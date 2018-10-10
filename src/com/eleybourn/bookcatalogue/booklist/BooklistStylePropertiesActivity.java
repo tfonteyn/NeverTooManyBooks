@@ -56,6 +56,7 @@ public class BooklistStylePropertiesActivity extends BookCatalogueActivity {
     private static final String BKEY_SAVE_TO_DATABASE = TAG + ".SaveToDb";
 
     /** Database connection, if used */
+    @Nullable
     private CatalogueDBAdapter mDb = null;
 
     /** Options indicating style should be saved to the database on exit */

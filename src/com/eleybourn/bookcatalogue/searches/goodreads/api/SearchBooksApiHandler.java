@@ -21,6 +21,7 @@
 package com.eleybourn.bookcatalogue.searches.goodreads.api;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.BookNotFoundException;
@@ -55,6 +56,7 @@ public class SearchBooksApiHandler extends ApiHandler {
     private static final String GR_WORK = "work";
     private static final String GR_BEST_BOOK = "best_book";
     /** List of GoodreadsWork objects that result from a search */
+    @Nullable
     private List<GoodreadsWork> mWorks = null;
     /** Starting result # (for multi-page result sets). We don't use it (yet). */
     private Long mResultsStart;
@@ -225,6 +227,7 @@ public class SearchBooksApiHandler extends ApiHandler {
         }
     };
     /** Transient global data for current work in search results. */
+    @Nullable
     private GoodreadsWork mCurrentWork;
     /**
      * At the START of a "work" tag, we create a new work.
@@ -238,6 +241,7 @@ public class SearchBooksApiHandler extends ApiHandler {
     /**
      * At the END of a "work" tag, we add it to list and reset the pointer.
      */
+    @Nullable
     private final XmlHandler mHandleWorkEnd = new XmlHandler() {
         @Override
         public void process(@NonNull ElementContext context) {
@@ -315,7 +319,7 @@ public class SearchBooksApiHandler extends ApiHandler {
             mCurrentWork.smallImageUrl = context.body;
         }
     };
-    public SearchBooksApiHandler(GoodreadsManager manager) {
+    public SearchBooksApiHandler(@NonNull GoodreadsManager manager) {
         super(manager);
         // Build the XML filters needed to get the data we're interested in.
         buildFilters();

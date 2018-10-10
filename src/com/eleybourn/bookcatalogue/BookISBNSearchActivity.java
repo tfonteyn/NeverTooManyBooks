@@ -100,10 +100,12 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
     private EditText mIsbnText;
     private EditText mTitleText;
     private AutoCompleteTextView mAuthorText;
+    @Nullable
     private ArrayAdapter<String> mAuthorAdapter = null;
     private CatalogueDBAdapter mDb;
     private String mAuthor;
     private String mTitle;
+    @Nullable
     private String mIsbn;
     private int mMode;
 
@@ -113,8 +115,10 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
      */
     private boolean mDisplayingAlert = false;
     /** Object to manage preferred (or found) scanner */
+    @Nullable
     private Scanner mScanner = null;
     /** The last Intent returned as a result of creating a book. */
+    @Nullable
     private Intent mLastBookIntent = null;
     /** Object managing current search. */
     private long mSearchManagerId = 0;
@@ -125,6 +129,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
         }
     };
 
+    @Nullable
     private String mBy;
 
     /**
@@ -336,7 +341,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
         });
     }
 
-    private void setupNumberButton(@IdRes final int id, final String text) {
+    private void setupNumberButton(@IdRes final int id, @NonNull final String text) {
         Button button = findViewById(id);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
@@ -823,7 +828,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
      * Ensure the TaskManager is restored.
      */
     @Override
-    protected void onRestoreInstanceState(Bundle instanceState) {
+    protected void onRestoreInstanceState(@NonNull Bundle instanceState) {
 
         mSearchManagerId = instanceState.getLong(SEARCH_MANAGER_ID);
 
@@ -835,7 +840,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle instanceState) {
+    protected void onSaveInstanceState(@NonNull Bundle instanceState) {
         super.onSaveInstanceState(instanceState);
 
         // Saving intent data is a kludge due to an apparent Android bug in some

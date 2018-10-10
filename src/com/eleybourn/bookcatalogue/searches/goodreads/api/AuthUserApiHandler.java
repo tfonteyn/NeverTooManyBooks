@@ -21,6 +21,7 @@
 package com.eleybourn.bookcatalogue.searches.goodreads.api;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.searches.goodreads.api.XmlFilter.ElementContext;
@@ -44,6 +45,7 @@ public class AuthUserApiHandler extends ApiHandler {
         }
     };
 
+    @Nullable
     private String mUsername = null;
 
     private final XmlHandler mHandleUsernameEnd = new XmlHandler() {
@@ -102,6 +104,7 @@ public class AuthUserApiHandler extends ApiHandler {
         XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "user", "name").setEndAction(mHandleUsernameEnd);
     }
 
+    @Nullable
     public String getUsername() {
         return mUsername;
     }

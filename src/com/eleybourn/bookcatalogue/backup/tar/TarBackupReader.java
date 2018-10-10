@@ -40,10 +40,13 @@ import java.io.IOException;
  */
 public class TarBackupReader extends BackupReaderAbstract {
     /** The data stream for the archive */
+    @NonNull
     private final TarArchiveInputStream mInput;
     /** The INFO data read from the start of the archive */
+    @NonNull
     private final BackupInfo mInfo;
     /** Used to allow 'peeking' at the input stream */
+    @Nullable
     private ReaderEntity mPushedEntity;
 
     /**
@@ -120,6 +123,7 @@ public class TarBackupReader extends BackupReaderAbstract {
     /**
      * Accessor used by TarEntityReader to get access to the stream data
      */
+    @NonNull
     protected TarArchiveInputStream getInput() {
         return mInput;
     }

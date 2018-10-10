@@ -23,6 +23,7 @@ package com.eleybourn.bookcatalogue;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.widget.ImageView;
 
 import com.eleybourn.bookcatalogue.booklist.BooklistPreferencesActivity;
@@ -57,6 +58,7 @@ public class GetThumbnailTask implements SimpleTask {
      * Despite above 'allow 2 threads', original code had '1' set so I presume even 2 was to much.
      * Given the number of cores has gone up these days, let's see what we can do....
      */
+    @NonNull
     private static final SimpleTaskQueue mQueue;
     static {
         int maxTasks = 1;
@@ -72,8 +74,10 @@ public class GetThumbnailTask implements SimpleTask {
     }
 
     /** Reference to the view we are using */
+    @NonNull
     private final WeakReference<ImageView> mView;
     /** ID of book whose cover we are getting */
+    @NonNull
     private final String mBookHash;
     /** Options indicating original caller had checked cache */
     private final boolean mCacheWasChecked;
@@ -81,8 +85,10 @@ public class GetThumbnailTask implements SimpleTask {
     private final int mWidth;
     /** The height of the thumbnail retrieved (based on preferences) */
     private final int mHeight;
+    @NonNull
     private final Context mContext;
     /** Resulting bitmap object */
+    @Nullable
     private Bitmap mBitmap = null;
     /** Options indicating image was found in the cache */
     private boolean mWasInCache = false;

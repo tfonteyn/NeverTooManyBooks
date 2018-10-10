@@ -21,6 +21,7 @@
 package com.eleybourn.bookcatalogue.searches.goodreads;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.widget.ImageView;
 
 import com.eleybourn.bookcatalogue.R;
@@ -49,9 +50,11 @@ public class GoodreadsWork {
 	public Double rating;
 	public Long authorId;
 	public String authorName;
-	private byte[] imageBytes = null;
+	@Nullable
+    private byte[] imageBytes = null;
 	private GetImageTask mTask;
-	private WeakReference<ImageView> mImageView = null;
+	@Nullable
+    private WeakReference<ImageView> mImageView = null;
 
 	public GoodreadsWork() {
 		super();

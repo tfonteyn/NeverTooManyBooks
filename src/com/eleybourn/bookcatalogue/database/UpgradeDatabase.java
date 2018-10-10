@@ -190,7 +190,9 @@ public class UpgradeDatabase {
                     ")";
     //</editor-fold>
 
+    @NonNull
     private static String mMessage = "";
+    @NonNull
     public static String getMessage() {
         return mMessage;
     }

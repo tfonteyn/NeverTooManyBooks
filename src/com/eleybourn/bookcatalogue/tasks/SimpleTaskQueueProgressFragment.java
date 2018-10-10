@@ -55,16 +55,19 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
 
 
     /** The underlying task queue */
+    @NonNull
     private final SimpleTaskQueue mQueue;
     /** Handler so we can detect UI thread */
     private final Handler mHandler = new Handler();
     /** List of messages to be sent to the underlying activity, but not yet sent */
     private final List<TaskMessage> mTaskMessages = new ArrayList<>();
     /** List of messages queued; only used if activity not present when showToast() is called */
+    @Nullable
     private List<String> mMessages = null;
     /** Options indicating dialog was cancelled */
     private boolean mWasCancelled = false;
     /** Max value of progress (for determinate progress) */
+    @Nullable
     private String mMessage = null;
     /** Max value of progress (for determinate progress) */
     private int mMax;
@@ -79,6 +82,7 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
     /** Options indicating underlying field has changed so that progress dialog will be updated */
     private boolean mNumberFormatChanged = false;
     /** Format of number part of dialog */
+    @Nullable
     private String mNumberFormat = null;
     /** Unique ID for this task. Can be used like menu or activity IDs */
     private int mTaskId;
@@ -123,6 +127,7 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
      * @param message Message to display
      * @param task    Task to run
      */
+    @NonNull
     public static SimpleTaskQueueProgressFragment runTaskWithProgress(@NonNull final FragmentActivity context,
                                                                       final int message,
                                                                       @NonNull final FragmentTask task,
@@ -134,6 +139,7 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
         return frag;
     }
 
+    @NonNull
     private static SimpleTaskQueueProgressFragment newInstance(final int title, final boolean isIndeterminate, final int taskId) {
         SimpleTaskQueueProgressFragment frag = new SimpleTaskQueueProgressFragment();
         Bundle args = new Bundle();
@@ -534,7 +540,9 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
      * We only deliver onFinish() to the FragmentTask when the activity is present.
      */
     private class TaskFinishedMessage implements TaskMessage {
+        @NonNull
         final FragmentTask mTask;
+        @Nullable
         final Exception mException;
 
         TaskFinishedMessage(@NonNull final FragmentTask task, @Nullable final Exception e) {
@@ -585,6 +593,7 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
      * @author pjw
      */
     private class FragmentTaskWrapper implements SimpleTask {
+        @NonNull
         private final FragmentTask mInnerTask;
 
         FragmentTaskWrapper(@NonNull final FragmentTask task) {

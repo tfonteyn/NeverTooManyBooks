@@ -74,9 +74,9 @@ public class CoversDbHelper implements AutoCloseable {
         @Override
         public Cursor newCursor(
                 SQLiteDatabase db,
-                SQLiteCursorDriver masterQuery,
-                String editTable,
-                SQLiteQuery query) {
+                @NonNull SQLiteCursorDriver masterQuery,
+                @NonNull String editTable,
+                @NonNull SQLiteQuery query) {
             return new TrackedCursor(masterQuery, editTable, query, mSynchronizer);
         }
     };
@@ -116,6 +116,7 @@ public class CoversDbHelper implements AutoCloseable {
      * So... won't increase/decrease when using only singletons
      * Will be used if you create "new" instances yourself, so it's a nice debug as well.
      */
+    @NonNull
     private static Integer mCountToGetInstance = 0;
     /** Our singleton */
     private static CoversDbHelper mInstance;
@@ -123,6 +124,7 @@ public class CoversDbHelper implements AutoCloseable {
     /** List of statements we create so we can clean them when the instance is closed. */
     private final SqlStatementManager mStatements = new SqlStatementManager();
     /** {@link #saveFile(String, int, int, byte[])} */
+    @Nullable
     private SynchronizedStatement mExistsStmt = null;
 
     /**

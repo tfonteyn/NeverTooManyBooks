@@ -31,6 +31,7 @@ public class MessageDialogFragment extends DialogFragment {
      *
      * @return Created fragment
      */
+    @NonNull
     public static MessageDialogFragment newInstance(final int dialogId,
                                                     @StringRes final int titleId,
                                                     @NonNull final String message) {
@@ -45,6 +46,7 @@ public class MessageDialogFragment extends DialogFragment {
      *
      * @return Created fragment
      */
+    @NonNull
     @SuppressWarnings("WeakerAccess")
     public static MessageDialogFragment newInstance(final int dialogId,
                                                     @StringRes final int titleId,

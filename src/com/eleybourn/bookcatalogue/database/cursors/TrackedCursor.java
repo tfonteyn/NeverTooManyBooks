@@ -54,15 +54,18 @@ public class TrackedCursor extends SynchronizedCursor implements Closeable {
     /** Used as a collection of known cursors */
     private static final Set<WeakReference<TrackedCursor>> mCursors = new HashSet<>();
     /** Global counter for unique cursor IDs */
+    @NonNull
     private static Long mIdCounter = 0L;
 
     /** Debug counter */
+    @NonNull
     private static Integer mInstanceCount = 0;
     /** ID of the current cursor */
     private Long mId;
     /** We record a stack track when a cursor is created. */
     private StackTraceElement[] mStackTrace;
     /** Weak reference to this object, used in cursor collection */
+    @Nullable
     private WeakReference<TrackedCursor> mWeakRef;
     /** Already closed */
     private boolean mIsClosedFlg = false;
@@ -141,10 +144,11 @@ public class TrackedCursor extends SynchronizedCursor implements Closeable {
     }
 
     /**
-     * DEBUG Dump all open cursors to System.out.
+     * DEBUG Dump all open cursors
      */
     public static void dumpCursors() {
         if (DEBUG_SWITCHES.TRACKED_CURSOR && BuildConfig.DEBUG) {
+            //noinspection UnusedAssignment
             List<TrackedCursor> cursors = getCursors();
             if (cursors == null) {
                 Logger.debug("No cursors");

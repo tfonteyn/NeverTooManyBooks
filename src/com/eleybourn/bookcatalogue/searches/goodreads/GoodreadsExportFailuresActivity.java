@@ -62,7 +62,9 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity {
     /** Key to store optional task ID when activity is started */
     private static final String GR_TASK_ID = "GoodreadsExportFailuresActivity.TaskId";
     /** DB connection */
+    @Nullable
     private CatalogueDBAdapter mDb = null;
+    @Nullable
     private BindableItemCursor mCursor;
 
     /**
@@ -173,7 +175,7 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity {
         }
     }
 
-    private void doContextMenu(@NonNull final AdapterView<?> parent, final View v, final int position, final long id) {
+    private void doContextMenu(@NonNull final AdapterView<?> parent, @NonNull final View v, final int position, final long id) {
         final Event event = ViewTagger.getTag(v, R.id.TAG_EVENT);
         final List<ContextDialogItem> items = new ArrayList<>();
 
@@ -244,6 +246,7 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity {
     /**
      * Get the EventsCursor relevant to this Activity
      */
+    @Nullable
     @Override
     protected BindableItemCursor getBindableItemCursor(@Nullable final Bundle savedInstanceState) {
         if (mTaskId == 0) {

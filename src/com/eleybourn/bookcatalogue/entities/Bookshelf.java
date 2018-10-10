@@ -19,6 +19,7 @@ public class Bookshelf implements Serializable, Utils.ItemWithIdFixup {
     public static final int DEFAULT_ID = 1;
 
     public long id;
+    @NonNull
     public final String name;
 
     /**

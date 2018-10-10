@@ -154,6 +154,7 @@ public class HintManager {
      */
     private static class Hint {
         /** Preferences key suffix specific to this hint */
+        @NonNull
         public final String key;
 
         /** Indicates that this hint was displayed already in this instance of the app */

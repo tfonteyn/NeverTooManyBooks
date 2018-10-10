@@ -21,6 +21,7 @@
 package com.eleybourn.bookcatalogue.properties;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -46,6 +47,7 @@ public abstract class Property {
      * This means that any serialized version would only be useful for in-process data passing. But this
      * can be accomplished by custom serialization in the referencing object much more easily.
      */
+    @NonNull
     private static Integer mViewIdCounter = 0;
 
     /** Unique 'name' of this property. */
@@ -156,6 +158,7 @@ public abstract class Property {
      * @author Philip Warner
      */
     public interface BooleanValue {
+        @Nullable
         Boolean get();
     }
 
@@ -167,6 +170,7 @@ public abstract class Property {
      * @author Philip Warner
      */
     protected interface StringValue {
+        @Nullable
         String get();
     }
 
@@ -178,6 +182,7 @@ public abstract class Property {
      * @author Philip Warner
      */
     public interface IntegerValue {
+        @Nullable
         Integer get();
     }
 

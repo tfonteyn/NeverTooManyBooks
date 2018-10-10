@@ -36,7 +36,7 @@ public class ImportTypeSelectionDialogFragment extends DialogFragment {
     private boolean mArchiveHasValidDates;
     private final OnClickListener mRowClickListener = new OnClickListener() {
         @Override
-        public void onClick(View v) {
+        public void onClick(@NonNull View v) {
             handleClick(v);
         }
     };
@@ -49,6 +49,7 @@ public class ImportTypeSelectionDialogFragment extends DialogFragment {
      *
      * @return Created fragment
      */
+    @NonNull
     public static ImportTypeSelectionDialogFragment newInstance(final int dialogId, @NonNull final File file) {
         ImportTypeSelectionDialogFragment frag = new ImportTypeSelectionDialogFragment();
         Bundle args = new Bundle();

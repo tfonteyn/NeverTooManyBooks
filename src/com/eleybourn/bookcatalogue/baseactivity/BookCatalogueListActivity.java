@@ -42,7 +42,7 @@ abstract public class BookCatalogueListActivity extends BookCatalogueActivity {
 
     private final Handler mHandler = new Handler();
     private final AdapterView.OnItemClickListener mOnClickListener = new AdapterView.OnItemClickListener() {
-        public void onItemClick(final AdapterView<?> parent, final View v, final int position, final long id) {
+        public void onItemClick(final AdapterView<?> parent, @NonNull final View v, final int position, final long id) {
             onListItemClick((ListView) parent, v, position, id);
         }
     };

@@ -51,7 +51,8 @@ public class Properties implements Iterable<Property> {
     }
 
     /** Add a property to this collection */
-    public Properties add(Property p) {
+    @NonNull
+    public Properties add(@NonNull Property p) {
         mList.add(p);
         mHash.put(p.getUniqueName(), p);
         return this;

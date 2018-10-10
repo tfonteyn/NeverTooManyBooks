@@ -39,10 +39,12 @@ import java.util.ArrayList;
  */
 public class Datum {
     /** Key of this datum */
+    @NonNull
     private final String mKey;
     /** True if data should be visible */
     private final boolean mIsVisible;
     /** Validator for this Datum */
+    @Nullable
     private DataValidator mValidator;
     /** Accessor for this Datum (eg. the datum might be a bit in a mask field, or a composite read-only value */
     private DataAccessor mAccessor;
@@ -206,6 +208,7 @@ public class Datum {
         return toBoolean(o.toString(), true);
     }
 
+    @NonNull
     public String getKey() {
         return mKey;
     }
@@ -214,6 +217,7 @@ public class Datum {
         return !mIsVisible;
     }
 
+    @Nullable
     public DataValidator getValidator() {
         return mValidator;
     }
@@ -510,10 +514,11 @@ public class Datum {
      *
      * @return The data
      */
+    @SuppressWarnings("unchecked")
     @Nullable
-    Serializable getSerializable(@SuppressWarnings("unused") @NonNull final DataManager data, @NonNull final Bundle bundle) {
+     <T extends Serializable> T getSerializable(@SuppressWarnings("unused") @NonNull final DataManager data, @NonNull final Bundle bundle) {
         if (mAccessor == null) {
-            return bundle.getSerializable(mKey);
+            return (T)bundle.getSerializable(mKey);
         } else {
             throw new IllegalStateException("Accessor not supported for serializable objects");
         }

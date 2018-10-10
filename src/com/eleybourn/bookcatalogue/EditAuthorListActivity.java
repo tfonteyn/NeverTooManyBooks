@@ -186,7 +186,7 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
                 .create();
 
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.this_book), new DialogInterface.OnClickListener() {
-            public void onClick(final DialogInterface dialog, final int which) {
+            public void onClick(@NonNull final DialogInterface dialog, final int which) {
                 from.copyFrom(to);
                 Utils.pruneList(mDb, mList);
                 mAdapter.notifyDataSetChanged();
@@ -195,7 +195,7 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
         });
 
         dialog.setButton(DialogInterface.BUTTON_NEGATIVE, allBooks, new DialogInterface.OnClickListener() {
-            public void onClick(final DialogInterface dialog, final int which) {
+            public void onClick(@NonNull final DialogInterface dialog, final int which) {
                 mDb.globalReplaceAuthor(from, to);
                 from.copyFrom(to);
                 Utils.pruneList(mDb, mList);

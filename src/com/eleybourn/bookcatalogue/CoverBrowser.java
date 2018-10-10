@@ -70,21 +70,29 @@ import java.util.List;
  */
 public class CoverBrowser {
     /** Handler when an image is finally selected. */
+    @NonNull
     private final OnImageSelectedListener mOnImageSelectedListener;
     /** ISBN of book to lookup */
+    @NonNull
     private final String mIsbn;
     /** Calling context */
+    @NonNull
     private final Activity mActivity;
     private final int mPreviewSizeWidth;
     private final int mPreviewSizeHeight;
     /** The Dialog */
+    @NonNull
     private final Dialog mDialog;
+    @NonNull
     private final android.util.DisplayMetrics mMetric;
     /** Task queue for images */
+    @Nullable
     private SimpleTaskQueue mImageFetcher = null;
     /** List of all editions for the given ISBN */
+    @Nullable
     private List<String> mEditions;
     /** Object to ensure files are cleaned up. */
+    @Nullable
     private FileManager mFileManager;
     /** Indicates a 'shutdown()' has been requested */
     private boolean mShutdown = false;
@@ -222,6 +230,7 @@ public class CoverBrowser {
 
         // Required object. Just create an ImageView
         switcher.setFactory(new ViewFactory() {
+            @NonNull
             @Override
             public View makeView() {
                 ImageView view = new ImageView(mActivity);
@@ -262,6 +271,7 @@ public class CoverBrowser {
      */
     private class CoverImagePagerAdapter extends PagerAdapter {
         private final int mGalleryItemBackground;
+        @NonNull
         private final ImageSwitcher mSwitcher;
 
         CoverImagePagerAdapter(@NonNull final ImageSwitcher switcher) {
@@ -347,6 +357,7 @@ public class CoverBrowser {
      * @author Philip Warner
      */
     private class GetEditionsTask implements SimpleTask {
+        @NonNull
         final String isbn;
 
         /**
@@ -387,9 +398,11 @@ public class CoverBrowser {
      * @author Philip Warner
      */
     private class GetThumbnailTask implements SimpleTask {
+        @NonNull
         private final ImageView mImageView;
         private final int mMaxWidth;
         private final int mMaxHeight;
+        @NonNull
         private final String mIsbn;
         private String mFilename;
 
@@ -435,6 +448,7 @@ public class CoverBrowser {
      */
     private class GetFullImageTask implements SimpleTask {
         // Switcher to use
+        @NonNull
         private final ImageSwitcher mSwitcher;
         // ISBN
         private final String mIsbn;

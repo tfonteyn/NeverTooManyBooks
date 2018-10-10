@@ -115,7 +115,7 @@ public class BooklistStylesListActivity extends EditObjectListActivity<BooklistS
             // Handle clicks on the CheckedTextView
             holder.preferred.setOnClickListener(new OnClickListener() {
                 @Override
-                public void onClick(View v) {
+                public void onClick(@NonNull View v) {
                     Holder h = ViewTagger.getTag(v, R.id.TAG_HOLDER);
                     if (h != null) {
                         boolean newStatus = !h.style.isPreferred();
@@ -166,7 +166,7 @@ public class BooklistStylesListActivity extends EditObjectListActivity<BooklistS
         final AlertDialog dialog = new AlertDialog.Builder(getLayoutInflater().getContext())
                 .setItems(csa, new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(final DialogInterface dialog, final int which) {
+                    public void onClick(@NonNull final DialogInterface dialog, final int which) {
                         switch (items.get(which).getId()) {
                             case R.id.MENU_STYLE_DELETE:
                                 style.delete(mDb);
@@ -310,6 +310,7 @@ public class BooklistStylesListActivity extends EditObjectListActivity<BooklistS
      */
     private class ContextItem implements CharSequence {
         /** String for this item */
+        @NonNull
         private final String mString;
         /** ID of this item */
         private final int mId;
@@ -359,6 +360,7 @@ public class BooklistStylesListActivity extends EditObjectListActivity<BooklistS
         /**
          * Use the string object to provide the CharSequence implementation
          */
+        @NonNull
         @Override
         public CharSequence subSequence(final int start, final int end) {
             return mString.subSequence(start, end);

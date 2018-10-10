@@ -46,6 +46,7 @@ public class ExportAdvancedDialogFragment extends DialogFragment {
      *
      * @return Created fragment
      */
+    @NonNull
     public static ExportAdvancedDialogFragment newInstance(final int dialogId, @NonNull final File file) {
         final ExportAdvancedDialogFragment frag = new ExportAdvancedDialogFragment();
         final Bundle args = new Bundle();

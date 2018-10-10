@@ -53,6 +53,7 @@ import java.util.Objects;
  */
 public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> {
     /** List of valid values */
+    @NonNull
     private final ItemEntries<T> mList;
 
     ListProperty(@NonNull final ItemEntries<T> list,
@@ -82,7 +83,7 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
         // Display the list of values when clicked.
         root.setOnClickListener(new OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(@NonNull View view) {
                 handleClick(view, inflater);
             }
         });
@@ -163,7 +164,7 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
         // Create a listener that responds to any click on the list
         OnClickListener clickListener = new OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(@NonNull View v) {
                 dialog.dismiss();
                 Holder<T> holder = ViewTagger.getTag(v, R.id.TAG_HOLDER);
                 set(Objects.requireNonNull(holder).item.value);
@@ -227,6 +228,7 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
      */
     public static class ItemEntry<T> {
         /** Actual value */
+        @Nullable
         final T value;
         /** Test description of the meaning of that value */
         int stringId;
@@ -239,6 +241,7 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
             this.textArgs = args;
         }
 
+        @NonNull
         public String getString() {
             return BookCatalogueApp.getResourceString(stringId, textArgs);
         }
@@ -253,6 +256,7 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
             textArgs = args;
         }
 
+        @NonNull
         @Override
         public String toString() {
             return getString();
@@ -277,6 +281,7 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
          *
          * @return this for chaining
          */
+        @NonNull
         public ItemEntries<T> add(@Nullable final T value, @StringRes final int stringId, @NonNull final Object... args) {
             mList.add(new ItemEntry<>(value, stringId, args));
             return this;
@@ -297,7 +302,9 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
      * @author Philip Warner
      */
     private static class Holder<T> {
+        @NonNull
         final ItemEntry<T> item;
+        @NonNull
         final View baseView;
 
         Holder(@NonNull final ItemEntry<T> item, @NonNull final View baseView) {

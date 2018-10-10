@@ -116,21 +116,29 @@ public class GoodreadsManager {
     /** Set to true when the credentials have been successfully verified. */
     private static boolean mHasValidCredentials = false;
     /** Cached when credentials have been verified. */
+    @Nullable
     private static String mAccessToken = null;
+    @Nullable
     private static String mAccessSecret = null;
     /** Local copies of user data retrieved when the credentials were verified */
+    @Nullable
     private static String mUsername = null;
     private static long mUserId = 0;
     /** Stores the last time an API request was made to avoid breaking API rules. */
+    @NonNull
     private static Long mLastRequestTime = 0L;
     /** OAuth helpers */
     private CommonsHttpOAuthConsumer mConsumer;
     private OAuthProvider mProvider;
     /** Local API object */
+    @Nullable
     private IsbnToId mIsbnToId = null;
+    @Nullable
     private GoodreadsBookshelves mBookshelfList = null;
     /** Local API object */
+    @Nullable
     private ShelfAddBookHandler mAddBookHandler = null;
+    @Nullable
     private ReviewUpdateHandler mReviewUpdater = null;
 
     /**
@@ -593,7 +601,7 @@ public class GoodreadsManager {
             // Make sure we follow LibraryThing ToS (no more than 1 request/second).
             parser.parse(in, requestHandler);
             parseOk = true;
-        } catch (ParserConfigurationException | SAXException | IOException e) {
+        } catch (@NonNull ParserConfigurationException | SAXException | IOException e) {
             String s = "unknown";
             try {
                 s = e.getMessage();
@@ -990,6 +998,7 @@ public class GoodreadsManager {
     }
 
     private class GoodreadsBookshelf {
+        @NonNull
         private final Bundle mBundle;
 
         GoodreadsBookshelf(@NonNull final Bundle b) {
@@ -1007,6 +1016,7 @@ public class GoodreadsManager {
     }
 
     private class GoodreadsBookshelves {
+        @NonNull
         private final Map<String, GoodreadsBookshelf> mBookshelfList;
 
         GoodreadsBookshelves(@NonNull final Map<String, GoodreadsBookshelf> list) {

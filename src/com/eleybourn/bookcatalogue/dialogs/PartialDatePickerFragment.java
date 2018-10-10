@@ -40,10 +40,13 @@ public class PartialDatePickerFragment extends DialogFragment {
     private static final String BKEY_TITLE = "title";
 
     /** Currently displayed year; null if empty/invalid */
+    @Nullable
     private Integer mYear;
     /** Currently displayed month; null if empty/invalid */
+    @Nullable
     private Integer mMonth;
     /** Currently displayed day; null if empty/invalid */
+    @Nullable
     private Integer mDay;
     /** Title id */
     private int mTitleId;
@@ -117,6 +120,7 @@ public class PartialDatePickerFragment extends DialogFragment {
         return editor;
     }
 
+    @NonNull
     public PartialDatePickerFragment setDialogId(final int id) {
         mDialogId = id;
         return this;
@@ -125,6 +129,7 @@ public class PartialDatePickerFragment extends DialogFragment {
     /**
      * Accessor. Update dialog if available.
      */
+    @NonNull
     public PartialDatePickerFragment setTitle(final int title) {
         mTitleId = title;
         PartialDatePicker d = (PartialDatePicker) getDialog();
@@ -137,6 +142,7 @@ public class PartialDatePickerFragment extends DialogFragment {
     /**
      * Accessor. Update dialog if available.
      */
+    @NonNull
     private PartialDatePickerFragment setDate(@Nullable final Integer year, @Nullable final Integer month, @Nullable final Integer day) {
         mYear = year;
         mMonth = month;
@@ -180,6 +186,7 @@ public class PartialDatePickerFragment extends DialogFragment {
     /**
      * @param current Current date (may be null)
      */
+    @NonNull
     public PartialDatePickerFragment setDate(@Nullable final Object current) {
         String dateString = current == null ? "" : current.toString();
 

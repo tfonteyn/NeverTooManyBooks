@@ -107,6 +107,7 @@ public class DbSync {
         /**
          * Add a new SharedLock to the collection and return it.
          */
+        @NonNull
         SyncLock getSharedLock() {
             final Thread t = Thread.currentThread();
             //Logger.debug(t.getName() + " requesting SHARED lock");
@@ -167,6 +168,7 @@ public class DbSync {
          * - if not, return with the lock still held -- this prevents more EX or SH locks.
          * - if there are other SH locks, wait for one to be release and loop.
          */
+        @NonNull
         SyncLock getExclusiveLock() {
             final Thread ourThread = Thread.currentThread();
             long t0;
@@ -241,6 +243,7 @@ public class DbSync {
         public interface SyncLock {
             void unlock();
 
+            @NonNull
             LockTypes getType();
         }
 
@@ -255,6 +258,7 @@ public class DbSync {
                 releaseSharedLock();
             }
 
+            @NonNull
             @Override
             public LockTypes getType() {
                 return LockTypes.shared;
@@ -272,6 +276,7 @@ public class DbSync {
                 releaseExclusiveLock();
             }
 
+            @NonNull
             @Override
             public LockTypes getType() {
                 return LockTypes.exclusive;
@@ -287,12 +292,15 @@ public class DbSync {
     public static class SynchronizedDb {
         static final String ERROR_UPDATE_INSIDE_SHARED_TX = "Update inside shared TX";
         /** Underlying database */
+        @NonNull
         final SQLiteDatabase mSqlDb;
         /** Sync object to use */
+        @NonNull
         final Synchronizer mSync;
         /** Factory object to create the custom cursor. Can not be static because it needs mSync */
         final SynchronizedCursorFactory mCursorFactory = new SynchronizedCursorFactory();
         /** Currently held transaction lock, if any */
+        @Nullable
         private SyncLock mTxLock = null;
 
         /**
@@ -355,7 +363,7 @@ public class DbSync {
                         //}
 
                     }
-                } catch (NoSuchFieldException | IllegalAccessException | IllegalArgumentException e) {
+                } catch (@NonNull NoSuchFieldException | IllegalAccessException | IllegalArgumentException e) {
                     Logger.error(e);
                 }
             }
@@ -752,9 +760,9 @@ public class DbSync {
             @Override
             @NonNull
             public SynchronizedCursor newCursor(final SQLiteDatabase db,
-                                                final SQLiteCursorDriver masterQuery,
-                                                final String editTable,
-                                                final SQLiteQuery query) {
+                                                @NonNull final SQLiteCursorDriver masterQuery,
+                                                @NonNull final String editTable,
+                                                @NonNull final SQLiteQuery query) {
                 return new SynchronizedCursor(masterQuery, editTable, query, mSync);
             }
         }
@@ -772,12 +780,14 @@ public class DbSync {
     public static class SynchronizedStatement implements Closeable {
 
         /** Synchronizer from database */
+        @NonNull
         final Synchronizer mSync;
         /** Underlying statement */
         final SQLiteStatement mStatement;
         /** Indicates this is a 'read-only' statement */
         final boolean mIsReadOnly;
         /** Copy of SQL used for debugging */
+        @NonNull
         private final String mSql;
         /** Indicates close() has been called */
         private boolean mIsClosed = false;
@@ -812,7 +822,7 @@ public class DbSync {
         /**
          * Wrapper for underlying method on SQLiteStatement.
          */
-        public void bindString(final int index, final String value) {
+        public void bindString(final int index, @Nullable final String value) {
             if (value == null) {
                 if (BuildConfig.DEBUG) {
                     Logger.debug("binding NULL");
@@ -1032,6 +1042,7 @@ public class DbSync {
      * still result in 'database is locked' exceptions. So far in testing, none have occurred.
      */
     public static class SynchronizedCursor extends SQLiteCursor {
+        @NonNull
         private final Synchronizer mSync;
         private int mCount = -1;
 

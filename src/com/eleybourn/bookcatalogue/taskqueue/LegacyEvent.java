@@ -50,6 +50,7 @@ public class LegacyEvent extends Event {
         super("Legacy Event");
     }
 
+    @NonNull
     @Override
     public View newListItemView(@NonNull final LayoutInflater inflater,
                                 @NonNull final Context context,

@@ -150,16 +150,21 @@ public class BookCatalogueApp extends Application {
     /** Never store a context in a static, use the instance instead */
     private static BookCatalogueApp mInstance;
     /** Used to sent notifications regarding tasks */
+    @Nullable
     private static NotificationManager mNotifier;
 
+    @Nullable
     private static BCQueueManager mQueueManager = null;
     /** List of supported locales */
+    @Nullable
     private static List<String> mSupportedLocales = null;
     /** The locale used at startup; so that we can revert to system locale if we want to */
     private static Locale mInitialLocale = Locale.getDefault();
     /** User-specified default locale */
+    @Nullable
     private static Locale mPreferredLocale = null;
     /** Last locale used so; cached so we can check if it has genuinely changed */
+    @Nullable
     private static Locale mLastLocale = null;
 
     /**
@@ -184,6 +189,7 @@ public class BookCatalogueApp extends Application {
      *
      * Currently it just handles Locale changes and propagates it to any listeners.
      */
+    @Nullable
     private final SharedPreferences.OnSharedPreferenceChangeListener mPrefsListener =
             new SharedPreferences.OnSharedPreferenceChangeListener() {
         @Override
@@ -297,6 +303,7 @@ public class BookCatalogueApp extends Application {
      *
      * @return QueueManager object
      */
+    @Nullable
     public static BCQueueManager getQueueManager() {
         return mQueueManager;
     }

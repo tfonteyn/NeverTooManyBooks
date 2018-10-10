@@ -19,7 +19,9 @@ import java.io.IOException;
  * @author Philip Warner
  */
 public class ImportThread extends ManagedTask {
+    @NonNull
     private final String mFileSpec;
+    @NonNull
     private final Importer.CoverFinder mCoverFinder;
     private final Importer.OnImporterListener mImportListener = new Importer.OnImporterListener() {
 

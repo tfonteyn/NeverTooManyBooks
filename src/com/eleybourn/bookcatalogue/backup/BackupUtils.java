@@ -177,7 +177,7 @@ public class BackupUtils {
         final SAXParser parser;
         try {
             parser = factory.newSAXParser();
-        } catch (SAXException | ParserConfigurationException e) {
+        } catch (@NonNull SAXException | ParserConfigurationException e) {
             Logger.error(e);
             throw new IOException("Unable to create XML parser", e);
         }
@@ -205,6 +205,7 @@ public class BackupUtils {
         Set<T> keySet();
 
         /** Get the object for the specified key */
+        @Nullable
         Object get(@NonNull final T key);
 
         /** Process the passed item to store in the collection */
@@ -218,6 +219,7 @@ public class BackupUtils {
      * @author pjw
      */
     private static class BundleAccessor implements CollectionAccessor<String> {
+        @NonNull
         private final Bundle mBundle;
 
         BundleAccessor(@NonNull final Bundle b) {
@@ -276,8 +278,10 @@ public class BackupUtils {
      * @author pjw
      */
     private static class PreferencesAccessor implements CollectionAccessor<String> {
+        @NonNull
         final SharedPreferences mPrefs;
         final Map<String, ?> mMap;
+        @Nullable
         Editor mEditor;
 
         PreferencesAccessor(@NonNull final SharedPreferences prefs) {
@@ -295,6 +299,7 @@ public class BackupUtils {
             mEditor = null;
         }
 
+        @NonNull
         @Override
         public Set<String> keySet() {
             return mMap.keySet();

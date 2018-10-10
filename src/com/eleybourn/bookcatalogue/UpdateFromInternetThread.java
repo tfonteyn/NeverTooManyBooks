@@ -23,9 +23,11 @@ package com.eleybourn.bookcatalogue;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
+import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.AnthologyTitle;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Book;
@@ -51,6 +53,7 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class UpdateFromInternetThread extends ManagedTask {
     /** The fields that the user requested to update */
+    @NonNull
     private final FieldUsages mRequestedFields;
 
     //** Lock help by pop and by push when an item was added to an empty stack. */
@@ -58,22 +61,27 @@ public class UpdateFromInternetThread extends ManagedTask {
     /** Signal for available items */
     private final Condition mSearchDone = mSearchLock.newCondition();
     /** Active search manager */
+    @NonNull
     private final SearchManager mSearchManager;
     /** message to display when all is done */
     private String mFinalMessage;
 
     // Data related to current row being processed
     /** Original row data */
+    @Nullable
     private Bundle mOriginalBookData = null;
     /** current book ID */
     private long mCurrentBookId = 0;
     /** current book UUID */
+    @Nullable
     private String mCurrentBookUuid = null;
     /** The (subset) of fields relevant to the current book */
     private FieldUsages mCurrentBookFieldUsages;
     /** DB connection */
+    @Nullable
     private CatalogueDBAdapter mDb;
     /** where clause to use in cursor, none by default */
+    @NonNull
     private String mBookWhereClause = "";
 
     /**

@@ -51,6 +51,7 @@ abstract class AbstractBase {
         return true;
     }
 
+    @NonNull
     String cleanUpName(@NonNull final String s) {
         return s.trim()
                 .replace("\n", " ")

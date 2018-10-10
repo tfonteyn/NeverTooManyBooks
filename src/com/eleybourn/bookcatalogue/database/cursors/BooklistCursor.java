@@ -23,6 +23,7 @@ package com.eleybourn.bookcatalogue.database.cursors;
 import android.database.sqlite.SQLiteCursorDriver;
 import android.database.sqlite.SQLiteQuery;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;
 import com.eleybourn.bookcatalogue.booklist.BooklistSupportProvider;
@@ -36,8 +37,10 @@ import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer;
  */
 public class BooklistCursor extends TrackedCursor implements BooklistSupportProvider {
     /** Underlying BooklistBuilder object */
+    @NonNull
     private final BooklistBuilder mBuilder;
     /** Cached RowView for this cursor */
+    @Nullable
     private BooklistRowView mRowView = null;
 
     /**

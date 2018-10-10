@@ -92,7 +92,7 @@ public class PagerLayout extends FrameLayout implements ViewPager.OnPageChangeLi
     }
 
     @Override
-    public boolean onTouchEvent(final MotionEvent ev) {
+    public boolean onTouchEvent(@NonNull final MotionEvent ev) {
         //We capture any touches not already handled by the ViewPager
         // to implement scrolling from a touch outside the pager bounds.
         switch (ev.getAction()) {

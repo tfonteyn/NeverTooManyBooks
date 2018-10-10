@@ -46,8 +46,10 @@ abstract public class BindableItemListActivity extends BookCatalogueListActivity
     /** The resource ID for the base view */
     private final int mBaseViewId;
     /** Cursor of book IDs */
+    @Nullable
     private BindableItemCursor mBindableItems;
     /** Adapter for list */
+    @Nullable
     private BindableItemCursorAdapter mListAdapter;
 
     /**
@@ -67,6 +69,7 @@ abstract public class BindableItemListActivity extends BookCatalogueListActivity
      *
      * @return TaskNotesCursor to use
      */
+    @Nullable
     protected abstract BindableItemCursor getBindableItemCursor(@Nullable final Bundle savedInstanceState);
 
     @Override
@@ -89,14 +92,14 @@ abstract public class BindableItemListActivity extends BookCatalogueListActivity
 
         lv.setOnItemClickListener(new OnItemClickListener() {
             @Override
-            public void onItemClick(final AdapterView<?> parent, final View v, final int position, final long id) {
+            public void onItemClick(@NonNull final AdapterView<?> parent, @NonNull final View v, final int position, final long id) {
                 BindableItemListActivity.this.onListItemClick(parent, v, position, id);
             }
         });
         lv.setOnItemLongClickListener(new OnItemLongClickListener() {
 
             @Override
-            public boolean onItemLongClick(final AdapterView<?> parent, final View v, final int position, final long id) {
+            public boolean onItemLongClick(@NonNull final AdapterView<?> parent, @NonNull final View v, final int position, final long id) {
                 return BindableItemListActivity.this.onListItemLongClick(parent, v, position, id);
             }
         });

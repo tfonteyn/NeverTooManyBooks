@@ -204,6 +204,7 @@ public class StorageUtils {
      *
      * @return The File object for existing files, or a new placeholder.
      */
+    @NonNull
     public static File getCoverFile(@NonNull final String uuid) {
         final File jpg = new File(COVER_FILE_PATH + File.separator + uuid + ".jpg");
         if (jpg.exists()) {
@@ -269,6 +270,7 @@ public class StorageUtils {
     }
 
 
+    @NonNull
     public static List<File> findCsvFiles() {
         // Make a filter for files ending in .csv
         FilenameFilter csvFilter = new FilenameFilter() {

@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue.searches.goodreads.api;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -112,6 +113,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
 
     // Current author being processed
     //private long mCurrAuthorId = 0;
+    @Nullable
     private final XmlHandler mHandleText = new XmlHandler() {
 
         @Override
@@ -120,6 +122,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
             mBookData.putString(name, context.body.trim());
         }
     };
+    @Nullable
     private final XmlHandler mHandleLong = new XmlHandler() {
 
         @Override
@@ -136,6 +139,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
 
     // Current series being processed
     //private int mCurrSeriesId = 0;
+    @Nullable
     private final XmlHandler mHandleFloat = new XmlHandler() {
 
         @Override
@@ -149,6 +153,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
             }
         }
     };
+    @Nullable
     private final XmlHandler mHandleBoolean = new XmlHandler() {
 
         @Override
@@ -330,10 +335,13 @@ public abstract class ShowBookApiHandler extends ApiHandler {
 	 */
 
     /** Local storage for series book appears in */
+    @Nullable
     private ArrayList<Series> mSeries = null;
     /** Local storage for series book appears in */
+    @Nullable
     private ArrayList<Author> mAuthors = null;
     /** Local storage for shelf names */
+    @Nullable
     private ArrayList<String> mShelves = null;
     /**
      * Create a new shelves collection when the "shelves" tag is encountered.
@@ -362,7 +370,9 @@ public abstract class ShowBookApiHandler extends ApiHandler {
     };
 
     /** Current author being processed */
+    @Nullable
     private String mCurrAuthorName = null;
+    @Nullable
     private final XmlHandler mHandleAuthorEnd = new XmlHandler() {
         @Override
         public void process(@NonNull ElementContext context) {
@@ -384,6 +394,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
     };
 
     /** Current series being processed */
+    @Nullable
     private String mCurrSeriesName = null;
     private final XmlHandler mHandleSeriesName = new XmlHandler() {
         @Override
@@ -393,8 +404,10 @@ public abstract class ShowBookApiHandler extends ApiHandler {
     };
 
     /** Current series being processed */
+    @Nullable
     private Integer mCurrSeriesPosition = null;
 
+    @Nullable
     private final XmlHandler mHandleSeriesEnd = new XmlHandler() {
         @Override
         public void process(@NonNull ElementContext context) {

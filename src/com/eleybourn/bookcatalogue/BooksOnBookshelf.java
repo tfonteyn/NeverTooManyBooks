@@ -106,12 +106,15 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
     private final static String PREF_LIST_STYLE_FOR_BOOKSHELF = TAG + ".LIST_STYLE.BOOKSHELF." /* + name of shelf */;
 
     /** Counter for com.eleybourn.bookcatalogue.debug purposes */
+    @NonNull
     private static Integer mInstanceCount = 0;
     /** Task queue to get book lists in background */
     private final SimpleTaskQueue mTaskQueue = new SimpleTaskQueue("BoB-List", 1);
     /** Currently selected list style */
+    @Nullable
     private BooklistStyle mCurrentStyle = null;
     /** Currently selected bookshelf */
+    @Nullable
     private String mCurrentBookshelf = "";
     /** Options indicating activity has been destroyed. Used for background tasks */
     private boolean mIsDead = false;
@@ -120,10 +123,12 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
     /** Used by onScroll to detect when the top row has actually changed. */
     private int mLastTop = -1;
     /** ProgressDialog used to display "Getting books...". Needed here so we can dismiss it on close. */
+    @Nullable
     private ProgressDialog mListDialog = null;
     /** A book ID used for keeping/updating current list position, eg. when a book is edited. */
     private long mMarkBookId = 0;
     /** Text to use in search query */
+    @Nullable
     private String mSearchText = "";
     /** Saved position of last top row */
     private int mTopRow = 0;
@@ -132,10 +137,12 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
     /** Database connection */
     private CatalogueDBAdapter mDb;
     /** Handler to manage all Views on the list */
+    @Nullable
     private BooksMultiTypeListHandler mListHandler;
     /** Current displayed list cursor */
     private BooklistPseudoCursor mList;
     /** Multi-type adapter to manage list connection to cursor */
+    @Nullable
     private MultiTypeListCursorAdapter mAdapter;
     /** Preferred booklist state in next rebuild */
     private int mRebuildState;
@@ -144,7 +151,9 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
     /** Total number of unique books in current list */
     private int mUniqueBooks = 0;
 
+    @Nullable
     private Spinner mBookshelfSpinner;
+    @Nullable
     private ArrayAdapter<String> mBookshelfAdapter;
     private MenuHandler mMenuHandler;
 
@@ -346,7 +355,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
      * Handle selections from context menu
      */
     @Override
-    public boolean onContextItemSelected(MenuItem item) {
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         mList.moveToPosition(info.position);
         return
@@ -358,7 +367,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
      * Run each time the menu button is pressed. This will setup the options menu
      */
     @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
+    public boolean onPrepareOptionsMenu(@NonNull Menu menu) {
         mMenuHandler = new MenuHandler(menu);
         mMenuHandler.addCreateBookSubMenu(menu);
 
@@ -377,7 +386,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
      * call the appropriate functions (or other activities)
      */
     @Override
-    public boolean onOptionsItemSelected(final MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         if (mMenuHandler != null && !mMenuHandler.onOptionsItemSelected(this, item)) {
             switch (item.getItemId()) {
 
@@ -492,6 +501,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
     /**
      * Support routine now that this activity is no longer a ListActivity
      */
+    @NonNull
     private ListView getListView() {
         return (ListView) findViewById(android.R.id.list);
     }
@@ -578,7 +588,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
         listView.setOnScrollListener(
                 new OnScrollListener() {
                     @Override
-                    public void onScroll(final AbsListView view, final int firstVisibleItem, final int visibleItemCount, final int totalItemCount) {
+                    public void onScroll(@NonNull final AbsListView view, final int firstVisibleItem, final int visibleItemCount, final int totalItemCount) {
                         // TODO: Investigate why BooklistPseudoCursor causes a scroll even when it is closed!
                         // Need to check isDead because BooklistPseudoCursor misbehaves when activity
                         // terminates and closes cursor
@@ -771,7 +781,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                     true,
                     true, new OnCancelListener() {
                         @Override
-                        public void onCancel(DialogInterface dialog) {
+                        public void onCancel(@NonNull DialogInterface dialog) {
                             // Cancelling the list cancels the activity.
                             BooksOnBookshelf.this.finish();
                             dialog.dismiss();
@@ -832,7 +842,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 
         getListView().setOnItemLongClickListener(new OnItemLongClickListener() {
             @Override
-            public boolean onItemLongClick(final AdapterView<?> parent, final View view, final int position, final long id) {
+            public boolean onItemLongClick(final AdapterView<?> parent, @NonNull final View view, final int position, final long id) {
                 mList.moveToPosition(position);
                 List<SimpleDialogItem> menu = new ArrayList<>();
                 mListHandler.buildContextMenu(mList.getRowView(), menu);
@@ -1133,6 +1143,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
      *
      * @return The BooklistBuilder object used to build the data
      */
+    @Nullable
     private BooklistBuilder buildBooklist(final boolean isFullRebuild) {
         // If not a full rebuild then just use the current builder to re-query the underlying data
         if (mList != null && !isFullRebuild) {
@@ -1172,8 +1183,10 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
         /** Indicates whole table structure needs rebuild, vs. just do a reselect of underlying data */
         private final boolean mIsFullRebuild;
         /** Resulting Cursor */
+        @Nullable
         BooklistPseudoCursor mTempList = null;
         /** used to determine new cursor position */
+        @Nullable
         ArrayList<BookRowInfo> mTargetRows = null;
 
         /**

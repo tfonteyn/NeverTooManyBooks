@@ -69,7 +69,7 @@ public class StringProperty extends ValuePropertyWithGlobalDefault<String> imple
         // Reflect all changes in underlying data
         value.addTextChangedListener(new TextWatcher() {
             @Override
-            public void afterTextChanged(final Editable s) {
+            public void afterTextChanged(@NonNull final Editable s) {
                 set(s.toString());
             }
 

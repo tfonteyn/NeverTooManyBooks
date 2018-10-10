@@ -27,6 +27,7 @@ import android.support.annotation.NonNull;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
+import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.BookNotFoundException;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.NetworkException;
@@ -260,6 +261,7 @@ public class ListReviewsApiHandler extends ApiHandler {
 
 	 */
 
+    @NonNull
     public Bundle run(final int page, final int perPage)
             throws OAuthMessageSignerException, OAuthExpectationFailedException,
             OAuthCommunicationException, NotAuthorizedException, BookNotFoundException, IOException, NetworkException {

@@ -64,6 +64,7 @@ public class BackupChooser extends FileChooser implements
     private static final String ARCHIVE_PREFIX = "BookCatalogue-";
 
     /** The backup file that will be created (if saving) */
+    @Nullable
     private File mBackupFile = null;
 
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -96,6 +97,7 @@ public class BackupChooser extends FileChooser implements
     /**
      * Create the fragment using the last backup for the path, and the default file name (if saving)
      */
+    @NonNull
     @Override
     protected FileChooserFragment getChooserFragment() {
         return FileChooserFragment.newInstance(BCPreferences.getLastBackupFile(), getDefaultFileName());
@@ -104,6 +106,7 @@ public class BackupChooser extends FileChooser implements
     /**
      * Get a task suited to building a list of backup files.
      */
+    @NonNull
     @Override
     public FileLister getFileLister(@NonNull File root) {
         return new BackupLister(root);
@@ -113,7 +116,7 @@ public class BackupChooser extends FileChooser implements
      * Save the state
      */
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         if (mBackupFile != null) {
             outState.putString(BKEY_FILENAME, mBackupFile.getAbsolutePath());

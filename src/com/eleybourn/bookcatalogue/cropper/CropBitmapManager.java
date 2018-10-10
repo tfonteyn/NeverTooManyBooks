@@ -44,10 +44,13 @@ class CropBitmapManager {
 	}
 
 	private static class ThreadStatus {
-		State mState = State.ALLOW;
-		BitmapFactory.Options mOptions;
+		@NonNull
+        State mState = State.ALLOW;
+		@Nullable
+        BitmapFactory.Options mOptions;
 
-		@Override
+		@Nullable
+        @Override
 		public String toString() {
 			String s;
 			switch (mState) {
@@ -85,7 +88,8 @@ class CropBitmapManager {
 
 	private final WeakHashMap<Thread, ThreadStatus> mThreadStatus = new WeakHashMap<>();
 
-	private static CropBitmapManager sManager = null;
+	@Nullable
+    private static CropBitmapManager sManager = null;
 
 	private CropBitmapManager() {
 	}
@@ -126,13 +130,13 @@ class CropBitmapManager {
 	 * The following two methods are used to allow/cancel a set of threads for
 	 * bitmap decoding.
 	 */
-	public synchronized void allowThreadDecoding(ThreadSet threads) {
+	public synchronized void allowThreadDecoding(@NonNull ThreadSet threads) {
 		for (Thread t : threads) {
 			allowThreadDecoding(t);
 		}
 	}
 
-	public synchronized void cancelThreadDecoding(ThreadSet threads) {
+	public synchronized void cancelThreadDecoding(@NonNull ThreadSet threads) {
 		for (Thread t : threads) {
 			cancelThreadDecoding(t);
 		}
@@ -176,7 +180,8 @@ class CropBitmapManager {
 //	 }
 //	 }
 
-	public static synchronized CropBitmapManager instance() {
+	@Nullable
+    public static synchronized CropBitmapManager instance() {
 		if (sManager == null) {
 			sManager = new CropBitmapManager();
 		}

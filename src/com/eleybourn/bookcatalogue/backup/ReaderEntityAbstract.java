@@ -81,7 +81,7 @@ public abstract class ReaderEntityAbstract implements ReaderEntity {
 
     @NonNull
     @Override
-    public Serializable getSerializable() throws IOException, DeserializationException {
+    public <T extends Serializable> T getSerializable() throws IOException, DeserializationException {
         // Turn the input into a byte array
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
 

@@ -1,6 +1,7 @@
 package com.eleybourn.bookcatalogue.scanner;
 
 import android.annotation.SuppressLint;
+import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.BCPreferences;
 
@@ -31,6 +32,7 @@ public class ScannerManager {
      */
     static {
         myScannerFactories.put(SCANNER_ZXING_COMPATIBLE, new ScannerFactory() {
+            @NonNull
             @Override
             public Scanner newInstance() {
                 return new ZxingScanner(false);
@@ -43,6 +45,7 @@ public class ScannerManager {
         });
 
         myScannerFactories.put(SCANNER_ZXING, new ScannerFactory() {
+            @NonNull
             @Override
             public Scanner newInstance() {
                 return new ZxingScanner(true);
@@ -55,6 +58,7 @@ public class ScannerManager {
         });
 
         myScannerFactories.put(SCANNER_PIC2SHOP, new ScannerFactory() {
+            @NonNull
             @Override
             public Scanner newInstance() {
                 return new Pic2ShopScanner();
@@ -72,6 +76,7 @@ public class ScannerManager {
      *
      * @return A Scanner
      */
+    @NonNull
     public static Scanner getScanner() {
         // Find out what the user prefers if any
         int prefScanner = BCPreferences.getInt(PREF_PREFERRED_SCANNER, SCANNER_ZXING_COMPATIBLE);
@@ -98,6 +103,7 @@ public class ScannerManager {
      */
     private interface ScannerFactory {
         /** Create a new scanner of the related type */
+        @NonNull
         Scanner newInstance();
 
         /** Check if this scanner is available */

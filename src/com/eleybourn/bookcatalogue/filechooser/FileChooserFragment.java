@@ -55,6 +55,7 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
 
     private File mRootPath;
     // Create an empty one in case we are rotated before generated.
+    @Nullable
     private ArrayList<FileDetails> mList = new ArrayList<>();
 
     /** Create a new chooser fragment */
@@ -88,7 +89,7 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
      * Ensure activity supports event
      */
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         if (!(PathChangedListener.class.isInstance(context)))
             throw new IllegalStateException("Class " + context.getClass().getSimpleName() + " must implement " + PathChangedListener.class.getSimpleName());
@@ -167,6 +168,7 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
      *
      * @return File
      */
+    @NonNull
     public File getSelectedFile() {
         EditText et = getView().findViewById(R.id.file_name);
         return new File(mRootPath.getAbsolutePath() + File.separator + et.getText());
@@ -203,6 +205,7 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
     /** Interface for details of files in current directory */
     public interface FileDetails extends ViewProvider, Parcelable {
         /** Get the underlying File object */
+        @NonNull
         File getFile();
 
         /** Called to fill in the details of this object in the View provided by the ViewProvider implementation */

@@ -34,6 +34,7 @@ import com.eleybourn.bookcatalogue.datamanager.validators.IntegerValidator;
 import com.eleybourn.bookcatalogue.datamanager.validators.NonBlankValidator;
 import com.eleybourn.bookcatalogue.datamanager.validators.OrValidator;
 import com.eleybourn.bookcatalogue.datamanager.validators.ValidatorException;
+import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 
 import java.io.Serializable;
@@ -346,7 +347,7 @@ public class DataManager {
      * @return The data
      */
     @Nullable
-    protected Object getSerializable(@NonNull final String key) {
+    protected <T extends Serializable> T getSerializable(@NonNull final String key) {
         return mData.get(key).getSerializable(this, mBundle);
     }
 
@@ -449,6 +450,7 @@ public class DataManager {
     /**
      * @return the current set of data
      */
+    @NonNull
     public Set<String> keySet() {
         return mData.keySet();
     }

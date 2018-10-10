@@ -14,13 +14,13 @@
     <string name="pages">Sayfa</string>
     <string name="confirm_add">Kitap ekle</string>
     <string name="confirm_update">Güncelle</string>
-    <string name="no_books">Bu kitaplıkta hiç kitap yok. Lütfen ekranın alt kısmındaki bölümü kullanarak kitap ekleyin.</string>
+    <string name="no_books_yet">Bu kitaplıkta hiç kitap yok. Lütfen ekranın alt kısmındaki bölümü kullanarak kitap ekleyin.</string>
     <string name="menu_expand_all">Hepsini göster</string>
     <string name="menu_sort_by">Sırala</string>
     <string name="menu_collapse_all">Hepsini gizle</string>
     <string name="search">Ara</string>
     <string name="confirm_save">Kitabı kaydet</string>
-    <string name="nobookshelves">Henüz hiçbir kitaplık oluşturmadınız. Ekranın alt kısmındaki bölümü kullanarak yeni kitaplık oluşturun.</string>
+    <string name="no_bookshelves_yet">Henüz hiçbir kitaplık oluşturmadınız. Ekranın alt kısmındaki bölümü kullanarak yeni kitaplık oluşturun.</string>
     <string name="menu_insert_bs">Kitaplık oluştur</string>
     <string name="confirm_add_bs">Kitaplık ekle</string>
     <string name="menu_bookshelf">Kitaplıkları yönet</string>
@@ -128,8 +128,8 @@
     <string name="columns_are_blank">%1$s sütunlarının hepsi %2$d satırında boş</string>
     <string name="save">Kaydet</string>
     <string name="add">Ekle</string>
-    <string name="noauthors">Bu kitap için hiçbir yazar eklenmemiş. Ekranın üst kısmındaki metin alanı ve düğmeyi kullanarak yazar ekleyin.</string>
-    <string name="noseries">Bu kitap için hiçbir seri eklenmemiş.  Ekranın üst kısmındaki metin alanı ve düğmeyi kullanarak seri ekleyin.</string>
+    <string name="no_authors_yet">Bu kitap için hiçbir yazar eklenmemiş. Ekranın üst kısmındaki metin alanı ve düğmeyi kullanarak yazar ekleyin.</string>
+    <string name="no_series_yet">Bu kitap için hiçbir seri eklenmemiş.  Ekranın üst kısmındaki metin alanı ve düğmeyi kullanarak seri ekleyin.</string>
     <string name="cover_not_set">Kapak yok</string>
     <string name="cover_corrupt">Kapak hasarlı</string>
     <string name="cover_detail">Kapak ayrıntısı</string>

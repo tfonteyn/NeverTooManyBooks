@@ -70,7 +70,7 @@ public class AmazonUtils {
     }
 
     @Nullable
-    private static String buildSearchArgs(String author, String series) {
+    private static String buildSearchArgs(@Nullable String author, @Nullable String series) {
         // This code works, but Amazon have a nasty tendency to cancel Associate IDs...
         //String baseUrl = "http://www.amazon.com/gp/search?index=books&tag=philipwarneri-20&tracking_id=philipwarner-20";
         String extra = "";

@@ -75,6 +75,7 @@ abstract class CropImageViewTouchBase extends AppCompatImageView {
     int mPaddingLeft;
     int mPaddingRight;
     private Recycler mRecycler;
+    @Nullable
     private Runnable mOnLayoutRunnable = null;
 
     public CropImageViewTouchBase(@NonNull final Context context) {
@@ -287,6 +288,7 @@ abstract class CropImageViewTouchBase extends AppCompatImageView {
     }
 
     // Combine the base matrix and the supp matrix to make the final matrix.
+    @NonNull
     protected Matrix getImageViewMatrix() {
         // The final matrix is computed as the concatenation of the base matrix
         // and the supplementary matrix.

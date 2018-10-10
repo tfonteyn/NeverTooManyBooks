@@ -196,14 +196,18 @@ public class SearchAmazonHandler extends DefaultHandler {
 
     private static boolean mFetchThumbnail;
 
+    @NonNull
     private final Bundle mBookData;
     private StringBuilder mBuilder;
+    @NonNull
     private String mThumbnailUrl = "";
     private int mThumbnailSize = -1;
     /* A flag to identify if we are in the correct node */
     private boolean mInLanguage = false;
     private boolean mInListPrice = false;
+    @NonNull
     private String mCurrencyCode = "";
+    @NonNull
     private String mCurrencyAmount = "";
 
     private boolean entry = false;
@@ -279,7 +283,7 @@ public class SearchAmazonHandler extends DefaultHandler {
      * Also download the thumbnail and store in a tmp location
      */
     @Override
-    public void endElement(final String uri, final String localName, final String name) throws SAXException {
+    public void endElement(final String uri, @NonNull final String localName, final String name) throws SAXException {
         super.endElement(uri, localName, name);
         try {
             if (localName.equalsIgnoreCase(THUMBNAIL)) {
@@ -371,7 +375,7 @@ public class SearchAmazonHandler extends DefaultHandler {
      * Start each XML element. Specifically identify when we are in the item element and set the appropriate flag.
      */
     @Override
-    public void startElement(final String uri, final String localName, final String name, final Attributes attributes) throws SAXException {
+    public void startElement(final String uri, @NonNull final String localName, final String name, final Attributes attributes) throws SAXException {
         super.startElement(uri, localName, name, attributes);
         if (!done && localName.equalsIgnoreCase(ENTRY)) {
             entry = true;

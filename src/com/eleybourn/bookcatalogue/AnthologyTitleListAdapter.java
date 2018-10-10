@@ -16,6 +16,7 @@ import java.util.ArrayList;
  */
 public class AnthologyTitleListAdapter extends SimpleListAdapter<AnthologyTitle> {
 
+    @NonNull
     private final Context mContext;
 
     AnthologyTitleListAdapter(@NonNull final Context context,

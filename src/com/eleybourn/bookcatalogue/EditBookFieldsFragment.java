@@ -166,7 +166,7 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
                 mEditManager.setDirty(false);
             }
 
-        } catch (IndexOutOfBoundsException | SQLException e) {
+        } catch (@NonNull IndexOutOfBoundsException | SQLException e) {
             Logger.error(e);
         } finally {
             Tracker.exitOnActivityCreated(this);

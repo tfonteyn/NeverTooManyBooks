@@ -37,10 +37,14 @@ import java.util.List;
 
 abstract public class SearchThread extends ManagedTask {
     protected static boolean mFetchThumbnail;
+    @NonNull
     protected final String mAuthor;
+    @NonNull
     protected final String mTitle;
+    @NonNull
     protected final String mIsbn;
     // Accumulated book info.
+    @NonNull
     protected Bundle mBookData = new Bundle();
 
     /**

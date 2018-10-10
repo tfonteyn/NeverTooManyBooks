@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
@@ -17,13 +18,15 @@ class CropImageView extends CropImageViewTouchBase {
     private static final boolean ENSURE_VISIBLE = true;
 
     final List<CropHighlightView> mHighlightViews = new ArrayList<>();
+    @NonNull
     private final Context mContext;
+    @Nullable
     private CropHighlightView mMotionHighlightView = null;
     private float mLastX;
     private float mLastY;
     private int mMotionEdge;
 
-    public CropImageView(Context context, AttributeSet attrs) {
+    public CropImageView(@NonNull Context context, @NonNull AttributeSet attrs) {
         super(context, attrs);
         this.mContext = context;
     }
@@ -107,7 +110,7 @@ class CropImageView extends CropImageViewTouchBase {
     }
 
     @Override
-    public boolean onTouchEvent(final MotionEvent event) {
+    public boolean onTouchEvent(@NonNull final MotionEvent event) {
         CropImageActivity cropImage = (CropImageActivity) mContext;
         if (cropImage.mSaving) {
             return false;
@@ -234,7 +237,7 @@ class CropImageView extends CropImageViewTouchBase {
     }
 
     @Override
-    protected void onDraw(final Canvas canvas) {
+    protected void onDraw(@NonNull final Canvas canvas) {
         try {
             super.onDraw(canvas);
             for (int i = 0; i < mHighlightViews.size(); i++) {

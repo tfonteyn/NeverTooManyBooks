@@ -23,6 +23,7 @@ package com.eleybourn.bookcatalogue.database.cursors;
 import android.database.sqlite.SQLiteCursorDriver;
 import android.database.sqlite.SQLiteQuery;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.database.DBExceptions;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
@@ -39,6 +40,7 @@ public class BooksCursor extends TrackedCursor implements AutoCloseable {
     /** Get the row ID; need a local implementation so that get/setSelected() works. */
     private int mIdCol = -2;
     /** Get a RowView */
+    @Nullable
     private BookRowView mView;
 
     public BooksCursor(@NonNull final SQLiteCursorDriver driver,

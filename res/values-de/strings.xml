@@ -13,13 +13,13 @@
     <string name="pages">Seiten</string>
     <string name="confirm_add">Buch hinzufügen</string>
     <string name="confirm_update">Aktualisieren</string>
-    <string name="no_books">Es befinden sich keine Bücher im Bücherregal. Bitte fügen Sie Bücher über das Menü am unteren Bildschirmrand hinzu.</string>
+    <string name="no_books_yet">Es befinden sich keine Bücher im Bücherregal. Bitte fügen Sie Bücher über das Menü am unteren Bildschirmrand hinzu.</string>
     <string name="menu_expand_all">Alles ausklappen</string>
     <string name="menu_sort_by">Sortieren nach</string>
     <string name="menu_collapse_all">Alles einklappen</string>
     <string name="search">Suche</string>
     <string name="confirm_save">Buch speichern</string>
-    <string name="nobookshelves">Es wurde noch kein Bücherregal erstellt. Bitte fügen Sie Bücherregale über das Menü am unteren Bildschirmrand hinzu.</string>
+    <string name="no_bookshelves_yet">Es wurde noch kein Bücherregal erstellt. Bitte fügen Sie Bücherregale über das Menü am unteren Bildschirmrand hinzu.</string>
     <string name="menu_insert_bs">Bücherregal erstellen</string>
     <string name="confirm_add_bs">Bücherregal hinzufügen</string>
     <string name="menu_bookshelf">Bücherregale verwalten</string>
@@ -128,8 +128,8 @@
     <string name="columns_are_blank">Die Spalten %1$s sind in der Zeile %2$d leer</string>
     <string name="save">Speichern</string>
     <string name="add">Hinzufügen</string>
-    <string name="noauthors">Es wurde kein Autor für dieses Buch eingetragen. Bitte fügen Sie einen Autor über das Textfeld und den Knopf oben auf diesem Bildschirm hinzu.</string>
-    <string name="noseries">Es besteht keine Serie für dieses Buch. Sie können eine Serie über das Textfeld und den Knopf oben auf dieser Seite hinzufügen.</string>
+    <string name="no_authors_yet">Es wurde kein Autor für dieses Buch eingetragen. Bitte fügen Sie einen Autor über das Textfeld und den Knopf oben auf diesem Bildschirm hinzu.</string>
+    <string name="no_series_yet">Es besteht keine Serie für dieses Buch. Sie können eine Serie über das Textfeld und den Knopf oben auf dieser Seite hinzufügen.</string>
     <string name="cover_not_set">Das Cover wurde nicht gesetzt</string>
     <string name="cover_corrupt">Das Cover ist unbrauchbar</string>
     <string name="cover_detail">Coverdetails</string>

@@ -26,6 +26,7 @@ import android.database.CursorIndexOutOfBoundsException;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.content.FileProvider;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
@@ -107,7 +108,7 @@ public class BookUtils {
     public static void deleteBook(@NonNull final Activity activity,
                                   @NonNull final CatalogueDBAdapter db,
                                   final long bookId,
-                                  final Runnable runnable) {
+                                  @Nullable final Runnable runnable) {
         int res = StandardDialogs.deleteBookAlert(activity, db, bookId, new Runnable() {
             @Override
             public void run() {

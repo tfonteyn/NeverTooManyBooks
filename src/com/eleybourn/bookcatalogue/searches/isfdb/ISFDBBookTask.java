@@ -7,7 +7,9 @@ import android.support.annotation.Nullable;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue;
 
 class ISFDBBookTask implements SimpleTaskQueue.SimpleTask {
+    @NonNull
     private final HandlesISFDB callback;
+    @NonNull
     private final String bookUrl;
     private final Bundle mBookData = new Bundle();
     private boolean fetchThumbnail;

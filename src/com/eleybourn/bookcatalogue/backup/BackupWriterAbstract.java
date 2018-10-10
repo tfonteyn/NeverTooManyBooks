@@ -46,6 +46,7 @@ import java.util.Date;
  * @author pjw
  */
 public abstract class BackupWriterAbstract implements BackupWriter {
+    @NonNull
     private final CatalogueDBAdapter mDb;
 
     /**

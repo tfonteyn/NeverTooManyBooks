@@ -31,6 +31,7 @@ import com.eleybourn.bookcatalogue.datamanager.Datum;
  * @author Philip Warner
  */
 public class DefaultFieldValidator implements DataValidator {
+    @NonNull
     private final String mDefault;
 
     /**

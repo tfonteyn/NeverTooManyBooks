@@ -42,6 +42,7 @@ import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedDb;
 import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedStatement;
 import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer;
 import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer.SyncLock;
+import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
 import com.eleybourn.bookcatalogue.database.cursors.BooksCursor;
 import com.eleybourn.bookcatalogue.database.cursors.TrackedCursor;
 import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
@@ -50,7 +51,6 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.AnthologyTitle;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Book;
-import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.entities.Publisher;
 import com.eleybourn.bookcatalogue.entities.Series;
@@ -214,9 +214,9 @@ public class CatalogueDBAdapter {
         @NonNull
         public Cursor newCursor(
                 final SQLiteDatabase db,
-                final SQLiteCursorDriver masterQuery,
-                final String editTable,
-                final SQLiteQuery query) {
+                @NonNull final SQLiteCursorDriver masterQuery,
+                @NonNull final String editTable,
+                @NonNull final SQLiteQuery query) {
             return new TrackedCursor(masterQuery, editTable, query, mSynchronizer);
         }
     };
@@ -227,9 +227,9 @@ public class CatalogueDBAdapter {
         @Override
         public Cursor newCursor(
                 final SQLiteDatabase db,
-                final SQLiteCursorDriver masterQuery,
-                final String editTable,
-                final SQLiteQuery query) {
+                @NonNull final SQLiteCursorDriver masterQuery,
+                @NonNull final String editTable,
+                @NonNull final SQLiteQuery query) {
             return new BooksCursor(masterQuery, editTable, query, mSynchronizer);
         }
     };
@@ -301,7 +301,9 @@ public class CatalogueDBAdapter {
             TBL_AUTHORS.dotAs(DOM_AUTHOR_FAMILY_NAME) + "," + TBL_AUTHORS.dotAs(DOM_AUTHOR_GIVEN_NAMES) + "," + SQL_FIELDS_AUTHOR_FORMATTED + ", " + SQL_FIELDS_AUTHOR_FORMATTED_GIVEN_FIRST;
     private static DatabaseHelper mDbHelper;
     private static SynchronizedDb mSyncedDb;
+    @NonNull
     private static Integer mDebugInstanceCount = 0;
+    @NonNull
     private final Context mContext;
 
     /**
@@ -318,86 +320,127 @@ public class CatalogueDBAdapter {
     /** a cache for statements, where they are pre-compiled */
     private SqlStatementManager mStatements;
     /** {@link #getAnthologyTitleId } */
+    @Nullable
     private SynchronizedStatement mGetAnthologyTitleIdStmt = null;
     /** {@link #getBookAnthologyTitleId}  } */
+    @Nullable
     private SynchronizedStatement mGetBookAnthologyTitleIdStmt = null;
     /** {@link #getBookAnthologyTitleHighestPositionByBookId}  } */
+    @Nullable
     private SynchronizedStatement mGetBookAnthologyTitleHighestPositionByBookIdStmt = null;
     /** {@link #getAuthorIdByName } */
+    @Nullable
     private SynchronizedStatement mGetAuthorIdStmt = null;
     /** {@link #purgeAuthors} */
+    @Nullable
     private SynchronizedStatement mPurgeBookAuthorsStmt = null;
     /** {@link #purgeAuthors} */
+    @Nullable
     private SynchronizedStatement mPurgeAuthorsStmt = null;
     /** {@link #countAuthorBooks} */
+    @Nullable
     private SynchronizedStatement mGetAuthorBookCountQuery = null;
     /** {@link #countAuthorAnthologies} */
+    @Nullable
     private SynchronizedStatement mGetAuthorAnthologyCountQuery = null;
     /** {@link #getBookUuid} */
+    @Nullable
     private SynchronizedStatement mGetBookUuidQuery = null;
     /** {@link #getBookIdFromUuid} */
+    @Nullable
     private SynchronizedStatement mGetBookIdFromUuidStmt = null;
     /** {@link #getBookLastUpdateDate} */
+    @Nullable
     private SynchronizedStatement mGetBookUpdateDateQuery = null;
     /** {@link #getBookTitle} */
+    @Nullable
     private SynchronizedStatement mGetBookTitleQuery = null;
     /** {@link #countBooks} */
+    @Nullable
     private SynchronizedStatement mCountBooksQuery = null;
     /** {@link #getIdFromIsbn} */
+    @Nullable
     private SynchronizedStatement mGetIdFromIsbn1Stmt = null;
     /** {@link #getIdFromIsbn} */
+    @Nullable
     private SynchronizedStatement mGetIdFromIsbn2Stmt = null;
     /** {@link #bookExists} */
+    @Nullable
     private SynchronizedStatement mCheckBookExistsStmt = null;
     /** {@link #insertBookSeries} */
+    @Nullable
     private SynchronizedStatement mDeleteBookSeriesStmt = null;
     /** {@link #setBooksDirtyBySeries} */
+    @Nullable
     private SynchronizedStatement mSetBooksDirtyBySeriesStmt = null;
     /** {@link #setBooksDirtyByAuthor} */
+    @Nullable
     private SynchronizedStatement mSetBooksDirtyByAuthorStmt = null;
     /** {@link #setBooksDirtyByAuthor} */
+    @Nullable
     private SynchronizedStatement mSetBooksDirtyByAuthorStmt2 = null;
     /** {@link #setBooksDirtyByBookshelf} */
+    @Nullable
     private SynchronizedStatement mSetBooksDirtyByBookshelfStmt = null;
     /** {@link #insertBookSeries} */
+    @Nullable
     private SynchronizedStatement mAddBookSeriesStmt = null;
     /** {@link #insertBookAuthors} */
+    @Nullable
     private SynchronizedStatement mDeleteBookAuthorsStmt = null;
     /** {@link #insertBookAuthors} */
+    @Nullable
     private SynchronizedStatement mAddBookAuthorsStmt = null;
     /** {@link #insertBookBookshelf} */
+    @Nullable
     private SynchronizedStatement mDeleteBookBookshelfStmt = null;
     /** {@link #insertBookBookshelf} */
+    @Nullable
     private SynchronizedStatement mInsertBookBookshelfStmt = null;
     /** {@link #getBookshelfName} */
+    @Nullable
     private SynchronizedStatement mGetBookshelfNameStmt = null;
     /** {@link #getBookshelfId} */
+    @Nullable
     private SynchronizedStatement mGetBookshelfIdStmt = null;
     /** {@link #getBookshelfIdByName} */
+    @Nullable
     private SynchronizedStatement mGetBookshelfIdByNameStmt = null;
     /** {@link #insertBooklistStyle} */
+    @Nullable
     private SynchronizedStatement mInsertBooklistStyleStmt = null;
     /** {@link #updateBooklistStyle} */
+    @Nullable
     private SynchronizedStatement mUpdateBooklistStyleStmt = null;
     /** {@link #deleteBooklistStyle} */
+    @Nullable
     private SynchronizedStatement mDeleteBooklistStyleStmt = null;
     /** {@link #getSeriesId} */
+    @Nullable
     private SynchronizedStatement mGetSeriesIdStmt = null;
     /** {@link #purgeSeries} */
+    @Nullable
     private SynchronizedStatement mPurgeBookSeriesStmt = null;
     /** {@link #purgeSeries} */
+    @Nullable
     private SynchronizedStatement mPurgeSeriesStmt = null;
     /** {@link #countSeriesBooks} */
+    @Nullable
     private SynchronizedStatement mGetSeriesBookCountQuery = null;
     /** {@link #setGoodreadsBookId} */
+    @Nullable
     private SynchronizedStatement mSetGoodreadsBookIdStmt = null;
     /** {@link #setGoodreadsSyncDate} */
+    @Nullable
     private SynchronizedStatement mSetGoodreadsSyncDateStmt = null;
     /** {@link #insertFts} */
+    @Nullable
     private SynchronizedStatement mInsertFtsStmt = null;
     /** {@link #updateFts} */
+    @Nullable
     private SynchronizedStatement mUpdateFtsStmt = null;
     /** {@link #deleteFts} */
+    @Nullable
     private SynchronizedStatement mDeleteFtsStmt = null;
     //endregion
 
@@ -422,15 +465,6 @@ public class CatalogueDBAdapter {
     }
 
     /**
-     * Really only meant for backup purposes.
-     *
-     * @return the path to the actual database file
-     */
-    public String getPath() {
-        return mSyncedDb.getPath();
-    }
-
-    /**
      * Get the synchronizer object for this database in case there is some other activity
      * that needs to be synced.
      *
@@ -441,12 +475,10 @@ public class CatalogueDBAdapter {
         return mSynchronizer;
     }
 
-
     @NonNull
     public static String encodeString(@NonNull final String value) {
         return value.replace("'", "''");
     }
-
 
     /**
      * DEBUG only
@@ -567,6 +599,16 @@ public class CatalogueDBAdapter {
         return out.toString();
     }
 
+    /**
+     * Really only meant for backup purposes.
+     *
+     * @return the path to the actual database file
+     */
+    @NonNull
+    public String getPath() {
+        return mSyncedDb.getPath();
+    }
+
     public void analyzeDb() {
         try {
             mSyncedDb.execSQL("analyze");
@@ -646,7 +688,7 @@ public class CatalogueDBAdapter {
      * @throws DBExceptions.UpdateException if the update failed
      */
     private long insertOrUpdateBookAnthology(final long anthologyId, final long bookId,
-                                             @SuppressWarnings("SameParameterValue") final boolean dirtyBookIfNecessary)
+                                              final boolean dirtyBookIfNecessary)
             throws DBExceptions.UpdateException {
 
         ContentValues cv = new ContentValues();
@@ -680,7 +722,7 @@ public class CatalogueDBAdapter {
      * @return the number of rows affected
      */
     private int deleteAnthologyTitlesByBookId(final long bookId,
-                                              @SuppressWarnings("SameParameterValue") final boolean dirtyBookIfNecessary) {
+                                              final boolean dirtyBookIfNecessary) {
 
         int rowsAffected = mSyncedDb.delete(TBL_BOOK_ANTHOLOGY.getName(), DOM_BOOK_ID + "=?", new String[]{Long.toString(bookId)});
         if (rowsAffected > 0) {
@@ -1306,7 +1348,7 @@ public class CatalogueDBAdapter {
         return rowsAffected;
     }
 
-    private void deleteThumbnail(final String uuid) {
+    private void deleteThumbnail(@Nullable final String uuid) {
         if (uuid != null) {
             try {
                 //TODO: understand the logic when uuid.isEmpty() -> see the second step with the CoversDbHelper
@@ -1343,10 +1385,10 @@ public class CatalogueDBAdapter {
      *
      * Transaction: participate, or run in new.
      *
-     * @param bookId   The ID of the book to insert
-     *                 zero: a new book
-     *                 non-zero: will overwrite the normal autoIncrement, normally only an Import should use this
-     * @param book A ContentValues collection with the columns to be set. May contain extra data.
+     * @param bookId The ID of the book to insert
+     *               zero: a new book
+     *               non-zero: will overwrite the normal autoIncrement, normally only an Import should use this
+     * @param book   A ContentValues collection with the columns to be set. May contain extra data.
      *
      * @return the row ID of the newly inserted row, or -1 if an error occurred
      */
@@ -1408,9 +1450,9 @@ public class CatalogueDBAdapter {
     /**
      * Transaction: participate, or run in new.
      *
-     * @param bookId   of the book in the database
-     * @param book A collection with the columns to be updated. May contain extra data.
-     * @param flags    See {@link #BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT} an others for flag definitions
+     * @param bookId of the book in the database
+     * @param book   A collection with the columns to be updated. May contain extra data.
+     * @param flags  See {@link #BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT} an others for flag definitions
      *
      * @return the number of rows affected, should be 1
      *
@@ -1625,7 +1667,7 @@ public class CatalogueDBAdapter {
 
     private void insertBookSeries(long bookId,
                                   @NonNull final List<Series> series,
-                                  @SuppressWarnings("SameParameterValue") boolean dirtyBookIfNecessary) {
+                                  boolean dirtyBookIfNecessary) {
         if (!mSyncedDb.inTransaction()) {
             throw new DBExceptions.TransactionException();
         }
@@ -1713,7 +1755,7 @@ public class CatalogueDBAdapter {
      */
     private void insertOrUpdateBookAnthologyAndAnthologyTitles(final long bookId,
                                                                @NonNull final List<AnthologyTitle> list,
-                                                               @SuppressWarnings("SameParameterValue") boolean dirtyBookIfNecessary) {
+                                                               boolean dirtyBookIfNecessary) {
         if (!mSyncedDb.inTransaction()) {
             throw new DBExceptions.TransactionException();
         }
@@ -1755,7 +1797,7 @@ public class CatalogueDBAdapter {
      */
     private void insertBookAuthors(final long bookId,
                                    @NonNull final List<Author> authors,
-                                   @SuppressWarnings("SameParameterValue") final boolean dirtyBookIfNecessary) {
+                                   final boolean dirtyBookIfNecessary) {
 
         if (!mSyncedDb.inTransaction()) {
             throw new DBExceptions.TransactionException();
@@ -1826,7 +1868,7 @@ public class CatalogueDBAdapter {
      */
     private void insertBookBookshelf(final long bookId,
                                      @NonNull final List<String> bookshelves,
-                                     @SuppressWarnings("SameParameterValue") final boolean dirtyBookIfNecessary) {
+                                     final boolean dirtyBookIfNecessary) {
         if (!mSyncedDb.inTransaction()) {
             throw new DBExceptions.TransactionException();
         }
@@ -2041,6 +2083,7 @@ public class CatalogueDBAdapter {
         return list;
     }
 
+    @NonNull
     public ArrayList<Series> getBookSeriesList(final long bookId) {
         ArrayList<Series> list = new ArrayList<>();
         try (Cursor series = fetchAllSeriesByBookId(bookId)) {
@@ -2066,6 +2109,7 @@ public class CatalogueDBAdapter {
      *
      * @return Cursor over all Books
      */
+    @NonNull
     public BooksCursor fetchBooks(@NonNull final String bookWhere, @NonNull final String[] selectionArgs, @NonNull final String order) {
         String sql = getAllBooksSql(bookWhere);
         if (!order.isEmpty()) {
@@ -2081,6 +2125,7 @@ public class CatalogueDBAdapter {
      *
      * @return A full piece of SQL to perform the search
      */
+    @NonNull
     private String getAllBooksSql(@NonNull final String bookWhere) {
 
         //TODO: redo this so the sql becomes static
@@ -2142,6 +2187,7 @@ public class CatalogueDBAdapter {
      *
      * @throws DBExceptions.NotFoundException if not found
      */
+    @NonNull
     public Book getBookById(final long bookId) throws DBExceptions.NotFoundException {
 
         try (Cursor cursor = fetchBookById(bookId)) {
@@ -2167,6 +2213,7 @@ public class CatalogueDBAdapter {
      *
      * @throws DBExceptions.NotFoundException if not found
      */
+    @NonNull
     public BooksCursor fetchBookById(final long bookId) throws DBExceptions.NotFoundException {
         BooksCursor cursor = fetchBooks(TBL_BOOKS.dot(DOM_ID) + "=?", new String[]{Long.toString(bookId)}, "");
         if (cursor == null || !cursor.moveToFirst()) {
@@ -2188,6 +2235,7 @@ public class CatalogueDBAdapter {
      *
      * @throws SQLException if none could not be found/retrieved
      */
+    @NonNull
     public BooksCursor fetchBooksByIsbnList(@NonNull final List<String> isbnList) {
         if (isbnList.size() == 0) {
             throw new IllegalArgumentException("No ISBNs specified in lookup");
@@ -2420,7 +2468,7 @@ public class CatalogueDBAdapter {
      * Either updates or creates as necessary
      *
      * @return insert: the row ID of the newly inserted row, or -1 if an error occurred during insert
-     *         update: the existing id
+     * update: the existing id
      */
     public long insertOrUpdateBooklistStyle(@NonNull final BooklistStyle /* in/out */ style) {
         if (style.id != 0) {
@@ -2602,8 +2650,8 @@ public class CatalogueDBAdapter {
     /**
      * This function will create a new loan in the database
      *
-     * @param book             the book
-     * @param dirtyBookIfNecessary flag to set book dirty or not (for now, always false...TOMF: compare with original code)
+     * @param book                 the book
+     * @param dirtyBookIfNecessary flag to set book dirty or not
      *
      * @return the row ID of the newly inserted row, or -1 if an error occurred
      */
@@ -3039,12 +3087,12 @@ public class CatalogueDBAdapter {
      * - data will be transformed based on the intended type of the underlying column based on column definition.
      *
      * @param tableName destination table
-     * @param book  Source column data
+     * @param book      Source column data
      *
      * @return New and filtered ContentValues
      */
     @NonNull
-    private ContentValues filterValues(@SuppressWarnings("SameParameterValue") @NonNull final String tableName,
+    private ContentValues filterValues(@NonNull final String tableName,
                                        @NonNull final Book book) {
 
         TableInfo table = new TableInfo(mSyncedDb, tableName);
@@ -3131,6 +3179,7 @@ public class CatalogueDBAdapter {
      *
      * @throws SQLException if note could not be found/retrieved
      */
+    @NonNull
     public BooksCursor fetchBooksByGoodreadsBookId(long grId) throws SQLException {
         String where = TBL_BOOKS.dot(DOM_BOOK_GOODREADS_BOOK_ID) + "=?";
         return fetchBooks(where, new String[]{Long.toString(grId)}, "");
@@ -3269,6 +3318,7 @@ public class CatalogueDBAdapter {
     /**
      * Used by {@link com.eleybourn.bookcatalogue.backup.CsvImporter}
      */
+    @NonNull
     public SyncLock startTransaction(boolean isUpdate) {
         return mSyncedDb.beginTransaction(isUpdate);
     }
@@ -3276,7 +3326,7 @@ public class CatalogueDBAdapter {
     /**
      * Used by {@link com.eleybourn.bookcatalogue.backup.CsvImporter}
      */
-    public void endTransaction(SyncLock lock) {
+    public void endTransaction(@NonNull SyncLock lock) {
         mSyncedDb.endTransaction(lock);
     }
 
@@ -3685,6 +3735,7 @@ public class CatalogueDBAdapter {
      * DEBUG only
      */
     private static class InstanceRefDebug extends WeakReference<CatalogueDBAdapter> {
+        @NonNull
         private final Exception mCreationException;
 
         InstanceRefDebug(@NonNull final CatalogueDBAdapter db) {

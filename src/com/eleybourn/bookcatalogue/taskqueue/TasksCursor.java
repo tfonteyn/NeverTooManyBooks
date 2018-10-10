@@ -27,6 +27,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteQuery;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.SerializationUtils;
@@ -56,8 +57,8 @@ public class TasksCursor extends SQLiteCursor implements BindableItemCursor {
     private static final CursorFactory mFactory = new CursorFactory() {
         @Override
         public Cursor newCursor(SQLiteDatabase db,
-                                SQLiteCursorDriver masterQuery, String editTable,
-                                SQLiteQuery query) {
+                                @NonNull SQLiteCursorDriver masterQuery, @NonNull String editTable,
+                                @NonNull SQLiteQuery query) {
             return new TasksCursor(masterQuery, editTable, query);
         }
     };
@@ -167,6 +168,7 @@ public class TasksCursor extends SQLiteCursor implements BindableItemCursor {
         return getLong(mIdCol);
     }
 
+    @Nullable
     public Date getQueuedDate() {
         if (mQueuedDateCol < 0) {
             mQueuedDateCol = this.getColumnIndex(DOM_QUEUED_DATE);
@@ -179,6 +181,7 @@ public class TasksCursor extends SQLiteCursor implements BindableItemCursor {
         return date;
     }
 
+    @Nullable
     public Date getRetryDate() {
         if (mRetryDateCol < 0) {
             mRetryDateCol = this.getColumnIndex(DOM_RETRY_DATE);
@@ -221,6 +224,7 @@ public class TasksCursor extends SQLiteCursor implements BindableItemCursor {
         return getInt(mNoteCountCol);
     }
 
+    @NonNull
     @Override
     public BindableItemCursorAdapter.BindableItem getBindableItem() {
         return getTask();

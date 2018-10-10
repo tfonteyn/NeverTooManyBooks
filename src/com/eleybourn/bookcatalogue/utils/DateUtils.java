@@ -180,8 +180,10 @@ public class DateUtils {
     }
 
     /** Calendar to construct dates from month numbers */
+    @Nullable
     private static Calendar mCalendar = null;
     /** Formatter for month names given dates */
+    @Nullable
     private static SimpleDateFormat mMonthNameFormatter = null;
 
     @NonNull

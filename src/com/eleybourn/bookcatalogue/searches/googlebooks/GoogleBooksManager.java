@@ -93,7 +93,7 @@ public class GoogleBooksManager {
                 parser.parse(Utils.getInputStreamWithTerminator(url), entryHandler);
             }
             // Don't bother catching general exceptions, they will be caught by the caller.
-        } catch (ParserConfigurationException | IOException | SAXException e) {
+        } catch (@NonNull ParserConfigurationException | IOException | SAXException e) {
             Logger.error(e);
         }
     }

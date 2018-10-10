@@ -41,8 +41,11 @@ import java.util.Map;
 public class BindableItemCursorAdapter extends CursorAdapter {
 
     /** A local Inflater for convenience */
+    @Nullable
     private final LayoutInflater mInflater;
+    @NonNull
     private final Context mContext;
+    @NonNull
     private final BindableItemBinder mBinder;
     /** hash of class names and values used to dynamically allocate layout numbers */
     private final Map<String, Integer> m_itemTypeLookups = new Hashtable<>();
@@ -51,6 +54,7 @@ public class BindableItemCursorAdapter extends CursorAdapter {
     /** The item type returned by the last call of getItemViewType() */
     private int m_lastItemViewType = -1;
     /** The Event used in the last call of getItemViewType() */
+    @Nullable
     private BindableItem m_lastItemViewTypeEvent = null;
     private int m_itemTypeCount = 0;
     /**
@@ -81,6 +85,7 @@ public class BindableItemCursorAdapter extends CursorAdapter {
     /**
      * NOT USED. Should never be called.
      */
+    @NonNull
     @Override
     public View newView(final Context context, final Cursor cursor, final ViewGroup parent) {
         throw new IllegalStateException("EventsCursorAdapter.newView is unsupported");
@@ -150,6 +155,7 @@ public class BindableItemCursorAdapter extends CursorAdapter {
         return mBinder.getBindableItemTypeCount() + 1;
     }
 
+    @Nullable
     @Override
     public View getView(final int position, @Nullable View convertView, @NonNull final ViewGroup parent) {
         BindableItemCursor cursor = (BindableItemCursor) this.getCursor();

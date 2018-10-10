@@ -67,6 +67,7 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment implemen
     private String mBookAuthor;
     private Button mAdd;
     private CheckBox mSame;
+    @Nullable
     private Integer mEditPosition = null;
     private ArrayList<AnthologyTitle> mList;
 
@@ -196,6 +197,7 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment implemen
     /**
      * Mimic ListActivity
      */
+    @NonNull
     private ListView getListView() {
         return (ListView) getView().findViewById(android.R.id.list);
     }
@@ -276,7 +278,7 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment implemen
 
         dialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(android.R.string.cancel),
                 new DialogInterface.OnClickListener() {
-                    public void onClick(final DialogInterface dialog, final int which) {
+                    public void onClick(@NonNull final DialogInterface dialog, final int which) {
                         dialog.dismiss();
                     }
                 });

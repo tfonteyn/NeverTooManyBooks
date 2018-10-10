@@ -23,6 +23,7 @@ package com.eleybourn.bookcatalogue.searches;
 import android.content.SearchRecentSuggestionsProvider;
 import android.database.Cursor;
 import android.net.Uri;
+import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
@@ -33,6 +34,7 @@ import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 public class SearchSuggestionProvider extends SearchRecentSuggestionsProvider {
     private final static String AUTHORITY = BookCatalogueApp.getAppContext().getPackageName() + ".SearchSuggestionProvider";
     private final static int MODE = DATABASE_MODE_QUERIES;
+    @Nullable
     private CatalogueDBAdapter mDb = null;
 
     public SearchSuggestionProvider() {

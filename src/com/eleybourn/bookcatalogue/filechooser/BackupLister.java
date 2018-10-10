@@ -42,6 +42,7 @@ public class BackupLister extends FileLister {
     /**
      * Get the file filter we constructed
      */
+    @NonNull
     protected FileFilter getFilter() {
         return mFilter;
     }
@@ -49,6 +50,7 @@ public class BackupLister extends FileLister {
     /**
      * Process an array of Files into an ArrayList of BackupFileDetails
      */
+    @NonNull
     protected ArrayList<FileDetails> processList(@Nullable final File[] files) {
         ArrayList<FileDetails> dirs = new ArrayList<>();
         if (files == null) {

@@ -33,6 +33,7 @@ public class ValidatorException extends RuntimeException {
     // String ID of resource string
     private final int mStringId;
     // Args to pass to format function
+    @NonNull
     private final Object[] mArgs;
 
     // Constructor
@@ -41,6 +42,7 @@ public class ValidatorException extends RuntimeException {
         mArgs = args;
     }
 
+    @NonNull
     public String getFormattedMessage(@NonNull final Resources res) {
         return res.getString(mStringId, mArgs);
     }

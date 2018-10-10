@@ -18,10 +18,12 @@ package com.eleybourn.bookcatalogue.cropper;
 
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 class CropRotateBitmap {
     public static final String TAG = "RotateBitmap";
+    @Nullable
     private Bitmap mBitmap;
     private int mRotation;
 
@@ -54,6 +56,7 @@ class CropRotateBitmap {
         mBitmap = bitmap;
     }
 
+    @NonNull
     public Matrix getRotateMatrix() {
         // By default this is an identity matrix.
         Matrix matrix = new Matrix();

@@ -93,11 +93,13 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
     };
 
     protected ImageUtils.ThumbSize mThumbSize;
+    @Nullable
     private CoverBrowser mCoverBrowser = null;
 
     /**
      * Handler to process a cover selected from the CoverBrowser.
      */
+    @Nullable
     private final OnImageSelectedListener mOnImageSelectedListener = new OnImageSelectedListener() {
         @Override
         public void onImageSelected(@NonNull final String fileSpec) {
@@ -438,6 +440,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
      * Get the File object for the cover of the book we are editing.
      * If the book is new (0), return the standard temp file.
      */
+    @NonNull
     private File getCoverFile(final long bookId) {
         if (bookId == 0) {
             return StorageUtils.getTempCoverFile();

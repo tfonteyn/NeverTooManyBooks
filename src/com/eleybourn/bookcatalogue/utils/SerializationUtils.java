@@ -70,7 +70,7 @@ public class SerializationUtils {
     public static <T> T deserializeObject(@NonNull final byte[] o) throws DeserializationException {
         try (ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(o))) {
             return (T) in.readObject();
-        } catch (ClassCastException | ClassNotFoundException | IOException e) {
+        } catch (@NonNull ClassCastException | ClassNotFoundException | IOException e) {
             throw new DeserializationException(e);
         }
     }

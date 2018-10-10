@@ -86,10 +86,12 @@ public class StartupActivity extends AppCompatActivity {
     private static boolean mIsReallyStartup = true;
     /** Options indicating Amazon hint could be shown */
     private static boolean mShowAmazonHint = false;
+    @Nullable
     private static WeakReference<StartupActivity> mStartupActivity = null;
     /** Handler to post run'ables to UI thread */
     private final Handler mHandler = new Handler();
     /** Queue for executing startup tasks, if any */
+    @Nullable
     private SimpleTaskQueue mTaskQueue = null;
     /** Progress Dialog for startup tasks
      *  ENHANCE: this is a global requirement: ProgressDialog is deprecated in API 26
@@ -97,6 +99,7 @@ public class StartupActivity extends AppCompatActivity {
      *  Suggested: ProgressBar or Notification.
      *  Alternative maybe: SnackBar (recommended replacement for Toast)
      */
+    @Nullable
     @Deprecated
     private ProgressDialog mProgress = null;
     /** Options indicating an export is required after startup */
@@ -276,7 +279,7 @@ public class StartupActivity extends AppCompatActivity {
      * onCreate() completes, so a race condition is not possible. Equally well, tasks should only
      * be queued in onCreate().
      */
-    private void taskCompleted(SimpleTask task) {
+    private void taskCompleted(@NonNull SimpleTask task) {
         if (BuildConfig.DEBUG) {
             Logger.debug("Task Completed: " + task.getClass().getSimpleName());
         }
@@ -291,6 +294,7 @@ public class StartupActivity extends AppCompatActivity {
     /**
      * Get (or create) the task queue.
      */
+    @Nullable
     private SimpleTaskQueue getQueue() {
         if (mTaskQueue == null) {
             mTaskQueue = new SimpleTaskQueue("startup-tasks", 1);
@@ -361,14 +365,14 @@ public class StartupActivity extends AppCompatActivity {
             dialog.setButton(AlertDialog.BUTTON_NEGATIVE,
                     getString(android.R.string.cancel)
                     , new DialogInterface.OnClickListener() {
-                        public void onClick(final DialogInterface dialog, final int which) {
+                        public void onClick(@NonNull final DialogInterface dialog, final int which) {
                             dialog.dismiss();
                         }
                     });
             dialog.setButton(AlertDialog.BUTTON_POSITIVE,
                     getString(android.R.string.ok),
                     new DialogInterface.OnClickListener() {
-                        public void onClick(final DialogInterface dialog, final int which) {
+                        public void onClick(@NonNull final DialogInterface dialog, final int which) {
                             mExportRequired = true;
                             dialog.dismiss();
                         }

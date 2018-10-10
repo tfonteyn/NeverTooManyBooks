@@ -142,6 +142,7 @@ public class GoodreadsSearchResults extends BookCatalogueListActivity {
      * @author Philip Warner
      */
     private class ListHolder {
+        @NonNull
         final ImageView cover;
         GoodreadsWork work;
         TextView title;
@@ -158,6 +159,7 @@ public class GoodreadsSearchResults extends BookCatalogueListActivity {
      */
     private class ResultsAdapter extends ArrayAdapter<GoodreadsWork> {
         /** Used in building views when needed */
+        @NonNull
         final LayoutInflater mInflater;
 
         ResultsAdapter() {
@@ -185,7 +187,7 @@ public class GoodreadsSearchResults extends BookCatalogueListActivity {
                     // Set the click listener
                     convertView.setOnClickListener(new OnClickListener() {
                         @Override
-                        public void onClick(View v) {
+                        public void onClick(@NonNull View v) {
                             doItemClick(v);
                         }
                     });

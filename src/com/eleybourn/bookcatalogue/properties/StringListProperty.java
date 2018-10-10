@@ -45,6 +45,7 @@ public class StringListProperty extends ListProperty<String> implements Property
         return BCPreferences.getString(getPreferenceKey(), getDefaultValue());
     }
 
+    @NonNull
     @Override
     protected StringListProperty setGlobalDefault(@Nullable final String value) {
         BCPreferences.setString(getPreferenceKey(), value);

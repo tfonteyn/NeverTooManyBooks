@@ -36,8 +36,10 @@ import java.io.IOException;
  */
 public class LocalCoverFinder implements Importer.CoverFinder {
     /** The root path to search for files */
+    @NonNull
     private final String mSrc;
     private final boolean mIsForeign;
+    @NonNull
     private final CatalogueDBAdapter mDb;
 
     LocalCoverFinder(@NonNull final String srcPath, @NonNull final String dstPath) {

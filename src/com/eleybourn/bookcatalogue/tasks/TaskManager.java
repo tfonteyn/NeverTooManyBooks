@@ -60,6 +60,7 @@ public class TaskManager implements AutoCloseable {
      */
     private static final MessageSwitch<TaskManagerListener, TaskManagerController> mMessageSwitch = new MessageSwitch<>();
 
+    @NonNull
     private final Context mContext;
 
     /** List of tasks being managed by this object */
@@ -68,6 +69,7 @@ public class TaskManager implements AutoCloseable {
     /** Current progress message to display, even if no tasks running.
      *  Setting to blank will remove the ProgressDialog
      */
+    @Nullable
     private String mBaseMessage = "";
     /** Options indicating tasks are being cancelled. This is reset when a new task is added */
     private boolean mCancelling = false;
@@ -323,6 +325,7 @@ public class TaskManager implements AutoCloseable {
      *
      * @return	The context
      */
+    @NonNull
     public Context getContext() {
         synchronized (this) {
             return mContext;
@@ -364,11 +367,14 @@ public class TaskManager implements AutoCloseable {
     public interface TaskManagerController {
         void requestAbort();
 
+        @NonNull
         TaskManager getManager();
     }
 
     public static class OnTaskEndedMessage implements Message<TaskManagerListener> {
+        @NonNull
         private final TaskManager mManager;
+        @NonNull
         private final ManagedTask mTask;
 
         OnTaskEndedMessage(@NonNull final TaskManager manager, @NonNull final ManagedTask task) {
@@ -386,6 +392,7 @@ public class TaskManager implements AutoCloseable {
     public static class OnProgressMessage implements Message<TaskManagerListener> {
         private final int mCount;
         private final int mMax;
+        @NonNull
         private final String mMessage;
 
         OnProgressMessage(final int count, final int max, @NonNull final String message) {
@@ -402,6 +409,7 @@ public class TaskManager implements AutoCloseable {
     }
 
     public static class OnToastMessage implements Message<TaskManagerListener> {
+        @NonNull
         private final String mMessage;
 
         OnToastMessage(@NonNull final String message) {
@@ -425,7 +433,9 @@ public class TaskManager implements AutoCloseable {
 
     // Task info for each ManagedTask object
     private class TaskInfo {
+        @NonNull
         final ManagedTask task;
+        @Nullable
         String progressMessage;
         int progressMax;
         int progressCurrent;

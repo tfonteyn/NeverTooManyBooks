@@ -125,6 +125,7 @@ class SearchGoogleBooksHandler extends DefaultHandler {
     private static final String TOTAL_RESULTS = "totalResults";
     private static final String ENTRY = "entry";
     private StringBuilder builder;
+    @NonNull
     private String id = "";
     private int count = 0;
     private boolean entry = false;
@@ -135,6 +136,7 @@ class SearchGoogleBooksHandler extends DefaultHandler {
      *
      * @return The book id (to be passed to the entry handler)
      */
+    @NonNull
     public String getId() {
         return id;
     }

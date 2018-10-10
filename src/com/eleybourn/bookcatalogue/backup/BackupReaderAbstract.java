@@ -42,6 +42,7 @@ import java.util.Date;
  * @author pjw
  */
 public abstract class BackupReaderAbstract implements BackupReader {
+    @NonNull
     private final CatalogueDBAdapter mDb;
 
     /**
@@ -182,7 +183,7 @@ public abstract class BackupReaderAbstract implements BackupReader {
         listener.step("Booklist Styles...", 1);
         BooklistStyle booklistStyle = null;
         try {
-            booklistStyle = (BooklistStyle) entity.getSerializable();
+            booklistStyle = entity.getSerializable();
         } catch (DeserializationException e) {
             Logger.error(e, "Unable to restore style");
         }

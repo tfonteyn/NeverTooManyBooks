@@ -12,6 +12,7 @@ import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
  */
 public class JoinContext {
     /** Text of join statement */
+    @NonNull
     private final StringBuilder mSql;
     /** Last table added to join */
     private TableDefinition mCurrentTable;

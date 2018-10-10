@@ -24,13 +24,14 @@ import java.util.Set;
  *
  * @author Philip Warner
  */
-public class TableDefinition implements AutoCloseable {
+public class TableDefinition implements AutoCloseable, Cloneable {
     private final static String mExistsSql =
             "SELECT (SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name=?) + " +
             "(SELECT COUNT(*) FROM sqlite_temp_master WHERE type='table' AND name=?)";
     /** List of index definitions for this table */
     private final Map<String, IndexDefinition> mIndexes = Collections.synchronizedMap(new HashMap<String, IndexDefinition>());
     /** List of domains in this table */
+    @NonNull
     private final List<DomainDefinition> mDomains;
     /** Used for checking if a domain has already been added */
     private final Set<DomainDefinition> mDomainCheck = new HashSet<>();
@@ -47,6 +48,7 @@ public class TableDefinition implements AutoCloseable {
     /** Table alias */
     private String mAlias;
     /** Options indicating table is temporary */
+    @NonNull
     private TableTypes mType = TableTypes.Standard;
 
     /**
@@ -138,6 +140,7 @@ public class TableDefinition implements AutoCloseable {
     /**
      * Make a copy of this table.
      */
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
     @NonNull
     public TableDefinition clone() {
         TableDefinition newTbl = new TableDefinition();
@@ -358,6 +361,7 @@ public class TableDefinition implements AutoCloseable {
      *
      * @return TableDefinition (for chaining)
      */
+    @NonNull
     @SuppressWarnings("UnusedReturnValue")
     private TableDefinition addChild(@NonNull final TableDefinition child,
                                      @NonNull final FkReference fk) {
@@ -831,10 +835,13 @@ public class TableDefinition implements AutoCloseable {
      */
     private class FkReference {
         /** Owner of primary key in FK reference */
+        @NonNull
         final TableDefinition parent;
         /** Table owning FK */
+        @NonNull
         final TableDefinition child;
         /** Domains in the FK that reference the parent PK */
+        @NonNull
         final List<DomainDefinition> domains;
 
         /**

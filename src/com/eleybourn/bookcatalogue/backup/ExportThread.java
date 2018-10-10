@@ -41,6 +41,7 @@ public class ExportThread extends ManagedTask {
 
     };
 
+    @NonNull
     private final CsvExporter mExporter;
 
     public ExportThread(@NonNull final TaskManager manager) {

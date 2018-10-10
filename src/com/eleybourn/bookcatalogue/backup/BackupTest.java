@@ -19,6 +19,7 @@
  */
 package com.eleybourn.bookcatalogue.backup;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
@@ -57,7 +58,7 @@ public class BackupTest {
         }
     }
 
-    private static void performBackupTar(File file) throws IOException {
+    private static void performBackupTar(@NonNull File file) throws IOException {
         if (BuildConfig.DEBUG) {
             Logger.debug("Starting " + file.getAbsolutePath());
         }
@@ -66,6 +67,7 @@ public class BackupTest {
                 .backup(new BackupWriterListener() {
                     private final boolean mIsCancelled = false;
                     private long mMax;
+                    @Nullable
                     private String mMessage = "";
                     private int mPosition = 0;
                     private int mTotalBooks;
@@ -105,7 +107,7 @@ public class BackupTest {
         }
     }
 
-    private static void performRestoreTar(File file) throws IOException {
+    private static void performRestoreTar(@NonNull File file) throws IOException {
         if (BuildConfig.DEBUG) {
             Logger.debug("Starting " + file.getAbsolutePath());
         }
@@ -119,6 +121,7 @@ public class BackupTest {
         bkp.newReader().restore(new BackupReaderListener() {
             private final boolean mIsCancelled = false;
             private long mMax;
+            @Nullable
             private String mMessage = "";
             private int mPosition = 0;
 

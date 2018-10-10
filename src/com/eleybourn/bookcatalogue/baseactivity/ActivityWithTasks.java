@@ -64,14 +64,17 @@ abstract public class ActivityWithTasks extends BookCatalogueActivity {
     /** ID of associated TaskManager */
     private long mTaskManagerId = 0;
     /** ProgressDialog for this activity */
+    @Nullable
     private ProgressDialog mProgressDialog = null;
     /** Associated TaskManager */
+    @Nullable
     private TaskManager mTaskManager = null;
     /** Max value for ProgressDialog */
     private int mProgressMax = 0;
     /** Current value for ProgressDialog */
     private int mProgressCount = 0;
     /** Message for ProgressDialog */
+    @NonNull
     private String mProgressMessage = "";
 
     /**
@@ -99,6 +102,7 @@ abstract public class ActivityWithTasks extends BookCatalogueActivity {
     /**
      * Object to handle all TaskManager events
      */
+    @Nullable
     private final TaskManagerListener mTaskListener = new TaskManagerListener() {
         @Override
         public void onTaskEnded(@NonNull final TaskManager manager, @NonNull final ManagedTask task) {
@@ -295,7 +299,7 @@ abstract public class ActivityWithTasks extends BookCatalogueActivity {
      * Save the TaskManager ID for later retrieval
      */
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
         if (mTaskManagerId != 0) {

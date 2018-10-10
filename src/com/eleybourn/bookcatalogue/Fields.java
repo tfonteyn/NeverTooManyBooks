@@ -131,12 +131,14 @@ public class Fields extends ArrayList<Fields.Field> {
     private static final java.text.SimpleDateFormat DATE_SQL_SDF = new java.text.SimpleDateFormat("yyyy-MM-dd");
     private static final java.text.DateFormat DATE_DISPLAY_SDF = java.text.DateFormat.getDateInstance(java.text.DateFormat.MEDIUM);
     // The activity and preferences related to this object.
+    @NonNull
     private final FieldsContext mContext;
     private final SharedPreferences mPrefs;
     // The last validator exception caught by this object
     private final List<ValidatorException> mValidationExceptions = new ArrayList<>();
     // A list of cross-validators to apply if all fields pass simple validation.
     private final List<FieldCrossValidator> mCrossValidators = new ArrayList<>();
+    @Nullable
     private AfterFieldChangeListener mAfterFieldChangeListener = null;
 
     /**
@@ -212,6 +214,7 @@ public class Fields extends ArrayList<Fields.Field> {
      *
      * @return Activity for this collection.
      */
+    @NonNull
     private FieldsContext getContext() {
         return mContext;
     }
@@ -242,6 +245,7 @@ public class Fields extends ArrayList<Fields.Field> {
      *
      * @return The resulting Field.
      */
+    @Nullable
     public Field add(final int fieldId,
                      @NonNull final String sourceColumn,
                      @Nullable final FieldValidator fieldValidator) {
@@ -258,6 +262,7 @@ public class Fields extends ArrayList<Fields.Field> {
      *
      * @return The resulting Field.
      */
+    @Nullable
     public Field add(final int fieldId,
                      @NonNull final String sourceColumn,
                      @Nullable final FieldValidator fieldValidator,
@@ -275,6 +280,7 @@ public class Fields extends ArrayList<Fields.Field> {
      *
      * @return The resulting Field.
      */
+    @Nullable
     @SuppressWarnings("UnusedReturnValue")
     public Field add(final int fieldId,
                      @NonNull final String sourceColumn,
@@ -294,6 +300,7 @@ public class Fields extends ArrayList<Fields.Field> {
      *
      * @return The resulting Field.
      */
+    @Nullable
     public Field add(final int fieldId,
                      @NonNull final String sourceColumn,
                      @NonNull final String visibilityGroup,
@@ -309,6 +316,7 @@ public class Fields extends ArrayList<Fields.Field> {
      *
      * @return Associated Field.
      */
+    @NonNull
     public Field getField(final int id) {
         for (Field f : this) {
             if (f.id == id) {
@@ -481,6 +489,7 @@ public class Fields extends ArrayList<Fields.Field> {
      *
      * @return res The resource manager to use when looking up strings.
      */
+    @NonNull
     @SuppressWarnings("unused")
     public String getValidationExceptionMessage(@NonNull final Resources res) {
         if (mValidationExceptions.size() == 0) {
@@ -517,6 +526,7 @@ public class Fields extends ArrayList<Fields.Field> {
     private interface FieldsContext {
         Object dbgGetOwnerContext();
 
+        @Nullable
         View findViewById(@IdRes int id);
     }
 
@@ -584,6 +594,7 @@ public class Fields extends ArrayList<Fields.Field> {
          *
          * @return The most natural value to associate with the View value.
          */
+        @Nullable
         Object get(@NonNull final Field field);
     }
 
@@ -638,6 +649,7 @@ public class Fields extends ArrayList<Fields.Field> {
          *
          * @return The formatted value
          */
+        @Nullable
         String format(@NonNull final Field f, @Nullable final String source);
 
         /**
@@ -657,6 +669,7 @@ public class Fields extends ArrayList<Fields.Field> {
      * @author Philip Warner
      */
     static public class StringDataAccessor implements FieldDataAccessor {
+        @Nullable
         private String mLocalValue = "";
 
         @Override
@@ -704,6 +717,7 @@ public class Fields extends ArrayList<Fields.Field> {
      */
     static public class TextViewAccessor implements FieldDataAccessor {
         private boolean mFormatHtml;
+        @Nullable
         private String mRawValue;
 
         TextViewAccessor() {
@@ -771,6 +785,7 @@ public class Fields extends ArrayList<Fields.Field> {
             values.putString(field.column, mRawValue.trim());
         }
 
+        @Nullable
         public Object get(@NonNull final Field field) {
             return mRawValue;
         }
@@ -1129,6 +1144,7 @@ public class Fields extends ArrayList<Fields.Field> {
     }
 
     private class ActivityContext implements FieldsContext {
+        @NonNull
         private final WeakReference<Activity> mActivity;
 
         ActivityContext(@NonNull final Activity a) {
@@ -1147,6 +1163,7 @@ public class Fields extends ArrayList<Fields.Field> {
     }
 
     private class FragmentContext implements FieldsContext {
+        @NonNull
         private final WeakReference<Fragment> mFragment;
 
         FragmentContext(@NonNull final Fragment f) {
@@ -1191,13 +1208,16 @@ public class Fields extends ArrayList<Fields.Field> {
         @IdRes
         public final int id;
         /** database column name (can be blank) */
+        @NonNull
         public final String column;
         /** Visibility group name. Used in conjunction with preferences to show/hide Views */
+        @NonNull
         public final String group;
         /** Validator to use (can be null) */
         @Nullable
         public final FieldValidator validator;
         /** Owning collection */
+        @NonNull
         final WeakReference<Fields> mFields;
         /** Has the field been set to invisible **/
         public boolean visible;
@@ -1210,9 +1230,11 @@ public class Fields extends ArrayList<Fields.Field> {
         @Nullable
         FieldFormatter formatter;
         /** Accessor to use (automatically defined) */
+        @Nullable
         private FieldDataAccessor mAccessor = null;
 
         /** Optional field-specific tag object */
+        @Nullable
         private Object mTag = null;
 
         ///** Property used to determine if edits have been made.
@@ -1272,7 +1294,7 @@ public class Fields extends ArrayList<Fields.Field> {
                     et.addTextChangedListener(
                             new TextWatcher() {
                                 @Override
-                                public void afterTextChanged(Editable arg0) {
+                                public void afterTextChanged(@NonNull Editable arg0) {
                                     Field.this.setValue(arg0.toString());
                                 }
 
@@ -1342,7 +1364,7 @@ public class Fields extends ArrayList<Fields.Field> {
             //TODO We need to introduce a better way to handle this.
             view.setOnTouchListener(new View.OnTouchListener() {
                 @Override
-                public boolean onTouch(View v, MotionEvent event) {
+                public boolean onTouch(View v, @NonNull MotionEvent event) {
                     if (MotionEvent.ACTION_UP == event.getAction()) {
                         if (mAfterFieldChangeListener != null) {
                             mAfterFieldChangeListener.afterFieldChange(Field.this, null);
@@ -1396,6 +1418,7 @@ public class Fields extends ArrayList<Fields.Field> {
          *
          * @return Current value of tag.
          */
+        @Nullable
         public Object getTag() {
             return mTag;
         }
@@ -1412,6 +1435,7 @@ public class Fields extends ArrayList<Fields.Field> {
          *
          * @return Current value in native form.
          */
+        @Nullable
         public Object getValue() {
             return mAccessor.get(this);
         }

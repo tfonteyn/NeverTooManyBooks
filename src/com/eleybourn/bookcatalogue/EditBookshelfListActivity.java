@@ -76,7 +76,7 @@ public class EditBookshelfListActivity extends BookCatalogueListActivity
     }
 
     @Override
-    public boolean onCreateOptionsMenu(final Menu menu) {
+    public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
         super.onCreateOptionsMenu(menu);
         menu.add(Menu.NONE, R.id.MENU_INSERT, 0, R.string.menu_insert_bs)
                 .setIcon(R.drawable.ic_add)
@@ -96,14 +96,14 @@ public class EditBookshelfListActivity extends BookCatalogueListActivity
     }
 
     @Override
-    public void onCreateContextMenu(final ContextMenu menu, final View v, final ContextMenuInfo menuInfo) {
+    public void onCreateContextMenu(@NonNull final ContextMenu menu, final View v, final ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
         menu.add(Menu.NONE, R.id.MENU_DELETE, 0, R.string.menu_delete_bs)
                 .setIcon(R.drawable.ic_mode_edit);
     }
 
     @Override
-    public boolean onContextItemSelected(final MenuItem item) {
+    public boolean onContextItemSelected(@NonNull final MenuItem item) {
         switch (item.getItemId()) {
             case R.id.MENU_DELETE:
                 AdapterContextMenuInfo menuInfo = (AdapterContextMenuInfo) item.getMenuInfo();

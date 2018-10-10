@@ -24,6 +24,7 @@ class Editions extends AbstractBase {
     /**
      * @return a list with native ISFDB book id's pointing to individual editions (with the same isbn)
      */
+    @NonNull
     long[] getBookIds() {
         if (mEditions == null) {
             fetchEditions();

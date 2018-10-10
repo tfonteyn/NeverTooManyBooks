@@ -76,6 +76,7 @@ public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
     private long id = 0;
     private Author mAuthor;
     private String mTitle;
+    @Nullable
     private String mFirstPublicationDate;
 
     private long mBookId;
@@ -211,6 +212,7 @@ public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
         this.mPosition = mPosition;
     }
 
+    @Nullable
     public String getFirstPublication() {
         return mFirstPublicationDate;
     }

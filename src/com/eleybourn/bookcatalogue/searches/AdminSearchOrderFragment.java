@@ -21,7 +21,9 @@ import java.util.List;
 public class AdminSearchOrderFragment extends Fragment {
 
     private ListView mListView;
+    @Nullable
     private ArrayList<SearchManager.SearchSite> mList;
+    @Nullable
     private SearchSiteListAdapter mAdapter;
 
     private boolean isCreated;
@@ -49,6 +51,7 @@ public class AdminSearchOrderFragment extends Fragment {
         isCreated = true;
     }
 
+    @Nullable
     public ArrayList<SearchManager.SearchSite> getList() {
         if (isCreated) {
             ArrayList<SearchManager.SearchSite> newList = new ArrayList<>(mList);

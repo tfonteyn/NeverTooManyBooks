@@ -14,13 +14,13 @@
     <string name="pages">Pagina\'s</string>
     <string name="confirm_add">Boek toevoegen</string>
     <string name="confirm_update">Bijwerken</string>
-    <string name="no_books">Er staan geen boeken op deze boekenplank. Voeg er een paar toe via het menu onderaan dit scherm.</string>
+    <string name="no_books_yet">Er staan geen boeken op deze boekenplank. Voeg er een paar toe via het menu onderaan dit scherm.</string>
     <string name="menu_expand_all">Alles uitklappen</string>
     <string name="menu_sort_by">Sorteren op</string>
     <string name="menu_collapse_all">Alles inklappen</string>
     <string name="search">Zoeken</string>
     <string name="confirm_save">Boek opslaan</string>
-    <string name="nobookshelves">U heef nog geen boekenplank aangemaakt. Voeg er een toe via het menu onderaan dit scherm.</string>
+    <string name="no_bookshelves_yet">U heef nog geen boekenplank aangemaakt. Voeg er een toe via het menu onderaan dit scherm.</string>
     <string name="menu_insert_bs">Boekenplank maken</string>
     <string name="confirm_add_bs">Toevoegen Boekenplank</string>
     <string name="menu_bookshelf">Beheer boekenplanken</string>
@@ -131,8 +131,8 @@
     <string name="columns_are_blank">Kolommen %1$s zijn allemaal leeg op rij %2$d</string>
     <string name="save">Opslaan</string>
     <string name="add">Toevoegen</string>
-    <string name="noauthors">Er zijn geen auteurs voor dit boek. Voeg er een toe met het tekstveld en de knop bovenin dit scherm.</string>
-    <string name="noseries">Er zijn geen series voor dit boek. U kunt er een toevoegen met het tekstveld en de knop bovenin dit scherm.</string>
+    <string name="no_authors_yet">Er zijn geen auteurs voor dit boek. Voeg er een toe met het tekstveld en de knop bovenin dit scherm.</string>
+    <string name="no_series_yet">Er zijn geen series voor dit boek. U kunt er een toevoegen met het tekstveld en de knop bovenin dit scherm.</string>
     <string name="cover_not_set">Omslagafbeelding niet ingesteld</string>
     <string name="cover_corrupt">Omslagafbeelding is niet geldig</string>
     <string name="cover_detail">Omslagafbeelding detail</string>

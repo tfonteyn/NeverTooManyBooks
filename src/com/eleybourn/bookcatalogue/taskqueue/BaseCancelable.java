@@ -17,6 +17,7 @@
 package com.eleybourn.bookcatalogue.taskqueue;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
@@ -50,9 +51,11 @@ public abstract class BaseCancelable<T> implements Cancelable<T> {
 
     private Throwable mError;
     private T mResult;
+    @Nullable
     private Cancelable<?> mCurrentTask;
     private Thread mThread;
 
+    @NonNull
     protected abstract T execute();
 
     protected synchronized void interruptNow() {

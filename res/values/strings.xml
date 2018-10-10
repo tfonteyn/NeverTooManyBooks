@@ -37,13 +37,13 @@
     <string name="pages">Pages</string>
     <string name="confirm_add">Add Book</string>
     <string name="confirm_update">Update</string>
-    <string name="no_books">There are no books in this Bookshelf. Please add some using the menu at the bottom of this screen.</string>
+    <string name="no_books_yet">There are no books in this Bookshelf. Please add some using the menu at the bottom of this screen.</string>
     <string name="menu_expand_all">Expand All</string>
     <string name="menu_sort_by">Sort By</string>
     <string name="menu_collapse_all">Collapse All</string>
     <string name="search">Search</string>
     <string name="confirm_save">Save Book</string>
-    <string name="nobookshelves">You have not created any bookshelves yet. Please add some using the menu at the bottom of this screen.</string>
+    <string name="no_bookshelves_yet">You have not created any bookshelves yet. Please add some using the menu at the bottom of this screen.</string>
     <string name="menu_insert_bs">Create Bookshelf</string>
     <string name="confirm_add_bs">Add Bookshelf</string>
     <string name="menu_bookshelf">Manage Bookshelves</string>
@@ -152,8 +152,8 @@
     <string name="columns_are_blank">Columns %1$s are all blank at row %2$d</string>
     <string name="save">Save</string>
     <string name="add">Add</string>
-    <string name="noauthors">There are no authors for this Book. Please add some using the text area and button at the top of this screen.</string>
-    <string name="noseries">There are no series for this Book. You can add some using the text area and button at the top of this screen.</string>
+    <string name="no_authors_yet">There are no authors for this Book. Please add some using the text area and button at the top of this screen.</string>
+    <string name="no_series_yet">There are no series for this Book. You can add some using the text area and button at the top of this screen.</string>
     <string name="cover_not_set">Cover is not set</string>
     <string name="cover_corrupt">Cover is corrupt</string>
     <string name="cover_detail">Cover Detail</string>
@@ -304,14 +304,16 @@
     <string name="crash_dialog_text">It looks like BookCatalogue has crashed. If possible describe anything you think may be relevant below and press "OK" to send us an email about the crash. You will see the email before it is sent.</string>
     <string name="crash_dialog_comment_prompt">Your comments (or just leave blank):</string>
     <string name="crash_dialog_ok_toast">Thank you!</string>
-    <string name="no_series">(no series)</string>
     <string name="booklist_read">Read</string>
     <string name="booklist_unread">Unread</string>
+
+    <string name="no_series">(no series)</string>
     <string name="no_genre">(no genre)</string>
     <string name="no_title">(no title)</string>
     <string name="no_publisher">(no publisher)</string>
     <string name="no_author">(no author)</string>
     <string name="no_date">(no date)</string>
+
     <string name="show_thumbnails">Show Thumbnails</string>
     <string name="prefer_large_thumbnails">Prefer large thumbnails</string>
     <string name="sort_author_series">Author then Series</string>

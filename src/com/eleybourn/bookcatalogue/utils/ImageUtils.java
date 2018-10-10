@@ -225,7 +225,7 @@ public class ImageUtils {
 
         try (InputStream in = Utils.getInputStream(urlText)) {
             StorageUtils.saveInputStreamToFile(in, file);
-        } catch (IOException | URISyntaxException e) {
+        } catch (@NonNull IOException | URISyntaxException e) {
             Logger.error(e);
             return "";
         }
@@ -274,7 +274,7 @@ public class ImageUtils {
             }
             return out.toByteArray();
 
-        } catch (IOException | URISyntaxException e) {
+        } catch (@NonNull IOException | URISyntaxException e) {
             Logger.error(e);
             return null;
         }

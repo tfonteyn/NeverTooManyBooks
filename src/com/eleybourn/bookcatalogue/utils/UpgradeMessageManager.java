@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue.utils;
 import android.content.Context;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BCPreferences;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
@@ -67,6 +68,7 @@ public class UpgradeMessageManager {
             .add(200, R.string.new_in_600);
 
     /** The message generated for this instance; will be set first time it inputStream generated */
+    @Nullable
     private static String mMessage = null;
 
     private UpgradeMessageManager() {

@@ -68,6 +68,7 @@ public class SimpleTaskQueue {
     /** Handler for sending tasks to the UI thread. */
     private final Handler mHandler = new Handler();
     /** Name for this queue */
+    @NonNull
     private final String mName;
     /** Threads associate with this queue */
     private final List<SimpleTaskQueueThread> mThreads = new ArrayList<>();
@@ -78,7 +79,9 @@ public class SimpleTaskQueue {
     /** Number of currently queued, executing (or starting/finishing) tasks */
     private int mManagedTaskCount = 0;
 
+    @Nullable
     private OnTaskStartListener mTaskStartListener = null;
+    @Nullable
     private OnTaskFinishListener mTaskFinishListener = null;
     /**
      * Options indicating runnable is queued but not run; avoids multiple unnecessary Runnable's
@@ -300,6 +303,7 @@ public class SimpleTaskQueue {
     /**
      * Accessor.
      */
+    @Nullable
     @SuppressWarnings("unused")
     public OnTaskStartListener getTaskStartListener() {
         return mTaskStartListener;
@@ -316,6 +320,7 @@ public class SimpleTaskQueue {
     /**
      * Accessor.
      */
+    @Nullable
     @SuppressWarnings("unused")
     public OnTaskFinishListener getTaskFinishListener() {
         return mTaskFinishListener;
@@ -367,6 +372,7 @@ public class SimpleTaskQueue {
     }
 
     public interface SimpleTaskContext {
+        @Nullable
         CatalogueDBAdapter getDb();
 
         void setRequiresFinish(final boolean requiresFinish);
@@ -380,13 +386,17 @@ public class SimpleTaskQueue {
      * @author Philip Warner
      */
     private static class SimpleTaskWrapper implements SimpleTaskContext {
+        @NonNull
         private static Long mCounter = 0L;
+        @NonNull
         public final SimpleTask task;
         public final long id;
+        @NonNull
         private final SimpleTaskQueue mOwner;
         public Exception exception;
 
         boolean finishRequested = true;
+        @Nullable
         SimpleTaskQueueThread activeThread = null;
 
         SimpleTaskWrapper(@NonNull final SimpleTaskQueue owner, @NonNull final SimpleTask task) {
@@ -400,6 +410,7 @@ public class SimpleTaskQueue {
         /**
          * Accessor when behaving as a context
          */
+        @Nullable
         @Override
         public CatalogueDBAdapter getDb() {
             if (activeThread == null) {
@@ -427,6 +438,7 @@ public class SimpleTaskQueue {
      */
     private class SimpleTaskQueueThread extends Thread {
         /** DB Connection, if task requests one. Survives while thread is alive */
+        @Nullable
         CatalogueDBAdapter mDb = null;
 
         /**
@@ -468,6 +480,7 @@ public class SimpleTaskQueue {
         /**
          * @return a database connection associated with this Task
          */
+        @Nullable
         public CatalogueDBAdapter getDb() {
             if (mDb == null) {
                 // Reminder: don't make/put the context in a static variable! -> Memory Leak!

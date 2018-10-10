@@ -38,7 +38,8 @@ public class Tracker {
 		final String activityClass;
 		public final String action;
 		public final States state;
-		public final Date date;
+		@NonNull
+        public final Date date;
 		public Event(Object a, String action, States state) {
 			activityClass = a.getClass().getSimpleName();
 			this.action = action;
@@ -46,7 +47,8 @@ public class Tracker {
 			date = new Date();
 		}
 		
-		public String getInfo() {
+		@NonNull
+        public String getInfo() {
 			return DateUtils.toSqlDateTime(date) + ": " + activityClass + " " + action + " " + state;
 		}
 	}
@@ -99,10 +101,10 @@ public class Tracker {
 	public static void exitOnResume(@NonNull final Object a) {
 		handleEvent(a,"OnResume (" + a + ")", States.Exit);
 	}
-	public static void enterOnSaveInstanceState(Object a) {
+	public static void enterOnSaveInstanceState(@NonNull Object a) {
 		handleEvent(a,"OnSaveInstanceState", States.Enter);		
 	}
-	public static void exitOnSaveInstanceState(Object a) {
+	public static void exitOnSaveInstanceState(@NonNull Object a) {
 		handleEvent(a,"OnSaveInstanceState", States.Exit);
 	}
 	public static void enterFunction(@NonNull final Object a, @NonNull final String name, @NonNull final Object... params) {

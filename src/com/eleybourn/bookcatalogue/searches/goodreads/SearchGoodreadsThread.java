@@ -71,7 +71,7 @@ public class SearchGoodreadsThread extends SearchThread {
                 }
             }
         } catch (BookNotFoundException ignore) {
-        } catch (OAuthMessageSignerException | OAuthExpectationFailedException | OAuthCommunicationException
+        } catch (@NonNull OAuthMessageSignerException | OAuthExpectationFailedException | OAuthCommunicationException
                 | GoodreadsManager.Exceptions.NotAuthorizedException e) {
             // Added to stop confusing a new developer (me!).... the dev keys need to be in the manifest
             if (BuildConfig.DEBUG) {

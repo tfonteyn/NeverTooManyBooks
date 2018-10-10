@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue.booklist;
 
 import android.database.AbstractCursor;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.database.cursors.BooklistCursor;
@@ -74,18 +75,24 @@ public class BooklistPseudoCursor extends AbstractCursor implements BooklistSupp
     /** Size of MRU list. Not based on tuning; just set to more than 2*3+1. */
     private final static int MRU_LIST_SIZE = 8;
     /** Underlying BooklistBuilder object */
+    @NonNull
     private final BooklistBuilder mBuilder;
     /** Collection of current cursors */
+    @NonNull
     private final Hashtable<Integer, BooklistCursor> mCursors;
     /** MRU ring buffer of cursors */
+    @NonNull
     private final int[] mMruList;
     /** Cached RowView for this cursor */
+    @Nullable
     private BooklistRowView mRowView = null;
     /** The cursor to use for the last onMove() event */
+    @Nullable
     private BooklistCursor mActiveCursor = null;
     /** Current MRU ring buffer position */
     private int mMruListPos = 0;
     /** Pseudo-count obtained from Builder */
+    @Nullable
     private Integer mPseudoCount = null;
 
     /**

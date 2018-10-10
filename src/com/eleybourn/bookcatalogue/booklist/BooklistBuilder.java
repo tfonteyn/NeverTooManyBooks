@@ -187,23 +187,29 @@ public class BooklistBuilder implements AutoCloseable {
             + " End";
 
     /** Counter for BooklistBuilder IDs */
+    @NonNull
     private static Integer mBooklistBuilderIdCounter = 0;
     /** Debug counter */
+    @NonNull
     private static Integer mInstanceCount = 0;
     /** Counter for 'flattened' book temp tables */
+    @NonNull
     private static Integer mFlatNavCounter = 0;
 
     // List of columns for the group-by clause, including COLLATE clauses. Set by build() method.
     //private String mGroupColumnList;
     /** Collection of statements created by this Builder */
+    @NonNull
     private final SqlStatementManager mStatements;
     /** Database to use */
+    @NonNull
     private final SynchronizedDb mSyncedDb;
     /** Internal ID */
     private final int mBooklistBuilderId;
     /** Collection of 'extra' domains requested by caller */
     private final Map<String, ExtraDomainDetails> mExtraDomains = new HashMap<>();
     /** Style to use in building the list */
+    @NonNull
     private final BooklistStyle mStyle;
     /**
      * Instance-based cursor factory so that the builder can be associated with the cursor
@@ -214,9 +220,9 @@ public class BooklistBuilder implements AutoCloseable {
         @Override
         public Cursor newCursor(
                 SQLiteDatabase db,
-                SQLiteCursorDriver masterQuery,
-                String editTable,
-                SQLiteQuery query) {
+                @NonNull SQLiteCursorDriver masterQuery,
+                @NonNull String editTable,
+                @NonNull SQLiteQuery query) {
             return new BooklistCursor(masterQuery, editTable, query, BooklistBuilder.this, CatalogueDBAdapter.getSynchronizer());
         }
     };
@@ -226,16 +232,25 @@ public class BooklistBuilder implements AutoCloseable {
     /** Local copy of the navigation table definition, renamed to match this instance */
     private TableDefinition mNavTable;
     /** Object used in constructing the output table */
+    @Nullable
     private SummaryBuilder mSummary = null;
     /** Statement used to perform initial insert */
+    @Nullable
     private SynchronizedStatement mBaseBuildStmt = null;
     /** Collection of statements used to build remaining data */
+    @Nullable
     private ArrayList<SynchronizedStatement> mLevelBuildStmts = null;
+    @Nullable
     private SynchronizedStatement mDeleteListNodeSettingsStmt = null;
+    @Nullable
     private SynchronizedStatement mSaveListNodeSettingsStmt = null;
+    @Nullable
     private SynchronizedStatement mDeleteListNodeSettingStmt = null;
+    @Nullable
     private SynchronizedStatement mSaveListNodeSettingStmt = null;
+    @Nullable
     private SynchronizedStatement mGetPositionCheckVisibleStmt = null;
+    @Nullable
     private SynchronizedStatement mGetPositionStmt = null;
 
     ///** Convenience expression for the SQL which gets the name of the person to whom a book has been loaned, if any
@@ -248,10 +263,15 @@ public class BooklistBuilder implements AutoCloseable {
     //	}
     //	return LOANED_TO_SQL;
     //}
+    @Nullable
     private SynchronizedStatement mGetNodeRootStmt = null;
+    @Nullable
     private SynchronizedStatement mGetNodeLevelStmt = null;
+    @Nullable
     private SynchronizedStatement mGetNextAtSameLevelStmt = null;
+    @Nullable
     private SynchronizedStatement mShowStmt = null;
+    @Nullable
     private SynchronizedStatement mExpandStmt = null;
     private boolean mReferenceDecremented = false;
 
@@ -295,6 +315,7 @@ public class BooklistBuilder implements AutoCloseable {
     /**
      * Construct a flattened table of ordered book IDs based on the underlying list
      */
+    @NonNull
     public FlattenedBooklist createFlattenedBooklist() {
         int flatId;
         synchronized (mFlatNavCounter) {
@@ -326,6 +347,7 @@ public class BooklistBuilder implements AutoCloseable {
      *
      * @return The builder (to allow chaining)
      */
+    @NonNull
     @SuppressWarnings("UnusedReturnValue")
     public BooklistBuilder requireDomain(@NonNull final DomainDefinition domain, @NonNull final String sourceExpression, final boolean isSorted) {
         // Save the details
@@ -1474,6 +1496,7 @@ public class BooklistBuilder implements AutoCloseable {
      * <p>
      * This approach means to allow DESCENDING sort orders.
      */
+    @NonNull
     private String makeTriggers(@NonNull final SummaryBuilder summary, final boolean flatTriggers) {
         if (flatTriggers) {
             // Flat triggers are compatible with Android 1.6+ but slower
@@ -1494,6 +1517,7 @@ public class BooklistBuilder implements AutoCloseable {
      * This approach is allows DESCENDING sort orders but is slightly slower than the old-style
      * manually generated lists.
      */
+    @NonNull
     private String makeSingleTrigger(@NonNull final SummaryBuilder summary) {
         // Name of a table to store the snapshot of the most recent/current row headings
         final String currTblName = mListTable + "_curr";
@@ -1830,6 +1854,7 @@ public class BooklistBuilder implements AutoCloseable {
      * Utility routine to return a list of column names that will be in the list
      * for cursor implementations.
      */
+    @NonNull
     String[] getListColumnNames() {
         // Get the domains
         List<DomainDefinition> domains = mListTable.getDomains();
@@ -1846,6 +1871,7 @@ public class BooklistBuilder implements AutoCloseable {
     /**
      * Return a list cursor starting at a given offset, using a given limit.
      */
+    @NonNull
     BooklistCursor getOffsetCursor(final int position, final int size) {
         // Get the domains
         StringBuilder domains = new StringBuilder();
@@ -1871,6 +1897,7 @@ public class BooklistBuilder implements AutoCloseable {
     /**
      * Return a BooklistPseudoCursor instead of a real cursor.
      */
+    @NonNull
     public BooklistPseudoCursor getList() {
         return new BooklistPseudoCursor(this);
     }
@@ -2104,6 +2131,7 @@ public class BooklistBuilder implements AutoCloseable {
     /**
      * @return the style used by this builder.
      */
+    @NonNull
     public BooklistStyle getStyle() {
         return mStyle;
     }
@@ -2176,6 +2204,7 @@ public class BooklistBuilder implements AutoCloseable {
     }
 
     public static class SortedDomainInfo {
+        @NonNull
         final DomainDefinition domain;
         final boolean isDescending;
 
@@ -2320,6 +2349,8 @@ public class BooklistBuilder implements AutoCloseable {
          * allows us to get the GROUP-BY fields applicable to the currently processed group, including all
          * outer groups. Hence why it is cloned -- subsequent domains will modify this collection.
          */
+        @NonNull
+        @SuppressWarnings("unchecked")
         ArrayList<DomainDefinition> cloneGroups() {
             //TOMF
             //      * Returns a shallow copy of this <tt>ArrayList</tt> instance.  (The
@@ -2330,6 +2361,7 @@ public class BooklistBuilder implements AutoCloseable {
         /**
          * Return the collection of columns used to sort the output.
          */
+        @NonNull
         ArrayList<SortedDomainInfo> getSortedColumns() {
             return mSortedColumns;
         }
@@ -2362,6 +2394,7 @@ public class BooklistBuilder implements AutoCloseable {
          *
          * @return SqlComponents structure
          */
+        @NonNull
         SqlComponents buildSqlComponents(@NonNull final CompoundKey rootKey) {
             SqlComponents cmp = new SqlComponents();
 

@@ -293,6 +293,7 @@ public class Utils {
      *
      * @return Spannable with all links
      */
+    @NonNull
     public static Spannable linkifyHtml(@NonNull final String html, final int linkifyMask) {
         // Get the spannable HTML
         Spanned text = Html.fromHtml(html);
@@ -450,7 +451,9 @@ public class Utils {
 //	}
 
     private static class ConnectionInfo {
+        @Nullable
         URLConnection connection = null;
+        @Nullable
         StatefulBufferedInputStream inputStream = null;
     }
 

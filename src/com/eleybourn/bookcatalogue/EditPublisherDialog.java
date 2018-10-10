@@ -31,8 +31,11 @@ import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.entities.Publisher;
 
 public class EditPublisherDialog {
+    @NonNull
     private final Activity mActivity;
+    @NonNull
     private final CatalogueDBAdapter mDb;
+    @NonNull
     private final Runnable mOnChanged;
 
     EditPublisherDialog(@NonNull final Activity activity, @NonNull final CatalogueDBAdapter db, @NonNull final Runnable onChanged) {

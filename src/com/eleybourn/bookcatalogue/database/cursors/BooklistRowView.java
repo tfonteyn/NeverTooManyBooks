@@ -47,6 +47,7 @@ import com.eleybourn.bookcatalogue.utils.DateUtils;
 public class BooklistRowView extends BookRowViewBase {
 
     /** Underlying builder object */
+    @NonNull
     private final BooklistBuilder mBuilder;
     /** Max size of thumbnails based on preferences at object creation time */
     private final int mMaxThumbnailWidth;

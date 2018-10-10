@@ -18,6 +18,7 @@ package com.eleybourn.bookcatalogue.cropper;
 
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 
 import java.io.InputStream;
 
@@ -67,30 +68,38 @@ public interface CropIImage {
 
 
     /** Get the image list which contains this image. */
+    @NonNull
     CropIImageList getContainer();
 
     /** Get the bitmap for the full size image. */
+    @NonNull
     Bitmap fullSizeBitmap(int minSideLength,
                           int maxNumberOfPixels);
 
+    @NonNull
     Bitmap fullSizeBitmap(int minSideLength,
                           int maxNumberOfPixels, boolean rotateAsNeeded);
 
+    @NonNull
     Bitmap fullSizeBitmap(int minSideLength,
                           int maxNumberOfPixels, boolean rotateAsNeeded, boolean useNative);
 
     int getDegreesRotated();
 
     /** Get the input stream associated with a given full size image. */
+    @NonNull
     InputStream fullSizeImageData();
 
     long fullSizeImageId();
 
+    @NonNull
     Uri fullSizeImageUri();
 
     /** Get the path of the (full size) image data. */
+    @NonNull
     String getDataPath();
 
+    @NonNull
     String getTitle();
 
     // Get/Set the title of the image
@@ -99,12 +108,14 @@ public interface CropIImage {
     // Get metadata of the image
     long getDateTaken();
 
+    @NonNull
     String getMimeType();
 
     int getWidth();
 
     int getHeight();
 
+    @NonNull
     String getDisplayName();
 
     // Get property of the image
@@ -113,11 +124,14 @@ public interface CropIImage {
     boolean isDrm();
 
     // Get the bitmap/uri of the medium thumbnail
+    @NonNull
     Bitmap thumbBitmap(boolean rotateAsNeeded);
 
+    @NonNull
     Uri thumbUri();
 
     // Get the bitmap of the mini thumbnail.
+    @NonNull
     Bitmap miniThumbBitmap();
 
     // Rotate the image

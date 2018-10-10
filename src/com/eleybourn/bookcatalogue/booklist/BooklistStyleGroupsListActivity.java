@@ -134,7 +134,7 @@ public class BooklistStyleGroupsListActivity extends EditObjectListActivity<Grou
             // Handle a click on the CheckedTextView
             holder.present.setOnClickListener(new OnClickListener() {
                 @Override
-                public void onClick(View v) {
+                public void onClick(@NonNull View v) {
                     Holder h = ViewTagger.getTag(v, R.id.TAG_HOLDER);
                     if (h != null) {
                         boolean newStatus = !h.wrapper.present;
@@ -191,6 +191,7 @@ public class BooklistStyleGroupsListActivity extends EditObjectListActivity<Grou
     public static class GroupWrapper implements Serializable {
         private static final long serialVersionUID = 3108094089675884238L;
         /** The actual group */
+        @NonNull
         final BooklistGroup group;
         /** Whether this groups is present in the style */
         boolean present;

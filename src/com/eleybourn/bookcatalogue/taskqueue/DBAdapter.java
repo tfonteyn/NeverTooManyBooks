@@ -65,6 +65,7 @@ import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.TBL_TASK;
  * @author Philip Warner
  */
 class DBAdapter {
+    @NonNull
     private final DBHelper mDBHelper;
     private final Context mApplicationContext;
 
@@ -76,12 +77,13 @@ class DBAdapter {
         @Override
         public Cursor newCursor(
                 SQLiteDatabase db,
-                SQLiteCursorDriver masterQuery,
-                String editTable,
-                SQLiteQuery query) {
+                @NonNull SQLiteCursorDriver masterQuery,
+                @NonNull String editTable,
+                @NonNull SQLiteQuery query) {
             return new EventsCursor(masterQuery, editTable, query);
         }
     };
+    @Nullable
     private SQLiteStatement mCheckTaskExistsStmt = null;
 
     /**

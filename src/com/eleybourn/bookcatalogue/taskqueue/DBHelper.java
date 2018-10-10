@@ -23,6 +23,7 @@ package com.eleybourn.bookcatalogue.taskqueue;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.support.annotation.NonNull;
 
 import java.util.Hashtable;
 import java.util.Map;
@@ -142,7 +143,7 @@ class DBHelper extends SQLiteOpenHelper {
      * the definitions easier.
      */
     @Override
-    public void onCreate(SQLiteDatabase db) {
+    public void onCreate(@NonNull SQLiteDatabase db) {
         for(int i = 0; i < mTables.length; i=i+2 ) {
             db.execSQL("CREATE TABLE " + mTables[i] + "(" + mTables[i+1] + ")");
         }
@@ -183,7 +184,7 @@ class DBHelper extends SQLiteOpenHelper {
      * Called to upgrade DB.
      */
     @Override
-    public void onUpgrade(final SQLiteDatabase db, final int oldVersion, final int newVersion) {
+    public void onUpgrade(@NonNull final SQLiteDatabase db, final int oldVersion, final int newVersion) {
         int currVersion = oldVersion;
 
         if (currVersion == 1) {
@@ -197,7 +198,7 @@ class DBHelper extends SQLiteOpenHelper {
     }
 
     @Override
-    public void onOpen(SQLiteDatabase db) {
+    public void onOpen(@NonNull SQLiteDatabase db) {
         // Turn on foreign key support so that CASCADE works.
         db.execSQL("PRAGMA foreign_keys = ON");
     }

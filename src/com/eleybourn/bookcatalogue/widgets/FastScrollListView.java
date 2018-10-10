@@ -23,6 +23,7 @@ package com.eleybourn.bookcatalogue.widgets;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.widget.AbsListView;
@@ -40,9 +41,12 @@ import android.widget.ListView;
 public class FastScrollListView extends ListView {
 
     /** Active scroller, if any */
+    @Nullable
     private FastScroller mScroller = null;
 
+    @Nullable
     private OnScrollListener mOnScrollListener = null;
+    @Nullable
     private final OnScrollListener mOnScrollDispatcher = new OnScrollListener() {
         @Override
         public void onScroll(@NonNull final AbsListView view, final int firstVisibleItem, final int visibleItemCount, final int totalItemCount) {
@@ -98,7 +102,7 @@ public class FastScrollListView extends ListView {
      * Pass to scroller if defined, otherwise perform default actions.
      */
     @Override
-    public boolean onInterceptTouchEvent(final MotionEvent ev) {
+    public boolean onInterceptTouchEvent(@NonNull final MotionEvent ev) {
         return mScroller != null && mScroller.onInterceptTouchEvent(ev) || super.onInterceptTouchEvent(ev);
 
     }
@@ -118,7 +122,7 @@ public class FastScrollListView extends ListView {
      * Pass to scroller if defined, otherwise perform default actions.
      */
     @Override
-    public boolean onTouchEvent(final MotionEvent ev) {
+    public boolean onTouchEvent(@NonNull final MotionEvent ev) {
         return mScroller != null && mScroller.onTouchEvent(ev) || super.onTouchEvent(ev);
 
     }
@@ -127,7 +131,7 @@ public class FastScrollListView extends ListView {
      * Send draw() to the scroller as well.
      */
     @Override
-    public void draw(final Canvas canvas) {
+    public void draw(@NonNull final Canvas canvas) {
         super.draw(canvas);
         if (mScroller != null) {
             mScroller.draw(canvas);

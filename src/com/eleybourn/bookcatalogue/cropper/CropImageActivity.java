@@ -69,6 +69,7 @@ public class CropImageActivity extends CropMonitoredActivity {
     private final Bitmap.CompressFormat COMPRESS_FORMAT = Bitmap.CompressFormat.JPEG; // only used with mOptionSaveUri
 
     /** These are various options can be specified in the intent. */
+    @Nullable
     private Uri mOptionSaveUri = null;
     private int mOptionAspectX, mOptionAspectY;
     /** crop circle ? (default: rectangle) */
@@ -90,11 +91,13 @@ public class CropImageActivity extends CropMonitoredActivity {
 
     CropHighlightView mCrop;
     private CropImageView mImageView;
+    @Nullable
     private Bitmap mBitmap;
 
     /** Whether we are wait the user to pick a face. */
     boolean mWaitingToPickFace;
     /** runnable that does the actual face detection */
+    @Nullable
     private final Runnable mRunFaceDetection = new Runnable() {
         final FaceDetector.Face[] mFaces = new FaceDetector.Face[3];
         float mScale = 1F;

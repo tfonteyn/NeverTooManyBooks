@@ -66,6 +66,7 @@ public class BooklistStyles extends ArrayList<BooklistStyle> {
     private static final String PREF_MENU_ITEMS = TAG + ".Menu.Items";
 
     /** Internal storage for preferred styles represented by this object */
+    @NonNull
     private final Set<String> mPreferredStyleNames;
 
     /**
@@ -79,6 +80,7 @@ public class BooklistStyles extends ArrayList<BooklistStyle> {
      * Get a list of canonical names of the preferred styles from user preferences.
      *
      */
+    @NonNull
     private static Set<String> getPreferredStyleNames() {
         Set<String> names = new HashSet<>();
         String itemStr = BCPreferences.getString(PREF_MENU_ITEMS, null);
@@ -99,6 +101,7 @@ public class BooklistStyles extends ArrayList<BooklistStyle> {
      * NOTE: Do NOT call this in static initialization of application.
      * This method requires the application context to be present.
      */
+    @NonNull
     private static List<BooklistStyle> getBuiltinStyles() {
         List<BooklistStyle> list = new ArrayList<>();
         BooklistStyle style;

@@ -76,11 +76,13 @@ import java.util.List;
  */
 public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
     private final int mRowViewId;
+    @NonNull
     private final List<T> mItems;
 
+    @Nullable
     private final View.OnLongClickListener mRowLongClickListener = new View.OnLongClickListener() {
         @Override
-        public boolean onLongClick(View v) {
+        public boolean onLongClick(@NonNull View v) {
             try {
                 int pos = getViewRow(v);
                 T item = getItem(pos);
@@ -91,9 +93,10 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
             return false;
         }
     };
+    @Nullable
     private final View.OnClickListener mRowClickListener = new View.OnClickListener() {
         @Override
-        public void onClick(View v) {
+        public void onClick(@NonNull View v) {
             try {
                 int pos = getViewRow(v);
                 T item = getItem(pos);
@@ -106,9 +109,10 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
         }
     };
 
+    @Nullable
     private final View.OnClickListener mRowDeleteListener = new View.OnClickListener() {
         @Override
-        public void onClick(View v) {
+        public void onClick(@NonNull View v) {
             try {
                 int pos = getViewRow(v);
                 T old = getItem(pos);
@@ -123,9 +127,10 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
             }
         }
     };
+    @Nullable
     private final View.OnClickListener mRowDownListener = new View.OnClickListener() {
         @Override
-        public void onClick(View v) {
+        public void onClick(@NonNull View v) {
             int pos = getViewRow(v);
             if (pos == (getCount() - 1))
                 return;
@@ -146,9 +151,10 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
             }
         }
     };
+    @Nullable
     private final View.OnClickListener mRowUpListener = new View.OnClickListener() {
         @Override
-        public void onClick(View v) {
+        public void onClick(@NonNull View v) {
             int pos = getViewRow(v);
             if (pos == 0)
                 return;
@@ -329,6 +335,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
      *
      * @return The row view.
      */
+    @NonNull
     public Integer getViewRow(@NonNull View view) {
         while (view.getId() != R.id.ROW) {
             ViewParent parent = view.getParent();

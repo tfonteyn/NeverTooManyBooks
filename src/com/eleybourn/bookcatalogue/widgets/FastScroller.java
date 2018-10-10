@@ -72,6 +72,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.view.MotionEvent;
@@ -107,9 +108,12 @@ public class FastScroller {
     private static final int mLargeTextSpSize = 22; //Units=SP
     private static int mLargeTextScaledSize = 22; //Units=SP
     private final int mOverlaySize;
+    @NonNull
     private final AbsListView mList;
     private final Handler mHandler = new Handler();
+    @Nullable
     private Drawable mThumbDrawable;
+    @Nullable
     private Drawable mOverlayDrawable;
     private int mThumbH;
     private int mThumbW;
@@ -122,13 +126,17 @@ public class FastScroller {
     private int mItemCount = -1;
     private boolean mLongList;
     private Object[] mSections;
+    @Nullable
     private String mSectionTextV1;
+    @Nullable
     private String[] mSectionTextV2;
     private boolean mDrawOverlay;
     private ScrollFade mScrollFade;
     private int mState;
     private BaseAdapter mListAdapter;
+    @Nullable
     private SectionIndexer mSectionIndexerV1; // android.widget.SectionIndexer
+    @Nullable
     private SectionIndexerV2 mSectionIndexerV2; // our own
     private boolean mChangedBounds;
 
@@ -517,6 +525,7 @@ public class FastScroller {
      * than having to build a huge index at start.
      */
     public interface SectionIndexerV2 {
+        @Nullable
         String[] getSectionTextForPosition(final int position);
     }
 

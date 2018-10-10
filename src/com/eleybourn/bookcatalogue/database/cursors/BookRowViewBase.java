@@ -20,6 +20,7 @@ import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 public class BookRowViewBase {
 
     /** Associated cursor object */
+    @NonNull
     protected final Cursor mCursor;
 
     private int mIdCol = -2;

@@ -436,6 +436,7 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
         /**
          * Extract as an SQL date.
          */
+        @NonNull
         public String extract(@NonNull final Field f, @NonNull final String source) {
             try {
                 return Datum.toBoolean(source, false) ? "1" : "0";

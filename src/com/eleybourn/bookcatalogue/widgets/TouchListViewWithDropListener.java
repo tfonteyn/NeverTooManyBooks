@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.ListAdapter;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -34,7 +35,9 @@ public class TouchListViewWithDropListener<T> extends TouchListView implements T
         // before remove/insert
         final int firstPos = getFirstVisiblePosition();
 
-        ArrayAdapter<T> adapter = (ArrayAdapter)getAdapter();
+        @SuppressWarnings("unchecked")
+        ArrayAdapter<T> adapter = (ArrayAdapter) getAdapter();
+
         T item = adapter.getItem(from);
         adapter.remove(item);
         adapter.insert(item, to);

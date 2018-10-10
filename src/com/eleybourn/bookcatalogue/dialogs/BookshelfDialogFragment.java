@@ -51,8 +51,10 @@ public class BookshelfDialogFragment extends DialogFragment {
     private static final String BKEY_LIST = "list";
 
     /** Current display text for bookshelf list */
+    @Nullable
     private String mCurrText;
     /** Current encoded list (,|) of bookshelves */
+    @Nullable
     private String mCurrList;
 
     /**
@@ -64,6 +66,7 @@ public class BookshelfDialogFragment extends DialogFragment {
      *
      * @return Instance of dialog fragment
      */
+    @NonNull
     public static BookshelfDialogFragment newInstance(final long bookId,
                                                       @NonNull final String initialText,
                                                       @NonNull final String initialList) {

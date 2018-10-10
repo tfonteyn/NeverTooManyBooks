@@ -15,8 +15,11 @@ import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import java.util.List;
 
 abstract class EditStringDialog {
+    @NonNull
     protected final CatalogueDBAdapter mDb;
+    @NonNull
     protected final Runnable mOnChanged;
+    @NonNull
     private final Activity mActivity;
     private ArrayAdapter<String> mAdapter;
 

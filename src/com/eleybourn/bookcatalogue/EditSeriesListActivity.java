@@ -197,7 +197,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
                 .create();
 
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.this_book), new DialogInterface.OnClickListener() {
-            public void onClick(final DialogInterface dialog, final int which) {
+            public void onClick(@NonNull final DialogInterface dialog, final int which) {
                 from.copyFrom(to);
                 Series.pruneSeriesList(mList);
                 Utils.pruneList(mDb, mList);
@@ -207,7 +207,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
         });
 
         dialog.setButton(DialogInterface.BUTTON_NEGATIVE, allBooks, new DialogInterface.OnClickListener() {
-            public void onClick(final DialogInterface dialog, final int which) {
+            public void onClick(@NonNull final DialogInterface dialog, final int which) {
                 mDb.globalReplaceSeries(from, to);
                 from.copyFrom(to);
                 Series.pruneSeriesList(mList);

@@ -113,7 +113,7 @@
                 android:id="@android:id/empty"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/no_books"
+                android:text="@string/no_books_yet"
                 android:textSize="16sp" />
         </LinearLayout>
     </RelativeLayout>

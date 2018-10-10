@@ -61,7 +61,7 @@ public interface ReaderEntity {
 
     /** Read the data as a Serializable object */
     @NonNull
-    Serializable getSerializable() throws IOException, DeserializationException;
+    <T extends Serializable> T getSerializable() throws IOException, DeserializationException;
 
     /** Modified date from archive entry */
     @NonNull

@@ -51,6 +51,7 @@ public class BooleanListProperty extends ListProperty<Boolean> implements Boolea
         return BCPreferences.getBoolean(getPreferenceKey(), value);
     }
 
+    @NonNull
     protected BooleanListProperty setGlobalDefault(final Boolean value) {
         BCPreferences.setBoolean(getPreferenceKey(), value);
         return this;

@@ -197,6 +197,7 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
     }
 
     /** List of groups */
+    @NonNull
     private final ArrayList<BooklistGroup> mGroups;
     /** ID if string representing name of this style. Used for standard system-defined styles */
     @StringRes
@@ -727,8 +728,10 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
      */
     static class CompoundKey {
         /** Unique prefix used to represent a key in the hierarchy */
+        @NonNull
         final String prefix;
         /** List of domains in key */
+        @NonNull
         final DomainDefinition[] domains;
 
         /** Constructor */

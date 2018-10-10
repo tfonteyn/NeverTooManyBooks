@@ -25,6 +25,7 @@ public class ISFDBManager {
      *
      * Not used for 'normal' search
      */
+    @Nullable
     private static SimpleTaskQueue taskQueue = null;
 
     @NonNull

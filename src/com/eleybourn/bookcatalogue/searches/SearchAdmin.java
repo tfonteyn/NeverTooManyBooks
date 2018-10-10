@@ -93,7 +93,7 @@ public class SearchAdmin extends BookCatalogueActivity {
 
     private class TabListener implements TabLayout.OnTabSelectedListener {
         @Override
-        public void onTabSelected(final TabLayout.Tab tab) {
+        public void onTabSelected(@NonNull final TabLayout.Tab tab) {
             Holder holder = (Holder) tab.getTag();
             replaceTab(holder.fragment);
         }

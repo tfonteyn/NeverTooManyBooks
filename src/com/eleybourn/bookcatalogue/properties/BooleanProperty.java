@@ -77,14 +77,14 @@ public class BooleanProperty extends ValuePropertyWithGlobalDefault<Boolean> imp
         // Setup click handlers for view and checkbox
         h.cb.setOnClickListener(new OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(@NonNull View v) {
                 handleClick(v);
             }
         });
 
         v.setOnClickListener(new OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(@NonNull View v) {
                 handleClick(v);
             }
         });

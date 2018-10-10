@@ -21,6 +21,7 @@
 package com.eleybourn.bookcatalogue.properties;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
@@ -84,6 +85,7 @@ public class PropertyGroup {
     /** Weight of this group, for sorting */
     private final Integer weight;
     /** Name of this group (from resource ID) */
+    @Nullable
     private String mName = null;
 
     /** Constructor */
@@ -116,6 +118,7 @@ public class PropertyGroup {
     }
 
     /** Realize and return the group name */
+    @Nullable
     private String getName() {
         if (mName == null) {
             mName = BookCatalogueApp.getResourceString(nameId);
@@ -132,6 +135,7 @@ public class PropertyGroup {
         private static final long serialVersionUID = 1L;
 
         /** Add the passed group */
+        @NonNull
         @SuppressWarnings("UnusedReturnValue")
         PropertyGroup addGroup(@NonNull final PropertyGroup g) {
             if (this.containsKey(g.id) && (this.get(g.id) != g)) {
@@ -143,6 +147,7 @@ public class PropertyGroup {
         }
 
         /** Construct and add a group based on parameters */
+        @NonNull
         PropertyGroup addGroup(final int id, @StringRes final int nameId, final int weight) {
             PropertyGroup g = new PropertyGroup(id, nameId, weight);
             addGroup(g);

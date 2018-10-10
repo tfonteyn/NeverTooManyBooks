@@ -75,7 +75,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
     /**
      * Start the archiving activity
      */
-    public static void exportToArchive(Activity a) {
+    public static void exportToArchive(@NonNull Activity a) {
         Intent i = new Intent(a, BackupChooser.class);
         i.putExtra(BackupChooser.BKEY_MODE, BackupChooser.BVAL_MODE_SAVE_AS);
         a.startActivity(i);
@@ -439,7 +439,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
     /**
      * Import all data from the passed CSV file spec
      */
-    private void importFromCSV(String fileSpec) {
+    private void importFromCSV(@NonNull String fileSpec) {
         new ImportThread(getTaskManager(), fileSpec).start();
     }
 
@@ -494,7 +494,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
         dialog.setButton(AlertDialog.BUTTON_POSITIVE,
                 getString(android.R.string.ok),
                 new DialogInterface.OnClickListener() {
-                    public void onClick(final DialogInterface dialog, final int which) {
+                    public void onClick(@NonNull final DialogInterface dialog, final int which) {
                         // setup the mail message
                         String subject = "[" + getString(R.string.app_name) + "] " + getString(R.string.export_to_csv);
 
@@ -518,7 +518,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
         dialog.setButton(AlertDialog.BUTTON_NEGATIVE,
                 getString(android.R.string.cancel),
                 new DialogInterface.OnClickListener() {
-                    public void onClick(final DialogInterface dialog, final int which) {
+                    public void onClick(@NonNull final DialogInterface dialog, final int which) {
                         //do nothing
                         dialog.dismiss();
                     }

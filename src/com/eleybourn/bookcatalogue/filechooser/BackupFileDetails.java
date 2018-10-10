@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -33,7 +34,7 @@ public class BackupFileDetails implements FileDetails {
      * Need a CREATOR
      */
     public static final Parcelable.Creator<BackupFileDetails> CREATOR = new Parcelable.Creator<BackupFileDetails>() {
-        public BackupFileDetails createFromParcel(final Parcel in) {
+        public BackupFileDetails createFromParcel(@NonNull final Parcel in) {
             return new BackupFileDetails(in);
         }
 
@@ -42,8 +43,10 @@ public class BackupFileDetails implements FileDetails {
         }
     };
     /** File for this item */
+    @NonNull
     private final File mFile;
     /** The BackupInfo we use when displaying the object */
+    @Nullable
     private BackupInfo mInfo;
 
     /**
@@ -75,6 +78,7 @@ public class BackupFileDetails implements FileDetails {
         mInfo = info;
     }
 
+    @NonNull
     @Override
     public File getFile() {
         return mFile;
@@ -149,7 +153,7 @@ public class BackupFileDetails implements FileDetails {
      * Save all fields that must be persisted.
      */
     @Override
-    public void writeToParcel(final Parcel dest, final int flags) {
+    public void writeToParcel(@NonNull final Parcel dest, final int flags) {
         dest.writeSerializable(mFile);
         if (mInfo != null) {
             dest.writeByte((byte) 1);

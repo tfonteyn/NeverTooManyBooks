@@ -143,6 +143,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
      *
      * @return the section text as an array with all levels in order
      */
+    @Nullable
     @Override
     public String[] getSectionText(@NonNull final Cursor cursor) {
         Tracker.enterFunction(this, "getSectionTextForPosition", cursor);
@@ -155,7 +156,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
     /**
      * Return the *absolute* position of the passed view in the list of books.
      */
-    int getAbsolutePosition(View v) {
+    int getAbsolutePosition(@NonNull View v) {
         final BooklistHolder holder = ViewTagger.getTag(v, R.id.TAG_HOLDER);
         return holder.absolutePosition;
     }
@@ -727,6 +728,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
         static final String mFormatRes = BookCatalogueApp.getResourceString(R.string.format);
 
         /** The filled-in view holder for the book view. */
+        @NonNull
         final BookHolder mHolder;
         /** The book ID to fetch */
         final long mBookId;
@@ -963,6 +965,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
         /** the "I've read it" checkbox */
         CheckedTextView read;
         /** The current task to get book extra info for this view. Can be null if none. */
+        @Nullable
         GetBookExtrasTask extrasTask;
 
         @Override
@@ -1151,6 +1154,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
      */
     public static class MonthHolder extends BooklistHolder {
         /** Source column name */
+        @NonNull
         private final String mSource;
         /** Source column number */
         private final int mSourceCol;
@@ -1202,6 +1206,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
      */
     public static class RatingHolder extends BooklistHolder {
         /** Source column name */
+        @NonNull
         private final String mSource;
         /** Source column number */
         private final int mSourceCol;

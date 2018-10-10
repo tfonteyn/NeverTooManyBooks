@@ -20,6 +20,7 @@
 package com.eleybourn.bookcatalogue.tasks;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTask;
@@ -82,6 +83,7 @@ public class Terminator {
 
     /** Details of the runnable to run */
     private static class Event {
+        @NonNull
         public final Runnable runnable;
         final long time;
 
@@ -96,7 +98,7 @@ public class Terminator {
         private static final long serialVersionUID = 1L;
 
         @Override
-        public int compare(Event lhs, Event rhs) {
+        public int compare(@NonNull Event lhs, @NonNull Event rhs) {
             return Long.compare(lhs.time, rhs.time);
         }
     }
@@ -158,7 +160,7 @@ public class Terminator {
         }
 
         @Override
-        public void onFinish(Exception e) {
+        public void onFinish(@Nullable Exception e) {
             Logger.info("Terminator: I'll be back.");
             if (e != null) {
                 Logger.error(e);

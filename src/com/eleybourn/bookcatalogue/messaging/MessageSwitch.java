@@ -60,6 +60,7 @@ public class MessageSwitch<T, U> {
     /** Handler object for posting to main thread and for testing if running on UI thread */
     private static final Handler mHandler = new Handler();
     /** ID counter for unique sender IDs; set > 0 to allow for possible future static senders **/
+    @NonNull
     private static Long mSenderIdCounter = 1024L;
     /** List of message sources */
     @SuppressLint("UseSparseArrays")
@@ -71,6 +72,7 @@ public class MessageSwitch<T, U> {
     private final Map<Long, MessageListeners> mListeners = Collections.synchronizedMap(new HashMap<Long, MessageListeners>());
 
     /** Register a new sender and it's controller object; return the unique ID for this sender */
+    @NonNull
     public Long createSender(@NonNull final U controller) {
         MessageSenderImpl s = new MessageSenderImpl(controller);
         mSenders.put(s.getId(), s);
@@ -231,11 +233,13 @@ public class MessageSwitch<T, U> {
      * @author pjw
      */
     private interface MessageSender<U> extends AutoCloseable {
+        @NonNull
         Long getId();
 
         @Override
         void close();
 
+        @NonNull
         U getController();
     }
 
@@ -267,8 +271,10 @@ public class MessageSwitch<T, U> {
         /** Weak refs to all listeners */
         private final List<WeakReference<T>> mList = new ArrayList<>();
         /** Last message sent */
+        @Nullable
         private MessageRoutingSlip mLastMessage = null;
 
+        @Nullable
         MessageRoutingSlip getLastMessage() {
             return mLastMessage;
         }
@@ -345,8 +351,10 @@ public class MessageSwitch<T, U> {
     /** RoutingSlip to deliver a Message object to all associated listeners */
     private class MessageRoutingSlip implements RoutingSlip {
         /** Destination queue (sender ID) */
+        @NonNull
         final Long destination;
         /** Message to deliver */
+        @NonNull
         final Message<T> message;
 
         /** Constructor */
@@ -396,6 +404,7 @@ public class MessageSwitch<T, U> {
     /** Implementation of Message sender object */
     private class MessageSenderImpl implements MessageSender<U> {
         private final Long mId = ++mSenderIdCounter;
+        @NonNull
         private final U mController;
 
         /** Constructor */
@@ -403,11 +412,13 @@ public class MessageSwitch<T, U> {
             mController = controller;
         }
 
+        @NonNull
         @Override
         public Long getId() {
             return mId;
         }
 
+        @NonNull
         @Override
         public U getController() {
             return mController;

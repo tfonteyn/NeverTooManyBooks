@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue.taskqueue;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.taskqueue.DBAdapter.ScheduledTask;
@@ -39,13 +40,16 @@ public class Queue extends Thread {
     /** Application context. Needed for DB access */
     private final Context mApplicationContext;
     /** QueueManager that owns this Queue object */
+    @NonNull
     private final QueueManager mManager;
     /** Name of this Queue */
+    @NonNull
     private final String mName;
     /** DBAdapter used internally */
     private DBAdapter mDb;
 
     /** Currently running task */
+    @Nullable
     private WeakReference<Task> mTask = null;
 
     /** Options to indicate process is terminating */
@@ -74,6 +78,7 @@ public class Queue extends Thread {
     /**
      * Return the bare queue name, as opposed to the thread name
      */
+    @NonNull
     String getQueueName() {
         return mName;
     }
@@ -197,6 +202,7 @@ public class Queue extends Thread {
         mManager.notifyTaskChange(task, message);
     }
 
+    @Nullable
     public Task getTask() {
         if (mTask == null) {
             return null;

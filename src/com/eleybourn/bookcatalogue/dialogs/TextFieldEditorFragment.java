@@ -57,7 +57,8 @@ public class TextFieldEditorFragment extends DialogFragment {
 	 *
 	 * @return			Created fragment
 	 */
-	public static TextFieldEditorFragment newInstance(final int dialogId, final int titleId, @Nullable final String text) {
+	@NonNull
+    public static TextFieldEditorFragment newInstance(final int dialogId, final int titleId, @Nullable final String text) {
     	TextFieldEditorFragment frag = new TextFieldEditorFragment();
         Bundle args = new Bundle();
         args.putString(BKEY_TEXT, text);

@@ -48,6 +48,7 @@ abstract public class ManagedTask extends Thread {
 
     private static final TaskSwitch mMessageSwitch = new TaskSwitch();
     /** The manager who we will use for progress etc, and who we will inform about our state. */
+    @NonNull
     protected final TaskManager mManager;
     private final long mMessageSenderId;
     /** Options indicating the main onRun method has completed. Set in call do doFinish() in the UI thread. */
@@ -68,6 +69,7 @@ abstract public class ManagedTask extends Thread {
                 ManagedTask.this.cancelTask();
             }
 
+            @NonNull
             @Override
             public ManagedTask getTask() {
                 return ManagedTask.this;
@@ -81,6 +83,7 @@ abstract public class ManagedTask extends Thread {
         mManager.addTask(this);
     }
 
+    @NonNull
     public static TaskSwitch getMessageSwitch() {
         return mMessageSwitch;
     }
@@ -109,6 +112,7 @@ abstract public class ManagedTask extends Thread {
      *
      * @return Result
      */
+    @NonNull
     protected String getString(@StringRes final int id) {
         return mManager.getContext().getString(id);
     }
@@ -207,6 +211,7 @@ abstract public class ManagedTask extends Thread {
     public interface TaskController {
         void requestAbort();
 
+        @NonNull
         ManagedTask getTask();
     }
 

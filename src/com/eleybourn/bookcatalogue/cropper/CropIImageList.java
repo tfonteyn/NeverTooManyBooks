@@ -19,6 +19,7 @@ package com.eleybourn.bookcatalogue.cropper;
 import android.content.ContentResolver;
 import android.net.Uri;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -47,7 +48,8 @@ import java.util.HashMap;
  * The interface of all image collections used in gallery.
  */
 interface CropIImageList extends Parcelable {
-	HashMap<String, String> getBucketIds();
+	@NonNull
+    HashMap<String, String> getBucketIds();
 
 	void deactivate();
 
@@ -69,6 +71,7 @@ interface CropIImageList extends Parcelable {
 	 * @param index		the position
 	 * @return the image at the ith position
 	 */
+    @NonNull
     CropIImage getImageAt(int index);
 
 	/**
@@ -76,6 +79,7 @@ interface CropIImageList extends Parcelable {
 	 * 
 	 * @return the image with a particular Uri. null if not found.
 	 */
+    @NonNull
     CropIImage getImageForUri(Uri uri);
 
 	/**

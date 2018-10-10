@@ -30,7 +30,6 @@ import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -39,6 +38,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
+ * Non-error messages easier to find in the logfile, they always start with either:
+ * DEBUG:
+ * INFO:
+ *
  * error methods will always print a stacktrace (even if you do not pass in an exception)
  */
 public class Logger {
@@ -48,11 +51,19 @@ public class Logger {
     private Logger() {
     }
 
-    public static void info(final String message) {
-        log("INFO: " + message);
-    }
+    /**
+     * Should really only be used from within a code block
+     *
+     * if (BuildConfig.DEBUG) {
+     * Logger.debug("blah");
+     * }
+     */
     public static void debug(final String message) {
-        log("DEBUG: " + message);
+        error("DEBUG: " + message);
+    }
+
+    public static void info(final String message) {
+        error("INFO: " + message);
     }
 
     public static void error(@NonNull final String message) {
@@ -69,18 +80,18 @@ public class Logger {
 
     /**
      * Write the exception stacktrace to the error log file
+     * Don't pass error.getMessage(), that one is logged automatically
      *
      * @param e       The exception to log
-     * @param message extra message (don't pass error.getMessage(), that one is logged automatically)
+     * @param message extra message
      */
     public static void error(@NonNull final Exception e, @NonNull final String message) {
         @SuppressLint("SimpleDateFormat")
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String now = dateFormat.format(new Date());
 
-        StringWriter stringWriter = new StringWriter();
-        PrintWriter pw = new PrintWriter(stringWriter);
-
+        StringWriter stacktrace = new StringWriter();
+        PrintWriter pw = new PrintWriter(stacktrace);
         e.printStackTrace(pw);
 
         String exMsg = e.getMessage();
@@ -88,22 +99,23 @@ public class Logger {
                 (exMsg != null ? exMsg + "\n" : "") +
                 "In Phone " + Build.MODEL + " (" + Build.VERSION.SDK_INT + ") \n" +
                 message + "\n" +
-                stringWriter; // contains the exception
+                stacktrace;
 
-        log(error);
+        // FIXME Remove Log.error! Replace with ACRA?
+        Log.e(TAG, message);
+        //ACRA.getErrorReporter().handleException(e);
 
+        writeToErrorLog(error);
         pw.close();
     }
 
-    private static void log(final String message) {
+    private static void writeToErrorLog(@NonNull final String message) {
         try {
-        // FIXME Remove Log.error! Replace with ACRA?
-        Log.e(TAG, message);
-        BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(StorageUtils.getErrorLog()), "utf8"), 8192);
-        out.write(message);
-        out.close();
+            BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(StorageUtils.getErrorLog()), "utf8"), 8192);
+            out.write(message);
+            out.close();
         } catch (Exception ignored) {
-            // do nothing - we can't log an error in the error logger. (and we don't want to FC the app)
+            // do nothing - we can't log an error in the error logger. (and we don't want to CF the app)
         }
     }
 
@@ -125,7 +137,7 @@ public class Logger {
             out.write("");
             out.close();
         } catch (Exception ignore) {
-            // do nothing - we can't log an error in the error logger. (and we don't want to FC the app)
+            // do nothing - we can't log an error in the error logger. (and we don't want to CF the app)
         }
     }
 }

@@ -11,10 +11,13 @@ import com.eleybourn.bookcatalogue.database.DbSync;
  */
 public class IndexDefinition {
     /** Full name of index */
+    @NonNull
     private final String mName;
     /** Table to which index applies */
+    @NonNull
     private final TableDefinition mTable;
     /** Domains in index */
+    @NonNull
     private final DomainDefinition[] mDomains;
     /** Options indicating index is unique */
     private final boolean mIsUnique;

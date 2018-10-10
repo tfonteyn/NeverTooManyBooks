@@ -231,7 +231,7 @@ public class GoodreadsUtils {
                             dialog.setButton(DialogInterface.BUTTON_POSITIVE,
                                     context.getString(R.string.send_updated),
                                     new DialogInterface.OnClickListener() {
-                                        public void onClick(final DialogInterface dialog, final int which) {
+                                        public void onClick(@NonNull final DialogInterface dialog, final int which) {
                                             dialog.dismiss();
                                             GoodreadsUtils.sendToGoodreads(context, true);
                                         }
@@ -240,7 +240,7 @@ public class GoodreadsUtils {
                             dialog.setButton(DialogInterface.BUTTON_NEUTRAL,
                                     context.getString(R.string.send_all),
                                     new DialogInterface.OnClickListener() {
-                                        public void onClick(final DialogInterface dialog, final int which) {
+                                        public void onClick(@NonNull final DialogInterface dialog, final int which) {
                                             dialog.dismiss();
                                             GoodreadsUtils.sendToGoodreads(context, false);
                                         }
@@ -249,7 +249,7 @@ public class GoodreadsUtils {
                             dialog.setButton(DialogInterface.BUTTON_NEGATIVE,
                                     context.getString(android.R.string.cancel),
                                     new DialogInterface.OnClickListener() {
-                                        public void onClick(final DialogInterface dialog, final int which) {
+                                        public void onClick(@NonNull final DialogInterface dialog, final int which) {
                                             dialog.dismiss();
                                         }
                                     });

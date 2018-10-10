@@ -60,6 +60,7 @@ public interface MultiTypeListHandler {
      *
      * @return Filled-in view to use.
      */
+    @NonNull
     View getView(@NonNull final Cursor cursor,
                  @NonNull final LayoutInflater inflater,
                  @Nullable final View convertView,

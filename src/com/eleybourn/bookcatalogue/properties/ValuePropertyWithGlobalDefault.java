@@ -33,10 +33,13 @@ import android.support.annotation.StringRes;
  */
 public abstract class ValuePropertyWithGlobalDefault<T> extends Property {
     /** Underlying value */
+    @Nullable
     private T mValue = null;
     /** Key in preferences for default value */
+    @Nullable
     private String mDefaultPrefKey = null;
     /** Default value, for case when not in preferences, or no preferences given */
+    @Nullable
     private T mDefaultValue = null;
     /** Indicates that this instance is to only use the global default */
     private boolean mIsGlobal = false;
@@ -96,6 +99,7 @@ public abstract class ValuePropertyWithGlobalDefault<T> extends Property {
     protected abstract T getGlobalDefault();
 
     /** Children must implement accessor for global default */
+    @Nullable
     @SuppressWarnings("UnusedReturnValue")
     protected abstract ValuePropertyWithGlobalDefault<T> setGlobalDefault(@Nullable final T value);
 

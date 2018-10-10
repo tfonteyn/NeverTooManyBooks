@@ -43,19 +43,24 @@ import java.util.Map;
  */
 public class XmlFilter {
     /** The tag for this specific filter */
+    @NonNull
     private final String mTagName;
     /** A HashMap to ensure that there are no more than one sub-filter per tag at a given level */
     private final Map<String, XmlFilter> mSubFilterHash = new HashMap<>();
     /** List of sub-filters for this filter */
     private final ArrayList<XmlFilter> mSubFilters = new ArrayList<>();
     /** Action to perform, if any, when the associated tag is started */
+    @Nullable
     private XmlHandler mStartAction = null;
     /** Optional parameter put in context before action is called */
+    @Nullable
     private Object mStartArg = null;
 
     /** Action to perform, if any, when the associated tag is finished */
+    @Nullable
     private XmlHandler mEndAction = null;
     /** Optional parameter put in context before action is called */
+    @Nullable
     private Object mEndArg = null;
 
     /**
@@ -143,6 +148,7 @@ public class XmlFilter {
      * Find a sub-filter for the passed context.
      * Currently just used local_name from the context.
      */
+    @Nullable
     XmlFilter getSubFilter(@NonNull final ElementContext context) {
         return getSubFilter(context.localName);
     }
@@ -187,6 +193,7 @@ public class XmlFilter {
     /**
      * Get the tag that this filter will match
      */
+    @NonNull
     private String getTagName() {
         return mTagName;
     }
@@ -267,13 +274,19 @@ public class XmlFilter {
      * @author Philip Warner
      */
     public static class ElementContext {
+        @Nullable
         public final String uri;
+        @Nullable
         public final String localName;
+        @Nullable
         public final String name;
+        @Nullable
         public final Attributes attributes;
+        @Nullable
         public final String preText;
         public String body;
         public XmlFilter filter;
+        @Nullable
         public Object userArg;
 
         public ElementContext() {

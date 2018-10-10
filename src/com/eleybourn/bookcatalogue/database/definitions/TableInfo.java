@@ -33,7 +33,9 @@ public class TableInfo implements Iterable<TableInfo.ColumnInfo> {
     public static final String TYPE_FLOAT = "float";
 
 
+    @NonNull
     private final Map<String, ColumnInfo> mColumns;
+    @NonNull
     private final DbSync.SynchronizedDb mSyncedDb;
 
     public TableInfo(@NonNull final DbSync.SynchronizedDb db, @NonNull final String tableName) {

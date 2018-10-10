@@ -93,7 +93,9 @@ public class LibraryThingManager {
 //	private static final String ITEM = "item";
 
     // Words in XML
+    @NonNull
     public static String ID = "id";
+    @NonNull
     private static Long mLastRequestTime = 0L;
     /** App context (for prefs) */
     private final Context mAppContext;
@@ -169,7 +171,7 @@ public class LibraryThingManager {
             SAXParser parser = factory.newSAXParser();
             parser.parse(Utils.getInputStreamWithTerminator(url), entryHandler);
             // Don't bother catching general exceptions, they will be caught by the caller.
-        } catch (ParserConfigurationException | IOException | SAXException e) {
+        } catch (@NonNull ParserConfigurationException | IOException | SAXException e) {
             Logger.error(e);
         }
 
@@ -508,7 +510,7 @@ public class LibraryThingManager {
             parser.parse(Utils.getInputStreamWithTerminator(url), entryHandler);
 
             // Don't bother catching general exceptions, they will be caught by the caller.
-        } catch (ParserConfigurationException | SAXException | java.io.IOException e) {
+        } catch (@NonNull ParserConfigurationException | SAXException | java.io.IOException e) {
             Logger.error(e);
         }
 
@@ -620,6 +622,7 @@ public class LibraryThingManager {
      */
     static private class SearchLibraryThingEditionHandler extends DefaultHandler {
         private final StringBuilder mBuilder = new StringBuilder();
+        @NonNull
         private final List<String> mEditions;
 
         SearchLibraryThingEditionHandler(@NonNull final List<String> editions) {
@@ -633,7 +636,7 @@ public class LibraryThingManager {
         }
 
         @Override
-        public void endElement(final String uri, final String localName, final String name) throws SAXException {
+        public void endElement(final String uri, @NonNull final String localName, final String name) throws SAXException {
             super.endElement(uri, localName, name);
 
             if (localName.equalsIgnoreCase(ISBN)) {
@@ -657,9 +660,11 @@ public class LibraryThingManager {
      * @author Philip Warner
      */
     private class SearchLibraryThingEntryHandler extends DefaultHandler {
+        @NonNull
         private final Bundle mBookData;
         private final StringBuilder mBuilder = new StringBuilder();
 
+        @NonNull
         private FieldTypes mFieldType = FieldTypes.OTHER;
 
         SearchLibraryThingEntryHandler(@NonNull final Bundle bookData) {
@@ -673,7 +678,7 @@ public class LibraryThingManager {
         }
 
         @Override
-        public void startElement(final String uri, final String localName, final String name, final Attributes attributes) throws SAXException {
+        public void startElement(final String uri, @NonNull final String localName, final String name, @NonNull final Attributes attributes) throws SAXException {
             super.startElement(uri, localName, name, attributes);
 
             // reset the string. See note in endElement() for a discussion.
@@ -708,7 +713,7 @@ public class LibraryThingManager {
         }
 
         @Override
-        public void endElement(final String uri, final String localName, final String name) throws SAXException {
+        public void endElement(final String uri, @NonNull final String localName, final String name) throws SAXException {
             super.endElement(uri, localName, name);
 
             if (localName.equalsIgnoreCase(FIELD)) {

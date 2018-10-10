@@ -14,13 +14,13 @@
     <string name="pages">Страницы</string>
     <string name="confirm_add">Добавить книгу</string>
     <string name="confirm_update">Обновить</string>
-    <string name="no_books">На этой полке нет книг. Пожалуйста, добавьте книги, используя меню в нижней части этого экрана.</string>
+    <string name="no_books_yet">На этой полке нет книг. Пожалуйста, добавьте книги, используя меню в нижней части этого экрана.</string>
     <string name="menu_expand_all">Развернуть всё</string>
     <string name="menu_sort_by">Отсортировать по</string>
     <string name="menu_collapse_all">Свернуть всё</string>
     <string name="search">Поиск</string>
     <string name="confirm_save">Сохранить книгу</string>
-    <string name="nobookshelves">Вы не создали ни одной полки. Пожалуйста, добавьте полку, используя меню в нижней части этого экрана.</string>
+    <string name="no_bookshelves_yet">Вы не создали ни одной полки. Пожалуйста, добавьте полку, используя меню в нижней части этого экрана.</string>
     <string name="menu_insert_bs">Создать полку</string>
     <string name="confirm_add_bs">Добавить полку</string>
     <string name="menu_bookshelf">Полки</string>
@@ -130,8 +130,8 @@
     <string name="columns_are_blank">В строке %2$d столбцы %1$s пусты</string>
     <string name="save">Сохранить</string>
     <string name="add">Добавить</string>
-    <string name="noauthors">Не указаны авторы книги. Пожалуйста, добавьте автора(ов), используя текстовую область и кнопку в верхней части этого экрана.</string>
-    <string name="noseries">Не указана серия книги. Вы можете добавить серию используя текстовую область в верхней части этого экрана.</string>
+    <string name="no_authors_yet">Не указаны авторы книги. Пожалуйста, добавьте автора(ов), используя текстовую область и кнопку в верхней части этого экрана.</string>
+    <string name="no_series_yet">Не указана серия книги. Вы можете добавить серию используя текстовую область в верхней части этого экрана.</string>
     <string name="cover_not_set">Обложка не установлена</string>
     <string name="cover_corrupt">Обложка испорчена</string>
     <string name="cover_detail">Детальная информация об обложке</string>

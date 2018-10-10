@@ -96,16 +96,20 @@ public class BookDetailsActivity extends BookCatalogueActivity
             EditBookAnthologyFragment.class
     };
     private final CatalogueDBAdapter mDb = new CatalogueDBAdapter(this);
+    @Nullable
     private FlattenedBooklist mList = null;
+    @Nullable
     private GestureDetector mGestureDetector;
     private boolean mIsDirtyFlg = false;
     private long mRowId;
+    @Nullable
     private Book mBook;
     private boolean mIsReadOnly;
     /**
      * Listener to handle 'fling' events; we could handle others but need to be
      * careful about possible clicks and scrolling.
      */
+    @Nullable
     private final GestureDetector.SimpleOnGestureListener mGestureListener = new GestureDetector.SimpleOnGestureListener() {
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
@@ -134,6 +138,7 @@ public class BookDetailsActivity extends BookCatalogueActivity
     };
 
     private TabLayout mTabLayout;
+    @Nullable
     private TabLayout.Tab mAnthologyTab;
 
     /** Lists in database so far, we cache them for performance */
@@ -302,7 +307,7 @@ public class BookDetailsActivity extends BookCatalogueActivity
                 mTabLayout.addTab(tab);
                 mAllTabs.add(tab);
             }
-        } catch (InstantiationException | IllegalAccessException e) {
+        } catch (@NonNull InstantiationException | IllegalAccessException e) {
             throw new IllegalStateException("Creating BookDetailsActivity tabs failed?");
         }
 
@@ -501,7 +506,7 @@ public class BookDetailsActivity extends BookCatalogueActivity
     }
 
     @Override
-    protected void onSaveInstanceState(final Bundle outState) {
+    protected void onSaveInstanceState(@NonNull final Bundle outState) {
         Tracker.enterOnSaveInstanceState(this);
         super.onSaveInstanceState(outState);
 
@@ -671,6 +676,7 @@ public class BookDetailsActivity extends BookCatalogueActivity
         mIsDirtyFlg = dirty;
     }
 
+    @Nullable
     @Override
     public Book getBook() {
         return mBook;
@@ -788,7 +794,7 @@ public class BookDetailsActivity extends BookCatalogueActivity
                     mAnthologyTab = mTabLayout.newTab()
                             .setText(R.string.anthology)
                             .setTag(holder);
-                } catch (InstantiationException | IllegalAccessException ignore) {
+                } catch (@NonNull InstantiationException | IllegalAccessException ignore) {
                 }
             }
             mTabLayout.addTab(mAnthologyTab);
@@ -915,7 +921,7 @@ public class BookDetailsActivity extends BookCatalogueActivity
 
     private class TabListener implements TabLayout.OnTabSelectedListener {
         @Override
-        public void onTabSelected(final TabLayout.Tab tab) {
+        public void onTabSelected(@NonNull final TabLayout.Tab tab) {
             Holder holder = (Holder) tab.getTag();
             replaceTab(holder.fragment);
         }

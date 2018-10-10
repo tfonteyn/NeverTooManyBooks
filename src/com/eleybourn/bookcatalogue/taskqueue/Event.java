@@ -43,6 +43,7 @@ import java.io.Serializable;
 public abstract class Event implements Serializable, BindableItemCursorAdapter.BindableItem {
     private static final long serialVersionUID = 5209097408979831308L;
 
+    @NonNull
     private final String mDescription;
     private long mId = 0;
 

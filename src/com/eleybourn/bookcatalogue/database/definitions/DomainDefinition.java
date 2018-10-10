@@ -8,11 +8,15 @@ import android.support.annotation.NonNull;
  * @author Philip Warner
  */
 public class DomainDefinition {
+    @NonNull
     public final String name;
 
+    @NonNull
     private final String type;
+    @NonNull
     private final String extra;
 
+    @NonNull
     private final String constraint;
 
     public DomainDefinition(@NonNull final String name,

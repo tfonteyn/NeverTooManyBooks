@@ -64,6 +64,7 @@ public class TaskListActivity extends BindableItemListActivity {
             TaskListActivity.this.refreshData();
         }
     };
+    @Nullable
     private CatalogueDBAdapter mDb = null;
     private TasksCursor mCursor;
 

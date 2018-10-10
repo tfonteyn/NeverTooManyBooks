@@ -14,13 +14,13 @@
     <string name="pages">Páginas</string>
     <string name="confirm_add">Añadir libro</string>
     <string name="confirm_update">Actualizar</string>
-    <string name="no_books">No hay libros en esta biblioteca. Añada alguno utilizando el menú al pie de esta pantalla.</string>
+    <string name="no_books_yet">No hay libros en esta biblioteca. Añada alguno utilizando el menú al pie de esta pantalla.</string>
     <string name="menu_expand_all">Expandir todo</string>
     <string name="menu_sort_by">Ordenar por</string>
     <string name="menu_collapse_all">Comprimir todo</string>
     <string name="search">Buscar</string>
     <string name="confirm_save">Guardar libro</string>
-    <string name="nobookshelves">Todavía no has creado ninguna biblioteca. Cree una utilizando el menú al pie de esta pantalla.</string>
+    <string name="no_bookshelves_yet">Todavía no has creado ninguna biblioteca. Cree una utilizando el menú al pie de esta pantalla.</string>
     <string name="menu_insert_bs">Crear biblioteca</string>
     <string name="confirm_add_bs">Añadir biblioteca</string>
     <string name="menu_bookshelf">Gestionar bibliotecas</string>
@@ -131,8 +131,8 @@
     <string name="columns_are_blank">Las columnas %1$s tienen en blanco la fila %2$d</string>
     <string name="save">Guardar</string>
     <string name="add">Añadir</string>
-    <string name="noauthors">El libro no tiene autor. Añada alguno utilizando el campo de texto y el botón de la parte superior de esta pantalla.</string>
-    <string name="noseries">El libro no tiene serie. Puede especificar una utilizando el campo de texto y el botón de la parte superior de esta pantalla.</string>
+    <string name="no_authors_yet">El libro no tiene autor. Añada alguno utilizando el campo de texto y el botón de la parte superior de esta pantalla.</string>
+    <string name="no_series_yet">El libro no tiene serie. Puede especificar una utilizando el campo de texto y el botón de la parte superior de esta pantalla.</string>
 
     <string name="cover_not_set">No hay imagen de portada</string>
     <string name="cover_corrupt">La imagen de portada está dañada</string>

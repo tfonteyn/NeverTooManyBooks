@@ -25,6 +25,7 @@ import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
@@ -77,7 +78,9 @@ public class TouchListView extends ListView {
     private static final int SLIDE_LEFT = 2;
     private final Rect mTempRect = new Rect();
     private final int mTouchSlop;
+    @Nullable
     private ImageView mDragView;
+    @Nullable
     private WindowManager mWindowManager;
     private WindowManager.LayoutParams mWindowParams;
     /** which item is being dragged */
@@ -94,8 +97,10 @@ public class TouchListView extends ListView {
     private int mUpperBound;
     private int mLowerBound;
     private int mHeight;
+    @Nullable
     private GestureDetector mGestureDetector;
     private int mRemoveMode = -1;
+    @Nullable
     private Bitmap mDragBitmap;
     private int mItemHeightNormal = -1;
     //private int mItemHeightExpanded=-1;
@@ -105,6 +110,7 @@ public class TouchListView extends ListView {
     /** Set to true at start of a new drag operation */
     private boolean mWasFirstExpansion = false;
 
+    @Nullable
     private Integer mSavedHeight = null;
 
     public TouchListView(@NonNull final Context context, @NonNull final AttributeSet attrs) {
@@ -154,12 +160,12 @@ public class TouchListView extends ListView {
     }
 
     @Override
-    public boolean onInterceptTouchEvent(MotionEvent ev) {
+    public boolean onInterceptTouchEvent(@NonNull MotionEvent ev) {
         if (mRemoveListener != null && mGestureDetector == null) {
             if (mRemoveMode == FLING) {
                 mGestureDetector = new GestureDetector(getContext(), new SimpleOnGestureListener() {
                     @Override
-                    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
+                    public boolean onFling(MotionEvent e1, @NonNull MotionEvent e2, float velocityX,
                                            float velocityY) {
                         if (mDragView != null) {
                             if (velocityX > 1000) {
@@ -403,7 +409,7 @@ public class TouchListView extends ListView {
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent ev) {
+    public boolean onTouchEvent(@NonNull MotionEvent ev) {
         if (mGestureDetector != null) {
             mGestureDetector.onTouchEvent(ev);
         }

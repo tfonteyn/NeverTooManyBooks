@@ -118,6 +118,7 @@ public class Book extends DataManager {
     }
 
     //TODO: can we simplify this ? not just a 'string' but structured data with proper ID's
+    @NonNull
     public String getBookshelfListAsEncodedString() {
         return getString(BOOKSHELF_LIST);
     }
@@ -192,17 +193,6 @@ public class Book extends DataManager {
     }
 
     /**
-     * For better control on the actual type of the value,
-     * don't use this on the Book level. Better to add a specific method.
-     * @see #getAuthorList as an example.
-     */
-    @Override
-    @Deprecated
-    protected Object getSerializable(@NonNull final String key) {
-        throw new IllegalStateException();
-    }
-
-    /**
      * Special Accessor
      */
     public void setAuthorList(@NonNull final ArrayList<Author> list) {
@@ -271,7 +261,7 @@ public class Book extends DataManager {
      */
     @NonNull
     public ArrayList<Author> getAuthorList() {
-        ArrayList<Author> list = (ArrayList<Author>) super.getSerializable(UniqueId.BKEY_AUTHOR_ARRAY);
+        ArrayList<Author> list = super.getSerializable(UniqueId.BKEY_AUTHOR_ARRAY);
         return list != null ? list : new ArrayList<Author>();
     }
 
@@ -282,7 +272,7 @@ public class Book extends DataManager {
      */
     @NonNull
     public ArrayList<Series> getSeriesList() {
-        ArrayList<Series> list = (ArrayList<Series>) super.getSerializable(UniqueId.BKEY_SERIES_ARRAY);
+        ArrayList<Series> list = super.getSerializable(UniqueId.BKEY_SERIES_ARRAY);
         return list != null ? list : new ArrayList<Series>();
     }
 
@@ -293,7 +283,7 @@ public class Book extends DataManager {
      */
     @NonNull
     public ArrayList<AnthologyTitle> getContentList() {
-        ArrayList<AnthologyTitle> list = (ArrayList<AnthologyTitle>) super.getSerializable(UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY);
+        ArrayList<AnthologyTitle> list = super.getSerializable(UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY);
         return list != null ? list : new ArrayList<AnthologyTitle>();
     }
 
@@ -358,6 +348,7 @@ public class Book extends DataManager {
          * We also store it in the tag field so that it is automatically serialized with the
          * activity. */
         addAccessor(IS_ANTHOLOGY, new DataAccessor() {
+            @NonNull
             @Override
             public Object get(@NonNull final DataManager data, @NonNull final Datum datum, @NonNull final Bundle rawData) {
                 Integer mask = data.getInt(UniqueId.KEY_ANTHOLOGY_MASK);
@@ -386,6 +377,7 @@ public class Book extends DataManager {
 
         /* Make a csv formatted list of bookshelves */
         addAccessor(BOOKSHELF_TEXT, new DataAccessor() {
+            @NonNull
             @Override
             public Object get(@NonNull final DataManager data, @NonNull final Datum datum, @NonNull final Bundle rawData) {
                 return getBookshelfDisplayText();

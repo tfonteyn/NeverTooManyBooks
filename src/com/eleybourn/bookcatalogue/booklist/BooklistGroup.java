@@ -135,6 +135,7 @@ public class BooklistGroup implements Serializable {
     /**
      * Return a list of all defined row kinds.
      */
+    @NonNull
     static int[] getRowKinds() {
         int[] kinds = new int[mRowKindNames.size()];
         int pos = 0;
@@ -281,7 +282,7 @@ public class BooklistGroup implements Serializable {
          */
         @Override
         @NonNull
-        public V put(final K key, final V value) {
+        public V put(@NonNull final K key, @NonNull final V value) {
             return add(key, value);
         }
     }

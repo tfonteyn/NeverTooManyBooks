@@ -29,6 +29,7 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.cursors.BooksCursor;
+import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.AnthologyTitle;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
@@ -285,7 +286,7 @@ public class CsvExporter implements Exporter {
      * // V83: Giants In The Sky (1952) * Blish, James|We, The Marauders (1958) * Silverberg, Robert|
      */
     @NonNull
-    private String getAnthologyTitlesForExport(final CatalogueDBAdapter db, final long bookId, final BookRowView rowView) {
+    private String getAnthologyTitlesForExport(@NonNull final CatalogueDBAdapter db, final long bookId, final BookRowView rowView) {
         StringBuilder anthology_titles = new StringBuilder();
         if (rowView.getAnthologyMask() != 0) {
             try (Cursor titles = db.fetchAnthologyTitlesByBookId(bookId)) {

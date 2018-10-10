@@ -73,6 +73,7 @@ class ImportAllTask extends GenericTask {
      */
     private static final int BOOKS_PER_PAGE = 50;
     /** Date before which updates are irrelevant. Can be null, which implies all dates are included. */
+    @Nullable
     private final String mUpdatesAfter;
     /** Options indicating this job is a sync job: on completion, it will start an export. */
     private final boolean mIsSync;
@@ -83,8 +84,10 @@ class ImportAllTask extends GenericTask {
     /** Options indicating this is the first time *this* object instance has been called */
     private transient boolean mFirstCall = true;
     /** Date at which this job started downloading first page */
+    @Nullable
     private Date mStartDate = null;
     /** Lookup table of bookshelves defined currently and their goodreads canonical names */
+    @Nullable
     private transient Map<String, String> mBookshelfLookup = null;
 
     /**
@@ -273,6 +276,7 @@ class ImportAllTask extends GenericTask {
      *
      * @return Local name, or goodreads name if no match
      */
+    @Nullable
     private String translateBookshelf(@NonNull final CatalogueDBAdapter db, @Nullable final String grShelfName) {
         if (grShelfName == null) {
             return null;
@@ -290,6 +294,7 @@ class ImportAllTask extends GenericTask {
     /**
      * Extract a list of ISBNs from the bundle
      */
+    @NonNull
     private List<String> extractIsbnList(@NonNull final Bundle review) {
         List<String> list = new ArrayList<>();
         ArrayUtils.addIfHasValue(list, review.getString(ListReviewsFieldNames.ISBN13));
@@ -343,6 +348,7 @@ class ImportAllTask extends GenericTask {
      * Build a book bundle based on the goodreads 'review' data. Some data is just copied
      * while other data is processed (eg. dates) and other are combined (authors & series).
      */
+    @NonNull
     private Book buildBundle(@NonNull final CatalogueDBAdapter db, @Nullable final BookRowView bookRowView, @NonNull final Bundle review) {
         Book book = new Book();
 

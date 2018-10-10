@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.debug.Logger;
 
 /**
  * Base class for all (most) Activity's
@@ -25,6 +26,7 @@ abstract public class BookCatalogueActivity extends AppCompatActivity
 
     /** The side/navigation panel */
     private DrawerLayout mDrawerLayout;
+    @Nullable
     private NavigationView mNavigationView;
 
     /** when a locale or theme is changed, a restart of the activity is needed */
@@ -101,7 +103,7 @@ abstract public class BookCatalogueActivity extends AppCompatActivity
     }
 
     @Override
-    public boolean onOptionsItemSelected(final MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         int itemId = item.getItemId();
         switch (itemId) {
             // Default handler for home icon

@@ -121,6 +121,7 @@ class SearchGoogleBooksEntryHandler extends DefaultHandler {
     private static final String GENRE = "subject";
     private static final String DESCRIPTION = "description";
     private static boolean mFetchThumbnail;
+    @NonNull
     private final Bundle mValues;
     private StringBuilder builder;
 

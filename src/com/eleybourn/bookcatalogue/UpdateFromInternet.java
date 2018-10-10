@@ -56,6 +56,7 @@ public class UpdateFromInternet extends ActivityWithTasks {
             finish();
         }
     };
+    @Nullable
     private SharedPreferences mPrefs = null;
 
     @Override

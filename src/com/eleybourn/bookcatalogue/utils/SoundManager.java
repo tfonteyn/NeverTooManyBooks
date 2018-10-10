@@ -57,7 +57,7 @@ public class SoundManager {
         // When the beep has finished playing, rewind to queue up another one.
         player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
-            public void onCompletion(MediaPlayer player) {
+            public void onCompletion(@NonNull final MediaPlayer player) {
                 player.release();
             }
         });

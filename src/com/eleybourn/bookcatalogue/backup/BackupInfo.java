@@ -66,6 +66,7 @@ public class BackupInfo {
     /** Standard INFO item */
     private static final String INFO_HAS_BOOKLIST_STYLES = "HasBooklistStyles";
     /** Bundle retrieved from the archive for this instance */
+    @NonNull
     private final Bundle mBundle;
 
 

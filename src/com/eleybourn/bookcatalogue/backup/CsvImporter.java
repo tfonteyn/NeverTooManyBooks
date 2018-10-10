@@ -62,7 +62,9 @@ public class CsvImporter implements Importer {
     private final static String STRINGED_ID = UniqueId.KEY_ID;
 
     private final CatalogueDBAdapter mDb = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
+    @NonNull
     private Integer mCreated = 0;
+    @NonNull
     private Integer mUpdated = 0;
 
     @SuppressWarnings("UnusedReturnValue")
@@ -256,9 +258,9 @@ public class CsvImporter implements Importer {
      */
     private long importBook(long bookId,
                             final boolean hasNumericId,
-                            final String uuidVal,
+                            @NonNull final String uuidVal,
                             final boolean hasUuid,
-                            final Book book,
+                            @NonNull final Book book,
                             final boolean updateOnlyIfNewer) throws Exception {
         if (!hasUuid && !hasNumericId) {
             // Always import empty IDs...even if they are duplicates.
@@ -445,6 +447,7 @@ public class CsvImporter implements Importer {
     // versions. At some stage in the future it would be good to allow full CSV export
     // and import to allow for escape('\') chars so that cr/lf can be preserved.
     //
+    @NonNull
     private String[] returnRow(@NonNull final String row, final boolean fullEscaping) {
         // Need to handle double quotes etc
 

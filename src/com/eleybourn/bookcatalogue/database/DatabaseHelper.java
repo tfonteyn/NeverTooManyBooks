@@ -283,7 +283,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * @param db The database to be created
      */
     @Override
-    public void onCreate(SQLiteDatabase db) {
+    public void onCreate(@NonNull SQLiteDatabase db) {
         mDbWasCreated = true;
         db.execSQL(DATABASE_CREATE_AUTHORS);
         db.execSQL(DATABASE_CREATE_BOOKSHELF);
@@ -325,7 +325,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("CREATE TRIGGER " + name + body);
     }
 
-    private void createIndices(SQLiteDatabase db) {
+    private void createIndices(@NonNull SQLiteDatabase db) {
         //delete all indices first
         String sql = "SELECT name FROM sqlite_master WHERE type = 'index' AND sql is not null;";
         try (Cursor current = db.rawQuery(sql, new String[]{})) {
@@ -368,7 +368,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * @param newVersion The new version number of the database
      */
     @Override
-    public void onUpgrade(final SQLiteDatabase db, final int oldVersion, final int newVersion) {
+    public void onUpgrade(@NonNull final SQLiteDatabase db, final int oldVersion, final int newVersion) {
         mDbWasCreated = false;
 
         int curVersion = oldVersion;

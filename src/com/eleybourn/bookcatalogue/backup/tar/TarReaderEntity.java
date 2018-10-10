@@ -34,8 +34,11 @@ import java.util.Date;
  * @author pjw
  */
 public class TarReaderEntity extends ReaderEntityAbstract {
+    @NonNull
     private final TarBackupReader mReader;
+    @NonNull
     private final TarArchiveEntry mEntry;
+    @NonNull
     private final BackupEntityType mType;
 
     /**

@@ -48,7 +48,9 @@ import java.io.OutputStreamWriter;
  * @author pjw
  */
 public class TarBackupWriter extends BackupWriterAbstract {
+    @NonNull
     private final TarBackupContainer mContainer;
+    @NonNull
     private final TarArchiveOutputStream mOutput;
     private int mStyleCounter = 0;
 

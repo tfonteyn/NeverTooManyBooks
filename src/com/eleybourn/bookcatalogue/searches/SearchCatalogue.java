@@ -82,6 +82,7 @@ public class SearchCatalogue extends BookCatalogueActivity {
     /** Timer reset each time the user clicks, in order to detect an idle time */
     private long mIdleStart = 0;
     /** Timer object for background idle searches */
+    @Nullable
     private Timer mTimer;
 
     /** Detect when user touches something, just so we know they are 'busy'. */

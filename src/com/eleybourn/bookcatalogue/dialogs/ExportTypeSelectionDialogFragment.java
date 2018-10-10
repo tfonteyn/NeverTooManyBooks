@@ -31,7 +31,7 @@ public class ExportTypeSelectionDialogFragment extends DialogFragment {
     private File mFile;
     private final OnClickListener mRowClickListener = new OnClickListener() {
         @Override
-        public void onClick(View v) {
+        public void onClick(@NonNull View v) {
             handleClick(v);
         }
     };
@@ -44,6 +44,7 @@ public class ExportTypeSelectionDialogFragment extends DialogFragment {
      *
      * @return Created fragment
      */
+    @NonNull
     public static ExportTypeSelectionDialogFragment newInstance(int dialogId, File file) {
         ExportTypeSelectionDialogFragment frag = new ExportTypeSelectionDialogFragment();
         Bundle args = new Bundle();
@@ -132,6 +133,7 @@ public class ExportTypeSelectionDialogFragment extends DialogFragment {
     public static class ExportSettings {
         public File file;
         public int options;
+        @Nullable
         public Date dateFrom;
     }
 

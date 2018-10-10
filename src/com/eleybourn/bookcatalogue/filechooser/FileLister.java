@@ -68,7 +68,7 @@ public abstract class FileLister implements FragmentTask {
 	 * Perform case-insensitive sorting using default locale.
 	 */
 	private static class FileDetailsComparator implements Comparator<FileDetails> {
-		public int compare(final FileDetails f1, final FileDetails f2) {
+		public int compare(@NonNull final FileDetails f1, @NonNull final FileDetails f2) {
 			return f1.getFile().getName().toUpperCase().compareTo(f2.getFile().getName().toUpperCase());
 		}
 	}

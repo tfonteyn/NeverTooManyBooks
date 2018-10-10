@@ -99,13 +99,13 @@
     <string name="pages">Pages</string>
     <string name="confirm_add">Ajouter le livre</string>
     <string name="confirm_update">Mettre à jour</string>
-    <string name="no_books">Il n\'y a pas de livre dans cette biblothèque. Veuillez en ajouter par le menu en bas de cet écran.</string>
+    <string name="no_books_yet">Il n\'y a pas de livre dans cette biblothèque. Veuillez en ajouter par le menu en bas de cet écran.</string>
     <string name="menu_expand_all">Tout étendre</string>
     <string name="menu_sort_by">Trier par</string>
     <string name="menu_collapse_all">Tout réduire</string>
     <string name="search">Recherche</string>
     <string name="confirm_save">Sauvegarder le livre</string>
-    <string name="nobookshelves">Vous n\'avez pas encore créé de bibliothèque. Veuillez en ajouter une par le menu en bas de cet écran.</string>
+    <string name="no_bookshelves_yet">Vous n\'avez pas encore créé de bibliothèque. Veuillez en ajouter une par le menu en bas de cet écran.</string>
     <string name="menu_insert_bs">Créer une bibliothèque</string>
     <string name="confirm_add_bs">Ajouter une bibliothèque</string>
     <string name="menu_bookshelf">Gérer les bibliothèques</string>
@@ -213,8 +213,8 @@
     <string name="columns_are_blank">Les colonnes %1$s sont toutes vides à la ligne %2$d</string>
     <string name="save">Sauvegarder</string>
     <string name="add">Ajouter</string>
-    <string name="noauthors">Il n\'y a pas d\'auteur pour ce livre. Veuillez en ajouter un en utilisant la zone de texte et le bouton en haut de cet écran.</string>
-    <string name="noseries">Il n\'y a pas de série pour ce livre. Vous pouvez en ajouter une en utilisant la zone de texte et le bouton en haut de cet écran.</string>
+    <string name="no_authors_yet">Il n\'y a pas d\'auteur pour ce livre. Veuillez en ajouter un en utilisant la zone de texte et le bouton en haut de cet écran.</string>
+    <string name="no_series_yet">Il n\'y a pas de série pour ce livre. Vous pouvez en ajouter une en utilisant la zone de texte et le bouton en haut de cet écran.</string>
     <string name="cover_not_set">Couverture non définie</string>
     <string name="cover_corrupt">Couverture corrompue</string>
     <string name="cover_detail">Détails de la couverture</string>

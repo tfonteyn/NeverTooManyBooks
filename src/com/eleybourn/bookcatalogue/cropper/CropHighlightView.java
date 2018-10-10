@@ -47,6 +47,7 @@ class CropHighlightView {
     static final int MOVE = (1 << 5);
 
     /**  The View displaying the image. */
+    @NonNull
     private final View mContext;
 
     private final Paint mFocusPaint = new Paint();
@@ -59,6 +60,7 @@ class CropHighlightView {
     RectF mCropRect;
     Matrix mMatrix;
     private boolean mHidden;
+    @NonNull
     private ModifyMode mMode = ModifyMode.None;
     /*** in image space */
     private RectF mImageRect;
@@ -176,6 +178,7 @@ class CropHighlightView {
         }
     }
 
+    @NonNull
     public ModifyMode getMode() {
         return mMode;
     }
@@ -357,6 +360,7 @@ class CropHighlightView {
     }
 
     // Returns the cropping rectangle in image space.
+    @NonNull
     Rect getCropRect() {
         return new Rect((int) mCropRect.left, (int) mCropRect.top,
                 (int) mCropRect.right, (int) mCropRect.bottom);

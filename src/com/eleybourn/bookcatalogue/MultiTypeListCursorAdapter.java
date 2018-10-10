@@ -44,11 +44,14 @@ import com.eleybourn.bookcatalogue.widgets.FastScroller;
  */
 public class MultiTypeListCursorAdapter extends CursorAdapter implements FastScroller.SectionIndexerV2 {
 
+    @NonNull
     private final LayoutInflater mInflater;
+    @NonNull
     private final MultiTypeListHandler mHandler;
     /**
      * TODO: the intention is to set a click listener on the cover image... but see fixme below first!
      */
+    @NonNull
     @SuppressWarnings("FieldCanBeLocal")
     private final Activity mActivity;
 
@@ -74,6 +77,7 @@ public class MultiTypeListCursorAdapter extends CursorAdapter implements FastScr
     /**
      * NOT USED. Should never be called. Die if it is.
      */
+    @NonNull
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
         throw new RuntimeException("MultiTypeListCursorAdapter.newView is unsupported");
@@ -104,8 +108,9 @@ public class MultiTypeListCursorAdapter extends CursorAdapter implements FastScr
         return mHandler.getViewTypeCount();
     }
 
+    @NonNull
     @Override
-    public View getView(final int position, final View convertView, final ViewGroup parent) {
+    public View getView(final int position, final View convertView, @NonNull final ViewGroup parent) {
         Cursor cursor = this.getCursor();
         cursor.moveToPosition(position);
 

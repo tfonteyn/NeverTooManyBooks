@@ -32,9 +32,13 @@ import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.entities.Series;
 
 public class EditSeriesDialog {
+    @NonNull
     private final Activity mContext;
+    @NonNull
     private final ArrayAdapter<String> mSeriesAdapter;
+    @NonNull
     private final CatalogueDBAdapter mDb;
+    @NonNull
     private final Runnable mOnChanged;
 
     EditSeriesDialog(@NonNull final Activity activity, @NonNull final CatalogueDBAdapter db, @NonNull final  Runnable onChanged) {

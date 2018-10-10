@@ -87,15 +87,19 @@ import java.util.ArrayList;
 abstract public class EditObjectListActivity<T extends Serializable> extends BookCatalogueListActivity {
 
     /** The key to use in the Bundle to get the array */
+    @Nullable
     private final String mBKey;
     /** The resource ID for the base view */
     private final int mBaseViewId;
     /** The resource ID for the row view */
     private final int mRowViewId;
     /** the rows */
+    @Nullable
     protected ArrayList<T> mList = null;
+    @Nullable
     protected EditObjectListAdapter mAdapter;
     protected CatalogueDBAdapter mDb;
+    @Nullable
     protected String mBookTitle;
     /** Row ID... mainly used (if list is from a book) to know if book is new. */
     protected long mRowId = 0;
@@ -115,7 +119,7 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Boo
      */
     private final OnClickListener mAddListener = new OnClickListener() {
         @Override
-        public void onClick(View v) {
+        public void onClick(@NonNull View v) {
             onAdd(v);
             onListChanged();
         }

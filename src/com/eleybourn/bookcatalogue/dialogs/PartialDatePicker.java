@@ -54,20 +54,25 @@ public class PartialDatePicker extends AlertDialog {
     private static final String UNKNOWN_MONTH = "---";
     private static final String UNKNOWN_DAY = "--";
     /** Calling context */
+    @NonNull
     private final Activity mActivity;
     /** Local ref to month spinner */
     private final Spinner mMonthSpinner;
     /** Local ref to day spinner */
     private final Spinner mDaySpinner;
     /** Local ref to day spinner adapter */
+    @NonNull
     private final ArrayAdapter<String> mDayAdapter;
     /** Local ref to year text view */
     private final EditText mYearView;
     /** Currently displayed year; null if empty/invalid */
+    @Nullable
     private Integer mYear;
     /** Currently displayed month; null if empty/invalid */
+    @Nullable
     private Integer mMonth;
     /** Currently displayed day; null if empty/invalid */
+    @Nullable
     private Integer mDay;
     /** Listener to be called when date is set or dialog cancelled */
     private OnDateSetListener mListener;

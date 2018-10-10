@@ -37,7 +37,9 @@ import java.util.List;
  * @author Philip Warner
  */
 public class SqlStatementManager implements AutoCloseable {
+    @NonNull
     private final Hashtable<String, SynchronizedStatement> mStatements;
+    @Nullable
     private final SynchronizedDb mSyncedDb;
 
     SqlStatementManager() {
@@ -53,6 +55,7 @@ public class SqlStatementManager implements AutoCloseable {
         return mStatements.get(name);
     }
 
+    @NonNull
     public SynchronizedStatement add(@NonNull final String name, @NonNull final String sql) {
         if (mSyncedDb == null)
             throw new RuntimeException("Database not set when SqlStatementManager created");

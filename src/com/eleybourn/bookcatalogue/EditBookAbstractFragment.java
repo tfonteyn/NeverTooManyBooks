@@ -209,7 +209,7 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
     }
 
     @Override
-    public void onActivityResult(final int requestCode, final int resultCode, final Intent intent) {
+    public void onActivityResult(final int requestCode, final int resultCode, @NonNull final Intent intent) {
         if (requestCode == 1) {
             if (resultCode == Activity.RESULT_OK) {
                 String result = intent.getStringExtra("result");
@@ -302,7 +302,7 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
      * @param fieldId       layout resource id of the field
      * @param relatedFields list of fields whose visibility will also be set based on the first field
      */
-    void showHideField(final boolean hideIfEmpty, @IdRes final int fieldId, @IdRes final int... relatedFields) {
+    void showHideField(final boolean hideIfEmpty, @IdRes final int fieldId, @NonNull @IdRes final int... relatedFields) {
         // Get the base view
         final View view = getView().findViewById(fieldId);
         int visibility;
@@ -371,18 +371,24 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
 
         void setDirty(final boolean isDirty);
 
+        @Nullable
         Book getBook();
 
         void setRowId(final long id);
 
+        @NonNull
         List<String> getFormats();
 
+        @NonNull
         List<String> getGenres();
 
+        @NonNull
         List<String> getLanguages();
 
+        @NonNull
         List<String> getLocations();
 
+        @NonNull
         List<String> getPublishers();
     }
 

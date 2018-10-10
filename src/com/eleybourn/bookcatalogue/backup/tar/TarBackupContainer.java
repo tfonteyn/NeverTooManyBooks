@@ -66,6 +66,7 @@ public class TarBackupContainer implements BackupContainer {
     /** Buffer size for buffered streams */
     public static final int BUFFER_SIZE = 32768;
     /** Backup file spec */
+    @NonNull
     private final File mFile;
 
     /**
@@ -75,6 +76,7 @@ public class TarBackupContainer implements BackupContainer {
         mFile = file;
     }
 
+    @NonNull
     public File getFile() {
         return mFile;
     }

@@ -21,6 +21,7 @@
 package com.eleybourn.bookcatalogue.taskqueue;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.widgets.BindableItemCursorAdapter;
 
@@ -47,6 +48,7 @@ public abstract class Task implements Serializable, BindableItemCursorAdapter.Bi
     private TaskState mState;
     private long mId;
     private int mRetries;
+    @Nullable
     private Exception mException = null;
     private int mRetryDelay = 0;
     private boolean mAbortTask = false;
@@ -121,6 +123,7 @@ public abstract class Task implements Serializable, BindableItemCursorAdapter.Bi
         return mRetries < mRetryLimit;
     }
 
+    @Nullable
     public Exception getException() {
         return mException;
     }

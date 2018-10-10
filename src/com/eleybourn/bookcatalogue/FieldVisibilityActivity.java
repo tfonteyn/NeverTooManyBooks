@@ -144,6 +144,7 @@ public class FieldVisibilityActivity extends BookCatalogueActivity {
     }
 
     private static class FieldInfo {
+        @NonNull
         final String name;
         @StringRes
         final int stringId;

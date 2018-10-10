@@ -33,6 +33,7 @@ import java.util.LinkedHashMap;
 public class FieldUsages extends LinkedHashMap<String, FieldUsages.FieldUsage> {
     private static final long serialVersionUID = 1L;
 
+    @NonNull
     @SuppressWarnings("UnusedReturnValue")
     public FieldUsage put(@NonNull final FieldUsage usage) {
         this.put(usage.fieldName, usage);
@@ -42,6 +43,7 @@ public class FieldUsages extends LinkedHashMap<String, FieldUsages.FieldUsage> {
     public enum Usages {COPY_IF_BLANK, ADD_EXTRA, OVERWRITE}
 
     public static class FieldUsage {
+        @NonNull
         public final String fieldName;
         public final int stringId;
         public final boolean canAppend;

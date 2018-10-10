@@ -29,6 +29,7 @@ import android.support.annotation.Nullable;
 import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.taskqueue.Listeners.EventActions;
 import com.eleybourn.bookcatalogue.taskqueue.Listeners.OnEventChangeListener;
 import com.eleybourn.bookcatalogue.taskqueue.Listeners.OnTaskChangeListener;
@@ -64,14 +65,17 @@ public abstract class QueueManager {
     /** Static reference to the active QueueManager */
     private static QueueManager mQueueManager;
     /** Database access layer */
+    @NonNull
     private final DBAdapter mDb;
     /** Collection of currently active queues */
     private final Map<String, Queue> mActiveQueues = new Hashtable<>();
     /** The UI thread */
+    @NonNull
     private final WeakReference<Thread> mUIThread;
     /** Objects listening for Event operations */
     private final List<WeakReference<OnEventChangeListener>> mEventChangeListeners = new ArrayList<>();
     /** Objects listening for Task operations */
+    @NonNull
     private final List<WeakReference<OnTaskChangeListener>> mTaskChangeListeners;
     /** Handle inter-thread messages */
     private MessageHandler mMessageHandler;
@@ -340,6 +344,7 @@ public abstract class QueueManager {
      *
      * @return Cursor of exceptions
      */
+    @NonNull
     public EventsCursor getAllEvents() {
         return mDb.getAllEvents();
     }
@@ -351,6 +356,7 @@ public abstract class QueueManager {
      *
      * @return Cursor of exceptions
      */
+    @NonNull
     public EventsCursor getTaskEvents(final long taskId) {
         return mDb.getTaskEvents(taskId);
     }
@@ -362,6 +368,7 @@ public abstract class QueueManager {
      *
      * @return Cursor of exceptions
      */
+    @NonNull
     public TasksCursor getTasks(@NonNull final TaskCursorSubtype type) {
         return mDb.getTasks(type);
     }
@@ -455,6 +462,7 @@ public abstract class QueueManager {
     /**
      * Return the running application context.
      */
+    @NonNull
     protected abstract Context getApplicationContext();
 
     /**

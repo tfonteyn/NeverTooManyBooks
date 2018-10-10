@@ -37,6 +37,7 @@ import java.util.List;
  * @author Philip Warner
  */
 public class SimpleXmlFilter {
+    @Nullable
     private static final XmlHandler mHandleStart = new XmlHandler() {
         @Override
         public void process(@NonNull ElementContext context) {
@@ -70,6 +71,7 @@ public class SimpleXmlFilter {
 
         }
     };
+    @Nullable
     private static final XmlHandler mHandleFinish = new XmlHandler() {
         @Override
         public void process(@NonNull ElementContext context) {
@@ -93,6 +95,7 @@ public class SimpleXmlFilter {
 
         }
     };
+    @Nullable
     private static final XmlHandler mTextHandler = new XmlHandler() {
         @Override
         public void process(@NonNull ElementContext context) {
@@ -100,6 +103,7 @@ public class SimpleXmlFilter {
             c.getData().putString(c.collectField, context.body.trim());
         }
     };
+    @Nullable
     private static final XmlHandler mLongHandler = new XmlHandler() {
 
         @Override
@@ -114,6 +118,7 @@ public class SimpleXmlFilter {
             }
         }
     };
+    @Nullable
     private static final XmlHandler mDoubleHandler = new XmlHandler() {
 
         @Override
@@ -128,6 +133,7 @@ public class SimpleXmlFilter {
             }
         }
     };
+    @Nullable
     private static final XmlHandler mBooleanHandler = new XmlHandler() {
 
         @Override
@@ -142,6 +148,7 @@ public class SimpleXmlFilter {
             }
         }
     };
+    @NonNull
     private final XmlFilter mRootFilter;
     private final ArrayList<BuilderContext> mContexts = new ArrayList<>();
     private final ArrayList<String> mTags = new ArrayList<>();
@@ -199,6 +206,7 @@ public class SimpleXmlFilter {
         return this;
     }
 
+    @NonNull
     @SuppressWarnings("UnusedReturnValue")
     public SimpleXmlFilter done() {
         mTags.clear();
@@ -276,7 +284,7 @@ public class SimpleXmlFilter {
         return this;
     }
 
-    private void setCollector(@NonNull final String tag, XmlHandler handler, @NonNull final String fieldName) {
+    private void setCollector(@NonNull final String tag, @NonNull XmlHandler handler, @NonNull final String fieldName) {
         s(tag);
         setCollector(handler, fieldName);
         pop();
@@ -350,17 +358,25 @@ public class SimpleXmlFilter {
     }
 
     public static class BuilderContext implements DataStoreProvider {
+        @NonNull
         public final DataStoreProvider parent;
 
         String collectField;
+        @Nullable
         List<AttrFilter> attrs = null;
+        @Nullable
         XmlListener listener = null;
+        @Nullable
         XmlHandler finishHandler = null;
+        @Nullable
         private final XmlFilter mFilter;
+        @Nullable
         private Bundle mLocalBundle = null;
+        @Nullable
         private ArrayList<Bundle> mArrayItems = null;
 
         private boolean mIsArray = false;
+        @Nullable
         private String mArrayName = null;
 
         private boolean mIsArrayItem = false;
@@ -443,6 +459,7 @@ public class SimpleXmlFilter {
     }
 
     public class DataStore implements DataStoreProvider {
+        @NonNull
         private final Bundle mData;
 
         DataStore() {
@@ -463,7 +480,9 @@ public class SimpleXmlFilter {
     }
 
     private abstract class AttrFilter {
+        @NonNull
         public final String name;
+        @NonNull
         public final String key;
 
         AttrFilter(@NonNull final String key, @NonNull final String name) {

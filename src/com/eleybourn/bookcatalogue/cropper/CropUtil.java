@@ -241,10 +241,15 @@ class CropUtil {
     private static class BackgroundJob extends
             CropMonitoredActivity.LifeCycleAdapter implements Runnable {
 
+        @NonNull
         private final CropMonitoredActivity mActivity;
+        @NonNull
         private final ProgressDialog mDialog;
+        @NonNull
         private final Runnable mJob;
+        @NonNull
         private final Handler mHandler;
+        @Nullable
         private final Runnable mCleanupRunner = new Runnable() {
             public void run() {
                 mActivity.removeLifeCycleListener(BackgroundJob.this);
