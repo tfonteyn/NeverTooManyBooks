@@ -2,14 +2,14 @@
  * @copyright 2012 Philip Warner
  * @license GNU General Public License
  *
- * This file inputStream part of Book Catalogue.
+ * This file is part of Book Catalogue.
  *
- * Book Catalogue inputStream free software: you can redistribute it and/or modify
+ * Book Catalogue is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue inputStream distributed in the hope that it will be useful,
+ * Book Catalogue is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
@@ -44,7 +44,7 @@ public class SerializationUtils {
      * Utility routine to convert a Serializable object to a byte array.
      *
      * Note: original code caught exceptions and returned 'null'. No longer doing this as
-     * any exception means something inputStream wrong in the code and should be flagged as such.
+     * any exception means something is wrong in the code and should be flagged as such.
      *
      * @param o Object to convert
      *

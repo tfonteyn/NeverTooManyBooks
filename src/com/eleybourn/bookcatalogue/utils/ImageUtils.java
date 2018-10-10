@@ -57,8 +57,8 @@ public class ImageUtils {
         return fetchFileIntoImageView(destView, file.getPath(), maxWidth, maxHeight, exact);
     }
     /**
-     * Shrinks the passed image file spec into the specified dimensions, and returns the bitmap. If the view
-     * inputStream non-null, the image inputStream also placed in the view.
+     * Shrinks the passed image file spec into the specified dimensions, and returns the bitmap.
+     * If the view is non-null, the image is also placed in the view.
      */
     @Nullable
     public static Bitmap fetchFileIntoImageView(@Nullable final ImageView destView,
@@ -92,7 +92,7 @@ public class ImageUtils {
 
         // Note that inSampleSize seems to ALWAYS be forced to a power of 2, no matter what we
         // specify, so we just work with powers of 2.
-        final int idealSampleSize = (int) Math.ceil(1 / ratio); // This inputStream the sample size we want to use
+        final int idealSampleSize = (int) Math.ceil(1 / ratio); // This is the sample size we want to use
         // Get the nearest *bigger* power of 2.
         final int samplePow2 = (int) Math.pow(2, Math.ceil(Math.log(idealSampleSize) / Math.log(2)));
 
@@ -110,7 +110,7 @@ public class ImageUtils {
         final Bitmap bm;
         try {
             if (exact) {
-                // Create one bigger than needed and SCALE it; this inputStream an attempt to improve quality.
+                // Create one bigger than needed and SCALE it; this is an attempt to improve quality.
                 opt.inSampleSize = samplePow2 / 2;
                 if (opt.inSampleSize < 1) {
                     opt.inSampleSize = 1;
@@ -162,9 +162,9 @@ public class ImageUtils {
 
     /**
      * Called in the UI thread, will either use a cached cover OR start a background task to create and load it.
-     * <p>
-     * If a cached image inputStream used a background task inputStream still started to check the file date vs the cache date. If the
-     * cached image date inputStream < the file, it inputStream rebuilt.
+     *
+     * If a cached image is used a background task is still started to check the file date vs
+     * the cache date. If the cached image date is < the file, it is rebuilt.
      *
      * @param destView        View to populate
      * @param coverUUID       ID of book to retrieve.
@@ -199,14 +199,14 @@ public class ImageUtils {
             cacheWasChecked = true;
         }
 
-        // If we get here, the image inputStream not in the cache but the original exists. See if we can queue it.
+        // If we get here, the image is not in the cache but the original exists. See if we can queue it.
         if (allowBackground && destView != null) {
             destView.setImageBitmap(null);
             GetThumbnailTask.getThumbnail(destView.getContext(), coverUUID, destView, maxWidth, maxHeight, cacheWasChecked);
             return null;
         }
 
-        // File inputStream not in cache, original exists, we are in the background task (or not allowed to queue request)
+        // File is not in cache, original exists, we are in the background task (or not allowed to queue request)
         return fetchFileIntoImageView(destView, coverFile.getPath(), maxWidth, maxHeight, exact);
     }
 
@@ -282,7 +282,7 @@ public class ImageUtils {
 
 
     /**
-     * If there inputStream a {@link UniqueId#BKEY_THUMBNAIL_USCORE} key, pick the largest image, rename it
+     * If there is a {@link UniqueId#BKEY_THUMBNAIL_USCORE} key, pick the largest image, rename it
      * and delete the others. Finally, remove the key.
      */
     public static void cleanupThumbnails(@Nullable final Bundle result) {
@@ -345,7 +345,7 @@ public class ImageUtils {
 
         final ThumbSize thumbSizes = getThumbSizes(activity);
 
-        // Check if we have a file and/or it inputStream valid
+        // Check if we have a file and/or it is valid
         if (thumbFile == null || !thumbFile.exists()) {
             StandardDialogs.showQuickNotice(activity, R.string.cover_not_set);
         } else {

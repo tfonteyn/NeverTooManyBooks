@@ -2,14 +2,14 @@
  * @copyright 2012 Philip Warner
  * @license GNU General Public License
  *
- * This file inputStream part of Book Catalogue.
+ * This file is part of Book Catalogue.
  *
- * Book Catalogue inputStream free software: you can redistribute it and/or modify
+ * Book Catalogue is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue inputStream distributed in the hope that it will be useful,
+ * Book Catalogue is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
@@ -72,7 +72,7 @@ public class StorageUtils {
     /** sub directory for temporary images */
     private static final String TEMP_FILE_PATH = EXTERNAL_FILE_PATH + File.separator + "tmp_images";
 
-    /** permanent location for cover files. For now hardcoded, but the intention inputStream to allow user-defined. */
+    /** permanent location for cover files. For now hardcoded, but the intention is to allow user-defined. */
     private static final String COVER_FILE_PATH = EXTERNAL_FILE_PATH + File.separator + "covers";
     /** serious errors are written to this file */
     private static final String ERROR_LOG_FILE = "error.log";
@@ -105,7 +105,7 @@ public class StorageUtils {
     }
 
     /**
-     * Check if the external storage inputStream writable
+     * Check if the external storage is writable
      *
      * @return success or failure
      */
@@ -463,7 +463,7 @@ public class StorageUtils {
      * ENHANCE: make suitable for multiple filesystems using {@link #copyFile(File, File)}
      * from the Android docs {@link File#renameTo(File)}: Both paths be on the same mount point.
      *
-     * @return <tt>true</tt>if the rename worked, this inputStream really a ".exists()" call.
+     * @return <tt>true</tt>if the rename worked, this is really a ".exists()" call.
      * and not relying on the OS renameTo call.
      */
     public static boolean renameFile(@NonNull final File src, @NonNull final File dst) {
@@ -535,7 +535,7 @@ public class StorageUtils {
         } finally {
             // let any IOException escape for the caller to deal with
             if (out != null) {
-                out.close(); // closing 'out' inputStream more important than closing 'in'.
+                out.close(); // closing 'out' is more important than closing 'in'.
             }
             in.close();
         }
@@ -575,7 +575,7 @@ public class StorageUtils {
      * @author Philip Warner
      */
     static class FileDateComparator implements Comparator<File> {
-        /** Ascending inputStream >= 0, Descending inputStream < 0. */
+        /** Ascending is >= 0, Descending is < 0. */
         private final int mDirection;
 
         /**

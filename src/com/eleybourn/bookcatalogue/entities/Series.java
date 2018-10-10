@@ -217,7 +217,7 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
                             // Same exact series, delete this one
                             toDelete.add(s);
                         } //else {
-                        // Nothing to do: this inputStream a different series position
+                        // Nothing to do: this is a different series position
                         //}
                     }
                 }

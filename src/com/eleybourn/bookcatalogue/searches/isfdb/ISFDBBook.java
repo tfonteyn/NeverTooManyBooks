@@ -174,7 +174,7 @@ public class ISFDBBook extends AbstractBase {
                     }
                 } else if (li.text().contains("Date")) {
                     tmp = li.childNode(2).toString().trim();
-                    mBookData.putString(UniqueId.KEY_BOOK_DATE_PUBLISHED, digits(tmp));
+                    mBookData.putString(UniqueId.KEY_BOOK_DATE_PUBLISHED, tmp);
 
                 } else if (li.text().contains("ISBN")) {
                     // always use the first one, as that will be the one used at publication

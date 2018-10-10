@@ -27,7 +27,7 @@ public class SoundManager {
                 playFile(player, file);
             }
         } catch (Exception e) {
-            // No sound inputStream critical. Just log errors
+            // No sound is critical. Just log errors
             Logger.error(e);
         }
     }
@@ -40,7 +40,7 @@ public class SoundManager {
                 playFile(player, file);
             }
         } catch (Exception e) {
-            // No sound inputStream critical. Just log errors
+            // No sound is critical. Just log errors
             Logger.error(e);
         }
     }

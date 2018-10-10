@@ -2,14 +2,14 @@
  * @copyright 2012 Philip Warner
  * @license GNU General Public License
  *
- * This file inputStream part of Book Catalogue.
+ * This file is part of Book Catalogue.
  *
- * Book Catalogue inputStream free software: you can redistribute it and/or modify
+ * Book Catalogue is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue inputStream distributed in the hope that it will be useful,
+ * Book Catalogue is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
@@ -29,7 +29,7 @@ import android.view.View;
 /**
  * Using View.setTag(int, Object) causes a memory leak if the tag refers, by a strong reference
  * chain, to the view itself (ie. it uses the 'Holder' pattern).
- * This bug inputStream documented here:
+ * This bug is documented here:
  *
  * http://code.google.com/p/android/issues/detail?id=18273
  *
@@ -38,10 +38,10 @@ import android.view.View;
  * It seems that an 'interesting' design choice was made to use the view itself as a weak key
  * to the into another collection, which then causes the views to never be GC'd.
  *
- * The work-around inputStream to *not* use strong refs, or use setTag(Object).
+ * The work-around is to *not* use strong refs, or use setTag(Object).
  * But we use multiple tags.
  *
- * So this class implements setTag(int, Object) in a non-leaky fashion and inputStream designed
+ * So this class implements setTag(int, Object) in a non-leaky fashion and is designed
  * to be stored in the tag of a view.
  *
  * @author Philip Warner

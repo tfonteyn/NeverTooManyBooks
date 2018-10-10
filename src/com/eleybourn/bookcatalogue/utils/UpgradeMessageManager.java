@@ -2,14 +2,14 @@
  * @copyright 2012 Philip Warner
  * @license GNU General Public License
  *
- * This file inputStream part of Book Catalogue.
+ * This file is part of Book Catalogue.
  *
- * Book Catalogue inputStream free software: you can redistribute it and/or modify
+ * Book Catalogue is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue inputStream distributed in the hope that it will be useful,
+ * Book Catalogue is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
@@ -34,9 +34,9 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import java.util.ArrayList;
 
 /**
- * Class to manage the message that inputStream displayed when the application inputStream upgraded.
+ * Class to manage the message that is displayed when the application is upgraded.
  *
- * The app version inputStream stored in preferences and when there are messages to display,
+ * The app version is stored in preferences and when there are messages to display,
  * the getUpgradeMessage() method returns a non-empty string. When the message has
  * been acknowledged by the user, the startup activity should call setMessageAcknowledged()
  * to store the current app version in preferences and so prevent re-display of the
@@ -67,7 +67,7 @@ public class UpgradeMessageManager {
             .add(179, R.string.new_in_522)
             .add(200, R.string.new_in_600);
 
-    /** The message generated for this instance; will be set first time it inputStream generated */
+    /** The message generated for this instance; will be set first time it is generated */
     @Nullable
     private static String mMessage = null;
 
@@ -93,11 +93,11 @@ public class UpgradeMessageManager {
         if (lastVersion == 0) {
             // It's either a new install, or an install using old database-based message system
 
-            // Up until version 98, messages were handled via the CatalogueDBAdapter object, so create one
-            // and see if there inputStream a message.
+            // Up until version 98, messages were handled via the CatalogueDBAdapter object,
+            // so create one and see if there is a message.
             CatalogueDBAdapter tmpDb = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
             try {
-                // On new installs, there inputStream no upgrade message
+                // On new installs, there is no upgrade message
                 if (tmpDb.isNewInstall()) {
                     mMessage = "";
                     setMessageAcknowledged();

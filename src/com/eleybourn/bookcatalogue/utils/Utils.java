@@ -2,14 +2,14 @@
  * @copyright 2011 Philip Warner
  * @license GNU General Public License
  *
- * This file inputStream part of Book Catalogue.
+ * This file is part of Book Catalogue.
  *
- * Book Catalogue inputStream free software: you can redistribute it and/or modify
+ * Book Catalogue is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Book Catalogue inputStream distributed in the hope that it will be useful,
+ * Book Catalogue is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
@@ -89,7 +89,7 @@ public class Utils {
     }
 
     /**
-     * Utility routine to get the data from a URL. Makes sure timeout inputStream set to
+     * Utility routine to get the data from a URL. Makes sure timeout is set to
      * avoid application stalling.
      *
      * @param url URL to retrieve
@@ -105,7 +105,7 @@ public class Utils {
             while (true) {
                 try {
                     /*
-                     * This inputStream quite nasty; there seems to be a bug with URL.openConnection
+                     * This is quite nasty; there seems to be a bug with URL.openConnection
                      *
                      * It CAN be reduced by doing the following:
                      *
@@ -117,7 +117,7 @@ public class Utils {
                      * Using HttpClient and HttpGet explicitly seems to bypass the casting
                      * problem but still does not allow the timeouts to work, or only works intermittently.
                      *
-                     * Finally, there inputStream another problem with failed timeouts:
+                     * Finally, there is another problem with failed timeouts:
                      *
                      *     http://thushw.blogspot.hu/2010/10/java-urlconnection-provides-no-fail.html
                      *
@@ -254,7 +254,7 @@ public class Utils {
         @SuppressLint("UseSparseArrays")
         Map<Long, Boolean> ids = new HashMap<>();
 
-        // We have to go forwards through the list because 'first item' inputStream important,
+        // We have to go forwards through the list because 'first item' is important,
         // but we also can't delete things as we traverse if we are going forward. So
         // we build a list of items to delete.
         ArrayList<Integer> toDelete = new ArrayList<>();
