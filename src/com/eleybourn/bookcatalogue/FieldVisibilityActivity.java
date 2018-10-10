@@ -96,7 +96,7 @@ public class FieldVisibilityActivity extends BookCatalogueActivity {
             setTitle(R.string.menu_manage_fields);
             setupFields();
         } catch (Exception e) {
-            Logger.logError(e);
+            Logger.error(e);
         }
     }
 

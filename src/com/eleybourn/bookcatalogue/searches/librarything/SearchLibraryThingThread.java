@@ -39,7 +39,7 @@ public class SearchLibraryThingThread extends SearchThread {
                     // Look for series name and clear KEY_TITLE
                     checkForSeriesName();
                 } catch (Exception e) {
-                    Logger.logError(e);
+                    Logger.error(e);
                     showException(R.string.searching_library_thing, e);
                 }
             }

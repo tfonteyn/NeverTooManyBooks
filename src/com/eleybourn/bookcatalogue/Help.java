@@ -81,7 +81,7 @@ public class Help extends BookCatalogueActivity {
             setupCleanupButton();
 
         } catch (Exception e) {
-            Logger.logError(e);
+            Logger.error(e);
         }
     }
 
@@ -108,7 +108,7 @@ public class Help extends BookCatalogueActivity {
                 cleanupTxt.setText(getString(R.string.cleanup_files_text, Utils.formatFileSize(space)));
             }
         } catch (Exception e) {
-            Logger.logError(e);
+            Logger.error(e);
         }
     }
 

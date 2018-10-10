@@ -240,8 +240,8 @@ class CropImageView extends CropImageViewTouchBase {
             for (int i = 0; i < mHighlightViews.size(); i++) {
                 mHighlightViews.get(i).draw(canvas);
             }
-        } catch (RuntimeException e) {
-            Logger.logError(e);
+        } catch (Exception e) {
+            Logger.error(e);
         }
     }
 

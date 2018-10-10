@@ -78,9 +78,8 @@ public class Utils {
         final HttpResponse response = httpclient.execute(httpRequest);
 
         if (response.getStatusLine().getStatusCode() >= 300) {
-            String msg = "URL lookup failed: " + response.getStatusLine().getStatusCode() +
-                    " " + response.getStatusLine().getReasonPhrase() + ", URL: " + url;
-            Logger.logError(new RuntimeException(msg));
+            Logger.error("URL lookup failed: " + response.getStatusLine().getStatusCode() +
+                    " " + response.getStatusLine().getReasonPhrase() + ", URL: " + url);
             throw new IOException();
         }
 
@@ -167,7 +166,7 @@ public class Utils {
                                         connInfo.inputStream.close();
                                         ((HttpURLConnection) connInfo.connection).disconnect();
                                     } catch (IOException e) {
-                                        Logger.logError(e);
+                                        Logger.error(e);
                                     }
                                 }
                             } else {
@@ -180,15 +179,15 @@ public class Utils {
                     connInfo.inputStream = new StatefulBufferedInputStream(connInfo.connection.getInputStream());
 
                     if (connection != null && connection.getResponseCode() >= 300) {
-                        Logger.logError(new RuntimeException("URL lookup failed: " + connection.getResponseCode()
-                                + " " + connection.getResponseMessage() + ", URL: " + url));
+                        Logger.error("URL lookup failed: " + connection.getResponseCode()
+                                + " " + connection.getResponseMessage() + ", URL: " + url);
                         return null;
                     }
 
                     return connInfo.inputStream;
 
                 } catch (java.net.UnknownHostException e) {
-                    Logger.logError(e);
+                    Logger.error(e);
                     retries--;
                     if (retries-- == 0)
                         throw e;
@@ -197,7 +196,7 @@ public class Utils {
                     } catch (Exception ignored) {
                     }
                 } catch (Exception e) {
-                    Logger.logError(e);
+                    Logger.error(e);
                     throw new RuntimeException(e);
                 }
             }
@@ -421,13 +420,13 @@ public class Utils {
 		int addr;
 		try {
 			addr = lookupHost(host);			
-		} catch (Exception e) {
+		} catch (Exception error) {
 			return false;
 		}
 	    ConnectivityManager cm = (ConnectivityManager) ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
 	    try {
 		    return cm.requestRouteToHost(ConnectivityManager., addr);	    	
-		} catch (Exception e) {
+		} catch (Exception error) {
 			return false;
 		}
 	}
@@ -437,7 +436,7 @@ public class Utils {
 //	    InetAddress inetAddress;
 //	    try {
 //	        inetAddress = InetAddress.getByName(hostname);
-//	    } catch (UnknownHostException e) {
+//	    } catch (UnknownHostException error) {
 //	        return -1;
 //	    }
 //	    byte[] addrBytes;

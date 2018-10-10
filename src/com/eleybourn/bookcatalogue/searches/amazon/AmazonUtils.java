@@ -63,7 +63,7 @@ public class AmazonUtils {
                 linkService.openRetailPage(request);
             }
         } catch (Exception e) {
-            Logger.logError(e, "Unable to use Amazon API");
+            Logger.error(e, "Unable to use Amazon API");
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url + SUFFIX_EXTRAS));
             context.startActivity(intent);
         }
@@ -84,7 +84,7 @@ public class AmazonUtils {
             try {
                 extra += "&field-author=" + URLEncoder.encode(author, "UTF-8");
             } catch (UnsupportedEncodingException e) {
-                Logger.logError(e, "Unable to add author to URL");
+                Logger.error(e, "Unable to add author to URL");
                 return null;
             }
         }
@@ -94,7 +94,7 @@ public class AmazonUtils {
             try {
                 extra += "&field-keywords=" + URLEncoder.encode(series, "UTF-8");
             } catch (UnsupportedEncodingException e) {
-                Logger.logError(e, "Unable to add series to URL");
+                Logger.error(e, "Unable to add series to URL");
                 return null;
             }
         }
@@ -128,7 +128,7 @@ public class AmazonUtils {
             openLink(activity, author, series);
         } catch (Exception ae) {
             // An Amazon error should not crash the app
-            Logger.logError(ae, "Unable to call the Amazon API");
+            Logger.error(ae, "Unable to call the Amazon API");
             StandardDialogs.showQuickNotice(activity, R.string.unexpected_error);
             // This code works, but Amazon have a nasty tendency to cancel Associate IDs...
             //String baseUrl = "http://www.amazon.com/gp/search?index=books&tag=philipwarneri-20&tracking_id=philipwarner-20";

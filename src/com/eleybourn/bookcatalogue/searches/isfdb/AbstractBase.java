@@ -44,7 +44,7 @@ abstract class AbstractBase {
                         .followRedirects(true)
                         .get();
             } catch (IOException e) {
-                Logger.logError(e, mPath);
+                Logger.error(e, mPath);
                 return false;
             }
         }

@@ -169,7 +169,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
                     return;
                 }
                 default:
-                    Logger.logError(new RuntimeException("unknown result code"));
+                    Logger.error("unknown result code");
             }
         } finally {
             Tracker.exitOnActivityResult(this, requestCode, resultCode);
@@ -187,7 +187,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
                 InputStream in = getContext().getContentResolver().openInputStream(selectedImageUri);
                 imageOk = StorageUtils.saveInputStreamToFile(in, getCoverFile(mEditManager.getBook().getBookId()));
             } catch (FileNotFoundException e) {
-                Logger.logError(e, "Unable to copy content to file");
+                Logger.error(e, "Unable to copy content to file");
             }
             if (imageOk) {
                 // Update the ImageView with the new image
@@ -217,7 +217,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
             try {
                 out = new FileOutputStream(cameraFile.getAbsoluteFile());
             } catch (FileNotFoundException e) {
-                Logger.logError(e);
+                Logger.error(e);
                 return;
             }
 
@@ -429,7 +429,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
             File thumbFile = getCoverFile(mEditManager.getBook().getBookId());
             StorageUtils.deleteFile(thumbFile);
         } catch (Exception e) {
-            Logger.logError(e);
+            Logger.error(e);
         }
         invalidateCachedThumbnail();
     }
@@ -525,7 +525,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
                 try {
                     outFos = new FileOutputStream(thumbFile.getAbsoluteFile());
                 } catch (FileNotFoundException e) {
-                    Logger.logError(e);
+                    Logger.error(e);
                     return;
                 }
                 rotatedBitmap.compress(Bitmap.CompressFormat.PNG, 100, outFos);
@@ -551,7 +551,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
             try (CoversDbHelper coversDbHelper = CoversDbHelper.getInstance(getContext())) {
                 coversDbHelper.deleteBookCover(mDb.getBookUuid(bookId));
             } catch (Exception e) {
-                Logger.logError(e, "Error cleaning up cached cover images");
+                Logger.error(e, "Error cleaning up cached cover images");
             }
         }
     }
@@ -618,7 +618,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
             setBookThumbnail(book.getBookId(), mThumbSize.normal, mThumbSize.normal);
 
         } catch (Exception e) {
-            Logger.logError(e);
+            Logger.error(e);
         }
 
         populateBookshelvesField(mFields, book);
@@ -665,7 +665,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
                 result = true;
             }
         } catch (Exception e) {
-            Logger.logError(e);
+            Logger.error(e);
         }
         return result;
     }

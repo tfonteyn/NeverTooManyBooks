@@ -163,7 +163,7 @@ class SearchGoogleBooksEntryHandler extends DefaultHandler {
                 break;
             }
             case AUTHOR: {
-                ArrayUtils.appendOrAdd(mValues, UniqueId.BKEY_AUTHOR_DETAILS, builder.toString());
+                ArrayUtils.addOrAppend(mValues, UniqueId.BKEY_AUTHOR_DETAILS, builder.toString());
                 break;
             }
             case PUBLISHER: {
@@ -214,7 +214,7 @@ class SearchGoogleBooksEntryHandler extends DefaultHandler {
                 String thumbnail = attributes.getValue("", "href");
                 String fileSpec = ImageUtils.saveThumbnailFromUrl(thumbnail, "_GB");
                 if (!fileSpec.isEmpty()) {
-                    ArrayUtils.appendOrAdd(mValues, UniqueId.BKEY_THUMBNAIL_USCORE, fileSpec);
+                    ArrayUtils.addOrAppend(mValues, UniqueId.BKEY_THUMBNAIL_USCORE, fileSpec);
                 }
             }
         }

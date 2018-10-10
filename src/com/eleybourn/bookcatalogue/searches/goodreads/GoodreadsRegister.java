@@ -62,7 +62,7 @@ public class GoodreadsRegister extends BookCatalogueActivity {
 			setTitle(R.string.goodreads);
 			setupViews();
 		} catch (Exception e) {
-			Logger.logError(e);
+			Logger.error(e);
 		}
 	}
 
@@ -146,7 +146,7 @@ public class GoodreadsRegister extends BookCatalogueActivity {
 			try {
 				grMgr.requestAuthorization(context);
 			} catch (NetworkException e) {
-				Logger.logError(e, "Error while requesting Goodreads authorization");
+				Logger.error(e, "Error while requesting Goodreads authorization");
 				return R.string.goodreads_access_error;
 			}
 		} else {

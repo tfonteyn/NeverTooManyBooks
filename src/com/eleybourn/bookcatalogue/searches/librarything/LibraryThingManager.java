@@ -170,7 +170,7 @@ public class LibraryThingManager {
             parser.parse(Utils.getInputStreamWithTerminator(url), entryHandler);
             // Don't bother catching general exceptions, they will be caught by the caller.
         } catch (ParserConfigurationException | IOException | SAXException e) {
-            Logger.logError(e);
+            Logger.error(e);
         }
 
         return editions;
@@ -509,7 +509,7 @@ public class LibraryThingManager {
 
             // Don't bother catching general exceptions, they will be caught by the caller.
         } catch (ParserConfigurationException | SAXException | java.io.IOException e) {
-            Logger.logError(e, e.getMessage());
+            Logger.error(e);
         }
 
         if (fetchThumbnail) {
@@ -558,7 +558,7 @@ public class LibraryThingManager {
     public File getCoverImage(@NonNull final String isbn, @Nullable final Bundle book, @NonNull final ImageSizes size) {
         String url = getCoverImageUrl(isbn, size);
         if (DEBUG_SWITCHES.LIBRARY_THING && BuildConfig.DEBUG) {
-            System.out.println("LTM: " + url + " " + isbn + " " + size);
+            Logger.debug("LTM: " + url + " " + isbn + " " + size);
         }
 
         // Make sure we follow LibraryThing ToS (no more than 1 request/second).
@@ -567,7 +567,7 @@ public class LibraryThingManager {
         // Save it with an _LT suffix
         String fileSpec = ImageUtils.saveThumbnailFromUrl(url, "_LT_" + size + "_" + isbn);
         if (!fileSpec.isEmpty() && book != null) {
-            ArrayUtils.appendOrAdd(book, UniqueId.BKEY_THUMBNAIL_USCORE, fileSpec);
+            ArrayUtils.addOrAppend(book, UniqueId.BKEY_THUMBNAIL_USCORE, fileSpec);
         }
         return fileSpec.isEmpty() ? null : new File(fileSpec);
     }
@@ -716,7 +716,7 @@ public class LibraryThingManager {
                 mFieldType = FieldTypes.NONE;
 
             } else if (localName.equalsIgnoreCase(AUTHOR)) {
-                ArrayUtils.appendOrAdd(mBookData, UniqueId.BKEY_AUTHOR_DETAILS, mBuilder.toString());
+                ArrayUtils.addOrAppend(mBookData, UniqueId.BKEY_AUTHOR_DETAILS, mBuilder.toString());
 
             } else if (localName.equalsIgnoreCase(FACT)) {
                 // Process the FACT according to the active FIELD type.
@@ -728,15 +728,15 @@ public class LibraryThingManager {
                         break;
 
                     case SERIES:
-                        ArrayUtils.appendOrAdd(mBookData, UniqueId.BKEY_SERIES_DETAILS, mBuilder.toString());
+                        ArrayUtils.addOrAppend(mBookData, UniqueId.BKEY_SERIES_DETAILS, mBuilder.toString());
                         break;
 
                     case PLACES:
-                        ArrayUtils.appendOrAdd(mBookData, "__places", mBuilder.toString());
+                        ArrayUtils.addOrAppend(mBookData, "__places", mBuilder.toString());
                         break;
 
                     case CHARACTERS:
-                        ArrayUtils.appendOrAdd(mBookData, "__characters", mBuilder.toString());
+                        ArrayUtils.addOrAppend(mBookData, "__characters", mBuilder.toString());
                         break;
                 }
             }

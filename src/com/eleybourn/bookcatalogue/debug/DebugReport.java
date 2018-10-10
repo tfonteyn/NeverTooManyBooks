@@ -162,7 +162,7 @@ public class DebugReport {
 
         message.append("Details:\n\n").append(activity.getString(R.string.debug_body).toUpperCase()).append("\n\n");
 
-        Logger.logError(new RuntimeException("DEBUG"), message.toString());
+        Logger.debug(message.toString());
 
         emailIntent.putExtra(Intent.EXTRA_TEXT, message.toString());
         //has to be an ArrayList
@@ -200,7 +200,7 @@ public class DebugReport {
             activity.startActivity(Intent.createChooser(emailIntent, activity.getString(R.string.send_mail)));
 
         } catch (NullPointerException e) {
-            Logger.logError(e);
+            Logger.error(e);
             StandardDialogs.showQuickNotice(activity, R.string.export_failed_sdcard);
         }
     }

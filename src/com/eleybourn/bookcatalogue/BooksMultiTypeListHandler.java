@@ -177,7 +177,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
 			if (img.getId() == R.id.read) {
 				img.setMaxHeight((int) (30*BooklistStyle.SCALE));
 				img.setMaxWidth((int) (30*BooklistStyle.SCALE) );
-				System.out.println("SCALE READ");
+				Logger.debugln("SCALE READ");
 				img.requestLayout();
 			} else if (img.getId() == R.id.cover) {
 				img.setMaxHeight((int) (rowView.getMaxThumbnailHeight()*BooklistStyle.SCALE));
@@ -185,9 +185,9 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
 				LayoutParams lp = new LayoutParams(LayoutParams.WRAP_CONTENT, (int) (rowView.getMaxThumbnailHeight()*BooklistStyle.SCALE) );
 				img.setLayoutParams(lp);
 				img.requestLayout();
-				System.out.println("SCALE COVER");
+				Logger.debugln("SCALE COVER");
 			} else {
-				System.out.println("UNKNOWN IMAGE");
+				Logger.debugln("UNKNOWN IMAGE");
 			}
 		}
 		 */
@@ -378,7 +378,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                 addMenuItem(menu, R.id.MENU_AMAZON_BOOKS_IN_SERIES, R.string.amazon_books_in_series, R.drawable.ic_search);
             }
         } catch (Exception e) {
-            Logger.logError(e);
+            Logger.error(e);
         }
     }
 
@@ -475,7 +475,9 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                 long id = rowView.getSeriesId();
                 if (id == -1) {
                     StandardDialogs.showQuickNotice(activity, R.string.cannot_edit_system);
-                    System.out.println("FIXME id==-1, ... how? why? R.string.cannot_edit_system)");
+                    if (BuildConfig.DEBUG) {
+                        Logger.debug("FIXME id==-1, ... how? why? R.string.cannot_edit_system)");
+                    }
                 } else {
                     Series s = db.getSeries(id);
                     EditSeriesDialog d = new EditSeriesDialog(activity, db, new Runnable() {
@@ -508,7 +510,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                         }
                     });
                 } else {
-                    Logger.logError(new RuntimeException("Series " + id + " not found in database?"));
+                    Logger.error("Series " + id + " not found in database?");
                 }
                 return true;
             }
@@ -1178,7 +1180,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                     s = DateUtils.getMonthName(i);
                 }
             } catch (Exception e) {
-                Logger.logError(e);
+                Logger.error(e);
             }
             // Display whatever text we have
             setText(text, s, R.string.unknown_uc, level);
@@ -1230,7 +1232,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                     s = r.getQuantityString(R.plurals.n_stars, i, i);
                 }
             } catch (Exception e) {
-                Logger.logError(e);
+                Logger.error(e);
             }
             // Display whatever text we have
             setText(text, s, R.string.unknown_uc, level);

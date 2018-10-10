@@ -170,7 +170,7 @@ public class BooklistStylePropertiesActivity extends BookCatalogueActivity {
                     try {
                         editedStyle = (BooklistStyle) intent.getSerializableExtra(BooklistStyleGroupsListActivity.BKEY_STYLE);
                     } catch (Exception e) {
-                        Logger.logError(e);
+                        Logger.error(e);
                     }
                     if (editedStyle != null) {
                         mStyle.setGroups(editedStyle);

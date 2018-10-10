@@ -309,7 +309,7 @@ public class UpdateFromInternetThread extends ManagedTask {
     @SuppressWarnings("SameReturnValue")
     private boolean onSearchFinished(@NonNull final Bundle newBookData, final boolean cancelled) {
         if (BuildConfig.DEBUG) {
-            System.out.println("onSearchFinished (cancel = " + cancelled + ")");
+            Logger.debug("onSearchFinished (cancel = " + cancelled + ")");
         }
 
         // Set cancelled flag if the task was cancelled

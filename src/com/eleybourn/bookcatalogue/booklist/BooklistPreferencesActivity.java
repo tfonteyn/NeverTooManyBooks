@@ -147,7 +147,7 @@ public class BooklistPreferencesActivity extends PreferencesBaseActivity {
                 HintManager.displayHint(this, R.string.hint_booklist_global_properties, null);
             }
         } catch (Exception e) {
-            Logger.logError(e);
+            Logger.error(e);
         }
     }
 

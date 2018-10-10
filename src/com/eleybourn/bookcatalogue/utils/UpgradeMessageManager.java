@@ -133,7 +133,7 @@ public class UpgradeMessageManager {
 
             BCPreferences.setInt(PREF_LAST_MESSAGE, currVersion);
         } catch (NameNotFoundException e) {
-            Logger.logError(e, "Failed to get package version code");
+            Logger.error(e, "Failed to get package version code");
         }
     }
 

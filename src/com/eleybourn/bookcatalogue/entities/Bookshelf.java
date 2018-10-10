@@ -23,14 +23,19 @@ public class Bookshelf implements Serializable, Utils.ItemWithIdFixup {
 
     /**
      * Constructor
-     *
-     * @param id     ID of Bookshelf in DB (0 if not in DB)
      */
     public Bookshelf(final long id, @NonNull final String name) {
         this.id = id;
         this.name = name.trim();
     }
 
+    /**
+     * Support for Serializable/encoding to a text file
+     *
+     * @return the object encoded as a String. If the format changes, update serialVersionUID
+     *
+     * "name"
+     */
     @Override
     @NonNull
     public String toString() {
@@ -54,7 +59,7 @@ public class Bookshelf implements Serializable, Utils.ItemWithIdFixup {
     /**
      * Two bookshelves are equal if:
      * - it's the same Object duh..
-     * - one or both of them is 'new' (e.g. id == 0) but their names are equal
+     * - one or both of them is 'new' (error.g. id == 0) but their names are equal
      * - ids are equal
      *
      * Compare is CASE SENSITIVE !

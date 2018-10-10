@@ -130,7 +130,7 @@ public class MessageDialogFragment extends DialogFragment {
             if (a != null)
                 a.onMessageDialogResult(mDialogId, button);
         } catch (Exception e) {
-            Logger.logError(e);
+            Logger.error(e);
         }
         dismiss();
     }

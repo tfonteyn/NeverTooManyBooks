@@ -309,7 +309,7 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Boo
             }
 
         } catch (Exception e) {
-            Logger.logError(e);
+            Logger.error(e);
         }
     }
 

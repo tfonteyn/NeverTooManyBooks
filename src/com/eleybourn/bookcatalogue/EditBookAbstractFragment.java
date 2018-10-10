@@ -120,7 +120,7 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
             item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         }
 
-        boolean hasAuthor = mEditManager.getBook().getAuthorsList().size() > 0;
+        boolean hasAuthor = mEditManager.getBook().getAuthorList().size() > 0;
         if (hasAuthor) {
             menu.add(Menu.NONE, R.id.MENU_AMAZON_BOOKS_BY_AUTHOR, 0, R.string.amazon_books_by_author)
                     .setIcon(R.drawable.ic_search);
@@ -220,7 +220,7 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
 
     @Nullable
     private String getAuthorFromBook() {
-        ArrayList<Author> list = mEditManager.getBook().getAuthorsList();
+        ArrayList<Author> list = mEditManager.getBook().getAuthorList();
         return list.size() > 0 ? list.get(0).getDisplayName() : null;
     }
 
@@ -538,7 +538,7 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
         //	System.out.print(v.getClass().getName() + " (" + v.getId() + ")" + (v.getId() == R.id.descriptionLabel? "DESC! ->" : " ->"));
         //	if (v instanceof TextView) {
         //		String s = ((TextView)v).getText().toString().trim();
-        //		System.out.println(s.substring(0, Math.min(s.length(), 20)));
+        //		System.out.print(s.substring(0, Math.min(s.length(), 20)));
         //	} else {
         //		System.out.println();
         //	}

@@ -148,7 +148,7 @@ abstract public class ManagedTask extends Thread {
         } catch (InterruptedException e) {
             mCancelFlg = true;
         } catch (Exception e) {
-            Logger.logError(e);
+            Logger.error(e);
         }
 
         mFinished = true;

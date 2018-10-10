@@ -44,7 +44,7 @@ public class BackupTest {
         try {
             performBackupTar(f);
         } catch (IOException e) {
-            Logger.logError(e);
+            Logger.error(e);
         }
     }
 
@@ -53,13 +53,13 @@ public class BackupTest {
         try {
             performRestoreTar(f);
         } catch (IOException e) {
-            Logger.logError(e);
+            Logger.error(e);
         }
     }
 
     private static void performBackupTar(File file) throws IOException {
         if (BuildConfig.DEBUG) {
-            System.out.println("Starting " + file.getAbsolutePath());
+            Logger.debug("Starting " + file.getAbsolutePath());
         }
         new TarBackupContainer(file)
                 .newWriter()
@@ -81,7 +81,7 @@ public class BackupTest {
                             mMessage = message;
                         mPosition += delta;
                         if (BuildConfig.DEBUG) {
-                            System.out.println("BKP: " + mMessage + " " + mPosition + " of " + mMax);
+                            Logger.debug("BKP: " + mMessage + " " + mPosition + " of " + mMax);
                         }
                     }
 
@@ -101,13 +101,13 @@ public class BackupTest {
                     }
                 }, Exporter.EXPORT_ALL, null);
         if (BuildConfig.DEBUG) {
-            System.out.println("Finished " + file.getAbsolutePath() + ", size = " + file.length());
+            Logger.debug("Finished " + file.getAbsolutePath() + ", size = " + file.length());
         }
     }
 
     private static void performRestoreTar(File file) throws IOException {
         if (BuildConfig.DEBUG) {
-            System.out.println("Starting " + file.getAbsolutePath());
+            Logger.debug("Starting " + file.getAbsolutePath());
         }
 
         TarBackupContainer bkp = new TarBackupContainer(file);
@@ -134,7 +134,7 @@ public class BackupTest {
                 }
                 mPosition += delta;
                 if (BuildConfig.DEBUG) {
-                    System.out.println("RST: " + mMessage + " " + mPosition + " of " + mMax);
+                    Logger.debug("RST: " + mMessage + " " + mPosition + " of " + mMax);
                 }
             }
 
@@ -145,7 +145,7 @@ public class BackupTest {
         }, Importer.IMPORT_ALL);
 
         if (BuildConfig.DEBUG) {
-            System.out.println("Finished " + file.getAbsolutePath() + ", size = " + file.length());
+            Logger.debug("Finished " + file.getAbsolutePath() + ", size = " + file.length());
         }
     }
 

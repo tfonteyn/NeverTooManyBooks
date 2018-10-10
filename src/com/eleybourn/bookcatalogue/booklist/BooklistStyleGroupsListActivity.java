@@ -105,7 +105,7 @@ public class BooklistStyleGroupsListActivity extends EditObjectListActivity<Grou
             }
 
         } catch (Exception e) {
-            Logger.logError(e);
+            Logger.error(e);
         }
     }
 

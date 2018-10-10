@@ -97,7 +97,7 @@ public class ImageUtils {
         final int samplePow2 = (int) Math.pow(2, Math.ceil(Math.log(idealSampleSize) / Math.log(2)));
 
         if (DEBUG_SWITCHES.IMAGE_UTILS && BuildConfig.DEBUG) {
-            System.out.println("fetchFileIntoImageView:\n" +
+            Logger.debug("fetchFileIntoImageView:\n" +
                     " filename = " + fileSpec + "\n" +
                     "  exact       = " + exact + "\n" +
                     "  maxWidth    = " + maxWidth + ", opt.outWidth = " + opt.outWidth + ", widthRatio   = " + widthRatio + "\n" +
@@ -120,7 +120,7 @@ public class ImageUtils {
                 if (tmpBm == null) {
                     // We ran out of memory, most likely
                     // TODO: Need a way to try loading images after GC(). Otherwise, covers in cover browser wil stay blank.
-                    Logger.logError(new RuntimeException("Unexpectedly failed to decode bitmap; memory exhausted?"));
+                    Logger.error("Unexpectedly failed to decode bitmap; memory exhausted?");
                     return null;
                 }
 
@@ -141,12 +141,12 @@ public class ImageUtils {
                 bm = BitmapFactory.decodeFile(fileSpec, opt);
             }
         } catch (OutOfMemoryError e) {
-            Logger.logError(e);
+            Logger.error(e);
             return null;
         }
 
         if (DEBUG_SWITCHES.IMAGE_UTILS && BuildConfig.DEBUG) {
-            System.out.println("\n" +
+            Logger.debug("\n" +
                     "bm.width = " + bm.getWidth() + "\n" +
                     "bm.height = " + bm.getHeight() + "\n"
             );
@@ -226,7 +226,7 @@ public class ImageUtils {
         try (InputStream in = Utils.getInputStream(urlText)) {
             StorageUtils.saveInputStreamToFile(in, file);
         } catch (IOException | URISyntaxException e) {
-            Logger.logError(e);
+            Logger.error(e);
             return "";
         }
         return file.getAbsolutePath();
@@ -247,7 +247,7 @@ public class ImageUtils {
         Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length, new BitmapFactory.Options());
 
         if (BuildConfig.DEBUG) {
-            System.out.println("Array " + bytes.length + " bytes, bitmap " + bitmap.getHeight() + "x" + bitmap.getWidth());
+            Logger.debug("Array " + bytes.length + " bytes, bitmap " + bitmap.getHeight() + "x" + bitmap.getWidth());
         }
         return bitmap;
     }
@@ -275,7 +275,7 @@ public class ImageUtils {
             return out.toByteArray();
 
         } catch (IOException | URISyntaxException e) {
-            Logger.logError(e);
+            Logger.error(e);
             return null;
         }
     }
@@ -424,7 +424,7 @@ public class ImageUtils {
 //        try {
 //            return fetchFileIntoImageView(destView, StorageUtils.getCoverFile(uuid), maxWidth, maxHeight, exact);
 //        } catch (IllegalArgumentException e) {
-//            Logger.logError(e);
+//            Logger.error(e);
 //            return null;
 //        }
 //    }

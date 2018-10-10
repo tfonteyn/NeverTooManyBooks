@@ -238,7 +238,7 @@
     <!--
     **************************************************************************************
     -->
-    <!-- row, button and blurb for 'options' in a an option list (f.e. on a dialog) -->
+    <!-- row, button and blurb for 'options' in a an option list (f.error. on a dialog) -->
     <style name="option_button">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>

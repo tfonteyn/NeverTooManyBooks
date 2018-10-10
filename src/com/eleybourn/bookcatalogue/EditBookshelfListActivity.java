@@ -112,7 +112,7 @@ public class EditBookshelfListActivity extends BookCatalogueListActivity
                     mDb.deleteBookshelf(bookshelf.id);
                     populateList();
                 } else {
-                    //TODO: why not ? as long as we make sure there is another one left.. e.g. count > 2, then you can delete 'one'
+                    //TODO: why not ? as long as we make sure there is another one left.. error.g. count > 2, then you can delete 'one'
                     StandardDialogs.showQuickNotice(this, R.string.delete_1st_bs);
                 }
                 return true;

@@ -30,6 +30,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 
+import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.widgets.FastScroller;
 
@@ -131,11 +132,10 @@ public class MultiTypeListCursorAdapter extends CursorAdapter implements FastScr
         cursor.moveToPosition(savedPos);
 
         if (BuildConfig.DEBUG) {
-            System.out.println("MultiTypeListCursorAdapter.getSectionTextForPosition");
+            Logger.debug("MultiTypeListCursorAdapter.getSectionTextForPosition");
             for (String s : section) {
-                System.out.print("\n   " + s);
+                Logger.debug("Section: " + s);
             }
-            System.out.println();
         }
         Tracker.exitFunction(this, "getSectionTextForPosition");
         return section;

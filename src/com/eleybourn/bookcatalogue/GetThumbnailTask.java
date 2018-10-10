@@ -27,6 +27,7 @@ import android.widget.ImageView;
 
 import com.eleybourn.bookcatalogue.booklist.BooklistPreferencesActivity;
 import com.eleybourn.bookcatalogue.database.CoversDbHelper;
+import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTask;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTaskContext;
@@ -59,13 +60,13 @@ public class GetThumbnailTask implements SimpleTask {
     private static final SimpleTaskQueue mQueue;
     static {
         int maxTasks = 1;
-        int cpus = Runtime.getRuntime().availableProcessors();
-        if (cpus > 4) {
+        int nr = Runtime.getRuntime().availableProcessors();
+        if (nr > 4) {
             maxTasks = 3; // just a poke in the dark TODO: experiment more
         }
         if (BuildConfig.DEBUG) {
-            System.out.println("GetThumbnailTask: #cpu     : " + cpus);
-            System.out.println("GetThumbnailTask: #maxTasks: " + maxTasks);
+            Logger.debug("GetThumbnailTask: #cpu     : " + nr);
+            Logger.debug("GetThumbnailTask: #maxTasks: " + maxTasks);
         }
         mQueue = new SimpleTaskQueue("thumbnails", maxTasks);
     }
@@ -170,7 +171,7 @@ public class GetThumbnailTask implements SimpleTask {
 			/*
 			try {
 				Thread.sleep(10); // Let the UI have a chance to do something if we are racking up images!
-			} catch (InterruptedException e) {
+			} catch (InterruptedException error) {
 			}
 			*/
 

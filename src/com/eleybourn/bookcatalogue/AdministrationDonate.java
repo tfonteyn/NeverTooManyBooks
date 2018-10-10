@@ -49,7 +49,7 @@ public class AdministrationDonate extends BookCatalogueActivity {
             setTitle(R.string.app_name);
             setupPage();
         } catch (Exception e) {
-            Logger.logError(e);
+            Logger.error(e);
         }
     }
 

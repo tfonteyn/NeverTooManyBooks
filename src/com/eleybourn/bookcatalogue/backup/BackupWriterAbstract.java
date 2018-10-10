@@ -111,12 +111,12 @@ public abstract class BackupWriterAbstract implements BackupWriter {
             try {
                 close();
             } catch (Exception e) {
-                Logger.logError(e, "Failed to close archive");
+                Logger.error(e, "Failed to close archive");
             }
         }
 
         if (BuildConfig.DEBUG) {
-            System.out.println("Closed writer");
+            Logger.debug("Closed writer");
         }
     }
 
@@ -213,7 +213,7 @@ public abstract class BackupWriterAbstract implements BackupWriter {
                 sinceTime = since.getTime();
             } catch (Exception e) {
                 // Just ignore; backup everything
-                Logger.logError(e);
+                Logger.error(e);
             }
         }
 
@@ -252,7 +252,7 @@ public abstract class BackupWriterAbstract implements BackupWriter {
             }
         }
         if (!dryRun) {
-            System.out.println("Wrote " + ok + " Images, " + missing + " missing, and " + skipped + " skipped");
+            Logger.info("Wrote " + ok + " Images, " + missing + " missing, and " + skipped + " skipped");
         }
 
         return ok;

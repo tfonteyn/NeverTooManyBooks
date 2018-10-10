@@ -94,7 +94,7 @@ public class GoodreadsWork {
 						mTask = new GetImageTask(getBestUrl(), this);
 						queue.enqueue(mTask);
 					} catch (Exception e) {
-						Logger.logError(e, "Failed to create task to get image from goodreads");
+						Logger.error(e, "Failed to create task to get image from goodreads");
 					}
 				}
 				// Save the work in the View for verification

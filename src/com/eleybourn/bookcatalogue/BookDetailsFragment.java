@@ -117,7 +117,7 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
             // Restore default visibility and hide unused/unwanted and empty fields
             showHideFields(true);
         } catch (Exception e) {
-            Logger.logError(e);
+            Logger.error(e);
         }
 
         // Populate bookshelves and hide the field if bookshelves are not set.
@@ -186,7 +186,7 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
     /* Override populating author field. Hide the field if author not set or
      * shows author (or authors through ',') with 'by' at the beginning. */
     protected void populateAuthorListField() {
-        ArrayList<Author> authors = mEditManager.getBook().getAuthorsList();
+        ArrayList<Author> authors = mEditManager.getBook().getAuthorList();
         int authorsCount = authors.size();
         if (authorsCount == 0) {
             // Hide author field if it is not set

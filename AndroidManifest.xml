@@ -156,7 +156,7 @@
         <!-- Booklist Preferences -->
         <activity android:name="com.eleybourn.bookcatalogue.booklist.BooklistPreferencesActivity" />
 
-        <!-- Other preferences (e.g. non-booklist -->
+        <!-- Other preferences (error.g. non-booklist -->
         <activity android:name="com.eleybourn.bookcatalogue.PreferencesActivity" />
 
         <!-- Add Book; this activity then sub divides Add by scan,isbn,internet, or add manually -->

@@ -51,7 +51,7 @@ abstract public class PreferencesBaseActivity extends BookCatalogueActivity {
 			globalProps.buildView(getLayoutInflater(), styleProps);
 
 		} catch (Exception e) {
-			Logger.logError(e);
+			Logger.error(e);
 		}
 	}
 }

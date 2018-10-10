@@ -349,7 +349,7 @@ public class BookCatalogueApp extends Application {
                     .getPackageManager()
                     .getApplicationInfo(mInstance.getPackageName(), PackageManager.GET_META_DATA);
         } catch (PackageManager.NameNotFoundException e) {
-            Logger.logError(e);
+            Logger.error(e);
             throw new IllegalStateException("See log for PackageManager.NameNotFoundException");
         }
         String result = ai.metaData.getString(name);
@@ -446,7 +446,7 @@ public class BookCatalogueApp extends Application {
 
     /**
      *
-     * @param theme     allows to override the app theme, f.e. with Dialog Themes
+     * @param theme     allows to override the app theme, f.error. with Dialog Themes
      * @param attr      resource id to get
      *
      * @return resolved attribute
@@ -472,7 +472,7 @@ public class BookCatalogueApp extends Application {
             }
         } catch (Exception e) {
             // Not much we can do...we want locale set early, but not fatal if it fails.
-            Logger.logError(e);
+            Logger.error(e);
         }
 
         Terminator.init();

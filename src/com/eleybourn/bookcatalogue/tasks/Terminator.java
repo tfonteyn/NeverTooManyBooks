@@ -110,7 +110,7 @@ public class Terminator {
 
         @Override
         public void run(@NonNull final SimpleTaskContext taskContext) {
-            System.out.println("Terminator: Nice night for a walk.");
+            Logger.info("Terminator: Nice night for a walk.");
             do {
                 Event event;
                 long delay;
@@ -139,8 +139,8 @@ public class Terminator {
                     synchronized (mWaitObject) {
                         try {
                             mWaitObject.wait(delay);
-                        } catch (Exception ex) {
-                            Logger.logError(ex);
+                        } catch (Exception e) {
+                            Logger.error(e);
                         }
                     }
                 } else {
@@ -150,8 +150,8 @@ public class Terminator {
                     // But...not for now.
                     try {
                         event.runnable.run();
-                    } catch (Exception ex) {
-                        Logger.logError(ex);
+                    } catch (Exception e) {
+                        Logger.error(e);
                     }
                 }
             } while (true);
@@ -159,9 +159,9 @@ public class Terminator {
 
         @Override
         public void onFinish(Exception e) {
-            System.out.println("Terminator: I'll be back.");
+            Logger.info("Terminator: I'll be back.");
             if (e != null) {
-                Logger.logError(e);
+                Logger.error(e);
             }
         }
     }

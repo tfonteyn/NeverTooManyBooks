@@ -98,7 +98,7 @@ public class TaskListActivity extends BindableItemListActivity {
                 HintManager.displayHint(this, R.string.hint_background_tasks, null);
 
         } catch (Exception e) {
-            Logger.logError(e);
+            Logger.error(e);
         }
 
     }

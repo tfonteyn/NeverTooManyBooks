@@ -335,7 +335,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 try {
                     db.execSQL(delete_sql);
                 } catch (Exception e) {
-                    Logger.logError(e, "Index deletion failed (probably not a problem)");
+                    Logger.error(e, "Index deletion failed (probably not a problem)");
                 }
             }
         }
@@ -351,7 +351,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 db.execSQL(index);
             } catch (Exception e) {
                 // Expected on multi-version upgrades.
-                Logger.logError(e, "Index creation failed (probably not a problem), definition was: " + index);
+                Logger.error(e, "Index creation failed (probably not a problem), definition was: " + index);
             }
         }
         db.execSQL("analyze");

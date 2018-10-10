@@ -330,14 +330,14 @@ public class ArrayUtils<T> {
     }
 
     /**
-     * Add the current text data to the collection if not present
-     * otherwise append the data as a list.
+     * Add the value to the collection if not present
+     * otherwise append the value to the list.
      *
      * @param bundle to add to
      * @param key    for value to add
      * @param value  to add
      */
-    public static void appendOrAdd(@NonNull final Bundle bundle,
+    public static void addOrAppend(@NonNull final Bundle bundle,
                                    @Nullable final String key,
                                    @NonNull final String value) {
         String s = encodeListItem(value);
@@ -350,7 +350,7 @@ public class ArrayUtils<T> {
     }
 
     /**
-     * Add the current text data to the collection if not present
+     * Add the value to the collection if not present
      *
      * @param bundle to add to
      * @param key    for value to add
@@ -361,6 +361,22 @@ public class ArrayUtils<T> {
                                        @NonNull final String value) {
         if (!bundle.containsKey(key) || bundle.getString(key).isEmpty()) {
             bundle.putString(key, value.trim());
+        }
+    }
+
+    /**
+     * Add the value to the list if the value is actually 'real'
+     *
+     * @param list  to add to
+     * @param value to add
+     */
+    public static void addIfHasValue(@NonNull final List<String> list,
+                                     @Nullable String value) {
+        if (value != null) {
+            value = value.trim();
+            if (!value.isEmpty()) {
+                list.add(value);
+            }
         }
     }
 

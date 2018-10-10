@@ -52,7 +52,7 @@ public class ISFDBManager {
                 return null;
             }
         } catch (Exception e) {
-            Logger.logError(e, "Error getting thumbnail from ISFDB");
+            Logger.error(e, "Error getting thumbnail from ISFDB");
             return null;
         }
     }

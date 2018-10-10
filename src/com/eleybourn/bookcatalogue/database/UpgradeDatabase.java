@@ -410,19 +410,19 @@ public class UpgradeDatabase {
             try {
                 db.execSQL("ALTER TABLE " + TBL_BOOKS + " ADD " + DOM_BOOK_NOTES + " text");
             } catch (Exception e) {
-                Logger.logError(e);
+                Logger.error(e);
                 throw new RuntimeException("Failed to upgrade database", e);
             }
             try {
                 db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_NOTES + " = ''");
             } catch (Exception e) {
-                Logger.logError(e);
+                Logger.error(e);
                 throw new RuntimeException("Failed to upgrade database", e);
             }
             try {
                 db.execSQL(DATABASE_CREATE_LOAN);
             } catch (Exception e) {
-                Logger.logError(e);
+                Logger.error(e);
                 throw new RuntimeException("Failed to upgrade database", e);
             }
         }
@@ -449,7 +449,7 @@ public class UpgradeDatabase {
             try {
                 db.execSQL("ALTER TABLE " + TBL_BOOKS + " ADD " + DOM_BOOK_LIST_PRICE + " text");
             } catch (Exception e) {
-                Logger.logError(e);
+                Logger.error(e);
                 throw new RuntimeException("Failed to upgrade database", e);
             }
         }
@@ -474,14 +474,14 @@ public class UpgradeDatabase {
             try {
                 db.execSQL(DATABASE_CREATE_ANTHOLOGY_82);
             } catch (Exception e) {
-                Logger.logError(e);
+                Logger.error(e);
                 throw new RuntimeException("Failed to upgrade database", e);
             }
 
             try {
                 db.execSQL("ALTER TABLE " + TBL_BOOKS + " ADD " + DOM_BOOK_ANTHOLOGY_MASK + " int not null default " + DOM_ANTHOLOGY_NOT_AN_ANTHOLOGY);
             } catch (Exception e) {
-                Logger.logError(e);
+                Logger.error(e);
                 throw new RuntimeException("Failed to upgrade database", e);
             }
             mMessage += "* There is now support to record books as anthologies and it's titles. \n\n";
@@ -505,7 +505,7 @@ public class UpgradeDatabase {
                 db.execSQL("ALTER TABLE " + TBL_BOOKS + " ADD " + OLD_KEY_AUDIOBOOK + " boolean not null default 'f'");
                 db.execSQL("ALTER TABLE " + TBL_BOOKS + " ADD " + DOM_BOOK_SIGNED + " boolean not null default 'f'");
             } catch (Exception e) {
-                Logger.logError(e);
+                Logger.error(e);
                 throw new RuntimeException("Failed to upgrade database", e);
             }
         }
@@ -518,7 +518,7 @@ public class UpgradeDatabase {
                 db.execSQL("UPDATE " + TBL_BOOKS + " SET " + OLD_KEY_AUDIOBOOK + "='f'");
                 db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_SIGNED + "='f'");
             } catch (Exception e) {
-                Logger.logError(e);
+                Logger.error(e);
                 throw new RuntimeException("Failed to upgrade database", e);
             }
         }
@@ -603,7 +603,7 @@ public class UpgradeDatabase {
                 db.execSQL("DROP TABLE tmp2");
                 db.execSQL("DROP TABLE tmp3");
             } catch (Exception e) {
-                Logger.logError(e);
+                Logger.error(e);
                 throw new RuntimeException("Failed to upgrade database", e);
             }
         }
@@ -711,7 +711,7 @@ public class UpgradeDatabase {
             mMessage += "* The save button will always be visible on the edit book screen\n\n";
             mMessage += "* Searching for a single space will clear the search results page\n\n";
             mMessage += "* The Date Picker will now appear in a popup in order to save space on the screen (Requested by several people)\n\n";
-            mMessage += "* To improve speed when sorting by title, the titles will be broken up by the first character. Remember prefixes such as 'the' and 'a' are listed after the title, e.g. 'The Trigger' becomes 'Trigger, The'\n\n";
+            mMessage += "* To improve speed when sorting by title, the titles will be broken up by the first character. Remember prefixes such as 'the' and 'a' are listed after the title, error.g. 'The Trigger' becomes 'Trigger, The'\n\n";
         }
         if (curVersion == 48) {
             curVersion++;
@@ -821,7 +821,7 @@ public class UpgradeDatabase {
 
                     db.execSQL("DROP TABLE tmpBooks");
                 } catch (Exception e) {
-                    Logger.logError(e);
+                    Logger.error(e);
                     throw new RuntimeException("Failed to upgrade database", e);
                 }
             }
@@ -885,7 +885,7 @@ public class UpgradeDatabase {
 
                         db.execSQL("DROP TABLE tmpBooks");
                     } catch (Exception e) {
-                        Logger.logError(e);
+                        Logger.error(e);
                         throw new RuntimeException("Failed to upgrade database", e);
                     }
                 }

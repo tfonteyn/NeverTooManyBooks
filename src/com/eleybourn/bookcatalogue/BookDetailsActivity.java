@@ -356,7 +356,7 @@ public class BookDetailsActivity extends BookCatalogueActivity
      *
      * 1. If a valid rowId exists it will populate the fields from the database
      *
-     * 2. If fields have been passed from another activity (e.g. {@link BookISBNSearchActivity}) it
+     * 2. If fields have been passed from another activity (error.g. {@link BookISBNSearchActivity}) it
      * will populate the fields from the bundle
      *
      * 3. It will leave the fields blank for new books.
@@ -570,7 +570,7 @@ public class BookDetailsActivity extends BookCatalogueActivity
             ((OnPartialDatePickerListener) frag).onPartialDatePickerSet(dialogId, dialog, year, month, day);
         } else {
             StandardDialogs.showQuickNotice(this, R.string.unexpected_error);
-            Logger.logError(new RuntimeException("Received date dialog result with no fragment to handle it"));
+            Logger.error("Received date dialog result with no fragment to handle it");
         }
         // Make sure it's dismissed
         if (dialog.isVisible()) {
@@ -589,7 +589,7 @@ public class BookDetailsActivity extends BookCatalogueActivity
             ((OnPartialDatePickerListener) frag).onPartialDatePickerCancel(dialogId, dialog);
         } else {
             StandardDialogs.showQuickNotice(this, R.string.unexpected_error);
-            Logger.logError(new RuntimeException("Received date dialog cancellation with no fragment to handle it"));
+            Logger.error("Received date dialog cancellation with no fragment to handle it");
         }
         // Make sure it's dismissed
         if (dialog.isVisible()) {
@@ -610,7 +610,7 @@ public class BookDetailsActivity extends BookCatalogueActivity
             ((OnTextFieldEditorListener) frag).onTextFieldEditorSave(dialogId, dialog, newText);
         } else {
             StandardDialogs.showQuickNotice(this, R.string.unexpected_error);
-            Logger.logError(new RuntimeException("Received onTextFieldEditorSave result with no fragment to handle it"));
+            Logger.error("Received onTextFieldEditorSave result with no fragment to handle it");
         }
         // Make sure it's dismissed
         if (dialog.isVisible()) {
@@ -629,7 +629,7 @@ public class BookDetailsActivity extends BookCatalogueActivity
             ((OnTextFieldEditorListener) frag).onTextFieldEditorCancel(dialogId, dialog);
         } else {
             StandardDialogs.showQuickNotice(this, R.string.unexpected_error);
-            Logger.logError(new RuntimeException("Received onTextFieldEditorCancel result with no fragment to handle it"));
+            Logger.error("Received onTextFieldEditorCancel result with no fragment to handle it");
         }
         // Make sure it's dismissed
         if (dialog.isVisible()) {
@@ -649,7 +649,7 @@ public class BookDetailsActivity extends BookCatalogueActivity
             ((OnBookshelfCheckChangeListener) frag).onBookshelfCheckChanged(textList, encodedList);
         } else {
             StandardDialogs.showQuickNotice(this, R.string.unexpected_error);
-            Logger.logError(new RuntimeException("Received onBookshelfCheckChanged result with no fragment to handle it"));
+            Logger.error("Received onBookshelfCheckChanged result with no fragment to handle it");
         }
     }
 
@@ -837,7 +837,7 @@ public class BookDetailsActivity extends BookCatalogueActivity
         validate();
 
         // However, there is some data that we really do require...
-        if (mBook.getAuthorsList().size() == 0) {
+        if (mBook.getAuthorList().size() == 0) {
             StandardDialogs.showQuickNotice(this, R.string.author_required);
             return;
         }

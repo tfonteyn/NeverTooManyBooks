@@ -8,7 +8,7 @@ package com.eleybourn.bookcatalogue;
  * So use something like this:
  *
  *    if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
- *          System.out.println("some debug info);
+ *          Logger.debug("some debug info);
  *    }
  *
  *    RELEASE: set all to false ! in case you forgot to 'and' with BuildConfig.DEBUG anywhere...

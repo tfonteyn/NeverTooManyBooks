@@ -187,7 +187,7 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
                     try {
                         m.deliver(a);
                     } catch (Exception e) {
-                        Logger.logError(e);
+                        Logger.error(e);
                     }
                 }
                 toDeliver.clear();
@@ -277,7 +277,7 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
         // If no tasks left, exit
         if (!mQueue.hasActiveTasks()) {
             if (DEBUG_SWITCHES.SQPFragment && BuildConfig.DEBUG) {
-                System.out.println("STQPF: Tasks finished while activity absent, closing");
+                Logger.debug("STQPF: Tasks finished while activity absent, closing");
             }
             dismiss();
         }
@@ -348,7 +348,7 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
      */
     private void requestUpdateProgress() {
         if (DEBUG_SWITCHES.SQPFragment && BuildConfig.DEBUG) {
-            System.out.println("STQPF: " + mMessage + " (" + mProgress + "/" + mMax + ")");
+            Logger.debug("STQPF: " + mMessage + " (" + mProgress + "/" + mMax + ")");
         }
         if (Thread.currentThread() == mHandler.getLooper().getThread()) {
             updateProgress();
@@ -512,9 +512,9 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
         private int mState = 0;
 
         @Override
-        public void onFinish(@NonNull final SimpleTaskQueueProgressFragment fragment, @Nullable final Exception exception) {
-            if (exception != null) {
-                Logger.logError(exception);
+        public void onFinish(@NonNull final SimpleTaskQueueProgressFragment fragment, @Nullable final Exception e) {
+            if (e != null) {
+                Logger.error(e);
                 StandardDialogs.showQuickNotice(fragment.getActivity(), R.string.unexpected_error);
             }
         }
@@ -547,14 +547,14 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
             try {
                 mTask.onFinish(SimpleTaskQueueProgressFragment.this, mException);
             } catch (Exception e) {
-                Logger.logError(e);
+                Logger.error(e);
             }
             try {
                 if (a instanceof OnTaskFinishedListener) {
                     ((OnTaskFinishedListener) a).onTaskFinished(SimpleTaskQueueProgressFragment.this, mTaskId, mSuccess, mWasCancelled, mTask);
                 }
             } catch (Exception e) {
-                Logger.logError(e);
+                Logger.error(e);
             }
 
         }

@@ -34,17 +34,23 @@ import java.util.Objects;
  * ENHANCE Could just have used a String, but this way we're prepared for a dedicated table with the publishers
  */
 public class Publisher implements Serializable {
-    private static final long serialVersionUID = 1L;
     public static final char SEPARATOR = ',';
-
+    private static final long serialVersionUID = 1L;
     public String name;
 
     public Publisher(@NonNull final String name) {
         this.name = name.trim();
     }
 
-    // Support for encoding to a text file
+    /**
+     * Support for Serializable/encoding to a text file
+     *
+     * @return the object encoded as a String. If the format changes, update serialVersionUID
+     *
+     * "name"
+     */
     @Override
+    @NonNull
     public String toString() {
         return ArrayUtils.encodeListItem(SEPARATOR, name);
     }
@@ -61,7 +67,7 @@ public class Publisher implements Serializable {
     /**
      * Two Publishers are equal if:
      * - it's the same Object duh..
-     * - one or both of them is 'new' (e.g. id == 0) but their names are equal
+     * - one or both of them is 'new' (error.g. id == 0) but their names are equal
      * - ids are equal
      *
      * Compare is CASE SENSITIVE !
@@ -77,7 +83,7 @@ public class Publisher implements Serializable {
         Publisher publisher = (Publisher) o;
         //ENHANCE uncomment the 3 lines once(if) we start using ids
 //        if (id == 0 || publisher.id == 0) {
-            return Objects.equals(name, publisher.name);
+        return Objects.equals(name, publisher.name);
 //        }
 //        return (id == publisher.id);
     }

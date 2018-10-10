@@ -178,7 +178,7 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity {
         final List<ContextDialogItem> items = new ArrayList<>();
 
         if (event == null) {
-            Logger.logError(new RuntimeException("event was null"));
+            Logger.error("event was null");
             return;
         }
         event.addContextMenuItems(this, parent, v, position, id, items, mDb);

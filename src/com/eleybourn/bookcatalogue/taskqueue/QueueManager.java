@@ -306,7 +306,7 @@ public abstract class QueueManager {
         if (Thread.currentThread() == mUIThread.get()) {
             synchronized (this) {
                 if (BuildConfig.DEBUG) {
-                    System.out.println(this + ": is toasting: " + message);
+                    Logger.debug(this + ": is toasting: " + message);
                 }
                 // this is basically 'showing' on the UI thread of the Application.onCreate()
                 // TODO: replace with using the Notify stuff ?

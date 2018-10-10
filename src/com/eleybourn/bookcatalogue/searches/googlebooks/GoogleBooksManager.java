@@ -52,7 +52,7 @@ public class GoogleBooksManager {
                 return null;
             }
         } catch (Exception e) {
-            Logger.logError(e, "Error getting thumbnail from Google");
+            Logger.error(e, "Error getting thumbnail from Google");
             return null;
         }
     }
@@ -94,7 +94,7 @@ public class GoogleBooksManager {
             }
             // Don't bother catching general exceptions, they will be caught by the caller.
         } catch (ParserConfigurationException | IOException | SAXException e) {
-            Logger.logError(e);
+            Logger.error(e);
         }
     }
 }

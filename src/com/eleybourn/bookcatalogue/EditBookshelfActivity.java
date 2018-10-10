@@ -87,7 +87,7 @@ public class EditBookshelfActivity extends BookCatalogueActivity {
             populateFields();
 
         } catch (Exception e) {
-            Logger.logError(e);
+            Logger.error(e);
         }
     }
 

@@ -86,7 +86,7 @@ public class UpdateFromInternet extends ActivityWithTasks {
             mPrefs = getSharedPreferences(BookCatalogueApp.APP_SHARED_PREFERENCES, android.content.Context.MODE_PRIVATE);
             setupFields(bookId);
         } catch (Exception e) {
-            Logger.logError(e);
+            Logger.error(e);
         }
     }
 
@@ -94,7 +94,7 @@ public class UpdateFromInternet extends ActivityWithTasks {
      * Add a FieldUsage if the specified field has not been hidden by the user.
      *
      * @param field    name to use in FieldUsages
-     * @param visField Field name to check for visibility. If null, use field.
+     * @param visField Field name to check for visibility. If null, use field itself.
      * @param stringId of field label string
      * @param usage    Usage to apply.
      */

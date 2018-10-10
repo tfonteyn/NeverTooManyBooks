@@ -29,7 +29,7 @@ public class SearchAmazonThread extends SearchThread {
                 checkForSeriesName();
             }
         } catch (Exception e) {
-            Logger.logError(e);
+            Logger.error(e);
             showException(R.string.searching_amazon_books, e);
         }
     }

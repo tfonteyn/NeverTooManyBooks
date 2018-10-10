@@ -275,7 +275,7 @@ public class TaskManager implements AutoCloseable {
             // Now, display it if we have a context; if it is empty and complete, delete the progress.
             mMessageSwitch.send(mMessageSenderId, new OnProgressMessage(progressCount, progressMax, progressMessage));
         } catch (Exception e) {
-            Logger.logError(e, "Error updating progress");
+            Logger.error(e, "Error updating progress");
         }
     }
 
@@ -335,7 +335,7 @@ public class TaskManager implements AutoCloseable {
     @Override
     public void close() {
         if (DEBUG_SWITCHES.TASK_MANAGER && BuildConfig.DEBUG) {
-            System.out.println("DBG: Task Manager close requested");
+            Logger.debug("DBG: Task Manager close requested");
         }
 
         mIsClosing = true;

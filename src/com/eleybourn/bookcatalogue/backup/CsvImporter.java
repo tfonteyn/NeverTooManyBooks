@@ -211,9 +211,9 @@ public class CsvImporter implements Importer {
                         coverFinder.copyOrRenameCoverFile(uuidVal, bookIdFromFile, bookId);
                     }
                 } catch (IOException e) {
-                    Logger.logError(e, "Cover import failed at row " + row);
+                    Logger.error(e, "Cover import failed at row " + row);
                 } catch (Exception e) {
-                    Logger.logError(e, "Import failed at row " + row);
+                    Logger.error(e, "Import failed at row " + row);
                 }
 
                 long now = System.currentTimeMillis();
@@ -225,7 +225,7 @@ public class CsvImporter implements Importer {
                 row++;
             }
         } catch (Exception e) {
-            Logger.logError(e);
+            Logger.error(e);
             throw new RuntimeException(e);
         } finally {
             if (mDb.inTransaction()) {
@@ -237,12 +237,12 @@ public class CsvImporter implements Importer {
                 mDb.purgeSeries();
                 mDb.analyzeDb();
             } catch (Exception e) {
-                Logger.logError(e);
+                Logger.error(e);
             }
             try {
                 mDb.close();
             } catch (Exception e) {
-                Logger.logError(e);
+                Logger.error(e);
             }
         }
 

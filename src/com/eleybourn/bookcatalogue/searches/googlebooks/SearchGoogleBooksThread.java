@@ -29,13 +29,13 @@ public class SearchGoogleBooksThread extends SearchThread {
                     checkForSeriesName();
                 }
             } catch (Exception e) {
-                Logger.logError(e);
+                Logger.error(e);
                 showException(R.string.searching_google_books, e);
             }
 
 
         } catch (Exception e) {
-            Logger.logError(e);
+            Logger.error(e);
             showException(R.string.search_fail, e);
         }
     }

@@ -165,7 +165,7 @@ public class SimpleTaskQueue {
             mManagedTaskCount++;
         }
 
-        //System.out.println("SimpleTaskQueue(added): " + mExecutionStack.size());
+        //Logger.debug("SimpleTaskQueue(added): " + mExecutionStack.size());
         synchronized (this) {
             int qSize = mExecutionStack.size();
             int nThreads = mThreads.size();
@@ -228,7 +228,7 @@ public class SimpleTaskQueue {
             task.run(taskWrapper);
         } catch (Exception e) {
             taskWrapper.exception = e;
-            Logger.logError(e, "Error running task");
+            Logger.error(e, "Error running task");
         } finally {
             // Dereference
             taskWrapper.activeThread = null;
@@ -280,7 +280,7 @@ public class SimpleTaskQueue {
                     try {
                         task.onFinish(req.exception);
                     } catch (Exception e) {
-                        Logger.logError(e, "Error processing request result");
+                        Logger.error(e, "Error processing request result");
                     }
                 }
 
@@ -289,11 +289,11 @@ public class SimpleTaskQueue {
                     try {
                         mTaskFinishListener.onTaskFinish(task, req.exception);
                     } catch (Exception e) {
-                        Logger.logError(e, "Error from listener while processing request result");
+                        Logger.error(e, "Error from listener while processing request result");
                     }
             }
         } catch (Exception e) {
-            Logger.logError(e, "Exception in processResults in UI thread");
+            Logger.error(e, "Exception in processResults in UI thread");
         }
     }
 
@@ -450,12 +450,12 @@ public class SimpleTaskQueue {
                         }
                     }
 
-                    //System.out.println("SimpleTaskQueue(run): " + mQueue.size());
+                    //Logger.debug("SimpleTaskQueue(run): " + mQueue.size());
                     handleRequest(this, req);
                 }
             } catch (InterruptedException ignore) {
             } catch (Exception e) {
-                Logger.logError(e);
+                Logger.error(e);
             } finally {
                 try {
                     if (mDb != null)

@@ -267,7 +267,7 @@ public class SearchAmazonHandler extends DefaultHandler {
         if (mFetchThumbnail && !mThumbnailUrl.isEmpty()) {
             String fileSpec = ImageUtils.saveThumbnailFromUrl(mThumbnailUrl, "_AM");
             if (!fileSpec.isEmpty())
-                ArrayUtils.appendOrAdd(mBookData, UniqueId.BKEY_THUMBNAIL_USCORE, fileSpec);
+                ArrayUtils.addOrAppend(mBookData, UniqueId.BKEY_THUMBNAIL_USCORE, fileSpec);
         }
     }
 
@@ -305,7 +305,7 @@ public class SearchAmazonHandler extends DefaultHandler {
                 mInListPrice = false;
             } else if (entry) {
                 if (localName.equalsIgnoreCase(AUTHOR)) {
-                    ArrayUtils.appendOrAdd(mBookData, UniqueId.BKEY_AUTHOR_DETAILS, mBuilder.toString());
+                    ArrayUtils.addOrAppend(mBookData, UniqueId.BKEY_AUTHOR_DETAILS, mBuilder.toString());
                 } else if (localName.equalsIgnoreCase(TITLE)) {
                     addIfNotPresent(UniqueId.KEY_TITLE);
                 } else if (localName.equalsIgnoreCase(EAN) || localName.equalsIgnoreCase(E_ISBN)) {
@@ -339,7 +339,7 @@ public class SearchAmazonHandler extends DefaultHandler {
                 } else {
                     if (BuildConfig.DEBUG) {
                         // see what we are missing.
-                        System.out.println(localName + "->'" + mBuilder + "'");
+                        Logger.debug(localName + "->'" + mBuilder + "'");
                     }
                 }
             } //else if (localName.equalsIgnoreCase(TOTAL_RESULTS)){
@@ -348,7 +348,7 @@ public class SearchAmazonHandler extends DefaultHandler {
 
             mBuilder.setLength(0);
         } catch (Exception e) {
-            Logger.logError(e);
+            Logger.error(e);
         }
     }
 

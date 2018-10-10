@@ -415,7 +415,7 @@ public class CatalogueDBAdapter {
         if (DEBUG_SWITCHES.DB_ADAPTER && BuildConfig.DEBUG) {
             synchronized (mDebugInstanceCount) {
                 mDebugInstanceCount++;
-                System.out.println("CatDBA instances: " + mDebugInstanceCount);
+                Logger.debug("CatDBA instances: " + mDebugInstanceCount);
                 //debugAddInstance(this);
             }
         }
@@ -465,9 +465,9 @@ public class CatalogueDBAdapter {
         for (InstanceRefDebug ref : mInstances) {
             CatalogueDBAdapter refDb = ref.get();
             if (refDb == null) {
-                System.out.println("<-- **** Missing ref (not closed?) **** vvvvvvv");
-                Logger.logError(ref.getCreationException());
-                System.out.println("--> **** Missing ref (not closed?) **** ^^^^^^^");
+                Logger.debug("<-- **** Missing ref (not closed?) **** vvvvvvv");
+                Logger.error(ref.getCreationException());
+                Logger.debug("--> **** Missing ref (not closed?) **** ^^^^^^^");
             } else {
                 if (refDb == db) {
                     toDelete.add(ref);
@@ -497,11 +497,11 @@ public class CatalogueDBAdapter {
     public static void debugDumpInstances() {
         for (InstanceRefDebug ref : mInstances) {
             if (ref.get() == null) {
-                System.out.println("<-- **** Missing ref (not closed?) **** vvvvvvv");
-                Logger.logError(ref.getCreationException());
-                System.out.println("--> **** Missing ref (not closed?) **** ^^^^^^^");
+                Logger.debug("<-- **** Missing ref (not closed?) **** vvvvvvv");
+                Logger.error(ref.getCreationException());
+                Logger.debug("--> **** Missing ref (not closed?) **** ^^^^^^^");
             } else {
-                Logger.logError(ref.getCreationException());
+                Logger.error(ref.getCreationException());
             }
         }
     }
@@ -571,7 +571,7 @@ public class CatalogueDBAdapter {
         try {
             mSyncedDb.execSQL("analyze");
         } catch (Exception e) {
-            Logger.logError(e, "Analyze failed");
+            Logger.error(e, "Analyze failed");
         }
     }
 
@@ -857,7 +857,7 @@ public class CatalogueDBAdapter {
     }
 
     /**
-     * @return author id, or 0 (e.g. 'new') when not found
+     * @return author id, or 0 (error.g. 'new') when not found
      */
     public long getAuthorIdByName(@NonNull final String familyName, @NonNull final String givenNames) {
         if (mGetAuthorIdStmt == null) {
@@ -956,7 +956,7 @@ public class CatalogueDBAdapter {
 
             mSyncedDb.setTransactionSuccessful();
         } catch (Exception e) {
-            Logger.logError(e);
+            Logger.error(e);
             throw new DBExceptions.UpdateException(e);
         } finally {
             mSyncedDb.endTransaction(l);
@@ -1011,7 +1011,7 @@ public class CatalogueDBAdapter {
         try {
             mPurgeBookAuthorsStmt.execute();
         } catch (Exception e) {
-            Logger.logError(e, "Failed to purge " + TBL_BOOK_AUTHOR);
+            Logger.error(e, "Failed to purge " + TBL_BOOK_AUTHOR);
         }
 
         if (mPurgeAuthorsStmt == null) {
@@ -1025,7 +1025,7 @@ public class CatalogueDBAdapter {
         try {
             mPurgeAuthorsStmt.execute();
         } catch (Exception e) {
-            Logger.logError(e, "Failed to purge " + TBL_AUTHORS);
+            Logger.error(e, "Failed to purge " + TBL_AUTHORS);
         }
     }
 
@@ -1284,7 +1284,7 @@ public class CatalogueDBAdapter {
         try {
             uuid = this.getBookUuid(bookId);
         } catch (Exception e) {
-            Logger.logError(e, "Failed to get book UUID");
+            Logger.error(e, "Failed to get book UUID");
         }
         int rowsAffected = 0;
         SyncLock l = mSyncedDb.beginTransaction(true);
@@ -1298,7 +1298,7 @@ public class CatalogueDBAdapter {
             }
             mSyncedDb.setTransactionSuccessful();
         } catch (Exception e) {
-            Logger.logError(e, "Failed to delete book");
+            Logger.error(e, "Failed to delete book");
         } finally {
             mSyncedDb.endTransaction(l);
         }
@@ -1316,7 +1316,7 @@ public class CatalogueDBAdapter {
                     coverFile = StorageUtils.getCoverFile(uuid);
                 }
             } catch (Exception e) {
-                Logger.logError(e, "Failed to delete cover thumbnail");
+                Logger.error(e, "Failed to delete cover thumbnail");
             }
 
             if (!uuid.isEmpty()) {
@@ -1371,7 +1371,7 @@ public class CatalogueDBAdapter {
             }
 
             // Make sure we have an author
-            List<Author> authors = book.getAuthorsList();
+            List<Author> authors = book.getAuthorList();
             if (authors.size() == 0) {
                 throw new IllegalArgumentException();
             }
@@ -1396,7 +1396,7 @@ public class CatalogueDBAdapter {
             }
             return newBookId;
         } catch (Exception e) {
-            Logger.logError(e, "Error creating book from\n" + book);
+            Logger.error(e, "Error creating book from\n" + book);
             return -1L;
         } finally {
             if (syncLock != null) {
@@ -1457,7 +1457,7 @@ public class CatalogueDBAdapter {
             }
             return rowsAffected;
         } catch (Exception e) {
-            Logger.logError(e);
+            Logger.error(e);
             throw new DBExceptions.UpdateException("Error updating book from " + book + ": " + e.getMessage(), e);
         } finally {
             if (syncLock != null) {
@@ -1477,7 +1477,7 @@ public class CatalogueDBAdapter {
         }
 
         if (book.containsKey(UniqueId.BKEY_AUTHOR_ARRAY)) {
-            insertBookAuthors(bookId, book.getAuthorsList(), false);
+            insertBookAuthors(bookId, book.getAuthorList(), false);
         }
 
         if (book.containsKey(UniqueId.BKEY_SERIES_ARRAY)) {
@@ -1697,7 +1697,7 @@ public class CatalogueDBAdapter {
                     mAddBookSeriesStmt.executeInsert();
                 }
             } catch (Exception e) {
-                Logger.logError(e);
+                Logger.error(e);
                 throw new DBExceptions.InsertException("Error adding series '" + entry.name +
                         "' {" + seriesId + "} to book " + bookId + ": " + e.getMessage(), e);
             }
@@ -1725,12 +1725,12 @@ public class CatalogueDBAdapter {
         // remove all links between Book and AnthologyTitle's
         int rowsAffected = deleteAnthologyTitlesByBookId(bookId, false);
         if (BuildConfig.DEBUG) {
-            System.out.println("deleteAnthologyTitlesByBookId: " + rowsAffected);
+            Logger.debug("deleteAnthologyTitlesByBookId: " + rowsAffected);
         }
         if (list.size() > 0) {
             for (AnthologyTitle anthologyTitle : list) {
                 if (BuildConfig.DEBUG) {
-                    System.out.println("Adding AnthologyTitlesByBookId: " + anthologyTitle);
+                    Logger.debug("Adding AnthologyTitlesByBookId: " + anthologyTitle);
                 }
                 long authorId = getOrInsertAuthorId(anthologyTitle.getAuthor());
                 // insert new stories, or get the id from existing stories
@@ -1738,9 +1738,9 @@ public class CatalogueDBAdapter {
                 // create the book<->anthologyTitle link
                 long baId = insertOrUpdateBookAnthology(anthologyId, bookId, false);
                 if (BuildConfig.DEBUG) {
-                    System.out.println("     authorId   : " + authorId);
-                    System.out.println("     anthologyId: " + anthologyId);
-                    System.out.println("     baId       : " + baId);
+                    Logger.debug("     authorId   : " + authorId);
+                    Logger.debug("     anthologyId: " + anthologyId);
+                    Logger.debug("     baId       : " + baId);
                 }
             }
         }
@@ -1810,7 +1810,7 @@ public class CatalogueDBAdapter {
                     mAddBookAuthorsStmt.clearBindings();
                 }
             } catch (Exception e) {
-                Logger.logError(e);
+                Logger.error(e);
                 throw new DBExceptions.InsertException("Error adding author '" + author + "' {" + authorId + "} to book " + bookId + ": " + e.getMessage(), e);
             }
         }
@@ -1870,7 +1870,7 @@ public class CatalogueDBAdapter {
                 mInsertBookBookshelfStmt.bindLong(2, bookshelfId);
                 mInsertBookBookshelfStmt.execute();
             } catch (Exception e) {
-                Logger.logError(e, "Error assigning a book to a bookshelf.");
+                Logger.error(e, "Error assigning a book to a bookshelf.");
             }
         }
 
@@ -2128,7 +2128,7 @@ public class CatalogueDBAdapter {
 
 
         if (DEBUG_SWITCHES.SQL && DEBUG_SWITCHES.DB_ADAPTER && BuildConfig.DEBUG) {
-            System.out.println("getAllBooksSql:\n\n" + fullSql);
+            Logger.debug("getAllBooksSql:\n\n" + fullSql);
         }
         return fullSql;
     }
@@ -2881,7 +2881,7 @@ public class CatalogueDBAdapter {
 
             mSyncedDb.setTransactionSuccessful();
         } catch (Exception e) {
-            Logger.logError(e);
+            Logger.error(e);
             throw new DBExceptions.UpdateException(e);
         } finally {
             mSyncedDb.endTransaction(l);
@@ -2903,7 +2903,7 @@ public class CatalogueDBAdapter {
         try {
             mPurgeBookSeriesStmt.execute();
         } catch (Exception e) {
-            Logger.logError(e, "Failed to purge " + TBL_BOOK_SERIES);
+            Logger.error(e, "Failed to purge " + TBL_BOOK_SERIES);
         }
 
         if (mPurgeSeriesStmt == null) {
@@ -2914,7 +2914,7 @@ public class CatalogueDBAdapter {
         try {
             mPurgeSeriesStmt.execute();
         } catch (Exception e) {
-            Logger.logError(e, "Failed to purge " + TBL_SERIES);
+            Logger.error(e, "Failed to purge " + TBL_SERIES);
         }
     }
 
@@ -3063,18 +3063,17 @@ public class CatalogueDBAdapter {
 
                     // Try to set the appropriate value, but if that fails, just use TEXT...
                     try {
-
                         switch (columnInfo.typeClass) {
 
-                            case TableInfo.CLASS_REAL:
+                            case TableInfo.CLASS_REAL: {
                                 if (entry instanceof Float) {
                                     cv.put(columnInfo.name, (Float) entry);
                                 } else {
                                     cv.put(columnInfo.name, Float.parseFloat(entry.toString()));
                                 }
                                 break;
-
-                            case TableInfo.CLASS_INTEGER:
+                            }
+                            case TableInfo.CLASS_INTEGER: {
                                 if (entry instanceof Boolean) {
                                     if ((Boolean) entry) {
                                         cv.put(columnInfo.name, 1);
@@ -3087,16 +3086,16 @@ public class CatalogueDBAdapter {
                                     cv.put(columnInfo.name, Integer.parseInt(entry.toString()));
                                 }
                                 break;
-
-                            case TableInfo.CLASS_TEXT:
+                            }
+                            case TableInfo.CLASS_TEXT: {
                                 if (entry instanceof String) {
                                     cv.put(columnInfo.name, ((String) entry));
                                 } else {
                                     cv.put(columnInfo.name, entry.toString());
                                 }
                                 break;
+                            }
                         }
-
                     } catch (Exception e) {
                         if (entry != null) {
                             cv.put(columnInfo.name, entry.toString());
@@ -3255,7 +3254,7 @@ public class CatalogueDBAdapter {
             if (DEBUG_SWITCHES.DB_ADAPTER && BuildConfig.DEBUG) {
                 synchronized (mDebugInstanceCount) {
                     mDebugInstanceCount--;
-                    System.out.println("CatDBA instances: " + mDebugInstanceCount);
+                    Logger.debug("CatDBA instances: " + mDebugInstanceCount);
                     //debugRemoveInstance(this);
                 }
             }
@@ -3481,11 +3480,11 @@ public class CatalogueDBAdapter {
                 ftsSendBooks(books, mInsertFtsStmt);
             } finally {
                 if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
-                    System.out.println("Inserted FTS in " + (System.currentTimeMillis() - t0) + "ms");
+                    Logger.debug("Inserted FTS in " + (System.currentTimeMillis() - t0) + "ms");
                 }
             }
         } catch (Exception e) {
-            Logger.logError(e, "Failed to update FTS");
+            Logger.error(e, "Failed to update FTS");
         }
     }
 
@@ -3519,11 +3518,11 @@ public class CatalogueDBAdapter {
                 ftsSendBooks(books, mUpdateFtsStmt);
             } finally {
                 if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
-                    System.out.println("Updated FTS in " + (System.currentTimeMillis() - t0) + "ms");
+                    Logger.debug("Updated FTS in " + (System.currentTimeMillis() - t0) + "ms");
                 }
             }
         } catch (Exception e) {
-            Logger.logError(e, "Failed to update FTS");
+            Logger.error(e, "Failed to update FTS");
         }
     }
 
@@ -3550,10 +3549,10 @@ public class CatalogueDBAdapter {
             mDeleteFtsStmt.bindLong(1, bookId);
             mDeleteFtsStmt.execute();
             if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
-                System.out.println("Deleted FROM FTS in " + (System.currentTimeMillis() - t0) + "ms");
+                Logger.debug("Deleted FROM FTS in " + (System.currentTimeMillis() - t0) + "ms");
             }
         } catch (Exception e) {
-            Logger.logError(e, "Failed to delete FTS");
+            Logger.error(e, "Failed to delete FTS");
         }
     }
 
@@ -3597,7 +3596,7 @@ public class CatalogueDBAdapter {
 
             mSyncedDb.setTransactionSuccessful();
         } catch (Exception e) {
-            Logger.logError(e);
+            Logger.error(e);
             gotError = true;
         } finally {
             mSyncedDb.endTransaction(lock);
@@ -3617,7 +3616,7 @@ public class CatalogueDBAdapter {
         }
 
         if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
-            System.out.println("rebuildFts in " + (System.currentTimeMillis() - t0) + "ms");
+            Logger.debug("rebuildFts in " + (System.currentTimeMillis() - t0) + "ms");
         }
     }
 

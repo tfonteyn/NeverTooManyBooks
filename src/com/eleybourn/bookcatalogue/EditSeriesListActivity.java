@@ -80,7 +80,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
             getWindow().setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
         } catch (Exception e) {
-            Logger.logError(e);
+            Logger.error(e);
         }
     }
 

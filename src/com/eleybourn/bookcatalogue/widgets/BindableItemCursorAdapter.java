@@ -166,7 +166,7 @@ public class BindableItemCursorAdapter extends CursorAdapter {
             try {
                 convertView = bindable.newListItemView(mInflater, mContext, cursor, parent);
             } catch (Exception e) {
-                Logger.logError(e);
+                Logger.error(e);
             }
         }
 

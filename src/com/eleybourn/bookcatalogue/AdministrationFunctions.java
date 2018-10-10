@@ -102,14 +102,14 @@ public class AdministrationFunctions extends ActivityWithTasks {
                             mExportOnStartup = true;
                             break;
                         default:
-                            Logger.logError(new IllegalArgumentException("Unsupported DO_AUTO option: " + val));
+                            Logger.error("Unsupported DO_AUTO option: " + val);
                             break;
                     }
                 }
             }
             setupAdminPage();
         } catch (Exception e) {
-            Logger.logError(e);
+            Logger.error(e);
         }
     }
 
@@ -508,7 +508,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
                             emailIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
                             startActivity(Intent.createChooser(emailIntent, "Send mail..."));
                         } catch (NullPointerException e) {
-                            Logger.logError(e);
+                            Logger.error(e);
                             StandardDialogs.showQuickNotice(AdministrationFunctions.this, R.string.export_failed_sdcard);
                         }
 
@@ -541,7 +541,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
                 //
                 dialog.show();
             } catch (Exception e) {
-                Logger.logError(e);
+                Logger.error(e);
             }
         }
     }

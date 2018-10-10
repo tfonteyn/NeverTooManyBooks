@@ -56,13 +56,14 @@ public class DefaultFieldValidator implements DataValidator {
             // No validation required for invisible fields
             return;
         }
-        Object value = data.get(datum);
+
         // Default validator does not cross-validate
         if (crossValidating)
             return;
 
+        Object value = data.get(datum);
         try {
-            if (value.toString().trim().isEmpty()) {
+            if (value != null && value.toString().trim().isEmpty()) {
                 data.putString(datum, mDefault);
             }
         } catch (Exception e) {

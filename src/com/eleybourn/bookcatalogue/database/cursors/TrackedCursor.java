@@ -29,6 +29,7 @@ import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedCursor;
 import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer;
+import com.eleybourn.bookcatalogue.debug.Logger;
 
 import java.io.Closeable;
 import java.lang.ref.WeakReference;
@@ -75,7 +76,7 @@ public class TrackedCursor extends SynchronizedCursor implements Closeable {
         if (DEBUG_SWITCHES.TRACKED_CURSOR && BuildConfig.DEBUG) {
             synchronized (mInstanceCount) {
                 mInstanceCount++;
-                System.out.println("Cursor instances: " + mInstanceCount);
+                Logger.debug("Cursor instances: " + mInstanceCount);
             }
 
             // Record who called us. It's only from about the 7th element that matters.
@@ -144,10 +145,15 @@ public class TrackedCursor extends SynchronizedCursor implements Closeable {
      */
     public static void dumpCursors() {
         if (DEBUG_SWITCHES.TRACKED_CURSOR && BuildConfig.DEBUG) {
-            for (TrackedCursor c : getCursors()) {
-                System.out.println("Cursor " + c.getCursorId());
-                for (StackTraceElement s : c.getStackTrace()) {
-                    System.out.println(s.getFileName() + "    Line " + s.getLineNumber() + " Method " + s.getMethodName());
+            List<TrackedCursor> cursors = getCursors();
+            if (cursors == null) {
+                Logger.debug("No cursors");
+            } else {
+                for (TrackedCursor c : cursors) {
+                    Logger.debug("Cursor " + c.getCursorId());
+                    for (StackTraceElement s : c.getStackTrace()) {
+                        Logger.debug(s.getFileName() + "    Line " + s.getLineNumber() + " Method " + s.getMethodName());
+                    }
                 }
             }
         }
@@ -186,7 +192,7 @@ public class TrackedCursor extends SynchronizedCursor implements Closeable {
             if (!mIsClosedFlg) {
                 synchronized (mInstanceCount) {
                     mInstanceCount--;
-                    System.out.println("Cursor instances: " + mInstanceCount);
+                    Logger.debug("Cursor instances: " + mInstanceCount);
                 }
                 if (mWeakRef != null)
                     synchronized (mCursors) {

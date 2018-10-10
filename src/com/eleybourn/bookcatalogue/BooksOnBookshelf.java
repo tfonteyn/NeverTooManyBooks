@@ -156,7 +156,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
         if (DEBUG_SWITCHES.BOOKS_ON_BOOKSHELF && BuildConfig.DEBUG) {
             synchronized (mInstanceCount) {
                 mInstanceCount++;
-                System.out.println("BoB instances: " + mInstanceCount);
+                Logger.debug("BoB instances: " + mInstanceCount);
             }
         }
     }
@@ -283,13 +283,13 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                 try {
                     mList.getBuilder().close();
                 } catch (Exception e) {
-                    Logger.logError(e);
+                    Logger.error(e);
                 }
                 mList.close();
             }
             mDb.close();
         } catch (Exception e) {
-            Logger.logError(e);
+            Logger.error(e);
         }
         mListHandler = null;
         mAdapter = null;
@@ -299,7 +299,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
             synchronized (mInstanceCount) {
                 mInstanceCount--;
 
-                System.out.println("BoB instances: " + mInstanceCount);
+                Logger.debug("BoB instances: " + mInstanceCount);
             }
         }
 
@@ -461,7 +461,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                     // ENHANCE: Allow detection of global changes to avoid unnecessary rebuilds
                     this.setupBookList(false);
                 } catch (Exception e) {
-                    Logger.logError(e);
+                    Logger.error(e);
                 }
                 break;
             // not in use
@@ -474,7 +474,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                         }
                     }
                 } catch (Exception e) {
-                    Logger.logError(e);
+                    Logger.error(e);
                 }
                 this.savePosition();
                 this.setupBookList(true);
@@ -609,7 +609,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
             oldList.close();
         }
         if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
-            System.out.println("displayList: " + (System.currentTimeMillis() - t0));
+            Logger.debug("displayList: " + (System.currentTimeMillis() - t0));
         }
     }
 
@@ -641,7 +641,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                 int last = lv.getLastVisiblePosition();
                 int centre = (last + first) / 2;
                 if (DEBUG_SWITCHES.BOOKS_ON_BOOKSHELF && BuildConfig.DEBUG) {
-                    System.out.println("New List: (" + first + ", " + last + ")<-" + centre);
+                    Logger.debug("New List: (" + first + ", " + last + ")<-" + centre);
                 }
                 // Get the first 'target' and make it 'best candidate'
                 BookRowInfo best = targetRows.get(0);
@@ -657,12 +657,12 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                 }
 
                 if (DEBUG_SWITCHES.BOOKS_ON_BOOKSHELF && BuildConfig.DEBUG) {
-                    System.out.println("Best @" + best.listPosition);
+                    Logger.debug("Best @" + best.listPosition);
                 }
                 // Try to put at top if not already visible, or only partially visible
                 if (first >= best.listPosition || last <= best.listPosition) {
                     if (DEBUG_SWITCHES.BOOKS_ON_BOOKSHELF && BuildConfig.DEBUG) {
-                        System.out.println("Adjusting position");
+                        Logger.debug("Adjusting position");
                     }
                     // setSelectionFromTop does not seem to always do what is expected.
                     // But adding smoothScrollToPosition seems to get the job done reasonably well.
@@ -689,7 +689,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 
                     //int newTop = best.listPosition - (last-first)/2;
                     // if (BOOKS_ON_BOOKSHELF && BuildConfig.DEBUG) {
-                    //System.out.println("New Top @" + newTop );
+                    //Logger.debugln("New Top @" + newTop );
                     //}
                     //lv.setSelection(newTop);
                 }
@@ -1183,7 +1183,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
          */
         GetListTask(final boolean isFullRebuild) {
             if (!isFullRebuild && BuildConfig.DEBUG) {
-                Logger.logError(new RuntimeException("GetListTask constructor, isFullRebuild=false"));
+                Logger.debug("GetListTask constructor, isFullRebuild=false");
             }
             //TOMF FIXME
             //mIsFullRebuild = isFullRebuild;
@@ -1288,12 +1288,12 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                 }
 
                 if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
-                    System.out.println("Build: " + (t1 - t0));
-                    System.out.println("Position: " + (t2 - t1));
-                    System.out.println("Select: " + (t3 - t2));
-                    System.out.println("Count(" + count + "): " + (t4 - t3) + "/" + (t5 - t4) + "/" + (t6 - t5));
-                    System.out.println("====== ");
-                    System.out.println("Total: " + (t6 - t0));
+                    Logger.debug("Build: " + (t1 - t0));
+                    Logger.debug("Position: " + (t2 - t1));
+                    Logger.debug("Select: " + (t3 - t2));
+                    Logger.debug("Count(" + count + "): " + (t4 - t3) + "/" + (t5 - t4) + "/" + (t6 - t5));
+                    Logger.debug("====== ");
+                    Logger.debug("Total: " + (t6 - t0));
                 }
                 // Save a flag to say list was loaded at least once successfully
                 mListHasBeenLoaded = true;

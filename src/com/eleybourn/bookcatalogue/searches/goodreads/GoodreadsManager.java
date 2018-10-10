@@ -260,7 +260,7 @@ public class GoodreadsManager {
             try {
                 return DateUtils.parseDate(last);
             } catch (Exception e) {
-                Logger.logError(e);
+                Logger.error(e);
                 return null;
             }
         }
@@ -382,14 +382,14 @@ public class GoodreadsManager {
         }
 
         if (BuildConfig.DEBUG) {
-            System.out.println("GR requestAuthorization authUrl: " + authUrl);
+            Logger.debug("GR requestAuthorization authUrl: " + authUrl);
         }
         //FIXME: double check if this ever gives issues!
         if (!authUrl.startsWith("http://") && !authUrl.startsWith("https://")) {
             // Make a valid URL for the parser (some come back without a schema)
             authUrl = "http://" + authUrl;
             if (BuildConfig.DEBUG) {
-                System.out.println("GR requestAuthorization: replacing with: " + authUrl);
+                Logger.debug("GR requestAuthorization: replacing with: " + authUrl);
             }
         }
 
@@ -472,7 +472,7 @@ public class GoodreadsManager {
         // this should only happen when the developer did not set a dev key in the manifest
         if (!mHasValidCredentials) {
             if (BuildConfig.DEBUG) {
-                System.out.println("GoodReadManager: mHasValidCredentials == false, when entering execute method");
+                Logger.debug("GoodReadManager: mHasValidCredentials == false, when entering execute method");
             }
             return null;
         }
@@ -599,7 +599,7 @@ public class GoodreadsManager {
                 s = e.getMessage();
             } catch (Exception ignored) {
             }
-            Logger.logError(e, s);
+            Logger.error(e, s);
         }
         return parseOk;
     }

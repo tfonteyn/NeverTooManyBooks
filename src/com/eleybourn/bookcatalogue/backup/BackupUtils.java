@@ -166,7 +166,7 @@ public class BackupUtils {
                 try {
                     accessor.putItem(bundle, info.name, info.type, context.body);
                 } catch (IOException e) {
-                    Logger.logError(e);
+                    Logger.error(e);
                     throw new RuntimeException("Unable to process XML entity " + info.name + " (" + info.type + ")", e);
                 }
             }
@@ -178,7 +178,7 @@ public class BackupUtils {
         try {
             parser = factory.newSAXParser();
         } catch (SAXException | ParserConfigurationException e) {
-            Logger.logError(e);
+            Logger.error(e);
             throw new IOException("Unable to create XML parser", e);
         }
 
@@ -187,7 +187,7 @@ public class BackupUtils {
         try {
             parser.parse(is, handler);
         } catch (SAXException e) {
-            Logger.logError(e);
+            Logger.error(e);
             throw new IOException("Malformed XML");
         }
 

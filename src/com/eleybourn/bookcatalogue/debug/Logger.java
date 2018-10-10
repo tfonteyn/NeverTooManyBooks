@@ -30,6 +30,7 @@ import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -37,6 +38,9 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+/**
+ * error methods will always print a stacktrace (even if you do not pass in an exception)
+ */
 public class Logger {
 
     private static final String TAG = "BC Logger";
@@ -44,27 +48,38 @@ public class Logger {
     private Logger() {
     }
 
-    public static void logError(@NonNull final Exception e) {
-        logError(e, "");
+    public static void info(final String message) {
+        log("INFO: " + message);
+    }
+    public static void debug(final String message) {
+        log("DEBUG: " + message);
     }
 
-    public static void logError(@NonNull final Error e) {
-        logError(new RuntimeException(e), "");
+    public static void error(@NonNull final String message) {
+        error(new RuntimeException(), message);
+    }
+
+    public static void error(@NonNull final Exception e) {
+        error(e, "");
+    }
+
+    public static void error(@NonNull final Error e) {
+        error(new RuntimeException(e), "");
     }
 
     /**
      * Write the exception stacktrace to the error log file
      *
      * @param e       The exception to log
-     * @param message extra message (don't pass e.getMessage(), that one is logged automatically)
+     * @param message extra message (don't pass error.getMessage(), that one is logged automatically)
      */
-    public static void logError(@NonNull final Exception e, @NonNull final String message) {
+    public static void error(@NonNull final Exception e, @NonNull final String message) {
         @SuppressLint("SimpleDateFormat")
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String now = dateFormat.format(new Date());
 
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
+        StringWriter stringWriter = new StringWriter();
+        PrintWriter pw = new PrintWriter(stringWriter);
 
         e.printStackTrace(pw);
 
@@ -73,14 +88,20 @@ public class Logger {
                 (exMsg != null ? exMsg + "\n" : "") +
                 "In Phone " + Build.MODEL + " (" + Build.VERSION.SDK_INT + ") \n" +
                 message + "\n" +
-                sw;
+                stringWriter; // contains the exception
 
+        log(error);
+
+        pw.close();
+    }
+
+    private static void log(final String message) {
         try {
-            // FIXME Remove Log.e! Replace with ACRA?
-            Log.e(TAG, error);
-            BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(StorageUtils.getErrorLog()), "utf8"), 8192);
-            out.write(error);
-            out.close();
+        // FIXME Remove Log.error! Replace with ACRA?
+        Log.e(TAG, message);
+        BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(StorageUtils.getErrorLog()), "utf8"), 8192);
+        out.write(message);
+        out.close();
         } catch (Exception ignored) {
             // do nothing - we can't log an error in the error logger. (and we don't want to FC the app)
         }

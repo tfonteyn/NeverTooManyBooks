@@ -109,9 +109,9 @@ public class DbSync {
          */
         SyncLock getSharedLock() {
             final Thread t = Thread.currentThread();
-            //System.out.println(t.getName() + " requesting SHARED lock");
+            //Logger.debug(t.getName() + " requesting SHARED lock");
             mLock.lock();
-            //System.out.println(t.getName() + " locked lock held by " + mLock.getHoldCount());
+            //Logger.debug(t.getName() + " locked lock held by " + mLock.getHoldCount());
             purgeOldLocks();
             try {
                 Integer count;
@@ -121,11 +121,11 @@ public class DbSync {
                     count = 1;
                 }
                 mSharedOwners.put(t, count);
-                //System.out.println(t.getName() + " " + count + " SHARED threads");
+                //Logger.debug(t.getName() + " " + count + " SHARED threads");
                 return mSharedLock;
             } finally {
                 mLock.unlock();
-                //System.out.println(t.getName() + " unlocked lock held by " + mLock.getHoldCount());
+                //Logger.debug(t.getName() + " unlocked lock held by " + mLock.getHoldCount());
             }
         }
 
@@ -134,13 +134,13 @@ public class DbSync {
          */
         void releaseSharedLock() {
             final Thread t = Thread.currentThread();
-            //System.out.println(t.getName() + " releasing SHARED lock");
+            //Logger.debug(t.getName() + " releasing SHARED lock");
             mLock.lock();
-            //System.out.println(t.getName() + " locked lock held by " + mLock.getHoldCount());
+            //Logger.debug(t.getName() + " locked lock held by " + mLock.getHoldCount());
             try {
                 if (mSharedOwners.containsKey(t)) {
                     Integer count = mSharedOwners.get(t) - 1;
-                    //System.out.println(t.getName() + " now has " + count + " SHARED locks");
+                    //Logger.debug(t.getName() + " now has " + count + " SHARED locks");
                     if (count < 0) {
                         throw new DBExceptions.LockException("Release a lock count already zero");
                     }
@@ -155,7 +155,7 @@ public class DbSync {
                 }
             } finally {
                 mLock.unlock();
-                //System.out.println(t.getName() + " unlocked lock held by " + mLock.getHoldCount());
+                //Logger.debug(t.getName() + " unlocked lock held by " + mLock.getHoldCount());
             }
         }
 
@@ -179,8 +179,8 @@ public class DbSync {
                 while (true) {
                     // Cleanup any old threads that are dead.
                     purgeOldLocks();
-                    //System.out.println(t.getName() + " requesting EXCLUSIVE lock with " + mSharedOwners.size() + " shared locks (attempt #" + i + ")");
-                    //System.out.println("Lock held by " + mLock.getHoldCount());
+                    //Logger.debug(t.getName() + " requesting EXCLUSIVE lock with " + mSharedOwners.size() + " shared locks (attempt #" + i + ")");
+                    //Logger.debug("Lock held by " + mLock.getHoldCount());
                     try {
                         // Simple case -- no locks held, just return and keep the lock
                         if (mSharedOwners.size() == 0) {
@@ -192,7 +192,7 @@ public class DbSync {
                             return mExclusiveLock;
                         }
                         // Someone else has it. Wait.
-                        //System.out.println("Thread " + t.getName() + " waiting for DB access");
+                        //Logger.debug("Thread " + t.getName() + " waiting for DB access");
                         mReleased.await();
                     } catch (Exception e) {
                         // Probably happens because thread was interrupted. Just die.
@@ -206,9 +206,9 @@ public class DbSync {
             } finally {
                 if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
                     if (mLock.isHeldByCurrentThread()) {
-                        System.out.println(ourThread.getName() + " waited " + (System.currentTimeMillis() - t0) + "ms for EXCLUSIVE access");
+                        Logger.debug(ourThread.getName() + " waited " + (System.currentTimeMillis() - t0) + "ms for EXCLUSIVE access");
                     } else {
-                        System.out.println(ourThread.getName() + " waited " + (System.currentTimeMillis() - t0) + "ms AND FAILED TO GET EXCLUSIVE access");
+                        Logger.debug(ourThread.getName() + " waited " + (System.currentTimeMillis() - t0) + "ms AND FAILED TO GET EXCLUSIVE access");
                     }
                 }
             }
@@ -219,13 +219,13 @@ public class DbSync {
          */
         void releaseExclusiveLock() {
             //final Thread t = Thread.currentThread();
-            //System.out.println(t.getName() + " releasing EXCLUSIVE lock");
+            //Logger.debug(t.getName() + " releasing EXCLUSIVE lock");
             if (!mLock.isHeldByCurrentThread()) {
                 throw new DBExceptions.LockException("Exclusive Lock is not held by this thread");
             }
             mLock.unlock();
-            //System.out.println("Release lock held by " + mLock.getHoldCount());
-            //System.out.println(t.getName() + " released EXCLUSIVE lock");
+            //Logger.debug("Release lock held by " + mLock.getHoldCount());
+            //Logger.debug(t.getName() + " released EXCLUSIVE lock");
         }
 
         /** Enum of lock types supported */
@@ -307,7 +307,7 @@ public class DbSync {
             mSqlDb = db;
             mSync = sync;
             if (BuildConfig.DEBUG) {
-                System.out.println("Reminder: Use of this method is not recommended. It is better to use\n" +
+                Logger.debug("Reminder: Use of this method is not recommended. It is better to use\n" +
                         "\t\t  the methods that take a {@link SQLiteOpenHelper} object since opening the database may block\n" +
                         "\t\t  another thread, or vice versa.");
             }
@@ -345,18 +345,18 @@ public class DbSync {
                     f.setAccessible(true);
                     int refs = (Integer) f.get(db); //IllegalAccessException
                     if (msg != null) {
-                        System.out.println("DBRefs (" + msg + "): " + refs);
+                        Logger.debug("DBRefs (" + msg + "): " + refs);
                         //if (refs < 100) {
-                        //	System.out.println("DBRefs (" + msg + "): " + refs + " <-- TOO LOW (< 100)!");
+                        //	Logger.debug("DBRefs (" + msg + "): " + refs + " <-- TOO LOW (< 100)!");
                         //} else if (refs < 1001) {
-                        //	System.out.println("DBRefs (" + msg + "): " + refs + " <-- TOO LOW (< 1000)!");
+                        //	Logger.debug("DBRefs (" + msg + "): " + refs + " <-- TOO LOW (< 1000)!");
                         //} else {
-                        //	System.out.println("DBRefs (" + msg + "): " + refs);
+                        //	Logger.debug("DBRefs (" + msg + "): " + refs);
                         //}
 
                     }
                 } catch (NoSuchFieldException | IllegalAccessException | IllegalArgumentException e) {
-                    Logger.logError(e);
+                    Logger.error(e);
                 }
             }
         }
@@ -449,7 +449,7 @@ public class DbSync {
          */
         public void execSQL(@NonNull final String sql) throws SQLException {
             if (DEBUG_SWITCHES.SQL && DEBUG_SWITCHES.DB_SYNC && BuildConfig.DEBUG) {
-                System.out.println(sql);
+                Logger.debug(sql);
             }
 
             if (mTxLock != null) {
@@ -790,7 +790,7 @@ public class DbSync {
             mStatement = db.getUnderlyingDatabaseIfYouAreSureWhatYouAreDoing().compileStatement(sql);
 
             if (DEBUG_SWITCHES.SQL && BuildConfig.DEBUG) {
-                System.out.println("SynchronizedStatement(new): " + sql + "\n\n");
+                Logger.debug("SynchronizedStatement(new): " + sql + "\n\n");
             }
         }
 
@@ -815,7 +815,7 @@ public class DbSync {
         public void bindString(final int index, final String value) {
             if (value == null) {
                 if (BuildConfig.DEBUG) {
-                    Logger.logError(new RuntimeException("binding NULL"));
+                    Logger.debug("binding NULL");
                 }
                 mStatement.bindNull(index);
             } else {
@@ -871,7 +871,7 @@ public class DbSync {
             try {
                 long result = mStatement.simpleQueryForLong();
                 if (DEBUG_SWITCHES.DB_SYNC_QUERY_FOR_LONG && BuildConfig.DEBUG && result <= 0) {
-                    Logger.logError(new RuntimeException("simpleQueryForLong got: " + result));
+                    Logger.debug("simpleQueryForLong got: " + result);
                 }
                 return result;
             } finally {
@@ -893,7 +893,7 @@ public class DbSync {
             try {
                 long result = mStatement.simpleQueryForLong();
                 if (DEBUG_SWITCHES.DB_SYNC_QUERY_FOR_LONG && BuildConfig.DEBUG && result <= 0) {
-                    Logger.logError(new RuntimeException("simpleQueryForLongOrZero got: " + result));
+                    Logger.debug("simpleQueryForLongOrZero got: " + result);
                 }
                 return result;
             } catch (SQLiteDoneException ignore) {
@@ -916,7 +916,7 @@ public class DbSync {
         public long count() {
             if (DEBUG_SWITCHES.DB_SYNC_QUERY_FOR_LONG && BuildConfig.DEBUG) {
                 if (!mSql.toUpperCase().startsWith("SELECT COUNT(")) {
-                    Logger.logError(new IllegalArgumentException("count statement not a count?"));
+                    Logger.debug("count statement not a count?");
                 }
             }
             return this.simpleQueryForLongOrZero();
@@ -957,7 +957,7 @@ public class DbSync {
                 return mStatement.simpleQueryForString();
             } catch (SQLiteDoneException e) {
                 if (BuildConfig.DEBUG) {
-                    Logger.logError(e, "simpleQueryForStringOrNull got NULL");
+                    Logger.error(e, "simpleQueryForStringOrNull got NULL");
                 }
                 return null;
             } finally {
@@ -982,7 +982,7 @@ public class DbSync {
             }
             try {
                 if (DEBUG_SWITCHES.DB_SYNC && BuildConfig.DEBUG) {
-                    System.out.println("SynchronizedStatement execute: " + mStatement);
+                    Logger.debug("SynchronizedStatement execute: " + mStatement);
                 }
                 mStatement.execute();
             } finally {
@@ -1011,9 +1011,9 @@ public class DbSync {
 
         public void finalize() {
             if (!mIsClosed && DEBUG_SWITCHES.DB_SYNC && BuildConfig.DEBUG) {
-                Logger.logError(new RuntimeException("DbSync.SynchronizedStatement: Finalizing non-closed statement (potential error/normal)"));
+                Logger.debug("DbSync.SynchronizedStatement: Finalizing non-closed statement (potential error/normal)");
                 if (DEBUG_SWITCHES.SQL) {
-                    System.out.println(mSql);
+                    Logger.debug(mSql);
                 }
             }
 

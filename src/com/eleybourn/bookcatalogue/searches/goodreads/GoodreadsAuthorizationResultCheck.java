@@ -53,21 +53,21 @@ class GoodreadsAuthorizationResultCheck extends GenericTask {
         try {
             grMgr.handleAuthentication();
             if (grMgr.hasValidCredentials()) {
-                System.out.println("GoodreadsAuthorizationResultCheck: OK");
+                Logger.debug("GoodreadsAuthorizationResultCheck: OK");
 
                 BookCatalogueApp.showNotification(context, context.getString(R.string.authorized),
                         context.getString(R.string.goodreads_auth_successful));
             } else {
-                System.out.println("GoodreadsAuthorizationResultCheck: FAILED, no exception?");
+                Logger.debug("GoodreadsAuthorizationResultCheck: FAILED, no exception?");
                 BookCatalogueApp.showNotification(context, context.getString(R.string.not_authorized),
                         context.getString(R.string.goodreads_auth_failed));
             }
         } catch (NotAuthorizedException e) {
-            Logger.logError(e);
+            Logger.error(e);
             BookCatalogueApp.showNotification(context, context.getString(R.string.not_authorized),
                     context.getString(R.string.goodreads_auth_failed));
         } catch (Exception e) {
-            Logger.logError(e);
+            Logger.error(e);
             BookCatalogueApp.showNotification(context, context.getString(R.string.not_authorized),
                     context.getString(R.string.goodreads_auth_error)
                             + " " + context.getString(R.string.if_the_problem_persists));

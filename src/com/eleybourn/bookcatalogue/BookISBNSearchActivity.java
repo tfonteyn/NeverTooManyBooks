@@ -193,7 +193,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
              * So...we save the extras in savedInstanceState, and look for it when missing
              */
             if (mIsbn == null && (mBy == null || mBy.isEmpty())) {
-                Logger.logError(new IllegalStateException("Empty args for BookISBNSearchActivity"));
+                Logger.error("Empty args for BookISBNSearchActivity");
                 if (savedInstanceState != null) {
                     if (mIsbn == null && savedInstanceState.containsKey(UniqueId.KEY_ISBN)) {
                         mIsbn = savedInstanceState.getString(UniqueId.KEY_ISBN);
@@ -523,7 +523,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
 //                go(isbn, "", "");
 //            }
 //        } catch (Exception e) {
-//            Logger.logError(e);
+//            Logger.error(e);
 //        }
 //    }
 
@@ -552,7 +552,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
      */
     private void go(@NonNull final String isbn, @NonNull final String author, @NonNull final String title) {
         if (BuildConfig.DEBUG) {
-            System.out.println("BookISBNSearchActivity.go: isbn=" + isbn + ", author=" + author + ", title=" + title);
+            Logger.debug("BookISBNSearchActivity.go: isbn=" + isbn + ", author=" + author + ", title=" + title);
         }
 
         if (isbn.isEmpty() && author.isEmpty() && title.isEmpty()) {
@@ -636,7 +636,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
                 }
             }
         } catch (Exception e) {
-            Logger.logError(e);
+            Logger.error(e);
         }
 
         if (mSearchManagerId == 0) {
@@ -664,7 +664,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
                 mTitle = "";
                 mIsbn = "";
             } catch (Exception e) {
-                Logger.logError(e);
+                Logger.error(e);
                 StandardDialogs.showQuickNotice(this, R.string.search_fail);
                 finish();
             }
@@ -757,7 +757,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
                         }
                     }
                 } catch (NullPointerException e) {
-                    Logger.logError(e);
+                    Logger.error(e);
                     finish();
                 }
                 break;

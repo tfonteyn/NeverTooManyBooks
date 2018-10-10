@@ -64,7 +64,7 @@ public class AdministrationLibraryThing extends BookCatalogueActivity {
             setTitle(R.string.library_thing);
             setupPage();
         } catch (Exception e) {
-            Logger.logError(e);
+            Logger.error(e);
         }
     }
 

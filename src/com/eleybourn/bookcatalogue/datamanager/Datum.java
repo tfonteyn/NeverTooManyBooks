@@ -142,7 +142,7 @@ public class Datum {
      * @return Resulting value
      */
     @NonNull
-    private static String toString(@Nullable final Object o) {
+    public static String toString(@Nullable final Object o) {
         return o == null ? "" : o.toString().trim();
     }
 

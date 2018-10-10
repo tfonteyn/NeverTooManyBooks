@@ -159,7 +159,7 @@ public class ExportAdvancedDialogFragment extends DialogFragment {
                 dismiss();
             }
         } catch (Exception e) {
-            Logger.logError(e);
+            Logger.error(e);
         }
     }
 

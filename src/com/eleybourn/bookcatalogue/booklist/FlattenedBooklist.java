@@ -188,7 +188,7 @@ public class FlattenedBooklist implements AutoCloseable {
         SynchronizedStatement stmt = mStatements.get(MOVE_STMT_NAME);
         if (stmt == null) {
             String sql = "SELECT " + mTable.dot(DatabaseDefinitions.DOM_ID) + "|| '/' || " + mTable.dot(DatabaseDefinitions.DOM_BOOK_ID) +
-                    " FROM " + mTable.ref() + " WHERE " + mTable.dot(DatabaseDefinitions.DOM_ID) + " = ?";
+                    " FROM " + mTable.ref() + " WHERE " + mTable.dot(DatabaseDefinitions.DOM_ID) + "=?";
             stmt = mStatements.add(MOVE_STMT_NAME, sql);
         }
         stmt.bindLong(1, pos);

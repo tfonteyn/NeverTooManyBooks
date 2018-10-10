@@ -56,7 +56,7 @@ public class SerializationUtils {
         try (ObjectOutput out = new ObjectOutputStream(bos)) {
             out.writeObject(o);
         } catch (IOException e) {
-            Logger.logError(e);
+            Logger.error(e);
             throw new IllegalStateException(e);
         }
         return bos.toByteArray();

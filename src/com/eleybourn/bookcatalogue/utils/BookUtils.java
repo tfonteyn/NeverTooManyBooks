@@ -95,7 +95,7 @@ public class BookUtils {
             activity.startActivityForResult(intent, UniqueId.ACTIVITY_REQUEST_CODE_ADD_BOOK_MANUALLY);
         } catch (CursorIndexOutOfBoundsException e) {
             StandardDialogs.showQuickNotice(activity, R.string.unknown_error);
-            Logger.logError(e);
+            Logger.error(e);
         }
     }
 

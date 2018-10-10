@@ -88,7 +88,7 @@ public class EditBookLoanedFragment extends EditBookAbstractFragment {
                 showLoaned(friend);
             }
         } catch (Exception e) {
-            Logger.logError(e);
+            Logger.error(e);
         } finally {
             Tracker.exitOnCreate(this);
         }

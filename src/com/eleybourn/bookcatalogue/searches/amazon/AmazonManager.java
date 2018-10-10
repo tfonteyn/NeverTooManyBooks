@@ -78,9 +78,9 @@ public class AmazonManager {
             // We can't Toast anything here, so let exceptions fall through.
             parser.parse(Utils.getInputStreamWithTerminator(url), handler);
         } catch (MalformedURLException | ParserConfigurationException | ParseException | SAXException e) {
-            Logger.logError(e, "Error parsing XML");
+            Logger.error(e, "Error parsing XML");
         } catch (Exception e) {
-            Logger.logError(e, "Error retrieving or parsing XML");
+            Logger.error(e, "Error retrieving or parsing XML");
         }
     }
 }

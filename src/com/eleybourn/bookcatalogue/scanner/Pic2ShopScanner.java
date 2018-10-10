@@ -122,7 +122,7 @@ public class Pic2ShopScanner implements Scanner {
 //            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + packageName));
 //            context.startActivity(intent);
 //        } catch (ActivityNotFoundException e) {
-//            Logger.logError(e, "Android Market aka Google Play not installed.");
+//            Logger.error(e, "Google Play not installed.");
 //        }
 //    }
 }

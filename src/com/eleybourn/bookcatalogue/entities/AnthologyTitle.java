@@ -53,22 +53,26 @@ public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
      * "anthology title * author "
      */
     public static final char TITLE_AUTHOR_DELIM = '*';
-    //TODO: see if this matters, I don't think we serialize this to external/blob
-    //private static final long serialVersionUID = -8715364898312204329L;
-    private static final long serialVersionUID = 2L;
-
     /**
      * Used by:
      * - ISFDB import of anthology titles
      * - export/import
      *
-     *  find the publication year in a string like "some title (1960)"
+     * find the publication year in a string like "some title (1960)"
      *
-     *  pattern finds (1960), group 1 will then contain the pure 1960
+     * pattern finds (1960), group 1 will then contain the pure 1960
      */
     public static final Pattern YEAR_FROM_STRING = Pattern.compile("\\(([1|2]\\d\\d\\d)\\)");
     public static final char SEPARATOR = ',';
 
+    /**
+     * V82:
+     * private static final long serialVersionUID = -8715364898312204329L;
+     * V83 changed the format
+     *
+     * TODO: see if this matters, I don't think we serialize this to a binary stream (only to a String)
+     */
+    private static final long serialVersionUID = 2L;
     private long id = 0;
     private Author mAuthor;
     private String mTitle;
@@ -89,7 +93,7 @@ public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
      * to be removed once we have 1..x relation with books
      */
     @Deprecated
-    public AnthologyTitle(@NonNull final String fromString,  final long bookId) {
+    public AnthologyTitle(@NonNull final String fromString, final long bookId) {
         fromString(fromString);
         mBookId = bookId;
     }
@@ -149,8 +153,16 @@ public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
             mTitle = title;
         }
     }
+
     /**
-     * Support for encoding to a text file
+     * Support for Serializable/encoding to a text file
+     *
+     * @return the object encoded as a String.
+     *
+     * If the year is known:
+     * "Giants In The Sky (1952) * Blish, James"
+     * else:
+     * "Giants In The Sky * Blish, James"
      */
     @Override
     @NonNull
@@ -162,7 +174,6 @@ public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
         } else {
             yearStr = "";
         }
-        // V83: Giants In The Sky (1952) * Blish, James
         return ArrayUtils.encodeListItem(SEPARATOR, mTitle) + yearStr + " " + TITLE_AUTHOR_DELIM + " " + mAuthor;
     }
 
@@ -207,7 +218,6 @@ public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
     public void setFirstPublication(final String publicationDate) {
         mFirstPublicationDate = publicationDate;
     }
-
 
 
     @Override

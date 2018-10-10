@@ -130,7 +130,7 @@ public class Queue extends Thread {
                 }
             }
         } catch (Exception e) {
-            Logger.logError(e);
+            Logger.error(e);
         } finally {
             try {
                 // Close the DB. SQLite will complain otherwise.
@@ -163,7 +163,7 @@ public class Queue extends Thread {
             if (task.getException() == null) {
                 task.setException(e);
             }
-            Logger.logError(e,"Error running task " + task.getId());
+            Logger.error(e,"Error running task " + task.getId());
         }
         handleResult(task, result, requeue);
     }

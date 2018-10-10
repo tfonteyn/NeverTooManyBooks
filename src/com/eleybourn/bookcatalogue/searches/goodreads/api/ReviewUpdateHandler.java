@@ -100,7 +100,7 @@ public class ReviewUpdateHandler extends ApiHandler {
         //ReviewUpdateParser handler = new ReviewUpdateParser();
         mManager.execute(post, null, true);
         //String s = handler.getHtml();
-        //System.out.print(s);
+        //Logger.debug(s);
         /* Typical response can be ignored, but is:
            <review>
 			  <book-id type='integer'>375802</book-id>

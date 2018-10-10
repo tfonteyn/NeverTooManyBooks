@@ -90,6 +90,9 @@ public class UniqueId {
     public static final String BKEY_DIALOG_ID = "dialogId";
     public static final String BKEY_FILE_SPEC = "fileSpec";
 
+    /** If a search site indicates in any form it's an eBook, we store it as KEY_BOOK_FORMAT with "eBook" */
+    public static final String BVAL_FORMAT_EBOOK = "eBook";
+
     //^^^^ all verified & used correctly
 
     // the ones below still need checking
@@ -107,11 +110,13 @@ public class UniqueId {
     public static final String BKEY_DIRTY = "Dirty";
 
 
-    //TODO: migrate to calling these BKEY once we cleaned up the over-use of the DOM equiv
+    //TODO: migrate to calling these BKEY and making them fixed (error.g. no 'calling' .name)
+    // once we cleaned up the over-use of the DOM equiv
 
     // multi-table use
     public static final String KEY_ID = DOM_ID.name;
     public static final String KEY_TITLE = DOM_TITLE.name;
+    public static final String KEY_FIRST_PUBLICATION = DOM_FIRST_PUBLICATION.name;
 
     // single table use
     public static final String KEY_ANTHOLOGY_MASK = DOM_BOOK_ANTHOLOGY_MASK.name;
@@ -124,7 +129,6 @@ public class UniqueId {
 
     public static final String KEY_BOOKSHELF_NAME = DOM_BOOKSHELF.name;
 
-    public static final String KEY_BOOK_ID = DOM_BOOK_ID.name; // TODO: does not seem to be in active use, but check DOM usage before deleting
     public static final String KEY_BOOK_UUID = DOM_BOOK_UUID.name;
     public static final String KEY_BOOK_DATE_ADDED = DOM_BOOK_DATE_ADDED.name;
     public static final String KEY_BOOK_DATE_PUBLISHED = DOM_BOOK_DATE_PUBLISHED.name;
@@ -149,11 +153,7 @@ public class UniqueId {
     public static final String KEY_BOOK_PUBLISHER = DOM_BOOK_PUBLISHER.name;
     public static final String KEY_DESCRIPTION = DOM_DESCRIPTION.name;
 
-    public static final String KEY_FIRST_PUBLICATION = DOM_FIRST_PUBLICATION.name;
-
     public static final String KEY_ISBN = DOM_BOOK_ISBN.name;
     public static final String KEY_GOODREADS_LAST_SYNC_DATE = DOM_BOOK_GOODREADS_LAST_SYNC_DATE.name;
     public static final String KEY_LAST_UPDATE_DATE = DOM_LAST_UPDATE_DATE.name;
-    /** If GoodReads returns a (numeric) if indicating it's an eBook, we store it as KEY_BOOK_FORMAT with "eBook" */
-    public static final String BVAL_GOODREADS_FORMAT_EBOOK = "eBook";
 }

@@ -126,7 +126,7 @@ class ImportAllTask extends GenericTask {
             }
             return ok;
         } catch (GoodreadsManager.Exceptions.NotAuthorizedException e) {
-            Logger.logError(e);
+            Logger.error(e);
             throw new RuntimeException("Goodreads authorization failed");
         } finally {
             db.close();
@@ -215,7 +215,7 @@ class ImportAllTask extends GenericTask {
             db.analyzeDb();
         } catch (Exception e) {
             // Do nothing. Not a critical step.
-            Logger.logError(e);
+            Logger.error(e);
         }
         return true;
     }
@@ -273,7 +273,10 @@ class ImportAllTask extends GenericTask {
      *
      * @return Local name, or goodreads name if no match
      */
-    private String translateBookshelf(@NonNull final CatalogueDBAdapter db, @NonNull final String grShelfName) {
+    private String translateBookshelf(@NonNull final CatalogueDBAdapter db, @Nullable final String grShelfName) {
+        if (grShelfName == null) {
+            return null;
+        }
         if (mBookshelfLookup == null) {
             mBookshelfLookup = new HashMap<>();
             for (Bookshelf b : db.getBookshelves()) {
@@ -288,19 +291,10 @@ class ImportAllTask extends GenericTask {
      * Extract a list of ISBNs from the bundle
      */
     private List<String> extractIsbnList(@NonNull final Bundle review) {
-        List<String> isbns = new ArrayList<>();
-
-        String isbn = review.getString(ListReviewsFieldNames.ISBN13).trim();
-        if (!isbn.isEmpty()) {
-            isbns.add(isbn);
-        }
-
-        isbn = review.getString(UniqueId.KEY_ISBN).trim();
-        if (!isbn.isEmpty()) {
-            isbns.add(isbn);
-        }
-
-        return isbns;
+        List<String> list = new ArrayList<>();
+        ArrayUtils.addIfHasValue(list, review.getString(ListReviewsFieldNames.ISBN13));
+        ArrayUtils.addIfHasValue(list, review.getString(UniqueId.KEY_ISBN));
+        return list;
     }
 
     /**
@@ -400,7 +394,7 @@ class ImportAllTask extends GenericTask {
 
         ArrayList<Bundle> grAuthors = review.getParcelableArrayList(ListReviewsFieldNames.AUTHORS);
         if (grAuthors == null) {
-            Logger.logError(new RuntimeException("grAuthors was null"));
+            Logger.error("grAuthors was null");
             return book;
         }
 
@@ -470,7 +464,7 @@ class ImportAllTask extends GenericTask {
         if (review.containsKey(ListReviewsFieldNames.SHELVES)) {
             ArrayList<Bundle> shelves = review.getParcelableArrayList(ListReviewsFieldNames.SHELVES);
             if (shelves == null) {
-                Logger.logError(new RuntimeException("shelves was null"));
+                Logger.error("shelves was null");
                 return book;
             }
             StringBuilder shelfNames = null;
@@ -492,9 +486,9 @@ class ImportAllTask extends GenericTask {
 
         // We need to set BOTH of these fields, otherwise the add/update method will set the
         // last_update_date for us, and that will most likely be set ahead of the GR update date
-        Date now = new Date();
-        book.putString(UniqueId.KEY_GOODREADS_LAST_SYNC_DATE, DateUtils.toSqlDateTime(now));
-        book.putString(UniqueId.KEY_LAST_UPDATE_DATE, DateUtils.toSqlDateTime(now));
+        String now = DateUtils.toSqlDateTime(new Date());
+        book.putString(UniqueId.KEY_GOODREADS_LAST_SYNC_DATE, now);
+        book.putString(UniqueId.KEY_LAST_UPDATE_DATE, now);
 
         return book;
     }

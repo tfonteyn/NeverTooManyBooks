@@ -127,7 +127,7 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
                 @Override
                 public void onClick(View v) {
                     Intent i = new Intent(getActivity(), EditAuthorListActivity.class);
-                    i.putExtra(UniqueId.BKEY_AUTHOR_ARRAY, mEditManager.getBook().getAuthorsList());
+                    i.putExtra(UniqueId.BKEY_AUTHOR_ARRAY, mEditManager.getBook().getAuthorList());
                     i.putExtra(UniqueId.KEY_ID, mEditManager.getBook().getBookId());
                     i.putExtra(UniqueId.KEY_TITLE, mFields.getField(R.id.title).getValue().toString());
                     startActivityForResult(i, UniqueId.ACTIVITY_REQUEST_CODE_EDIT_AUTHORS);
@@ -157,7 +157,7 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
             } catch (Exception e) {
                 // Log, but ignore. This is a non-critical feature that prevents crashes when the
                 // 'next' key is pressed and some views have been hidden.
-                Logger.logError(e);
+                Logger.error(e);
             }
 
             if (savedInstanceState != null) {
@@ -167,7 +167,7 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
             }
 
         } catch (IndexOutOfBoundsException | SQLException e) {
-            Logger.logError(e);
+            Logger.error(e);
         } finally {
             Tracker.exitOnActivityCreated(this);
         }
@@ -212,7 +212,7 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
     /**
      * This function will populate the forms elements in three different ways
      * 1. If a valid rowId exists it will populate the fields from the database
-     * 2. If fields have been passed from another activity (e.g. ISBNSearch) it will populate the fields from the bundle
+     * 2. If fields have been passed from another activity (error.g. ISBNSearch) it will populate the fields from the bundle
      * 3. It will leave the fields blank for new books.
      */
     private void populateFields() {
@@ -253,7 +253,7 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
         showHideFields(false);
 
         if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
-            System.out.println("BEF popF: " + (System.currentTimeMillis() - t0));
+            Logger.debug("BEF popF: " + (System.currentTimeMillis() - t0));
         }
     }
 
@@ -322,7 +322,7 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
 
     @Override
     protected void populateAuthorListField() {
-        ArrayList<Author> list = mEditManager.getBook().getAuthorsList();
+        ArrayList<Author> list = mEditManager.getBook().getAuthorList();
         if (list.size() != 0 && Utils.pruneList(mDb, list)) {
             mEditManager.setDirty(true);
             mEditManager.getBook().setAuthorList(list);

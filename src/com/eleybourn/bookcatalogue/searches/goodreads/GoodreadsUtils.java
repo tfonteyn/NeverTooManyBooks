@@ -176,7 +176,7 @@ public class GoodreadsUtils {
 
             @Override
             public void onFinish(@NonNull final SimpleTaskQueueProgressFragment fragment,
-                                 @Nullable final Exception exception) {
+                                 @Nullable final Exception e) {
                 final int msg = getState();
                 if (msg == -1) {
                     fragment.post(new Runnable() {
@@ -216,7 +216,7 @@ public class GoodreadsUtils {
 
             @Override
             public void onFinish(@NonNull final SimpleTaskQueueProgressFragment fragment,
-                                 @Nullable final Exception exception) {
+                                 @Nullable final Exception e) {
                 final FragmentActivity context = fragment.getActivity();
                 switch (getState()) {
                     case 0:

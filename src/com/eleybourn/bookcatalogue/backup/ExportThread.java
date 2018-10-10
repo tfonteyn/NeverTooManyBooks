@@ -61,7 +61,7 @@ public class ExportThread extends ManagedTask {
             }
             renameFiles(tmpFile);
         } catch (IOException e) {
-            Logger.logError(e);
+            Logger.error(e);
             mManager.doToast(getString(R.string.export_failed_sdcard));
         }
     }

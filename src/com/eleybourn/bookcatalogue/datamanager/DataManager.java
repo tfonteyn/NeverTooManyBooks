@@ -24,6 +24,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteCursor;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.datamanager.validators.BlankValidator;
 import com.eleybourn.bookcatalogue.datamanager.validators.DataCrossValidator;
@@ -124,7 +125,7 @@ public class DataManager {
      *
      * @return Data object
      */
-    @NonNull
+    @Nullable
     public Object get(@NonNull final String key) {
         return get(mData.get(key));
     }
@@ -136,6 +137,7 @@ public class DataManager {
      *
      * @return Data object
      */
+    @Nullable
     public Object get(@NonNull final Datum datum) {
         return datum.get(this, mBundle);
     }
@@ -247,11 +249,13 @@ public class DataManager {
     }
 
     /** Get a String value */
+    @NonNull
     public String getString(@NonNull final String key) {
         return mData.get(key).getString(this, mBundle);
     }
 
     /** Get a String value */
+    @NonNull
     public String getString(@NonNull final Datum datum) {
         return datum.getString(this, mBundle);
     }
@@ -297,7 +301,7 @@ public class DataManager {
                 if (value != null) {
                     putString(key, value.toString());
                 } else {
-                    System.out.println("NULL value for key '" + key + "'");
+                    Logger.debug("NULL value for key '" + key + "'");
                 }
             }
         }
@@ -341,24 +345,13 @@ public class DataManager {
      *
      * @return The data
      */
+    @Nullable
     protected Object getSerializable(@NonNull final String key) {
         return mData.get(key).getSerializable(this, mBundle);
     }
 
     /**
-     * Get the ArrayList<String> object from the collection.
-     * We currently do not use a Datum for special access.
-     *
-     * @param bundle Raw data Bundle
-     *
-     * @return The data
-     */
-    protected Object getStringArrayList(@NonNull final String key) {
-        return mData.get(key).getStringArrayList(this, mBundle);
-    }
-
-    /**
-     * Get the serializable object from the collection.
+     * Set the serializable object in the collection.
      * We currently do not use a Datum for special access.
      *
      * @param key   Key of object
@@ -370,22 +363,6 @@ public class DataManager {
     @NonNull
     public DataManager putSerializable(@NonNull final String key, @NonNull final Serializable value) {
         mData.get(key).putSerializable(mBundle, value);
-        return this;
-    }
-
-    /**
-     * Set the ArrayList<String> object in the collection.
-     * We currently do not use a Datum for special access.
-     *
-     * @param bundle Raw data Bundle
-     * @param value  The ArrayList<String> object
-     *
-     * @return The data manager for chaining
-     */
-    @SuppressWarnings("UnusedReturnValue")
-    @NonNull
-    public DataManager putStringArrayList(@NonNull final String key, @NonNull final ArrayList<String> value) {
-        mData.get(key).putStringArrayList(mBundle, value);
         return this;
     }
 

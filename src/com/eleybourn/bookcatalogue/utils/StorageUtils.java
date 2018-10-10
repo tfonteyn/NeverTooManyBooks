@@ -100,7 +100,7 @@ public class StorageUtils {
         final File dir = new File(name);
         boolean ok = dir.mkdirs() || dir.isDirectory();
         if (!ok) {
-            Logger.logError(new RuntimeException("Could not write to storage. No permission on: " + name));
+            Logger.error("Could not write to storage. No permission on: " + name);
         }
     }
 
@@ -142,7 +142,7 @@ public class StorageUtils {
             //noinspection ResultOfMethodCallIgnored
             new File(NOMEDIA_FILE_PATH).createNewFile();
         } catch (IOException e) {
-            Logger.logError(e, "Failed to create .media file: " + NOMEDIA_FILE_PATH);
+            Logger.error(e, "Failed to create .media file: " + NOMEDIA_FILE_PATH);
         }
     }
 
@@ -236,7 +236,7 @@ public class StorageUtils {
                 }
             }
         } catch (SecurityException e) {
-            Logger.logError(e);
+            Logger.error(e);
         }
     }
 
@@ -263,7 +263,7 @@ public class StorageUtils {
                 }
             }
         } catch (SecurityException e) {
-            Logger.logError(e);
+            Logger.error(e);
         }
         return totalSize;
     }
@@ -311,7 +311,7 @@ public class StorageUtils {
                 }
             }
         } catch (IOException e) {
-            Logger.logError(e, "Failed to open/scan/read /proc/mounts");
+            Logger.error(e, "Failed to open/scan/read /proc/mounts");
         }
 
         // Sometimes (Android 6?) the /proc/mount search seems to fail, so we revert to environment vars
@@ -346,7 +346,7 @@ public class StorageUtils {
                 }
             }
         } catch (Exception e) {
-            Logger.logError(e, "Failed to get external storage from environment variables");
+            Logger.error(e, "Failed to get external storage from environment variables");
         }
 
         final Set<String> paths = new HashSet<>();
@@ -393,12 +393,12 @@ public class StorageUtils {
                     }
                 }
             } catch (Exception e) {
-                Logger.logError(e, "Failed to read directory " + dir.getAbsolutePath());
+                Logger.error(e, "Failed to read directory " + dir.getAbsolutePath());
             }
         }
 
         if (DEBUG_SWITCHES.STORAGE_UTILS && BuildConfig.DEBUG) {
-            Logger.logError(new RuntimeException(debugInfo.toString()));
+            Logger.debug(debugInfo.toString());
         }
 
         // Sort descending based on modified date
@@ -434,7 +434,7 @@ public class StorageUtils {
             renameFile(temp, out);
             return true;
         } catch (IOException e) {
-            Logger.logError(e);
+            Logger.error(e);
         } finally {
             deleteFile(temp);
         }
@@ -452,7 +452,7 @@ public class StorageUtils {
                 //noinspection ResultOfMethodCallIgnored
                 file.delete();
             } catch (Exception e) {
-                Logger.logError(e);
+                Logger.error(e);
             }
         }
     }
@@ -470,7 +470,7 @@ public class StorageUtils {
                 //noinspection ResultOfMethodCallIgnored
                 src.renameTo(dst);
             } catch (Exception e) {
-                Logger.logError(e);
+                Logger.error(e);
             }
         }
         return dst.exists();
@@ -495,7 +495,7 @@ public class StorageUtils {
             db.close();
             backupFile(dbPath, destFilename);
         } catch (Exception e) {
-            Logger.logError(e);
+            Logger.error(e);
         }
     }
 
@@ -511,7 +511,7 @@ public class StorageUtils {
             copyFile(new File(sourcePath), getFile(destPath));
 
         } catch (Exception e) {
-            Logger.logError(e);
+            Logger.error(e);
         }
     }
 

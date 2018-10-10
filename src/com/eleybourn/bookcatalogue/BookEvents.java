@@ -367,8 +367,8 @@ public class BookEvents {
 //	public static class GrGeneralBookEvent extends GrSendBookEvent {
 //		private static final long serialVersionUID = -7684121345325648066L;
 //
-//		public GrGeneralBookEvent(final long bookId, @NonNull final Exception e, String message) {
-//			super(bookId, message, e);
+//		public GrGeneralBookEvent(final long bookId, @NonNull final Exception error, String message) {
+//			super(bookId, message, error);
 //		}
 //	}
 

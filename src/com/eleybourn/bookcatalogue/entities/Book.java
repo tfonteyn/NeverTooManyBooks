@@ -25,6 +25,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
@@ -36,6 +37,7 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,7 +69,7 @@ public class Book extends DataManager {
     /**
      * Constructor
      *
-     * @param bundle with book data (may be null). TOMF Lists in the Bundle must be put in there as String Encoded
+     * @param bundle with book data (may be null)
      */
     public Book(@Nullable final Bundle bundle) {
         this(0L, bundle);
@@ -86,7 +88,7 @@ public class Book extends DataManager {
      * Constructor
      *
      * @param bookId of book (may be 0 for new)
-     * @param bundle Bundle with book data (may be null).  TOMF Lists in the Bundle must be put in there as String Encoded
+     * @param bundle Bundle with book data (may be null)
      */
     public Book(final long bookId, @Nullable final Bundle bundle) {
         this.mBookId = bookId;
@@ -140,7 +142,6 @@ public class Book extends DataManager {
         return text.toString();
     }
 
-
     /**
      * Accessor
      */
@@ -171,31 +172,55 @@ public class Book extends DataManager {
             setBookshelfListAsEncodedString(db.getBookshelvesByBookIdAsStringList(mBookId));
 
         } catch (Exception e) {
-            Logger.logError(e);
+            Logger.error(e);
         } finally {
             db.close();
         }
     }
 
     /**
+     * Special Accessor for easier debug
+     */
+    @NonNull
+    @Override
+    public DataManager putSerializable(@NonNull final String key, @NonNull final Serializable value) {
+        if (BuildConfig.DEBUG) {
+            Logger.debug("Book.putSerializable, key=" + key + " , type=" + value.getClass().getCanonicalName());
+        }
+        super.putSerializable(key,value);
+        return this;
+    }
+
+    /**
+     * For better control on the actual type of the value,
+     * don't use this on the Book level. Better to add a specific method.
+     * @see #getAuthorList as an example.
+     */
+    @Override
+    @Deprecated
+    protected Object getSerializable(@NonNull final String key) {
+        throw new IllegalStateException();
+    }
+
+    /**
      * Special Accessor
      */
     public void setAuthorList(@NonNull final ArrayList<Author> list) {
-        putSerializable(UniqueId.BKEY_AUTHOR_ARRAY, list);
+        super.putSerializable(UniqueId.BKEY_AUTHOR_ARRAY, list);
     }
 
     /**
      * Special Accessor
      */
     public void setSeriesList(@NonNull final ArrayList<Series> list) {
-        putSerializable(UniqueId.BKEY_SERIES_ARRAY, list);
+        super.putSerializable(UniqueId.BKEY_SERIES_ARRAY, list);
     }
 
     /**
      * Special Accessor
      */
     public void setContentList(@NonNull final ArrayList<AnthologyTitle> list) {
-        putSerializable(UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY, list);
+        super.putSerializable(UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY, list);
     }
 
     /**
@@ -206,7 +231,7 @@ public class Book extends DataManager {
     @Nullable
     public String getAuthorTextShort() {
         String newText;
-        List<Author> list = getAuthorsList();
+        List<Author> list = getAuthorList();
         if (list.size() == 0) {
             return null;
         } else {
@@ -245,8 +270,8 @@ public class Book extends DataManager {
      * @return List of authors
      */
     @NonNull
-    public ArrayList<Author> getAuthorsList() {
-        ArrayList<Author> list = (ArrayList<Author>) getSerializable(UniqueId.BKEY_AUTHOR_ARRAY);
+    public ArrayList<Author> getAuthorList() {
+        ArrayList<Author> list = (ArrayList<Author>) super.getSerializable(UniqueId.BKEY_AUTHOR_ARRAY);
         return list != null ? list : new ArrayList<Author>();
     }
 
@@ -257,7 +282,7 @@ public class Book extends DataManager {
      */
     @NonNull
     public ArrayList<Series> getSeriesList() {
-        ArrayList<Series> list = (ArrayList<Series>) getSerializable(UniqueId.BKEY_SERIES_ARRAY);
+        ArrayList<Series> list = (ArrayList<Series>) super.getSerializable(UniqueId.BKEY_SERIES_ARRAY);
         return list != null ? list : new ArrayList<Series>();
     }
 
@@ -268,7 +293,7 @@ public class Book extends DataManager {
      */
     @NonNull
     public ArrayList<AnthologyTitle> getContentList() {
-        ArrayList<AnthologyTitle> list = (ArrayList<AnthologyTitle>) getSerializable(UniqueId.BKEY_ANTHOLOGY_DETAILS);
+        ArrayList<AnthologyTitle> list = (ArrayList<AnthologyTitle>) super.getSerializable(UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY);
         return list != null ? list : new ArrayList<AnthologyTitle>();
     }
 
@@ -292,7 +317,7 @@ public class Book extends DataManager {
      * @param db Database connection
      */
     public void refreshAuthorList(@NonNull final CatalogueDBAdapter db) {
-        ArrayList<Author> list = getAuthorsList();
+        ArrayList<Author> list = getAuthorList();
         for (Author a : list) {
             db.refreshAuthor(a);
         }

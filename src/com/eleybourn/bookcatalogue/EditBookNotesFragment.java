@@ -159,7 +159,7 @@ public class EditBookNotesFragment extends EditBookAbstractFragment implements O
             } catch (Exception e) {
                 // Log, but ignore. This is a non-critical feature that prevents crashes when the
                 // 'next' key is pressed and some views have been hidden.
-                Logger.logError(e);
+                Logger.error(e);
             }
 
             mFields.setAfterFieldChangeListener(new AfterFieldChangeListener() {
@@ -173,7 +173,7 @@ public class EditBookNotesFragment extends EditBookAbstractFragment implements O
             //Utils.init(R.drawable.bc_background_gradient_dim, this, false);
 
         } catch (Exception e) {
-            Logger.logError(e);
+            Logger.error(e);
         }
         Tracker.exitOnCreate(this);
     }

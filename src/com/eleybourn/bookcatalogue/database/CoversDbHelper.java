@@ -139,9 +139,9 @@ public class CoversDbHelper implements AutoCloseable {
                 mSyncedDb = new SynchronizedDb(mHelper, mSynchronizer);
             } catch (Exception e) {
                 // Assume exception means DB corrupt. Log, rename, and retry
-                Logger.logError(e, "Failed to open covers db");
+                Logger.error(e, "Failed to open covers db");
                 if (!StorageUtils.renameFile(StorageUtils.getFile(COVERS_DATABASE_NAME), StorageUtils.getFile(COVERS_DATABASE_NAME + ".dead"))) {
-                    Logger.logError(new RuntimeException("Failed to rename dead covers database: "));
+                    Logger.error("Failed to rename dead covers database: ");
                 }
 
                 // try again?
@@ -149,7 +149,7 @@ public class CoversDbHelper implements AutoCloseable {
                     mSyncedDb = new SynchronizedDb(mHelper, mSynchronizer);
                 } catch (Exception e2) {
                     // If we fail a second time (creating a new DB), then just give up.
-                    Logger.logError(e2, "Covers database unavailable");
+                    Logger.error(e2, "Covers database unavailable");
                 }
             }
         }
@@ -157,7 +157,7 @@ public class CoversDbHelper implements AutoCloseable {
         synchronized (this) {
             mCountToGetInstance++;
             if (BuildConfig.DEBUG) {
-                System.out.println("CovDBA instances created: " + mCountToGetInstance);
+                Logger.debug("CovDBA instances created: " + mCountToGetInstance);
             }
         }
     }
@@ -204,7 +204,7 @@ public class CoversDbHelper implements AutoCloseable {
         synchronized (this) {
             mCountToGetInstance--;
             if (BuildConfig.DEBUG) {
-                System.out.println("CovDBA instances left: " + mCountToGetInstance);
+                Logger.debug("CovDBA instances left: " + mCountToGetInstance);
             }
 
             if (mCountToGetInstance == 0) {
@@ -371,7 +371,7 @@ public class CoversDbHelper implements AutoCloseable {
             try {
                 bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
             } catch (Exception e) {
-                Logger.logError(e, "");
+                Logger.error(e, "");
             }
         }
 

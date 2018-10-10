@@ -236,7 +236,7 @@ public class DateUtils {
 //                //assume yy
 //                try {
 //                    date = Integer.parseInt(date) < 15 ? "20" + date + "-01-01" : "19" + date + "-01-01";
-//                } catch (NumberFormatException e) {
+//                } catch (NumberFormatException error) {
 //                    date = "";
 //                }
 //                break;

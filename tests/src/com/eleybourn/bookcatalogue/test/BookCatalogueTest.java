@@ -531,7 +531,7 @@ public class BookCatalogueTest extends ActivityInstrumentationTestCase2 {
 		t.clickOnText("Backup Database");
 		t.sleep(1000);
 		String filename = com.eleybourn.bookcatalogue.Utils.EXTERNAL_FILE_PATH + "/bookCatalogueDbExport.db";
-		Log.e("BC", filename);
+		Log.error("BC", filename);
 		File file = new File(filename);
 		assertTrue("Backup file does not exist", file.exists());
 	}*/

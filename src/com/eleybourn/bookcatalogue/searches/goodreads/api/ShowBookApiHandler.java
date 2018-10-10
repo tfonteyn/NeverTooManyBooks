@@ -356,7 +356,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
                 name = context.attributes.getValue("name");
                 mShelves.add(name);
             } catch (Exception e) {
-                Logger.logError(e);
+                Logger.error(e);
             }
         }
     };
@@ -483,7 +483,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
             if (bestImage != null) {
                 String filename = ImageUtils.saveThumbnailFromUrl(bestImage, GoodreadsUtils.GOODREADS_FILENAME_SUFFIX);
                 if (filename.length() > 0) {
-                    ArrayUtils.appendOrAdd(mBookData, UniqueId.BKEY_THUMBNAIL_USCORE, filename);
+                    ArrayUtils.addOrAppend(mBookData, UniqueId.BKEY_THUMBNAIL_USCORE, filename);
                 }
             }
         }
@@ -492,7 +492,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
         GoodreadsManager.buildDate(mBookData, ShowBookFieldNames.PUBLICATION_YEAR, ShowBookFieldNames.PUBLICATION_MONTH, ShowBookFieldNames.PUBLICATION_DAY, UniqueId.KEY_BOOK_DATE_PUBLISHED);
 
         if (mBookData.containsKey(ShowBookFieldNames.IS_EBOOK) && mBookData.getBoolean(ShowBookFieldNames.IS_EBOOK)) {
-            mBookData.putString(UniqueId.KEY_BOOK_FORMAT, UniqueId.BVAL_GOODREADS_FORMAT_EBOOK);
+            mBookData.putString(UniqueId.KEY_BOOK_FORMAT, UniqueId.BVAL_FORMAT_EBOOK);
         }
 
         /*

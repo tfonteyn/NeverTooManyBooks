@@ -97,7 +97,7 @@ public class ImportTypeSelectionDialogFragment extends DialogFragment {
             reader.close();
             mArchiveHasValidDates = info.getAppVersionCode() >= 152;
         } catch (IOException e) {
-            Logger.logError(e);
+            Logger.error(e);
             mArchiveHasValidDates = false;
         }
 
@@ -135,7 +135,7 @@ public class ImportTypeSelectionDialogFragment extends DialogFragment {
                 a.onImportTypeSelectionDialogResult(mDialogId, this, settings);
             }
         } catch (Exception e) {
-            Logger.logError(e);
+            Logger.error(e);
         }
         dismiss();
     }

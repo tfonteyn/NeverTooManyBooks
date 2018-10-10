@@ -94,7 +94,7 @@ public class GoodreadsSearchResults extends BookCatalogueListActivity {
         try {
             works = searcher.search(criteria.trim());
         } catch (Exception e) {
-            Logger.logError(e, "Failed when searching goodreads");
+            Logger.error(e, "Failed when searching goodreads");
             StandardDialogs.showQuickNotice(this, getString(R.string.error_while_searching) + " " + getString(R.string.if_the_problem_persists));
             finish();
             return;
@@ -121,7 +121,7 @@ public class GoodreadsSearchResults extends BookCatalogueListActivity {
     private void doItemClick(@NonNull final View view) {
         ListHolder holder = (ListHolder) ViewTagger.getTag(view);
         // TODO: Implement edition lookup - requires access to work.editions API from GR
-        Logger.logError(new RuntimeException("Not implemented: see " + holder.title + " by " + holder.author));
+        Logger.debug("Not implemented: see " + holder.title + " by " + holder.author);
         StandardDialogs.showQuickNotice(this, "Not implemented: see " + holder.title + " by " + holder.author);
         //Intent i = new Intent(this, GoodreadsW)
     }
@@ -191,7 +191,7 @@ public class GoodreadsSearchResults extends BookCatalogueListActivity {
                     });
 
                 } catch (Exception e) {
-                    Logger.logError(e);
+                    Logger.error(e);
                     throw new RuntimeException(e);
                 }
             } else {

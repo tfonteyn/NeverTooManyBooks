@@ -383,7 +383,7 @@ public class MessageSwitch<T, U> {
                         }
 
                     } catch (Exception e) {
-                        Logger.logError(e, "Error delivering message to listener");
+                        Logger.error(e, "Error delivering message to listener");
                     }
                 }
                 if (handled) {

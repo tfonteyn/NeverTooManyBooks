@@ -37,9 +37,8 @@ import java.util.Objects;
  * @author Philip Warner
  */
 public class Author implements Serializable, Utils.ItemWithIdFixup {
-    private static final long serialVersionUID = 4597779234440821872L;
     public static final char SEPARATOR = ',';
-
+    private static final long serialVersionUID = 4597779234440821872L;
     public long id;
     public String familyName;
     public String givenNames;
@@ -78,9 +77,9 @@ public class Author implements Serializable, Utils.ItemWithIdFixup {
      * This will return the parsed author name based on a String.
      * The name can be in either "family, given" or "given family" format.
      *
-     * @param name a String containing the name e.g. "Isaac Asimov" or "Asimov, Isaac"
+     * @param name a String containing the name error.g. "Isaac Asimov" or "Asimov, Isaac"
      *
-     * @return a String array containing the family and given names. e.g. ['Asimov', 'Isaac']
+     * @return a String array containing the family and given names. error.g. ['Asimov', 'Isaac']
      */
     public static Author toAuthor(@NonNull final String name) {
         int commaIndex = name.indexOf(",");
@@ -93,13 +92,13 @@ public class Author implements Serializable, Utils.ItemWithIdFixup {
             String[] names = name.split(" ");
             if (names.length > 2) {
                 String sName = names[names.length - 2];
-                /* e.g. Ursula Le Guin or Marianne De Pierres FIXME: needs internationalisation or at least add some more like 'Van', 'Des' !*/
+                /* error.g. Ursula Le Guin or Marianne De Pierres FIXME: needs internationalisation or at least add some more like 'Van', 'Des' !*/
                 if (sName.matches("[LlDd]e")) {
                     family.append(names[names.length - 2]).append(" ");
                     fLen = 2;
                 }
                 sName = names[names.length - 1];
-                /* e.g. Foo Bar Jr  FIXME: needs internationalisation ? */
+                /* error.g. Foo Bar Jr  FIXME: needs internationalisation ? */
                 if (sName.matches("[Jj]r|[Jj]unior|[Ss]r|[Ss]enior")) {
                     family.append(names[names.length - 2]).append(" ");
                     fLen = 2;
@@ -112,7 +111,7 @@ public class Author implements Serializable, Utils.ItemWithIdFixup {
                 given.append(names[i]).append(" ");
             }
 
-            return new Author(family.toString().trim(), given.toString().trim() );
+            return new Author(family.toString().trim(), given.toString().trim());
         }
     }
 
@@ -144,7 +143,13 @@ public class Author implements Serializable, Utils.ItemWithIdFixup {
         }
     }
 
-    // Support for encoding to a text file
+    /**
+     * Support for Serializable/encoding to a text file
+     *
+     * @return the object encoded as a String. If the format changes, update serialVersionUID
+     *
+     * "familyName, givenName"
+     */
     @Override
     @NonNull
     public String toString() {
@@ -196,7 +201,7 @@ public class Author implements Serializable, Utils.ItemWithIdFixup {
     /**
      * Two authors are equal if:
      * - it's the same Object duh..
-     * - one or both of them is 'new' (e.g. id == 0) but their names are equal
+     * - one or both of them is 'new' (error.g. id == 0) but their names are equal
      * - ids are equal
      *
      * Compare is CASE SENSITIVE !

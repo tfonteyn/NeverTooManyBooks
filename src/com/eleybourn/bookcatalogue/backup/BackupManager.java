@@ -91,7 +91,7 @@ public class BackupManager {
 
                 TarBackupContainer bkp = new TarBackupContainer(tempFile);
                 if (BuildConfig.DEBUG) {
-                    System.out.println("Starting " + tempFile.getAbsolutePath());
+                    Logger.debug("Starting " + tempFile.getAbsolutePath());
                 }
                 try (BackupWriter wrt = bkp.newWriter()) {
 
@@ -126,7 +126,7 @@ public class BackupManager {
 
                     if (fragment.isCancelled()) {
                         if (BuildConfig.DEBUG) {
-                            System.out.println("Cancelled " + resultingFile.getAbsolutePath());
+                            Logger.debug("Cancelled " + resultingFile.getAbsolutePath());
                         }
                         StorageUtils.deleteFile(tempFile);
                     } else {
@@ -134,20 +134,20 @@ public class BackupManager {
                         StorageUtils.renameFile(tempFile, resultingFile);
                         mBackupOk = true;
                         if (BuildConfig.DEBUG) {
-                            System.out.println("Finished " + resultingFile.getAbsolutePath() + ", size = " + resultingFile.length());
+                            Logger.debug("Finished " + resultingFile.getAbsolutePath() + ", size = " + resultingFile.length());
                         }
                     }
                 } catch (Exception e) {
-                    Logger.logError(e);
+                    Logger.error(e);
                     StorageUtils.deleteFile(tempFile);
                     throw new RuntimeException("Error during backup", e);
                 }
             }
 
             @Override
-            public void onFinish(@NonNull final SimpleTaskQueueProgressFragment fragment, @Nullable final Exception exception) {
-                super.onFinish(fragment, exception);
-                if (exception != null) {
+            public void onFinish(@NonNull final SimpleTaskQueueProgressFragment fragment, @Nullable final Exception e) {
+                super.onFinish(fragment, e);
+                if (e != null) {
                     StorageUtils.deleteFile(tempFile);
                 }
                 fragment.setSuccess(mBackupOk);
@@ -181,7 +181,7 @@ public class BackupManager {
             public void run(@NonNull final SimpleTaskQueueProgressFragment fragment, @NonNull final SimpleTaskContext taskContext) {
                 try {
                     if (BuildConfig.DEBUG) {
-                        System.out.println("Importing " + inputFile.getAbsolutePath());
+                        Logger.debug("Importing " + inputFile.getAbsolutePath());
                     }
 
                     readBackup(inputFile).restore(new BackupReaderListener() {
@@ -202,11 +202,11 @@ public class BackupManager {
                     }, importFlags);
 
                 } catch (IOException e) {
-                    Logger.logError(e);
+                    Logger.error(e);
                     throw new RuntimeException("Error during restore", e);
                 }
                 if (BuildConfig.DEBUG) {
-                    System.out.println("Finished " + inputFile.getAbsolutePath() + ", size = " + inputFile.length());
+                    Logger.debug("Finished " + inputFile.getAbsolutePath() + ", size = " + inputFile.length());
                 }
             }
         };

@@ -102,7 +102,7 @@ public abstract class BackupReaderAbstract implements BackupReader {
         close();
 
         if (BuildConfig.DEBUG) {
-            System.out.println("Restored " + coverCount + " covers");
+            Logger.debug("Restored " + coverCount + " covers");
         }
     }
 
@@ -184,7 +184,7 @@ public abstract class BackupReaderAbstract implements BackupReader {
         try {
             booklistStyle = (BooklistStyle) entity.getSerializable();
         } catch (DeserializationException e) {
-            Logger.logError(e, "Unable to restore style");
+            Logger.error(e, "Unable to restore style");
         }
         if (booklistStyle != null) {
             mDb.insertOrUpdateBooklistStyle(booklistStyle);

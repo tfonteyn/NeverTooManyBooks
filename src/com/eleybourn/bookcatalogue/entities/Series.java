@@ -243,9 +243,24 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
         return getDisplayName();
     }
 
+    /**
+     * Support for Serializable/encoding to a text file
+     *
+     * @return the object encoded as a String. If the format changes, update serialVersionUID
+     *
+     * "name (number)"
+     * or
+     * "name"
+     */
+    @Override
     @NonNull
     public String toString() {
-        return getDisplayName();
+        if (number != null && !number.isEmpty()) {
+            // start with a space !
+            return name + " (" + number + ")";
+        } else {
+            return name;
+        }
     }
 
     /**
@@ -276,7 +291,7 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
 
     /**
      * Two series are equal if:
-     * - one or both of them is 'new' (e.g. id == 0) and their names are equal
+     * - one or both of them is 'new' (error.g. id == 0) and their names are equal
      * - ids are equal
      *
      * So the number plays NO ROLE !

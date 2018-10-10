@@ -516,7 +516,7 @@ public class CoverBrowser {
                 } catch (Exception e) {
                     // Failed to decode; probably not an image
                     ok = false;
-                    Logger.logError(e, "Unable to decode thumbnail");
+                    Logger.error(e, "Unable to decode thumbnail");
                 }
             }
 
@@ -627,7 +627,7 @@ public class CoverBrowser {
                 }
                 mFiles.clear();
             } catch (Exception e) {
-                Logger.logError(e);
+                Logger.error(e);
             }
         }
     }

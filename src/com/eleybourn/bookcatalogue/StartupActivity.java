@@ -157,7 +157,7 @@ public class StartupActivity extends AppCompatActivity {
     private void startNextStage() {
         // onCreate being stage 0
         mStartupStage++;
-        System.out.println("Starting stage " + mStartupStage);
+        Logger.debug("Starting stage " + mStartupStage);
 
         switch (mStartupStage) {
             case 1: {
@@ -196,7 +196,7 @@ public class StartupActivity extends AppCompatActivity {
 
     private void startTasks() {
         if (BuildConfig.DEBUG) {
-            System.out.println("Startup isTaskRoot() = " + isTaskRoot());
+            Logger.debug("Startup isTaskRoot() = " + isTaskRoot());
         }
 
         mUiThread = Thread.currentThread();
@@ -256,7 +256,7 @@ public class StartupActivity extends AppCompatActivity {
                         mProgress.show();
                     }
                 } catch (Exception e) {
-                    Logger.logError(e);
+                    Logger.error(e);
                 }
             }
         } else {
@@ -278,11 +278,11 @@ public class StartupActivity extends AppCompatActivity {
      */
     private void taskCompleted(SimpleTask task) {
         if (BuildConfig.DEBUG) {
-            System.out.println("Task Completed: " + task.getClass().getSimpleName());
+            Logger.debug("Task Completed: " + task.getClass().getSimpleName());
         }
         if (!mTaskQueue.hasActiveTasks()) {
             if (BuildConfig.DEBUG) {
-                System.out.println("Task Completed - no more");
+                Logger.debug("Task Completed - no more");
             }
             startNextStage();
         }
@@ -435,7 +435,7 @@ public class StartupActivity extends AppCompatActivity {
                     initStorage();
                 } else {
                     // we can't work without storage, so die.
-                    Logger.logError(new RuntimeException("No storage permissions granted, quiting"));
+                    Logger.error("No storage permissions granted, quiting");
                     finishAndRemoveTask();
                 }
             }

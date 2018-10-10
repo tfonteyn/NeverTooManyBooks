@@ -850,7 +850,7 @@ public class Fields extends ArrayList<Fields.Field> {
                         }
                     }
                     Tracker.handleEvent(this, msg, Tracker.States.Running);
-                    Logger.logError(new RuntimeException("Unable to get associated View object"));
+                    Logger.error("Unable to get associated View object");
                 }
 
                 // If the view is still present, make sure it is accurate.
@@ -1163,14 +1163,14 @@ public class Fields extends ArrayList<Fields.Field> {
         public View findViewById(@IdRes final int id) {
             if (mFragment.get() == null) {
                 if (BuildConfig.DEBUG) {
-                    System.out.println("Fragment is NULL");
+                    Logger.debug("Fragment is NULL");
                 }
                 return null;
             }
             final View view = mFragment.get().getView();
             if (view == null) {
                 if (BuildConfig.DEBUG) {
-                    System.out.println("View is NULL");
+                    Logger.debug("View is NULL");
                 }
                 return null;
             }
@@ -1377,14 +1377,14 @@ public class Fields extends ArrayList<Fields.Field> {
             Fields fs = mFields.get();
             if (fs == null) {
                 if (BuildConfig.DEBUG) {
-                    System.out.println("Fields is NULL");
+                    Logger.debug("Fields is NULL");
                 }
                 return null;
             }
             FieldsContext c = fs.getContext();
             if (c == null) {
                 if (BuildConfig.DEBUG) {
-                    System.out.println("Context is NULL");
+                    Logger.debug("Context is NULL");
                 }
                 return null;
             }

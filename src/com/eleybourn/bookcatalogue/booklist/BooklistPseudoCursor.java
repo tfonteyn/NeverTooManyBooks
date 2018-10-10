@@ -26,6 +26,7 @@ import android.support.annotation.NonNull;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.database.cursors.BooklistCursor;
 import com.eleybourn.bookcatalogue.database.cursors.BooklistRowView;
+import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 
 import java.util.ArrayList;
@@ -197,10 +198,10 @@ public class BooklistPseudoCursor extends AbstractCursor implements BooklistSupp
 
             }
             // DEBUG: Remove dump of MRU list!
-            //System.out.print("MRU: ");
+            //Logger.debug("MRU: ");
             //for(int i = 0; i < MRU_LIST_SIZE; i++)
-            //	System.out.print(mMruList[(mMruListPos+1+i)%MRU_LIST_SIZE] + " ");
-            //System.out.println();
+            //	Logger.debug(mMruList[(mMruListPos+1+i)%MRU_LIST_SIZE] + " ");
+
 
             // Set the active cursor, and set its position correctly
             mActiveCursor = mCursors.get(cursorId);
@@ -229,7 +230,7 @@ public class BooklistPseudoCursor extends AbstractCursor implements BooklistSupp
         // Purge them
         for (Integer i : toPurge) {
             if (BuildConfig.DEBUG) {
-                System.out.println("Removing cursor at " + i);
+                Logger.debug("Removing cursor at " + i);
             }
             BooklistCursor c = mCursors.remove(i);
             c.close();

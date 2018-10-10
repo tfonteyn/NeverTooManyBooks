@@ -7,6 +7,7 @@ import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.database.DbSync;
+import com.eleybourn.bookcatalogue.debug.Logger;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -74,7 +75,7 @@ public class TableDefinition implements AutoCloseable {
      */
     private static void drop(@NonNull final DbSync.SynchronizedDb db, @NonNull final String name) {
         if (BuildConfig.DEBUG) {
-            System.out.println("Dropping TABLE " + name);
+            Logger.debug("Dropping TABLE " + name);
         }
         db.execSQL("DROP TABLE If Exists " + name);
     }
@@ -484,9 +485,9 @@ public class TableDefinition implements AutoCloseable {
         if (BuildConfig.DEBUG) {
             String s = this.getSql(mName, withConstraints, false);
             if (DEBUG_SWITCHES.SQL) {
-                System.out.println(s);
+                Logger.debug(s);
             } else {
-                System.out.println("Creating table " + s.substring(0, 30));
+                Logger.debug("Creating table " + s.substring(0, 30));
             }
         }
         db.execSQL(this.getSql(mName, withConstraints, false));
@@ -610,15 +611,13 @@ public class TableDefinition implements AutoCloseable {
     public String getUpdate(@NonNull final DomainDefinition... domains) {
         StringBuilder s = new StringBuilder("UPDATE ");
         s.append(mName);
-        s.append(" SET\n");
-
-        s.append("	");
+        s.append(" SET ");
         s.append(domains[0]);
-        s.append(" = ?");
+        s.append("=?");
         for (int i = 1; i < domains.length; i++) {
-            s.append(",\n	");
+            s.append(",	");
             s.append(domains[i]);
-            s.append(" = ?");
+            s.append("=?");
         }
         s.append("\n");
         return s.toString();

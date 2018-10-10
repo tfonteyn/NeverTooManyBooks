@@ -4,6 +4,7 @@ import android.content.SharedPreferences.Editor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 import java.util.ArrayList;
@@ -211,7 +212,7 @@ public class BCPreferences {
                 sb.append("\n").append(key).append("=").append(value);
             }
             sb.append("\n\n");
-            System.out.println(sb);
+            Logger.debug(sb.toString());
         }
     }
 }

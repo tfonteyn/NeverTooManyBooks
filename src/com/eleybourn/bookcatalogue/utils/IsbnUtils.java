@@ -200,7 +200,7 @@ public class IsbnUtils {
                 }
             } catch (NumberFormatException e) {
                 if (BuildConfig.DEBUG) {
-                    Logger.logError(e);
+                    Logger.error(e);
                 }
             }
 
@@ -213,7 +213,7 @@ public class IsbnUtils {
                 }
             } catch (NumberFormatException e) {
                 if (BuildConfig.DEBUG) {
-                    Logger.logError(e);
+                    Logger.error(e);
                 }
             }
             throw new NumberFormatException();

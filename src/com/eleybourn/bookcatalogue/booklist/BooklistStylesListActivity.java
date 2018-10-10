@@ -78,7 +78,7 @@ public class BooklistStylesListActivity extends EditObjectListActivity<BooklistS
                 HintManager.displayHint(this, R.string.hint_booklist_styles_editor, null);
             }
         } catch (Exception e) {
-            Logger.logError(e);
+            Logger.error(e);
         }
     }
 
@@ -206,7 +206,7 @@ public class BooklistStylesListActivity extends EditObjectListActivity<BooklistS
                 style = style.getClone();
                 style.setName(style.getDisplayName());
             } catch (SerializationUtils.DeserializationException e) {
-                Logger.logError(e);
+                Logger.error(e);
                 StandardDialogs.showQuickNotice(this, R.string.unexpected_error);
                 return;
             }
@@ -282,7 +282,7 @@ public class BooklistStylesListActivity extends EditObjectListActivity<BooklistS
             }
             setList(mList);
         } catch (Exception e) {
-            Logger.logError(e);
+            Logger.error(e);
             // Do our best to recover
             setList(getList());
         }

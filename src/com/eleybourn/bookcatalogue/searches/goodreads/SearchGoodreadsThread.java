@@ -75,11 +75,11 @@ public class SearchGoodreadsThread extends SearchThread {
                 | GoodreadsManager.Exceptions.NotAuthorizedException e) {
             // Added to stop confusing a new developer (me!).... the dev keys need to be in the manifest
             if (BuildConfig.DEBUG) {
-                Logger.logError(e);
+                Logger.error(e);
                 showException(R.string.searching_goodreads, e);
             }
         } catch (Exception e) {
-            Logger.logError(e);
+            Logger.error(e);
             showException(R.string.searching_goodreads, e);
         }
     }

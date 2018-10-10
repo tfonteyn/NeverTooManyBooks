@@ -506,9 +506,9 @@ public class CropImageActivity extends CropMonitoredActivity {
                 if (outputStream != null) {
                     croppedImage.compress(COMPRESS_FORMAT, 75, outputStream);
                 }
-            } catch (IOException ex) {
+            } catch (IOException e) {
                 // TODO: report error to caller
-                Logger.logError(ex, "Error while saving image");
+                Logger.error(e, "Error while saving image");
             }
 
             Bundle extras = new Bundle();

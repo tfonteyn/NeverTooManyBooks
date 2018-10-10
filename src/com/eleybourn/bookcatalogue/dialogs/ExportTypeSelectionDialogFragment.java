@@ -115,7 +115,7 @@ public class ExportTypeSelectionDialogFragment extends DialogFragment {
                 }
             }
         } catch (Exception e) {
-            Logger.logError(e);
+            Logger.error(e);
         }
         dismiss();
     }

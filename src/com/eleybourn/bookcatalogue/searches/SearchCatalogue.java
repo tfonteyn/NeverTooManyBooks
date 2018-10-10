@@ -208,7 +208,7 @@ public class SearchCatalogue extends BookCatalogueActivity {
                     tmpMsg = "(enter search criteria)";
             }
         } catch (Exception e) {
-            Logger.logError(e);
+            Logger.error(e);
         }
 
         final String message = (tmpMsg != null ? tmpMsg : "");

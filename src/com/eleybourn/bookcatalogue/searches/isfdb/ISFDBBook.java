@@ -34,7 +34,7 @@ public class ISFDBBook extends AbstractBase {
         FORMAT_MAP.put("pb", "Paperback");
         FORMAT_MAP.put("tp", "Trade Paperback");
         FORMAT_MAP.put("hc", "Hardcover");
-        FORMAT_MAP.put("ebook", "eBook");
+        FORMAT_MAP.put("ebook", UniqueId.BVAL_FORMAT_EBOOK);
         FORMAT_MAP.put("digest", "Digest");
         FORMAT_MAP.put("unknown", "Unknown");
     }
@@ -168,8 +168,8 @@ public class ISFDBBook extends AbstractBase {
                     Elements as = li.select("a");
                     if (as != null) {
                         for (Element a : as) {
-                            ArrayUtils.appendOrAdd(mBookData, UniqueId.BKEY_AUTHOR_DETAILS, a.text());
-                            ArrayUtils.appendOrAdd(mBookData, "ISFDB_AUTHOR_ID", Long.toString(stripNumber(a.attr("href"))));
+                            ArrayUtils.addOrAppend(mBookData, UniqueId.BKEY_AUTHOR_DETAILS, a.text());
+                            ArrayUtils.addOrAppend(mBookData, "ISFDB_AUTHOR_ID", Long.toString(stripNumber(a.attr("href"))));
                         }
                     }
                 } else if (li.text().contains("Date")) {
@@ -195,8 +195,8 @@ public class ISFDBBook extends AbstractBase {
                     Elements as = li.select("a");
                     if (as != null) {
                         for (Element a : as) {
-                            ArrayUtils.appendOrAdd(mBookData, UniqueId.BKEY_SERIES_DETAILS, a.text());
-                            ArrayUtils.appendOrAdd(mBookData, "ISFDB_SERIES_ID", Long.toString(stripNumber(a.attr("href"))));
+                            ArrayUtils.addOrAppend(mBookData, UniqueId.BKEY_SERIES_DETAILS, a.text());
+                            ArrayUtils.addOrAppend(mBookData, "ISFDB_SERIES_ID", Long.toString(stripNumber(a.attr("href"))));
                         }
                     }
 
@@ -237,8 +237,8 @@ public class ISFDBBook extends AbstractBase {
 
                     // Cover artist, handle as author
                     Node node_a = li.childNode(4);
-                    ArrayUtils.appendOrAdd(mBookData, UniqueId.BKEY_AUTHOR_DETAILS, node_a.childNode(0).toString().trim());
-                    ArrayUtils.appendOrAdd(mBookData, "ISFDB_BOOK_COVER_ARTIST_ID", Long.toString(stripNumber(node_a.attr("href"))));
+                    ArrayUtils.addOrAppend(mBookData, UniqueId.BKEY_AUTHOR_DETAILS, node_a.childNode(0).toString().trim());
+                    ArrayUtils.addOrAppend(mBookData, "ISFDB_BOOK_COVER_ARTIST_ID", Long.toString(stripNumber(node_a.attr("href"))));
 
                 } else if (li.text().contains("Notes")) {
                     tmp = li.childNode(1).childNode(1).toString().trim();
@@ -249,15 +249,15 @@ public class ISFDBBook extends AbstractBase {
                     Elements as = li.select("a");
                     if (as != null) {
                         for (Element a : as) {
-                            ArrayUtils.appendOrAdd(mBookData, UniqueId.BKEY_AUTHOR_DETAILS, a.text());
-                            ArrayUtils.appendOrAdd(mBookData, "ISFDB_EDITORS_ID", Long.toString(stripNumber(a.attr("href"))));
+                            ArrayUtils.addOrAppend(mBookData, UniqueId.BKEY_AUTHOR_DETAILS, a.text());
+                            ArrayUtils.addOrAppend(mBookData, "ISFDB_EDITORS_ID", Long.toString(stripNumber(a.attr("href"))));
                         }
                     }
 
                 }
             } catch (IndexOutOfBoundsException e) {
                 // does not happen now, but could happen if we come about non-standard entries, or if ISFDB website changes
-                Logger.logError(e, "path: " + mPath + "\n\nLI: " + li.toString());
+                Logger.error(e, "path: " + mPath + "\n\nLI: " + li.toString());
             }
         }
 
@@ -288,7 +288,7 @@ public class ISFDBBook extends AbstractBase {
 
         // another gamble for the series "name (nr)"
         if (mSeries != null) {
-            ArrayUtils.appendOrAdd(mBookData, UniqueId.BKEY_SERIES_DETAILS, mSeries);
+            ArrayUtils.addOrAppend(mBookData, UniqueId.BKEY_SERIES_DETAILS, mSeries);
         }
 
         // lastly, optional fetch of the cover.
@@ -331,7 +331,7 @@ public class ISFDBBook extends AbstractBase {
         String thumbnail = img.attr("src");
         String fileSpec = ImageUtils.saveThumbnailFromUrl(thumbnail, "_ISFDB");
         if (!fileSpec.isEmpty()) {
-            ArrayUtils.appendOrAdd(mBookData, UniqueId.BKEY_THUMBNAIL_USCORE, fileSpec);
+            ArrayUtils.addOrAppend(mBookData, UniqueId.BKEY_THUMBNAIL_USCORE, fileSpec);
         }
     }
 
@@ -437,7 +437,7 @@ public class ISFDBBook extends AbstractBase {
 
             AnthologyTitle anthologyTitle = new AnthologyTitle(author, title, year);
             results.add(anthologyTitle);
-            ArrayUtils.appendOrAdd(mBookData, UniqueId.BKEY_ANTHOLOGY_DETAILS, anthologyTitle.toString());
+            ArrayUtils.addOrAppend(mBookData, UniqueId.BKEY_ANTHOLOGY_DETAILS, anthologyTitle.toString());
 
             // check for year & series. Note we don't store it here in mBookData
             // once found, don't retest (mFirstPublication == null)

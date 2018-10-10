@@ -64,7 +64,7 @@ public class BackupLister extends FileLister {
                     fd.setInfo(reader.getInfo());
                     reader.close();
                 } catch (IOException e) {
-                    Logger.logError(e);
+                    Logger.error(e);
                     if (reader != null)
                         try {
                             reader.close();

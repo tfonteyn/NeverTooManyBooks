@@ -86,7 +86,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
                 T item = getItem(pos);
                 return item != null && onRowLongClick(v, item, pos);
             } catch (Exception e) {
-                Logger.logError(e);
+                Logger.error(e);
             }
             return false;
         }
@@ -101,7 +101,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
                     onRowClick(v, item, pos);
                 }
             } catch (Exception e) {
-                Logger.logError(e);
+                Logger.error(e);
             }
         }
     };
@@ -119,7 +119,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
                 }
             } catch (Exception e) {
                 // TODO: Allow a specific exception to cancel the action
-                Logger.logError(e);
+                Logger.error(e);
             }
         }
     };
@@ -142,7 +142,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
                 onListChanged();
             } catch (Exception e) {
                 // TODO: Allow a specific exception to cancel the action
-                Logger.logError(e);
+                Logger.error(e);
             }
         }
     };
@@ -165,7 +165,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
                 onListChanged();
             } catch (Exception e) {
                 // TODO: Allow a specific exception to cancel the action
-                Logger.logError(e);
+                Logger.error(e);
             }
 
         }
@@ -253,12 +253,12 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
         View row = convertView.findViewById(R.id.ROW_DETAILS);
         if (row == null) {
             if (BuildConfig.DEBUG) {
-                System.out.println("R.id.ROW_DETAILS NOT found in " + this);
+                Logger.debug("R.id.ROW_DETAILS NOT found in " + this);
             }
             // but if we did not define a details row, try row anyhow
             row = convertView.findViewById(R.id.ROW);
             if (BuildConfig.DEBUG) {
-                System.out.println("Using R.id.ROW instead");
+                Logger.debug("Using R.id.ROW instead");
             }
         }
 
@@ -311,7 +311,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
             try {
                 onSetupView(convertView, item);
             } catch (Exception e) {
-                Logger.logError(e);
+                Logger.error(e);
             }
             convertView.setBackgroundResource(android.R.drawable.list_selector_background);
 

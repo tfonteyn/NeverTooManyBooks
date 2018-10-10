@@ -111,7 +111,7 @@ abstract public class ActivityWithTasks extends BookCatalogueActivity {
             if (BuildConfig.DEBUG) {
                 String dbgMsg = count + "/" + max + ", '" + message.replace("\n", "\\n") + "'";
                 Tracker.handleEvent(ActivityWithTasks.this, "SearchProgress " + dbgMsg, States.Running);
-                System.out.println("PRG: " + dbgMsg);
+                Logger.debug("PRG: " + dbgMsg);
             }
 
             // Save the details
@@ -167,10 +167,10 @@ abstract public class ActivityWithTasks extends BookCatalogueActivity {
                 if (c != null) {
                     mTaskManager = c.getManager();
                 } else {
-                    Logger.logError(new IllegalStateException("Have ID("+mTaskManagerId+"), but can not find controller getting TaskManager"));
+                    Logger.error("Have ID("+mTaskManagerId+"), but can not find controller getting TaskManager");
                 }
             } //else {
-            //Logger.logError(new RuntimeException("Task manager requested, but no ID available"));
+            //Logger.error("Task manager requested, but no ID available");
             //}
 
             // Create if necessary
