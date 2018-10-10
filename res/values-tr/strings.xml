@@ -14,7 +14,7 @@
     <string name="pages">Sayfa</string>
     <string name="confirm_add">Kitap ekle</string>
     <string name="confirm_update">Güncelle</string>
-    <string name="nobooks">Bu kitaplıkta hiç kitap yok. Lütfen ekranın alt kısmındaki bölümü kullanarak kitap ekleyin.</string>
+    <string name="no_books">Bu kitaplıkta hiç kitap yok. Lütfen ekranın alt kısmındaki bölümü kullanarak kitap ekleyin.</string>
     <string name="menu_expand_all">Hepsini göster</string>
     <string name="menu_sort_by">Sırala</string>
     <string name="menu_collapse_all">Hepsini gizle</string>
@@ -63,12 +63,6 @@
     <string name="contact_label">İletişim</string>
     <string name="donate_label">Bağış yap</string>
     <string name="about_label">Uygulama hakkında</string>
-    <string name="sortby_author">Yazara göre sırala</string>
-    <string name="sortby_title">Ada göre sırala</string>
-    <string name="sortby_series">Diziye göre sırala</string>
-    <string name="sortby_loan">Ödünç verilene göre sırala</string>
-    <string name="sortby_unread">Okunmamışlara göre sırala</string>
-    <string name="sortby_genre">Türe göre sırala</string>
     <string name="list_price">Fiyatı</string>
     <string name="update_fields">Alanları kendiliğinden doldur</string>
     <string name="select_fields_to_update">Güncellenecek alanları seçin</string>
@@ -209,16 +203,13 @@
     <string name="megabytes">%.2f MS</string>
     <string name="kilobytes">%.2f kilobit</string>
     <string name="bytes">%.0f bit</string>
-    <string name="sortby_author_given">Yazara göre sırala (Ad)</string>
     <string name="debug_subject">Hata ayıklama bilgisi alındı</string>
     <string name="debug_body">Lütfen yaşamakta olduğunuz sorunu kısaca anlatınız.</string>
     <string name="menu_duplicate">Kitabı kopyala</string>
     <string name="cannot_edit_system">Sistem değerlerini düzenleyemezsiniz</string>
     <string name="incorrect_key">Ya LibraryThing geliştirici anahtarınız yanlış ya da biz doğrulama için ağa bağlanamadık.</string>
     <string name="correct_key">LibraryThing geliştirici anahtarınız geçerli.</string>
-    <string name="sortby_author_one">Yazara göre sırala (Yalnızca ilk yazar)</string>
     <string name="no_connection">Ağ bağlantısı yok.</string>
-    <string name="sortby_published">Yayım tarihine göre sırala</string>
     <string name="menu_share_this">Paylaş</string>
     <string name="email_export">Dışarı aktarılan veriyi e-posta ile göndermemizi ister misiniz?</string>
     <string name="menu_crop_thumb">Küçük resmi kırp</string>
@@ -245,7 +236,6 @@
     <string name="goodreads_access_error">Goodreads\'e erişmeye çalışırken bir ağ sorunu oluştu. Lütfen Goodreads ağ sayfasının çalışıyor olduğundan emin olun, sorun sürerse lütfen destek bölümü ile iletişime geçin.</string>
     <string name="other_preferences">Diğer seçenekler</string>
     <string name="user_interface">Kullanıcı arayüzü</string>
-    <string name="start_in_my_books">\'Kitaplarım\' içinde aç</string>
     <string name="background_tasks">Ardalan görevleri</string>
     <string name="cleanup_old_tasks">Eski görevleri temizle</string>
     <string name="cleanup_old_events">Eski olayları temizle</string>
@@ -504,8 +494,8 @@
     <string name="cancelled">İptal edildi</string>
     <string name="import_complete">İçe aktarma başarılı</string>
     <string name="library_thing">LibraryThing</string>
-    <string name="searching_elipsis">Aranıyor&#8230;</string>
-    <string name="adding_book_elipsis">Kitap ekle&#8230;</string>
+    <string name="searching_ellipsis">Aranıyor&#8230;</string>
+    <string name="adding_book_ellipsis">Kitap ekle&#8230;</string>
     <string name="prefs_global_opening_book_mode">Kitabı salt okunur aç</string>
     <string name="book_details_readonly_publishing">Yayımlanıyor</string>
     <string name="book_details_readonly_by">ile</string>

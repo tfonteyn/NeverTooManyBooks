@@ -415,7 +415,7 @@
             android:id="@+id/description_divider"
             style="@style/listDividerHorizontal" />
 
-        <!-- reminder: autolink/textIsSelectable etc won't work here, as its done in code -->
+        <!-- reminder: textIsSelectable etc won't work here, as its done in code -->
         <TextView
             android:id="@+id/description"
             android:layout_width="match_parent"

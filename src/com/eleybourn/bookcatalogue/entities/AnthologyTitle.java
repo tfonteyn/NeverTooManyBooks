@@ -67,6 +67,7 @@ public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
      *  pattern finds (1960), group 1 will then contain the pure 1960
      */
     public static final Pattern YEAR_FROM_STRING = Pattern.compile("\\(([1|2]\\d\\d\\d)\\)");
+    public static final char SEPARATOR = ',';
 
     private long id = 0;
     private Author mAuthor;
@@ -79,6 +80,15 @@ public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
     /**
      * Constructor that will attempt to parse a single string into an AnthologyTitle.
      */
+    public AnthologyTitle(@NonNull final String fromString) {
+        fromString(fromString);
+    }
+
+    /**
+     * Constructor that will attempt to parse a single string into an AnthologyTitle.
+     * to be removed once we have 1..x relation with books
+     */
+    @Deprecated
     public AnthologyTitle(@NonNull final String fromString,  final long bookId) {
         fromString(fromString);
         mBookId = bookId;
@@ -90,6 +100,22 @@ public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
      * @param author Author of title
      * @param title  Title
      */
+    public AnthologyTitle(@NonNull final Author author,
+                          @NonNull final String title,
+                          @Nullable final String publicationDate) {
+        mAuthor = author;
+        mTitle = title.trim();
+        mFirstPublicationDate = publicationDate;
+        mBookId = 0;
+    }
+
+    /**
+     * Constructor: to be removed once we have 1..x relation with books
+     *
+     * @param author Author of title
+     * @param title  Title
+     */
+    @Deprecated
     public AnthologyTitle(@NonNull final Author author,
                           @NonNull final String title,
                           @Nullable final String publicationDate,
@@ -109,9 +135,9 @@ public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
         // V82: Giants In The Sky * Blish, James
         // V83: Giants In The Sky (1952) * Blish, James
 
-        List<String> data = ArrayUtils.decodeList(TITLE_AUTHOR_DELIM, encodedString);
-        mAuthor = new Author(data.get(1));
-        String title = data.get(0);
+        List<String> list = ArrayUtils.decodeList(TITLE_AUTHOR_DELIM, encodedString);
+        mAuthor = new Author(list.get(1));
+        String title = list.get(0);
 
         //FIXME: fine for now, but should be made foolproof for full dates instead of just the 4 digit year
         Matcher matcher = AnthologyTitle.YEAR_FROM_STRING.matcher(title);
@@ -137,7 +163,7 @@ public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
             yearStr = "";
         }
         // V83: Giants In The Sky (1952) * Blish, James
-        return ArrayUtils.encodeListItem(',', mTitle) + yearStr + " " + TITLE_AUTHOR_DELIM + " " + mAuthor;
+        return ArrayUtils.encodeListItem(SEPARATOR, mTitle) + yearStr + " " + TITLE_AUTHOR_DELIM + " " + mAuthor;
     }
 
     @NonNull

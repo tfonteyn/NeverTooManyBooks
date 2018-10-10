@@ -14,7 +14,7 @@
     <string name="pages">Páginas</string>
     <string name="confirm_add">Añadir libro</string>
     <string name="confirm_update">Actualizar</string>
-    <string name="nobooks">No hay libros en esta biblioteca. Añada alguno utilizando el menú al pie de esta pantalla.</string>
+    <string name="no_books">No hay libros en esta biblioteca. Añada alguno utilizando el menú al pie de esta pantalla.</string>
     <string name="menu_expand_all">Expandir todo</string>
     <string name="menu_sort_by">Ordenar por</string>
     <string name="menu_collapse_all">Comprimir todo</string>
@@ -64,12 +64,6 @@
     <string name="contact_label">Contacto</string>
     <string name="donate_label">Contribuir</string>
     <string name="about_label">Acerca de esta App</string>
-    <string name="sortby_author">Ordenar por autor</string>
-    <string name="sortby_title">Ordenar por título</string>
-    <string name="sortby_series">Ordenar por serie</string>
-    <string name="sortby_loan">Ordenar por prestado</string>
-    <string name="sortby_unread">Ordenar por no leidos</string>
-    <string name="sortby_genre">Ordenar por género</string>
     <string name="list_price">Precio</string>
     <string name="update_fields">Actualización automática de campos</string>
     <string name="select_fields_to_update">Seleccione campos para actualizar</string>
@@ -214,16 +208,13 @@
     <string name="megabytes">%.2fMB</string>
     <string name="kilobytes">%.2fkB</string>
     <string name="bytes">%.0f bytes</string>
-    <string name="sortby_author_given">Ordenar por autor (Nombre)</string>
     <string name="debug_subject">Recopilando información sobre fallos</string>
     <string name="debug_body">Por favor, explique brevemente el problema experimentado.</string>
     <string name="menu_duplicate">Duplicar libro</string>
     <string name="cannot_edit_system">No se pueden modificar los valores del sistema</string>
     <string name="incorrect_key">Su clave de desarrollador de LibraryThing es incorrecta, o no se  ha podido contactar para verificarla.</string>
     <string name="correct_key">Su clave de desarrollador de LibraryThing es válida.</string>
-    <string name="sortby_author_one">Ordenar por Autor (sólo el primer autor)</string>
     <string name="no_connection">No hay conexión a internet.</string>
-    <string name="sortby_published">Ordenar por fecha de publicación</string>
     <string name="menu_share_this">Compartir</string>
     <string name="email_export">¿Desea enviar por correo electrónico el fichero exportado?</string>
     <string name="menu_crop_thumb">Recortar miniatura</string>
@@ -253,7 +244,6 @@
     <string name="goodreads_access_error">Se ha producido un problema de red al acceder a goodreads. Compruebe si el sitio web de goodreads está operativo, y si el problema persiste póngase en contacto con su servicio de soporte</string>
     <string name="other_preferences">Otras preferencias</string>
     <string name="user_interface">Interfaz de usuario</string>
-    <string name="start_in_my_books">Empezar en \'Mis libros\'</string>
     <string name="background_tasks">Tareas en segundo plano</string>
     <string name="cleanup_old_tasks">Eliminar tareas antiguas</string>
     <string name="cleanup_old_events">Eliminar eventos antiguos</string>
@@ -517,8 +507,8 @@
     <string name="cancelled">Cancelado</string>
     <string name="import_complete">Importación finalizada</string>
     <string name="library_thing">LibraryThing</string>
-    <string name="searching_elipsis">Buscando&#8230;</string>
-    <string name="adding_book_elipsis">Añadiendo libro&#8230;</string>
+    <string name="searching_ellipsis">Buscando&#8230;</string>
+    <string name="adding_book_ellipsis">Añadiendo libro&#8230;</string>
     <string name="prefs_global_opening_book_mode">Abrir libro en modo sólo lectura</string>
     <string name="book_details_readonly_publishing">Editor</string>
     <string name="book_details_readonly_by">por</string>

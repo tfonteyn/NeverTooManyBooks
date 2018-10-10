@@ -236,9 +236,9 @@ class ImportAllTask extends GenericTask {
                 c.close();
                 c = null;
 
-                List<String> isbns = extractIsbns(review);
-                if (isbns != null && isbns.size() > 0) {
-                    c = db.fetchBooksByIsbnList(isbns);
+                List<String> list = extractIsbnList(review);
+                if (list != null && list.size() > 0) {
+                    c = db.fetchBooksByIsbnList(list);
                     found = c.moveToFirst();
                 }
             }
@@ -287,7 +287,7 @@ class ImportAllTask extends GenericTask {
     /**
      * Extract a list of ISBNs from the bundle
      */
-    private List<String> extractIsbns(@NonNull final Bundle review) {
+    private List<String> extractIsbnList(@NonNull final Bundle review) {
         List<String> isbns = new ArrayList<>();
 
         String isbn = review.getString(ListReviewsFieldNames.ISBN13).trim();
@@ -374,11 +374,11 @@ class ImportAllTask extends GenericTask {
         }
 
         // Find the best (longest) isbn.
-        List<String> isbns = extractIsbns(review);
-        if (isbns.size() > 0) {
-            String best = isbns.get(0);
+        List<String> list = extractIsbnList(review);
+        if (list.size() > 0) {
+            String best = list.get(0);
             int bestLen = best.length();
-            for (String curr : isbns) {
+            for (String curr : list) {
                 if (curr.length() > bestLen) {
                     best = curr;
                     bestLen = best.length();
@@ -419,7 +419,7 @@ class ImportAllTask extends GenericTask {
                 authors.add(new Author(name));
             }
         }
-        book.putSerializable(UniqueId.BKEY_AUTHOR_ARRAY, authors);
+        book.setAuthorList(authors);
 
         if (bookRowView == null) {
             // Use the GR added date for new books
@@ -427,10 +427,10 @@ class ImportAllTask extends GenericTask {
             // Also fetch thumbnail if add
             String thumbnail;
             if (review.containsKey(ListReviewsFieldNames.LARGE_IMAGE)
-                    && !review.getString(ListReviewsFieldNames.LARGE_IMAGE).toLowerCase().contains(UniqueId.BKEY_NOCOVER)) {
+                    && !review.getString(ListReviewsFieldNames.LARGE_IMAGE).toLowerCase().contains(UniqueId.BKEY_NO_COVER)) {
                 thumbnail = review.getString(ListReviewsFieldNames.LARGE_IMAGE);
             } else if (review.containsKey(ListReviewsFieldNames.SMALL_IMAGE)
-                    && !review.getString(ListReviewsFieldNames.SMALL_IMAGE).toLowerCase().contains(UniqueId.BKEY_NOCOVER)) {
+                    && !review.getString(ListReviewsFieldNames.SMALL_IMAGE).toLowerCase().contains(UniqueId.BKEY_NO_COVER)) {
                 thumbnail = review.getString(ListReviewsFieldNames.SMALL_IMAGE);
             } else {
                 thumbnail = null;
@@ -462,7 +462,7 @@ class ImportAllTask extends GenericTask {
                 book.putString(UniqueId.KEY_TITLE, thisTitle.substring(0, details.startChar - 1));
 
                 Series.pruneSeriesList(allSeries);
-                book.putSerializable(UniqueId.BKEY_SERIES_ARRAY, allSeries);
+                book.setSeriesList(allSeries);
             }
         }
 
@@ -486,7 +486,7 @@ class ImportAllTask extends GenericTask {
                 }
             }
             if (shelfNames != null && shelfNames.length() > 0) {
-                book.setBookshelfList(shelfNames.toString());
+                book.setBookshelfListAsEncodedString(shelfNames.toString());
             }
         }
 
@@ -509,7 +509,7 @@ class ImportAllTask extends GenericTask {
     @Nullable
     private String addDateIfValid(@NonNull final Bundle source,
                                   @NonNull final String sourceField,
-                                  @NonNull final Book dest,
+                                  @NonNull final Book book,
                                   @NonNull final String destField) {
         if (!source.containsKey(sourceField)) {
             return null;
@@ -526,7 +526,7 @@ class ImportAllTask extends GenericTask {
         }
 
         val = DateUtils.toSqlDateTime(d);
-        dest.putString(destField, val);
+        book.putString(destField, val);
         return val;
     }
 
@@ -550,11 +550,11 @@ class ImportAllTask extends GenericTask {
      */
     private void addLongIfPresent(@NonNull final Bundle source,
                                   @NonNull final String sourceField,
-                                  @NonNull final Book dest,
+                                  @NonNull final Book book,
                                   @NonNull final String destField) {
         if (source.containsKey(sourceField)) {
             long val = source.getLong(sourceField);
-            dest.putLong(destField, val);
+            book.putLong(destField, val);
         }
     }
 
@@ -564,11 +564,11 @@ class ImportAllTask extends GenericTask {
     @Nullable
     private Double addDoubleIfPresent(@NonNull final Bundle source,
                                       @SuppressWarnings("SameParameterValue") @NonNull final String sourceField,
-                                      @NonNull final Book dest,
+                                      @NonNull final Book book,
                                       @SuppressWarnings("SameParameterValue") @NonNull final String destField) {
         if (source.containsKey(sourceField)) {
             double val = source.getDouble(sourceField);
-            dest.putDouble(destField, val);
+            book.putDouble(destField, val);
             return val;
         } else {
             return null;

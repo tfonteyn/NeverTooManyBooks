@@ -28,7 +28,7 @@ import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
-import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.entities.AnthologyTitle;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.messaging.MessageSwitch;
@@ -400,8 +400,8 @@ public class SearchManager implements TaskManagerListener {
             System.out.println("SearchManager.doSearch listener started");
         }
 
-        // We really want to ensure we get the same book from each, so if isbn is not present, do
-        // these in series.
+        // We really want to ensure we get the same book from each, so if isbn is not present,
+        // do these in serially
 
         boolean tasksStarted = false;
         mSearchingAsin = false;
@@ -452,7 +452,7 @@ public class SearchManager implements TaskManagerListener {
      *
      * @param searchId Source
      */
-    private void accumulateData(int searchId) {
+    private void accumulateData(final int searchId) {
         // See if we got data from this source
         if (!mSearchResults.containsKey(searchId)) {
             return;
@@ -476,6 +476,12 @@ public class SearchManager implements TaskManagerListener {
                 } else if (UniqueId.BKEY_SERIES_DETAILS.equals(key)) {
                     appendData(key, bookData, mBookData);
 
+                } else if (UniqueId.BKEY_ANTHOLOGY_DETAILS.equals(key)) {
+                    appendData(key, bookData, mBookData);
+
+                } else if (UniqueId.BKEY_THUMBNAIL_USCORE.equals(key)) {
+                    appendData(key, bookData, mBookData);
+
                 } else if (UniqueId.KEY_BOOK_DATE_PUBLISHED.equals(key)) {// Grab a different date if we can parse it.
                     String pd = bookData.getString(key);
                     if (pd != null) {
@@ -487,10 +493,6 @@ public class SearchManager implements TaskManagerListener {
                             }
                         }
                     }
-
-                } else if (UniqueId.BKEY_THUMBNAIL_USCORE.equals(key)) {
-                    appendData(key, bookData, mBookData);
-
                 }
             }
         }
@@ -498,6 +500,12 @@ public class SearchManager implements TaskManagerListener {
 
     /**
      * Combine all the data and create a book or display an error.
+     *
+     * This is where string encoded fields get transformed into arrays
+     * {@link UniqueId#BKEY_AUTHOR_DETAILS} -> {@link UniqueId#BKEY_AUTHOR_ARRAY}
+     * {@link UniqueId#BKEY_SERIES_DETAILS} -> {@link UniqueId#BKEY_SERIES_DETAILS}
+     * {@link UniqueId#BKEY_ANTHOLOGY_DETAILS} -> {@link UniqueId#BKEY_ANTHOLOGY_DETAILS}
+     *
      */
     private void sendResults() {
         // This list will be the actual order of the result we apply, based on the
@@ -529,7 +537,6 @@ public class SearchManager implements TaskManagerListener {
             }
         }
 
-
         // Merge the data we have. We do this in a fixed order rather than as the threads finish.
         for (int i : results) {
             accumulateData(i);
@@ -538,20 +545,20 @@ public class SearchManager implements TaskManagerListener {
         // If there are thumbnails present, pick the biggest, delete others and rename.
         ImageUtils.cleanupThumbnails(mBookData);
 
+
         // Try to use/construct authors
         String authors = null;
         try {
             authors = mBookData.getString(UniqueId.BKEY_AUTHOR_DETAILS);
         } catch (Exception ignored) {
         }
-
         if (authors == null || authors.isEmpty()) {
             authors = mAuthor;
         }
-
         if (authors != null && !authors.isEmpty()) {
-            ArrayList<Author> aa = ArrayUtils.getAuthorUtils().decodeList(authors, false);
-            mBookData.putSerializable(UniqueId.BKEY_AUTHOR_ARRAY, aa);
+            ArrayList<Author> list = ArrayUtils.getAuthorUtils().decodeList(authors, false);
+            mBookData.putSerializable(UniqueId.BKEY_AUTHOR_ARRAY, list);
+            mBookData.remove(UniqueId.BKEY_AUTHOR_DETAILS);
         }
 
         // Try to use/construct title
@@ -560,11 +567,9 @@ public class SearchManager implements TaskManagerListener {
             title = mBookData.getString(UniqueId.KEY_TITLE);
         } catch (Exception ignored) {
         }
-
         if (title == null || title.isEmpty()) {
             title = mTitle;
         }
-
         if (title != null && !title.isEmpty()) {
             mBookData.putString(UniqueId.KEY_TITLE, title);
         }
@@ -575,11 +580,9 @@ public class SearchManager implements TaskManagerListener {
             isbn = mBookData.getString(UniqueId.KEY_ISBN);
         } catch (Exception ignored) {
         }
-
         if (isbn == null || isbn.isEmpty()) {
             isbn = mIsbn;
         }
-
         if (isbn != null && !isbn.isEmpty()) {
             mBookData.putString(UniqueId.KEY_ISBN, isbn);
         }
@@ -590,24 +593,30 @@ public class SearchManager implements TaskManagerListener {
             series = mBookData.getString(UniqueId.BKEY_SERIES_DETAILS);
         } catch (Exception ignored) {
         }
-
         if (series != null && !series.isEmpty()) {
-            try {
-                ArrayList<Series> sa = ArrayUtils.getSeriesUtils().decodeList(series, false);
-                mBookData.putSerializable(UniqueId.BKEY_SERIES_ARRAY, sa);
-            } catch (Exception e) {
-                Logger.logError(e);
-            }
-        } else {
-            //add series to stop crashing
-            mBookData.putSerializable(UniqueId.BKEY_SERIES_ARRAY, new ArrayList<Series>());
+            ArrayList<Series> list = ArrayUtils.getSeriesUtils().decodeList(series, false);
+            mBookData.putSerializable(UniqueId.BKEY_SERIES_ARRAY, list);
+            mBookData.remove(UniqueId.BKEY_SERIES_DETAILS);
+        }
+
+        // Try to use/construct anthologyTitles
+        String anthologyTitles = null;
+        try {
+            anthologyTitles = mBookData.getString(UniqueId.BKEY_ANTHOLOGY_DETAILS);
+        } catch (Exception ignored) {
+        }
+        if (anthologyTitles != null && !anthologyTitles.isEmpty()) {
+            ArrayList<AnthologyTitle> list = ArrayUtils.getAnthologyTitleUtils().decodeList(anthologyTitles, false);
+            mBookData.putSerializable(UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY, list);
+            mBookData.remove(UniqueId.BKEY_ANTHOLOGY_DETAILS);
         }
 
         // If book is not found or missing required data, warn the user
         if (authors == null || authors.isEmpty() || title == null || title.isEmpty()) {
             mTaskManager.doToast(BookCatalogueApp.getResourceString(R.string.book_not_found));
         }
-        // Pass the data back
+
+        // All done, Pass the data back
         mMessageSwitch.send(mMessageSenderId, new MessageSwitch.Message<SearchListener>() {
                     @Override
                     public boolean deliver(@NonNull final SearchListener listener) {

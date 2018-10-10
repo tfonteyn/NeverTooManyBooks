@@ -99,7 +99,7 @@
     <string name="pages">Pages</string>
     <string name="confirm_add">Ajouter le livre</string>
     <string name="confirm_update">Mettre à jour</string>
-    <string name="nobooks">Il n\'y a pas de livre dans cette biblothèque. Veuillez en ajouter par le menu en bas de cet écran.</string>
+    <string name="no_books">Il n\'y a pas de livre dans cette biblothèque. Veuillez en ajouter par le menu en bas de cet écran.</string>
     <string name="menu_expand_all">Tout étendre</string>
     <string name="menu_sort_by">Trier par</string>
     <string name="menu_collapse_all">Tout réduire</string>
@@ -146,12 +146,6 @@
     <string name="sourcecode_label">Code source :</string>
     <string name="donate_label">Don</string>
     <string name="about_label">À propos de cette application</string>
-    <string name="sortby_author">Trier par auteurs</string>
-    <string name="sortby_title">Trier par titres</string>
-    <string name="sortby_series">Trier par séries</string>
-    <string name="sortby_loan">Trier par prêts</string>
-    <string name="sortby_unread">Trier par statut de lecture</string>
-    <string name="sortby_genre">Trier par genre</string>
     <string name="list_price">Liste de prix</string>
     <string name="update_fields">Mise à jour automatique des champs</string>
     <string name="select_fields_to_update">Sélection des champs à mettre à jour</string>
@@ -294,15 +288,12 @@
     <string name="megabytes">%.2f Mo</string>
     <string name="kilobytes">%.2f ko</string>
     <string name="bytes">%.0f octets</string>
-    <string name="sortby_author_given">Trier par auteur (prénom)</string>
     <string name="select_bookshelves">Choisir des bibliothèques</string>
     <string name="debug_subject">Collecte des informations de débogage en cours</string>
     <string name="debug_body">Merci de prendre le temps de décrire brièvement le problème que vous rencontrez.</string>
     <string name="menu_duplicate">Livre en double</string>
     <string name="cannot_edit_system">Vous ne pouvez pas modifier les valeurs du système</string>
-    <string name="sortby_author_one">Trier par auteur (premier auteur uniquement)</string>
     <string name="no_connection">Pas de connexion Internet disponible.</string>
-    <string name="sortby_published">Trier par date de publication</string>
     <string name="menu_share_this">Partager</string>
     <string name="email_export">Souhaitez-vous envoyer cet export par courriel ?</string>
     <string name="task_errors">Erreurs de tâches</string>
@@ -334,7 +325,6 @@
     <string name="goodreads_access_error">Problème réseau lors de l\'accès à Goodreads : vérifiez que le site Goodreads est disponible et si le problème persiste, prenez contact avec le support.</string>
     <string name="other_preferences">Autres préférences</string>
     <string name="user_interface">Interface utilisateur</string>
-    <string name="start_in_my_books">Commencer dans « mes livres »</string>
     <string name="background_tasks">Tâches en arrière plan</string>
     <string name="cleanup_old_tasks">Nettoyer les anciennes tâches</string>
     <string name="cleanup_old_events">Nettoyer les anciens événements</string>
@@ -592,8 +582,8 @@
     <string name="cancelled">Annulé</string>
     <string name="import_complete">Import terminé</string>
     <string name="library_thing">LibraryThing</string>
-    <string name="searching_elipsis">Recherche en cours&#8230;</string>
-    <string name="adding_book_elipsis">Ajout du livre&#8230;</string>
+    <string name="searching_ellipsis">Recherche en cours&#8230;</string>
+    <string name="adding_book_ellipsis">Ajout du livre&#8230;</string>
 
     <!-- Heading for scanner-related preferences -->
     <string name="scanning">Scan en cours</string>

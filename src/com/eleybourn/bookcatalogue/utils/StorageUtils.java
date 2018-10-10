@@ -137,7 +137,7 @@ public class StorageUtils {
         createDir(COVER_FILE_PATH);
         createDir(TEMP_FILE_PATH);
 
-        // * A .nomedia file will be created which will stop the thumbnails showing up in the gallery (thanks Brandon)
+        // A .nomedia file will be created which will stop the thumbnails showing up in the gallery (thanks Brandon)
         try {
             //noinspection ResultOfMethodCallIgnored
             new File(NOMEDIA_FILE_PATH).createNewFile();
@@ -281,7 +281,7 @@ public class StorageUtils {
         };
 
         @SuppressWarnings("unused") StringBuilder debugInfo;
-        if (DEBUG_SWITCHES.STORAGEUTILS && BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.STORAGE_UTILS && BuildConfig.DEBUG) {
             //noinspection UnusedAssignment
             debugInfo = new StringBuilder("Getting mounted file systems\n");
         }
@@ -292,7 +292,7 @@ public class StorageUtils {
         try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream("/proc/mounts")), 1024)) {
             String line;
             while ((line = in.readLine()) != null) {
-                if (DEBUG_SWITCHES.STORAGEUTILS && BuildConfig.DEBUG) {
+                if (DEBUG_SWITCHES.STORAGE_UTILS && BuildConfig.DEBUG) {
                     debugInfo.append("   checking ").append(line).append("\n");
                 }
                 final Matcher m = MOUNT_POINT_PATH.matcher(line);
@@ -300,12 +300,12 @@ public class StorageUtils {
                 if (m.find()) {
                     // See if it has a bookCatalogue directory
                     final File dir = new File(m.group(1) + File.separator + DIRECTORY_NAME);
-                    if (DEBUG_SWITCHES.STORAGEUTILS && BuildConfig.DEBUG) {
+                    if (DEBUG_SWITCHES.STORAGE_UTILS && BuildConfig.DEBUG) {
                         debugInfo.append("       matched ").append(dir.getAbsolutePath()).append("\n");
                     }
                     dirs.add(dir);
                 } else {
-                    if (DEBUG_SWITCHES.STORAGEUTILS && BuildConfig.DEBUG) {
+                    if (DEBUG_SWITCHES.STORAGE_UTILS && BuildConfig.DEBUG) {
                         debugInfo.append("       NO match\n");
                     }
                 }
@@ -315,7 +315,7 @@ public class StorageUtils {
         }
 
         // Sometimes (Android 6?) the /proc/mount search seems to fail, so we revert to environment vars
-        if (DEBUG_SWITCHES.STORAGEUTILS && BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.STORAGE_UTILS && BuildConfig.DEBUG) {
             debugInfo.append("Found ").append(dirs.size()).append(" directories\n");
         }
 
@@ -324,11 +324,11 @@ public class StorageUtils {
             if (loc1 != null) {
                 final File dir = new File(loc1 + File.separator + DIRECTORY_NAME);
                 dirs.add(dir);
-                if (DEBUG_SWITCHES.STORAGEUTILS && BuildConfig.DEBUG) {
+                if (DEBUG_SWITCHES.STORAGE_UTILS && BuildConfig.DEBUG) {
                     debugInfo.append("EXTERNAL_STORAGE added ").append(dir.getAbsolutePath()).append("\n");
                 }
             } else {
-                if (DEBUG_SWITCHES.STORAGEUTILS && BuildConfig.DEBUG) {
+                if (DEBUG_SWITCHES.STORAGE_UTILS && BuildConfig.DEBUG) {
                     debugInfo.append("EXTERNAL_STORAGE was null\n");
                 }
             }
@@ -337,11 +337,11 @@ public class StorageUtils {
             if (loc2 != null && !loc2.equals(loc1)) {
                 final File dir = new File(loc2 + File.separator + DIRECTORY_NAME);
                 dirs.add(dir);
-                if (DEBUG_SWITCHES.STORAGEUTILS && BuildConfig.DEBUG) {
+                if (DEBUG_SWITCHES.STORAGE_UTILS && BuildConfig.DEBUG) {
                     debugInfo.append("SECONDARY_STORAGE added ").append(dir.getAbsolutePath()).append("\n");
                 }
             } else {
-                if (DEBUG_SWITCHES.STORAGEUTILS && BuildConfig.DEBUG) {
+                if (DEBUG_SWITCHES.STORAGE_UTILS && BuildConfig.DEBUG) {
                     debugInfo.append("SECONDARY_STORAGE ignored: ").append(loc2).append("\n");
                 }
             }
@@ -351,7 +351,7 @@ public class StorageUtils {
 
         final Set<String> paths = new HashSet<>();
 
-        if (DEBUG_SWITCHES.STORAGEUTILS && BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.STORAGE_UTILS && BuildConfig.DEBUG) {
             debugInfo.append("Looking for files in directories\n");
         }
 
@@ -362,33 +362,33 @@ public class StorageUtils {
                     // Scan for csv files
                     final File[] csvFiles = dir.listFiles(csvFilter);
                     if (csvFiles != null) {
-                        if (DEBUG_SWITCHES.STORAGEUTILS && BuildConfig.DEBUG) {
+                        if (DEBUG_SWITCHES.STORAGE_UTILS && BuildConfig.DEBUG) {
                             debugInfo.append("    found ").append(csvFiles.length).append(" in ").append(dir.getAbsolutePath()).append("\n");
                         }
                         for (File f : csvFiles) {
-                            if (DEBUG_SWITCHES.STORAGEUTILS && BuildConfig.DEBUG) {
+                            if (DEBUG_SWITCHES.STORAGE_UTILS && BuildConfig.DEBUG) {
                                 debugInfo.append("Found: ").append(f.getAbsolutePath());
                             }
                             final String cp = f.getCanonicalPath();
                             if (paths.contains(cp)) {
-                                if (DEBUG_SWITCHES.STORAGEUTILS && BuildConfig.DEBUG) {
+                                if (DEBUG_SWITCHES.STORAGE_UTILS && BuildConfig.DEBUG) {
                                     debugInfo.append("        already present as ").append(cp).append("\n");
                                 }
                             } else {
                                 files.add(f);
                                 paths.add(cp);
-                                if (DEBUG_SWITCHES.STORAGEUTILS && BuildConfig.DEBUG) {
+                                if (DEBUG_SWITCHES.STORAGE_UTILS && BuildConfig.DEBUG) {
                                     debugInfo.append("        added as ").append(cp).append("\n");
                                 }
                             }
                         }
                     } else {
-                        if (DEBUG_SWITCHES.STORAGEUTILS && BuildConfig.DEBUG) {
+                        if (DEBUG_SWITCHES.STORAGE_UTILS && BuildConfig.DEBUG) {
                             debugInfo.append("    null returned by listFiles() in ").append(dir.getAbsolutePath()).append("\n");
                         }
                     }
                 } else {
-                    if (DEBUG_SWITCHES.STORAGEUTILS && BuildConfig.DEBUG) {
+                    if (DEBUG_SWITCHES.STORAGE_UTILS && BuildConfig.DEBUG) {
                         debugInfo.append("    ").append(dir.getAbsolutePath()).append(" does not exist\n");
                     }
                 }
@@ -397,7 +397,7 @@ public class StorageUtils {
             }
         }
 
-        if (DEBUG_SWITCHES.STORAGEUTILS && BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.STORAGE_UTILS && BuildConfig.DEBUG) {
             Logger.logError(new RuntimeException(debugInfo.toString()));
         }
 

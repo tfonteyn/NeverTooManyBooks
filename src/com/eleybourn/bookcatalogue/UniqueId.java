@@ -71,26 +71,22 @@ public class UniqueId {
 
     // END Codes used for startActivityForResult / onActivityResult
 
-    /* Bundle keys for entire ArrayLists */
-
-    /** ArrayList<Author> */
+    /* Bundle keys for serialised ArrayList<Entity> */
     public static final String BKEY_AUTHOR_ARRAY = "author_array";
-    /** ArrayList<Series> */
     public static final String BKEY_SERIES_ARRAY = "series_array";
-    /** ArrayList<AnthologyTitle> */
     public static final String BKEY_ANTHOLOGY_TITLES_ARRAY = "anthology_titles_array";
 
     /* encoded strings containing more then one piece of data. */
 
-    /** string-encoded - used in import/export, never change the string! */
+    /** string-encoded - used in import/export and internet searches, never change the string! */
     public static final String BKEY_AUTHOR_DETAILS = "author_details";
-    /**  string-encoded - used in import/export, never change the string! */
+    /** string-encoded - used in import/export and internet searches, never change the string! */
     public static final String BKEY_SERIES_DETAILS = "series_details";
-    /**  string-encoded - used in import/export, never change the string! */
+    /** string-encoded - used in import/export and internet searches, never change the string! */
     public static final String BKEY_ANTHOLOGY_DETAILS = "anthology_titles";
 
     /* BKEY_* and BVAL_* which are used in more then one class should be moved here */
-    public static final String BKEY_NOCOVER = "nocover";
+    public static final String BKEY_NO_COVER = "nocover";
     public static final String BKEY_DIALOG_ID = "dialogId";
     public static final String BKEY_FILE_SPEC = "fileSpec";
 

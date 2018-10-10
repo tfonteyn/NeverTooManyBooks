@@ -29,14 +29,15 @@ import android.provider.ContactsContract;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresPermission;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.PermissionChecker;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.Button;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -59,6 +60,8 @@ public class EditBookLoanedFragment extends EditBookAbstractFragment {
             ContactsContract.Contacts.LOOKUP_KEY,
             ContactsContract.Contacts.DISPLAY_NAME_PRIMARY
     };
+
+    private TextView mWho;
 
     @Override
     public View onCreateView(@NonNull final LayoutInflater inflater,
@@ -96,15 +99,12 @@ public class EditBookLoanedFragment extends EditBookAbstractFragment {
      */
     private void showLoanTo() {
         ScrollView sv = loadFragmentIntoScrollView(R.layout.fragment_edit_book_loan_to);
-
-        // Auto complete list comes from your Contacts
-        final AutoCompleteTextView who = sv.findViewById(R.id.who);
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_dropdown_item_1line, getFriends());
-        who.setAdapter(adapter);
+        mWho = sv.findViewById(R.id.who);
+        setAdapter();
 
         sv.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                String friend = who.getText().toString().trim();
+                String friend = mWho.getText().toString().trim();
                 saveLoan(friend);
                 showLoaned(friend);
             }
@@ -118,9 +118,9 @@ public class EditBookLoanedFragment extends EditBookAbstractFragment {
      */
     private void showLoaned(@NonNull final String user) {
         ScrollView sv = loadFragmentIntoScrollView(R.layout.fragment_edit_book_loaned);
+        mWho = sv.findViewById(R.id.who);
 
-        TextView who = sv.findViewById(R.id.who);
-        who.setText(user);
+        mWho.setText(user);
 
         sv.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
@@ -139,9 +139,9 @@ public class EditBookLoanedFragment extends EditBookAbstractFragment {
     }
 
     private void saveLoan(@NonNull final String friend) {
-        Book values = mEditManager.getBook();
-        values.putString(UniqueId.KEY_LOANED_TO, friend);
-        mDb.insertLoan(values, true);
+        Book book = mEditManager.getBook();
+        book.putString(UniqueId.KEY_LOANED_TO, friend);
+        mDb.insertLoan(book, true);
     }
 
     private void removeLoan() {
@@ -156,39 +156,67 @@ public class EditBookLoanedFragment extends EditBookAbstractFragment {
     }
 
     /**
+     * Auto complete list comes from your Contacts
+     */
+    private void setAdapter() {
+        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_CONTACTS}, UniqueId.ACTIVITY_REQUEST_CODE_PERMISSIONS_REQUEST);
+            return;
+        }
+        ArrayList<String> contacts = getFriends();
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_dropdown_item_1line, contacts);
+        ((AutoCompleteTextView) mWho).setAdapter(adapter);
+    }
+
+    /**
      * Return a list of friends from your contact list.
-     * This is for the autoComplete textView
      *
      * @return an ArrayList of names
      */
+    @RequiresPermission(Manifest.permission.READ_CONTACTS)
     @NonNull
-    private ArrayList<String> getFriends() {
-        ArrayList<String> friend_list = new ArrayList<>();
-
-        // got permission ? then send contacts list back
-        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
-            ContentResolver cr = getActivity().getContentResolver();
-            try (Cursor contactsCursor = cr.query(ContactsContract.Contacts.CONTENT_URI, PROJECTION, null, null, null)) {
-                if (contactsCursor != null) {
-                    while (contactsCursor.moveToNext()) {
-                        String name = contactsCursor.getString(contactsCursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME_PRIMARY));
-                        friend_list.add(name);
-                    }
+    private ArrayList<String> getFriends() throws SecurityException{
+        ArrayList<String> list = new ArrayList<>();
+        ContentResolver cr = getActivity().getContentResolver();
+        try (Cursor contactsCursor = cr.query(ContactsContract.Contacts.CONTENT_URI, PROJECTION, null, null, null)) {
+            if (contactsCursor != null) {
+                while (contactsCursor.moveToNext()) {
+                    String name = contactsCursor.getString(contactsCursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME_PRIMARY));
+                    list.add(name);
                 }
             }
-        } else {
-            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_CONTACTS}, UniqueId.ACTIVITY_REQUEST_CODE_PERMISSIONS_REQUEST);
         }
-        return friend_list;
+        return list;
     }
 
 
+    /**
+     * Callback for the result from requesting permissions. This method
+     * is invoked for every call on {@link #requestPermissions(String[], int)}.
+     * <p>
+     * <strong>Note:</strong> It is possible that the permissions request interaction
+     * with the user is interrupted. In this case you will receive empty permissions
+     * and results arrays which should be treated as a cancellation.
+     * </p>
+     *
+     * @param requestCode The request code passed in {@link #requestPermissions(String[], int)}.
+     * @param permissions The requested permissions. Never null.
+     * @param grantResults The grant results for the corresponding permissions
+     *     which is either {@link android.content.pm.PackageManager#PERMISSION_GRANTED}
+     *     or {@link android.content.pm.PackageManager#PERMISSION_DENIED}. Never null.
+     *
+     * @see #requestPermissions(String[], int)
+     */
     @Override
-    public void onRequestPermissionsResult(final int requestCode, @NonNull final String[] permissions, @NonNull final int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == UniqueId.ACTIVITY_REQUEST_CODE_PERMISSIONS_REQUEST) {
-
+    @PermissionChecker.PermissionResult
+    public void onRequestPermissionsResult(final int requestCode, @NonNull final String permissions[], @NonNull final int[] grantResults) {
+        //ENHANCE: when/if we request more permissions, then the permissions[] and grantResults[] must be checked in parallel
+        switch (requestCode) {
+            case UniqueId.ACTIVITY_REQUEST_CODE_PERMISSIONS_REQUEST: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    setAdapter();
+                }
+            }
         }
     }
-
 }

@@ -51,6 +51,7 @@ import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.searches.isfdb.HandlesISFDB;
 import com.eleybourn.bookcatalogue.searches.isfdb.ISFDBManager;
+import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,8 +69,6 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment implemen
     private CheckBox mSame;
     private Integer mEditPosition = null;
     private ArrayList<AnthologyTitle> mList;
-
-
 
     /**
      * ISFDB editions (url's) of a book(isbn)
@@ -93,24 +92,11 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment implemen
         loadPage();
     }
 
-//    /**
-//     * Scroll to the current group
-//     */
-//    private void gotoTitle(int id) {
-//        try {
-//            ListView view = this.getListView();
-//            view.setSelection(id);
-//        } catch (Exception e) {
-//            Logger.logError(e);
-//        }
-//        return;
-//    }
-
     /**
      * Display the main manage anthology page. This has three parts.
      * 1. Setup the "Same Author" checkbox
      * 2. Setup the "Add Title" fields
-     * 3. Populate the "Title List" - {@link #fillAnthology};
+     * 3. Populate the "Title List" - {@link #fillContentList};
      */
     private void loadPage() {
 
@@ -129,8 +115,9 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment implemen
             }
         });
 
-        // AutoCompleteTextView
-        ArrayAdapter<String> author_adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_dropdown_item_1line, mDb.getAuthors());
+        // Author AutoCompleteTextView
+        ArrayAdapter<String> author_adapter = new ArrayAdapter<>(getActivity(),
+                android.R.layout.simple_dropdown_item_1line, mDb.getAuthors());
         mAuthorText = getView().findViewById(R.id.add_author);
         mAuthorText.setAdapter(author_adapter);
         mAuthorText.setVisibility(mSame.isChecked() ? View.GONE : View.VISIBLE);
@@ -147,18 +134,20 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment implemen
                 if (mSame.isChecked()) {
                     author = mBookAuthor;
                 }
-                AnthologyTitleListAdapterForEditing adapter = ((AnthologyTitleListAdapterForEditing) EditBookAnthologyFragment.this.getListView().getAdapter());
+                AnthologyTitleListAdapterForEditing antAdapter = ((AnthologyTitleListAdapterForEditing)
+                        EditBookAnthologyFragment.this.getListView().getAdapter());
 
                 if (mEditPosition == null) {
-                    AnthologyTitle anthologyTitle = new AnthologyTitle(new Author(author), title, pubDate, book.getBookId());
-                    adapter.add(anthologyTitle);
+                    AnthologyTitle anthologyTitle = new AnthologyTitle(new Author(author), title, pubDate);
+                    anthologyTitle.setBookId(book.getBookId());
+                    antAdapter.add(anthologyTitle);
                 } else {
-                    AnthologyTitle anthologyTitle = adapter.getItem(mEditPosition);
+                    AnthologyTitle anthologyTitle = antAdapter.getItem(mEditPosition);
                     anthologyTitle.setAuthor(new Author(author));
                     anthologyTitle.setTitle(title);
                     anthologyTitle.setFirstPublication(pubDate);
 
-                    adapter.notifyDataSetChanged();
+                    antAdapter.notifyDataSetChanged();
 
                     mEditPosition = null;
                     mAdd.setText(R.string.anthology_add);
@@ -167,30 +156,31 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment implemen
                 mPubDateText.setText("");
                 mTitleText.setText("");
                 mAuthorText.setText("");
-                //fillAnthology();
+                //fillContentList();
                 mEditManager.setDirty(true);
             }
         });
 
-        fillAnthology();
+        fillContentList();
     }
 
     /**
-     * Populate the view
+     * Populate the list view with the book content table
      */
-    private void fillAnthology() {
+    private void fillContentList() {
+
+        final ListView listView = getListView();
 
         // Get all of the rows from the database and create the item list
-        mList = mEditManager.getBook().getAnthologyTitles();
+        mList = mEditManager.getBook().getContentList();
 
         // Now create a simple cursor adapter and set it to display
         AnthologyTitleListAdapterForEditing adapter = new AnthologyTitleListAdapterForEditing(getActivity(), R.layout.row_edit_anthology, mList);
-        getListView().setAdapter(adapter);
+        listView.setAdapter(adapter);
 
-        registerForContextMenu(getListView());
+        registerForContextMenu(listView);
         // click on a list entry, puts it in edit fields
-        getListView().setOnItemClickListener(new OnItemClickListener() {
-
+        listView.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long id) {
                 mEditPosition = position;
@@ -203,6 +193,9 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment implemen
         });
     }
 
+    /**
+     * Mimic ListActivity
+     */
     private ListView getListView() {
         return (ListView) getView().findViewById(android.R.id.list);
     }
@@ -221,15 +214,14 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment implemen
     /**
      * we got a book
      *
-     * @param book our book from ISFDB
+     * @param bookData our book from ISFDB. Any li
      */
     @Override
-    public void onGotISFDBBook(@NonNull final Bundle book) {
-        @SuppressWarnings("unchecked")
-        final List<AnthologyTitle> results = (List<AnthologyTitle>)book.get(UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY);
+    public void onGotISFDBBook(@NonNull final Bundle bookData) {
+        final List<AnthologyTitle> results = ArrayUtils.getAnthologyTitleFromBundle(bookData);
 
         if (results == null) {
-            StandardDialogs.showQuickNotice(EditBookAnthologyFragment.this.getActivity(), R.string.automatic_population_failed);
+            StandardDialogs.showQuickNotice(getActivity(), R.string.automatic_population_failed);
             return;
         }
 
@@ -264,7 +256,8 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment implemen
                             }
                             mSame.setChecked(sameAuthor);
                             mList.addAll(results);
-                            AnthologyTitleListAdapterForEditing adapter = ((AnthologyTitleListAdapterForEditing) EditBookAnthologyFragment.this.getListView().getAdapter());
+                            AnthologyTitleListAdapterForEditing adapter = ((AnthologyTitleListAdapterForEditing)
+                                    EditBookAnthologyFragment.this.getListView().getAdapter());
                             adapter.notifyDataSetChanged();
                         }
                     });
@@ -295,7 +288,7 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment implemen
      * Run each time the menu button is pressed. This will setup the options menu
      */
     @Override
-    public void onPrepareOptionsMenu(Menu menu) {
+    public void onPrepareOptionsMenu(@NonNull final Menu menu) {
         menu.clear();
         menu.add(Menu.NONE, MENU_POPULATE_ISFDB, 0, R.string.populate_anthology_titles)
                 .setIcon(R.drawable.ic_autorenew);
@@ -307,10 +300,10 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment implemen
      * call the appropriate functions (or other activities)
      */
     @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         switch (item.getItemId()) {
             case MENU_POPULATE_ISFDB:
-                StandardDialogs.showQuickNotice(EditBookAnthologyFragment.this.getActivity(), R.string.connecting_to_web_site);
+                StandardDialogs.showQuickNotice(getActivity(), R.string.connecting_to_web_site);
                 ISFDBManager.searchEditions(mIsbn, this);
                 return true;
         }
@@ -318,17 +311,17 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment implemen
     }
 
     @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+    public void onCreateContextMenu(@NonNull final ContextMenu menu, @NonNull final View v, @NonNull final ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
         menu.add(Menu.NONE, R.id.MENU_DELETE_ANTHOLOGY, 0, R.string.menu_delete_anthology);
     }
 
     @Override
-    public boolean onContextItemSelected(MenuItem item) {
+    public boolean onContextItemSelected(@NonNull final MenuItem item) {
         switch (item.getItemId()) {
             case R.id.MENU_DELETE_ANTHOLOGY:
                 AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
-                AnthologyTitleListAdapterForEditing adapter = ((AnthologyTitleListAdapterForEditing) EditBookAnthologyFragment.this.getListView().getAdapter());
+                AnthologyTitleListAdapterForEditing adapter = ((AnthologyTitleListAdapterForEditing) getListView().getAdapter());
                 adapter.remove(adapter.getItem((int) info.id));
                 mEditManager.setDirty(true);
                 return true;
@@ -337,7 +330,7 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment implemen
     }
 
     private void saveState(@NonNull final Book book) {
-        book.setAnthologyTitles(mList);
+        book.setContentList(mList);
         // multiple authors is now automatically done during database access. The checkbox is only
         // a visual aid for hiding/showing the author EditText.
         // So while this command is 'correct', it does not stop (and does not bother) the user

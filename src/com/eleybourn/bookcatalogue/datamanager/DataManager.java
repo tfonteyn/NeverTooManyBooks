@@ -513,8 +513,8 @@ public class DataManager {
     /**
      * Append a string to a list value in this collection
      */
-    public void appendOrAdd(@NonNull final String key, String value) {
-        String s = ArrayUtils.encodeListItem('|', value);
+    public void appendOrAdd(@NonNull final String key, @NonNull final String value) {
+        String s = ArrayUtils.encodeListItem(value);
         if (!containsKey(key) || getString(key).isEmpty()) {
             putString(key, s);
         } else {

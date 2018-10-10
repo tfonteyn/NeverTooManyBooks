@@ -35,8 +35,9 @@ import java.util.Objects;
  */
 public class Publisher implements Serializable {
     private static final long serialVersionUID = 1L;
+    public static final char SEPARATOR = ',';
 
-     public String name;
+    public String name;
 
     public Publisher(@NonNull final String name) {
         this.name = name.trim();
@@ -45,7 +46,7 @@ public class Publisher implements Serializable {
     // Support for encoding to a text file
     @Override
     public String toString() {
-        return ArrayUtils.encodeListItem(',', name);
+        return ArrayUtils.encodeListItem(SEPARATOR, name);
     }
 
     /**

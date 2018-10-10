@@ -46,9 +46,9 @@ import com.eleybourn.bookcatalogue.properties.ValuePropertyWithGlobalDefault;
 public class BooklistPreferencesActivity extends PreferencesBaseActivity {
 
     // ID values for state preservation property
-    public static final int BOOKLISTS_ALWAYS_EXPANDED = 1;
-    public static final int BOOKLISTS_ALWAYS_COLLAPSED = 2;
-    public static final int BOOKLISTS_STATE_PRESERVED = 3;
+    public static final int BOOK_LIST_ALWAYS_EXPANDED = 1;
+    public static final int BOOK_LIST_ALWAYS_COLLAPSED = 2;
+    public static final int BOOK_LIST_STATE_PRESERVED = 3;
 
     /** Prefix for all preferences */
     private static final String TAG = "BookList.Global";
@@ -59,16 +59,16 @@ public class BooklistPreferencesActivity extends PreferencesBaseActivity {
     /** Key added to resulting Intent */
     private static final String PREF_CHANGED = TAG + ".PrefChanged";
     /** Always expand/collapse/preserve book list state */
-    private static final String PREF_BOOKLISTS_STATE = TAG + ".BooklistState";
+    private static final String PREF_BOOK_LIST_STATE = TAG + ".BooklistState";
 
 
     /** Booklist state preservation property */
     private static final ItemEntries<Integer> mBooklistStateListItems = new ItemEntries<>();
     private static final IntegerListProperty mBooklistStateProperty =
-            new IntegerListProperty(mBooklistStateListItems, PREF_BOOKLISTS_STATE,
+            new IntegerListProperty(mBooklistStateListItems, PREF_BOOK_LIST_STATE,
                     PropertyGroup.GRP_GENERAL, R.string.book_list_state)
-                    .setPreferenceKey(PREF_BOOKLISTS_STATE)
-                    .setDefaultValue(BOOKLISTS_ALWAYS_EXPANDED)
+                    .setPreferenceKey(PREF_BOOK_LIST_STATE)
+                    .setDefaultValue(BOOK_LIST_ALWAYS_EXPANDED)
                     .setGlobal(true);
     /** Enable Thumbnail Cache property definition */
     private static final ItemEntries<Boolean> mCacheThumbnailsListItems = new ItemEntries<>();
@@ -91,9 +91,9 @@ public class BooklistPreferencesActivity extends PreferencesBaseActivity {
 
     static {
         mBooklistStateListItems.add(null, R.string.use_default_setting);
-        mBooklistStateListItems.add(BOOKLISTS_ALWAYS_EXPANDED, R.string.always_start_booklists_expanded);
-        mBooklistStateListItems.add(BOOKLISTS_ALWAYS_COLLAPSED, R.string.always_start_booklists_collapsed);
-        mBooklistStateListItems.add(BOOKLISTS_STATE_PRESERVED, R.string.remember_booklists_state);
+        mBooklistStateListItems.add(BOOK_LIST_ALWAYS_EXPANDED, R.string.always_start_booklists_expanded);
+        mBooklistStateListItems.add(BOOK_LIST_ALWAYS_COLLAPSED, R.string.always_start_booklists_collapsed);
+        mBooklistStateListItems.add(BOOK_LIST_STATE_PRESERVED, R.string.remember_booklists_state);
 
         mCacheThumbnailsListItems.add(null, R.string.use_default_setting);
         mCacheThumbnailsListItems.add(false, R.string.resize_each_time);

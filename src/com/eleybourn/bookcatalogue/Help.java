@@ -55,8 +55,7 @@ public class Help extends BookCatalogueActivity {
         try {
             setTitle(R.string.app_name);
 
-            TextView webinstructions = findViewById(R.id.helpinstructions);
-            webinstructions.setOnClickListener(new OnClickListener() {
+            findViewById(R.id.helpinstructions).setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.helppage)));
@@ -64,8 +63,7 @@ public class Help extends BookCatalogueActivity {
                 }
             });
 
-            TextView website = findViewById(R.id.helppage);
-            website.setOnClickListener(new OnClickListener() {
+            findViewById(R.id.helppage).setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.helppage)));
@@ -73,8 +71,7 @@ public class Help extends BookCatalogueActivity {
                 }
             });
 
-            Button sendInfo = findViewById(R.id.send_info);
-            sendInfo.setOnClickListener(new OnClickListener() {
+            findViewById(R.id.send_info).setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     DebugReport.sendDebugInfo(Help.this);

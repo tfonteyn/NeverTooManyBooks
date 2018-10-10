@@ -478,7 +478,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
      */
     protected void populateSeriesListField() {
         String newText;
-        ArrayList<Series> list = mEditManager.getBook().getSeries();
+        ArrayList<Series> list = mEditManager.getBook().getSeriesList();
         if (list.size() == 0) {
             newText = getString(R.string.set_series);
         } else {
@@ -659,7 +659,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
         try {
             // Display the selected bookshelves
             Field bookshelfTextFe = fields.getField(R.id.bookshelf);
-            String bookshelfText = book.getBookshelfText();
+            String bookshelfText = book.getBookshelfDisplayText();
             bookshelfTextFe.setValue(bookshelfText);
             if (!bookshelfText.isEmpty()) {
                 result = true;

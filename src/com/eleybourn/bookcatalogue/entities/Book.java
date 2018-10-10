@@ -67,7 +67,7 @@ public class Book extends DataManager {
     /**
      * Constructor
      *
-     * @param bundle with book data (may be null)
+     * @param bundle with book data (may be null). TOMF Lists in the Bundle must be put in there as String Encoded
      */
     public Book(@Nullable final Bundle bundle) {
         this(0L, bundle);
@@ -86,7 +86,7 @@ public class Book extends DataManager {
      * Constructor
      *
      * @param bookId of book (may be 0 for new)
-     * @param bundle Bundle with book data (may be null)
+     * @param bundle Bundle with book data (may be null).  TOMF Lists in the Bundle must be put in there as String Encoded
      */
     public Book(final long bookId, @Nullable final Bundle bundle) {
         this.mBookId = bookId;
@@ -116,11 +116,11 @@ public class Book extends DataManager {
     }
 
     //TODO: can we simplify this ? not just a 'string' but structured data with proper ID's
-    public String getBookshelfList() {
+    public String getBookshelfListAsEncodedString() {
         return getString(BOOKSHELF_LIST);
     }
 
-    public void setBookshelfList(@NonNull final String encodedList) {
+    public void setBookshelfListAsEncodedString(@NonNull final String encodedList) {
         putString(BOOKSHELF_LIST, encodedList);
     }
 
@@ -128,16 +128,14 @@ public class Book extends DataManager {
      * @return a csv formatted list of bookshelves
      */
     @NonNull
-    public String getBookshelfText() {
-        final String list = getString(BOOKSHELF_LIST);
-        final List<String> items = ArrayUtils.decodeList(Bookshelf.SEPARATOR, list);
-        if (items.size() == 0)
+    public String getBookshelfDisplayText() {
+        final List<String> list = ArrayUtils.decodeList(Bookshelf.SEPARATOR, getString(BOOKSHELF_LIST));
+        if (list.size() == 0)
             return "";
 
-        final StringBuilder text = new StringBuilder(items.get(0));
-        for (int i = 1; i < items.size(); i++) {
-            text.append(", ");
-            text.append(items.get(i));
+        final StringBuilder text = new StringBuilder(list.get(0));
+        for (int i = 1; i < list.size(); i++) {
+            text.append(Bookshelf.SEPARATOR).append(" ").append(list.get(i));
         }
         return text.toString();
     }
@@ -168,8 +166,9 @@ public class Book extends DataManager {
             // Get author, series, bookshelf and anthology title lists
             setAuthorList(db.getBookAuthorList(mBookId));
             setSeriesList(db.getBookSeriesList(mBookId));
-            setAnthologyTitles(db.getBookAnthologyTitleList(mBookId));
-            setBookshelfList(db.getBookshelvesByBookIdAsStringList(mBookId));
+            setContentList(db.getBookAnthologyTitleList(mBookId));
+
+            setBookshelfListAsEncodedString(db.getBookshelvesByBookIdAsStringList(mBookId));
 
         } catch (Exception e) {
             Logger.logError(e);
@@ -193,6 +192,13 @@ public class Book extends DataManager {
     }
 
     /**
+     * Special Accessor
+     */
+    public void setContentList(@NonNull final ArrayList<AnthologyTitle> list) {
+        putSerializable(UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY, list);
+    }
+
+    /**
      * Special Accessor.
      *
      * Build a formatted string for author list.
@@ -200,7 +206,7 @@ public class Book extends DataManager {
     @Nullable
     public String getAuthorTextShort() {
         String newText;
-        List<Author> list = getAuthors();
+        List<Author> list = getAuthorsList();
         if (list.size() == 0) {
             return null;
         } else {
@@ -212,17 +218,7 @@ public class Book extends DataManager {
         }
     }
 
-    /**
-     * Utility routine to get an anthology title list from a data manager
-     *
-     * @return List of anthology titles
-     */
-    @SuppressWarnings("unchecked")
-    @NonNull
-    public ArrayList<AnthologyTitle> getAnthologyTitles() {
-        ArrayList<AnthologyTitle> list = (ArrayList<AnthologyTitle>) getSerializable(UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY);
-        return list != null ? list : new ArrayList<AnthologyTitle>();
-    }
+
 
 //    /**
 //     * Special Accessor.
@@ -231,7 +227,7 @@ public class Book extends DataManager {
 //     */
 //    public String getSeriesTextShort() {
 //        String newText;
-//        ArrayList<Series> list = getSeries();
+//        ArrayList<Series> list = getSeriesList();
 //        if (list.size() == 0) {
 //            newText = null;
 //        } else {
@@ -244,20 +240,12 @@ public class Book extends DataManager {
 //    }
 
     /**
-     * Special Accessor
-     */
-    public void setAnthologyTitles(@NonNull final ArrayList<AnthologyTitle> list) {
-        putSerializable(UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY, list);
-    }
-
-    /**
      * Utility routine to get an author list from a data manager
      *
      * @return List of authors
      */
-    @SuppressWarnings("unchecked")
     @NonNull
-    public ArrayList<Author> getAuthors() {
+    public ArrayList<Author> getAuthorsList() {
         ArrayList<Author> list = (ArrayList<Author>) getSerializable(UniqueId.BKEY_AUTHOR_ARRAY);
         return list != null ? list : new ArrayList<Author>();
     }
@@ -267,11 +255,21 @@ public class Book extends DataManager {
      *
      * @return List of series
      */
-    @SuppressWarnings("unchecked")
     @NonNull
-    public ArrayList<Series> getSeries() {
+    public ArrayList<Series> getSeriesList() {
         ArrayList<Series> list = (ArrayList<Series>) getSerializable(UniqueId.BKEY_SERIES_ARRAY);
         return list != null ? list : new ArrayList<Series>();
+    }
+
+    /**
+     * Utility routine to get a Content (an AnthologyTitle list) from a data manager
+     *
+     * @return List of anthology titles
+     */
+    @NonNull
+    public ArrayList<AnthologyTitle> getContentList() {
+        ArrayList<AnthologyTitle> list = (ArrayList<AnthologyTitle>) getSerializable(UniqueId.BKEY_ANTHOLOGY_DETAILS);
+        return list != null ? list : new ArrayList<AnthologyTitle>();
     }
 
     /**
@@ -294,7 +292,7 @@ public class Book extends DataManager {
      * @param db Database connection
      */
     public void refreshAuthorList(@NonNull final CatalogueDBAdapter db) {
-        ArrayList<Author> list = getAuthors();
+        ArrayList<Author> list = getAuthorsList();
         for (Author a : list) {
             db.refreshAuthor(a);
         }
@@ -365,7 +363,7 @@ public class Book extends DataManager {
         addAccessor(BOOKSHELF_TEXT, new DataAccessor() {
             @Override
             public Object get(@NonNull final DataManager data, @NonNull final Datum datum, @NonNull final Bundle rawData) {
-                return getBookshelfText();
+                return getBookshelfDisplayText();
             }
 
             @Override
@@ -375,7 +373,7 @@ public class Book extends DataManager {
 
             @Override
             public boolean isPresent(@NonNull final DataManager data, @NonNull final Datum datum, @NonNull final Bundle rawData) {
-                return !getBookshelfText().isEmpty();
+                return !getBookshelfDisplayText().isEmpty();
             }
         });
 

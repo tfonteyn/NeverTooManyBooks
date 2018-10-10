@@ -26,10 +26,9 @@ public class AdminSearchOrderFragment extends Fragment {
 
     private boolean isCreated;
 
-    @SuppressWarnings("unchecked")
     @Override
     public void setArguments(@Nullable final Bundle args) {
-        //noinspection ConstantConditions
+        //noinspection ConstantConditions,unchecked
         mList = (ArrayList<SearchManager.SearchSite>)args.getSerializable(SearchManager.BKEY_SEARCH_SITES);
     }
 

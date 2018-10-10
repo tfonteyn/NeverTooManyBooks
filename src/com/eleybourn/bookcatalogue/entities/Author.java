@@ -38,6 +38,8 @@ import java.util.Objects;
  */
 public class Author implements Serializable, Utils.ItemWithIdFixup {
     private static final long serialVersionUID = 4597779234440821872L;
+    public static final char SEPARATOR = ',';
+
     public long id;
     public String familyName;
     public String givenNames;
@@ -148,20 +150,20 @@ public class Author implements Serializable, Utils.ItemWithIdFixup {
     public String toString() {
         // Always use givenNames even if blanks because we need to KNOW they are blank. There
         // is a slim chance that family name may contain spaces (eg. 'Anonymous Anarchists').
-        return ArrayUtils.encodeListItem(',', familyName) + ", " + ArrayUtils.encodeListItem(',', givenNames);
+        return ArrayUtils.encodeListItem(SEPARATOR, familyName) + SEPARATOR + " " + ArrayUtils.encodeListItem(SEPARATOR, givenNames);
     }
 
     private void fromString(@NonNull final String name) {
-        ArrayList<String> sa = ArrayUtils.decodeList(',', name);
-        if (sa.size() > 0) {
-            if (sa.size() < 2) {
+        ArrayList<String> list = ArrayUtils.decodeList(SEPARATOR, name);
+        if (list.size() > 0) {
+            if (list.size() < 2) {
                 // We have a name with no comma. Parse it the usual way.
                 Author author = toAuthor(name);
                 familyName = author.familyName;
                 givenNames = author.givenNames;
             } else {
-                familyName = sa.get(0).trim();
-                givenNames = sa.get(1).trim();
+                familyName = list.get(0).trim();
+                givenNames = list.get(1).trim();
             }
         }
     }

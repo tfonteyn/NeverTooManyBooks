@@ -172,20 +172,20 @@ public class SearchAmazonHandler extends DefaultHandler {
 
     /* The XML element names */
     //private static String ID = "id";
-    //private static final String TOTALRESULTS = "TotalResults";
+    //private static final String TOTAL_RESULTS = "TotalResults";
     private static final String ENTRY = "Item";
     private static final String AUTHOR = "Author";
     private static final String TITLE = "Title";
-    private static final String EISBN = "EISBN";
+    private static final String E_ISBN = "EISBN";
     private static final String EAN = "EAN";
-    private static final String ISBNOLD = "EAN";
+    private static final String ISBN_OLD = "EAN";
     private static final String DATE_PUBLISHED = "PublicationDate";
     private static final String PUBLISHER = "Publisher";
     private static final String PAGES = "NumberOfPages";
     private static final String THUMBNAIL = "URL";
-    private static final String SMALLIMAGE = "SmallImage";
-    private static final String MEDIUMIMAGE = "MediumImage";
-    private static final String LARGEIMAGE = "LargeImage";
+    private static final String SMALL_IMAGE = "SmallImage";
+    private static final String MEDIUM_IMAGE = "MediumImage";
+    private static final String LARGE_IMAGE = "LargeImage";
     private static final String DESCRIPTION = "Content";
     private static final String BINDING = "Binding";
     private static final String LANGUAGE = "Language";
@@ -193,6 +193,7 @@ public class SearchAmazonHandler extends DefaultHandler {
     private static final String LIST_PRICE = "ListPrice";
     private static final String CURRENCY_CODE = "CurrencyCode";
     private static final String AMOUNT = "Amount";
+
     private static boolean mFetchThumbnail;
 
     private final Bundle mBookData;
@@ -204,11 +205,12 @@ public class SearchAmazonHandler extends DefaultHandler {
     private boolean mInListPrice = false;
     private String mCurrencyCode = "";
     private String mCurrencyAmount = "";
+
     private boolean entry = false;
     private boolean image = false;
     private boolean done = false;
 
-    SearchAmazonHandler(Bundle bookData, boolean fetchThumbnail) {
+    SearchAmazonHandler(@NonNull final Bundle bookData, final boolean fetchThumbnail) {
         mBookData = bookData;
         mFetchThumbnail = fetchThumbnail;
     }
@@ -306,13 +308,13 @@ public class SearchAmazonHandler extends DefaultHandler {
                     ArrayUtils.appendOrAdd(mBookData, UniqueId.BKEY_AUTHOR_DETAILS, mBuilder.toString());
                 } else if (localName.equalsIgnoreCase(TITLE)) {
                     addIfNotPresent(UniqueId.KEY_TITLE);
-                } else if (localName.equalsIgnoreCase(EAN) || localName.equalsIgnoreCase(EISBN)) {
+                } else if (localName.equalsIgnoreCase(EAN) || localName.equalsIgnoreCase(E_ISBN)) {
                     String tmp = mBuilder.toString();
                     if (!mBookData.containsKey(UniqueId.KEY_ISBN)
                             || mBookData.getString(UniqueId.KEY_ISBN).length() < tmp.length()) {
                         mBookData.putString(UniqueId.KEY_ISBN, tmp);
                     }
-                } else if (localName.equalsIgnoreCase(ISBNOLD)) {
+                } else if (localName.equalsIgnoreCase(ISBN_OLD)) {
                     String tmp = mBuilder.toString();
                     if (!mBookData.containsKey(UniqueId.KEY_ISBN)
                             || mBookData.getString(UniqueId.KEY_ISBN).length() < tmp.length()) {
@@ -340,7 +342,7 @@ public class SearchAmazonHandler extends DefaultHandler {
                         System.out.println(localName + "->'" + mBuilder + "'");
                     }
                 }
-            } //else if (localName.equalsIgnoreCase(TOTALRESULTS)){
+            } //else if (localName.equalsIgnoreCase(TOTAL_RESULTS)){
             // not used for now... int mCount = Integer.parseInt(mBuilder.toString());
             //}
 
@@ -373,17 +375,17 @@ public class SearchAmazonHandler extends DefaultHandler {
         super.startElement(uri, localName, name, attributes);
         if (!done && localName.equalsIgnoreCase(ENTRY)) {
             entry = true;
-        } else if (localName.equalsIgnoreCase(SMALLIMAGE)) {
+        } else if (localName.equalsIgnoreCase(SMALL_IMAGE)) {
             if (mThumbnailSize < 1) {
                 image = true;
                 mThumbnailSize = 1;
             }
-        } else if (localName.equalsIgnoreCase(MEDIUMIMAGE)) {
+        } else if (localName.equalsIgnoreCase(MEDIUM_IMAGE)) {
             if (mThumbnailSize < 2) {
                 image = true;
                 mThumbnailSize = 2;
             }
-        } else if (localName.equalsIgnoreCase(LARGEIMAGE)) {
+        } else if (localName.equalsIgnoreCase(LARGE_IMAGE)) {
             if (mThumbnailSize < 3) {
                 image = true;
                 mThumbnailSize = 3;

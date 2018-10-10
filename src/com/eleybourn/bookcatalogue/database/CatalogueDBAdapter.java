@@ -1156,9 +1156,9 @@ public class CatalogueDBAdapter {
             }
         }
 
-        // Handle ANTHOLOGY_MASK
+        // Handle ANTHOLOGY_MASK (only!, no handling of actual titles)
         {
-            ArrayList<AnthologyTitle> anthologyTitles = book.getAnthologyTitles();
+            ArrayList<AnthologyTitle> anthologyTitles = book.getContentList();
             if (anthologyTitles.size() > 0) {
                 // definitively an anthology, overrule whatever the KEY_ANTHOLOGY_MASK was.
                 book.putInt(UniqueId.KEY_ANTHOLOGY_MASK, DOM_ANTHOLOGY_IS_AN_ANTHOLOGY);
@@ -1371,7 +1371,7 @@ public class CatalogueDBAdapter {
             }
 
             // Make sure we have an author
-            List<Author> authors = book.getAuthors();
+            List<Author> authors = book.getAuthorsList();
             if (authors.size() == 0) {
                 throw new IllegalArgumentException();
             }
@@ -1396,7 +1396,7 @@ public class CatalogueDBAdapter {
             }
             return newBookId;
         } catch (Exception e) {
-            Logger.logError(e, "Error creating book from " + book);
+            Logger.logError(e, "Error creating book from\n" + book);
             return -1L;
         } finally {
             if (syncLock != null) {
@@ -1471,21 +1471,21 @@ public class CatalogueDBAdapter {
      * All of these will first delete the entries in the Book-[tableX] table, and then insert the all rows again
      */
     private void insertBookDependents(final long bookId, final @NonNull Book book) {
-        String bookshelf = book.getBookshelfList();
+        String bookshelf = book.getBookshelfListAsEncodedString();
         if (bookshelf != null && !bookshelf.isEmpty()) {
             insertBookBookshelf(bookId, ArrayUtils.decodeList(Bookshelf.SEPARATOR, bookshelf), false);
         }
 
         if (book.containsKey(UniqueId.BKEY_AUTHOR_ARRAY)) {
-            insertBookAuthors(bookId, book.getAuthors(), false);
+            insertBookAuthors(bookId, book.getAuthorsList(), false);
         }
 
         if (book.containsKey(UniqueId.BKEY_SERIES_ARRAY)) {
-            insertBookSeries(bookId, book.getSeries(), false);
+            insertBookSeries(bookId, book.getSeriesList(), false);
         }
 
         if (book.containsKey(UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY)) {
-            insertOrUpdateBookAnthologyAndAnthologyTitles(bookId, book.getAnthologyTitles(), false);
+            insertOrUpdateBookAnthologyAndAnthologyTitles(bookId, book.getContentList(), false);
         }
 
         if (book.containsKey(UniqueId.KEY_LOANED_TO) && !book.get(UniqueId.KEY_LOANED_TO).toString().isEmpty()) {
@@ -2016,8 +2016,7 @@ public class CatalogueDBAdapter {
                         cursor.getString(familyNameCol),
                         cursor.getString(givenNameCol));
 
-                list.add(new AnthologyTitle(author, cursor.getString(titleCol), cursor.getString(pubDateCol),
-                        bookId));
+                list.add(new AnthologyTitle(author, cursor.getString(titleCol), cursor.getString(pubDateCol), bookId));
             }
         }
         return list;
@@ -2152,8 +2151,9 @@ public class CatalogueDBAdapter {
             // Get author, series, bookshelf and anthology title lists
             book.setAuthorList(getBookAuthorList(bookId));
             book.setSeriesList(getBookSeriesList(bookId));
-            book.setAnthologyTitles(getBookAnthologyTitleList(bookId));
-            book.setBookshelfList(getBookshelvesByBookIdAsStringList(bookId));
+            book.setContentList(getBookAnthologyTitleList(bookId));
+
+            book.setBookshelfListAsEncodedString(getBookshelvesByBookIdAsStringList(bookId));
             return book;
         }
     }

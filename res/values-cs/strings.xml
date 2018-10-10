@@ -13,7 +13,7 @@
     <string name="pages">Počet stran</string>
     <string name="confirm_add">Přidat knihu</string>
     <string name="confirm_update">Upravit</string>
-    <string name="nobooks">V této knihovně nemáte v současnosti žádnou knihu. Pro přidání knihy použijte menu ve spodní části obrazovky.</string>
+    <string name="no_books">V této knihovně nemáte v současnosti žádnou knihu. Pro přidání knihy použijte menu ve spodní části obrazovky.</string>
     <string name="menu_expand_all">Rozbalit vše</string>
     <string name="menu_sort_by">Seřadit podle</string>
     <string name="menu_collapse_all">Sbalit vše</string>
@@ -63,12 +63,6 @@
     <string name="contact_label">Kontakt:</string>
     <string name="donate_label">Podpořit</string>
     <string name="about_label">O této aplikaci</string>
-    <string name="sortby_author">Řadit podle autora</string>
-    <string name="sortby_title">Řadit podle titulu</string>
-    <string name="sortby_series">Řadit podle série</string>
-    <string name="sortby_loan">Řadit podle zapůjčení</string>
-    <string name="sortby_unread">Řadit podle přečtení</string>
-    <string name="sortby_genre">Řadit podle žánru</string>
     <string name="list_price">Seznam cen</string>
     <string name="update_fields">Automaticky aktualizovat pole</string>
     <string name="select_fields_to_update">Zvolit pole k aktualizaci</string>
@@ -211,16 +205,13 @@
     <string name="megabytes">%.2fMB</string>
     <string name="kilobytes">%.2fkB</string>
     <string name="bytes">%.0f bytů</string>
-    <string name="sortby_author_given">Řadit podle autora (křestní jméno)</string>
     <string name="debug_subject">Shromáždit informace o debugování</string>
     <string name="debug_body">Věnujte prosím čas přesnému popisu problému, se kterým máte zkušenost.</string>
     <string name="menu_duplicate">Duplicitní kniha</string>
     <string name="cannot_edit_system">Nemůžete upravovat systémové hodnoty</string>
     <string name="incorrect_key">Váš vývojářský klíč LibraryThing je neplatný, nebo není k dispozici připojení k internetu nutné k jeho ověření.</string>
     <string name="correct_key">Váš vývojářský klíč LibraryThing je platný.</string>
-    <string name="sortby_author_one">Řadit podle autora (pouze dle prvního autora)</string>
     <string name="no_connection">Připojení k internetu není k dispozici.</string>
-    <string name="sortby_published">Řadit podle data vydání</string>
     <string name="menu_share_this">Sdílet</string>
     <string name="email_export">Přejete si odeslat tento export prostřednictvím mailu?</string>
     <string name="menu_crop_thumb">Oříznout náhled</string>
@@ -247,7 +238,6 @@
     <string name="goodreads_access_error">Během autorizace aplikace došlo k problému s internetovým připojením. Zkontrolujte prosím přístup ke stránkám Goodreads a pokud problémy přetrvají, kontaktujte správce.</string>
     <string name="other_preferences">Další možnosti</string>
     <string name="user_interface">Uživatelské rozhraní</string>
-    <string name="start_in_my_books">Začínat v \'Moje knihy\'</string>
     <string name="background_tasks">Úlohy na pozadí</string>
     <string name="cleanup_old_tasks">Smazat staré úlohy</string>
     <string name="cleanup_old_events">Smazat staré události</string>

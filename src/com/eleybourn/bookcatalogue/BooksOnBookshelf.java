@@ -153,7 +153,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
      */
     public BooksOnBookshelf() {
         super();
-        if (DEBUG_SWITCHES.BOOKSONBOOKSHELF && BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.BOOKS_ON_BOOKSHELF && BuildConfig.DEBUG) {
             synchronized (mInstanceCount) {
                 mInstanceCount++;
                 System.out.println("BoB instances: " + mInstanceCount);
@@ -179,7 +179,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                 mRebuildState = BooklistPreferencesActivity.getRebuildState();
             } else {
                 // Always preserve state when rebuilding/recreating etc
-                mRebuildState = BooklistPreferencesActivity.BOOKLISTS_STATE_PRESERVED;
+                mRebuildState = BooklistPreferencesActivity.BOOK_LIST_STATE_PRESERVED;
             }
 
             mDb = new CatalogueDBAdapter(this);
@@ -295,7 +295,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
         mAdapter = null;
         mBookshelfSpinner = null;
         mBookshelfAdapter = null;
-        if (DEBUG_SWITCHES.BOOKSONBOOKSHELF && BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.BOOKS_ON_BOOKSHELF && BuildConfig.DEBUG) {
             synchronized (mInstanceCount) {
                 mInstanceCount--;
 
@@ -303,7 +303,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
             }
         }
 
-        if (DEBUG_SWITCHES.BOOKSONBOOKSHELF && BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.BOOKS_ON_BOOKSHELF && BuildConfig.DEBUG) {
             TrackedCursor.dumpCursors();
         }
         Tracker.exitOnDestroy(this);
@@ -640,7 +640,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                 int first = lv.getFirstVisiblePosition();
                 int last = lv.getLastVisiblePosition();
                 int centre = (last + first) / 2;
-                if (DEBUG_SWITCHES.BOOKSONBOOKSHELF && BuildConfig.DEBUG) {
+                if (DEBUG_SWITCHES.BOOKS_ON_BOOKSHELF && BuildConfig.DEBUG) {
                     System.out.println("New List: (" + first + ", " + last + ")<-" + centre);
                 }
                 // Get the first 'target' and make it 'best candidate'
@@ -656,12 +656,12 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                     }
                 }
 
-                if (DEBUG_SWITCHES.BOOKSONBOOKSHELF && BuildConfig.DEBUG) {
+                if (DEBUG_SWITCHES.BOOKS_ON_BOOKSHELF && BuildConfig.DEBUG) {
                     System.out.println("Best @" + best.listPosition);
                 }
                 // Try to put at top if not already visible, or only partially visible
                 if (first >= best.listPosition || last <= best.listPosition) {
-                    if (DEBUG_SWITCHES.BOOKSONBOOKSHELF && BuildConfig.DEBUG) {
+                    if (DEBUG_SWITCHES.BOOKS_ON_BOOKSHELF && BuildConfig.DEBUG) {
                         System.out.println("Adjusting position");
                     }
                     // setSelectionFromTop does not seem to always do what is expected.
@@ -688,7 +688,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                     });
 
                     //int newTop = best.listPosition - (last-first)/2;
-                    // if (BOOKSONBOOKSHELF && BuildConfig.DEBUG) {
+                    // if (BOOKS_ON_BOOKSHELF && BuildConfig.DEBUG) {
                     //System.out.println("New Top @" + newTop );
                     //}
                     //lv.setSelection(newTop);
@@ -1157,7 +1157,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
             builder.build(mRebuildState, mMarkBookId, mCurrentBookshelf, "", "", "", "", mSearchText);
 
             // After first build, always preserve this object state
-            mRebuildState = BooklistPreferencesActivity.BOOKLISTS_STATE_PRESERVED;
+            mRebuildState = BooklistPreferencesActivity.BOOK_LIST_STATE_PRESERVED;
 
             return builder;
         }

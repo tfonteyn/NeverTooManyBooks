@@ -557,7 +557,7 @@ public class LibraryThingManager {
     @Nullable
     public File getCoverImage(@NonNull final String isbn, @Nullable final Bundle book, @NonNull final ImageSizes size) {
         String url = getCoverImageUrl(isbn, size);
-        if (DEBUG_SWITCHES.LIBRARYTHING && BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.LIBRARY_THING && BuildConfig.DEBUG) {
             System.out.println("LTM: " + url + " " + isbn + " " + size);
         }
 
@@ -657,40 +657,19 @@ public class LibraryThingManager {
      * @author Philip Warner
      */
     private class SearchLibraryThingEntryHandler extends DefaultHandler {
-        private final Bundle mBook;
+        private final Bundle mBookData;
         private final StringBuilder mBuilder = new StringBuilder();
 
         private FieldTypes mFieldType = FieldTypes.OTHER;
 
-        SearchLibraryThingEntryHandler(@NonNull final Bundle book) {
-            mBook = book;
+        SearchLibraryThingEntryHandler(@NonNull final Bundle bookData) {
+            mBookData = bookData;
         }
 
         @Override
         public void characters(final char[] ch, final int start, final int length) throws SAXException {
             super.characters(ch, start, length);
             mBuilder.append(ch, start, length);
-        }
-
-        /**
-         * Add the current characters to the book collection if not already present.
-         *
-         * @param key Key for data to add
-         */
-        private void addIfNotPresent(@SuppressWarnings("SameParameterValue") @NonNull final String key) {
-            if (!mBook.containsKey(key) || mBook.getString(key).isEmpty()) {
-                mBook.putString(key, mBuilder.toString().trim());
-            }
-        }
-
-        /**
-         * Add the current text data to the book collection if not present, otherwise
-         * append the data as a list.
-         *
-         * @param key Key for data to add
-         */
-        private void appendOrAdd(@NonNull final String key) {
-            ArrayUtils.appendOrAdd(mBook, key, mBuilder.toString());
         }
 
         @Override
@@ -737,8 +716,7 @@ public class LibraryThingManager {
                 mFieldType = FieldTypes.NONE;
 
             } else if (localName.equalsIgnoreCase(AUTHOR)) {
-                // Add the author
-                ArrayUtils.appendOrAdd(mBook, UniqueId.BKEY_AUTHOR_DETAILS, mBuilder.toString());
+                ArrayUtils.appendOrAdd(mBookData, UniqueId.BKEY_AUTHOR_DETAILS, mBuilder.toString());
 
             } else if (localName.equalsIgnoreCase(FACT)) {
                 // Process the FACT according to the active FIELD type.
@@ -746,19 +724,19 @@ public class LibraryThingManager {
                 switch (mFieldType) {
 
                     case TITLE:
-                        addIfNotPresent(UniqueId.KEY_TITLE);
+                        ArrayUtils.addIfNotPresent(mBookData, UniqueId.KEY_TITLE, mBuilder.toString());
                         break;
 
                     case SERIES:
-                        appendOrAdd(UniqueId.BKEY_SERIES_DETAILS);
+                        ArrayUtils.appendOrAdd(mBookData, UniqueId.BKEY_SERIES_DETAILS, mBuilder.toString());
                         break;
 
                     case PLACES:
-                        appendOrAdd("__places");
+                        ArrayUtils.appendOrAdd(mBookData, "__places", mBuilder.toString());
                         break;
 
                     case CHARACTERS:
-                        appendOrAdd("__characters");
+                        ArrayUtils.appendOrAdd(mBookData, "__characters", mBuilder.toString());
                         break;
                 }
             }

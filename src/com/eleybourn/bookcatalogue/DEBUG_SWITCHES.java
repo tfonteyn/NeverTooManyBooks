@@ -28,18 +28,18 @@ public final class DEBUG_SWITCHES {
 
     public static final boolean TRACKED_CURSOR = false;
 
-    public static final boolean LIBRARYTHING = false;
+    public static final boolean LIBRARY_THING = false;
 
     public static final boolean BOOKLIST_BUILDER = true;
 
-    public static final boolean BOOKSONBOOKSHELF = true;
+    public static final boolean BOOKS_ON_BOOKSHELF = true;
 
-    public static final boolean IMAGEUTILS = false;
+    public static final boolean IMAGE_UTILS = false;
 
     public static final boolean SQPFragment = false;
 
-    public static final boolean STORAGEUTILS = false;
+    public static final boolean STORAGE_UTILS = false;
 
-    public static final boolean TASKMANAGER = false;
+    public static final boolean TASK_MANAGER = false;
 
 }

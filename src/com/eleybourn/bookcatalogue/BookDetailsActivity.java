@@ -274,10 +274,9 @@ public class BookDetailsActivity extends BookCatalogueActivity
     /**
      * initial setup for editing
      */
-    private void initForEditing(@Nullable final Bundle extras,
-                                final boolean isExistingBook) {
-        ArrayList<TabLayout.Tab> mAllTabs = new ArrayList<>();
+    private void initForEditing(@Nullable final Bundle extras, final boolean isExistingBook) {
 
+        ArrayList<TabLayout.Tab> mAllTabs = new ArrayList<>();
         mTabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
         try {
             Holder holder = new Holder();
@@ -292,31 +291,31 @@ public class BookDetailsActivity extends BookCatalogueActivity
             mTabLayout.addTab(tab);
             mAllTabs.add(tab);
 
+            boolean isAnthology = (mBook.getInt(Book.IS_ANTHOLOGY) != DatabaseDefinitions.DOM_ANTHOLOGY_NOT_AN_ANTHOLOGY);
+            addAnthologyTab(isAnthology);
+
+            // can't loan out a new book yet
             if (isExistingBook) {
                 holder = new Holder();
                 holder.fragment = (Fragment)mTabClasses[TAB_EDIT_FRIENDS].newInstance();
                 tab = mTabLayout.newTab().setText(R.string.loan).setTag(holder);
                 mTabLayout.addTab(tab);
                 mAllTabs.add(tab);
-
-                boolean isAnthology = (mBook.getBookId() > 0) && (mBook.getInt(Book.IS_ANTHOLOGY) != DatabaseDefinitions.DOM_ANTHOLOGY_NOT_AN_ANTHOLOGY);
-                showAnthologyTab(isAnthology);
             }
         } catch (InstantiationException | IllegalAccessException e) {
             throw new IllegalStateException("Creating BookDetailsActivity tabs failed?");
         }
 
-
+        // any specific tab desired as 'selected' ?
         if (extras != null && extras.containsKey(TAB)) {
             int i = extras.getInt(TAB);
             if (mAllTabs.size() > i) {
                 mAllTabs.get(i).select();
-                //replaceTab(mAllTabs.get(i));
             }
         } else {
             mAllTabs.get(TAB_EDIT).select();
-            //replaceTab(mAllTabs.get(TAB_EDIT));
         }
+
         mTabLayout.setVisibility(View.VISIBLE);
         findViewById(R.id.buttonbar_cancel_save).setVisibility(View.VISIBLE);
     }
@@ -378,6 +377,7 @@ public class BookDetailsActivity extends BookCatalogueActivity
     private void initBooklist(@Nullable final Bundle extras,
                               @Nullable final Bundle savedInstanceState) {
         if (extras != null) {
+            //TOMF: what is this really ?
             String list = extras.getString(BKEY_FLATTENED_BOOKLIST);
             if (list != null && !list.isEmpty()) {
                 mList = new FlattenedBooklist(mDb, list);
@@ -779,8 +779,8 @@ public class BookDetailsActivity extends BookCatalogueActivity
      * Show or hide the anthology tab
      * FIXME:  android:ellipsize="end" and maxLine="1" on the TextView used by the mAnthologyTab... how ?
      */
-    public void showAnthologyTab(final boolean showAnthology) {
-        if (showAnthology) {
+    public void addAnthologyTab(final boolean show) {
+        if (show) {
             if (mAnthologyTab == null) {
                 Holder holder = new Holder();
                 try {
@@ -837,7 +837,7 @@ public class BookDetailsActivity extends BookCatalogueActivity
         validate();
 
         // However, there is some data that we really do require...
-        if (mBook.getAuthors().size() == 0) {
+        if (mBook.getAuthorsList().size() == 0) {
             StandardDialogs.showQuickNotice(this, R.string.author_required);
             return;
         }

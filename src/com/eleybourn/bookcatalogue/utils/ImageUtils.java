@@ -96,7 +96,7 @@ public class ImageUtils {
         // Get the nearest *bigger* power of 2.
         final int samplePow2 = (int) Math.pow(2, Math.ceil(Math.log(idealSampleSize) / Math.log(2)));
 
-        if (DEBUG_SWITCHES.IMAGEUTILS && BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.IMAGE_UTILS && BuildConfig.DEBUG) {
             System.out.println("fetchFileIntoImageView:\n" +
                     " filename = " + fileSpec + "\n" +
                     "  exact       = " + exact + "\n" +
@@ -145,7 +145,7 @@ public class ImageUtils {
             return null;
         }
 
-        if (DEBUG_SWITCHES.IMAGEUTILS && BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.IMAGE_UTILS && BuildConfig.DEBUG) {
             System.out.println("\n" +
                     "bm.width = " + bm.getWidth() + "\n" +
                     "bm.height = " + bm.getHeight() + "\n"
@@ -296,10 +296,10 @@ public class ImageUtils {
         }
 
         // Parse the list
-        ArrayList<String> files = ArrayUtils.decodeList('|', s);
+        ArrayList<String> files = ArrayUtils.decodeList(s);
 
-        long best = -1;
-        int bestFile = -1;
+        long bestFileSize = -1;
+        int bestFileIndex = -1;
 
         // Just read the image files to get file size
         BitmapFactory.Options opt = new BitmapFactory.Options();
@@ -313,9 +313,9 @@ public class ImageUtils {
                 // If no size info, assume file bad and skip
                 if (opt.outHeight > 0 && opt.outWidth > 0) {
                     long size = opt.outHeight * opt.outWidth;
-                    if (size > best) {
-                        best = size;
-                        bestFile = i;
+                    if (size > bestFileSize) {
+                        bestFileSize = size;
+                        bestFileIndex = i;
                     }
                 }
             }
@@ -325,13 +325,13 @@ public class ImageUtils {
         // so all would be deleted. We do this first in case the list
         // contains a file with the same name as the target of our rename.
         for (int i = 0; i < files.size(); i++) {
-            if (i != bestFile) {
+            if (i != bestFileIndex) {
                 StorageUtils.deleteFile(new File(files.get(i)));
             }
         }
         // Get the best file (if present) and rename it.
-        if (bestFile >= 0) {
-            StorageUtils.renameFile(new File(files.get(bestFile)), StorageUtils.getTempCoverFile());
+        if (bestFileIndex >= 0) {
+            StorageUtils.renameFile(new File(files.get(bestFileIndex)), StorageUtils.getTempCoverFile());
         }
         // Finally, cleanup the data
         result.remove(UniqueId.BKEY_THUMBNAIL_USCORE);

@@ -188,17 +188,15 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
         }
 
         // When we get here, we know the names are genuinely different and the old series is used in more than one place.
-        String format = getString(R.string.changed_series_how_apply);
         String allBooks = getString(R.string.all_books);
-        String thisBook = getString(R.string.this_book);
 
         final AlertDialog dialog = new AlertDialog.Builder(this)
-                .setMessage(String.format(format, from.name, to.name, allBooks))
+                .setMessage(getString(R.string.changed_series_how_apply, from.name, to.name, allBooks))
                 .setTitle(R.string.scope_of_change)
                 .setIcon(R.drawable.ic_info_outline)
                 .create();
 
-        dialog.setButton(DialogInterface.BUTTON_POSITIVE, thisBook, new DialogInterface.OnClickListener() {
+        dialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.this_book), new DialogInterface.OnClickListener() {
             public void onClick(final DialogInterface dialog, final int which) {
                 from.copyFrom(to);
                 Series.pruneSeriesList(mList);

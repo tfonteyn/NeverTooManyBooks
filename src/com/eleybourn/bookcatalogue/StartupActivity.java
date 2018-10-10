@@ -36,6 +36,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.PermissionChecker;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
@@ -53,10 +54,6 @@ import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.UpgradeMessageManager;
 
 import java.lang.ref.WeakReference;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
 
 /**
  * Single Activity to be the 'Main' activity for the app. It does app-startup stuff which is initially
@@ -70,9 +67,8 @@ public class StartupActivity extends AppCompatActivity {
 
     /** Options to indicate FTS rebuild is required at startup */
     private static final String PREF_FTS_REBUILD_REQUIRED = TAG + ".FtsRebuildRequired";
-    // obsolete from v74
-    @Deprecated
-    public static final String PREF_AUTHOR_SERIES_FIX_UP_REQUIRED = TAG + ".FAuthorSeriesFixupRequired";
+    /** obsolete from v74 */
+    public static final String V74_PREF_AUTHOR_SERIES_FIX_UP_REQUIRED = TAG + ".FAuthorSeriesFixupRequired";
 
     private static final String PREFS_STATE_OPENED = "state_opened";
     /** Number of times the app has been started */
@@ -122,11 +118,7 @@ public class StartupActivity extends AppCompatActivity {
      */
     @Nullable
     public static StartupActivity getActiveActivity() {
-        if (mStartupActivity != null) {
-            return mStartupActivity.get();
-        } else {
-            return null;
-        }
+        return mStartupActivity != null ? mStartupActivity.get() : null;
     }
 
     public static boolean getShowAmazonHint() {
@@ -137,17 +129,31 @@ public class StartupActivity extends AppCompatActivity {
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // request Permissions (Android 6+) ENHANCE
+        // request Permissions (Android 6+)
         if (Build.VERSION.SDK_INT >= 23) {
-            checkPermissions();
+            initStorage();
         } else {
             // older Android, simply move forward as the permissions will have
-            // been requested at install time.
+            // been requested at install time. The SecurityException will never be thrown
+            // but the API requires catching it.
+            try {
+                StorageUtils.initSharedDirectories();
+            } catch (SecurityException ignore) {
+            }
             startNextStage();
         }
     }
 
-    /** determines the order of startup stages (without having to manually renumber */
+    private void initStorage() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, UniqueId.ACTIVITY_REQUEST_CODE_PERMISSIONS_REQUEST);
+            return;
+        }
+        StorageUtils.initSharedDirectories();
+        startNextStage();
+    }
+
+    /** determines the order of startup stages */
     private void startNextStage() {
         // onCreate being stage 0
         mStartupStage++;
@@ -188,7 +194,7 @@ public class StartupActivity extends AppCompatActivity {
         }
     }
 
-    private void startTasks() throws SecurityException {
+    private void startTasks() {
         if (BuildConfig.DEBUG) {
             System.out.println("Startup isTaskRoot() = " + isTaskRoot());
         }
@@ -200,10 +206,6 @@ public class StartupActivity extends AppCompatActivity {
             mStartupActivity = new WeakReference<>(this);
 
             updateProgress(R.string.starting);
-
-            // at this point the user should have granted us STORAGE permission,
-            // so make sure we have our directories ready
-            StorageUtils.initSharedDirectories();
 
             SimpleTaskQueue q = getQueue();
 
@@ -285,7 +287,6 @@ public class StartupActivity extends AppCompatActivity {
             startNextStage();
         }
     }
-
 
     /**
      * Get (or create) the task queue.
@@ -408,50 +409,36 @@ public class StartupActivity extends AppCompatActivity {
     }
 
     /**
-     * Minimally needed.
-     * - WRITE_EXTERNAL_STORAGE
+     * Callback for the result from requesting permissions. This method
+     * is invoked for every call on {@link #requestPermissions(String[], int)}.
+     * <p>
+     * <strong>Note:</strong> It is possible that the permissions request interaction
+     * with the user is interrupted. In this case you will receive empty permissions
+     * and results arrays which should be treated as a cancellation.
+     * </p>
      *
-     * Other permissions we use will be requested when needed
-     * - READ_CONTACTS
-     */
-    @NonNull
-    private String[] getRequiredPermissions() {
-        return new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
-    }
-
-    /**
-     * See if we now have all of the required dangerous permissions. Otherwise, tell the user that
-     * they can't continue without granting the permissions, and then request the permissions again.
+     * @param requestCode The request code passed in {@link #requestPermissions(String[], int)}.
+     * @param permissions The requested permissions. Never null.
+     * @param grantResults The grant results for the corresponding permissions
+     *     which is either {@link android.content.pm.PackageManager#PERMISSION_GRANTED}
+     *     or {@link android.content.pm.PackageManager#PERMISSION_DENIED}. Never null.
+     *
+     * @see #requestPermissions(String[], int)
      */
     @Override
-    public void onRequestPermissionsResult(final int requestCode,
-                                           @NonNull final String permissions[],
-                                           @NonNull final int[] grantResults) {
-        if (requestCode == UniqueId.ACTIVITY_REQUEST_CODE_PERMISSIONS_REQUEST) {
-            checkPermissions();
-        }
-    }
-
-    private void checkPermissions() {
-        // Convert the array of required permissions to a {@link Set} to remove redundant elements.
-        // Then remove already granted permissions, and return an array of missing permissions.
-        Set<String> permissions = new HashSet<>();
-        Collections.addAll(permissions, getRequiredPermissions());
-
-        for (Iterator<String> i = permissions.iterator(); i.hasNext(); ) {
-            //ENHANCE: when going to API 23+, use native call
-            if (ContextCompat.checkSelfPermission(this, i.next()) == PackageManager.PERMISSION_GRANTED) {
-                i.remove();
+    @PermissionChecker.PermissionResult
+    public void onRequestPermissionsResult(final int requestCode, @NonNull final String permissions[], @NonNull final int[] grantResults) {
+        //ENHANCE: when/if we request more permissions, then the permissions[] and grantResults[] must be checked in parallel
+        switch (requestCode) {
+            case UniqueId.ACTIVITY_REQUEST_CODE_PERMISSIONS_REQUEST: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    initStorage();
+                } else {
+                    // we can't work without storage, so die.
+                    Logger.logError(new RuntimeException("No storage permissions granted, quiting"));
+                    finishAndRemoveTask();
+                }
             }
-        }
-        String[] missing = permissions.toArray(new String[0]);
-
-        if (missing.length == 0) {
-            startNextStage();
-        } else {
-            ActivityCompat.requestPermissions(this, missing, UniqueId.ACTIVITY_REQUEST_CODE_PERMISSIONS_REQUEST);
-            //ENHANCE: when going to API 23+, use native call
-            //requestPermissions(missing, UniqueId.ACTIVITY_REQUEST_CODE_PERMISSIONS_REQUEST);
         }
     }
 
@@ -494,9 +481,9 @@ public class StartupActivity extends AppCompatActivity {
                 }
             }
 
-            if (BCPreferences.getBoolean(PREF_AUTHOR_SERIES_FIX_UP_REQUIRED, false)) {
+            if (BCPreferences.getBoolean(V74_PREF_AUTHOR_SERIES_FIX_UP_REQUIRED, false)) {
                 UpgradeDatabase.v74_fixupAuthorsAndSeries(db);
-                BCPreferences.remove(PREF_AUTHOR_SERIES_FIX_UP_REQUIRED);
+                BCPreferences.remove(V74_PREF_AUTHOR_SERIES_FIX_UP_REQUIRED);
             }
         }
 

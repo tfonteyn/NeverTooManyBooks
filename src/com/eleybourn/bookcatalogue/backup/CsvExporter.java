@@ -192,7 +192,7 @@ public class CsvExporter implements Exporter {
                 num++;
                 long bookId = bookCursor.getLong(bookCursor.getColumnIndexOrThrow(DOM_ID.name));
 
-                String authorDetails = ArrayUtils.getAuthorUtils().encodeList(ArrayUtils.MULTI_STRING_SEPARATOR, db.getBookAuthorList(bookId));
+                String authorDetails = ArrayUtils.getAuthorUtils().encodeList(db.getBookAuthorList(bookId));
                 // Sanity check: ensure author is non-blank. This HAPPENS. Probably due to constraint failures.
                 if (authorDetails.trim().isEmpty()) {
                     authorDetails = AUTHOR + ", " + UNKNOWN;
@@ -234,7 +234,7 @@ public class CsvExporter implements Exporter {
                         .append(formatCell(bookshelves_id_text.toString()))
                         .append(formatCell(bookshelves_name_text.toString()))
                         .append(formatCell(rowView.getRead()))
-                        .append(formatCell(ArrayUtils.getSeriesUtils().encodeList(ArrayUtils.MULTI_STRING_SEPARATOR, db.getBookSeriesList(bookId))))
+                        .append(formatCell(ArrayUtils.getSeriesUtils().encodeList(db.getBookSeriesList(bookId))))
                         .append(formatCell(rowView.getPages()))
                         .append(formatCell(rowView.getNotes()))
                         .append(formatCell(rowView.getListPrice()))

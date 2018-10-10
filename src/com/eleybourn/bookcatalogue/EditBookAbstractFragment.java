@@ -120,13 +120,13 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
             item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         }
 
-        boolean hasAuthor = mEditManager.getBook().getAuthors().size() > 0;
+        boolean hasAuthor = mEditManager.getBook().getAuthorsList().size() > 0;
         if (hasAuthor) {
             menu.add(Menu.NONE, R.id.MENU_AMAZON_BOOKS_BY_AUTHOR, 0, R.string.amazon_books_by_author)
                     .setIcon(R.drawable.ic_search);
         }
 
-        if (mEditManager.getBook().getSeries().size() > 0) {
+        if (mEditManager.getBook().getSeriesList().size() > 0) {
             if (hasAuthor) {
                 menu.add(Menu.NONE, R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES, 0, R.string.amazon_books_by_author_in_series)
                         .setIcon(R.drawable.ic_search);
@@ -220,13 +220,13 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
 
     @Nullable
     private String getAuthorFromBook() {
-        ArrayList<Author> list = mEditManager.getBook().getAuthors();
+        ArrayList<Author> list = mEditManager.getBook().getAuthorsList();
         return list.size() > 0 ? list.get(0).getDisplayName() : null;
     }
 
     @Nullable
     private String getSeriesFromBook() {
-        ArrayList<Series> list = mEditManager.getBook().getSeries();
+        ArrayList<Series> list = mEditManager.getBook().getSeriesList();
         return list.size() > 0 ? list.get(0).name : null;
     }
 
@@ -365,7 +365,7 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
      * @author pjw
      */
     public interface BookEditManager {
-        void showAnthologyTab(final boolean showAnthology);
+        void addAnthologyTab(final boolean showAnthology);
 
         boolean isDirty();
 

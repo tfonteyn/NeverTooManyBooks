@@ -42,11 +42,11 @@ import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds;
 import com.eleybourn.bookcatalogue.booklist.BooklistPreferencesActivity;
-import com.eleybourn.bookcatalogue.database.cursors.BooklistRowView;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.booklist.BooklistSupportProvider;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.DBExceptions;
+import com.eleybourn.bookcatalogue.database.cursors.BooklistRowView;
 import com.eleybourn.bookcatalogue.database.cursors.BooksCursor;
 import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -277,7 +277,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
     /**
      * Utility routine to add an item to a ContextMenu object.
      *
-     * @param list    list to add to
+     * @param list     list to add to
      * @param id       unique item ID
      * @param stringId string ID of string to display
      * @param iconId   icon of menu item
@@ -813,7 +813,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                             }
                             String tmpPubDate = c.getString(mDatePublishedCol);
 
-                            if (tmpPubDate != null && tmpPubDate.length() >=4) {
+                            if (tmpPubDate != null && tmpPubDate.length() >= 4) {
                                 mPublisher = BookCatalogueApp.getResourceString(R.string.a_bracket_b_bracket, tmpPublisher, tmpPubDate);
                             } else {
                                 mPublisher = tmpPublisher;
@@ -862,19 +862,19 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                 }
 
                 if ((mFlags & BooklistStyle.EXTRAS_BOOKSHELVES) != 0) {
-                    mHolder.shelves.setText(mShelvesRes + ": " + mShelves);
+                    mHolder.shelves.setText(BookCatalogueApp.getResourceString(R.string.label_colon_value, mShelvesRes, mShelves));
                 }
                 if ((mFlags & BooklistStyle.EXTRAS_AUTHOR) != 0) {
                     mHolder.author.setText(mAuthor);
                 }
                 if ((mFlags & BooklistStyle.EXTRAS_LOCATION) != 0) {
-                    mHolder.location.setText(mLocationRes + ": " +mLocation);
+                    mHolder.location.setText(BookCatalogueApp.getResourceString(R.string.label_colon_value, mLocationRes, mLocation));
                 }
                 if ((mFlags & BooklistStyle.EXTRAS_PUBLISHER) != 0) {
-                    mHolder.publisher.setText(mPublisherRes + ": " + mPublisher);
+                    mHolder.publisher.setText(BookCatalogueApp.getResourceString(R.string.label_colon_value, mPublisherRes, mPublisher));
                 }
                 if ((mFlags & BooklistStyle.EXTRAS_FORMAT) != 0) {
-                    mHolder.format.setText(mFormatRes + ": " +mFormat);
+                    mHolder.format.setText(BookCatalogueApp.getResourceString(R.string.label_colon_value, mFormatRes, mFormat));
                 }
             }
         }

@@ -40,6 +40,8 @@
                 android:drawableStart="@drawable/ic_style"
                 android:text="@string/edit_book_list_styles" />
 
+            <View style="@style/listDividerHorizontal" />
+
             <!-- DATA IMPORT/EXPORT -->
 
             <TextView
@@ -58,8 +60,6 @@
                 android:drawableStart="@drawable/ic_file_download"
                 android:text="@string/import_from_archive" />
 
-            <View style="@style/listDividerHorizontal" />
-
             <TextView
                 android:id="@+id/export_label"
                 style="@style/prefsItem"
@@ -71,6 +71,8 @@
                 style="@style/prefsItem"
                 android:drawableStart="@drawable/ic_file_download"
                 android:text="@string/import_from_csv" />
+
+            <View style="@style/listDividerHorizontal" />
 
             <!-- FIELD UPDATES -->
 
@@ -102,6 +104,7 @@
                 android:drawableStart="@drawable/ic_send"
                 android:text="@string/send_books_to_goodreads" />
 
+            <View style="@style/listDividerHorizontal" />
             <!-- CREDENTIALS -->
 
             <TextView
@@ -121,6 +124,7 @@
                 android:drawableStart="@drawable/ic_security"
                 android:text="@string/library_thing" />
 
+            <View style="@style/listDividerHorizontal" />
             <!-- ADVANCED OPTIONS Header -->
 
             <TextView
@@ -156,6 +160,8 @@
                 style="@style/prefsItem"
                 android:drawableStart="@drawable/ic_file_upload"
                 android:text="@string/copy_database" />
+
+            <View style="@style/listDividerHorizontal" />
         </LinearLayout>
 
     </ScrollView>

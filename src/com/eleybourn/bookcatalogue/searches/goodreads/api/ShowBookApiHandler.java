@@ -473,9 +473,9 @@ public abstract class ShowBookApiHandler extends ApiHandler {
             String bestImage = null;
             if (mBookData.containsKey(ShowBookFieldNames.IMAGE)) {
                 bestImage = mBookData.getString(ShowBookFieldNames.IMAGE);
-                if (bestImage != null && bestImage.contains(UniqueId.BKEY_NOCOVER) && mBookData.containsKey(ShowBookFieldNames.SMALL_IMAGE)) {
+                if (bestImage != null && bestImage.contains(UniqueId.BKEY_NO_COVER) && mBookData.containsKey(ShowBookFieldNames.SMALL_IMAGE)) {
                     bestImage = mBookData.getString(ShowBookFieldNames.SMALL_IMAGE);
-                    if (bestImage != null && bestImage.contains(UniqueId.BKEY_NOCOVER)) {
+                    if (bestImage != null && bestImage.contains(UniqueId.BKEY_NO_COVER)) {
                         bestImage = null;
                     }
                 }
@@ -533,11 +533,11 @@ public abstract class ShowBookApiHandler extends ApiHandler {
         //public static final String BOOK_URL = "__url";
 
         if (mAuthors != null && mAuthors.size() > 0) {
-            mBookData.putString(UniqueId.BKEY_AUTHOR_DETAILS, ArrayUtils.getAuthorUtils().encodeList('|', mAuthors));
+            mBookData.putString(UniqueId.BKEY_AUTHOR_DETAILS, ArrayUtils.getAuthorUtils().encodeList(mAuthors));
         }
 
         if (mSeries != null && mSeries.size() > 0) {
-            mBookData.putString(UniqueId.BKEY_SERIES_DETAILS, ArrayUtils.getSeriesUtils().encodeList('|', mSeries));
+            mBookData.putString(UniqueId.BKEY_SERIES_DETAILS, ArrayUtils.getSeriesUtils().encodeList(mSeries));
         }
 
         if (mShelves != null && mShelves.size() > 0) {

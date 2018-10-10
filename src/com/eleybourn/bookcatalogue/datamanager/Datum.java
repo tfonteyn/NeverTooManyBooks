@@ -531,7 +531,7 @@ public class Datum {
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    public Datum putSerializable(@NonNull final Bundle bundle, @NonNull final Serializable value) {
+    Datum putSerializable(@NonNull final Bundle bundle, @NonNull final Serializable value) {
         if (mAccessor == null) {
             bundle.putSerializable(mKey, value);
         } else {

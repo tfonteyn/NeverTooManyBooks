@@ -55,19 +55,17 @@ class CropUtil {
 //		return b;
 //	}
 
-    /*
-     * Compute the sample size as a function of minSideLength and
-     * maxNumOfPixels. minSideLength is used to specify that minimal width or
-     * height of a bitmap. maxNumOfPixels is used to specify the maximal size in
-     * pixels that are tolerable in terms of memory usage.
+    /**
+     * Compute the sample size as a function of minSideLength and maxNumOfPixels.
+     * minSideLength is used to specify that minimal width or height of a bitmap.
+     * maxNumOfPixels is used to specify the maximal size in pixels that are tolerable
+     * in terms of memory usage.
      *
-     * The function returns a sample size based on the constraints. Both size
-     * and minSideLength can be passed in as IImage.UNCONSTRAINED, which
-     * indicates no care of the corresponding constraint. The functions prefers
-     * returning a sample size that generates a smaller bitmap, unless
-     * minSideLength = IImage.UNCONSTRAINED.
+     * The function returns a sample size based on the constraints. Both size and minSideLength
+     * can be passed in as IImage.UNCONSTRAINED, which indicates no care of the corresponding
+     * constraint. The functions prefers returning a sample size that generates a smaller bitmap,
+     * unless minSideLength = IImage.UNCONSTRAINED.
      */
-
     public static Bitmap transform(@NonNull Matrix scaler,
                                    @NonNull final Bitmap source,
                                    final int targetWidth,
@@ -122,7 +120,7 @@ class CropUtil {
 
         Bitmap b1;
         if (scaler != null) {
-            // this is used for minithumb and crop, so we want to filter here.
+            // this is used for mini thumb and crop, so we want to filter here.
             b1 = Bitmap.createBitmap(source, 0, 0, source.getWidth(),
                     source.getHeight(), scaler, true);
         } else {
@@ -203,13 +201,13 @@ class CropUtil {
         // Make the progress dialog not-cancelable, so that we can guarantee
         // the thread will be done before the activity getting destroyed.
         ProgressDialog dialog = ProgressDialog.show(activity,
-                title, message,true, false);
+                title, message, true, false);
         new Thread(new BackgroundJob(activity, job, dialog, handler)).start();
     }
 
-    /**
-     * Make a bitmap from a given Uri.
-     */
+//    /**
+//     * Make a bitmap from a given Uri.
+//     */
     // private static ParcelFileDescriptor makeInputStream(Uri uri,
     // ContentResolver cr) {
     // try {

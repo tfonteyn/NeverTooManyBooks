@@ -26,6 +26,7 @@ import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
+import com.eleybourn.bookcatalogue.entities.AnthologyTitle;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.Series;
@@ -63,7 +64,7 @@ public class UpdateFromInternetThread extends ManagedTask {
 
     // Data related to current row being processed
     /** Original row data */
-    private Bundle mOrigData = null;
+    private Bundle mOriginalBookData = null;
     /** current book ID */
     private long mCurrentBookId = 0;
     /** current book UUID */
@@ -78,12 +79,12 @@ public class UpdateFromInternetThread extends ManagedTask {
     /**
      * Constructor.
      *
-     * @param manager           Object to manage background tasks
-     * @param requestedFields   fields to update
+     * @param manager         Object to manage background tasks
+     * @param requestedFields fields to update
      */
     public UpdateFromInternetThread(@NonNull final TaskManager manager,
-                                     @NonNull final FieldUsages requestedFields,
-                                     @NonNull final TaskListener listener) {
+                                    @NonNull final FieldUsages requestedFields,
+                                    @NonNull final TaskListener listener) {
         super(manager);
         mDb = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
         mDb.open();
@@ -148,7 +149,7 @@ public class UpdateFromInternetThread extends ManagedTask {
             return;
         }
         // had order: "b." + DatabaseDefinitions.DOM_ID ... why ? -> removed
-        try (Cursor books = mDb.fetchBooks(mBookWhereClause, new String[]{},"")) {
+        try (Cursor books = mDb.fetchBooks(mBookWhereClause, new String[]{}, "")) {
             mManager.setMax(this, books.getCount());
             while (books.moveToNext() && !isCancelled()) {
                 // Increment the progress counter
@@ -156,27 +157,27 @@ public class UpdateFromInternetThread extends ManagedTask {
 
                 // Copy the fields from the cursor and build a complete set of data for this book.
                 // This only needs to include data that we can fetch (so, for example, bookshelves are ignored).
-                mOrigData = new Bundle();
+                mOriginalBookData = new Bundle();
                 for (int i = 0; i < books.getColumnCount(); i++) {
-                    mOrigData.putString(books.getColumnName(i), books.getString(i));
+                    mOriginalBookData.putString(books.getColumnName(i), books.getString(i));
                 }
                 // Get the book ID
-                mCurrentBookId = Utils.getLongFromBundle(mOrigData, UniqueId.KEY_ID);
+                mCurrentBookId = Utils.getLongFromBundle(mOriginalBookData, UniqueId.KEY_ID);
                 // Get the book UUID
-                mCurrentBookUuid = mOrigData.getString(UniqueId.KEY_BOOK_UUID);
+                mCurrentBookUuid = mOriginalBookData.getString(UniqueId.KEY_BOOK_UUID);
                 // Get the extra data about the book
-                mOrigData.putSerializable(UniqueId.BKEY_AUTHOR_ARRAY, mDb.getBookAuthorList(mCurrentBookId));
-                mOrigData.putSerializable(UniqueId.BKEY_SERIES_ARRAY, mDb.getBookSeriesList(mCurrentBookId));
-                mOrigData.putSerializable(UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY, mDb.getBookAnthologyTitleList(mCurrentBookId));
+                mOriginalBookData.putSerializable(UniqueId.BKEY_AUTHOR_ARRAY, mDb.getBookAuthorList(mCurrentBookId));
+                mOriginalBookData.putSerializable(UniqueId.BKEY_SERIES_ARRAY, mDb.getBookSeriesList(mCurrentBookId));
+                mOriginalBookData.putSerializable(UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY, mDb.getBookAnthologyTitleList(mCurrentBookId));
 
                 // Grab the searchable fields. Ideally we will have an ISBN but we may not.
-                String isbn = mOrigData.getString(UniqueId.KEY_ISBN);
+                String isbn = mOriginalBookData.getString(UniqueId.KEY_ISBN);
                 // Make sure ISBN is not NULL (legacy data, and possibly set to null when adding new book)
                 if (isbn == null) {
                     isbn = "";
                 }
-                String author = mOrigData.getString(UniqueId.KEY_AUTHOR_FORMATTED);
-                String title = mOrigData.getString(UniqueId.KEY_TITLE);
+                String author = mOriginalBookData.getString(UniqueId.KEY_AUTHOR_FORMATTED);
+                String title = mOriginalBookData.getString(UniqueId.KEY_TITLE);
 
                 // Reset the fields we want for THIS book
                 mCurrentBookFieldUsages = new FieldUsages();
@@ -204,32 +205,37 @@ public class UpdateFromInternetThread extends ManagedTask {
 
                                     case UniqueId.BKEY_AUTHOR_ARRAY:
                                         // We should never have a book with no authors, but lets be paranoid
-                                        if (mOrigData.containsKey(usage.fieldName)) {
-                                            List<Author> origAuthors = ArrayUtils.getAuthorsFromBundle(mOrigData);
-                                            if (origAuthors == null || origAuthors.size() == 0) {
+                                        if (mOriginalBookData.containsKey(usage.fieldName)) {
+                                            List<Author> list = ArrayUtils.getAuthorsFromBundle(mOriginalBookData);
+                                            if (list == null || list.size() == 0) {
                                                 mCurrentBookFieldUsages.put(usage);
                                             }
                                         }
                                         break;
 
                                     case UniqueId.BKEY_SERIES_ARRAY:
-                                        if (mOrigData.containsKey(usage.fieldName)) {
-                                            List<Series> origSeries = ArrayUtils.getSeriesFromBundle(mOrigData);
-                                            if (origSeries == null || origSeries.size() == 0) {
+                                        if (mOriginalBookData.containsKey(usage.fieldName)) {
+                                            List<Series> list = ArrayUtils.getSeriesFromBundle(mOriginalBookData);
+                                            if (list == null || list.size() == 0) {
                                                 mCurrentBookFieldUsages.put(usage);
                                             }
                                         }
                                         break;
-//                    TODO: allow ant titles updates
-//                                    case UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY:
-//
-//                                        break;
+
+                                    case UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY:
+                                        if (mOriginalBookData.containsKey(usage.fieldName)) {
+                                            List<AnthologyTitle> list = ArrayUtils.getAnthologyTitleFromBundle(mOriginalBookData);
+                                            if (list == null || list.size() == 0) {
+                                                mCurrentBookFieldUsages.put(usage);
+                                            }
+                                        }
+                                        break;
 
                                     default:
                                         // If the original was blank, add to list
-                                        if (!mOrigData.containsKey(usage.fieldName)
-                                                || mOrigData.getString(usage.fieldName) == null
-                                                || mOrigData.getString(usage.fieldName).isEmpty()) {
+                                        if (!mOriginalBookData.containsKey(usage.fieldName)
+                                                || mOriginalBookData.getString(usage.fieldName) == null
+                                                || mOriginalBookData.getString(usage.fieldName).isEmpty()) {
                                             mCurrentBookFieldUsages.put(usage);
                                         }
                                         break;
@@ -268,7 +274,7 @@ public class UpdateFromInternetThread extends ManagedTask {
                     mSearchManager.search(author, title, isbn, tmpThumbWanted, SearchManager.SEARCH_ALL);
                     // Wait for the search to complete; when the search has completed it uses class-level state
                     // data when processing the results. It will signal this lock when it no longer needs any class
-                    // level state data (eg. mOrigData).
+                    // level state data (eg. mOriginalBookData).
                     mSearchLock.lock();
                     try {
                         mSearchDone.await();
@@ -301,7 +307,7 @@ public class UpdateFromInternetThread extends ManagedTask {
      * Called in the main thread for this object when a search has completed.
      */
     @SuppressWarnings("SameReturnValue")
-    private boolean onSearchFinished(@NonNull final Bundle bookData, final boolean cancelled) {
+    private boolean onSearchFinished(@NonNull final Bundle newBookData, final boolean cancelled) {
         if (BuildConfig.DEBUG) {
             System.out.println("onSearchFinished (cancel = " + cancelled + ")");
         }
@@ -309,17 +315,13 @@ public class UpdateFromInternetThread extends ManagedTask {
         // Set cancelled flag if the task was cancelled
         if (cancelled) {
             cancelTask();
-        } else if (bookData.size() == 0) {
+        } else if (newBookData.size() == 0) {
             mManager.doToast("Unable to find book details");
         }
 
         // Save the local data from the context so we can start a new search
-        long rowId = mCurrentBookId;
-        Bundle origData = mOrigData;
-        FieldUsages requestedFields = mCurrentBookFieldUsages;
-
-        if (!isCancelled() && bookData.size() > 0) {
-            processSearchResults(rowId, mCurrentBookUuid, requestedFields, bookData, origData);
+        if (!isCancelled() && newBookData.size() > 0) {
+            processSearchResults(mCurrentBookId, mCurrentBookUuid, mCurrentBookFieldUsages, newBookData, mOriginalBookData);
         }
 
         // Done! This need to go after processSearchResults() because doSearchDone() frees
@@ -333,28 +335,28 @@ public class UpdateFromInternetThread extends ManagedTask {
      * Passed the old & new data, construct the update data and perform the update.
      *
      * @param bookId   Book ID
-     * @param newData  Data gathered from internet
-     * @param origData Original data
+     * @param newBookData  Data gathered from internet
+     * @param originalBookData Original data
      */
     private void processSearchResults(final long bookId,
                                       @NonNull final String bookUuid,
                                       @NonNull final FieldUsages requestedFields,
-                                      @NonNull final Bundle newData,
-                                      @NonNull final Bundle origData) {
+                                      @NonNull final Bundle newBookData,
+                                      @NonNull final Bundle originalBookData) {
         // First, filter the data to remove keys we don't care about
         List<String> toRemove = new ArrayList<>();
-        for (String key : newData.keySet()) {
+        for (String key : newBookData.keySet()) {
             if (!requestedFields.containsKey(key) || !requestedFields.get(key).selected) {
                 toRemove.add(key);
             }
         }
         for (String key : toRemove) {
-            newData.remove(key);
+            newBookData.remove(key);
         }
 
         // For each field, process it according the the usage.
         for (FieldUsages.FieldUsage usage : requestedFields.values()) {
-            if (newData.containsKey(usage.fieldName)) {
+            if (newBookData.containsKey(usage.fieldName)) {
                 // Handle thumbnail specially
                 if (usage.fieldName.equals(UniqueId.BKEY_THUMBNAIL)) {
                     File downloadedFile = StorageUtils.getTempCoverFile();
@@ -380,39 +382,50 @@ public class UpdateFromInternetThread extends ManagedTask {
                             // Handle special cases
                             switch (usage.fieldName) {
                                 case UniqueId.BKEY_AUTHOR_ARRAY:
-                                    if (origData.containsKey(usage.fieldName)) {
-                                        ArrayList<Author> origAuthors = ArrayUtils.getAuthorsFromBundle(origData);
-                                        if (origAuthors != null && origAuthors.size() > 0) {
-                                            newData.remove(usage.fieldName);
+                                    if (originalBookData.containsKey(usage.fieldName)) {
+                                        ArrayList<Author> list = ArrayUtils.getAuthorsFromBundle(originalBookData);
+                                        if (list != null && list.size() > 0) {
+                                            newBookData.remove(usage.fieldName);
                                         }
                                     }
                                     break;
                                 case UniqueId.BKEY_SERIES_ARRAY:
-                                    if (origData.containsKey(usage.fieldName)) {
-                                        ArrayList<Series> origSeries = ArrayUtils.getSeriesFromBundle(origData);
-                                        if (origSeries != null && origSeries.size() > 0) {
-                                            newData.remove(usage.fieldName);
+                                    if (originalBookData.containsKey(usage.fieldName)) {
+                                        ArrayList<Series> list = ArrayUtils.getSeriesFromBundle(originalBookData);
+                                        if (list != null && list.size() > 0) {
+                                            newBookData.remove(usage.fieldName);
+                                        }
+                                    }
+                                    break;
+                                case UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY:
+                                    if (originalBookData.containsKey(usage.fieldName)) {
+                                        ArrayList<AnthologyTitle> list = ArrayUtils.getAnthologyTitleFromBundle(originalBookData);
+                                        if (list != null && list.size() > 0) {
+                                            newBookData.remove(usage.fieldName);
                                         }
                                     }
                                     break;
                                 default:
                                     // If the original was non-blank, erase from list
-                                    if (origData.containsKey(usage.fieldName)
-                                            && origData.getString(usage.fieldName) != null
-                                            && !origData.getString(usage.fieldName).isEmpty()) {
-                                        newData.remove(usage.fieldName);
+                                    if (originalBookData.containsKey(usage.fieldName)
+                                            && originalBookData.getString(usage.fieldName) != null
+                                            && !originalBookData.getString(usage.fieldName).isEmpty()) {
+                                        newBookData.remove(usage.fieldName);
                                     }
                                     break;
                             }
                             break;
                         case ADD_EXTRA:
-                            // Handle arrays
+                            // Handle arrays (note: before you're clever, and collapse this to one... Android Studio hides the type in the <~> notation!
                             switch (usage.fieldName) {
                                 case UniqueId.BKEY_AUTHOR_ARRAY:
-                                    UpdateFromInternetThread.<Author>combineArrays(usage.fieldName, origData, newData);
+                                    UpdateFromInternetThread.<Author>combineArrays(usage.fieldName, originalBookData, newBookData);
                                     break;
                                 case UniqueId.BKEY_SERIES_ARRAY:
-                                    UpdateFromInternetThread.<Series>combineArrays(usage.fieldName, origData, newData);
+                                    UpdateFromInternetThread.<Series>combineArrays(usage.fieldName, originalBookData, newBookData);
+                                    break;
+                                case UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY:
+                                    UpdateFromInternetThread.<AnthologyTitle>combineArrays(usage.fieldName, originalBookData, newBookData);
                                     break;
                                 default:
                                     // No idea how to handle this for non-arrays
@@ -420,14 +433,13 @@ public class UpdateFromInternetThread extends ManagedTask {
                             }
                             break;
                     }
-
                 }
             }
         }
 
         // Update
-        if (!newData.isEmpty()) {
-            mDb.updateBook(bookId, new Book(newData), 0);
+        if (!newBookData.isEmpty()) {
+            mDb.updateBook(bookId, new Book(newBookData), 0);
         }
 
     }

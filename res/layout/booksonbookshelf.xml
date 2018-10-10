@@ -39,7 +39,7 @@
             <!-- the header with the Bookshelf Spinner and information lines -->
             <RelativeLayout
                 android:id="@+id/header"
-                style="@style/booksonbookshelf_header"
+                style="@style/books_on_bookshelf_header"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/toolbar"
@@ -109,7 +109,7 @@
                 android:layout_below="@id/header" />
 
             <LinearLayout
-                style="@style/booksonbookshelf_list"
+                style="@style/books_on_bookshelf_list"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_below="@id/header_divider"
@@ -124,7 +124,7 @@
                     android:id="@android:id/empty"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/nobooks" />
+                    android:text="@string/no_books" />
             </LinearLayout>
 
         </RelativeLayout>
@@ -136,7 +136,7 @@
     -->
     <android.support.design.widget.NavigationView
         android:id="@+id/nav_view"
-        style="@style/booksonbookshelf_nav_view"
+        style="@style/books_on_bookshelf_nav_view"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"

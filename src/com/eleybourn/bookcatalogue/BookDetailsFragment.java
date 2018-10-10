@@ -128,7 +128,7 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
 
     private void showTOC(@NonNull final Book book) {
         View headerSection = getView().findViewById(R.id.toc_row);
-        final ArrayList<AnthologyTitle> list = book.getAnthologyTitles();
+        final ArrayList<AnthologyTitle> list = book.getContentList();
         if (list.isEmpty()) {
             // book is an Anthology, but the user has not added any titles (yet)
             headerSection.setVisibility(View.GONE);
@@ -186,7 +186,7 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
     /* Override populating author field. Hide the field if author not set or
      * shows author (or authors through ',') with 'by' at the beginning. */
     protected void populateAuthorListField() {
-        ArrayList<Author> authors = mEditManager.getBook().getAuthors();
+        ArrayList<Author> authors = mEditManager.getBook().getAuthorsList();
         int authorsCount = authors.size();
         if (authorsCount == 0) {
             // Hide author field if it is not set
@@ -207,7 +207,7 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
 
     @Override
     protected void populateSeriesListField() {
-        ArrayList<Series> series = mEditManager.getBook().getSeries();
+        ArrayList<Series> series = mEditManager.getBook().getSeriesList();
 
         if (series.size() == 0 || !mFields.getField(R.id.series).visible) {
             // Hide 'Series' label and data

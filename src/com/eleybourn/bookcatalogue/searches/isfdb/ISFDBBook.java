@@ -2,13 +2,14 @@ package com.eleybourn.bookcatalogue.searches.isfdb;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.AnthologyTitle;
 import com.eleybourn.bookcatalogue.entities.Author;
+import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 
@@ -18,12 +19,17 @@ import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ISFDBBook extends AbstractBase {
 
-    private static final Map<String,String> FORMAT_MAP = new HashMap<>();
+    /** maps to translate ISFDB terminology with our own */
+    private static final Map<String, String> FORMAT_MAP = new HashMap<>();
+    private static final Map<String, String> TYPE_MAP = new HashMap<>();
+
     static {
         FORMAT_MAP.put("pb", "Paperback");
         FORMAT_MAP.put("tp", "Trade Paperback");
@@ -33,7 +39,6 @@ public class ISFDBBook extends AbstractBase {
         FORMAT_MAP.put("unknown", "Unknown");
     }
 
-    private static final Map<String,String> TYPE_MAP = new HashMap<>();
     static {
         // throw all these together into the Anthology bucket
         TYPE_MAP.put("coll", "a1"); // one author
@@ -54,8 +59,22 @@ public class ISFDBBook extends AbstractBase {
         TYPE_MAP.put("NONFICTION", "Non-Fiction");
     }
 
-    private final Bundle mBook;
+    @NonNull
+    private final Bundle mBookData;
     private final boolean mFetchThumbnail;
+
+    /** set during book load, used during content table load */
+    @Nullable
+    private String mTitle;
+
+    /** with some luck we'll get these as well */
+    @Nullable
+    private String mFirstPublication;
+    @Nullable
+    private String mSeries;
+
+    /** "[some string]" TODO: make this more specific ? */
+    private static final Pattern SERIES = Pattern.compile("\\[(.*)]");
 
     /** ISFDB native book id */
     private long mPublicationRecord;
@@ -64,23 +83,23 @@ public class ISFDBBook extends AbstractBase {
      * @param publicationRecord ISFDB native book id
      */
     public ISFDBBook(final long publicationRecord,
-                     @NonNull final Bundle /* out */ book,
+                     @NonNull final Bundle /* out */ bookData,
                      final boolean fetchThumbnail) {
         mPublicationRecord = publicationRecord;
         mPath = String.format(ISFDBManager.getBaseURL() + "/cgi-bin/pl.cgi?%s", mPublicationRecord);
-        mBook = book;
+        mBookData = bookData;
         mFetchThumbnail = fetchThumbnail;
     }
 
     /**
      * @param path example: "http://www.isfdb.org/cgi-bin/pl.cgi?230949"
      */
-    public ISFDBBook(@NonNull final String path,
-                     @NonNull final Bundle /* out */ book,
-                     final boolean fetchThumbnail) {
+    ISFDBBook(@NonNull final String path,
+              @NonNull final Bundle /* out */ bookData,
+              final boolean fetchThumbnail) {
         mPublicationRecord = stripNumber(path);
         mPath = path;
-        mBook = book;
+        mBookData = bookData;
         mFetchThumbnail = fetchThumbnail;
     }
 
@@ -131,7 +150,6 @@ public class ISFDBBook extends AbstractBase {
         if (!loadPage()) {
             return;
         }
-        //TODO: series could be fetched from Content (e.g. contextbox.last)
 
         Element contentBox = mDoc.select("div.contentbox").first();
         Elements lis = contentBox.select("li");
@@ -140,111 +158,149 @@ public class ISFDBBook extends AbstractBase {
         for (Element li : lis) {
             try {
                 if (li.text().contains("Publication")) {
-                    tmp = li.childNode(1).toString().trim();
-                    mBook.putString(UniqueId.KEY_TITLE, tmp);
+                    mTitle = li.childNode(1).toString().trim();
+                    mBookData.putString(UniqueId.KEY_TITLE, mTitle);
 
                     tmp = li.childNode(2).childNode(1).toString().trim();
-                    mBook.putString("ISFDB_PUB_RECORD", tmp);
+                    mBookData.putString("ISFDB_PUB_RECORD", tmp);
 
                 } else if (li.text().contains("Author")) {
-                    ArrayList<String> urls = new ArrayList<>();
                     Elements as = li.select("a");
-                    for (Element a : as) {
-                        urls.add(a.attr("href"));
-                        ArrayUtils.appendOrAdd(mBook, UniqueId.BKEY_AUTHOR_DETAILS, a.text());
+                    if (as != null) {
+                        for (Element a : as) {
+                            ArrayUtils.appendOrAdd(mBookData, UniqueId.BKEY_AUTHOR_DETAILS, a.text());
+                            ArrayUtils.appendOrAdd(mBookData, "ISFDB_AUTHOR_ID", Long.toString(stripNumber(a.attr("href"))));
+                        }
                     }
-                    mBook.putStringArrayList("ISFDB_AUTHOR_URL", urls);
-
                 } else if (li.text().contains("Date")) {
                     tmp = li.childNode(2).toString().trim();
-                    mBook.putString(UniqueId.KEY_BOOK_DATE_PUBLISHED, tmp);
+                    mBookData.putString(UniqueId.KEY_BOOK_DATE_PUBLISHED, digits(tmp));
 
                 } else if (li.text().contains("ISBN")) {
+                    // always use the first one, as that will be the one used at publication
                     tmp = li.childNode(1).toString().trim();
-                    mBook.putString("ISFDB_ISBN10", digits(tmp));
-                    // second ISBN, 13
+                    mBookData.putString(UniqueId.KEY_ISBN, digits(tmp));
+
                     tmp = li.childNode(2).childNode(0).toString().trim();
-                    mBook.putString(UniqueId.KEY_ISBN, digits(tmp));
+                    mBookData.putString("ISFDB_ISBN2", digits(tmp));
 
                 } else if (li.text().contains("Publisher")) {
                     tmp = li.childNode(3).attr("href");
-                    mBook.putString("ISFDB_PUBLISHER_URL", tmp);
+                    mBookData.putString("ISFDB_PUBLISHER_ID", Long.toString(stripNumber(tmp)));
 
                     tmp = li.childNode(3).childNode(0).toString().trim();
-                    mBook.putString(UniqueId.KEY_BOOK_PUBLISHER, tmp);
+                    mBookData.putString(UniqueId.KEY_BOOK_PUBLISHER, tmp);
+
+                } else if (li.text().contains("Pub. Series")) {
+                    Elements as = li.select("a");
+                    if (as != null) {
+                        for (Element a : as) {
+                            ArrayUtils.appendOrAdd(mBookData, UniqueId.BKEY_SERIES_DETAILS, a.text());
+                            ArrayUtils.appendOrAdd(mBookData, "ISFDB_SERIES_ID", Long.toString(stripNumber(a.attr("href"))));
+                        }
+                    }
 
                 } else if (li.text().contains("Price")) {
                     tmp = li.childNode(2).toString().trim();
-                    mBook.putString(UniqueId.KEY_BOOK_LIST_PRICE, tmp);
+                    mBookData.putString(UniqueId.KEY_BOOK_LIST_PRICE, tmp);
 
                 } else if (li.text().contains("Pages")) {
                     tmp = li.childNode(2).toString().trim();
-                    mBook.putString(UniqueId.KEY_BOOK_PAGES, tmp);
+                    mBookData.putString(UniqueId.KEY_BOOK_PAGES, tmp);
 
                 } else if (li.text().contains("Format")) {
                     tmp = li.childNode(3).childNode(0).toString().trim();
                     tmp = FORMAT_MAP.get(tmp);
                     if (tmp != null) {
-                        mBook.putString(UniqueId.KEY_BOOK_FORMAT, tmp);
+                        mBookData.putString(UniqueId.KEY_BOOK_FORMAT, tmp);
                     }
-
                 } else if (li.text().contains("Type")) {
                     tmp = li.childNode(2).toString().trim();
-                    mBook.putString("ISFDB_BOOK_TYPE", tmp); // original type
+                    mBookData.putString("ISFDB_BOOK_TYPE", tmp);
 
                     if ("a1".equals(TYPE_MAP.get(tmp))) {
-                        mBook.putInt(Book.IS_ANTHOLOGY,
+                        mBookData.putInt(Book.IS_ANTHOLOGY,
                                 DatabaseDefinitions.DOM_ANTHOLOGY_IS_AN_ANTHOLOGY);
                     } else if ("a2".equals(TYPE_MAP.get(tmp))) {
-                        mBook.putInt(Book.IS_ANTHOLOGY,
+                        mBookData.putInt(Book.IS_ANTHOLOGY,
                                 DatabaseDefinitions.DOM_ANTHOLOGY_IS_AN_ANTHOLOGY |
-                                DatabaseDefinitions.DOM_ANTHOLOGY_WITH_MULTIPLE_AUTHORS);
+                                        DatabaseDefinitions.DOM_ANTHOLOGY_WITH_MULTIPLE_AUTHORS);
                     }
 
                 } else if (li.text().contains("Cover")) {
+                    //TODO: if there are multiple art/artists... will this barf ?
                     tmp = li.childNode(2).attr("href");
-                    mBook.putString("ISFDB_BOOK_COVER_ART_URL", tmp);
+                    mBookData.putString("ISFDB_BOOK_COVER_ART_URL", tmp);
 
                     tmp = li.childNode(2).childNode(0).toString().trim();
-                    mBook.putString("ISFDB_BOOK_COVER_ART_TXT", tmp);
+                    mBookData.putString("ISFDB_BOOK_COVER_ART_TXT", tmp);
 
-                    tmp = li.childNode(4).attr("href");
-                    mBook.putString("ISFDB_BOOK_COVER_ARTIST_URL", tmp);
-
-                    // Cover artist
-                    tmp = li.childNode(4).childNode(0).toString().trim();
-                    ArrayUtils.appendOrAdd(mBook, UniqueId.BKEY_AUTHOR_DETAILS, tmp);
+                    // Cover artist, handle as author
+                    Node node_a = li.childNode(4);
+                    ArrayUtils.appendOrAdd(mBookData, UniqueId.BKEY_AUTHOR_DETAILS, node_a.childNode(0).toString().trim());
+                    ArrayUtils.appendOrAdd(mBookData, "ISFDB_BOOK_COVER_ARTIST_ID", Long.toString(stripNumber(node_a.attr("href"))));
 
                 } else if (li.text().contains("Notes")) {
                     tmp = li.childNode(1).childNode(1).toString().trim();
-                    mBook.putString(UniqueId.KEY_DESCRIPTION, tmp);
+                    mBookData.putString(UniqueId.KEY_DESCRIPTION, tmp);
 
                 } else if (li.text().contains("Editors")) {
-                    ArrayList<String> urls = new ArrayList<>();
+                    // handle as authors
                     Elements as = li.select("a");
-                    for (Element a : as) {
-                        urls.add(a.attr("href"));
-                        ArrayUtils.appendOrAdd(mBook, UniqueId.BKEY_AUTHOR_DETAILS, a.text());
+                    if (as != null) {
+                        for (Element a : as) {
+                            ArrayUtils.appendOrAdd(mBookData, UniqueId.BKEY_AUTHOR_DETAILS, a.text());
+                            ArrayUtils.appendOrAdd(mBookData, "ISFDB_EDITORS_ID", Long.toString(stripNumber(a.attr("href"))));
+                        }
                     }
-                    mBook.putStringArrayList("ISFDB_EDITORS_URL", urls);
 
                 }
             } catch (IndexOutOfBoundsException e) {
-                // does not happen now, but could happen if ISFDB website changes
-                Logger.logError(e,"path: " + mPath + "\n\nLI: " + li.toString());
+                // does not happen now, but could happen if we come about non-standard entries, or if ISFDB website changes
+                Logger.logError(e, "path: " + mPath + "\n\nLI: " + li.toString());
             }
         }
 
-        mBook.putSerializable(UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY, this.getAnthologyTitles());
+        // ISFDB does not offer the books language on the main page (although they store it in their database)
+        // default to a localised 'English" as ISFDB is after all (I presume) 99% english
+        mBookData.putString(UniqueId.KEY_BOOK_LANGUAGE, Locale.ENGLISH.getDisplayName());
 
+        // the content for local (below) processing. The actual entries are already added to the book data bundle
+        ArrayList<AnthologyTitle> toc = getTableOfContentList();
+
+        // indicate Anthology, just in case the ISDB book-type did not.
+        if (toc.size() > 0) {
+            int ant = mBookData.getInt(Book.IS_ANTHOLOGY, 0) | DatabaseDefinitions.DOM_ANTHOLOGY_IS_AN_ANTHOLOGY;
+            mBookData.putInt(Book.IS_ANTHOLOGY, ant);
+        }
+
+        // try to deduce the first publication date
+        if (toc.size() == 1) {
+            // if the content table has only one entry, then this will have the first publication year for sure
+            mBookData.putString(UniqueId.KEY_FIRST_PUBLICATION, digits(toc.get(0).getFirstPublication()));
+
+        } else  if (toc.size() > 1){
+            // we gamble and take what we found in the content
+            if (mFirstPublication != null) {
+                mBookData.putString(UniqueId.KEY_FIRST_PUBLICATION, digits(mFirstPublication));
+            } // else take the book pub date ... but that might be wrong....
+        }
+
+        // another gamble for the series "name (nr)"
+        if (mSeries != null) {
+            ArrayUtils.appendOrAdd(mBookData, UniqueId.BKEY_SERIES_DETAILS, mSeries);
+        }
+
+        // lastly, optional fetch of the cover.
         if (mFetchThumbnail) {
             fetchCover();
         }
     }
 
+    @NonNull
     private String digits(@NonNull final String s) {
         StringBuilder sb = new StringBuilder();
-        for (int i=0; i < s.length(); i++) {
+        for (int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);
             if (Character.isDigit(c)) {
                 sb.append(c);
@@ -259,6 +315,7 @@ public class ISFDBBook extends AbstractBase {
         }
         fetchCover(mDoc.select("div.contentbox").first());
     }
+
     /* First "ContentBox" contains all basic details
 
     <div class="ContentBox">
@@ -274,83 +331,54 @@ public class ISFDBBook extends AbstractBase {
         String thumbnail = img.attr("src");
         String fileSpec = ImageUtils.saveThumbnailFromUrl(thumbnail, "_ISFDB");
         if (!fileSpec.isEmpty()) {
-            ArrayUtils.appendOrAdd(mBook, UniqueId.BKEY_THUMBNAIL_USCORE, fileSpec);
+            ArrayUtils.appendOrAdd(mBookData, UniqueId.BKEY_THUMBNAIL_USCORE, fileSpec);
         }
     }
 
     /*  Second ContentBox contains the TOC
 
-    <div class="ContentBox">
-    <span class="containertitle">Collection Title:</span>
-    <a href="http://www.isfdb.org/cgi-bin/title.cgi?37576" dir="ltr">The Days of Perky Pat</a> &#8226; [<a href="http://www.isfdb.org/cgi-bin/pe.cgi?22461" dir="ltr">The Collected Stories of Philip K. Dick</a> &#8226; 4] &#8226; (1987) &#8226; collection by
-    <a href="http://www.isfdb.org/cgi-bin/ea.cgi?23" dir="ltr">Philip K. Dick</a>
-    <h2>Contents <a href="http://www.isfdb.org/cgi-bin/pl.cgi?230949+c"><span class="listingtext">(view Concise Listing)</span></a></h2>
-    <ul>
-    <li>
-    7 &#8226; <a href="http://www.isfdb.org/cgi-bin/title.cgi?118799" dir="ltr">Introduction (The Days of Perky Pat)</a> &#8226; [<a href="http://www.isfdb.org/cgi-bin/pe.cgi?31226" dir="ltr">Introductions to the Collected Stories of Philip K. Dick</a> &#8226; 4] &#8226; (1987) &#8226; essay by
-    <a href="http://www.isfdb.org/cgi-bin/ea.cgi?57" dir="ltr">James Tiptree, Jr.</a>
-    <li>
-    11 &#8226; <a href="http://www.isfdb.org/cgi-bin/title.cgi?53646" dir="ltr">Autofac</a> &#8226; (1955) &#8226; novelette by
-    <a href="http://www.isfdb.org/cgi-bin/ea.cgi?23" dir="ltr">Philip K. Dick</a>
-    <li>
-    37 &#8226; <a href="http://www.isfdb.org/cgi-bin/title.cgi?58242" dir="ltr">Service Call</a> &#8226; (1955) &#8226; novelette by
-    <a href="http://www.isfdb.org/cgi-bin/ea.cgi?23" dir="ltr">Philip K. Dick</a>
-    <li>
-    57 &#8226; <a href="http://www.isfdb.org/cgi-bin/title.cgi?41568" dir="ltr">Captive Market</a> &#8226; (1955) &#8226; short story by
-    <a href="http://www.isfdb.org/cgi-bin/ea.cgi?23" dir="ltr">Philip K. Dick</a>
-    <li>
-    76 &#8226; <a href="http://www.isfdb.org/cgi-bin/title.cgi?58216" dir="ltr">The Mold of Yancy</a> &#8226; (1955) &#8226; novelette by
-    <a href="http://www.isfdb.org/cgi-bin/ea.cgi?23" dir="ltr">Philip K. Dick</a>
-    <li>
-    99 &#8226; <a href="http://www.isfdb.org/cgi-bin/title.cgi?58214" dir="ltr">The Minority Report</a> &#8226; (1956) &#8226; novelette by
-    <a href="http://www.isfdb.org/cgi-bin/ea.cgi?23" dir="ltr">Philip K. Dick</a>
-    <li>
-    141 &#8226; <a href="http://www.isfdb.org/cgi-bin/title.cgi?58238" dir="ltr">Recall Mechanism</a> &#8226; (1959) &#8226; short story by
-    <a href="http://www.isfdb.org/cgi-bin/ea.cgi?23" dir="ltr">Philip K. Dick</a>
-    <li>
-    159 &#8226; <a href="http://www.isfdb.org/cgi-bin/title.cgi?58259" dir="ltr">The Unreconstructed M</a> &#8226; (1957) &#8226; novelette by
-    <a href="http://www.isfdb.org/cgi-bin/ea.cgi?23" dir="ltr">Philip K. Dick</a>
-    <li>
-    198 &#8226; <a href="http://www.isfdb.org/cgi-bin/title.cgi?58190" dir="ltr">Explorers We</a> &#8226; (1959) &#8226; short story by
-    <a href="http://www.isfdb.org/cgi-bin/ea.cgi?23" dir="ltr">Philip K. Dick</a>
-    <li>
-    209 &#8226; <a href="http://www.isfdb.org/cgi-bin/title.cgi?43713" dir="ltr">War Game</a> &#8226; (1959) &#8226; short story by
-    <a href="http://www.isfdb.org/cgi-bin/ea.cgi?23" dir="ltr">Philip K. Dick</a>
-    <li>
-    228 &#8226; <a href="http://www.isfdb.org/cgi-bin/title.cgi?41292" dir="ltr">If There Were No Benny Cemoli</a> &#8226; (1963) &#8226; novelette by
-    <a href="http://www.isfdb.org/cgi-bin/ea.cgi?23" dir="ltr">Philip K. Dick</a>
-    <li>
-    251 &#8226; <a href="http://www.isfdb.org/cgi-bin/title.cgi?58220" dir="ltr">Novelty Act</a> &#8226; (1964) &#8226; novelette by
-    <a href="http://www.isfdb.org/cgi-bin/ea.cgi?23" dir="ltr">Philip K. Dick</a>
-    <li>
-    285 &#8226; <a href="http://www.isfdb.org/cgi-bin/title.cgi?58263" dir="ltr">Waterspider</a> &#8226; (1964) &#8226; novelette by
-    <a href="http://www.isfdb.org/cgi-bin/ea.cgi?23" dir="ltr">Philip K. Dick</a>
-    <li>
-    321 &#8226; <a href="http://www.isfdb.org/cgi-bin/title.cgi?58264" dir="ltr">What the Dead Men Say</a> &#8226; (1964) &#8226; novella by
-    <a href="http://www.isfdb.org/cgi-bin/ea.cgi?23" dir="ltr">Philip K. Dick</a>
-    <li>
-    379 &#8226; <a href="http://www.isfdb.org/cgi-bin/title.cgi?58224" dir="ltr">Orpheus with Clay Feet</a> &#8226; (1987) &#8226; short story by
-    <a href="http://www.isfdb.org/cgi-bin/ea.cgi?23" dir="ltr">Philip K. Dick</a>
-    <li>
-    395 &#8226; <a href="http://www.isfdb.org/cgi-bin/title.cgi?58186" dir="ltr">The Days of Perky Pat</a> &#8226; (1963) &#8226; novelette by
-    <a href="http://www.isfdb.org/cgi-bin/ea.cgi?23" dir="ltr">Philip K. Dick</a>
-    <li>
-    423 &#8226; <a href="http://www.isfdb.org/cgi-bin/title.cgi?95236" dir="ltr">Stand-By</a> &#8226; [<a href="http://www.isfdb.org/cgi-bin/pe.cgi?25841" dir="ltr">Jim Briskin</a>] &#8226; (1963) &#8226; short story by
-    <a href="http://www.isfdb.org/cgi-bin/ea.cgi?23" dir="ltr">Philip K. Dick</a>
-     (variant of <i><a href="http://www.isfdb.org/cgi-bin/title.cgi?58256" dir="ltr">Top Stand-By Job</a></i>)
-    <li>
-    443 &#8226; <a href="http://www.isfdb.org/cgi-bin/title.cgi?58265" dir="ltr">What'll We Do with Ragland Park?</a> &#8226; [<a href="http://www.isfdb.org/cgi-bin/pe.cgi?25841" dir="ltr">Jim Briskin</a>] &#8226; (1963) &#8226; novelette by
-    <a href="http://www.isfdb.org/cgi-bin/ea.cgi?23" dir="ltr">Philip K. Dick</a>
-    <li>
-    467 &#8226; <a href="http://www.isfdb.org/cgi-bin/title.cgi?58223" dir="ltr">Oh, to Be a Blobel!</a> &#8226; (1964) &#8226; novelette by
-    <a href="http://www.isfdb.org/cgi-bin/ea.cgi?23" dir="ltr">Philip K. Dick</a>
-    <li>
-    487 &#8226; <a href="http://www.isfdb.org/cgi-bin/title.cgi?1257883" dir="ltr">Notes (The Days of Perky Pat)</a> &#8226; (1987) &#8226; essay by
-    <a href="http://www.isfdb.org/cgi-bin/ea.cgi?23" dir="ltr">Philip K. Dick</a>
-    </ul>
-    </div>
+        <div class="ContentBox">
+        <span class="containertitle">Collection Title:</span>
+        <a href="http://www.isfdb.org/cgi-bin/title.cgi?37576" dir="ltr">The Days of Perky Pat</a> &#8226; [<a href="http://www.isfdb.org/cgi-bin/pe.cgi?22461" dir="ltr">The Collected Stories of Philip K. Dick</a> &#8226; 4] &#8226; (1987) &#8226; collection by
+        <a href="http://www.isfdb.org/cgi-bin/ea.cgi?23" dir="ltr">Philip K. Dick</a>
+        <h2>Contents <a href="http://www.isfdb.org/cgi-bin/pl.cgi?230949+c"><span class="listingtext">(view Concise Listing)</span></a></h2>
+        <ul>
+
+        <li>
+        7 &#8226; <a href="http://www.isfdb.org/cgi-bin/title.cgi?118799" dir="ltr">Introduction (The Days of Perky Pat)</a>
+        &#8226; [<a href="http://www.isfdb.org/cgi-bin/pe.cgi?31226" dir="ltr">Introductions to the Collected Stories of Philip K. Dick</a> &#8226; 4]
+        &#8226; (1987)
+        &#8226; essay by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?57" dir="ltr">James Tiptree, Jr.</a>
+
+        <li>
+        11 &#8226; <a href="http://www.isfdb.org/cgi-bin/title.cgi?53646" dir="ltr">Autofac</a>
+        &#8226; (1955)
+        &#8226; novelette by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?23" dir="ltr">Philip K. Dick</a>
+
+        <li>
+        395 &#8226; <a href="http://www.isfdb.org/cgi-bin/title.cgi?58186" dir="ltr">The Days of Perky Pat</a>
+        &#8226; (1963)
+         &#8226; novelette by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?23" dir="ltr">Philip K. Dick</a>
+
+        <li>
+        423 &#8226; <a href="http://www.isfdb.org/cgi-bin/title.cgi?95236" dir="ltr">Stand-By</a>
+         &#8226; [<a href="http://www.isfdb.org/cgi-bin/pe.cgi?25841" dir="ltr">Jim Briskin</a>]
+         &#8226; (1963)
+         &#8226; short story by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?23" dir="ltr">Philip K. Dick</a>
+         (variant of <i><a href="http://www.isfdb.org/cgi-bin/title.cgi?58256" dir="ltr">Top Stand-By Job</a></i>)
+
+        <li>
+        487 &#8226; <a href="http://www.isfdb.org/cgi-bin/title.cgi?1257883" dir="ltr">Notes (The Days of Perky Pat)</a>
+        &#8226; (1987)
+        &#8226; essay by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?23" dir="ltr">Philip K. Dick</a>
+        </ul>
+        </div>
+
+        This method returns the list for easy use, but ALSO adds the data to the book bundle !
      */
-    public ArrayList<AnthologyTitle> getAnthologyTitles() {
+    @NonNull
+    private ArrayList<AnthologyTitle> getTableOfContentList() {
+
         final ArrayList<AnthologyTitle> results = new ArrayList<>();
 
         if (!loadPage()) {
@@ -361,35 +389,42 @@ public class ISFDBBook extends AbstractBase {
         Elements lis = contentbox.select("li");
         for (Element li : lis) {
 
-                    /* LI entries, 4 possibilities:
+            /* LI entries, 4 possibilities:
 
-                    7 &#8226;
-                    <a href="http://www.isfdb.org/cgi-bin/title.cgi?118799" dir="ltr">Introduction (The Days of Perky Pat)</a>
-                    &#8226; [
-                    <a href="http://www.isfdb.org/cgi-bin/pe.cgi?31226" dir="ltr">Introductions to the Collected Stories of Philip K. Dick</a>
-                    &#8226; 4] &#8226; (1987) &#8226; essay by
-                    <a href="http://www.isfdb.org/cgi-bin/ea.cgi?57" dir="ltr">James Tiptree, Jr.</a>
-
-
-                    11 &#8226;
-                    <a href="http://www.isfdb.org/cgi-bin/title.cgi?53646" dir="ltr">Autofac</a>
-                    &#8226; (1955) &#8226; novelette by
-                    <a href="http://www.isfdb.org/cgi-bin/ea.cgi?23" dir="ltr">Philip K. Dick</a>
+            7 &#8226;
+            <a href="http://www.isfdb.org/cgi-bin/title.cgi?118799" dir="ltr">Introduction (The Days of Perky Pat)</a>
+            &#8226; [<a href="http://www.isfdb.org/cgi-bin/pe.cgi?31226" dir="ltr">Introductions to the Collected Stories of Philip K. Dick</a> &#8226; 4]
+            &#8226; (1987)
+            &#8226; essay by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?57" dir="ltr">James Tiptree, Jr.</a>
 
 
-                    <a href="http://www.isfdb.org/cgi-bin/title.cgi?41613" dir="ltr">Beyond Lies the Wub</a>
-                    &#8226; (1952) &#8226; short story by
-                    <a href="http://www.isfdb.org/cgi-bin/ea.cgi?23" dir="ltr">Philip K. Dick</a>
+            11 &#8226;
+            <a href="http://www.isfdb.org/cgi-bin/title.cgi?53646" dir="ltr">Autofac</a>
+            &#8226; (1955)
+            &#8226; novelette by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?23" dir="ltr">Philip K. Dick</a>
 
 
-                    <a href="http://www.isfdb.org/cgi-bin/title.cgi?118803" dir="ltr">Introduction (Beyond Lies the Wub)</a>
-                    &#8226; [
-                    <a href="http://www.isfdb.org/cgi-bin/pe.cgi?31226" dir="ltr">Introductions to the Collected Stories of Philip K. Dick</a>
-                    &#8226; 1] &#8226; (1987) &#8226; essay by
-                    <a href="http://www.isfdb.org/cgi-bin/ea.cgi?69" dir="ltr">Roger Zelazny</a>
+            <a href="http://www.isfdb.org/cgi-bin/title.cgi?41613" dir="ltr">Beyond Lies the Wub</a>
+            &#8226; (1952)
+            &#8226; short story by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?23" dir="ltr">Philip K. Dick</a>
 
-                    So the year is always previous from last, but there is a non-visible 'text' node at the end, hence 'len-3'
-                     */
+
+            <a href="http://www.isfdb.org/cgi-bin/title.cgi?118803" dir="ltr">Introduction (Beyond Lies the Wub)</a>
+            &#8226; [ <a href="http://www.isfdb.org/cgi-bin/pe.cgi?31226" dir="ltr">Introductions to the Collected Stories of Philip K. Dick</a> &#8226; 1]
+            &#8226; (1987)
+            &#8226; essay by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?69" dir="ltr">Roger Zelazny</a>
+
+            So the year is always previous from last, but there is a non-visible 'text' node at the end, hence 'len-3'
+
+            A book belonging to a series will have one content entry with the same title as the book.
+            TODO: And potentially have the series/nr in it:
+
+            <a href="http://www.isfdb.org/cgi-bin/title.cgi?2210372" dir="ltr">The Delirium Brief</a>
+            &#8226; [<a href="http://www.isfdb.org/cgi-bin/pe.cgi?23081" dir="ltr">Laundry Files</a> &#8226; 8]
+            &#8226; (2017) &#8226; novel by
+            <a href="http://www.isfdb.org/cgi-bin/ea.cgi?2200" dir="ltr">Charles Stross</a>
+
+             */
             int len = li.childNodeSize();
             Node y = li.childNode(len - 3);
             Matcher matcher = AnthologyTitle.YEAR_FROM_STRING.matcher(y.toString());
@@ -398,8 +433,34 @@ public class ISFDBBook extends AbstractBase {
             /* See above for LI examples. The title is the first a element, the author is the last a element */
             Elements a = li.select("a");
             String title = cleanUpName(a.get(0).text());
-            String author = cleanUpName(a.get(a.size() - 1).text());
-            results.add(new AnthologyTitle(new Author(author), title, year, mPublicationRecord));
+            Author author = new Author(cleanUpName(a.get(a.size() - 1).text()));
+
+            AnthologyTitle anthologyTitle = new AnthologyTitle(author, title, year);
+            results.add(anthologyTitle);
+            ArrayUtils.appendOrAdd(mBookData, UniqueId.BKEY_ANTHOLOGY_DETAILS, anthologyTitle.toString());
+
+            // check for year & series. Note we don't store it here in mBookData
+            // once found, don't retest (mFirstPublication == null)
+            // is the book title the same as the content entry?
+            if (mFirstPublication == null && title.equalsIgnoreCase(mTitle)) {
+                // then we have the year
+                mFirstPublication = year;
+
+                // and potentially a series:
+                if (a.size() == 3) {
+                    // series don't always have a number
+                    Matcher sm = SERIES.matcher(li.toString());
+                    String tmp = sm.find() ? sm.group(1) : "";
+                    String[] data = tmp.split("&#x2022;"); // yes, hex... chrome browser view-source shows &#8226;
+                    // don't use data[0], we already have easy access to the a element
+                    mSeries = a.get(1).text();
+                    // now check if there was a series number
+                    if (data.length > 1) {
+                        //noinspection StringConcatenationInLoop
+                        mSeries += " (" + data[1] + ")";
+                    }
+                }
+            }
         }
 
         return results;

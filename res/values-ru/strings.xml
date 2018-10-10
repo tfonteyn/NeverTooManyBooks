@@ -14,7 +14,7 @@
     <string name="pages">Страницы</string>
     <string name="confirm_add">Добавить книгу</string>
     <string name="confirm_update">Обновить</string>
-    <string name="nobooks">На этой полке нет книг. Пожалуйста, добавьте книги, используя меню в нижней части этого экрана.</string>
+    <string name="no_books">На этой полке нет книг. Пожалуйста, добавьте книги, используя меню в нижней части этого экрана.</string>
     <string name="menu_expand_all">Развернуть всё</string>
     <string name="menu_sort_by">Отсортировать по</string>
     <string name="menu_collapse_all">Свернуть всё</string>
@@ -63,12 +63,6 @@
     <string name="contact_label">Контакты разработчиков:</string>
     <string name="donate_label">Пожертвовать</string>
     <string name="about_label">О приложении…</string>
-    <string name="sortby_author">Отсортировать по автору</string>
-    <string name="sortby_title">Отсортировать по названию</string>
-    <string name="sortby_series">Отсортировать по серии</string>
-    <string name="sortby_loan">Отсортировать по одолженным</string>
-    <string name="sortby_unread">Отсортировать по непрочитанным</string>
-    <string name="sortby_genre">Отсортировать по жанру</string>
     <string name="list_price">Список цен</string>
     <string name="update_fields">Автоматическое обновление полей</string>
     <string name="select_fields_to_update">Выберите поля для обновления</string>
@@ -211,16 +205,13 @@
     <string name="megabytes">%.2fМб</string>
     <string name="kilobytes">%.2fкб</string>
     <string name="bytes">%.0f байт</string>
-    <string name="sortby_author_given">Отсортировать по автору (имени)</string>
     <string name="debug_subject">Собрана отладочная информация</string>
     <string name="debug_body">Пожалуйста, кратко опишите обнаруженную ошибку.</string>
     <string name="menu_duplicate">Дублирующаяся книга</string>
     <string name="cannot_edit_system">Вы не можете редактировать системные параметры.</string>
     <string name="incorrect_key">Ваш ключ разработчика LibraryThing не действителен или не возможно установить соединение, чтобы его проверить.</string>
     <string name="correct_key">Ваш ключ разработика LibraryThing действителен.</string>
-    <string name="sortby_author_one">Сортировать по автору (Только первый автор)</string>
     <string name="no_connection">Интернет соединение отсутствует.</string>
-    <string name="sortby_published">Сортировать по дате публикации</string>
     <string name="menu_share_this">Поделиться</string>
     <string name="email_export">Желаете ли Вы отправить этот экспорт по почте?</string>
     <string name="menu_crop_thumb">Обрезать эскиз</string>
@@ -248,7 +239,6 @@
     <string name="goodreads_access_error">Возникли проблемы с соединением во время доступа к Goodreads. Пожалуйста, проверьте работает ли сайт Goodreads и если проблема останется сообщите в поддержку</string>
     <string name="other_preferences">Другие настройки</string>
     <string name="user_interface">Пользовательский интерфейс</string>
-    <string name="start_in_my_books">Начинать с \'Мои книги\'</string>
     <string name="background_tasks">Фоновые задачи</string>
     <string name="cleanup_old_tasks">Очистить старые задачи</string>
     <string name="cleanup_old_events">Очистить старые события</string>
@@ -501,8 +491,8 @@
     <string name="cancelled">Отменено</string>
     <string name="import_complete">Импорт завершен</string>
     <string name="library_thing">LibraryThing</string>
-    <string name="searching_elipsis">Поиск&#8230;</string>
-    <string name="adding_book_elipsis">Добавление книги&#8230;</string>
+    <string name="searching_ellipsis">Поиск&#8230;</string>
+    <string name="adding_book_ellipsis">Добавление книги&#8230;</string>
     <string name="prefs_global_opening_book_mode">Просмотр книги в режиме чтения</string>
     <string name="book_details_readonly_publishing">Публикация</string>
     <string name="book_details_readonly_by">от</string>

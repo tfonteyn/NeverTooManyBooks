@@ -83,7 +83,7 @@ public class BooklistStyles extends ArrayList<BooklistStyle> {
         Set<String> names = new HashSet<>();
         String itemStr = BCPreferences.getString(PREF_MENU_ITEMS, null);
         if (itemStr != null && !itemStr.isEmpty()) {
-            List<String> list = ArrayUtils.decodeList(ArrayUtils.MULTI_STRING_SEPARATOR, itemStr);
+            List<String> list = ArrayUtils.decodeList(itemStr);
             for (String name : list) {
                 if (name != null && !name.isEmpty()) {
                     names.add(name);
@@ -214,7 +214,7 @@ public class BooklistStyles extends ArrayList<BooklistStyle> {
         String itemStr = BCPreferences.getString(PREF_MENU_ITEMS, null);
         if (itemStr != null && !itemStr.isEmpty()) {
             // Break it up and process in order
-            List<String> list = ArrayUtils.decodeList('|', itemStr);
+            List<String> list = ArrayUtils.decodeList(itemStr);
             for (String n : list) {
                 // Add any exiting style that is preferred
                 BooklistStyle s = allStyles.findCanonical(n);
@@ -279,7 +279,7 @@ public class BooklistStyles extends ArrayList<BooklistStyle> {
                 if (items.length() > 0) {
                     items.append(ArrayUtils.MULTI_STRING_SEPARATOR);
                 }
-                items.append(ArrayUtils.encodeListItem(ArrayUtils.MULTI_STRING_SEPARATOR, style.getCanonicalName()));
+                items.append(ArrayUtils.encodeListItem(style.getCanonicalName()));
             }
         }
         BCPreferences.setString(PREF_MENU_ITEMS, items.toString());

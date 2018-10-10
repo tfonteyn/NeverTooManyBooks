@@ -120,8 +120,8 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
     private long mSearchManagerId = 0;
     private final SearchManager.SearchListener mSearchHandler = new SearchManager.SearchListener() {
         @Override
-        public boolean onSearchFinished(@NonNull final Bundle book, final boolean cancelled) {
-            return BookISBNSearchActivity.this.onSearchFinished(book, cancelled);
+        public boolean onSearchFinished(@NonNull final Bundle bookData, final boolean cancelled) {
+            return BookISBNSearchActivity.this.onSearchFinished(bookData, cancelled);
         }
     };
 
@@ -657,7 +657,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
                 mSearchManagerId = searchManager.getSenderId();
                 Tracker.handleEvent(this, "Searching" + mSearchManagerId, Tracker.States.Running);
 
-                getTaskManager().doProgress(getString(R.string.searching_elipsis));
+                getTaskManager().doProgress(getString(R.string.searching_ellipsis));
                 searchManager.search(mAuthor, mTitle, mIsbn, true, SearchManager.SEARCH_ALL);
                 // reset the details so we don't restart the search unnecessarily
                 mAuthor = "";
@@ -676,7 +676,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
     }
 
     @SuppressWarnings("SameReturnValue")
-    private boolean onSearchFinished(@NonNull final Bundle book, final boolean cancelled) {
+    private boolean onSearchFinished(@NonNull final Bundle bookData, final boolean cancelled) {
         Tracker.handleEvent(this, "onSearchFinished" + mSearchManagerId, Tracker.States.Running);
         try {
             if (cancelled) {
@@ -684,8 +684,8 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
                     startScannerActivity();
                 }
             } else {
-                getTaskManager().doProgress(getString(R.string.adding_book_elipsis));
-                createBook(book);
+                getTaskManager().doProgress(getString(R.string.adding_book_ellipsis));
+                createBook(bookData);
                 // Clear the data entry fields ready for the next one
                 clearFields();
             }
@@ -731,9 +731,9 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
     /**
      * Load the {@link BookDetailsActivity} Activity with the new book
      */
-    private void createBook(@NonNull final Bundle book) {
+    private void createBook(@NonNull final Bundle bookData) {
         Intent i = new Intent(this, BookDetailsActivity.class);
-        i.putExtra(UniqueId.BKEY_BOOK_DATA, book);
+        i.putExtra(UniqueId.BKEY_BOOK_DATA, bookData);
         startActivityForResult(i, UniqueId.ACTIVITY_REQUEST_CODE_EDIT_BOOK);
     }
 

@@ -197,7 +197,7 @@ public class CsvImporter implements Importer {
 
                 // Make sure we have UniqueId.BKEY_BOOKSHELF_TEXT if we imported bookshelf
                 if (book.containsKey(UniqueId.KEY_BOOKSHELF_NAME) && !book.containsKey(UniqueId.BKEY_BOOKSHELF_TEXT)) {
-                    book.setBookshelfList(book.getString(UniqueId.KEY_BOOKSHELF_NAME));
+                    book.setBookshelfListAsEncodedString(book.getString(UniqueId.KEY_BOOKSHELF_NAME));
                 }
 
                 try {
@@ -361,7 +361,7 @@ public class CsvImporter implements Importer {
                     }
                     // fixup the id's
                     Utils.pruneList(db, ata);
-                    book.putSerializable(UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY, ata);
+                    book.setContentList(ata);
                 }
             }
         }
@@ -391,10 +391,11 @@ public class CsvImporter implements Importer {
             }
         }
         // Handle the series
-        final ArrayList<Series> sa = ArrayUtils.getSeriesUtils().decodeList(ArrayUtils.MULTI_STRING_SEPARATOR, seriesDetails, false);
-        Series.pruneSeriesList(sa);
-        Utils.pruneList(db, sa);
-        book.putSerializable(UniqueId.BKEY_SERIES_ARRAY, sa);
+        final ArrayList<Series> list = ArrayUtils.getSeriesUtils().decodeList(seriesDetails, false);
+        Series.pruneSeriesList(list);
+        Utils.pruneList(db, list);
+        book.setSeriesList(list);
+        book.remove(UniqueId.BKEY_SERIES_DETAILS);
     }
 
     /**
@@ -433,9 +434,10 @@ public class CsvImporter implements Importer {
         }
 
         // Now build the array for authors
-        final ArrayList<Author> aa = ArrayUtils.getAuthorUtils().decodeList(ArrayUtils.MULTI_STRING_SEPARATOR, authorDetails, false);
-        Utils.pruneList(db, aa);
-        book.putSerializable(UniqueId.BKEY_AUTHOR_ARRAY, aa);
+        final ArrayList<Author> list = ArrayUtils.getAuthorUtils().decodeList(authorDetails, false);
+        Utils.pruneList(db, list);
+        book.setAuthorList(list);
+        book.remove(UniqueId.BKEY_AUTHOR_DETAILS);
     }
 
     //

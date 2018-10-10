@@ -17,7 +17,6 @@ import android.widget.TextView;
 import com.eleybourn.bookcatalogue.Utils;
 import com.jayway.android.robotium.solo.Solo;
 
-@SuppressWarnings("unchecked")
 /**
  * @author evan
  *
@@ -36,7 +35,6 @@ public class BookCatalogueTest extends ActivityInstrumentationTestCase2 {
 		}
 	}
 	
-	//@SuppressWarnings("unchecked")	
 	public BookCatalogueTest() throws ClassNotFoundException {
 		super(TARGET_PACKAGE_ID, launcherActivityClass);
 	}

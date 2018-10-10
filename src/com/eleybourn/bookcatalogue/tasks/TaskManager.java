@@ -334,7 +334,7 @@ public class TaskManager implements AutoCloseable {
      */
     @Override
     public void close() {
-        if (DEBUG_SWITCHES.TASKMANAGER && BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.TASK_MANAGER && BuildConfig.DEBUG) {
             System.out.println("DBG: Task Manager close requested");
         }
 

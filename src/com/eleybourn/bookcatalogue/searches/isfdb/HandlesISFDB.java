@@ -8,6 +8,6 @@ import java.util.List;
 public interface HandlesISFDB {
 
     void onGotISFDBEditions(@NonNull final List<String> editions);
-    void onGotISFDBBook(@NonNull final Bundle book);
+    void onGotISFDBBook(@NonNull final Bundle bookData);
 
 }

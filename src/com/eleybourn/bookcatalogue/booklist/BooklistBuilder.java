@@ -1180,7 +1180,7 @@ public class BooklistBuilder implements AutoCloseable {
 
                 // On first-time builds, get the pref-based list
                 switch (preferredState) {
-                    case BooklistPreferencesActivity.BOOKLISTS_ALWAYS_COLLAPSED: {
+                    case BooklistPreferencesActivity.BOOK_LIST_ALWAYS_COLLAPSED: {
                         String sql = mNavTable.getInsert(DOM_REAL_ROW_ID, DOM_LEVEL, DOM_ROOT_KEY, DOM_VISIBLE, DOM_EXPANDED) +
                                 " SELECT " + mListTable.dot(DOM_ID) + "," + mListTable.dot(DOM_LEVEL) + "," + mListTable.dot(DOM_ROOT_KEY) +
                                 " ,\n	Case When " + DOM_LEVEL + " = 1 Then 1 Else 0 End, 0\n" +
@@ -1189,7 +1189,7 @@ public class BooklistBuilder implements AutoCloseable {
                         mSyncedDb.execSQL(sql);
                         break;
                     }
-                    case BooklistPreferencesActivity.BOOKLISTS_ALWAYS_EXPANDED: {
+                    case BooklistPreferencesActivity.BOOK_LIST_ALWAYS_EXPANDED: {
                         String sql = mNavTable.getInsert(DOM_REAL_ROW_ID, DOM_LEVEL, DOM_ROOT_KEY, DOM_VISIBLE, DOM_EXPANDED) +
                                 " SELECT " + mListTable.dot(DOM_ID) + "," + mListTable.dot(DOM_LEVEL) + "," + mListTable.dot(DOM_ROOT_KEY) +
                                 " , 1, 1 \n" +
@@ -2320,8 +2320,10 @@ public class BooklistBuilder implements AutoCloseable {
          * allows us to get the GROUP-BY fields applicable to the currently processed group, including all
          * outer groups. Hence why it is cloned -- subsequent domains will modify this collection.
          */
-        @SuppressWarnings("unchecked")
         ArrayList<DomainDefinition> cloneGroups() {
+            //TOMF
+            //      * Returns a shallow copy of this <tt>ArrayList</tt> instance.  (The
+            //     * elements themselves are not copied.)
             return (ArrayList<DomainDefinition>) mGroups.clone();
         }
 

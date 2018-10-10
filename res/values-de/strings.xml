@@ -13,7 +13,7 @@
     <string name="pages">Seiten</string>
     <string name="confirm_add">Buch hinzufügen</string>
     <string name="confirm_update">Aktualisieren</string>
-    <string name="nobooks">Es befinden sich keine Bücher im Bücherregal. Bitte fügen Sie Bücher über das Menü am unteren Bildschirmrand hinzu.</string>
+    <string name="no_books">Es befinden sich keine Bücher im Bücherregal. Bitte fügen Sie Bücher über das Menü am unteren Bildschirmrand hinzu.</string>
     <string name="menu_expand_all">Alles ausklappen</string>
     <string name="menu_sort_by">Sortieren nach</string>
     <string name="menu_collapse_all">Alles einklappen</string>
@@ -62,12 +62,6 @@
     <string name="contact_label">Kontakt:</string>
     <string name="donate_label">Spenden</string>
     <string name="about_label">Über diese App</string>
-    <string name="sortby_author">Sortieren nach Autor</string>
-    <string name="sortby_title">Sortieren nach Titel</string>
-    <string name="sortby_series">Sortieren nach Serie</string>
-    <string name="sortby_loan">Sortieren nach Verliehen</string>
-    <string name="sortby_unread">Sortieren nach Ungelesen</string>
-    <string name="sortby_genre">Sortieren nach Genre</string>
     <string name="list_price">Preis</string>
     <string name="update_fields">Automatische Aktualisierung der Felder</string>
     <string name="select_fields_to_update">Felder für Aktualisierung auswählen</string>
@@ -209,16 +203,13 @@
     <string name="megabytes">%.2f MB</string>
     <string name="kilobytes">%.2f kB</string>
     <string name="bytes">%.0f Bytes</string>
-    <string name="sortby_author_given">Sortieren nach Autor (Vorname)</string>
     <string name="debug_subject">Gesammelte Debug-Informationen</string>
     <string name="debug_body">Bitte nehmen Sie sich Zeit, das aufgetretene Problem zu beschreiben.</string>
     <string name="menu_duplicate">Dublette</string>
     <string name="cannot_edit_system">Die Systemwerte können nicht geändert werden</string>
     <string name="incorrect_key">Der eingegebene LibraryThing-Entwicklerschlüssel war falsch, oder es konnte keine Netzwerkverbindung zur Verifizierung hergestellt werden.</string>
     <string name="correct_key">Ihr LibraryThing-Entwicklerschlüssel ist gültig.</string>
-    <string name="sortby_author_one">Sortieren nach Autor (nur erster Autor)</string>
     <string name="no_connection">Internet Verbindung nicht verfügbar.</string>
-    <string name="sortby_published">Sortieren nach Veröffentlichungsdatum</string>
     <string name="menu_share_this">Teilen</string>
     <string name="email_export">Möchten Sie diesen Export als E-Mail versenden?</string>
     <string name="menu_crop_thumb">Cover-Bild zuschneiden</string>
@@ -248,7 +239,6 @@ anschließend auf eine leeren Seite landen. Klicken Sie einfach auf den "Zurück
     <string name="goodreads_access_error">Beim Zugriff auf Goodreads ist ein Netzwerkproblem aufgetreten. Bitte überprüfen Sie, ob die Website von Goodreads erreichbar ist. Falls das Problem nicht gelöst werden kann, kontaktieren Sie den Support.</string>
     <string name="other_preferences">Weitere Einstellungen</string>
     <string name="user_interface">Benutzeroberfläche</string>
-    <string name="start_in_my_books">Start in \'Meine Bücher\'</string>
     <string name="background_tasks">Aufgaben im Hintergrund</string>
     <string name="cleanup_old_tasks">Alte Aufgaben bereinigen</string>
     <string name="cleanup_old_events">Alte Ereignisse bereinigen</string>
@@ -503,9 +493,9 @@ Entweder sind die Daten des Buchs falsch (Sie sollten die ISBN überprüfen) ode
     <string name="cancelled">Abgebrochen</string>
     <string name="import_complete">Import vollständig</string>
     <string name="library_thing">LibraryThing</string>
-    <string name="searching_elipsis">Suche&#8230;</string>
+    <string name="searching_ellipsis">Suche&#8230;</string>
 
-    <string name="adding_book_elipsis">Buch hinzufügen&#8230;</string>
+    <string name="adding_book_ellipsis">Buch hinzufügen&#8230;</string>
 
     <string name="new_in_42"><![CDATA[
 <p><b>Neu in 4.2</b>\n\n

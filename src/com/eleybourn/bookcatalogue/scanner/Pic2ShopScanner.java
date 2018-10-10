@@ -1,14 +1,11 @@
 package com.eleybourn.bookcatalogue.scanner;
 
 import android.app.Activity;
-import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.debug.Logger;
 
 import java.util.Arrays;
 

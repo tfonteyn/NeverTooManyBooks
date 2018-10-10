@@ -25,6 +25,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.UniqueId;
+import com.eleybourn.bookcatalogue.entities.AnthologyTitle;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Series;
 
@@ -40,6 +41,8 @@ public class ArrayUtils<T> {
     private static ArrayUtils<Author> mAuthorUtils = null;
     @Nullable
     private static ArrayUtils<Series> mSeriesUtils = null;
+    @Nullable
+    private static ArrayUtils<AnthologyTitle> mAnthologyTitleUtils = null;
 
     private Factory<T> mFactory;
 
@@ -47,7 +50,7 @@ public class ArrayUtils<T> {
     private ArrayUtils() {
     }
 
-    private ArrayUtils(Factory<T> factory) {
+    private ArrayUtils(@NonNull final Factory<T> factory) {
         mFactory = factory;
     }
 
@@ -59,8 +62,8 @@ public class ArrayUtils<T> {
             mAuthorUtils = new ArrayUtils<>(new Factory<Author>() {
                 @Override
                 @NonNull
-                public Author get(@NonNull final String encodedName) {
-                    return new Author(encodedName);
+                public Author get(@NonNull final String stringEncodedList) {
+                    return new Author(stringEncodedList);
                 }
             });
         }
@@ -68,29 +71,23 @@ public class ArrayUtils<T> {
     }
 
     /**
-     * Utility routine to get an author list from the intent extras
-     *
-     * @param b Bundle with author list
+     * @param bundle containing encoded list
      *
      * @return List of authors
      */
-    @SuppressWarnings("unchecked")
     @Nullable
-    public static ArrayList<Author> getAuthorsFromBundle(@NonNull final Bundle b) {
-        return (ArrayList<Author>) b.getSerializable(UniqueId.BKEY_AUTHOR_ARRAY);
+    public static ArrayList<Author> getAuthorsFromBundle(@NonNull final Bundle bundle) {
+        return getListFromBundle(bundle, UniqueId.BKEY_AUTHOR_ARRAY);
     }
 
     /**
-     * Utility routine to get the series from the passed intent. Added to reduce lint warnings...
+     * @param intent containing encoded list
      *
-     * @param i Intent containing list
-     *
-     * @return List
+     * @return List of authors, can be empty
      */
-    @SuppressWarnings("unchecked")
     @NonNull
-    public static ArrayList<Author> getAuthorFromIntentExtras(@NonNull final Intent i) {
-        ArrayList<Author> list = (ArrayList<Author>) i.getSerializableExtra(UniqueId.BKEY_AUTHOR_ARRAY);
+    public static ArrayList<Author> getAuthorFromIntentExtras(@NonNull final Intent intent) {
+        ArrayList<Author> list = getListFromIntentExtras(intent, UniqueId.BKEY_AUTHOR_ARRAY);
         return list != null ? list : new ArrayList<Author>();
     }
     //</editor-fold>
@@ -103,8 +100,8 @@ public class ArrayUtils<T> {
             mSeriesUtils = new ArrayUtils<>(new Factory<Series>() {
                 @Override
                 @NonNull
-                public Series get(@NonNull final String encodedName) {
-                    return new Series(encodedName);
+                public Series get(@NonNull final String stringEncodedList) {
+                    return new Series(stringEncodedList);
                 }
             });
         }
@@ -112,65 +109,98 @@ public class ArrayUtils<T> {
     }
 
     /**
-     * Utility routine to get a series list from the intent extras
-     *
-     * @param b Bundle with series list
+     * @param bundle containing encoded list
      *
      * @return List of series
      */
-    @SuppressWarnings("unchecked")
     @Nullable
-    public static ArrayList<Series> getSeriesFromBundle(@NonNull final Bundle b) {
-        return (ArrayList<Series>) b.getSerializable(UniqueId.BKEY_SERIES_ARRAY);
+    public static ArrayList<Series> getSeriesFromBundle(@NonNull final Bundle bundle) {
+        return getListFromBundle(bundle, UniqueId.BKEY_SERIES_ARRAY);
     }
 
     /**
-     * Utility routine to get the series from the passed intent. Added to reduce lint warnings...
+     * @param intent containing encoded list
      *
-     * @param i Intent containing list
-     *
-     * @return List
+     * @return List of series, can be empty
      */
-    @SuppressWarnings("unchecked")
     @NonNull
-    public static ArrayList<Series> getSeriesFromIntentExtras(@NonNull final Intent i) {
-        ArrayList<Series> list = (ArrayList<Series>) i.getSerializableExtra(UniqueId.BKEY_SERIES_ARRAY);
+    public static ArrayList<Series> getSeriesFromIntentExtras(@NonNull final Intent intent) {
+        ArrayList<Series> list = getListFromIntentExtras(intent, UniqueId.BKEY_SERIES_ARRAY);
         return list != null ? list : new ArrayList<Series>();
     }
     //</editor-fold>
 
+
+    //<editor-fold desc="AnthologyTitle">
+    @NonNull
+    public static ArrayUtils<AnthologyTitle> getAnthologyTitleUtils() {
+        if (mAnthologyTitleUtils == null) {
+            mAnthologyTitleUtils = new ArrayUtils<>(new Factory<AnthologyTitle>() {
+                @Override
+                @NonNull
+                public AnthologyTitle get(@NonNull final String stringEncodedList) {
+                    return new AnthologyTitle(stringEncodedList);
+                }
+            });
+        }
+        return mAnthologyTitleUtils;
+    }
+
+    /**
+     * @param bundle containing encoded list
+     *
+     * @return List of AnthologyTitle
+     */
+    @Nullable
+    public static ArrayList<AnthologyTitle> getAnthologyTitleFromBundle(@NonNull final Bundle bundle) {
+        return getListFromBundle(bundle, UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY);
+    }
+
+//    /**
+//     * @param intent containing encoded list
+//     *
+//     * @return List of AnthologyTitle, can be empty
+//     */
+//    @NonNull
+//    public static ArrayList<AnthologyTitle> getAnthologyTitleFromIntentExtras(@NonNull final Intent intent) {
+//        ArrayList<AnthologyTitle> list = getListFromIntentExtras(intent, UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY);
+//        return list != null ? list : new ArrayList<AnthologyTitle>();
+//    }
+    //</editor-fold>
+
+
     /**
      * Utility routine to get the list from the passed bundle. Added to reduce lint warnings...
      *
-     * @param b   Bundle containing list
-     * @param key element to get
+     * @param bundle containing encoded list
+     * @param key    element to get
      *
-     * @return List
+     * @return List, or null when not present
      */
     @SuppressWarnings("unchecked")
     @Nullable
-    public static <T> ArrayList<T> getListFromBundle(@NonNull final Bundle b, @Nullable final String key) {
-        return (ArrayList<T>) b.getSerializable(key);
+    public static <T> ArrayList<T> getListFromBundle(@NonNull final Bundle bundle, @Nullable final String key) {
+        return (ArrayList<T>) bundle.getSerializable(key);
     }
 
     /**
      * Utility routine to get the list from the passed intent. Added to reduce lint warnings...
      *
-     * @param i   Intent containing list
-     * @param key element to get
+     * @param intent containing encoded list
+     * @param key    element to get
      *
-     * @return List, or null when not present in the intent extras
+     * @return List, or null when not present
      */
     @SuppressWarnings("unchecked")
     @Nullable
-    public static <T> ArrayList<T> getListFromIntentExtras(@NonNull final Intent i, @Nullable final String key) {
-        return (ArrayList<T>) i.getSerializableExtra(key);
+    public static <T> ArrayList<T> getListFromIntentExtras(@NonNull final Intent intent, @Nullable final String key) {
+        return (ArrayList<T>) intent.getSerializableExtra(key);
     }
 
     /**
      * Decode a text list separated by '|' and encoded by encodeListItem.
      *
-     * @param s     String representing the list
+     * @param s String representing the list
      *
      * @return Array of strings resulting from list
      */
@@ -250,15 +280,15 @@ public class ArrayUtils<T> {
      * This inputStream used to build text lists separated by the passed delimiter.
      *
      * @param delim The list delimiter to encode (if found).
-     * @param value     String to convert
+     * @param s     String to convert
      *
      * @return Converted string(trimmed)
      */
     @NonNull
-    public static String encodeListItem(final char delim, @NonNull final String value) {
+    public static String encodeListItem(final char delim, @NonNull final String s) {
         StringBuilder ns = new StringBuilder();
-        for (int i = 0; i < value.length(); i++) {
-            char c = value.charAt(i);
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
             switch (c) {
                 case '\\':
                     ns.append("\\\\");
@@ -300,19 +330,37 @@ public class ArrayUtils<T> {
     }
 
     /**
-     * Add the current text data to the collection if not present, otherwise
-     * append the data as a list.
+     * Add the current text data to the collection if not present
+     * otherwise append the data as a list.
      *
-     * @param key   Key for data to add
-     * @param value Data to add
+     * @param bundle to add to
+     * @param key    for value to add
+     * @param value  to add
      */
-    public static void appendOrAdd(@NonNull final Bundle values, @Nullable final String key, @NonNull final String value) {
-        String s = encodeListItem('|', value);
-        if (!values.containsKey(key) || values.getString(key).isEmpty()) {
-            values.putString(key, s);
+    public static void appendOrAdd(@NonNull final Bundle bundle,
+                                   @Nullable final String key,
+                                   @NonNull final String value) {
+        String s = encodeListItem(value);
+        if (!bundle.containsKey(key) || bundle.getString(key).isEmpty()) {
+            bundle.putString(key, s);
         } else {
-            String curr = values.getString(key);
-            values.putString(key, curr + MULTI_STRING_SEPARATOR + s);
+            String curr = bundle.getString(key);
+            bundle.putString(key, curr + MULTI_STRING_SEPARATOR + s);
+        }
+    }
+
+    /**
+     * Add the current text data to the collection if not present
+     *
+     * @param bundle to add to
+     * @param key    for value to add
+     * @param value  to add
+     */
+    public static void addIfNotPresent(@NonNull final Bundle bundle,
+                                       @Nullable final String key,
+                                       @NonNull final String value) {
+        if (!bundle.containsKey(key) || bundle.getString(key).isEmpty()) {
+            bundle.putString(key, value.trim());
         }
     }
 
@@ -347,7 +395,7 @@ public class ArrayUtils<T> {
      * @return Converted string
      */
     @NonNull
-    public String encodeList(final char delim, @NonNull final List<T> list) {
+    private String encodeList(final char delim, @NonNull final List<T> list) {
         StringBuilder ns = new StringBuilder();
         Iterator<T> si = list.iterator();
         if (si.hasNext()) {
@@ -380,7 +428,7 @@ public class ArrayUtils<T> {
      * @return Array of strings resulting from list
      */
     @NonNull
-    public ArrayList<T> decodeList(final char delim, @Nullable final String s, final boolean allowBlank) {
+    private ArrayList<T> decodeList(final char delim, @Nullable final String s, final boolean allowBlank) {
         StringBuilder ns = new StringBuilder();
         ArrayList<T> list = new ArrayList<>();
         if (s == null) {

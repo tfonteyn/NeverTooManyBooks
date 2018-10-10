@@ -87,7 +87,7 @@ public class TouchListView extends ListView {
     /** at what offset inside the item did the user grab it */
     private int mDragPoint;
     /** the difference between screen coordinates and coordinates in this view */
-    private int mCoordOffset;
+    private int mCoordinatesOffset;
     private DragListener mDragListener;
     private DropListener mDropListener;
     private RemoveListener mRemoveListener;
@@ -194,7 +194,7 @@ public class TouchListView extends ListView {
 
                     if (isDraggableRow(item)) {
                         mDragPoint = y - item.getTop();
-                        mCoordOffset = ((int) ev.getRawY()) - y;
+                        mCoordinatesOffset = ((int) ev.getRawY()) - y;
                         View dragger = item.findViewById(grabberId);
                         Rect r = mTempRect;
 						// dragger.getDrawingRect(r);
@@ -486,7 +486,7 @@ public class TouchListView extends ListView {
         mWindowParams = new WindowManager.LayoutParams();
         mWindowParams.gravity = Gravity.TOP | Gravity.START;
         mWindowParams.x = x;
-        mWindowParams.y = y - mDragPoint + mCoordOffset;
+        mWindowParams.y = y - mDragPoint + mCoordinatesOffset;
 
         mWindowParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
         mWindowParams.width = WindowManager.LayoutParams.WRAP_CONTENT;
@@ -523,7 +523,7 @@ public class TouchListView extends ListView {
             }
             mWindowParams.alpha = alpha;
         }
-        mWindowParams.y = y - mDragPoint + mCoordOffset;
+        mWindowParams.y = y - mDragPoint + mCoordinatesOffset;
         mWindowManager.updateViewLayout(mDragView, mWindowParams);
     }
 

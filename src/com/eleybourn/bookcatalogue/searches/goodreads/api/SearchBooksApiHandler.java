@@ -216,7 +216,7 @@ public class SearchBooksApiHandler extends ApiHandler {
 		</GoodreadsResponse>
 
 	 */
-    /** Total results available, as opposed to number returned on firt page. */
+    /** Total results available, as opposed to number returned on first page. */
     private Long mTotalResults;
     private final XmlHandler mHandleTotalResults = new XmlHandler() {
         @Override

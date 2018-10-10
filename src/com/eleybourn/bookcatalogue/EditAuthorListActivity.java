@@ -177,17 +177,15 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
         }
 
         // When we get here, we know the names are genuinely different and the old author is used in more than one place.
-        String format = getString(R.string.changed_author_how_apply);
         String allBooks = getString(R.string.all_books);
-        String thisBook = getString(R.string.this_book);
 
         final AlertDialog dialog = new AlertDialog.Builder(this)
-                .setMessage(String.format(format, from.getSortName(), to.getSortName(), allBooks))
+                .setMessage(getString(R.string.changed_author_how_apply, from.getSortName(), to.getSortName(), allBooks))
                 .setTitle(R.string.scope_of_change)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .create();
 
-        dialog.setButton(DialogInterface.BUTTON_POSITIVE, thisBook, new DialogInterface.OnClickListener() {
+        dialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.this_book), new DialogInterface.OnClickListener() {
             public void onClick(final DialogInterface dialog, final int which) {
                 from.copyFrom(to);
                 Utils.pruneList(mDb, mList);
