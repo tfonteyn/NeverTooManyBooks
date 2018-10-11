@@ -67,7 +67,7 @@ public class Datum {
      *
      * @param o Object
      *
-     * @return Resulting value
+     * @return Resulting value (null or empty becomes 0)
      */
     public static long toLong(@Nullable final Object o) {
         if (o == null) {
@@ -471,7 +471,7 @@ public class Datum {
      * @param data   Parent collection
      * @param bundle Raw data
      *
-     * @return Value of the data
+     * @return Value of the data, can be empty, but never null
      */
     @NonNull
     public String getString(@NonNull final DataManager data, @NonNull final Bundle bundle) {
@@ -481,6 +481,7 @@ public class Datum {
         } else {
             o = mAccessor.get(data, this, bundle);
         }
+        // any null gets turned into ""
         return toString(o);
     }
 
@@ -516,9 +517,9 @@ public class Datum {
      */
     @SuppressWarnings("unchecked")
     @Nullable
-     <T extends Serializable> T getSerializable(@SuppressWarnings("unused") @NonNull final DataManager data, @NonNull final Bundle bundle) {
+    <T extends Serializable> T getSerializable(@SuppressWarnings("unused") @NonNull final DataManager data, @NonNull final Bundle bundle) {
         if (mAccessor == null) {
-            return (T)bundle.getSerializable(mKey);
+            return (T) bundle.getSerializable(mKey);
         } else {
             throw new IllegalStateException("Accessor not supported for serializable objects");
         }

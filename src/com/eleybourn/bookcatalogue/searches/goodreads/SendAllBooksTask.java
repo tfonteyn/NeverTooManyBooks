@@ -24,8 +24,8 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.BookEvents.GrNoIsbnEvent;
-import com.eleybourn.bookcatalogue.BookEvents.GrNoMatchEvent;
+import com.eleybourn.bookcatalogue.searches.goodreads.BookEvents.GrNoIsbnEvent;
+import com.eleybourn.bookcatalogue.searches.goodreads.BookEvents.GrNoMatchEvent;
 import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;

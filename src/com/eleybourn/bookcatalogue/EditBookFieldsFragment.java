@@ -116,8 +116,8 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
                 public void onClick(View v) {
                     BookshelfDialogFragment frag = BookshelfDialogFragment.newInstance(
                             mEditManager.getBook().getBookId(),
-                            mEditManager.getBook().getBookshelfDisplayText(),
-                            mEditManager.getBook().getBookshelfListAsEncodedString()
+                            mEditManager.getBook().getString(Book.BOOKSHELF_TEXT),
+                            mEditManager.getBook().getBookshelfList()
                     );
                     frag.show(getFragmentManager(), TAG_BOOKSHELVES_DIALOG);
                 }
@@ -262,7 +262,7 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
      */
     private void initDefaultShelf() {
         final Book book = mEditManager.getBook();
-        final String list = book.getBookshelfListAsEncodedString();
+        final String list = book.getBookshelfList();
         if (list == null || list.isEmpty()) {
             String currentShelf = BCPreferences.getStringOrEmpty(BooksOnBookshelf.PREF_BOOKSHELF);
             if (currentShelf.isEmpty()) {
@@ -271,7 +271,7 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
             Field fe = mFields.getField(R.id.bookshelf);
             fe.setValue(currentShelf);
             String encoded_shelf = ArrayUtils.encodeListItem(Bookshelf.SEPARATOR, currentShelf);
-            book.setBookshelfListAsEncodedString(encoded_shelf);
+            book.setBookshelfList(encoded_shelf);
         }
     }
 
@@ -408,6 +408,6 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
                                         @NonNull final String encodedList) {
 
         mFields.getField(R.id.bookshelf).setValue(textList);
-        mEditManager.getBook().setBookshelfListAsEncodedString(encodedList);
+        mEditManager.getBook().setBookshelfList(encodedList);
     }
 }

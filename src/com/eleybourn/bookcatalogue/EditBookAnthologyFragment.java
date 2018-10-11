@@ -106,9 +106,9 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment implemen
         mIsbn = book.getString(UniqueId.KEY_ISBN);
 
         // Setup the same author field
+        boolean singleAuthor = ((book.getInt(UniqueId.KEY_ANTHOLOGY_BITMASK) & DatabaseDefinitions.DOM_ANTHOLOGY_MULTIPLE_AUTHORS) == 0);
         mSame = getView().findViewById(R.id.same_author);
-        mSame.setChecked(((book.getInt(UniqueId.KEY_ANTHOLOGY_MASK) & DatabaseDefinitions.DOM_ANTHOLOGY_WITH_MULTIPLE_AUTHORS)
-                == DatabaseDefinitions.DOM_ANTHOLOGY_NOT_AN_ANTHOLOGY));
+        mSame.setChecked(singleAuthor);
         mSame.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 saveState(mEditManager.getBook());
@@ -337,10 +337,10 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment implemen
         // a visual aid for hiding/showing the author EditText.
         // So while this command is 'correct', it does not stop (and does not bother) the user
         // setting it wrong. insert/update into the database will correctly set it.
-        book.putInt(UniqueId.KEY_ANTHOLOGY_MASK,
+        book.putInt(UniqueId.KEY_ANTHOLOGY_BITMASK,
                 mSame.isChecked() ?
-                        DatabaseDefinitions.DOM_ANTHOLOGY_IS_AN_ANTHOLOGY
-                        : DatabaseDefinitions.DOM_ANTHOLOGY_WITH_MULTIPLE_AUTHORS ^ DatabaseDefinitions.DOM_ANTHOLOGY_IS_AN_ANTHOLOGY);
+                        DatabaseDefinitions.DOM_ANTHOLOGY_SINGLE_AUTHOR
+                        : DatabaseDefinitions.DOM_ANTHOLOGY_MULTIPLE_AUTHORS ^ DatabaseDefinitions.DOM_ANTHOLOGY_SINGLE_AUTHOR);
     }
 
     @Override

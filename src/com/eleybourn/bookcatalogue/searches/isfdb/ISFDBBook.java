@@ -9,8 +9,8 @@ import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.AnthologyTitle;
 import com.eleybourn.bookcatalogue.entities.Author;
-import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
+import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 
 import org.jsoup.nodes.Element;
@@ -173,8 +173,15 @@ public class ISFDBBook extends AbstractBase {
                         }
                     }
                 } else if (li.text().contains("Date")) {
+                    // dates are in fact displayed as YYYY-MM-DD which is very nice.
                     tmp = li.childNode(2).toString().trim();
-                    mBookData.putString(UniqueId.KEY_BOOK_DATE_PUBLISHED, tmp);
+                    // except that ISFDB uses 00 for the day (month?) ... so lets arbitrarily change that to 01
+                    tmp = tmp.replace("-00","-01");
+                    // and we're paranoid...
+                    java.util.Date d = DateUtils.parseDate(tmp);
+                    if (d != null) {
+                        mBookData.putString(UniqueId.KEY_BOOK_DATE_PUBLISHED, DateUtils.toSqlDateOnly(d));
+                    }
 
                 } else if (li.text().contains("ISBN")) {
                     // always use the first one, as that will be the one used at publication
@@ -219,12 +226,12 @@ public class ISFDBBook extends AbstractBase {
                     mBookData.putString("ISFDB_BOOK_TYPE", tmp);
 
                     if ("a1".equals(TYPE_MAP.get(tmp))) {
-                        mBookData.putInt(Book.IS_ANTHOLOGY,
-                                DatabaseDefinitions.DOM_ANTHOLOGY_IS_AN_ANTHOLOGY);
+                        mBookData.putInt(UniqueId.KEY_ANTHOLOGY_BITMASK,
+                                DatabaseDefinitions.DOM_ANTHOLOGY_SINGLE_AUTHOR);
                     } else if ("a2".equals(TYPE_MAP.get(tmp))) {
-                        mBookData.putInt(Book.IS_ANTHOLOGY,
-                                DatabaseDefinitions.DOM_ANTHOLOGY_IS_AN_ANTHOLOGY |
-                                        DatabaseDefinitions.DOM_ANTHOLOGY_WITH_MULTIPLE_AUTHORS);
+                        mBookData.putInt(UniqueId.KEY_ANTHOLOGY_BITMASK,
+                                DatabaseDefinitions.DOM_ANTHOLOGY_SINGLE_AUTHOR |
+                                        DatabaseDefinitions.DOM_ANTHOLOGY_MULTIPLE_AUTHORS);
                     }
 
                 } else if (li.text().contains("Cover")) {
@@ -268,16 +275,19 @@ public class ISFDBBook extends AbstractBase {
         // the content for local (below) processing. The actual entries are already added to the book data bundle
         ArrayList<AnthologyTitle> toc = getTableOfContentList();
 
-        // indicate Anthology, just in case the ISDB book-type did not.
+        // indicate Anthology, just in case the ISFDB book-type did not.
         if (toc.size() > 0) {
-            int ant = mBookData.getInt(Book.IS_ANTHOLOGY, 0) | DatabaseDefinitions.DOM_ANTHOLOGY_IS_AN_ANTHOLOGY;
-            mBookData.putInt(Book.IS_ANTHOLOGY, ant);
+            int isAnt = mBookData.getInt(UniqueId.KEY_ANTHOLOGY_BITMASK) | DatabaseDefinitions.DOM_ANTHOLOGY_SINGLE_AUTHOR;
+            mBookData.putInt(UniqueId.KEY_ANTHOLOGY_BITMASK, isAnt);
         }
 
         // try to deduce the first publication date
         if (toc.size() == 1) {
             // if the content table has only one entry, then this will have the first publication year for sure
-            mBookData.putString(UniqueId.KEY_FIRST_PUBLICATION, digits(toc.get(0).getFirstPublication()));
+            String d = digits(toc.get(0).getFirstPublication());
+            if (d != null && !d.isEmpty()) {
+                mBookData.putString(UniqueId.KEY_FIRST_PUBLICATION, d);
+            }
 
         } else  if (toc.size() > 1){
             // we gamble and take what we found in the content
@@ -297,8 +307,11 @@ public class ISFDBBook extends AbstractBase {
         }
     }
 
-    @NonNull
-    private String digits(@NonNull final String s) {
+    @Nullable
+    private String digits(@Nullable final String s) {
+        if (s == null) {
+            return null;
+        }
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);
@@ -435,6 +448,7 @@ public class ISFDBBook extends AbstractBase {
             String title = cleanUpName(a.get(0).text());
             Author author = new Author(cleanUpName(a.get(a.size() - 1).text()));
 
+            //TODO: bit annoying to use DETAILS string... as the SearchManager will reform it to ARRAY anyhow.
             AnthologyTitle anthologyTitle = new AnthologyTitle(author, title, year);
             results.add(anthologyTitle);
             ArrayUtils.addOrAppend(mBookData, UniqueId.BKEY_ANTHOLOGY_DETAILS, anthologyTitle.toString());

@@ -43,7 +43,7 @@ import java.io.OutputStreamWriter;
 import java.util.Date;
 
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKSHELF;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ANTHOLOGY_MASK;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ANTHOLOGY_BITMASK;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_ADDED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_FORMAT;
@@ -109,7 +109,7 @@ public class CsvExporter implements Exporter {
                     '"' + DOM_BOOK_PAGES + "\"," +
                     '"' + DOM_BOOK_NOTES + "\"," +
                     '"' + DOM_BOOK_LIST_PRICE + "\"," +
-                    '"' + DOM_BOOK_ANTHOLOGY_MASK + "\"," +
+                    '"' + DOM_BOOK_ANTHOLOGY_BITMASK + "\"," +
                     '"' + DOM_BOOK_LOCATION + "\"," +
                     '"' + DOM_BOOK_READ_START + "\"," +
                     '"' + DOM_BOOK_READ_END + "\"," +

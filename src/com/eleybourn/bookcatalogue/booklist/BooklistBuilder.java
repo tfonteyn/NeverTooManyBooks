@@ -96,7 +96,7 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHO
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_SORT;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKSHELF;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKSHELF_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ANTHOLOGY_MASK;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ANTHOLOGY_BITMASK;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_COUNT;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_ADDED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_PUBLISHED;
@@ -1428,10 +1428,10 @@ public class BooklistBuilder implements AutoCloseable {
             String extra = null;
             switch (mStyle.getAnthologyFilter()) {
                 case BooklistStyle.FILTER_YES:
-                    extra = TBL_BOOKS.dot(DOM_BOOK_ANTHOLOGY_MASK) + " > 0\n";
+                    extra = TBL_BOOKS.dot(DOM_BOOK_ANTHOLOGY_BITMASK) + " > 0\n";
                     break;
                 case BooklistStyle.FILTER_NO:
-                    extra = TBL_BOOKS.dot(DOM_BOOK_ANTHOLOGY_MASK) + " = 0\n";
+                    extra = TBL_BOOKS.dot(DOM_BOOK_ANTHOLOGY_BITMASK) + " = 0\n";
                     break;
                 default:
                     break;

@@ -536,7 +536,11 @@ public abstract class ShowBookApiHandler extends ApiHandler {
 
         // If no published date, try original date
         if (!mBookData.containsKey(UniqueId.KEY_BOOK_DATE_PUBLISHED)) {
-            String origDate = GoodreadsManager.buildDate(mBookData, ShowBookFieldNames.ORIG_PUBLICATION_YEAR, ShowBookFieldNames.ORIG_PUBLICATION_MONTH, ShowBookFieldNames.ORIG_PUBLICATION_DAY, null);
+            String origDate = GoodreadsManager.buildDate(mBookData,
+                    ShowBookFieldNames.ORIG_PUBLICATION_YEAR,
+                    ShowBookFieldNames.ORIG_PUBLICATION_MONTH,
+                    ShowBookFieldNames.ORIG_PUBLICATION_DAY, null);
+
             if (origDate != null && !origDate.isEmpty()) {
                 mBookData.putString(UniqueId.KEY_BOOK_DATE_PUBLISHED, origDate);
             }

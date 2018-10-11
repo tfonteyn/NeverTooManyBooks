@@ -425,18 +425,15 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                 return true;
             }
             case R.id.MENU_BOOK_EDIT: {
-                // Start the activity in the correct tab
-                BookDetailsActivity.startEditMode(activity, rowView.getBookId(), BookDetailsActivity.TAB_EDIT);
+                EditBookActivity.startActivity(activity, rowView.getBookId(), EditBookActivity.TAB_EDIT);
                 return true;
             }
             case R.id.MENU_BOOK_EDIT_NOTES: {
-                // Start the activity in the correct tab
-                BookDetailsActivity.startEditMode(activity, rowView.getBookId(), BookDetailsActivity.TAB_EDIT_NOTES);
+                EditBookActivity.startActivity(activity, rowView.getBookId(), EditBookActivity.TAB_EDIT_NOTES);
                 return true;
             }
             case R.id.MENU_BOOK_EDIT_LOANS: {
-                // Start the activity in the correct tab
-                BookDetailsActivity.startEditMode(activity, rowView.getBookId(), BookDetailsActivity.TAB_EDIT_FRIENDS);
+                EditBookActivity.startActivity(activity, rowView.getBookId(), EditBookActivity.TAB_EDIT_FRIENDS);
                 return true;
             }
             case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR: {

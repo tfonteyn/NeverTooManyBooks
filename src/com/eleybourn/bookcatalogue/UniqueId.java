@@ -2,7 +2,7 @@ package com.eleybourn.bookcatalogue;
 
 import com.eleybourn.bookcatalogue.backup.CsvImporter;
 
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ANTHOLOGY_MASK;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ANTHOLOGY_BITMASK;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FAMILY_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FORMATTED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_GIVEN_NAMES;
@@ -46,6 +46,7 @@ public class UniqueId {
     public static final int ACTIVITY_REQUEST_CODE_EDIT_BOOK = 101;
     public static final int ACTIVITY_REQUEST_CODE_EDIT_AUTHORS = 102;
     public static final int ACTIVITY_REQUEST_CODE_EDIT_SERIES = 103;
+
     public static final int ACTIVITY_REQUEST_CODE_VIEW_BOOK = 104;
 
     public static final int ACTIVITY_REQUEST_CODE_ADD_THUMB_FROM_CAMERA = 201;
@@ -118,7 +119,7 @@ public class UniqueId {
     public static final String KEY_FIRST_PUBLICATION = DOM_FIRST_PUBLICATION.name;
 
     // single table use
-    public static final String KEY_ANTHOLOGY_MASK = DOM_BOOK_ANTHOLOGY_MASK.name;
+    public static final String KEY_ANTHOLOGY_BITMASK = DOM_BOOK_ANTHOLOGY_BITMASK.name;
 
     public static final String KEY_AUTHOR_ID = DOM_AUTHOR_ID.name;
     public static final String KEY_AUTHOR_FAMILY_NAME = DOM_AUTHOR_FAMILY_NAME.name;

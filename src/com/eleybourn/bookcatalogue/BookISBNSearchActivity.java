@@ -551,7 +551,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
 
     /**
      * This function searches the internet to extract the details of the book.
-     * The details will then get sent to the {@link BookDetailsActivity} activity
+     * The details will then get sent to {@link EditBookActivity}
      *
      * Either the isbn or the author/title needs to be specified.
      */
@@ -618,8 +618,8 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
                         dialog.setButton(AlertDialog.BUTTON_NEUTRAL, getString(R.string.edit_book),
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(final DialogInterface dialog, final int which) {
-                                        BookDetailsActivity.startEditMode(BookISBNSearchActivity.this,
-                                                existingId, BookDetailsActivity.TAB_EDIT);
+                                        EditBookActivity.startActivity(BookISBNSearchActivity.this,
+                                                existingId, EditBookActivity.TAB_EDIT);
                                     }
                                 });
                         dialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(android.R.string.cancel),
@@ -690,7 +690,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
                 }
             } else {
                 getTaskManager().doProgress(getString(R.string.adding_book_ellipsis));
-                createBook(bookData);
+                EditBookActivity.startActivity(this, bookData);
                 // Clear the data entry fields ready for the next one
                 clearFields();
             }
@@ -731,15 +731,6 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
             mDb.close();
         }
         Tracker.exitOnDestroy(this);
-    }
-
-    /**
-     * Load the {@link BookDetailsActivity} Activity with the new book
-     */
-    private void createBook(@NonNull final Bundle bookData) {
-        Intent i = new Intent(this, BookDetailsActivity.class);
-        i.putExtra(UniqueId.BKEY_BOOK_DATA, bookData);
-        startActivityForResult(i, UniqueId.ACTIVITY_REQUEST_CODE_EDIT_BOOK);
     }
 
     @Override

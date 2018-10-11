@@ -560,7 +560,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
     }
 
     /**
-     * Add all book fields with corresponding validators.
+     * Add all book fields with corresponding validators. Note this is NOT where we set values.
      */
     private void initFields() {
         /* Title has some post-processing on the text, to move leading 'A', 'The' etc to the end.
@@ -570,14 +570,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
          */
         mFields.add(R.id.title, UniqueId.KEY_TITLE, null);
 
-        /* Anthology needs special handling, and we use a formatter to do this. If the original
-         * value was 0 or 1, then setting/clearing it here should just set the new value to 0 or 1.
-         * However...if if the original value was 2, then we want setting/clearing to alternate
-         * between 2 and 0, not 1 and 0.
-         * So, despite it being a checkbox, we use an integerValidator and use a special formatter.
-         * We also store it in the tag field so that it is automatically serialized with the
-         * activity.
-         */
+        /* Anthology needs special handling, see {@link Book#initValidators()}*/
         if (getView().findViewById(R.id.anthology) != null) {
             mFields.add(R.id.anthology, Book.IS_ANTHOLOGY, null);
         }
@@ -590,11 +583,20 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
             mFields.add(R.id.date_published, UniqueId.KEY_BOOK_DATE_PUBLISHED, UniqueId.KEY_BOOK_DATE_PUBLISHED,
                     null, new Fields.DateFieldFormatter());
         }
+        //TOMF it's a date but we only used the year, do we need DateFieldFormatter ?
+        mFields.add(R.id.first_publication, UniqueId.KEY_FIRST_PUBLICATION, UniqueId.KEY_FIRST_PUBLICATION, null);
+
+        mFields.add(R.id.description, UniqueId.KEY_DESCRIPTION, null)
+                .setShowHtml(true);
+
+        mFields.add(R.id.bookshelf, UniqueId.BKEY_BOOKSHELF_TEXT, null)
+                .doNoFetch = true; // Output-only field
+
+        mFields.add(R.id.image, "", UniqueId.BKEY_THUMBNAIL, null);
+        mFields.getField(R.id.image).getView().setOnCreateContextMenuListener(mCreateBookThumbContextMenuListener);
+
 
         mFields.add(R.id.author, "", UniqueId.KEY_AUTHOR_FORMATTED, null);
-        mFields.add(R.id.bookshelf, UniqueId.BKEY_BOOKSHELF_TEXT, null).doNoFetch = true; // Output-only field
-        mFields.add(R.id.description, UniqueId.KEY_DESCRIPTION, null).setShowHtml(true);
-        mFields.add(R.id.first_publication, UniqueId.KEY_FIRST_PUBLICATION, UniqueId.KEY_FIRST_PUBLICATION, null);
         mFields.add(R.id.format, UniqueId.KEY_BOOK_FORMAT, null);
         mFields.add(R.id.genre, UniqueId.KEY_BOOK_GENRE, null);
         mFields.add(R.id.isbn, UniqueId.KEY_ISBN, null);
@@ -603,9 +605,6 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
         mFields.add(R.id.pages, UniqueId.KEY_BOOK_PAGES, null);
         mFields.add(R.id.series, UniqueId.KEY_SERIES_NAME, UniqueId.KEY_SERIES_NAME, null);
         mFields.add(R.id.signed, UniqueId.KEY_BOOK_SIGNED, null);
-
-        mFields.add(R.id.image, "", UniqueId.BKEY_THUMBNAIL, null);
-        mFields.getField(R.id.image).getView().setOnCreateContextMenuListener(mCreateBookThumbContextMenuListener);
     }
 
     /**
@@ -629,14 +628,12 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
 
     /**
      * Inflates all fields with data from cursor and populates UI fields with it.
-     * Also set thumbnail of the book.
      */
     protected void populateBookDetailsFields(@NonNull final Book book) {
-        //Set anthology field, which is only there on the Edit screen, but not on the 'Look'
         View ant = getView().findViewById(R.id.anthology);
         if (ant != null) {
             Integer val = book.getInt(Book.IS_ANTHOLOGY);
-            mFields.getField(R.id.anthology).setValue(val.toString()); // Set checked if ant != 07
+            mFields.getField(R.id.anthology).setValue(val.toString()); // Set checked if ant != 0
         }
     }
 
@@ -662,7 +659,7 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
         try {
             // Display the selected bookshelves
             Field bookshelfTextFe = fields.getField(R.id.bookshelf);
-            String bookshelfText = book.getBookshelfDisplayText();
+            String bookshelfText = book.getString(Book.BOOKSHELF_TEXT);
             bookshelfTextFe.setValue(bookshelfText);
             if (!bookshelfText.isEmpty()) {
                 result = true;

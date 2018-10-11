@@ -217,7 +217,7 @@ public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
         return mFirstPublicationDate;
     }
 
-    public void setFirstPublication(final String publicationDate) {
+    public void setFirstPublication(@NonNull final String publicationDate) {
         mFirstPublicationDate = publicationDate;
     }
 

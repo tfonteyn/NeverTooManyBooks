@@ -824,10 +824,16 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                 // Move the cursor to the position
                 mList.moveToPosition(position);
 
-                // If it's a book, edit it.
+                // If it's a book, view or edit it.
                 int kind = mList.getRowView().getRowKind();
                 if (kind == RowKinds.ROW_KIND_BOOK) {
-                    BookDetailsActivity.openBook(BooksOnBookshelf.this, mList.getRowView().getBookId(), mList.getBuilder(), position);
+                    long bookId = mList.getRowView().getBookId();
+                    if (BCPreferences.getOpenBookReadOnly()) {
+                        String listTable = mList.getBuilder().createFlattenedBooklist().getTable().getName();
+                        BookDetailsActivity.startActivity(BooksOnBookshelf.this, bookId, listTable, position);
+                    } else {
+                        EditBookActivity.startActivity(BooksOnBookshelf.this, bookId, EditBookActivity.TAB_EDIT);
+                    }
                 } else {
                     // If it's level, expand/collapse. Technically, TODO: we could expand/collapse any level
                     // but storing and recovering the view becomes unmanageable.

@@ -1,7 +1,7 @@
 /*
  * @copyright 2013 Philip Warner
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -24,15 +24,17 @@ import android.support.annotation.NonNull;
 
 /**
  * Interface implemented for custom data access
- * 
- * @author pjw
  *
+ * @author pjw
  */
 public interface DataAccessor {
-	/** Get the specified Datum from the passed DataManager and bundle */
+    /** Get the specified Datum from the passed DataManager and bundle */
+    @NonNull
     Object get(@NonNull final DataManager data, @NonNull final Datum datum, @NonNull final Bundle rawData);
-	/** Set the specified Datum in the passed DataManager and bundle */
+
+    /** Set the specified Datum in the passed DataManager and bundle */
     void set(@NonNull final DataManager data, @NonNull final Datum datum, @NonNull final Bundle rawData, @NonNull final Object value);
-	/** Check if the specified Datum is present in the passed DataManager and bundle */
+
+    /** Check if the specified Datum is present in the passed DataManager and bundle */
     boolean isPresent(@NonNull final DataManager data, @NonNull final Datum datum, @NonNull final Bundle rawData);
 }

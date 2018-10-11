@@ -21,340 +21,103 @@
 package com.eleybourn.bookcatalogue;
 
 import android.app.Activity;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AlertDialog;
 import android.view.GestureDetector;
-import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.MotionEvent;
-import android.view.View;
-import android.widget.Button;
 
 import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
-import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;
 import com.eleybourn.bookcatalogue.booklist.FlattenedBooklist;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
-import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.datamanager.DataEditor;
-import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
-import com.eleybourn.bookcatalogue.dialogs.BookshelfDialogFragment.OnBookshelfCheckChangeListener;
-import com.eleybourn.bookcatalogue.dialogs.PartialDatePickerFragment;
-import com.eleybourn.bookcatalogue.dialogs.PartialDatePickerFragment.OnPartialDatePickerListener;
-import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
-import com.eleybourn.bookcatalogue.dialogs.TextFieldEditorFragment;
-import com.eleybourn.bookcatalogue.dialogs.TextFieldEditorFragment.OnTextFieldEditorListener;
 import com.eleybourn.bookcatalogue.entities.Book;
-import com.eleybourn.bookcatalogue.utils.StorageUtils;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
- * A tab host activity which holds the edit book tabs
- * 1. Edit Details / Show Details
- * 2. Edit Comments  / Show Comments
- * 3. Loan Book
- * 4. Anthology titles
- *
  * @author Evan Leybourn
  */
-public class BookDetailsActivity extends BookCatalogueActivity
-        implements EditBookAbstractFragment.BookEditManager,
-        OnPartialDatePickerListener, OnTextFieldEditorListener, OnBookshelfCheckChangeListener {
-
-    /**
-     * Tabs in order, see {@link #mTabClasses}
-     */
-    public static final String TAB = "tab";
-    public static final int TAB_EDIT = 0;
-    public static final int TAB_EDIT_NOTES = 1;
-    public static final int TAB_EDIT_FRIENDS = 2;
-    public static final int TAB_EDIT_ANTHOLOGY = 3;
+public class BookDetailsActivity extends BookCatalogueActivity {
 
     private static final String BKEY_FLATTENED_BOOKLIST_POSITION = "FlattenedBooklistPosition";
     private static final String BKEY_FLATTENED_BOOKLIST = "FlattenedBooklist";
-    /**
-     * Key using in intent to start this class in read-only mode
-     */
-    private static final String READ_ONLY = "key_read_only";
-    /**
-     * Classes used for the Tabs (in order)
-     */
-    private static final Class[] mTabClasses = {
-            EditBookFieldsFragment.class,
-            EditBookNotesFragment.class,
-            EditBookLoanedFragment.class,
-            EditBookAnthologyFragment.class
-    };
+
     private final CatalogueDBAdapter mDb = new CatalogueDBAdapter(this);
     @Nullable
     private FlattenedBooklist mList = null;
     @Nullable
     private GestureDetector mGestureDetector;
-    private boolean mIsDirtyFlg = false;
     private long mRowId;
     @Nullable
     private Book mBook;
-    private boolean mIsReadOnly;
-    /**
-     * Listener to handle 'fling' events; we could handle others but need to be
-     * careful about possible clicks and scrolling.
-     */
-    @Nullable
-    private final GestureDetector.SimpleOnGestureListener mGestureListener = new GestureDetector.SimpleOnGestureListener() {
-        @Override
-        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-            if (mList == null) {
-                return false;
-            }
-
-            // Make sure we have considerably more X-velocity than Y-velocity;
-            // otherwise it might be a scroll.
-            if (Math.abs(velocityX / velocityY) > 2) {
-                boolean moved;
-                // Work out which way to move, and do it.
-                if (velocityX > 0) {
-                    moved = mList.movePrev();
-                } else {
-                    moved = mList.moveNext();
-                }
-                if (moved) {
-                    setRowId(mList.getBookId());
-                }
-                return true;
-            } else {
-                return false;
-            }
-        }
-    };
-
-    private TabLayout mTabLayout;
-    @Nullable
-    private TabLayout.Tab mAnthologyTab;
-
-    /** Lists in database so far, we cache them for performance */
-    private List<String> mFormats;
-    private List<String> mGenres;
-    private List<String> mLanguages;
-    private List<String> mLocations;
-    private List<String> mPublishers;
 
     /**
-     * Open book for viewing in edit or read-only mode.
-     *
-     * @param activity Current activity from which we start
-     * @param id       The id of the book to view
-     * @param builder  (Optional) builder for underlying book list. Only used in read-only view.
-     * @param position (Optional) position in underlying book list. Only used in read-only view.
-     */
-    public static void openBook(@NonNull final Activity activity,
-                                final long id,
-                                @Nullable final BooklistBuilder builder,
-                                @Nullable final Integer position) {
-        if (BCPreferences.getOpenBookReadOnly()) {
-            // Make a flattened copy of the list of books, if available
-            String listTable = null;
-            if (builder != null) {
-                listTable = builder.createFlattenedBooklist().getTable().getName();
-            }
-            startReadOnlyMode(activity, id, listTable, position);
-        } else {
-            startEditMode(activity, id, BookDetailsActivity.TAB_EDIT);
-        }
-    }
-
-    /**
-     * Load in edit mode based on the provided id. Also open to the provided tab.
-     *
-     * @param id  The id of the book to edit
-     * @param tab Which tab to open first
-     */
-    public static void startEditMode(@NonNull final Activity activity,
-                                     final long id,
-                                     final int tab) {
-        Intent intent = new Intent(activity, BookDetailsActivity.class);
-        intent.putExtra(UniqueId.KEY_ID, id);
-        intent.putExtra(BookDetailsActivity.TAB, tab);
-        activity.startActivityForResult(intent, UniqueId.ACTIVITY_REQUEST_CODE_EDIT_BOOK);
-    }
-
-    /**
-     * Load in read-only mode. The first tab is book details.
+     * Load in read-only mode.
      *
      * @param activity  Current activity from which we start
      * @param id        The id of the book to view
      * @param listTable (Optional) name of the temp table containing a list of book IDs.
-     * @param position  (Optional) position in underlying book list. Only used in read-only view.
+     * @param position  (Optional) position in underlying book list.
      */
-    private static void startReadOnlyMode(@NonNull final Activity activity,
-                                          final long id,
-                                          @Nullable final String listTable,
-                                          @Nullable final Integer position) {
+    public static void startActivity(@NonNull final Activity activity,
+                                     final long id,
+                                     @Nullable final String listTable,
+                                     @Nullable final Integer position) {
         Intent intent = new Intent(activity, BookDetailsActivity.class);
         intent.putExtra(UniqueId.KEY_ID, id);
-        intent.putExtra(BookDetailsActivity.TAB, BookDetailsActivity.TAB_EDIT); // needed extra for creating BookDetailsActivity
-        intent.putExtra(BookDetailsActivity.READ_ONLY, true);
-        intent.putExtra(BookDetailsActivity.BKEY_FLATTENED_BOOKLIST, listTable);
+        intent.putExtra(BKEY_FLATTENED_BOOKLIST, listTable);
         if (position != null) {
-            intent.putExtra(BookDetailsActivity.BKEY_FLATTENED_BOOKLIST_POSITION, position);
+            intent.putExtra(BKEY_FLATTENED_BOOKLIST_POSITION, position);
         }
         activity.startActivityForResult(intent, UniqueId.ACTIVITY_REQUEST_CODE_VIEW_BOOK);
     }
 
-
     @Override
     protected int getLayoutId() {
-        return R.layout.activity_edit_book_base;
+        return R.layout.activity_book_base;
     }
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         Tracker.enterOnCreate(this);
-
         super.onCreate(savedInstanceState);
         mDb.open();
 
-        // Get the extras; we use them a lot
         Bundle extras = getIntent().getExtras();
 
-        // We need the row ID
-        long bookId = 0;
-        if (savedInstanceState != null) {
-            bookId = savedInstanceState.getLong(UniqueId.KEY_ID);
-        }
+        mRowId = getBookId(savedInstanceState, extras);
+        mBook = initBook(mRowId, savedInstanceState == null ? extras : savedInstanceState);
 
-        if ((bookId == 0) && (extras != null)) {
-            bookId = extras.getLong(UniqueId.KEY_ID);
-        }
-        mRowId = bookId;
+        BookDetailsFragment details = new BookDetailsFragment();
+        details.setArguments(extras);
+        replaceFragment(details);
 
-        boolean isExistingBook = (mRowId > 0);
-
-        mIsReadOnly = (extras != null) && isExistingBook
-                && extras.getBoolean(READ_ONLY, false);
-
-        // prepare the tabs, will use multiple for editing, or invisible one for viewing
-        mTabLayout = findViewById(R.id.tab_panel);
-        mTabLayout.addOnTabSelectedListener(new TabListener());
-
-        initBook(mRowId, savedInstanceState == null ? extras : savedInstanceState);
-
-        if (mIsReadOnly) {
-            initForReadOnly(extras);
-        } else {
-            initForEditing(extras, isExistingBook);
-        }
-
-        initCancelConfirmButtons(isExistingBook);
         initBooklist(extras, savedInstanceState);
 
-        // Must come after all book data and list retrieved.
+        // Must come after book data and list retrieved.
         initActivityTitle();
 
         Tracker.exitOnCreate(this);
     }
 
-
     /**
-     * initial setup for read-only viewing
+     * get the book id either from the savedInstanceState or the extras.
      */
-    private void initForReadOnly(@Nullable final Bundle extras) {
-        BookDetailsFragment details = new BookDetailsFragment();
-        details.setArguments(extras);
-        replaceTab(details);
-
-        mTabLayout.setVisibility(View.GONE);
-        findViewById(R.id.buttonbar_cancel_save).setVisibility(View.GONE);
+    private long getBookId(final @Nullable Bundle savedInstanceState, final @Nullable Bundle extras) {
+        long bookId = 0;
+        if (savedInstanceState != null) {
+            bookId = savedInstanceState.getLong(UniqueId.KEY_ID);
+        }
+        if ((bookId == 0) && (extras != null)) {
+            bookId = extras.getLong(UniqueId.KEY_ID);
+        }
+        return bookId;
     }
 
-    /**
-     * initial setup for editing
-     */
-    private void initForEditing(@Nullable final Bundle extras, final boolean isExistingBook) {
-
-        ArrayList<TabLayout.Tab> mAllTabs = new ArrayList<>();
-        mTabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
-        try {
-            Holder holder = new Holder();
-            holder.fragment = (Fragment)mTabClasses[TAB_EDIT].newInstance();
-            TabLayout.Tab tab = mTabLayout.newTab().setText(R.string.details).setTag(holder);
-            mTabLayout.addTab(tab);
-            mAllTabs.add(tab);
-
-            holder = new Holder();
-            holder.fragment = (Fragment)mTabClasses[TAB_EDIT_NOTES].newInstance();
-            tab = mTabLayout.newTab().setText(R.string.notes).setTag(holder);
-            mTabLayout.addTab(tab);
-            mAllTabs.add(tab);
-
-            boolean isAnthology = (mBook.getInt(Book.IS_ANTHOLOGY) != DatabaseDefinitions.DOM_ANTHOLOGY_NOT_AN_ANTHOLOGY);
-            addAnthologyTab(isAnthology);
-
-            // can't loan out a new book yet
-            if (isExistingBook) {
-                holder = new Holder();
-                holder.fragment = (Fragment)mTabClasses[TAB_EDIT_FRIENDS].newInstance();
-                tab = mTabLayout.newTab().setText(R.string.loan).setTag(holder);
-                mTabLayout.addTab(tab);
-                mAllTabs.add(tab);
-            }
-        } catch (@NonNull InstantiationException | IllegalAccessException e) {
-            throw new IllegalStateException("Creating BookDetailsActivity tabs failed?");
-        }
-
-        // any specific tab desired as 'selected' ?
-        if (extras != null && extras.containsKey(TAB)) {
-            int i = extras.getInt(TAB);
-            if (mAllTabs.size() > i) {
-                mAllTabs.get(i).select();
-            }
-        } else {
-            mAllTabs.get(TAB_EDIT).select();
-        }
-
-        mTabLayout.setVisibility(View.VISIBLE);
-        findViewById(R.id.buttonbar_cancel_save).setVisibility(View.VISIBLE);
-    }
-
-    private void initCancelConfirmButtons(final boolean isExistingBook) {
-        Button mConfirmButton = findViewById(R.id.confirm);
-        if (isExistingBook) {
-            mConfirmButton.setText(R.string.confirm_save);
-        } else {
-            mConfirmButton.setText(R.string.confirm_add);
-        }
-
-        mConfirmButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                saveState(new DoConfirmAction());
-            }
-        });
-
-        findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                // Cleanup because we may have made global changes TODO: detect this if actually needed
-                mDb.purgeAuthors();
-                mDb.purgeSeries();
-                // We're done.
-                setResult(Activity.RESULT_OK);
-
-                if (isDirty()) {
-                    StandardDialogs.showConfirmUnsavedEditsDialog(BookDetailsActivity.this, null);
-                } else {
-                    finish();
-                }
-            }
-        });
-    }
 
     /**
      * This function will populate the forms elements in three different ways
@@ -366,13 +129,14 @@ public class BookDetailsActivity extends BookCatalogueActivity
      *
      * 3. It will leave the fields blank for new books.
      */
-    private void initBook(final long bookId, @Nullable final Bundle bestBundle) {
+    @NonNull
+    private Book initBook(final long bookId, @Nullable final Bundle bestBundle) {
         if (bestBundle != null && bestBundle.containsKey(UniqueId.BKEY_BOOK_DATA)) {
             // If we have saved book data, use it
-            mBook = new Book(bookId, bestBundle.getBundle(UniqueId.BKEY_BOOK_DATA));
+            return new Book(bookId, bestBundle.getBundle(UniqueId.BKEY_BOOK_DATA));
         } else {
             // Just load based on rowId
-            mBook = new Book(bookId);
+            return new Book(bookId);
         }
     }
 
@@ -382,7 +146,6 @@ public class BookDetailsActivity extends BookCatalogueActivity
     private void initBooklist(@Nullable final Bundle extras,
                               @Nullable final Bundle savedInstanceState) {
         if (extras != null) {
-            //TOMF: what is this really ?
             String list = extras.getString(BKEY_FLATTENED_BOOKLIST);
             if (list != null && !list.isEmpty()) {
                 mList = new FlattenedBooklist(mDb, list);
@@ -408,8 +171,7 @@ public class BookDetailsActivity extends BookCatalogueActivity
                         mList.close();
                         mList = null;
                     } else {
-                        // Add a gesture lister for 'swipe' gestures
-                        mGestureDetector = new GestureDetector(this, mGestureListener);
+                        initGestureDetector();
                     }
 
                 } else {
@@ -421,48 +183,55 @@ public class BookDetailsActivity extends BookCatalogueActivity
     }
 
     /**
-     * Sets title of the parent activity depending on show/edit/add
+     * Listener to handle 'fling' events; we could handle others but need to be
+     * careful about possible clicks and scrolling.
      */
+    private void initGestureDetector() {
+        mGestureDetector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
+            @Override
+            public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+                if (mList == null) {
+                    return false;
+                }
+
+                // Make sure we have considerably more X-velocity than Y-velocity;
+                // otherwise it might be a scroll.
+                if (Math.abs(velocityX / velocityY) > 2) {
+                    boolean moved;
+                    // Work out which way to move, and do it.
+                    if (velocityX > 0) {
+                        moved = mList.movePrev();
+                    } else {
+                        moved = mList.moveNext();
+                    }
+                    if (moved) {
+                        long id = mList.getBookId();
+                        if (mRowId != id) {
+                            mRowId = id;
+                            mBook = initBook(id, null);
+                            Fragment frag = getSupportFragmentManager().findFragmentById(R.id.fragment);
+                            if (frag instanceof DataEditor) {
+                                ((DataEditor) frag).reloadData(mBook);
+                            }
+                            initActivityTitle();
+                        }
+                    }
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        });
+    }
+
     private void initActivityTitle() {
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
-            if (mIsReadOnly && mList != null) {
+            if (mList != null) {
                 // display a book
                 actionBar.setTitle(R.string.book_details);
                 actionBar.setSubtitle(null);
-
-            } else if (mBook.getBookId() > 0) {
-                // editing an existing book
-                actionBar.setTitle(mBook.getString(UniqueId.KEY_TITLE));
-                actionBar.setSubtitle(mBook.getAuthorTextShort());
-            } else {
-                // new book
-                actionBar.setTitle(R.string.menu_insert);
-                actionBar.setSubtitle(null);
             }
-        }
-    }
-
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-
-    /**
-     * If 'back' is pressed, and the user has made changes, ask them if they
-     * really want to lose the changes.
-     *
-     * We don't use onBackPressed because it does not work with API level 4.
-     */
-    @Override
-    public boolean onKeyDown(final int keyCode, final KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if (isDirty()) {
-                StandardDialogs.showConfirmUnsavedEditsDialog(this, null);
-            } else {
-                doFinish();
-            }
-            return true;
-        } else {
-            return super.onKeyDown(keyCode, event);
         }
     }
 
@@ -515,36 +284,15 @@ public class BookDetailsActivity extends BookCatalogueActivity
         if (mList != null) {
             outState.putInt(BKEY_FLATTENED_BOOKLIST_POSITION, (int) mList.getPosition());
         }
-        outState.putInt(BookDetailsActivity.TAB, mTabLayout.getSelectedTabPosition());
         Tracker.exitOnSaveInstanceState(this);
     }
 
-    /**
-     * Check if edits need saving, and finish the activity if not
-     */
     private void doFinish() {
-        if (isDirty()) {
-            StandardDialogs.showConfirmUnsavedEditsDialog(this, new Runnable() {
-                @Override
-                public void run() {
-                    finishAndSendIntent();
-                }
-            });
-        } else {
-            finishAndSendIntent();
-        }
-    }
-    /**
-     * Actually finish this activity making sure an intent is returned.
-     */
-    private void finishAndSendIntent() {
         Intent intent = new Intent();
         intent.putExtra(UniqueId.KEY_ID, mBook.getBookId());
         setResult(Activity.RESULT_OK, intent);
         finish();
     }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * menu handler; handle the 'home' key, otherwise, pass on the event
@@ -561,398 +309,10 @@ public class BookDetailsActivity extends BookCatalogueActivity
         }
     }
 
-    /**
-     * Dialog handler; pass results to relevant destination
-     */
-    @Override
-    public void onPartialDatePickerSet(final int dialogId,
-                                       @NonNull final PartialDatePickerFragment dialog,
-                                       @Nullable final Integer year,
-                                       @Nullable final Integer month,
-                                       @Nullable final Integer day) {
-        Fragment frag = getSupportFragmentManager().findFragmentById(R.id.fragment);
-        if (frag instanceof OnPartialDatePickerListener) {
-            ((OnPartialDatePickerListener) frag).onPartialDatePickerSet(dialogId, dialog, year, month, day);
-        } else {
-            StandardDialogs.showQuickNotice(this, R.string.unexpected_error);
-            Logger.error("Received date dialog result with no fragment to handle it");
-        }
-        // Make sure it's dismissed
-        if (dialog.isVisible()) {
-            dialog.dismiss();
-        }
-    }
-
-    /**
-     * Dialog handler; pass results to relevant destination
-     */
-    @Override
-    public void onPartialDatePickerCancel(final int dialogId,
-                                          @NonNull final PartialDatePickerFragment dialog) {
-        Fragment frag = getSupportFragmentManager().findFragmentById(R.id.fragment);
-        if (frag instanceof OnPartialDatePickerListener) {
-            ((OnPartialDatePickerListener) frag).onPartialDatePickerCancel(dialogId, dialog);
-        } else {
-            StandardDialogs.showQuickNotice(this, R.string.unexpected_error);
-            Logger.error("Received date dialog cancellation with no fragment to handle it");
-        }
-        // Make sure it's dismissed
-        if (dialog.isVisible()) {
-            dialog.dismiss();
-        }
-
-    }
-
-    /**
-     * Dialog handler; pass results to relevant destination
-     */
-    @Override
-    public void onTextFieldEditorSave(final int dialogId,
-                                      @NonNull final TextFieldEditorFragment dialog,
-                                      @NonNull final String newText) {
-        Fragment frag = getSupportFragmentManager().findFragmentById(R.id.fragment);
-        if (frag instanceof OnTextFieldEditorListener) {
-            ((OnTextFieldEditorListener) frag).onTextFieldEditorSave(dialogId, dialog, newText);
-        } else {
-            StandardDialogs.showQuickNotice(this, R.string.unexpected_error);
-            Logger.error("Received onTextFieldEditorSave result with no fragment to handle it");
-        }
-        // Make sure it's dismissed
-        if (dialog.isVisible()) {
-            dialog.dismiss();
-        }
-    }
-
-    /**
-     * Dialog handler; pass results to relevant destination
-     */
-    @Override
-    public void onTextFieldEditorCancel(final int dialogId,
-                                        @NonNull final TextFieldEditorFragment dialog) {
-        Fragment frag = getSupportFragmentManager().findFragmentById(R.id.fragment);
-        if (frag instanceof OnTextFieldEditorListener) {
-            ((OnTextFieldEditorListener) frag).onTextFieldEditorCancel(dialogId, dialog);
-        } else {
-            StandardDialogs.showQuickNotice(this, R.string.unexpected_error);
-            Logger.error("Received onTextFieldEditorCancel result with no fragment to handle it");
-        }
-        // Make sure it's dismissed
-        if (dialog.isVisible()) {
-            dialog.dismiss();
-        }
-    }
-
-    /**
-     * Dialog handler; pass results to relevant destination
-     */
-    @Override
-    public void onBookshelfCheckChanged(@NonNull final String textList,
-                                        @NonNull final String encodedList) {
-
-        Fragment frag = getSupportFragmentManager().findFragmentById(R.id.fragment);
-        if (frag instanceof OnBookshelfCheckChangeListener) {
-            ((OnBookshelfCheckChangeListener) frag).onBookshelfCheckChanged(textList, encodedList);
-        } else {
-            StandardDialogs.showQuickNotice(this, R.string.unexpected_error);
-            Logger.error("Received onBookshelfCheckChanged result with no fragment to handle it");
-        }
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-
-    /**
-     * Get the current status of the data in this activity
-     */
-    @Override
-    public boolean isDirty() {
-        return mIsDirtyFlg;
-    }
-
-    /**
-     * Mark the data as dirty (or not)
-     */
-    @Override
-    public void setDirty(final boolean dirty) {
-        mIsDirtyFlg = dirty;
-    }
-
-    @Nullable
-    @Override
-    public Book getBook() {
-        return mBook;
-    }
-
-    @Override
-    public void setRowId(final long id) {
-        if (mRowId != id) {
-            mRowId = id;
-            initBook(id, null);
-            Fragment frag = getSupportFragmentManager().findFragmentById(R.id.fragment);
-            if (frag instanceof DataEditor) {
-                ((DataEditor) frag).reloadData(mBook);
-            }
-            initActivityTitle();
-        }
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-
-    /**
-     * Load a publisher list; reloading this list every time a tab changes is
-     * slow. So we cache it.
-     *
-     * @return List of publishers
-     */
-    @Override
-    @NonNull
-    public List<String> getPublishers() {
-        if (mPublishers == null) {
-            mPublishers = mDb.getPublishers();
-        }
-        return mPublishers;
-    }
-
-    /**
-     * Load a genre list; reloading this list every time a tab changes is slow.
-     * So we cache it.
-     *
-     * @return List of genres
-     */
-    @Override
-    @NonNull
-    public List<String> getGenres() {
-        if (mGenres == null) {
-            mGenres = mDb.getGenres();
-        }
-        return mGenres;
-    }
-
-    /**
-     * Load a location list; reloading this list every time a tab changes is slow.
-     * So we cache it.
-     *
-     * @return List of locations
-     */
-    @Override
-    @NonNull
-    public List<String> getLocations() {
-        if (mLocations == null) {
-            mLocations = mDb.getLocations();
-        }
-        return mLocations;
-    }
-
-    /**
-     * Load a language list; reloading this list every time a tab changes is slow.
-     * So we cache it.
-     *
-     * @return List of languages
-     */
-    @Override
-    @NonNull
-    public List<String> getLanguages() {
-        if (mLanguages == null) {
-            mLanguages = mDb.getLanguages();
-        }
-        return mLanguages;
-    }
-
-    /**
-     * Load a format list; reloading this list every time a tab changes is slow.
-     * So we cache it.
-     *
-     * @return List of formats
-     */
-    @Override
-    @NonNull
-    public List<String> getFormats() {
-        if (mFormats == null) {
-            mFormats = mDb.getFormats();
-        }
-        return mFormats;
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-
-    private void replaceTab(@NonNull final Fragment fragment) {
+    private void replaceFragment(@NonNull final Fragment fragment) {
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.fragment, fragment)
                 .commit();
-    }
-
-    /**
-     * Show or hide the anthology tab
-     * FIXME:  android:ellipsize="end" and maxLine="1" on the TextView used by the mAnthologyTab... how ?
-     */
-    public void addAnthologyTab(final boolean show) {
-        if (show) {
-            if (mAnthologyTab == null) {
-                Holder holder = new Holder();
-                try {
-                    holder.fragment = (Fragment)mTabClasses[TAB_EDIT_ANTHOLOGY].newInstance();
-                    mAnthologyTab = mTabLayout.newTab()
-                            .setText(R.string.anthology)
-                            .setTag(holder);
-                } catch (@NonNull InstantiationException | IllegalAccessException ignore) {
-                }
-            }
-            mTabLayout.addTab(mAnthologyTab);
-        } else {
-            if (mAnthologyTab != null) {
-                mTabLayout.removeTab(mAnthologyTab);
-            }
-            mAnthologyTab = null;
-        }
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-
-    /**
-     * Validate the current data in all fields that have validators. Display any errors.
-     */
-    private void validate() {
-        if (!mBook.validate()) {
-            StandardDialogs.showQuickNotice(this, mBook.getValidationExceptionMessage(getResources()));
-        }
-    }
-
-    /**
-     * This will save a book into the database, by either updating or created a
-     * book. Minor modifications will be made to the strings:
-     * <ul>
-     * <li>strings will be .trim()'d
-     * <li>Titles will be reworded so 'a', 'the', 'an' will be moved to the end of the string (only for NEW books)
-     * <li>Date published will be converted from a date to a string
-     * <li>Thumbnails will also be saved to the correct location
-     * <li>It will check if the book already exists (isbn search) if you are creating a book; if so the user will be prompted to confirm.
-     * </ul>
-     * In all cases, once the book is added/created, or not, the appropriate method of the
-     * passed nextStep parameter will be executed. Passing nextStep is necessary because
-     * this method may return after displaying a dialogue.
-     *
-     * @param nextStep The next step to be executed on success/failure.
-     */
-    private void saveState(@NonNull final PostSaveAction nextStep) {
-        Fragment frag = getSupportFragmentManager().findFragmentById(R.id.fragment);
-        if (frag instanceof DataEditor) {
-            ((DataEditor) frag).saveAllEdits(mBook);
-        }
-
-        // Ignore validation failures; we still validate to get the current values.
-        validate();
-
-        // However, there is some data that we really do require...
-        if (mBook.getAuthorList().size() == 0) {
-            StandardDialogs.showQuickNotice(this, R.string.author_required);
-            return;
-        }
-        if (!mBook.containsKey(UniqueId.KEY_TITLE)
-                || mBook.getString(UniqueId.KEY_TITLE).isEmpty()) {
-            StandardDialogs.showQuickNotice(this, R.string.title_required);
-            return;
-        }
-
-        if (mRowId == 0) {
-            String isbn = mBook.getString(UniqueId.KEY_ISBN);
-            /* Check if the book currently exists */
-            if (!isbn.isEmpty() && ((mDb.getIdFromIsbn(isbn, true) > 0))) {
-                /*
-                 * If it exists, show a dialog and use it to perform the
-                 * next action, according to the users choice.
-                 */
-                AlertDialog dialog = new AlertDialog.Builder(this)
-                        .setMessage(getString(R.string.duplicate_book_message))
-                        .setTitle(R.string.duplicate_book_title)
-                        .setIconAttribute(android.R.attr.alertDialogIcon)
-                        .create();
-
-                dialog.setButton(AlertDialog.BUTTON_POSITIVE,
-                        getString(android.R.string.ok),
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(final DialogInterface dialog, final int which) {
-                                updateOrInsert();
-                                nextStep.success();
-                            }
-                        });
-                dialog.setButton(AlertDialog.BUTTON_NEGATIVE,
-                        getString(android.R.string.cancel),
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(final DialogInterface dialog, final int which) {
-                                nextStep.failure();
-                            }
-                        });
-                dialog.show();
-                return;
-            }
-        }
-
-        // No special actions required...just do it.
-        updateOrInsert();
-        nextStep.success();
-    }
-
-    /**
-     * Save the collected book details
-     */
-    private void updateOrInsert() {
-        if (mRowId == 0) {
-            long id = mDb.insertBook(mBook);
-
-            if (id > 0) {
-                setRowId(id);
-                File thumb = StorageUtils.getTempCoverFile();
-                File real = StorageUtils.getCoverFile(mDb.getBookUuid(mRowId));
-                StorageUtils.renameFile(thumb, real);
-            }
-        } else {
-            mDb.updateBook(mRowId, mBook, 0);
-        }
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-
-    public interface PostSaveAction {
-        void success();
-
-        @SuppressWarnings("EmptyMethod")
-        void failure();
-    }
-
-    private class TabListener implements TabLayout.OnTabSelectedListener {
-        @Override
-        public void onTabSelected(@NonNull final TabLayout.Tab tab) {
-            Holder holder = (Holder) tab.getTag();
-            replaceTab(holder.fragment);
-        }
-
-        @Override
-        public void onTabUnselected(final TabLayout.Tab tab) {
-        }
-
-        @Override
-        public void onTabReselected(final TabLayout.Tab tab) {
-        }
-    }
-
-    private class Holder {
-        Fragment fragment;
-    }
-
-    private class DoConfirmAction implements PostSaveAction {
-
-        DoConfirmAction() {
-        }
-
-        public void success() {
-            Intent intent = new Intent();
-            intent.putExtra(UniqueId.KEY_ID, mBook.getBookId());
-            setResult(Activity.RESULT_OK, intent);
-            finish();
-        }
-
-        public void failure() {
-            // Do nothing
-        }
     }
 }

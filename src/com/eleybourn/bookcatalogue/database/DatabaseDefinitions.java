@@ -26,9 +26,9 @@ import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
 import com.eleybourn.bookcatalogue.database.definitions.TableInfo;
 
 /**
- * Static definitions of database objects; this is an incomplete representation of the BookCatalogue database. It should
- * probably become the 'real' representation of the database when DbUtils is more mature. For now, it suffices to build
- * the complex queries used in BooklistBuilder.
+ * Static definitions of database objects; this is an incomplete representation of the
+ * BookCatalogue database. It should probably become the 'real' representation of the database
+ * when DbUtils is more mature. For now, it suffices to build the complex queries used in BooklistBuilder.
  *
  * @author Philip Warner
  */
@@ -110,20 +110,17 @@ public class DatabaseDefinitions {
     public static final DomainDefinition DOM_AUTHOR_GIVEN_NAMES = new DomainDefinition("given_names", TableInfo.TYPE_TEXT);
 
     /**
-     * bitmask! used for {@link #DOM_BOOK_ANTHOLOGY_MASK}
-     *  00 = not an ant,
-     *  01 = ant from one author)
-     *  10 = not an ant, multiple authors -> not in the wild
-     *  11 = ant from multiple authors
-     *  So for now, the field will be 0,1,3
+     * {@link #DOM_BOOK_ANTHOLOGY_BITMASK}
+     *  0x01 = ant from one author
+     *  0x10 = ant from multiple authors
      */
-    public static final int DOM_ANTHOLOGY_NOT_AN_ANTHOLOGY = 0;
-    public static final int DOM_ANTHOLOGY_IS_AN_ANTHOLOGY = 1;
-    public static final int DOM_ANTHOLOGY_WITH_MULTIPLE_AUTHORS = 1 << 1;
+    public static final int DOM_ANTHOLOGY_SINGLE_AUTHOR = 1;
+    public static final int DOM_ANTHOLOGY_MULTIPLE_AUTHORS = 1 << 1;
+
     /** {@link #TBL_BOOKS} */
     public static final DomainDefinition DOM_BOOK_UUID = new DomainDefinition("book_uuid", TableInfo.TYPE_TEXT, NOT_NULL, "default (lower(hex(randomblob(16))))");
     public static final DomainDefinition DOM_BOOK_ISBN = new DomainDefinition("isbn", TableInfo.TYPE_TEXT);
-    public static final DomainDefinition DOM_BOOK_ANTHOLOGY_MASK = new DomainDefinition("anthology", TableInfo.TYPE_INT, NOT_NULL, "default " + DOM_ANTHOLOGY_NOT_AN_ANTHOLOGY);
+    public static final DomainDefinition DOM_BOOK_ANTHOLOGY_BITMASK = new DomainDefinition("anthology", TableInfo.TYPE_INT, NOT_NULL, "default 0");
     public static final DomainDefinition DOM_BOOK_DATE_ADDED = new DomainDefinition("date_added", TableInfo.TYPE_DATETIME,"", "default current_timestamp" );
     public static final DomainDefinition DOM_BOOK_DATE_PUBLISHED = new DomainDefinition("date_published", TableInfo.TYPE_DATE);
     public static final DomainDefinition DOM_BOOK_FORMAT = new DomainDefinition("format", TableInfo.TYPE_TEXT, "default ''");

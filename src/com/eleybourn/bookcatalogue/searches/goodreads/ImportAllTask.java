@@ -392,7 +392,9 @@ class ImportAllTask extends GenericTask {
 
         /* Build the pub date based on the components */
         String pubDate = GoodreadsManager.buildDate(review,
-                ListReviewsFieldNames.PUB_YEAR, ListReviewsFieldNames.PUB_MONTH, ListReviewsFieldNames.PUB_DAY,
+                ListReviewsFieldNames.PUB_YEAR,
+                ListReviewsFieldNames.PUB_MONTH,
+                ListReviewsFieldNames.PUB_DAY,
                 null);
         if (pubDate != null && !pubDate.isEmpty()) {
             book.putString(UniqueId.KEY_BOOK_DATE_PUBLISHED, pubDate);
@@ -486,7 +488,7 @@ class ImportAllTask extends GenericTask {
                 }
             }
             if (shelfNames != null && shelfNames.length() > 0) {
-                book.setBookshelfListAsEncodedString(shelfNames.toString());
+                book.setBookshelfList(shelfNames.toString());
             }
         }
 

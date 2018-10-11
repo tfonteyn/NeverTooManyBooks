@@ -314,9 +314,9 @@ public class BookRowViewBase {
 
     public final long getAnthologyMask() {
         if (mAnthologyMaskCol < 0) {
-            mAnthologyMaskCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_ANTHOLOGY_MASK.name);
+            mAnthologyMaskCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_ANTHOLOGY_BITMASK.name);
             if (mAnthologyMaskCol < 0) {
-                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_BOOK_ANTHOLOGY_MASK.name);
+                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_BOOK_ANTHOLOGY_BITMASK.name);
             }
         }
         return mCursor.getLong(mAnthologyMaskCol);

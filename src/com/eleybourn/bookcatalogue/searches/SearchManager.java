@@ -518,8 +518,8 @@ public class SearchManager implements TaskManagerListener {
      *
      */
     private void sendResults() {
-        // This list will be the actual order of the result we apply, based on the
-        // actual results and the default order.
+        /* This list will be the actual order of the result we apply, based on the
+         * actual results and the default order. */
         final List<Integer> results = new ArrayList<>();
 
         if (mHasValidIsbn) {
@@ -555,13 +555,8 @@ public class SearchManager implements TaskManagerListener {
         // If there are thumbnails present, pick the biggest, delete others and rename.
         ImageUtils.cleanupThumbnails(mBookData);
 
-
         // Try to use/construct authors
-        String authors = null;
-        try {
-            authors = mBookData.getString(UniqueId.BKEY_AUTHOR_DETAILS);
-        } catch (Exception ignored) {
-        }
+        String authors = mBookData.getString(UniqueId.BKEY_AUTHOR_DETAILS);
         if (authors == null || authors.isEmpty()) {
             authors = mAuthor;
         }
@@ -572,11 +567,7 @@ public class SearchManager implements TaskManagerListener {
         }
 
         // Try to use/construct title
-        String title = null;
-        try {
-            title = mBookData.getString(UniqueId.KEY_TITLE);
-        } catch (Exception ignored) {
-        }
+        String title = mBookData.getString(UniqueId.KEY_TITLE);
         if (title == null || title.isEmpty()) {
             title = mTitle;
         }
@@ -585,11 +576,7 @@ public class SearchManager implements TaskManagerListener {
         }
 
         // Try to use/construct isbn
-        String isbn = null;
-        try {
-            isbn = mBookData.getString(UniqueId.KEY_ISBN);
-        } catch (Exception ignored) {
-        }
+        String isbn = mBookData.getString(UniqueId.KEY_ISBN);
         if (isbn == null || isbn.isEmpty()) {
             isbn = mIsbn;
         }
@@ -598,11 +585,7 @@ public class SearchManager implements TaskManagerListener {
         }
 
         // Try to use/construct series
-        String series = null;
-        try {
-            series = mBookData.getString(UniqueId.BKEY_SERIES_DETAILS);
-        } catch (Exception ignored) {
-        }
+        String series = mBookData.getString(UniqueId.BKEY_SERIES_DETAILS);
         if (series != null && !series.isEmpty()) {
             ArrayList<Series> list = ArrayUtils.getSeriesUtils().decodeList(series, false);
             mBookData.putSerializable(UniqueId.BKEY_SERIES_ARRAY, list);
@@ -610,13 +593,9 @@ public class SearchManager implements TaskManagerListener {
         }
 
         // Try to use/construct anthologyTitles
-        String anthologyTitles = null;
-        try {
-            anthologyTitles = mBookData.getString(UniqueId.BKEY_ANTHOLOGY_DETAILS);
-        } catch (Exception ignored) {
-        }
-        if (anthologyTitles != null && !anthologyTitles.isEmpty()) {
-            ArrayList<AnthologyTitle> list = ArrayUtils.getAnthologyTitleUtils().decodeList(anthologyTitles, false);
+        String anthologyTitlesAsStringList = mBookData.getString(UniqueId.BKEY_ANTHOLOGY_DETAILS);
+        if (anthologyTitlesAsStringList != null && !anthologyTitlesAsStringList.isEmpty()) {
+            ArrayList<AnthologyTitle> list = ArrayUtils.getAnthologyTitleUtils().decodeList(anthologyTitlesAsStringList, false);
             mBookData.putSerializable(UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY, list);
             mBookData.remove(UniqueId.BKEY_ANTHOLOGY_DETAILS);
         }
@@ -692,7 +671,8 @@ public class SearchManager implements TaskManagerListener {
             case SEARCH_ISFDB:
                 return startISFDB();
             default:
-                throw new RuntimeException("Unexpected search source: " + source);
+                Logger.error("Unexpected search source: " + source);
+                return false;
         }
     }
 

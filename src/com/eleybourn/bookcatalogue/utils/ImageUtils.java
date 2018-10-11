@@ -283,7 +283,7 @@ public class ImageUtils {
 
     /**
      * If there is a {@link UniqueId#BKEY_THUMBNAIL_USCORE} key, pick the largest image, rename it
-     * and delete the others. Finally, remove the key.
+     * and delete the others. Finally, remove the key. and set BKEY_THUMBNAIL to true
      */
     public static void cleanupThumbnails(@Nullable final Bundle result) {
         if (result == null || !result.containsKey(UniqueId.BKEY_THUMBNAIL_USCORE)) {

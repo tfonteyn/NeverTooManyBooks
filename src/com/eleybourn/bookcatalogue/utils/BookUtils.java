@@ -31,6 +31,7 @@ import android.support.v4.content.FileProvider;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BookDetailsActivity;
+import com.eleybourn.bookcatalogue.EditBookActivity;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
 import com.eleybourn.bookcatalogue.R;
@@ -61,14 +62,12 @@ public class BookUtils {
     public static void duplicateBook(@NonNull final Activity activity,
                                      @NonNull final CatalogueDBAdapter db,
                                      final long bookId) {
-        Intent intent = new Intent(activity, BookDetailsActivity.class);
         final Bundle mBookData = new Bundle();
         try (BooksCursor cursor = db.fetchBookById(bookId)) {
             BookRowView bookRowView = cursor.getRowView();
-
             cursor.moveToFirst();
 
-            mBookData.putLong(UniqueId.KEY_ANTHOLOGY_MASK, bookRowView.getAnthologyMask());
+            mBookData.putLong(UniqueId.KEY_ANTHOLOGY_BITMASK, bookRowView.getAnthologyMask());
             mBookData.putString(UniqueId.KEY_BOOK_DATE_PUBLISHED, bookRowView.getDatePublished());
             mBookData.putString(UniqueId.KEY_DESCRIPTION, bookRowView.getDescription());
             mBookData.putString(UniqueId.KEY_BOOK_FORMAT, bookRowView.getFormat());
@@ -91,13 +90,15 @@ public class BookUtils {
             mBookData.putSerializable(UniqueId.BKEY_SERIES_ARRAY, db.getBookSeriesList(bookId));
             mBookData.putSerializable(UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY, db.getBookAnthologyTitleList(bookId));
 
-            intent.putExtra(UniqueId.BKEY_BOOK_DATA, mBookData);
-
-            activity.startActivityForResult(intent, UniqueId.ACTIVITY_REQUEST_CODE_ADD_BOOK_MANUALLY);
         } catch (CursorIndexOutOfBoundsException e) {
             StandardDialogs.showQuickNotice(activity, R.string.unknown_error);
             Logger.error(e);
+            return;
         }
+
+        Intent intent = new Intent(activity, EditBookActivity.class);
+        intent.putExtra(UniqueId.BKEY_BOOK_DATA, mBookData);
+        activity.startActivityForResult(intent, UniqueId.ACTIVITY_REQUEST_CODE_ADD_BOOK_MANUALLY);
     }
 
     /**

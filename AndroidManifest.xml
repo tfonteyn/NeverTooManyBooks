@@ -159,13 +159,16 @@
         <!-- Other preferences (error.g. non-booklist -->
         <activity android:name="com.eleybourn.bookcatalogue.PreferencesActivity" />
 
+        <!-- view a book -->
+        <activity android:name="com.eleybourn.bookcatalogue.BookDetailsActivity" />
+
         <!-- Add Book; this activity then sub divides Add by scan,isbn,internet, or add manually -->
         <activity
             android:name="com.eleybourn.bookcatalogue.BookISBNSearchActivity"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
 
         <!-- Edit a book + the related author/series -->
-        <activity android:name="com.eleybourn.bookcatalogue.BookDetailsActivity" />
+        <activity android:name="com.eleybourn.bookcatalogue.EditBookActivity" />
         <activity android:name="com.eleybourn.bookcatalogue.EditAuthorListActivity" />
         <activity android:name="com.eleybourn.bookcatalogue.EditSeriesListActivity" />
 

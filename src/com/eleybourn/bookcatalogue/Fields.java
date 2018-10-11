@@ -1237,14 +1237,6 @@ public class Fields extends ArrayList<Fields.Field> {
         @Nullable
         private Object mTag = null;
 
-        ///** Property used to determine if edits have been made.
-        // * 
-        // * Set to true in case the view is clicked
-        // *
-        // * This a good and simple metric to identify if a field was changed despite not being 100% accurate
-        // * */ 
-        //private boolean mWasClicked = false;
-
         /**
          * Constructor.
          *
@@ -1261,6 +1253,7 @@ public class Fields extends ArrayList<Fields.Field> {
               @NonNull final String visibilityGroupName,
               @Nullable final FieldValidator fieldValidator,
               @Nullable final FieldFormatter fieldFormatter) {
+
             mFields = new WeakReference<>(fields);
             id = fieldId;
             column = sourceColumn;
@@ -1268,16 +1261,8 @@ public class Fields extends ArrayList<Fields.Field> {
             formatter = fieldFormatter;
             validator = fieldValidator;
 
-            /*
-             * Load the layout from the passed Activity based on the ID and set visibility and accessor.
-             */
-            FieldsContext context = fields.getContext();
-            if (context == null) {
-                return;
-            }
-
             // Lookup the view
-            final View view = context.findViewById(this.id);
+            final View view = fields.getContext().findViewById(this.id);
 
             // Set the appropriate accessor
             if (view == null) {
@@ -1370,6 +1355,7 @@ public class Fields extends ArrayList<Fields.Field> {
                             mAfterFieldChangeListener.afterFieldChange(Field.this, null);
                         }
                     }
+                    v.performClick();
                     return false;
                 }
             });
@@ -1382,11 +1368,7 @@ public class Fields extends ArrayList<Fields.Field> {
          */
         @Nullable
         protected Fields getFields() {
-            if (mFields == null) {
-                return null;
-            } else {
-                return mFields.get();
-            }
+             return mFields.get();
         }
 
         /**
@@ -1399,18 +1381,11 @@ public class Fields extends ArrayList<Fields.Field> {
             Fields fs = mFields.get();
             if (fs == null) {
                 if (BuildConfig.DEBUG) {
-                    Logger.debug("Fields is NULL");
+                    Logger.debug("Fields (a weak reference) is NULL");
                 }
                 return null;
             }
-            FieldsContext c = fs.getContext();
-            if (c == null) {
-                if (BuildConfig.DEBUG) {
-                    Logger.debug("Context is NULL");
-                }
-                return null;
-            }
-            return c.findViewById(this.id);
+            return fs.getContext().findViewById(this.id);
         }
 
         /**
@@ -1467,7 +1442,8 @@ public class Fields extends ArrayList<Fields.Field> {
         }
 
         /**
-         * Utility function to call the formatters format() method if present, or just return the raw value.
+         * Utility function to call the formatters format() method if present,
+         * or just return the raw value.
          *
          * @param s String to format
          *
@@ -1482,7 +1458,8 @@ public class Fields extends ArrayList<Fields.Field> {
         }
 
         /**
-         * Utility function to call the formatters extract() method if present, or just return the raw value.
+         * Utility function to call the formatters extract() method if present,
+         * or just return the raw value.
          */
         public String extract(@NonNull final String s) {
             if (formatter == null) {
@@ -1532,26 +1509,6 @@ public class Fields extends ArrayList<Fields.Field> {
                 }
             }
         }
-
-        //public boolean isEdited(){
-        //	return mWasClicked;
-        //}
     }
-
-    ///**
-    // * Check if any field has been modified
-    // * 
-    // * @return	true if a field has been edited (or clicked)
-    // */
-    //public boolean isEdited(){
-    //
-    //	for (Field field : this){
-    //		if (field.isEdited()){
-    //			return true;
-    //		}
-    //	}
-    //
-    //	return false;
-    //}
 }
 

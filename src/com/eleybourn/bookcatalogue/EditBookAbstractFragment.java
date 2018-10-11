@@ -52,7 +52,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Based class for all fragments that appear in the {@link BookDetailsActivity} activity
+ * Based class for all fragments that appear in {@link EditBookActivity}
  *
  * @author pjw
  */
@@ -175,7 +175,7 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
 //                    return true;
 
             case R.id.MENU_BOOK_EDIT:
-                BookDetailsActivity.startEditMode(getActivity(), currRow, BookDetailsActivity.TAB_EDIT);
+                EditBookActivity.startActivity(getActivity(), currRow, EditBookActivity.TAB_EDIT);
                 return true;
 
             case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR: {

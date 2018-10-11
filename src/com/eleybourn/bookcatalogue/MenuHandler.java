@@ -142,24 +142,10 @@ public class MenuHandler {
     }
 
     /**
-     * Load the BookDetailsActivity Activity
+     * Load the {@link EditBookActivity}
      */
     private void createBook(@NonNull final Activity activity) {
-        Intent intent = new Intent(activity, BookDetailsActivity.class);
+        Intent intent = new Intent(activity, EditBookActivity.class);
         activity.startActivityForResult(intent, UniqueId.ACTIVITY_REQUEST_CODE_ADD_BOOK_MANUALLY);
     }
-
-//    /**
-//     * Load the BookDetailsActivity activity based on the provided id. Also open to the provided tab
-//     *
-//     * @param id  The id of the book to edit
-//     * @param tab Which tab to open first
-//     */
-//    public static void startEditMode(@NonNull final Activity a, final long id, final int tab) {
-//        Intent i = new Intent(a, BookDetailsActivity.class);
-//        i.putExtra(DatabaseDefinitions.KEY_ID, id);
-//        i.putExtra(BookDetailsActivity.TAB, tab);
-//        a.startActivityForResult(i, UniqueId.ACTIVITY_REQUEST_CODE_EDIT_BOOK);
-//        return;
-//    }
 }

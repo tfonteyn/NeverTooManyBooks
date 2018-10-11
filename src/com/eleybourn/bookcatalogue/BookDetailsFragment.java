@@ -44,14 +44,11 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
      *
      * TODO the idea is to have a new Activity: {@link AnthologyTitle} -> books containing the story
      * There is not much point in doing this in the Builder. The amount of entries is expected to be small.
-     * Main goal: the collector who wants *everything* of a certain author.
+     * Main audience: the collector who wants *everything* of a certain author.
      */
     @Override
     public View onCreateView(@NonNull final LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable final Bundle savedInstanceState) {
-        Tracker.enterOnCreateView(this);
-        final View view = inflater.inflate(R.layout.book_details, container, false);
-        Tracker.exitOnCreateView(this);
-        return view;
+        return inflater.inflate(R.layout.book_details, container, false);
     }
 
     @Override
@@ -77,23 +74,6 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
         mFields.getField(R.id.signed).formatter = new BinaryYesNoEmptyFormatter();
     }
 
-    /**
-     * This is a straight passthrough
-     */
-    @Override
-    public void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent intent) {
-        super.onActivityResult(requestCode, resultCode, intent);
-        switch (requestCode) {
-            case UniqueId.ACTIVITY_REQUEST_CODE_EDIT_BOOK:
-                // Update fields of read-only book after editing
-                // --- onResume() calls through to restoreBookData() which will do this now
-                //if (resultCode == Activity.RESULT_OK) {
-                //	updateFields(mEditManager.getBook());
-                //}
-                break;
-        }
-    }
-
     @Override
     /* The only difference from super class method is initializing of additional
      * fields needed for read-only mode (user notes, loaned, etc.) */
@@ -110,7 +90,7 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
             showSignedStatus(book.isSigned());
             formatFormatSection(book);
             formatPublishingSection(book);
-            if (book.getInt(Book.IS_ANTHOLOGY) != DatabaseDefinitions.DOM_ANTHOLOGY_NOT_AN_ANTHOLOGY) {
+            if (book.getInt(Book.IS_ANTHOLOGY) > 0) {
                 showTOC(book);
             }
 
@@ -411,7 +391,7 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
     }
 
     /**
-     * Formatter for date fields. On failure just return the raw string.
+     * Formatter for boolean fields. On failure just return the raw string.
      *
      * @author Philip Warner
      */

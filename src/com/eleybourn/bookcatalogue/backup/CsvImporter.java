@@ -193,13 +193,13 @@ public class CsvImporter implements Importer {
                 handleSeries(mDb, book);
 
                 // Keep anthology handling local
-                if (book.containsKey(UniqueId.KEY_ANTHOLOGY_MASK)) {
+                if (book.containsKey(UniqueId.KEY_ANTHOLOGY_BITMASK)) {
                     handleAnthology(mDb, book);
                 }
 
                 // Make sure we have UniqueId.BKEY_BOOKSHELF_TEXT if we imported bookshelf
                 if (book.containsKey(UniqueId.KEY_BOOKSHELF_NAME) && !book.containsKey(UniqueId.BKEY_BOOKSHELF_TEXT)) {
-                    book.setBookshelfListAsEncodedString(book.getString(UniqueId.KEY_BOOKSHELF_NAME));
+                    book.setBookshelfList(book.getString(UniqueId.KEY_BOOKSHELF_NAME));
                 }
 
                 try {
@@ -339,26 +339,19 @@ public class CsvImporter implements Importer {
 
     /**
      * Database access is strictly limited to fetching id's
+     * TODO:  can we use ? ArrayUtils.getAnthologyTitleUtils().decodeList(anthologyTitlesAsStringList, false);
      */
     private void handleAnthology(@NonNull final CatalogueDBAdapter db,
                                  @NonNull final Book book) {
-        // see if the book is marked as an anthology.
-        long anthologyMask = 0;
-        try {
-            anthologyMask = book.getLong(UniqueId.KEY_ANTHOLOGY_MASK);
-        } catch (NumberFormatException ignore) {
-            book.remove(UniqueId.KEY_ANTHOLOGY_MASK);
-        }
-
-        if (anthologyMask != 0) {
-            long bookId = book.getLong(UniqueId.KEY_ID);
-            String encodedString =  book.getString(UniqueId.BKEY_ANTHOLOGY_DETAILS);
-            if (encodedString != null && !encodedString.isEmpty()) {
-                String[] anthology_titles = encodedString.split("\\" + ArrayUtils.MULTI_STRING_SEPARATOR);
+        if (book.getLong(UniqueId.KEY_ANTHOLOGY_BITMASK) > 0) {
+            String anthologyTitlesAsStringList =  book.getString(UniqueId.BKEY_ANTHOLOGY_DETAILS);
+            if (!anthologyTitlesAsStringList.isEmpty()) {
+                ArrayList<String> list = ArrayUtils.decodeList(anthologyTitlesAsStringList);
                 // There is *always* one; but it will be empty if no titles present
-                if (!anthology_titles[0].isEmpty()) {
+                if (!list.get(0).isEmpty()) {
                     ArrayList<AnthologyTitle> ata = new ArrayList<>();
-                    for (String title : anthology_titles) {
+                    long bookId = book.getLong(UniqueId.KEY_ID);
+                    for (String title : list) {
                         ata.add(new AnthologyTitle(title, bookId));
                     }
                     // fixup the id's
@@ -370,7 +363,28 @@ public class CsvImporter implements Importer {
         // remove the unneeded string encoded set
         book.remove(UniqueId.BKEY_ANTHOLOGY_DETAILS);
     }
-
+//    private void handleAnthology(@NonNull final CatalogueDBAdapter db,
+//                                 @NonNull final Book book) {
+//        if (book.getLong(UniqueId.KEY_ANTHOLOGY_BITMASK) > 0) {
+//            String anthologyTitlesAsStringList =  book.getString(UniqueId.BKEY_ANTHOLOGY_DETAILS);
+//            if (!anthologyTitlesAsStringList.isEmpty()) {
+//                String[] anthology_titles = anthologyTitlesAsStringList.split("\\" + ArrayUtils.MULTI_STRING_SEPARATOR);
+//                // There is *always* one; but it will be empty if no titles present
+//                if (!anthology_titles[0].isEmpty()) {
+//                    ArrayList<AnthologyTitle> ata = new ArrayList<>();
+//                    long bookId = book.getLong(UniqueId.KEY_ID);
+//                    for (String title : anthology_titles) {
+//                        ata.add(new AnthologyTitle(title, bookId));
+//                    }
+//                    // fixup the id's
+//                    Utils.pruneList(db, ata);
+//                    book.setContentList(ata);
+//                }
+//            }
+//        }
+//        // remove the unneeded string encoded set
+//        book.remove(UniqueId.BKEY_ANTHOLOGY_DETAILS);
+//    }
     /**
      * Database access is strictly limited to fetching id's
      */

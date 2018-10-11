@@ -73,8 +73,8 @@ import java.util.Objects;
 import java.util.Set;
 
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ANTHOLOGY_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ANTHOLOGY_IS_AN_ANTHOLOGY;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ANTHOLOGY_WITH_MULTIPLE_AUTHORS;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ANTHOLOGY_SINGLE_AUTHOR;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ANTHOLOGY_MULTIPLE_AUTHORS;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FAMILY_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FORMATTED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FORMATTED_GIVEN_FIRST;
@@ -84,7 +84,7 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHO
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_POSITION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKSHELF;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKSHELF_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ANTHOLOGY_MASK;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ANTHOLOGY_BITMASK;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ANTHOLOGY_POSITION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_ADDED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_PUBLISHED;
@@ -268,7 +268,7 @@ public class CatalogueDBAdapter {
                     TBL_BOOKS.dotAs(DOM_BOOK_PAGES) + "," +
                     TBL_BOOKS.dotAs(DOM_BOOK_NOTES) + "," +
                     TBL_BOOKS.dotAs(DOM_BOOK_LIST_PRICE) + "," +
-                    TBL_BOOKS.dotAs(DOM_BOOK_ANTHOLOGY_MASK) + "," +
+                    TBL_BOOKS.dotAs(DOM_BOOK_ANTHOLOGY_BITMASK) + "," +
                     TBL_BOOKS.dotAs(DOM_BOOK_LOCATION) + "," +
                     TBL_BOOKS.dotAs(DOM_BOOK_READ_START) + "," +
                     TBL_BOOKS.dotAs(DOM_BOOK_READ_END) + "," +
@@ -1198,12 +1198,12 @@ public class CatalogueDBAdapter {
             }
         }
 
-        // Handle ANTHOLOGY_MASK (only!, no handling of actual titles)
+        // Handle ANTHOLOGY_BITMASK (only!, no handling of actual titles)
         {
             ArrayList<AnthologyTitle> anthologyTitles = book.getContentList();
             if (anthologyTitles.size() > 0) {
-                // definitively an anthology, overrule whatever the KEY_ANTHOLOGY_MASK was.
-                book.putInt(UniqueId.KEY_ANTHOLOGY_MASK, DOM_ANTHOLOGY_IS_AN_ANTHOLOGY);
+                // definitively an anthology, overrule whatever the KEY_ANTHOLOGY_BITMASK was.
+                book.putInt(UniqueId.KEY_ANTHOLOGY_BITMASK, DOM_ANTHOLOGY_SINGLE_AUTHOR);
 
                 // check if its all the same author or not
                 if (anthologyTitles.size() > 1) {
@@ -1212,14 +1212,12 @@ public class CatalogueDBAdapter {
                     for (AnthologyTitle t : anthologyTitles) { // yes, we check 0 twice.. oh well.
                         sameAuthor = author.equals(t.getAuthor());
                         if (!sameAuthor) {
-                            book.putInt(UniqueId.KEY_ANTHOLOGY_MASK, DOM_ANTHOLOGY_IS_AN_ANTHOLOGY | DOM_ANTHOLOGY_WITH_MULTIPLE_AUTHORS);
+                            book.putInt(UniqueId.KEY_ANTHOLOGY_BITMASK, DOM_ANTHOLOGY_MULTIPLE_AUTHORS);
                             break;
                         }
                     }
                 }
             }
-            // should never be the case, but one developer made this mistake before (me!)
-            book.remove(UniqueId.BKEY_ANTHOLOGY_DETAILS);
         }
 
         // Remove blank/null fields that have default values defined in the database
@@ -1513,7 +1511,7 @@ public class CatalogueDBAdapter {
      * All of these will first delete the entries in the Book-[tableX] table, and then insert the all rows again
      */
     private void insertBookDependents(final long bookId, final @NonNull Book book) {
-        String bookshelf = book.getBookshelfListAsEncodedString();
+        String bookshelf = book.getBookshelfList();
         if (bookshelf != null && !bookshelf.isEmpty()) {
             insertBookBookshelf(bookId, ArrayUtils.decodeList(Bookshelf.SEPARATOR, bookshelf), false);
         }
@@ -2199,7 +2197,7 @@ public class CatalogueDBAdapter {
             book.setSeriesList(getBookSeriesList(bookId));
             book.setContentList(getBookAnthologyTitleList(bookId));
 
-            book.setBookshelfListAsEncodedString(getBookshelvesByBookIdAsStringList(bookId));
+            book.setBookshelfList(getBookshelvesByBookIdAsStringList(bookId));
             return book;
         }
     }

@@ -131,8 +131,8 @@ public class DateUtils {
     /**
      * Attempt to parse a date string based on a range of possible formats.
      *
-     * @param dateString		String to parse
-     * @return		Resulting date if parsed, otherwise null
+     * @param dateString	String to parse
+     * @return	Resulting date if parsed, otherwise null
      */
     @Nullable
     public static Date parseDate(@Nullable final String dateString) {
@@ -154,7 +154,7 @@ public class DateUtils {
      *
      * If any Exception, returns null
      *
-     * @param dateString				String to parse
+     * @param dateString	String to parse
      * @param lenient		True if parsing should be lenient
      *
      * @return				Resulting date if parsed, otherwise null
