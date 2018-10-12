@@ -86,9 +86,9 @@ public class PagerLayout extends FrameLayout implements ViewPager.OnPageChangeLi
     private final Point mInitialTouch = new Point();
 
     @Override
-    protected void onSizeChanged(final int w, final int h, final int oldw, final int oldh) {
-        mCenter.x = w / 2;
-        mCenter.y = h / 2;
+    protected void onSizeChanged(final int width, final int height, final int oldWidth, final int oldHeight) {
+        mCenter.x = width / 2;
+        mCenter.y = height / 2;
     }
 
     @Override

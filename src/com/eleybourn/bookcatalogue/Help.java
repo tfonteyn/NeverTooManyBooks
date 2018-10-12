@@ -55,18 +55,18 @@ public class Help extends BookCatalogueActivity {
         try {
             setTitle(R.string.app_name);
 
-            findViewById(R.id.helpinstructions).setOnClickListener(new OnClickListener() {
+            findViewById(R.id.help_instructions).setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.helppage)));
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.help_page)));
                     startActivity(intent);
                 }
             });
 
-            findViewById(R.id.helppage).setOnClickListener(new OnClickListener() {
+            findViewById(R.id.help_page).setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.helppage)));
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.help_page)));
                     startActivity(intent);
                 }
             });

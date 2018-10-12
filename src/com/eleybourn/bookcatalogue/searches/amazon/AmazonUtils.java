@@ -33,7 +33,7 @@ public class AmazonUtils {
     private static final String SUFFIX_EXTRAS = "&tag=bookcatalogue-20&linkCode=da5";
 
     /** key into the Manifest meta-data */
-    private static final String AMAZON_KEY = "amazon.appkey";
+    private static final String AMAZON_KEY = "amazon.app_key";
 
     private static void openLink(@NonNull final Context context, @Nullable String author, @Nullable String series) {
         // Build the URL and args

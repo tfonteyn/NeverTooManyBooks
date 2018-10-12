@@ -76,10 +76,12 @@ public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
     private long id = 0;
     private Author mAuthor;
     private String mTitle;
-    @Nullable
-    private String mFirstPublicationDate;
+    @NonNull
+    private String mFirstPublicationDate = "";
 
-    private long mBookId;
+    @Deprecated
+    private long mBookId = 0;
+    @Deprecated
     private long mPosition = 0;     // order in the book, [1..x]
 
     /**
@@ -90,16 +92,6 @@ public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
     }
 
     /**
-     * Constructor that will attempt to parse a single string into an AnthologyTitle.
-     * to be removed once we have 1..x relation with books
-     */
-    @Deprecated
-    public AnthologyTitle(@NonNull final String fromString, final long bookId) {
-        fromString(fromString);
-        mBookId = bookId;
-    }
-
-    /**
      * Constructor
      *
      * @param author Author of title
@@ -107,30 +99,10 @@ public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
      */
     public AnthologyTitle(@NonNull final Author author,
                           @NonNull final String title,
-                          @Nullable final String publicationDate) {
+                          @NonNull final String publicationDate) {
         mAuthor = author;
         mTitle = title.trim();
         mFirstPublicationDate = publicationDate;
-        mBookId = 0;
-    }
-
-    /**
-     * Constructor: to be removed once we have 1..x relation with books
-     *
-     * @param author Author of title
-     * @param title  Title
-     */
-    @Deprecated
-    public AnthologyTitle(@NonNull final Author author,
-                          @NonNull final String title,
-                          @Nullable final String publicationDate,
-
-                          final long bookId) {
-        mAuthor = author;
-        mTitle = title.trim();
-        mFirstPublicationDate = publicationDate;
-
-        mBookId = bookId;
     }
 
     /**
@@ -169,7 +141,7 @@ public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
     @NonNull
     public String toString() {
         String yearStr;
-        if (mFirstPublicationDate != null && !mFirstPublicationDate.isEmpty()) {
+        if (!mFirstPublicationDate.isEmpty()) {
             // start with a space !
             yearStr = " (" + mFirstPublicationDate + ")";
         } else {
@@ -196,23 +168,27 @@ public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
         mAuthor = author;
     }
 
+    @Deprecated
     public long getBookId() {
         return mBookId;
     }
 
+    @Deprecated
     public void setBookId(final long mBookId) {
         this.mBookId = mBookId;
     }
 
+    @Deprecated
     public long getPosition() {
         return mPosition;
     }
 
+    @Deprecated
     public void setPosition(final long mPosition) {
         this.mPosition = mPosition;
     }
 
-    @Nullable
+    @NonNull
     public String getFirstPublication() {
         return mFirstPublicationDate;
     }

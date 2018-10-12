@@ -77,7 +77,7 @@
     <string name="menu_manage_fields">Видимость полей</string>
     <string name="manage_fields_help">Выбранные поля видны на экранах добавления/редактирования книги. Невыбранные поля скрыты.</string>
     <string name="anthology_titles">Названия антологий</string>
-    <string name="amazon_wishlist">Amazon Wishlist</string>
+    <string name="amazon_wish_list">Amazon Wishlist</string>
     <string name="same_author">Все рассказы этой антологии написаны одним автором</string>
     <string name="menu_delete_anthology">Удалить название антологии</string>
     <string name="is_anthology">Эта книга - антология?</string>
@@ -118,7 +118,7 @@
     <string name="vldt_real_expected">Введите действительное число: \'%s\'</string>
     <string name="vldt_date_expected">Введите дату: \'%s\'</string>
     <string name="vldt_boolean_expected">Введите логическое да-нет значение (0,1,t,f,true,false) for \'%s\'</string>
-    <string name="vldt_nonblank_required">Требуется не пустое значение для: \'%s\'</string>
+    <string name="vldt_non_blank_required">Требуется не пустое значение для: \'%s\'</string>
     <string name="vldt_blank_required">Требуется пустое значение: \'%s\'</string>
     <string name="vldt_failed">Проверка не удалась для \'%s\'</string>
     <string name="vldt_read_start_after_end">Дата начала чтения позже даты завершения</string>
@@ -188,8 +188,8 @@
     <string name="starting_search">Поиск начинается</string>
     <string name="lt_info">Это приложение может использовать LibraryThing (бесплатно) в качестве источника информации как для серий так и об альтернативных обложках. Чтобы использовать эту возможность, Вам нужно зарегистрироваться на LibraryThing и запросить ключ разработчика. Всё бесплатно.</string>
     <string name="lt_register_text">Зарегистрироваться в LibraryThing</string>
-    <string name="lt_devkey_text">Запросить ключ разработчика LibraryThing</string>
-    <string name="lt_gotkey">Как только вы получите ключ разработчика (или если он у Вас уже есть), просто введите его в поле ниже. Он будет использован для получения дополнительной информации о книге.</string>
+    <string name="lt_dev_key_text">Запросить ключ разработчика LibraryThing</string>
+    <string name="lt_got_key">Как только вы получите ключ разработчика (или если он у Вас уже есть), просто введите его в поле ниже. Он будет использован для получения дополнительной информации о книге.</string>
     <string name="developer_key">Ключ разработчика</string>
     <string name="require_library_thing_info">Для этой возможности необходим ключ разработчика LibraryThing. Вы хотите узнать больше о LibraryThing?</string>
     <string name="uses_library_thing_info">Эта функция работает лучше при наличии ключа разработчика LibraryThing. Вы хотите узнать больше о LibraryThing, или не показывать это сообщение?\n\nИнформация о LibraryThing есть на закладке LibraryThing страницы Администрирования.</string>
@@ -681,7 +681,7 @@
     <string name="old_archive_blurb">Эта опция не поддерживается для архивов более ранних версий.</string>
     <string name="n_created_m_updated">%1$s создано, %2$s обновлено</string>
     <string name="export_books_blurb">Книги этого архива будут экспортированы. Выберите один из вариантов, чтобы начать экспорт, или \'НАЗАД\' для отмены:</string>
-    <string name="covers_progress_incr">%1$s обложек обработано (%2$s не хватает, %3$s пропущено)</string>
+    <string name="covers_progress_increment">%1$s обложек обработано (%2$s не хватает, %3$s пропущено)</string>
 
     <!-- This was deleted in a previous version due to duplicate name; it has since been renamed. In the short term, I just display the simplet message -->
     <!-- The original message was: "ERROR: Import of data (from SDCard) failed. Is the file in the correct place?" -->

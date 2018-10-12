@@ -76,7 +76,7 @@
     <string name="menu_manage_fields">Feld Sichtbarkeit bearbeiten</string>
     <string name="manage_fields_help">Die ausgewählten Felder werden im Bildschirm Buch hinzufügen/bearbeiten angezeigt. Nicht ausgewählte Felder werden nicht angezeigt.</string>
     <string name="anthology_titles">Anthologie-Titel</string>
-    <string name="amazon_wishlist">Amazon-Wunschliste</string>
+    <string name="amazon_wish_list">Amazon-Wunschliste</string>
     <string name="same_author">Alle Geschichten in dieser Anthologie wurden vom gleichen Autor geschrieben.</string>
     <string name="menu_delete_anthology">Titel von Anthologie löschen</string>
     <string name="is_anthology">Ist dieses Buch eine Anthologie?</string>
@@ -116,7 +116,7 @@
     <string name="vldt_real_expected">Es wird ein Gleitkomma-Wert für \'%s\' erwartet</string>
     <string name="vldt_date_expected">Es wird ein Datum für \'%s\' erwartet</string>
     <string name="vldt_boolean_expected">Es wird ein boolescher Wert  (0,1,t,f,true,false) für \'%s\' erwartet</string>
-    <string name="vldt_nonblank_required">Es ist ein Wert für \'%s\' erforderlich</string>
+    <string name="vldt_non_blank_required">Es ist ein Wert für \'%s\' erforderlich</string>
     <string name="vldt_blank_required">\'%s\' muss leer sein</string>
     <string name="vldt_failed">Die Überprüfung für \'%s\' ist fehlgeschlagen</string>
     <string name="vldt_read_start_after_end">Das Datum Lesen beendet ist vor dem Datum mit Lesen begonnen</string>
@@ -186,8 +186,8 @@
     <string name="starting_search">Beginn der Suche</string>
     <string name="lt_info">Diese App nutzt LibraryThing als Quelle für Buchinformationen und alternative Cover. Um diese Funktionalitäten nutzen zu können, müssen Sie sich bei LibraryThing registrieren (kostenlos) und einen Entwicklerschlüssel anfordern (ebenfalls kostenlos).</string>
     <string name="lt_register_text">Registrieren Sie sich bei LibraryThing</string>
-    <string name="lt_devkey_text">LibraryThing-Entwicklerschlüssel anfordern</string>
-    <string name="lt_gotkey">Nachdem Sie einen Entwicklerschlüssel erhalten haben (oder bereits einen besitzen), geben Sie diesen unten ein.</string>
+    <string name="lt_dev_key_text">LibraryThing-Entwicklerschlüssel anfordern</string>
+    <string name="lt_got_key">Nachdem Sie einen Entwicklerschlüssel erhalten haben (oder bereits einen besitzen), geben Sie diesen unten ein.</string>
     <string name="developer_key">Entwicklerschlüssel</string>
     <string name="require_library_thing_info">Diese Funktionalität setzt einen LibraryThing Entwicklerschlüssel voraus. Möchten Sie mehr Informationen über LibraryThing erhalten?</string>
     <string name="uses_library_thing_info">Diese Funktionalität profitiert von einem LibraryThing Entwicklerschlüssel. Wollen Sie mehr Informationen über LibraryThing erhalten oder diese Meldung deaktivieren?\n\nInformationen zu LibraryThing erhalten Sie im Tab LibraryThing in Hilfe &amp; Verwaltung.</string>
@@ -759,7 +759,7 @@ Entweder sind die Daten des Buchs falsch (Sie sollten die ISBN überprüfen) ode
     <!-- Part of the progress message displayed when exporting books -->
 
     <!-- Displayed in progress dialog when exporting covers in incremental mode -->
-    <string name="covers_progress_incr">%1$s Cover bearbeitet (%2$s fehlen, %3$s übersprungen)</string>
+    <string name="covers_progress_increment">%1$s Cover bearbeitet (%2$s fehlen, %3$s übersprungen)</string>
 
     <!-- Explanatory note for 'export all' option -->
     <string name="export_all_blurb">Alle Bücher, Cover, Einstellungen und benutzerdefinierten Stile werden in das Archiv exportiert.</string>

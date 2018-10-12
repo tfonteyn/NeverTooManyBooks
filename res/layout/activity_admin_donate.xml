@@ -34,7 +34,7 @@
             <TextView
                 android:id="@+id/amazon_url"
                 style="@style/link_donate"
-                android:text="@string/amazon_wishlist" />
+                android:text="@string/amazon_wish_list" />
 
             <TextView
                 android:layout_width="match_parent"

@@ -134,7 +134,7 @@ public class CsvImporter implements Importer {
         /* Iterate through each imported row */
         SyncLock syncLock = null;
         try {
-            while (row < importedList.size() && !listener.isCancelled()) {
+            while (row < importedList.size() && listener.isActive()) {
                 // every 10 inserted, we commit the transaction
                 if (mDb.inTransaction() && txRowCount > 10) {
                     mDb.setTransactionSuccessful();
@@ -217,7 +217,7 @@ public class CsvImporter implements Importer {
                 }
 
                 long now = System.currentTimeMillis();
-                if ((now - lastUpdate) > 200 && !listener.isCancelled()) {
+                if ((now - lastUpdate) > 200 && listener.isActive()) {
                     listener.onProgress(title + "\n(" + BookCatalogueApp.getResourceString(R.string.n_created_m_updated, mCreated, mUpdated) + ")", row);
                     lastUpdate = now;
                 }
@@ -352,10 +352,12 @@ public class CsvImporter implements Importer {
                 long bookId = book.getLong(UniqueId.KEY_ID);
                 for (String title : list) {
                     // as titles are saved as a repeated "title|", the 'last' one is also an empty one.
-                    // "Islands In The Sky * Clarke, Arthur C.|The Sands Of Mars * Clarke, Arthur C.|Earthlight * Clarke, Arthur C.|"
+                    // "Islands In The Sky * Clarke, Arthur C.|The Sands Of Mars * Clarke, Arthur C.|Earth light * Clarke, Arthur C.|"
                     //  But let's not assume and keep this general
                     if (!title.isEmpty()) {
-                        ata.add(new AnthologyTitle(title, bookId));
+                        AnthologyTitle ant = new AnthologyTitle(title);
+                        ant.setBookId(bookId);
+                        ata.add(ant);
                     }
                 }
                 // fixup the id's

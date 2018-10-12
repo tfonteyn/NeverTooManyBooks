@@ -420,7 +420,7 @@ public class Utils {
         }
     }
 
-    /**
+    /*
      * Check if phone has a network connection
      *
      * @return

@@ -89,14 +89,14 @@ public class AdministrationLibraryThing extends BookCatalogueActivity {
         });
 
         SharedPreferences prefs = getSharedPreferences(BookCatalogueApp.APP_SHARED_PREFERENCES, Context.MODE_PRIVATE);
-        EditText devKeyView = findViewById(R.id.devkey);
+        EditText devKeyView = findViewById(R.id.dev_key);
         devKeyView.setText(prefs.getString(LibraryThingManager.PREFS_LT_DEV_KEY, ""));
 
         /* Save Button */
         findViewById(R.id.confirm).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                EditText devKeyView = findViewById(R.id.devkey);
+                EditText devKeyView = findViewById(R.id.dev_key);
                 String devKey = devKeyView.getText().toString().trim();
                 SharedPreferences prefs = getSharedPreferences(BookCatalogueApp.APP_SHARED_PREFERENCES, Context.MODE_PRIVATE);
                 SharedPreferences.Editor ed = prefs.edit();

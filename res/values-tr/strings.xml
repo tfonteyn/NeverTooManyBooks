@@ -77,7 +77,7 @@
     <string name="menu_manage_fields">Alan görünürlüğünü yönet</string>
     <string name="manage_fields_help">Seçili alanlar kitap ekle/düzenle ekranlarında görünecektir. Seçilmeyen alanlar gizli kalacaktır.</string>
     <string name="anthology_titles">Seçmeler</string>
-    <string name="amazon_wishlist">Amazon Wishlist</string>
+    <string name="amazon_wish_list">Amazon Wishlist</string>
     <string name="same_author">Bu seçkideki tüm anlatılar aynı yazar tarafından yazılmıştır</string>
     <string name="menu_delete_anthology">Seçkiden eser sil</string>
     <string name="is_anthology">Bu kitap bir seçkide var mı?</string>
@@ -116,7 +116,7 @@
     <string name="vldt_real_expected">\'%s\' için bir gerçek sayı gerekli</string>
     <string name="vldt_date_expected">\'%s\' için bir tarih gerekli</string>
     <string name="vldt_boolean_expected">\'%s\' için bir ikili (bool) değer gerekli (0,1,t,f,true,false)</string>
-    <string name="vldt_nonblank_required">\'%s\' için boş olmayan bir değer gerekli</string>
+    <string name="vldt_non_blank_required">\'%s\' için boş olmayan bir değer gerekli</string>
     <string name="vldt_blank_required">\'%s\' için boş değer gerekli</string>
     <string name="vldt_failed">\'%s\' için doğrulama başarısız</string>
     <string name="vldt_read_start_after_end">Okunmaya başlama süresi bitiş süresinden sonra</string>
@@ -186,8 +186,8 @@
     <string name="starting_search">Arama başlatılıyor&#8230;</string>
     <string name="lt_info">>Bu uygulama kitap serileri hakkında bilgi almak ve ek kapakları indirmek üzere LibraryThing\'den yararlanır. Bu özellikleri kullanmak için LibraryThing\'e kayıt olmanız (ücretsiz) ve LibraryThing geliştirici anahtarı almanız gerekmektedir (yine ücretsiz).</string>
     <string name="lt_register_text">LibraryThing\'e kayıt ol</string>
-    <string name="lt_devkey_text">LibraryThing geliştirici anahtarı iste</string>
-    <string name="lt_gotkey">Geliştirici anahtarını aldığınızda (veya sizde halihazırda varsa) yalnızca aşağıdaki alana girin, sonrasında bu anahtar ek verileri almak için kullanılacaktır.</string>
+    <string name="lt_dev_key_text">LibraryThing geliştirici anahtarı iste</string>
+    <string name="lt_got_key">Geliştirici anahtarını aldığınızda (veya sizde halihazırda varsa) yalnızca aşağıdaki alana girin, sonrasında bu anahtar ek verileri almak için kullanılacaktır.</string>
     <string name="developer_key">Geliştirici anahtarı</string>
     <string name="require_library_thing_info">Bu özellik bir LibraryThing geliştirici anahtarı gerektirmektedir. LibraryThing hakkında daha fazla bilgi almak ister misiniz?</string>
     <string name="uses_library_thing_info">Bu özellik bir LibraryThing geliştirici anahtarından yararlanır. LibraryThing hakkında daha fazla bilgi almak mı ister, yoksa bu iletiyi devre dışı bırakmak mı istersiniz?\n\nLibraryThing üzerine bilgi Yönetim bölümünün LibraryThing sekmesinde bulunabilir.</string>
@@ -775,7 +775,7 @@
     <!-- Part of the progress message displayed when exporting books -->
 
     <!-- Displayed in progress dialog when exporting covers in incremental mode -->
-    <string name="covers_progress_incr">%1$s kapak işlendi (%2$s bulunamadı, %3$s atlandı)</string>
+    <string name="covers_progress_increment">%1$s kapak işlendi (%2$s bulunamadı, %3$s atlandı)</string>
     <!-- Explanatory note for 'export all' option -->
     <string name="export_all_blurb">Tüm kitaplar, kapaklar, ayarlar ve kişiselleştirilmiş biçemler arşive aktarılacaktır.</string>
     <!-- Explanatory note for 'advanced export' option -->

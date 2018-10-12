@@ -134,8 +134,8 @@ public abstract class BackupReaderAbstract implements BackupReader {
             }
 
 			@Override
-			public boolean isCancelled() {
-				return listener.isCancelled();
+			public boolean isActive() {
+				return !listener.isCancelled();
 			}
 
             @Override

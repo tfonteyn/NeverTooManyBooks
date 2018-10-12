@@ -42,7 +42,6 @@ import com.eleybourn.bookcatalogue.utils.ViewTagger;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Implement a generic list-of-values property. Display is done with Radio Buttons

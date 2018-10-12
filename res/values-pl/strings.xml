@@ -77,7 +77,7 @@
     <string name="menu_manage_fields">Dostosuj widoczność pól</string>
     <string name="manage_fields_help">Wybrane pola są widoczne na ekranach dodawania i edycji książki. Pozostałe są ukryte.</string>
     <string name="anthology_titles">Tytuły antologii</string>
-    <string name="amazon_wishlist">Amazon Wishlist</string>
+    <string name="amazon_wish_list">Amazon Wishlist</string>
     <string name="same_author">Wszystkie ksiązki w tej antologii są napisane przez tego samego autora</string>
     <string name="menu_delete_anthology">Usuń pozycję z antologii</string>
     <string name="is_anthology">Czy ta książka jest antologią?</string>
@@ -118,7 +118,7 @@
     <string name="vldt_real_expected">Oczekiwana wartość liczbowa dla \'%s\'</string>
     <string name="vldt_date_expected">Oczekiwana data \'%s\'</string>
     <string name="vldt_boolean_expected">Oczekiwana wartość logiczna (0,1,t,f,true,false) dla \'%s\'</string>
-    <string name="vldt_nonblank_required">Oczekiwana wartość niepusta dla \'%s\'</string>
+    <string name="vldt_non_blank_required">Oczekiwana wartość niepusta dla \'%s\'</string>
     <string name="vldt_blank_required">Oczekiwana wartość pusta dla \'%s\'</string>
     <string name="vldt_failed">Walidacja pola nie powiodła się dla \'%s\'</string>
     <string name="vldt_read_start_after_end">Data rozpoczęcia czytania późniejsza od daty zakończenia</string>
@@ -188,8 +188,8 @@
     <string name="starting_search">Rozpoczynam szukanie</string>
     <string name="lt_info">Ten program wykorzystuje serwis LibraryThing jako żródło informacji o książkach, ich seriach, okładkach. W tym celu powinienieś zarejestrować się (darmowo) w LibraryThing i uzyskać klucz deweloperski LibraryThing (również darmowo).</string>
     <string name="lt_register_text">Zarejestruj się w LibraryThing</string>
-    <string name="lt_devkey_text">Pobierz klucz deweloperski LibraryThing</string>
-    <string name="lt_gotkey">Jeśli już masz klucz deweloperski, wprowadź go poniżej, co pozwoli na pobieranie danych uzupełniających.</string>
+    <string name="lt_dev_key_text">Pobierz klucz deweloperski LibraryThing</string>
+    <string name="lt_got_key">Jeśli już masz klucz deweloperski, wprowadź go poniżej, co pozwoli na pobieranie danych uzupełniających.</string>
     <string name="developer_key">Klucz deweloperski</string>
     <string name="require_library_thing_info">Ta fukncja wymaga klucza deweloperskiego LibraryThing. Czy chesz dowiedzieć się więcej o LibraryThing?</string>
     <string name="uses_library_thing_info">Ta fukncja korzysta z klucza deweloperskiego. Czy chesz dowiedzieć się więcej o LibraryThing, czy wyłączyć ten komunikat?\n\nInformacje o LibraryThing znajdziesz na stronie administracyjnej.</string>

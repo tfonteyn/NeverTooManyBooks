@@ -38,16 +38,16 @@
                 android:id="@+id/dev_key_url"
                 style="@style/link_url"
                 android:gravity="center"
-                android:text="@string/lt_devkey_text" />
+                android:text="@string/lt_dev_key_text" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/lt_gotkey"
+                android:text="@string/lt_got_key"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <EditText
-                android:id="@+id/devkey"
+                android:id="@+id/dev_key"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/developer_key"

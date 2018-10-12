@@ -78,7 +78,7 @@
     <string name="menu_manage_fields">Zichtbaarheid velden beheren</string>
     <string name="manage_fields_help">Geselecteerde velden zijn zichtbaar in de toevoegen/bewerken boekschermen. Ongeselecteerde velden zijn verborgen.</string>
     <string name="anthology_titles">Bloemlezing titels</string>
-    <string name="amazon_wishlist">Amazon Verlanglijst</string>
+    <string name="amazon_wish_list">Amazon Verlanglijst</string>
     <string name="same_author">Alle verhalen in deze bloemlezing zijn geschreven door dezelfde auteur</string>
     <string name="menu_delete_anthology">Verwijder titels uit bloemlezing</string>
     <string name="is_anthology">Is dit boek een bloemlezing?</string>
@@ -119,7 +119,7 @@
     <string name="vldt_real_expected">Verwachtte een echt nummer voor \'%s\'</string>
     <string name="vldt_date_expected">Verwachtte een datum voor \'%s\'</string>
     <string name="vldt_boolean_expected">Verwachtte een boolean waarde (0,1,t,f,waar,onwaar) voor \'%s\'</string>
-    <string name="vldt_nonblank_required">Waardeveld mag niet leeg zijn voor \'%s\'</string>
+    <string name="vldt_non_blank_required">Waardeveld mag niet leeg zijn voor \'%s\'</string>
     <string name="vldt_blank_required">Waardeveld moet leeg zijn voor \'%s\'</string>
     <string name="vldt_failed">Validatie mislukt voor \'%s\'</string>
     <string name="vldt_read_start_after_end">De begindatum voor lezen moet vóór de einddatum liggen</string>
@@ -189,8 +189,8 @@
     <string name="starting_search">Opstarten zoeken</string>
     <string name="lt_info">Deze applicatie wordt verbeterd door het gebruik van LibraryThing als informatiebron voor boeken en alternatieve omslagafbeeldingen. Om deze functies te kunnen gebruiken moet u zich bij LibraryThing (gratis) registreren en om een ontwikkelaarssleutel vragen (ook gratis).</string>
     <string name="lt_register_text">Registeren bij LibraryThing</string>
-    <string name="lt_devkey_text">Aanvragen LibraryThing ontwikkelaarssleutel</string>
-    <string name="lt_gotkey">Zodra u de sleutel heeft (of als u die al heeft) kunt u die hieronder in het tekstveld invullen om zo gebruik te maken van de extra gegevensbron.</string>
+    <string name="lt_dev_key_text">Aanvragen LibraryThing ontwikkelaarssleutel</string>
+    <string name="lt_got_key">Zodra u de sleutel heeft (of als u die al heeft) kunt u die hieronder in het tekstveld invullen om zo gebruik te maken van de extra gegevensbron.</string>
     <string name="developer_key">Ontwikkelaarssleutel</string>
     <string name="require_library_thing_info">Deze functie vereist een LibraryThing ontwikkelaarssleutel. Wilt u meer informatie over LibraryThing?</string>
     <string name="uses_library_thing_info">Deze functie profiteert van een LibraryThing ontwikkelaarssleutel. Wilt u meer informatie over LibraryThing, of dit bericht uitschakelen?\n\nLibraryThing informatie kan worden gevonden onder het LibraryThing tabblad van de Administratie pagina\'s.</string>
@@ -793,7 +793,7 @@ Zie "Meer voorkeuren" voor de relevante instelling.
     <!-- Part of the progress message displayed when exporting books -->
 
     <!-- Displayed in progress dialog when exporting covers in incremental mode -->
-    <string name="covers_progress_incr">%1$s boekomslagen verwerkt (%2$s missend, %3$s overgeslagen)</string>
+    <string name="covers_progress_increment">%1$s boekomslagen verwerkt (%2$s missend, %3$s overgeslagen)</string>
 
     <!-- Explanatory note for 'export all' option -->
     <string name="export_all_blurb">Alle boeken, omslagafbeeldingen, instellingen en aangepaste stijlen zullen worden geëxporteerd naar het archief.</string>

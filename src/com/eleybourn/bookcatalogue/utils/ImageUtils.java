@@ -14,13 +14,13 @@ import android.widget.ImageView;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
-import com.eleybourn.bookcatalogue.tasks.GetThumbnailTask;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.tasks.ThumbnailCacheWriterTask;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.CoversDbHelper;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
+import com.eleybourn.bookcatalogue.tasks.GetThumbnailTask;
+import com.eleybourn.bookcatalogue.tasks.ThumbnailCacheWriterTask;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;

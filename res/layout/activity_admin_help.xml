@@ -23,7 +23,7 @@
             android:paddingStart="@dimen/padding_border">
 
             <TextView
-                android:id="@+id/helpinstructions"
+                android:id="@+id/help_instructions"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/help"
@@ -37,9 +37,9 @@
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <TextView
-                android:id="@+id/helppage"
+                android:id="@+id/help_page"
                 style="@style/link_url"
-                android:text="@string/helppage" />
+                android:text="@string/help_page" />
 
             <TextView
                 android:layout_width="match_parent"

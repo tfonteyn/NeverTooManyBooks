@@ -32,7 +32,7 @@
 
         <!-- application developer keys -->
         <meta-data
-            android:name="amazon.appkey"
+            android:name="amazon.app_key"
             android:value="" />
         <meta-data
             android:name="goodreads.dev_key"

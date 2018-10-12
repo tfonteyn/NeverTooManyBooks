@@ -6,8 +6,8 @@ import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.tasks.ManagedTask;
-import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.tasks.TaskManager;
+import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -35,8 +35,8 @@ public class ImportThread extends ManagedTask {
         }
 
 		@Override
-		public boolean isCancelled() {
-			return ImportThread.this.isCancelled();
+		public boolean isActive() {
+			return !ImportThread.this.isCancelled();
 		}
 
         @Override

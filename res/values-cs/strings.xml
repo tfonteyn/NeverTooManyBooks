@@ -77,7 +77,7 @@
     <string name="menu_manage_fields">Spravovat viditelnost jednotlivých polí</string>
     <string name="manage_fields_help">Vybraná pole jsou viditelná na obrazovce pro přidání/úpravu knihy. Nevybraná pole jsou skryta.</string>
     <string name="anthology_titles">Antologické tituly</string>
-    <string name="amazon_wishlist">Amazon Wishlist</string>
+    <string name="amazon_wish_list">Amazon Wishlist</string>
     <string name="same_author">Všechny příběhy v této antologii jsou napsány stejným autorem</string>
     <string name="menu_delete_anthology">Odstranit tento titul z antologií</string>
     <string name="is_anthology">Je tato kniha antologií?</string>
@@ -118,7 +118,7 @@
     <string name="vldt_real_expected">Očekáváno reálné číslo pro \'%s\'</string>
     <string name="vldt_date_expected">Očekáváno datum pro \'%s\'</string>
     <string name="vldt_boolean_expected">Očekávána pravdivostní hodnota (0,1,t,f,true,false) pro \'%s\'</string>
-    <string name="vldt_nonblank_required">Neprázdná hodnota vyžadována pro \'%s\'</string>
+    <string name="vldt_non_blank_required">Neprázdná hodnota vyžadována pro \'%s\'</string>
     <string name="vldt_blank_required">Prázdná hodnota vyžadována pro \'%s\'</string>
     <string name="vldt_failed">Selhala validace pro \'%s\'</string>
     <string name="vldt_read_start_after_end">Datum začátku čtení musí předcházet datu ukončení čtení.</string>
@@ -188,8 +188,8 @@
     <string name="starting_search">Začínám vyhledávat</string>
     <string name="lt_info">Tato aplikace může využít LibraryThing jako další zdroj informací o knihách. K využití této funkce je nutná Vaše registrace na LibraryThing (zdarma) a rovněž získání vývojářského klíče od LibraryThing (také zdarma).</string>
     <string name="lt_register_text">Registrovat na LibraryThing</string>
-    <string name="lt_devkey_text">Získat vývojářský klíč LibraryThing</string>
-    <string name="lt_gotkey">Až získáte svůj vývojářský klíč (nebo pokud jej již máte), jednoduše jej vložte níže, aby mohl být použit pro získání extra informací.</string>
+    <string name="lt_dev_key_text">Získat vývojářský klíč LibraryThing</string>
+    <string name="lt_got_key">Až získáte svůj vývojářský klíč (nebo pokud jej již máte), jednoduše jej vložte níže, aby mohl být použit pro získání extra informací.</string>
     <string name="developer_key">Vývojářský klíč</string>
     <string name="require_library_thing_info">Tato funkce vyžaduje vývojářský klíč LibraryThing. Chtece se dozvědět více informací o LibraryThing?</string>
     <string name="uses_library_thing_info">Tato funkce využívá vývojářský klíč LibraryThing. Chtece se dozvědět více informací o LibraryThing, nebo zakázat tuto zprávu?\n\nInformace o LibraryThing můžete nalézt v záložce LibraryThing na administrační obrazovce.</string>

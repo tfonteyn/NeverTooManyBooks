@@ -26,10 +26,10 @@ import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
-import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
+import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
@@ -221,8 +221,8 @@ public abstract class BackupWriterAbstract implements BackupWriter {
         int ok = 0;
         int missing = 0;
         int skipped = 0;
-        String fmt_noskip = BookCatalogueApp.getResourceString(R.string.covers_progress);
-        String fmt_skip = BookCatalogueApp.getResourceString(R.string.covers_progress_incr);
+        String fmt_no_skip = BookCatalogueApp.getResourceString(R.string.covers_progress);
+        String fmt_skip = BookCatalogueApp.getResourceString(R.string.covers_progress_increment);
 
         try (Cursor cursor = mDb.fetchBookUuidList()) {
             final int uuidCol = cursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_UUID.toString());
@@ -244,7 +244,7 @@ public abstract class BackupWriterAbstract implements BackupWriter {
                 if (!dryRun) {
                     String message;
                     if (skipped == 0) {
-                        message = String.format(fmt_noskip, ok, missing);
+                        message = String.format(fmt_no_skip, ok, missing);
                     } else {
                         message = String.format(fmt_skip, ok, missing, skipped);
                     }

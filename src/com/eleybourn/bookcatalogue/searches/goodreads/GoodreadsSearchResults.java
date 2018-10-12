@@ -119,7 +119,7 @@ public class GoodreadsSearchResults extends BookCatalogueListActivity {
      * @param view View that was clicked.
      */
     private void doItemClick(@NonNull final View view) {
-        ListHolder holder = (ListHolder) ViewTagger.getTag(view);
+        ListHolder holder = ViewTagger.getTag(view);
         // TODO: Implement edition lookup - requires access to work.editions API from GR
         Logger.debug("Not implemented: see " + holder.title + " by " + holder.author);
         StandardDialogs.showQuickNotice(this, "Not implemented: see " + holder.title + " by " + holder.author);

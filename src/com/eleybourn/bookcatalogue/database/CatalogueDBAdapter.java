@@ -74,8 +74,8 @@ import java.util.Objects;
 import java.util.Set;
 
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ANTHOLOGY_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ANTHOLOGY_SINGLE_AUTHOR;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ANTHOLOGY_MULTIPLE_AUTHORS;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ANTHOLOGY_SINGLE_AUTHOR;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FAMILY_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FORMATTED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FORMATTED_GIVEN_FIRST;
@@ -2056,8 +2056,9 @@ public class CatalogueDBAdapter {
                         cursor.getLong(authorIdCol),
                         cursor.getString(familyNameCol),
                         cursor.getString(givenNameCol));
-
-                list.add(new AnthologyTitle(author, cursor.getString(titleCol), cursor.getString(pubDateCol), bookId));
+                AnthologyTitle title = new AnthologyTitle(author, cursor.getString(titleCol), cursor.getString(pubDateCol));
+                title.setBookId(bookId);
+                list.add(title);
             }
         }
         return list;
@@ -2469,6 +2470,7 @@ public class CatalogueDBAdapter {
      * @return insert: the row ID of the newly inserted row, or -1 if an error occurred during insert
      * update: the existing id
      */
+    @SuppressWarnings("UnusedReturnValue")
     public long insertOrUpdateBooklistStyle(@NonNull final BooklistStyle /* in/out */ style) {
         if (style.id != 0) {
             updateBooklistStyle(style);

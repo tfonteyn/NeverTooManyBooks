@@ -35,6 +35,7 @@ public class AdminHostsFragment extends Fragment {
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        //noinspection ConstantConditions
         amazon_url = getView().findViewById(R.id.amazon_url);
         amazon_url.setText(AmazonManager.getBaseURL());
 

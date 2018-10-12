@@ -24,13 +24,13 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.searches.goodreads.BookEvents.GrNoIsbnEvent;
-import com.eleybourn.bookcatalogue.searches.goodreads.BookEvents.GrNoMatchEvent;
-import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
 import com.eleybourn.bookcatalogue.database.cursors.BooksCursor;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.searches.goodreads.BookEvents.GrNoIsbnEvent;
+import com.eleybourn.bookcatalogue.searches.goodreads.BookEvents.GrNoMatchEvent;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.NotAuthorizedException;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.ExportDisposition;
 import com.eleybourn.bookcatalogue.taskqueue.QueueManager;

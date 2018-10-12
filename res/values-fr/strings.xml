@@ -160,7 +160,7 @@
     <string name="menu_manage_fields">Gérer la visibilité des champs</string>
     <string name="manage_fields_help">Les champs sélectionnés sont visibles dans les écrans d\'ajout et d\'édition des livres. Les champs non sélectionnés sont cachés.</string>
     <string name="anthology_titles">Titres de l\'anthologie</string>
-    <string name="amazon_wishlist">Idées cadeaux Amazon</string>
+    <string name="amazon_wish_list">Idées cadeaux Amazon</string>
     <string name="same_author">Toutes les histoires de cette anthologie sont écrites par le même auteur.</string>
     <string name="menu_delete_anthology">Supprimer ce titre de l\'anthologie</string>
     <string name="is_anthology">Ce livre est-il une anthologie ?</string>
@@ -201,7 +201,7 @@
     <string name="vldt_real_expected">Valeur décimale attendue pour \'%s\'</string>
     <string name="vldt_date_expected">Date attendue pour \'%s\'</string>
     <string name="vldt_boolean_expected">Valeur booléenne (0,1,t,f,true,false) attendue pour \'%s\'</string>
-    <string name="vldt_nonblank_required">Valeur non vide attendue pour \'%s\'</string>
+    <string name="vldt_non_blank_required">Valeur non vide attendue pour \'%s\'</string>
     <string name="vldt_blank_required">Le champ \'%s\' doit être vide</string>
     <string name="vldt_failed">La validation a échoué pour \'%s\'</string>
     <string name="vldt_read_start_after_end">La date de début de lecture est après la date de fin</string>
@@ -271,8 +271,8 @@
     <string name="starting_search">Démarrage en cours</string>
     <string name="lt_info">Le fonctionnement de cette application est amélioré par l\'utilisation de LibraryThing comme source d\'information sur les séries ou comme alternative pour les couvertures. Pour bénéficier de ces fonctionnalités, vous devez vous enregistrer auprès de LibraryThing (gratuit) et demander une clé développeur LibraryThing (gratuit).</string>
     <string name="lt_register_text">S\'enregistrer auprès de LibraryThing</string>
-    <string name="lt_devkey_text">Demander une clé développeur LibraryThing</string>
-    <string name="lt_gotkey">Une fois votre clé développeur obtenue (ou si vous en avez déjà une), entrez la simplement ci-dessous et elle sera utilisée pour obtenir des données supplémentaires.</string>
+    <string name="lt_dev_key_text">Demander une clé développeur LibraryThing</string>
+    <string name="lt_got_key">Une fois votre clé développeur obtenue (ou si vous en avez déjà une), entrez la simplement ci-dessous et elle sera utilisée pour obtenir des données supplémentaires.</string>
     <string name="developer_key">Clé développeur</string>
     <string name="require_library_thing_info">Cette fonctionnalité nécessite une clé développeur LibraryThing. Voulez-vous obtenir plus d\'informations à propos de LibraryThing ?</string>
     <string name="uses_library_thing_info">Cette fonctionnalité est améliorée par l\'utilisation d\'une clé développeur LibraryThing. Voulez-vous obtenir plus d\'informations à propos de LibraryThing, ou désactiver ce message ?\n\nDes informations sur LibraryThing peuvent être obtenues dans l\'onglet LibraryThing des écrans d\'administration.</string>
@@ -777,7 +777,7 @@
     <!-- Part of the progress message displayed when exporting books -->
 
     <!-- Displayed in progress dialog when exporting covers in incremental mode -->
-    <string name="covers_progress_incr">%1$s couvertures enregistrées (%2$s manquantes, %3$s ignorées)</string>
+    <string name="covers_progress_increment">%1$s couvertures enregistrées (%2$s manquantes, %3$s ignorées)</string>
 
     <!-- Explanatory note for 'export all' option -->
     <string name="export_all_blurb">Tous les livres, couvertures, préférence et styles de liste personnels du catalogue seront enregistrés dans la sauvegarde.</string>

@@ -24,8 +24,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.backup.tar.TarBackupContainer;
-import com.eleybourn.bookcatalogue.utils.SerializationUtils;
 import com.eleybourn.bookcatalogue.utils.RTE.DeserializationException;
+import com.eleybourn.bookcatalogue.utils.SerializationUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 import java.io.BufferedReader;

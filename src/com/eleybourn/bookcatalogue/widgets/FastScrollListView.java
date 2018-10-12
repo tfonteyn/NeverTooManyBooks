@@ -111,10 +111,10 @@ public class FastScrollListView extends ListView {
      * Pass to scroller if defined, otherwise perform default actions.
      */
     @Override
-    protected void onSizeChanged(final int w, final int h, final int oldw, final int oldh) {
-        super.onSizeChanged(w, h, oldw, oldh);
+    protected void onSizeChanged(final int width, final int height, final int oldWidth, final int oldHeight) {
+        super.onSizeChanged(width, height, oldWidth, oldHeight);
         if (mScroller != null) {
-            mScroller.onSizeChanged(w, h);
+            mScroller.onSizeChanged(width, height);
         }
     }
 

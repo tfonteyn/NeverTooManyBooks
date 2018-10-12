@@ -16,14 +16,14 @@
 
 package com.eleybourn.bookcatalogue.cropper;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
+
+import java.util.ArrayList;
+import java.util.List;
 
 abstract class CropMonitoredActivity extends BookCatalogueActivity {
 

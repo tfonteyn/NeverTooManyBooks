@@ -39,8 +39,8 @@ import com.eleybourn.bookcatalogue.properties.Properties;
 import com.eleybourn.bookcatalogue.properties.Property;
 import com.eleybourn.bookcatalogue.properties.PropertyGroup;
 import com.eleybourn.bookcatalogue.properties.StringProperty;
-import com.eleybourn.bookcatalogue.utils.SerializationUtils;
 import com.eleybourn.bookcatalogue.utils.RTE.DeserializationException;
+import com.eleybourn.bookcatalogue.utils.SerializationUtils;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;

@@ -26,6 +26,7 @@ abstract public class BookCatalogueActivity extends AppCompatActivity
 
     /** The side/navigation panel */
     private DrawerLayout mDrawerLayout;
+    @SuppressWarnings("FieldCanBeLocal")
     @Nullable
     private NavigationView mNavigationView;
 

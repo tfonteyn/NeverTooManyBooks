@@ -1045,7 +1045,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
             }
 
             // The default is to indent all views based on the level, but with book covers on
-            // the far left, it looks better if we 'outdent' one step.
+            // the far left, it looks better if we 'out-dent' one step.
             int level = rowView.getLevel();
             if (level > 0) {
                 --level;

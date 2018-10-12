@@ -78,7 +78,7 @@
     <string name="menu_manage_fields">Manage Field Visibility</string>
     <string name="manage_fields_help">Selected fields are visible in the add/edit book screens. Unselected fields are hidden.</string>
     <string name="anthology_titles">Anthology Titles</string>
-    <string name="amazon_wishlist">Amazon Wishlist</string>
+    <string name="amazon_wish_list">Amazon Wishlist</string>
     <string name="same_author">All stories in this anthology are written by the same author</string>
     <string name="menu_delete_anthology">Delete Title from Anthology</string>
     <string name="is_anthology">Is this book an Anthology?</string>
@@ -119,7 +119,7 @@
     <string name="vldt_real_expected">Expected a real number for \'%s\'</string>
     <string name="vldt_date_expected">Expected a date for \'%s\'</string>
     <string name="vldt_boolean_expected">Expected a boolean value (0,1,t,f,true,false) for \'%s\'</string>
-    <string name="vldt_nonblank_required">Non-empty value required for \'%s\'</string>
+    <string name="vldt_non_blank_required">Non-empty value required for \'%s\'</string>
     <string name="vldt_blank_required">Empty value required for \'%s\'</string>
     <string name="vldt_failed">Validation failed for \'%s\'</string>
     <string name="vldt_read_start_after_end">The date reading started is after the end date</string>
@@ -190,8 +190,8 @@
     <string name="starting_search">Starting Search</string>
     <string name="lt_info">This application is enhanced by using LibraryThing as a source of information about book series, as well as a source of alternate covers. To use these features you need to register with LibraryThing (free) and request a LibraryThing developer key (also free).</string>
     <string name="lt_register_text">Register with LibraryThing</string>
-    <string name="lt_devkey_text">Request LibraryThing developer key</string>
-    <string name="lt_gotkey">Once you have the developer key (or if you already have one), just enter it below and it will be used to get extra data.</string>
+    <string name="lt_dev_key_text">Request LibraryThing developer key</string>
+    <string name="lt_got_key">Once you have the developer key (or if you already have one), just enter it below and it will be used to get extra data.</string>
     <string name="developer_key">Developer Key</string>
     <string name="require_library_thing_info">This feature requires a LibraryThing Developer Key. Do you want to see more information about LibraryThing?</string>
     <string name="uses_library_thing_info">This feature benefits from having a LibraryThing Developer Key. Do you want to see more information about LibraryThing, or disable this message?\n\nLibraryThing information can be found in the LibraryThing tab of the Administration pages.</string>
@@ -803,7 +803,7 @@ and you can edit the book via the options menu using the menu button or overflow
     <!-- Part of the progress message displayed when exporting books -->
 
     <!-- Displayed in progress dialog when exporting covers in incremental mode -->
-    <string name="covers_progress_incr">%1$s covers processed (%2$s missing, %3$s skipped)</string>
+    <string name="covers_progress_increment">%1$s covers processed (%2$s missing, %3$s skipped)</string>
 
     <!-- Explanatory note for 'export all' option -->
     <string name="export_all_blurb">All books, covers, settings and custom styles will be exported to the archive.</string>

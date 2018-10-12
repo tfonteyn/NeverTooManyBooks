@@ -3,7 +3,6 @@ package com.eleybourn.bookcatalogue.utils;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
 
 /**
  * a centralised collection of RunTimeExceptions so we can re-use them without re-inventing.

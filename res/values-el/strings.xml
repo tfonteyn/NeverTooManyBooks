@@ -78,7 +78,7 @@
     <string name="menu_manage_fields">Διαχείρηση ορατότητας πεδίου</string>
     <string name="manage_fields_help">Τα επιλεγμένα πεδία είναι ορατά στις οθόνες προσθήκης/επεξεργασίας βιβλίου. Τα μη επιλεγμένα πεδία είναι κρυφά.</string>
     <string name="anthology_titles">Τίτλοι Ανθολογιών</string>
-    <string name="amazon_wishlist">Amazon Wishlist</string>
+    <string name="amazon_wish_list">Amazon Wishlist</string>
     <string name="same_author">Όλες οι ιστορίες σε αυτήν την ανθολογία είναι γραμμένες από τον ίδιο συγγραφέα.</string>
     <string name="menu_delete_anthology">Διαγραφή τίτλου από Ανθολογία</string>
     <string name="is_anthology">Είναι αυτό το βιβλίο ανθολογία;</string>
@@ -119,7 +119,7 @@
     <string name="vldt_real_expected">Αναμένεται ένας πραγματικός αριθμός για \'%s\'</string>
     <string name="vldt_date_expected">Αναμένεται ημερομηνία για \'%s\'</string>
     <string name="vldt_boolean_expected">Αναμένεται boolean τιμή (0,1,t,f,true,false) για \'%s\'</string>
-    <string name="vldt_nonblank_required">Απαιτείται μη κενή τιμή για \'%s\'</string>
+    <string name="vldt_non_blank_required">Απαιτείται μη κενή τιμή για \'%s\'</string>
     <string name="vldt_blank_required">Απαιτείται κενή τιμή για \'%s\'</string>
     <string name="vldt_failed">Η επικύρωση απέτυχε για \'%s\'</string>
     <string name="vldt_read_start_after_end">Η ημερομηνία έναρξης ανάγνωσης είναι μετά την ημερομηνία λήξης</string>
@@ -190,8 +190,8 @@
     <string name="starting_search">Έναρξη Αναζήτησης</string>
     <string name="lt_info">Αυτή η εφαρμογή ενισχύεται με τη χρήστη του LibraryThing σαν πηγή πληροφοριών για σειρές βιβλίων καθώς και ενναλλακτικών εξωφύλλων. Για πρόσβαση σε αυτές τις λειτουργίες απαιτείται εγγραφή στο LibraryThing (δωρεάν) και απόκτηση κλειδιού developer(επίσης δωρεάν).</string>
     <string name="lt_register_text">Εγγραφή με LibraryThing</string>
-    <string name="lt_devkey_text">Ζητήστε κλειδί developer από το LibraryThing</string>
-    <string name="lt_gotkey">Όταν αποκτήσετε κλειδί developer (ή εαν έχετε ήδη ένα), μπορείτε να το εισάγετε παρακάτω και θα χρησιμοποιηθεί για λήψη επιπλεόν δεδομένων.</string>
+    <string name="lt_dev_key_text">Ζητήστε κλειδί developer από το LibraryThing</string>
+    <string name="lt_got_key">Όταν αποκτήσετε κλειδί developer (ή εαν έχετε ήδη ένα), μπορείτε να το εισάγετε παρακάτω και θα χρησιμοποιηθεί για λήψη επιπλεόν δεδομένων.</string>
     <string name="developer_key">Κλειδί Developer</string>
     <string name="require_library_thing_info">Αυτή η λειτουργία απαιτεί κλειδί developer από το LibraryThing. Θέλετε περισσότερες πλήροφορίες σχετικά με το LibraryThing?</string>
     <string name="uses_library_thing_info">Αυτή η λειτουργία βελτιώνεται με τη χρήση κλειδιού developer από το LibraryThing. Θέλετε περισσότερες πλήροφορίες σχετικά με το LibraryThing, ή να απενεργοποιήσετε αυτό το μήνυμα?\n\nΠληροφορίες για το LibraryThing βρίσκονται στην καρτέλα LibraryThing των σελίδων διαχείρισης.</string>
@@ -802,7 +802,7 @@
     <!-- Part of the progress message displayed when exporting books -->
 
     <!-- Displayed in progress dialog when exporting covers in incremental mode -->
-    <string name="covers_progress_incr">%1$s εξώφυλλα επεξεργάστηκαν (%2$s λείπουν, %3$s παρελείφθησαν)</string>
+    <string name="covers_progress_increment">%1$s εξώφυλλα επεξεργάστηκαν (%2$s λείπουν, %3$s παρελείφθησαν)</string>
 
     <!-- Explanatory note for 'export all' option -->
     <string name="export_all_blurb">Όλα τα βιβλία, εξώφυλλα, ρυθμίσεις και προσαρμοσμένα στυλ θα εξαχθούν στο Αρχείο.</string>

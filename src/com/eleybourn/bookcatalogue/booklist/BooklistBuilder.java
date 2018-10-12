@@ -2765,7 +2765,7 @@ public class BooklistBuilder implements AutoCloseable {
 //		mSyncedDb.execSQL("Create Unique Index " + mListTable + "_IX_TG1 on " + mListTable + "(" + DOM_LEVEL + ", " + mKeyColumnList + ", " + DOM_BOOK_ID + ")");
 //
 //		/*
-//		 * Create a trigger to forward all row detais to real table
+//		 * Create a trigger to forward all row details to real table
 //		 */
 //		/*
 //		String fullInsert = "Insert into " + mListTable + "(";
