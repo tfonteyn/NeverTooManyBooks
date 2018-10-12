@@ -22,10 +22,12 @@ package com.eleybourn.bookcatalogue.backup.tar;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.backup.BackupInfo;
 import com.eleybourn.bookcatalogue.backup.BackupReaderAbstract;
 import com.eleybourn.bookcatalogue.backup.ReaderEntity;
 import com.eleybourn.bookcatalogue.backup.ReaderEntity.BackupEntityType;
+import com.eleybourn.bookcatalogue.debug.Logger;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
@@ -90,7 +92,6 @@ public class TarBackupReader extends BackupReaderAbstract {
         }
 
         TarArchiveEntry entry = mInput.getNextTarEntry();
-
         if (entry == null) {
             return null;
         }

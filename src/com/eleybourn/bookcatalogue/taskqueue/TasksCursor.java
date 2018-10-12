@@ -30,6 +30,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.utils.DateUtils;
+import com.eleybourn.bookcatalogue.utils.RTE;
 import com.eleybourn.bookcatalogue.utils.SerializationUtils;
 import com.eleybourn.bookcatalogue.widgets.BindableItemCursorAdapter;
 
@@ -129,7 +130,7 @@ public class TasksCursor extends SQLiteCursor implements BindableItemCursor {
                 query = mActiveTasksQuery;
                 break;
             default:
-                throw new IllegalStateException("Unexpected cursor subtype specified: " + type);
+                throw new RTE.IllegalTypeException(type.toString());
         }
         // Add extra 'where' clause
         query = String.format(query, " AND " + DOM_CATEGORY + "=?");
@@ -153,7 +154,7 @@ public class TasksCursor extends SQLiteCursor implements BindableItemCursor {
                 query = mActiveTasksQuery;
                 break;
             default:
-                throw new IllegalStateException("Unexpected cursor subtype specified: " + type);
+                throw new RTE.IllegalTypeException(type.toString());
         }
         // No extra 'where' clause
         query = String.format(query, "");
@@ -210,7 +211,7 @@ public class TasksCursor extends SQLiteCursor implements BindableItemCursor {
         byte[] blob = getBlob(mTaskCol);
         try {
             task = SerializationUtils.deserializeObject(blob);
-        } catch (SerializationUtils.DeserializationException de) {
+        } catch (RTE.DeserializationException de) {
             task = QueueManager.getQueueManager().newLegacyTask();
         }
         task.setId(this.getId());

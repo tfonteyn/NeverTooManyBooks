@@ -118,7 +118,7 @@ public class TaskListActivity extends BindableItemListActivity {
      */
     @Override
     public void onListItemClick(@NonNull AdapterView<?> parent, @NonNull final View v, final int position, final long id) {
-        Task task = ViewTagger.getTag(v, R.id.TAG_TASK);
+        Task task = ViewTagger.getTagOrThrow(v, R.id.TAG_TASK);
         List<ContextDialogItem> items = new ArrayList<>();
 
         items.add(new ContextDialogItem(getString(R.string.show_events_ellipsis), new Runnable() {

@@ -32,7 +32,10 @@ import android.widget.TextView;
 import com.eleybourn.bookcatalogue.BCPreferences;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.properties.Property.BooleanValue;
+import com.eleybourn.bookcatalogue.utils.RTE;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
+
+import java.util.Objects;
 
 /**
  * Extends ValuePropertyWithGlobalDefault to create a trinary value (or nullable boolean?) with
@@ -93,7 +96,7 @@ public class BooleanProperty extends ValuePropertyWithGlobalDefault<Boolean> imp
     }
 
     private void handleClick(@NonNull final View v) {
-        Holder holder = ViewTagger.getTag(v, R.id.TAG_PROPERTY);
+        Holder holder = ViewTagger.getTagOrThrow(v, R.id.TAG_PROPERTY);
         Boolean value = holder.property.get();
         // Cycle through three values: 'null', 'true', 'false'. If the value is 'global' omit 'null'.
         if (value == null) {
@@ -111,16 +114,16 @@ public class BooleanProperty extends ValuePropertyWithGlobalDefault<Boolean> imp
         holder.property.setViewValues(holder, value);
     }
 
-    /** Set the checkbox and text fields based on passed value. */
+    /** Set the checkbox and text fields based on passed value.TOMF */
     private void setViewValues(@NonNull final Holder holder, @Nullable final Boolean value) {
         if (value != null) {
             // We have a value, so setup based on it
             holder.cb.setChecked(value);
             holder.name.setText(this.getNameResourceId());
             if (value) {
-                holder.value.setText(android.R.string.yes);
+                holder.value.setText(R.string.yes);
             } else {
-                holder.value.setText(android.R.string.no);
+                holder.value.setText(R.string.no);
             }
             holder.cb.setPressed(false);
         } else {
@@ -136,18 +139,14 @@ public class BooleanProperty extends ValuePropertyWithGlobalDefault<Boolean> imp
     @NonNull
     protected Boolean getGlobalDefault() {
         Boolean b = getDefaultValue();
-        if (b == null) {
-            throw new IllegalStateException();
-        }
+        Objects.requireNonNull(b);
         return BCPreferences.getBoolean(getPreferenceKey(), b);
     }
 
     @Override
     @Nullable
     protected BooleanProperty setGlobalDefault(@Nullable final Boolean value) {
-        if (value == null) {
-            throw new IllegalStateException();
-        }
+        Objects.requireNonNull(value);
         BCPreferences.setBoolean(getPreferenceKey(), value);
         return this;
     }
@@ -156,7 +155,7 @@ public class BooleanProperty extends ValuePropertyWithGlobalDefault<Boolean> imp
     @Override
     public BooleanProperty set(@NonNull final Property p) {
         if (!(p instanceof BooleanValue)) {
-            throw new IllegalStateException();
+            throw new RTE.IllegalTypeException(p.getClass().getCanonicalName());
         }
         BooleanValue bv = (BooleanValue) p;
         set(bv.get());
@@ -179,10 +178,7 @@ public class BooleanProperty extends ValuePropertyWithGlobalDefault<Boolean> imp
     @NonNull
     @Override
     public BooleanProperty setDefaultValue(@Nullable final Boolean value) {
-        if (value == null) {
-            throw new IllegalStateException();
-        }
-        super.setDefaultValue(value);
+        super.setDefaultValue(Objects.requireNonNull(value));
         return this;
     }
 

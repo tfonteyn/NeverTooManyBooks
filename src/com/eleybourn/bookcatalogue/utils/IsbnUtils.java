@@ -40,7 +40,6 @@ public class IsbnUtils {
         if (isbn == null || isbn.isEmpty()) {
             return false;
         }
-
         try {
             return new ISBNNumber(isbn).isValid();
         } catch (NumberFormatException e) {

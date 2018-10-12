@@ -166,8 +166,8 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
             @Override
             public void onClick(@NonNull View v) {
                 dialog.dismiss();
-                Holder<T> holder = ViewTagger.getTag(v, R.id.TAG_HOLDER);
-                set(Objects.requireNonNull(holder).item.value);
+                Holder<T> holder = ViewTagger.getTagOrThrow(v, R.id.TAG_HOLDER);
+                set(holder.item.value);
                 setValueInView(holder.baseView, holder.item);
             }
         };

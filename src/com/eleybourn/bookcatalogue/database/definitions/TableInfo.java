@@ -72,10 +72,6 @@ public class TableInfo implements Iterable<TableInfo.ColumnInfo> {
         Map<String, ColumnInfo> allColumns = new HashMap<>();
 
         try (Cursor colCsr = mSyncedDb.rawQuery(sql, new String[]{})) {
-            if (colCsr == null) {
-                throw new IllegalArgumentException();
-            }
-
             if (!colCsr.moveToFirst()) {
                 throw new RuntimeException("Unable to get column details");
             }

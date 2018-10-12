@@ -39,17 +39,16 @@ public class BlankValidator implements DataValidator {
             return;
         }
 
-        if (crossValidating)
+        if (crossValidating) {
             return;
+        }
+
         try {
-            String s = data.getString(datum);
+            String s = data.getString(datum).trim();
             if (!s.isEmpty()) {
-                s = s.trim(); // not needed
-                if (!s.isEmpty()) {
-                    throw new ValidatorException(R.string.vldt_blank_required, new Object[]{datum.getKey()});
-                }
-                data.putString(datum, s);
+                throw new ValidatorException(R.string.vldt_blank_required, new Object[]{datum.getKey()});
             }
+            data.putString(datum, s);
         } catch (Exception e) {
             throw new ValidatorException(R.string.vldt_blank_required, new Object[]{datum.getKey()});
         }

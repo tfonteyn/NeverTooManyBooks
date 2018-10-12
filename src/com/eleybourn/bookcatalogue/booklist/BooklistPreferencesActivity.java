@@ -38,6 +38,8 @@ import com.eleybourn.bookcatalogue.properties.Property;
 import com.eleybourn.bookcatalogue.properties.PropertyGroup;
 import com.eleybourn.bookcatalogue.properties.ValuePropertyWithGlobalDefault;
 
+import java.util.Objects;
+
 /**
  * Activity to manage the preferences associate with Book lists (and the BooksOnBookshelf activity).
  *
@@ -111,9 +113,7 @@ public class BooklistPreferencesActivity extends PreferencesBaseActivity {
         Integer value = mBooklistStateProperty.get();
         if (value == null) {
             value = mBooklistStateProperty.getDefaultValue();
-            if (value == null) {
-                throw new IllegalStateException();
-            }
+            Objects.requireNonNull(value);
         }
         return value;
 

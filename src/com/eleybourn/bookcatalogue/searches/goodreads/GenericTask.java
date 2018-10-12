@@ -94,11 +94,7 @@ public abstract class GenericTask extends RunnableTask {
                          @NonNull final Context context,
                          @NonNull final BindableItemCursor bindAbleCursor,
                          @NonNull final Object appInfo) {
-        TaskHolder holder = ViewTagger.getTag(view, R.id.TAG_TASK_HOLDER);
-        if (holder == null) {
-            return;
-        }
-
+        TaskHolder holder = ViewTagger.getTagOrThrow(view, R.id.TAG_TASK_HOLDER);
         TasksCursor cursor = (TasksCursor) bindAbleCursor;
 
         // Update task info binding
@@ -139,7 +135,7 @@ public abstract class GenericTask extends RunnableTask {
         Exception e = this.getException();
         if (e != null) {
             holder.error.setVisibility(View.VISIBLE);
-            holder.error.setText(BookCatalogueApp.getResourceString(R.string.last_error_e, e.getMessage()));
+            holder.error.setText(BookCatalogueApp.getResourceString(R.string.last_error_e, e.getLocalizedMessage()));
         } else {
             holder.error.setVisibility(View.GONE);
         }

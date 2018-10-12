@@ -42,6 +42,7 @@ import com.eleybourn.bookcatalogue.widgets.TouchListViewWithDropListener;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Objects;
 
 /**
  * Base class for editing a list of objects. The inheritor must specify a view id and a row view
@@ -294,10 +295,8 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Boo
             if (mList == null) {
                 mList = getList();
             }
-            // sigh... give up
-            if (mList == null) {
-                throw new IllegalArgumentException("Unable to find list key '" + mBKey + "' in passed intent extras");
-            }
+            // give up if still null
+            Objects.requireNonNull(mList, "Unable to find list key '" + mBKey + "' in passed intent extras");
 
             // Set up list handling
             this.mAdapter = new EditObjectListAdapter(this, mRowViewId, mList);

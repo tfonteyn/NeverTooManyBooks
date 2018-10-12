@@ -179,7 +179,7 @@ public class CsvExporter implements Exporter {
         try (BooksCursor bookCursor = db.exportBooks(since);
              BufferedWriter out = new BufferedWriter(new OutputStreamWriter(outputStream, UTF8), BUFFER_SIZE)) {
 
-            final BookRowView rowView = bookCursor.getRowView();
+            final BookRowView bookRowView = bookCursor.getRowView();
             final int totalBooks = bookCursor.getCount();
 
             if (listener.isCancelled()) {
@@ -199,11 +199,11 @@ public class CsvExporter implements Exporter {
                     authorDetails = AUTHOR + ", " + UNKNOWN;
                 }
 
-                String title = rowView.getTitle();
+                String title = bookRowView.getTitle();
                 // Sanity check: ensure title is non-blank. This has not happened yet, but we
                 // know if does for author, so completeness suggests making sure all 'required'
                 // fields are non-blank.
-                if (title == null || title.trim().isEmpty()) {
+                if (title.trim().isEmpty()) {
                     title = UNKNOWN;
                 }
 
@@ -227,34 +227,34 @@ public class CsvExporter implements Exporter {
                 row.append(formatCell(bookId))
                         .append(formatCell(authorDetails))
                         .append(formatCell(title))
-                        .append(formatCell(rowView.getIsbn()))
-                        .append(formatCell(rowView.getPublisherName()))
-                        .append(formatCell(rowView.getDatePublished()))
-                        .append(formatCell(rowView.getFirstPublication()))
-                        .append(formatCell(rowView.getRating()))
+                        .append(formatCell(bookRowView.getIsbn()))
+                        .append(formatCell(bookRowView.getPublisherName()))
+                        .append(formatCell(bookRowView.getDatePublished()))
+                        .append(formatCell(bookRowView.getFirstPublication()))
+                        .append(formatCell(bookRowView.getRating()))
                         .append(formatCell(bookshelves_id_text.toString()))
                         .append(formatCell(bookshelves_name_text.toString()))
-                        .append(formatCell(rowView.getRead()))
+                        .append(formatCell(bookRowView.getRead()))
                         .append(formatCell(ArrayUtils.getSeriesUtils().encodeList(db.getBookSeriesList(bookId))))
-                        .append(formatCell(rowView.getPages()))
-                        .append(formatCell(rowView.getNotes()))
-                        .append(formatCell(rowView.getListPrice()))
-                        .append(formatCell(rowView.getAnthologyMask()))
-                        .append(formatCell(rowView.getLocation()))
-                        .append(formatCell(rowView.getReadStart()))
-                        .append(formatCell(rowView.getReadEnd()))
-                        .append(formatCell(rowView.getFormat()))
-                        .append(formatCell(rowView.getSigned()))
-                        .append(formatCell(rowView.getLoanedTo()))
-                        .append(formatCell(getAnthologyTitlesForExport(db, bookId, rowView)))
-                        .append(formatCell(rowView.getDescription()))
-                        .append(formatCell(rowView.getGenre()))
-                        .append(formatCell(rowView.getLanguage()))
-                        .append(formatCell(rowView.getDateAdded()))
-                        .append(formatCell(rowView.getGoodreadsBookId()))
-                        .append(formatCell(rowView.getDateLastSyncedWithGoodReads()))
-                        .append(formatCell(rowView.getDateLastUpdated()))
-                        .append(formatCell(rowView.getBookUuid()))
+                        .append(formatCell(bookRowView.getPages()))
+                        .append(formatCell(bookRowView.getNotes()))
+                        .append(formatCell(bookRowView.getListPrice()))
+                        .append(formatCell(bookRowView.getAnthologyMask()))
+                        .append(formatCell(bookRowView.getLocation()))
+                        .append(formatCell(bookRowView.getReadStart()))
+                        .append(formatCell(bookRowView.getReadEnd()))
+                        .append(formatCell(bookRowView.getFormat()))
+                        .append(formatCell(bookRowView.getSigned()))
+                        .append(formatCell(bookRowView.getLoanedTo()))
+                        .append(formatCell(getAnthologyTitlesForExport(db, bookId, bookRowView)))
+                        .append(formatCell(bookRowView.getDescription()))
+                        .append(formatCell(bookRowView.getGenre()))
+                        .append(formatCell(bookRowView.getLanguage()))
+                        .append(formatCell(bookRowView.getDateAdded()))
+                        .append(formatCell(bookRowView.getGoodreadsBookId()))
+                        .append(formatCell(bookRowView.getDateLastSyncedWithGoodReads()))
+                        .append(formatCell(bookRowView.getDateLastUpdated()))
+                        .append(formatCell(bookRowView.getBookUuid()))
                         .append("\n");
                 out.write(row.toString());
 
@@ -269,7 +269,7 @@ public class CsvExporter implements Exporter {
                 }
             }
         } finally {
-            Logger.debug("Books Exported: " + num);
+            Logger.info("Books Exported: " + num);
             if (displayingStartupMessage) {
                 try {
                     listener.onProgress("", 0);
@@ -286,9 +286,9 @@ public class CsvExporter implements Exporter {
      * // V83: Giants In The Sky (1952) * Blish, James|We, The Marauders (1958) * Silverberg, Robert|
      */
     @NonNull
-    private String getAnthologyTitlesForExport(@NonNull final CatalogueDBAdapter db, final long bookId, final BookRowView rowView) {
+    private String getAnthologyTitlesForExport(@NonNull final CatalogueDBAdapter db, final long bookId, final BookRowView bookRowView) {
         StringBuilder anthology_titles = new StringBuilder();
-        if (rowView.getAnthologyMask() != 0) {
+        if (bookRowView.getAnthologyMask() != 0) {
             try (Cursor titles = db.fetchAnthologyTitlesByBookId(bookId)) {
                 final int authorCol = titles.getColumnIndexOrThrow(DOM_AUTHOR_NAME.name);
                 final int titleCol = titles.getColumnIndexOrThrow(DOM_TITLE.name);

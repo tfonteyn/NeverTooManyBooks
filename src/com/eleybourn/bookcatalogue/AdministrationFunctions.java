@@ -414,7 +414,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
         // Find all possible files (CSV in bookCatalogue directory)
         List<File> files = StorageUtils.findCsvFiles();
         // If none, exit with message
-        if (files == null || files.size() == 0) {
+        if (files.size() == 0) {
             StandardDialogs.showQuickNotice(this, R.string.no_export_files_found);
         } else {
             if (files.size() == 1) {
@@ -449,7 +449,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
      * There is a current limitation that restricts the search to only books with an ISBN
      */
     private void updateFieldsFromInternet() {
-        Intent i = new Intent(this, UpdateFromInternet.class);
+        Intent i = new Intent(this, UpdateFromInternetActivity.class);
         startActivity(i);
     }
 

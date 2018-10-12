@@ -56,7 +56,10 @@ import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EditBookAnthologyFragment extends EditBookAbstractFragment implements HandlesISFDB {
+/**
+ * This class is called by {@link EditBookActivity} and displays the Anthology (aka Content) Tab
+ */
+public class EditBookAnthologyFragment extends BookAbstractFragment implements HandlesISFDB {
     // context menu specific for Anthology
     private static final int MENU_POPULATE_ISFDB = 100;
 
@@ -347,13 +350,6 @@ public class EditBookAnthologyFragment extends EditBookAbstractFragment implemen
     public void onPause() {
         super.onPause();
         saveState(mEditManager.getBook());
-    }
-
-    @Override
-    protected void onLoadBookDetails(@NonNull final Book book, final boolean setAllDone) {
-        if (!setAllDone) {
-            mFields.setAll(book);
-        }
     }
 
     @Override

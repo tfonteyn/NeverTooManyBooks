@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue;
 import com.eleybourn.bookcatalogue.utils.IsbnUtils;
+import com.eleybourn.bookcatalogue.utils.RTE;
 
 import java.util.List;
 
@@ -16,7 +17,7 @@ class ISFDBEditionsTask implements SimpleTaskQueue.SimpleTask {
 
     ISFDBEditionsTask(@NonNull final String isbn, HandlesISFDB callback) {
         if (!IsbnUtils.isValid(isbn)) {
-            throw new IllegalArgumentException("Can not get editions without an ISBN");
+            throw new RTE.IsbnInvalidException(isbn);
         }
         this.isbn = isbn;
         this.callback = callback;

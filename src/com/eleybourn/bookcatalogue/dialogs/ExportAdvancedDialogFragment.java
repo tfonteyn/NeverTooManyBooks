@@ -11,9 +11,9 @@ import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.CheckBox;
+import android.widget.Checkable;
 import android.widget.RadioButton;
 
-import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.backup.Exporter;
@@ -21,6 +21,7 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.ExportTypeSelectionDialogFragment.ExportSettings;
 import com.eleybourn.bookcatalogue.dialogs.ExportTypeSelectionDialogFragment.OnExportTypeSelectionDialogResultListener;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
+import com.eleybourn.bookcatalogue.utils.RTE;
 
 import java.io.File;
 import java.util.Objects;
@@ -64,7 +65,7 @@ public class ExportAdvancedDialogFragment extends DialogFragment {
         super.onAttach(context);
 
         if (!(context instanceof OnExportTypeSelectionDialogResultListener)) {
-            throw new IllegalArgumentException("Activity " + context.getClass().getSimpleName() + " must implement OnExportTypeSelectionDialogResultListener");
+            throw new RTE.MustImplementException(context, OnExportTypeSelectionDialogResultListener.class);
         }
 
     }
@@ -73,18 +74,12 @@ public class ExportAdvancedDialogFragment extends DialogFragment {
     /**
      * Utility routine to set the OnClickListener for a given view to change a checkbox.
      *
-     * @param cbId  checkbox view id
+     * @param cbId  Checkable view id
      * @param relId Related view id
      */
     private void setRelatedView(@NonNull final View root, @IdRes final int cbId, @IdRes final int relId) {
-        final CheckBox cb = root.findViewById(cbId);
+        final Checkable cb = root.findViewById(cbId);
         final View rel = root.findViewById(relId);
-        if (BuildConfig.DEBUG) {
-            // catch layout issues before we click on them.
-            if (cb == null || rel == null) {
-                throw new IllegalArgumentException("Layout must have: " + cbId + " and " + relId);
-            }
-        }
         rel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -147,7 +142,7 @@ public class ExportAdvancedDialogFragment extends DialogFragment {
         return dialog;
     }
 
-    private void handleClick(@SuppressWarnings("unused") View view) {
+    private void handleClick(@SuppressWarnings("unused") @NonNull final View view) {
         try {
             OnExportTypeSelectionDialogResultListener a = (OnExportTypeSelectionDialogResultListener) getActivity();
             if (a != null) {

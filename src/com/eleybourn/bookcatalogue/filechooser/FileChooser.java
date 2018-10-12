@@ -149,7 +149,7 @@ public abstract class FileChooser extends BookCatalogueActivity implements
         if (frag instanceof FileChooserFragment) {
             FileChooserFragment bf = (FileChooserFragment) frag;
             File file = bf.getSelectedFile();
-            if (file == null || !file.exists() || !file.isFile()) {
+            if (!file.exists() || !file.isFile()) {
                 StandardDialogs.showQuickNotice(this, R.string.please_select_an_existing_file);
                 return;
             }
@@ -165,7 +165,7 @@ public abstract class FileChooser extends BookCatalogueActivity implements
         if (frag instanceof FileChooserFragment) {
             FileChooserFragment bf = (FileChooserFragment) frag;
             File file = bf.getSelectedFile();
-            if (file == null || (file.exists() && !file.isFile())) {
+            if ((file.exists() && !file.isFile())) {
                 StandardDialogs.showQuickNotice(this, R.string.please_select_a_non_directory);
                 return;
             }

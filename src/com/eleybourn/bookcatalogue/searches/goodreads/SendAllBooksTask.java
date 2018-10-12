@@ -114,7 +114,7 @@ public class SendAllBooksTask extends GenericTask {
         db.open();
 
         try (BooksCursor books = db.getAllBooksForGoodreadsCursor(mLastId, mUpdatesOnly)) {
-            final BookRowView book = books.getRowView();
+            final BookRowView bookRowView = books.getRowView();
             mTotalBooks = books.getCount() + mCount;
 
             while (books.moveToNext()) {
@@ -123,7 +123,7 @@ public class SendAllBooksTask extends GenericTask {
                 ExportDisposition disposition;
                 Exception exportException = null;
                 try {
-                    disposition = grManager.sendOneBook(db, book);
+                    disposition = grManager.sendOneBook(db, bookRowView);
                 } catch (Exception e) {
                     disposition = ExportDisposition.error;
                     exportException = e;
@@ -141,11 +141,11 @@ public class SendAllBooksTask extends GenericTask {
                         mSent++;
                         break;
                     case noIsbn:
-                        storeEvent(new GrNoIsbnEvent(book.getId()));
+                        storeEvent(new GrNoIsbnEvent(bookRowView.getId()));
                         mNoIsbn++;
                         break;
                     case notFound:
-                        storeEvent(new GrNoMatchEvent(book.getId()));
+                        storeEvent(new GrNoMatchEvent(bookRowView.getId()));
                         mNotFound++;
                         break;
                     case networkError:

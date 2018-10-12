@@ -24,6 +24,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 
+import java.util.Objects;
+
 /**
  * Implements a property with a default value stored in preferences or provided locally.
  *
@@ -171,10 +173,7 @@ public abstract class ValuePropertyWithGlobalDefault<T> extends Property {
 
     @NonNull
     String getPreferenceKey() {
-        if (mDefaultPrefKey == null) {
-            throw new IllegalStateException();
-        }
-        return mDefaultPrefKey;
+        return Objects.requireNonNull(mDefaultPrefKey);
     }
 
     @NonNull

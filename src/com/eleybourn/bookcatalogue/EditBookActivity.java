@@ -63,7 +63,7 @@ import java.util.List;
  * @author Evan Leybourn
  */
 public class EditBookActivity extends BookCatalogueActivity
-        implements EditBookAbstractFragment.BookEditManager,
+        implements BookAbstractFragment.BookEditManager,
         OnPartialDatePickerListener, OnTextFieldEditorListener, OnBookshelfCheckChangeListener {
 
     /**
@@ -592,6 +592,7 @@ public class EditBookActivity extends BookCatalogueActivity
             @Override
             public void onTabSelected(@NonNull final TabLayout.Tab tab) {
                 Holder holder = (Holder) tab.getTag();
+                //noinspection ConstantConditions
                 replaceFragment(holder.fragment);
             }
 

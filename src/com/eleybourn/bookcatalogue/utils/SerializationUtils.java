@@ -21,7 +21,6 @@
 package com.eleybourn.bookcatalogue.utils;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.debug.Logger;
 
@@ -67,11 +66,11 @@ public class SerializationUtils {
      */
     @SuppressWarnings("unchecked")
     @NonNull
-    public static <T> T deserializeObject(@NonNull final byte[] o) throws DeserializationException {
+    public static <T> T deserializeObject(@NonNull final byte[] o) throws RTE.DeserializationException {
         try (ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(o))) {
             return (T) in.readObject();
         } catch (@NonNull ClassCastException | ClassNotFoundException | IOException e) {
-            throw new DeserializationException(e);
+            throw new RTE.DeserializationException(e);
         }
     }
 
@@ -79,21 +78,8 @@ public class SerializationUtils {
      * Serialize then de-serialize to create a deep clone.
      */
     @NonNull
-    public static <T extends Serializable> T cloneObject(@NonNull final T o) throws DeserializationException {
+    public static <T extends Serializable> T cloneObject(@NonNull final T o) throws RTE.DeserializationException {
         return deserializeObject(serializeObject(o));
     }
 
-    /**
-     * Catchall class for errors in serialization
-     *
-     * @author Philip Warner
-     */
-    public static class DeserializationException extends Exception {
-        private static final long serialVersionUID = -2040548134317746620L;
-
-        DeserializationException(@Nullable final Exception e) {
-            super();
-            initCause(e);
-        }
-    }
 }

@@ -8,10 +8,10 @@ package com.eleybourn.bookcatalogue;
  * So use something like this:
  *
  *    if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
- *          Logger.debug("some debug info);
+ *          Logger.info("some debug info);
  *    }
  *
- *    RELEASE: set all to false ! in case you forgot to 'and' with BuildConfig.DEBUG anywhere...
+ *    RELEASE: set all to false ! in case you forgot to '&&' with BuildConfig.DEBUG anywhere...
  *
  *    The compiler should remove all code between dead if() blocks
  */
@@ -42,4 +42,5 @@ public final class DEBUG_SWITCHES {
 
     public static final boolean TASK_MANAGER = false;
 
+    public static final boolean BACKUP_READER = false;
 }

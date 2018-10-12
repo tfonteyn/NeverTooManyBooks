@@ -231,7 +231,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
                     .setIconAttribute(android.R.attr.alertDialogIcon)
                     .create();
 
-            dialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(android.R.string.yes),
+            dialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.yes),
                     new DialogInterface.OnClickListener() {
                 public void onClick(final DialogInterface dialog, final int which) {
                     t.setText("");
@@ -239,7 +239,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
                 }
             });
 
-            dialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString(android.R.string.no),
+            dialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.no),
                     new DialogInterface.OnClickListener() {
                 public void onClick(final DialogInterface dialog, final int which) {
                     //do nothing

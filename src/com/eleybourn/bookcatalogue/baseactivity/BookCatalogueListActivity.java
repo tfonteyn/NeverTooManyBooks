@@ -11,6 +11,8 @@ import android.widget.ListView;
 
 import com.eleybourn.bookcatalogue.R;
 
+import java.util.Objects;
+
 /**
  * This has now become a copy from {@link ListActivity} but extending {@link BookCatalogueActivity}
  *
@@ -94,9 +96,8 @@ abstract public class BookCatalogueListActivity extends BookCatalogueActivity {
         super.onContentChanged();
         View emptyView = findViewById(android.R.id.empty);
         mList = findViewById(android.R.id.list);
-        if (mList == null) {
-            throw new IllegalStateException("Your content must have a ListView whose id attribute is '@android:id/list'");
-        }
+        Objects.requireNonNull(mList,"Your content must have a ListView whose id attribute is '@android:id/list'");
+
         if (emptyView != null) {
             mList.setEmptyView(emptyView);
         }

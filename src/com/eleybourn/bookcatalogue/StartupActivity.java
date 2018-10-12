@@ -160,7 +160,7 @@ public class StartupActivity extends AppCompatActivity {
     private void startNextStage() {
         // onCreate being stage 0
         mStartupStage++;
-        Logger.debug("Starting stage " + mStartupStage);
+        Logger.info("Starting stage " + mStartupStage);
 
         switch (mStartupStage) {
             case 1: {
@@ -198,8 +198,8 @@ public class StartupActivity extends AppCompatActivity {
     }
 
     private void startTasks() {
-        if (BuildConfig.DEBUG) {
-            Logger.debug("Startup isTaskRoot() = " + isTaskRoot());
+        if (!isTaskRoot()) {
+            Logger.info("Startup isTaskRoot() = FALSE");
         }
 
         mUiThread = Thread.currentThread();
@@ -281,11 +281,11 @@ public class StartupActivity extends AppCompatActivity {
      */
     private void taskCompleted(@NonNull SimpleTask task) {
         if (BuildConfig.DEBUG) {
-            Logger.debug("Task Completed: " + task.getClass().getSimpleName());
+            Logger.info("Task Completed: " + task.getClass().getCanonicalName());
         }
         if (!mTaskQueue.hasActiveTasks()) {
             if (BuildConfig.DEBUG) {
-                Logger.debug("Task Completed - no more");
+                Logger.info("Task Completed - all done");
             }
             startNextStage();
         }

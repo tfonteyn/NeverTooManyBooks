@@ -55,6 +55,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -357,12 +358,10 @@ public class BookCatalogueApp extends Application {
                     .getApplicationInfo(mInstance.getPackageName(), PackageManager.GET_META_DATA);
         } catch (PackageManager.NameNotFoundException e) {
             Logger.error(e);
-            throw new IllegalStateException("See log for PackageManager.NameNotFoundException");
-        }
-        String result = ai.metaData.getString(name);
-        if (result == null) {
             throw new IllegalStateException();
         }
+        String result = ai.metaData.getString(name);
+        Objects.requireNonNull(result);
         return result.trim();
     }
 
@@ -387,6 +386,7 @@ public class BookCatalogueApp extends Application {
                 .setContentIntent(PendingIntent.getActivity(mInstance.getApplicationContext(), 0, intent, 0))
                 .build();
 
+        //noinspection ConstantConditions
         mNotifier.notify(R.id.NOTIFICATION, notification);
     }
 

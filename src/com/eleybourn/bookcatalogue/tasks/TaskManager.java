@@ -130,8 +130,9 @@ public class TaskManager implements AutoCloseable {
      * @param task Task to add
      */
     public void addTask(@NonNull final ManagedTask task) {
-        if (mIsClosing)
+        if (mIsClosing) {
             throw new RuntimeException("Can not add a task when closing down");
+        }
 
         mCancelling = false;
 
@@ -338,7 +339,7 @@ public class TaskManager implements AutoCloseable {
     @Override
     public void close() {
         if (DEBUG_SWITCHES.TASK_MANAGER && BuildConfig.DEBUG) {
-            Logger.debug("DBG: Task Manager close requested");
+            Logger.info("DBG: Task Manager close requested");
         }
 
         mIsClosing = true;

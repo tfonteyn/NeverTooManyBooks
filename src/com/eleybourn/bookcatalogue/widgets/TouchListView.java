@@ -50,27 +50,26 @@ import com.eleybourn.bookcatalogue.R;
  * You have five customizable attributes:
  *
  * normal_height:
- *      the height of one of your regular rows (required)
+ * the height of one of your regular rows (required)
  *
  * expanded_height:
- *      the largest possible height of one of your rows (defaults to the value of normal_height)
+ * the largest possible height of one of your rows (defaults to the value of normal_height)
  *
  * grabber:
- *      the android:id value of an icon in your rows that should be used as the "grab handle"
- *      for the drag-and-drop operation (required)
+ * the android:id value of an icon in your rows that should be used as the "grab handle"
+ * for the drag-and-drop operation (required)
  *
  * dragndrop_background:
- *      a color to use as the background of your row when it is being dragged
- *      (defaults to being fully transparent)
+ * a color to use as the background of your row when it is being dragged
+ * (defaults to being fully transparent)
  *
  * remove_mode:
- *      ="none"         (default) user cannot remove entries
- *      ="slideRight"   user can remove entries by dragging to the right quarter of the list
- *      ="slideLeft"    user can remove entries by dragging to the left quarter of the list)
- *      ="fling"        ...not quite sure what this does
+ * ="none"         (default) user cannot remove entries
+ * ="slideRight"   user can remove entries by dragging to the right quarter of the list
+ * ="slideLeft"    user can remove entries by dragging to the left quarter of the list)
+ * ="fling"        ...not quite sure what this does
  *
  * NOTE: remove_mode of slide is equivalent to slideRight, but slideRight is recommended.
- *
  */
 public class TouchListView extends ListView {
     private static final int FLING = 0;
@@ -122,40 +121,38 @@ public class TouchListView extends ListView {
 
         mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
 
-        if (attrs != null) {
-            TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.TouchListView, 0, 0);
+        TypedArray typedArray = getContext().obtainStyledAttributes(attrs, R.styleable.TouchListView, 0, 0);
 
-            mItemHeightNormal = a.getDimensionPixelSize(R.styleable.TouchListView_normal_height, 0);
-            //mItemHeightExpanded=a.getDimensionPixelSize(R.styleable.TouchListView_expanded_height, mItemHeightNormal);
-            grabberId = a.getResourceId(R.styleable.TouchListView_grabber, -1);
-            dragndropBackgroundColor = a.getColor(R.styleable.TouchListView_dragndrop_background, Color.TRANSPARENT);
-            mRemoveMode = a.getInt(R.styleable.TouchListView_remove_mode, -1);
+        mItemHeightNormal = typedArray.getDimensionPixelSize(R.styleable.TouchListView_normal_height, 0);
+        //mItemHeightExpanded=a.getDimensionPixelSize(R.styleable.TouchListView_expanded_height, mItemHeightNormal);
+        grabberId = typedArray.getResourceId(R.styleable.TouchListView_grabber, -1);
+        dragndropBackgroundColor = typedArray.getColor(R.styleable.TouchListView_dragndrop_background, Color.TRANSPARENT);
+        mRemoveMode = typedArray.getInt(R.styleable.TouchListView_remove_mode, -1);
 
-            a.recycle();
-        }
+        typedArray.recycle();
     }
 
     @Override
     final public void addHeaderView(View v, Object data, boolean isSelectable) {
-        throw new IllegalStateException("Headers are not supported with TouchListView");
+        throw new UnsupportedOperationException();
     }
 
     @Override
     final public void addHeaderView(View v) {
-        throw new IllegalStateException("Headers are not supported with TouchListView");
+        throw new UnsupportedOperationException();
     }
 
     @Override
     final public void addFooterView(View v, Object data, boolean isSelectable) {
         if (mRemoveMode == SLIDE_LEFT || mRemoveMode == SLIDE_RIGHT) {
-            throw new IllegalStateException("Footers are not supported with TouchListView in conjunction with remove_mode");
+            throw new UnsupportedOperationException();
         }
     }
 
     @Override
     final public void addFooterView(View v) {
         if (mRemoveMode == SLIDE_LEFT || mRemoveMode == SLIDE_RIGHT) {
-            throw new IllegalStateException("Footers are not supported with TouchListView in conjunction with remove_mode");
+            throw new UnsupportedOperationException();
         }
     }
 
@@ -203,7 +200,7 @@ public class TouchListView extends ListView {
                         mCoordinatesOffset = ((int) ev.getRawY()) - y;
                         View dragger = item.findViewById(grabberId);
                         Rect r = mTempRect;
-						// dragger.getDrawingRect(r);
+                        // dragger.getDrawingRect(r);
 
                         r.left = dragger.getLeft();
                         r.right = dragger.getRight();

@@ -35,7 +35,7 @@ import android.support.annotation.Nullable;
 import android.widget.ImageView;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
-import com.eleybourn.bookcatalogue.GetThumbnailTask;
+import com.eleybourn.bookcatalogue.tasks.GetThumbnailTask;
 import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedDb;
 import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedStatement;
 import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer;
@@ -159,7 +159,7 @@ public class CoversDbHelper implements AutoCloseable {
         synchronized (this) {
             mCountToGetInstance++;
             if (BuildConfig.DEBUG) {
-                Logger.debug("CovDBA instances created: " + mCountToGetInstance);
+                Logger.info("CovDBA instances created: " + mCountToGetInstance);
             }
         }
     }
@@ -206,7 +206,7 @@ public class CoversDbHelper implements AutoCloseable {
         synchronized (this) {
             mCountToGetInstance--;
             if (BuildConfig.DEBUG) {
-                Logger.debug("CovDBA instances left: " + mCountToGetInstance);
+                Logger.info("CovDBA instances left: " + mCountToGetInstance);
             }
 
             if (mCountToGetInstance == 0) {

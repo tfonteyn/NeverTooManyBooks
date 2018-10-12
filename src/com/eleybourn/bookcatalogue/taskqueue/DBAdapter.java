@@ -34,6 +34,7 @@ import android.support.annotation.Nullable;
 import com.eleybourn.bookcatalogue.taskqueue.Task.TaskState;
 import com.eleybourn.bookcatalogue.taskqueue.TasksCursor.TaskCursorSubtype;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
+import com.eleybourn.bookcatalogue.utils.RTE;
 import com.eleybourn.bookcatalogue.utils.SerializationUtils;
 
 import java.util.ArrayList;
@@ -563,7 +564,7 @@ class DBAdapter {
 
             try {
                 task = SerializationUtils.deserializeObject(mBlob);
-            } catch (SerializationUtils.DeserializationException e) {
+            } catch (RTE.DeserializationException e) {
                 return null;
             }
 

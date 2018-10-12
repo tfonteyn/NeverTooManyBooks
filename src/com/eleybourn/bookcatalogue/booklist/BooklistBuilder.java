@@ -50,6 +50,7 @@ import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
 import com.eleybourn.bookcatalogue.database.definitions.TableDefinition.TableTypes;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
+import com.eleybourn.bookcatalogue.utils.RTE;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -285,7 +286,7 @@ public class BooklistBuilder implements AutoCloseable {
         if (DEBUG_SWITCHES.BOOKLIST_BUILDER && BuildConfig.DEBUG) {
             synchronized (mInstanceCount) {
                 mInstanceCount++;
-                Logger.debug("Builder instances: " + mInstanceCount);
+                Logger.info("BB instances: " + mInstanceCount);
             }
         }
 
@@ -820,7 +821,7 @@ public class BooklistBuilder implements AutoCloseable {
                         break;
 
                     default:
-                        throw new IllegalArgumentException("Unsupported group type " + booklistGroup.kind);
+                        throw new RTE.IllegalTypeException("" + booklistGroup.kind);
 
                 }
                 // Copy the current groups to this level item; this effectively accumulates 'group by' domains
@@ -1092,7 +1093,7 @@ public class BooklistBuilder implements AutoCloseable {
                 //}
                 //selCsr.close();
                 //long TM1 = System.currentTimeMillis();
-                //Logger.debug("Time to MANUALLY INSERT: " + (TM1-TM0));
+                //Logger.info("Time to MANUALLY INSERT: " + (TM1-TM0));
 
                 mLevelBuildStmts = new ArrayList<>();
 
@@ -1115,7 +1116,7 @@ public class BooklistBuilder implements AutoCloseable {
                     // Without triggers we just get the base rows and add summary later
                     mBaseBuildStmt = mStatements.add("mBaseBuildStmt",
                             sqlCmp.insertSelect + sqlCmp.join + sqlCmp.where);
-                    //Logger.debug("Base Build:\n" + sql);
+                    //Logger.info("Base Build:\n" + sql);
                     mBaseBuildStmt.execute();
                     t2 = System.currentTimeMillis();
 
@@ -1258,33 +1259,33 @@ public class BooklistBuilder implements AutoCloseable {
                 //mSyncedDb.execSQL("analyze " + mTableName);
 
                 if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
-                    Logger.debug("T0a: " + (t0a - t0));
-                    Logger.debug("T0b: " + (t0b - t0a));
-                    Logger.debug("T0c: " + (t0c - t0b));
-                    Logger.debug("T0d: " + (t0d - t0c));
-                    Logger.debug("T0e: " + (t0e - t0d));
-                    Logger.debug("T1: " + (t1 - t0));
-                    Logger.debug("T1a: " + (t1a - t1));
-                    Logger.debug("T1b: " + (t1b - t1a));
-                    Logger.debug("T1c: " + (t2 - t1b));
-                    Logger.debug("T2a[0]: " + (t2a[0] - t2));
+                    Logger.info("T0a: " + (t0a - t0));
+                    Logger.info("T0b: " + (t0b - t0a));
+                    Logger.info("T0c: " + (t0c - t0b));
+                    Logger.info("T0d: " + (t0d - t0c));
+                    Logger.info("T0e: " + (t0e - t0d));
+                    Logger.info("T1: " + (t1 - t0));
+                    Logger.info("T1a: " + (t1a - t1));
+                    Logger.info("T1b: " + (t1b - t1a));
+                    Logger.info("T1c: " + (t2 - t1b));
+                    Logger.info("T2a[0]: " + (t2a[0] - t2));
                     for (int i = 1; i < mStyle.size(); i++) {
-                        Logger.debug("T2a[" + i + "]: " + (t2a[i] - t2a[i - 1]));
+                        Logger.info("T2a[" + i + "]: " + (t2a[i] - t2a[i - 1]));
                     }
-                    Logger.debug("T3: " + (t3 - t2a[mStyle.size() - 1]));
-                    Logger.debug("T3a: " + (t3a - t3));
-                    Logger.debug("T3b: " + (t3b - t3a));
-                    Logger.debug("T4: " + (t4 - t3b));
-                    Logger.debug("T4a: " + (t4a - t4));
-                    Logger.debug("T4b: " + (t4b - t4a));
-                    Logger.debug("T4c: " + (t4c - t4b));
-                    //Logger.debug("T5: " + (t5-t4));
-                    //Logger.debug("T6: " + (t6-t5));
-                    //Logger.debug("T7: " + (t7-t6));
-                    Logger.debug("T8: " + (t8 - t4c));
-                    Logger.debug("T9: " + (t9 - t8));
-                    Logger.debug("T10: " + (t10 - t9));
-                    Logger.debug("T11: " + (System.currentTimeMillis() - t10));
+                    Logger.info("T3: " + (t3 - t2a[mStyle.size() - 1]));
+                    Logger.info("T3a: " + (t3a - t3));
+                    Logger.info("T3b: " + (t3b - t3a));
+                    Logger.info("T4: " + (t4 - t3b));
+                    Logger.info("T4a: " + (t4a - t4));
+                    Logger.info("T4b: " + (t4b - t4a));
+                    Logger.info("T4c: " + (t4c - t4b));
+                    //Logger.info("T5: " + (t5-t4));
+                    //Logger.info("T6: " + (t6-t5));
+                    //Logger.info("T7: " + (t7-t6));
+                    Logger.info("T8: " + (t8 - t4c));
+                    Logger.info("T9: " + (t9 - t8));
+                    Logger.info("T10: " + (t10 - t9));
+                    Logger.info("T11: " + (System.currentTimeMillis() - t10));
                 }
                 mSyncedDb.setTransactionSuccessful();
 
@@ -1818,7 +1819,7 @@ public class BooklistBuilder implements AutoCloseable {
 //		long tc2 = System.currentTimeMillis();
 //		cFoo.close();
 //
-//		Logger.debug("Limit cursor @" + pos + " create in " + (tc1 - tc0) + "ms, count (" + cCnt + ") in " + (tc2-tc1) + "ms");
+//		Logger.info("Limit cursor @" + pos + " create in " + (tc1 - tc0) + "ms, count (" + cCnt + ") in " + (tc2-tc1) + "ms");
 //	}
 
 //	private void pseudoCount(TableDefinition table, String condition) {
@@ -1938,7 +1939,7 @@ public class BooklistBuilder implements AutoCloseable {
         }
 
         if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
-            Logger.debug("Pseudo-count (" + name + ") = " + cnt + " completed in " + (System.currentTimeMillis() - tc0) + "ms");
+            Logger.info("Pseudo-count (" + name + ") = " + cnt + " completed in " + (System.currentTimeMillis() - tc0) + "ms");
         }
         return cnt;
     }
@@ -2075,7 +2076,7 @@ public class BooklistBuilder implements AutoCloseable {
         }
 
         if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
-            Logger.debug("Expand All: " + (System.currentTimeMillis() - t0));
+            Logger.info("Expand All: " + (System.currentTimeMillis() - t0));
         }
     }
 
@@ -2144,9 +2145,9 @@ public class BooklistBuilder implements AutoCloseable {
     private void cleanup(final boolean isFinalize) {
         if (mStatements.size() != 0) {
             if (DEBUG_SWITCHES.BOOKLIST_BUILDER && BuildConfig.DEBUG && isFinalize) {
-                Logger.debug("BooklistBuilder Finalizing with active statements (this is not an error): ");
+                Logger.info("BooklistBuilder Finalizing with active statements (this is not an error): ");
                 for (String name : mStatements.getNames()) {
-                    Logger.debug(name);
+                    Logger.info(name);
                 }
             }
             try {
@@ -2158,7 +2159,7 @@ public class BooklistBuilder implements AutoCloseable {
 
         if (mNavTable != null) {
             if (DEBUG_SWITCHES.BOOKLIST_BUILDER && BuildConfig.DEBUG && isFinalize) {
-                Logger.debug("BooklistBuilder Finalizing wth mNavTable (this is not an error)");
+                Logger.info("BooklistBuilder Finalizing wth mNavTable (this is not an error)");
             }
             try {
                 mNavTable.close();
@@ -2169,7 +2170,7 @@ public class BooklistBuilder implements AutoCloseable {
         }
         if (mListTable != null) {
             if (DEBUG_SWITCHES.BOOKLIST_BUILDER && BuildConfig.DEBUG && isFinalize) {
-                Logger.debug("BooklistBuilder Finalizing  with list table (this is not an error)");
+                Logger.info("BooklistBuilder Finalizing  with list table (this is not an error)");
             }
             try {
                 mListTable.close();
@@ -2184,7 +2185,7 @@ public class BooklistBuilder implements AutoCloseable {
                 // Only de-reference once!
                 synchronized (mInstanceCount) {
                     mInstanceCount--;
-                    Logger.debug("Builder instances: " + mInstanceCount);
+                    Logger.info("BB instances: " + mInstanceCount);
                 }
             }
             mReferenceDecremented = true;
@@ -2378,9 +2379,8 @@ public class BooklistBuilder implements AutoCloseable {
             mListTable.create(mSyncedDb, false);
 
             if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
-                long t2 = System.currentTimeMillis();
-                Logger.debug("DROP = " + (t1 - t0));
-                Logger.debug("Create = " + (t2 - t1));
+                Logger.info("Drop   = " + (t1 - t0));
+                Logger.info("Create = " + (System.currentTimeMillis() - t1));
             }
         }
 
@@ -2578,7 +2578,7 @@ public class BooklistBuilder implements AutoCloseable {
 //				break;
 //
 //			default:
-//				throw new IllegalStateException("Unsupported group type " + l.kind);
+//				throw new IllegalTypeException(l.kind.toString());
 //
 //			}
 //			// Copy the current groups to this level item; this effectively accumulates 'group by' domains 
@@ -2979,35 +2979,35 @@ public class BooklistBuilder implements AutoCloseable {
 //			//mSyncedDb.execSQL("analyze " + mTableName);
 //			long t11 = System.currentTimeMillis();
 //			
-//			Logger.debug("T0a: " + (t0a-t0));
-//			Logger.debug("T0b: " + (t0b-t0a));
-//			Logger.debug("T0c: " + (t0c-t0b));
-//			Logger.debug("T0d: " + (t0d-t0c));
-//			Logger.debug("T0e: " + (t0e-t0d));
-//			Logger.debug("T1: " + (t1-t0));
-//			Logger.debug("T1a: " + (t1a-t1));
-//			Logger.debug("T1b: " + (t1b-t1a));
-//			Logger.debug("T1c: " + (t1c-t1b));
-//			Logger.debug("T1d: " + (t1d-t1c));
-//			Logger.debug("T2: " + (t2-t1d));
-//			//Logger.debug("T2a[0]: " + (t2a[0]-t2));
+//			Logger.info("T0a: " + (t0a-t0));
+//			Logger.info("T0b: " + (t0b-t0a));
+//			Logger.info("T0c: " + (t0c-t0b));
+//			Logger.info("T0d: " + (t0d-t0c));
+//			Logger.info("T0e: " + (t0e-t0d));
+//			Logger.info("T1: " + (t1-t0));
+//			Logger.info("T1a: " + (t1a-t1));
+//			Logger.info("T1b: " + (t1b-t1a));
+//			Logger.info("T1c: " + (t1c-t1b));
+//			Logger.info("T1d: " + (t1d-t1c));
+//			Logger.info("T2: " + (t2-t1d));
+//			//Logger.info("T2a[0]: " + (t2a[0]-t2));
 //			//for(int i = 1; i < mLevels.size(); i++) {
-//			//	Logger.debug("T2a[" + i + "]: " + (t2a[i]-t2a[i-1]));
+//			//	Logger.info("T2a[" + i + "]: " + (t2a[i]-t2a[i-1]));
 //			//}
-//			//Logger.debug("T3: " + (t3-t2a[mLevels.size()-1]));
-//			Logger.debug("T3a: " + (t3a-t3));
-//			Logger.debug("T3b: " + (t3b-t3a));
-//			Logger.debug("T4: " + (t4-t3b));
-//			Logger.debug("T4a: " + (t4a-t4));
-//			Logger.debug("T4b: " + (t4b-t4a));
-//			Logger.debug("T4c: " + (t4c-t4b));
-//			//Logger.debug("T5: " + (t5-t4));
-//			//Logger.debug("T6: " + (t6-t5));
-//			//Logger.debug("T7: " + (t7-t6));
-//			Logger.debug("T8: " + (t8-t4c));
-//			Logger.debug("T9: " + (t9-t8));
-//			Logger.debug("T10: " + (t10-t9));
-//			Logger.debug("T10: " + (t11-t10));
+//			//Logger.info("T3: " + (t3-t2a[mLevels.size()-1]));
+//			Logger.info("T3a: " + (t3a-t3));
+//			Logger.info("T3b: " + (t3b-t3a));
+//			Logger.info("T4: " + (t4-t3b));
+//			Logger.info("T4a: " + (t4a-t4));
+//			Logger.info("T4b: " + (t4b-t4a));
+//			Logger.info("T4c: " + (t4c-t4b));
+//			//Logger.info("T5: " + (t5-t4));
+//			//Logger.info("T6: " + (t6-t5));
+//			//Logger.info("T7: " + (t7-t6));
+//			Logger.info("T8: " + (t8-t4c));
+//			Logger.info("T9: " + (t9-t8));
+//			Logger.info("T10: " + (t10-t9));
+//			Logger.info("T10: " + (t11-t10));
 //
 //			mSyncedDb.setTransactionSuccessful();
 //

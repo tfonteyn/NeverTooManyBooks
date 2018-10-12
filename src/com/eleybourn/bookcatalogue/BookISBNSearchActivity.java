@@ -557,7 +557,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
      */
     private void go(@NonNull final String isbn, @NonNull final String author, @NonNull final String title) {
         if (BuildConfig.DEBUG) {
-            Logger.debug("BookISBNSearchActivity.go: isbn=" + isbn + ", author=" + author + ", title=" + title);
+            Logger.info("BookISBNSearchActivity.go: isbn=" + isbn + ", author=" + author + ", title=" + title);
         }
 
         if (isbn.isEmpty() && author.isEmpty() && title.isEmpty()) {

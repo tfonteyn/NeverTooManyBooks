@@ -110,7 +110,7 @@ public class XmlResponseParser extends DefaultHandler {
         // Get out current context from the hierarchy and pop from stack
         ElementContext thisElement = mParents.remove(mParents.size() - 1);
         // Minor paranoia. Make sure name matches. Total waste of time, right?
-        if (!thisElement.localName.equals(localName)) {
+        if (!localName.equals(thisElement.localName)) {
             throw new RuntimeException("End element '" + localName + "' does not match start element '" + thisElement.localName + "'");
         }
 

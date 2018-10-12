@@ -25,6 +25,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 
 import com.eleybourn.bookcatalogue.BCPreferences;
+import com.eleybourn.bookcatalogue.utils.RTE;
 
 /**
  * Extends ListProperty to create a nullable integer property with associated editing support.
@@ -55,8 +56,9 @@ public class StringListProperty extends ListProperty<String> implements Property
     @NonNull
     @Override
     public StringListProperty set(@NonNull final Property p) {
-        if (!(p instanceof StringValue))
-            throw new IllegalStateException("Can not find a compatible interface for string parameter");
+        if (!(p instanceof StringValue)) {
+            throw new RTE.IllegalTypeException(p.getClass().getCanonicalName());
+        }
         StringValue v = (StringValue) p;
         set(v.get());
         return this;

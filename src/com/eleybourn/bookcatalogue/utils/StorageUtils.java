@@ -400,7 +400,7 @@ public class StorageUtils {
         }
 
         if (DEBUG_SWITCHES.STORAGE_UTILS && BuildConfig.DEBUG) {
-            Logger.debug(debugInfo.toString());
+            Logger.info(debugInfo.toString());
         }
 
         // Sort descending based on modified date
@@ -502,8 +502,8 @@ public class StorageUtils {
     }
 
     /**
-     * @param sourcePath   file to backup
-     * @param destPath     destination file name, will be stored in our directory on ExternalStorage
+     * @param sourcePath file to backup
+     * @param destPath   destination file name, will be stored in our directory on ExternalStorage
      */
     public static void backupFile(@NonNull final String sourcePath, @NonNull final String destPath) {
         try {
@@ -518,27 +518,32 @@ public class StorageUtils {
     }
 
     public static void copyFile(@NonNull final File src, @NonNull final File dst) throws IOException {
+        // let any IOException escape for the caller to deal with
         InputStream in = new FileInputStream(src);
         copyFile(in, FILE_COPY_BUFFER_SIZE, dst);
+        in.close();
     }
 
-    public static void copyFile(@NonNull final InputStream in, final int bufferSize, @NonNull final File dst) throws IOException {
-        OutputStream out = null;
-        try {
-            out = new FileOutputStream(dst);
+    /**
+     * @param in          InputStream, will NOT be closed here. Close it yourself !
+     * @param bufferSize  the read buffer
+     * @param destination destination file, will be properly closed.
+     *
+     * @throws IOException at failures
+     */
+    public static void copyFile(@NonNull final InputStream in,
+                                final int bufferSize,
+                                @NonNull final File destination) throws IOException {
+        try (OutputStream out = new FileOutputStream(destination)) {
             byte[] buffer = new byte[bufferSize];
             int nRead;
             while ((nRead = in.read(buffer)) > 0) {
                 out.write(buffer, 0, nRead);
             }
             out.flush();
-        } finally {
-            // let any IOException escape for the caller to deal with
-            if (out != null) {
-                out.close(); // closing 'out' is more important than closing 'in'.
-            }
-            in.close();
         }
+        // let any IOException escape for the caller to deal with
+        //IMPORTANT: DO **NOT** CLOSE THE INPUT STREAM. IT WILL BREAK 'RESTORE BACKUP'
     }
 
     /**
@@ -566,7 +571,7 @@ public class StorageUtils {
 
     public static long getFreeSpace() {
         StatFs stat = new StatFs(Environment.getExternalStorageDirectory().toString());
-        return (stat.getAvailableBlocksLong() * stat.getBlockSizeLong()) ;
+        return (stat.getAvailableBlocksLong() * stat.getBlockSizeLong());
     }
 
     /**

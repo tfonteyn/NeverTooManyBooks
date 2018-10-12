@@ -26,6 +26,7 @@ import android.database.sqlite.SQLiteQuery;
 import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.utils.DateUtils;
+import com.eleybourn.bookcatalogue.utils.RTE;
 import com.eleybourn.bookcatalogue.utils.SerializationUtils;
 import com.eleybourn.bookcatalogue.widgets.BindableItemCursorAdapter;
 
@@ -104,7 +105,7 @@ public class EventsCursor extends SQLiteCursor implements BindableItemCursor {
         Event event;
         try {
             event = SerializationUtils.deserializeObject(blob);
-        } catch (SerializationUtils.DeserializationException de) {
+        } catch (RTE.DeserializationException de) {
             event = QueueManager.getQueueManager().newLegacyEvent();
         }
         event.setId(this.getId());

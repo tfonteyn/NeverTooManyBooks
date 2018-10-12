@@ -118,7 +118,7 @@ public class PropertyGroup {
     }
 
     /** Realize and return the group name */
-    @Nullable
+    @NonNull
     private String getName() {
         if (mName == null) {
             mName = BookCatalogueApp.getResourceString(nameId);
@@ -139,7 +139,7 @@ public class PropertyGroup {
         @SuppressWarnings("UnusedReturnValue")
         PropertyGroup addGroup(@NonNull final PropertyGroup g) {
             if (this.containsKey(g.id) && (this.get(g.id) != g)) {
-                throw new IllegalStateException("Duplicate PropertyGroup ID " + g.id);
+                throw new IllegalArgumentException("Duplicate PropertyGroup ID " + g.id);
             }
 
             this.put(g.id, g);

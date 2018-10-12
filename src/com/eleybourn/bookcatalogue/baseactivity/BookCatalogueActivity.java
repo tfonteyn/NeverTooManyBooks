@@ -159,7 +159,7 @@ abstract public class BookCatalogueActivity extends AppCompatActivity
     protected void restartActivityIfNeeded() {
         if (mReloadOnResume) {
             if (BuildConfig.DEBUG) {
-                Logger.debug("Restarting " + this.getClass().getSimpleName());
+                Logger.info("Restarting " + this.getClass().getCanonicalName());
             }
             finish();
             startActivity(getIntent());

@@ -19,6 +19,8 @@ package com.eleybourn.bookcatalogue.taskqueue;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.eleybourn.bookcatalogue.utils.RTE;
+
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 
@@ -76,15 +78,16 @@ public abstract class BaseCancelable<T> implements Cancelable<T> {
     }
 
     private T handleTerminalStates() throws ExecutionException {
-        if (mState == STATE_CANCELED) {
-            throw new CancellationException();
+        switch (mState) {
+            case STATE_CANCELED:
+                throw new CancellationException();
+            case STATE_ERROR:
+                throw new ExecutionException(mError);
+            case STATE_COMPLETE:
+                return mResult;
+            default:
+                throw new RTE.IllegalTypeException("" + mState);
         }
-        if (mState == STATE_ERROR) {
-            throw new ExecutionException(mError);
-        }
-        if (mState == STATE_COMPLETE)
-            return mResult;
-        throw new IllegalStateException();
     }
 
     public synchronized void await() throws InterruptedException {
@@ -115,10 +118,12 @@ public abstract class BaseCancelable<T> implements Cancelable<T> {
             }
         }
         synchronized (this) {
-            if (mState == STATE_CANCELING)
+            if (mState == STATE_CANCELING) {
                 mState = STATE_CANCELED;
-            if (mState == STATE_EXECUTING)
+            }
+            if (mState == STATE_EXECUTING) {
                 mState = STATE_COMPLETE;
+            }
             notifyAll();
             if (mState == STATE_CANCELED && mResult != null) {
                 freeCanceledResult(mResult);
@@ -141,8 +146,9 @@ public abstract class BaseCancelable<T> implements Cancelable<T> {
             return false;
         }
         if (mState == STATE_EXECUTING) {
-            if (mCurrentTask != null)
+            if (mCurrentTask != null) {
                 mCurrentTask.requestCancel();
+            }
             mState = STATE_CANCELING;
             return true;
         }
@@ -172,8 +178,9 @@ public abstract class BaseCancelable<T> implements Cancelable<T> {
             if (mCurrentTask != null) {
                 throw new IllegalStateException("cannot run two sub-tasks at the same time");
             }
-            if (mState == STATE_CANCELING)
+            if (mState == STATE_CANCELING) {
                 throw new CancellationException();
+            }
             mCurrentTask = cancelable;
         }
         try {

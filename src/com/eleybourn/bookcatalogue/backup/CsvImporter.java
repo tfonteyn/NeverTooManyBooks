@@ -26,7 +26,6 @@ import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
-import com.eleybourn.bookcatalogue.backup.ImportThread.ImportException;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer.SyncLock;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -135,7 +134,7 @@ public class CsvImporter implements Importer {
         /* Iterate through each imported row */
         SyncLock syncLock = null;
         try {
-            while (row < importedList.size() && listener.isActive()) {
+            while (row < importedList.size() && !listener.isCancelled()) {
                 // every 10 inserted, we commit the transaction
                 if (mDb.inTransaction() && txRowCount > 10) {
                     mDb.setTransactionSuccessful();
@@ -219,7 +218,7 @@ public class CsvImporter implements Importer {
                 }
 
                 long now = System.currentTimeMillis();
-                if ((now - lastUpdate) > 200 && listener.isActive()) {
+                if ((now - lastUpdate) > 200 && !listener.isCancelled()) {
                     listener.onProgress(title + "\n(" + BookCatalogueApp.getResourceString(R.string.n_created_m_updated, mCreated, mUpdated) + ")", row);
                     lastUpdate = now;
                 }
@@ -248,6 +247,7 @@ public class CsvImporter implements Importer {
             }
         }
 
+        Logger.info("Csv Import successful: rows processed: " + row + ", created:" + mCreated + ", updated: " + mUpdated);
         return true;
     }
 
@@ -327,7 +327,7 @@ public class CsvImporter implements Importer {
         String importDateStr = book.getString(UniqueId.KEY_LAST_UPDATE_DATE);
 
         Date importDate = null;
-        if (importDateStr != null && !importDateStr.isEmpty()) {
+        if (!importDateStr.isEmpty()) {
             try {
                 importDate = DateUtils.parseDate(importDateStr);
             } catch (Exception ignore) {
@@ -352,7 +352,12 @@ public class CsvImporter implements Importer {
                     ArrayList<AnthologyTitle> ata = new ArrayList<>();
                     long bookId = book.getLong(UniqueId.KEY_ID);
                     for (String title : list) {
-                        ata.add(new AnthologyTitle(title, bookId));
+                        // as titles are saved as a repeated "title|", the 'last' one is also an empty one.
+                        // "Islands In The Sky * Clarke, Arthur C.|The Sands Of Mars * Clarke, Arthur C.|Eartlight * Clarke, Arthur C.|"
+                        //  But let's not assume and keep this general
+                        if (!title.isEmpty()) {
+                            ata.add(new AnthologyTitle(title, bookId));
+                        }
                     }
                     // fixup the id's
                     Utils.pruneList(db, ata);
@@ -391,15 +396,12 @@ public class CsvImporter implements Importer {
     private void handleSeries(@NonNull final CatalogueDBAdapter db,
                               @NonNull final Book book) {
         String seriesDetails = book.getString(UniqueId.BKEY_SERIES_DETAILS);
-        if (seriesDetails == null || seriesDetails.isEmpty()) {
+        if (seriesDetails.isEmpty()) {
             // Try to build from SERIES_NAME and SERIES_NUM. It may all be blank
             if (book.containsKey(UniqueId.KEY_SERIES_NAME)) {
                 seriesDetails = book.getString(UniqueId.KEY_SERIES_NAME);
-                if (seriesDetails != null && !seriesDetails.isEmpty()) {
+                if (!seriesDetails.isEmpty()) {
                     String seriesNum = book.getString(UniqueId.KEY_SERIES_NUM);
-                    if (seriesNum == null) {
-                        seriesNum = "";
-                    }
                     seriesDetails += "(" + seriesNum + ")";
                 } else {
                     seriesDetails = null;
@@ -421,7 +423,7 @@ public class CsvImporter implements Importer {
                                @NonNull final Book book) {
         // Get the list of authors from whatever source is available.
         String authorDetails = book.getString(UniqueId.BKEY_AUTHOR_DETAILS);
-        if (authorDetails == null || authorDetails.isEmpty()) {
+        if (authorDetails.isEmpty()) {
             // Need to build it from other fields.
             if (book.containsKey(UniqueId.KEY_AUTHOR_FAMILY_NAME)) {
                 // Build from family/given
@@ -430,7 +432,7 @@ public class CsvImporter implements Importer {
                 if (book.containsKey(UniqueId.KEY_AUTHOR_GIVEN_NAMES)) {
                     given = book.getString(UniqueId.KEY_AUTHOR_GIVEN_NAMES);
                 }
-                if (given != null && !given.isEmpty()) {
+                if (!given.isEmpty()) {
                     authorDetails += ", " + given;
                 }
             } else if (book.containsKey(UniqueId.KEY_AUTHOR_NAME)) {
@@ -443,7 +445,7 @@ public class CsvImporter implements Importer {
         // A pre-existing bug sometimes results in blank author-details due to bad underlying data
         // (it seems a 'book' record gets written without an 'author' record; should not happen)
         // so we allow blank author_details and full in a regional version of "Author, Unknown"
-        if (authorDetails == null || authorDetails.isEmpty()) {
+        if (authorDetails.isEmpty()) {
             authorDetails = BookCatalogueApp.getResourceString(R.string.author) + ", " + BookCatalogueApp.getResourceString(R.string.unknown);
             //String s = BookCatalogueApp.getResourceString(R.string.column_is_blank);
             //throw new ImportException(String.format(s, DatabaseDefinitions.BKEY_AUTHOR_DETAILS, row));

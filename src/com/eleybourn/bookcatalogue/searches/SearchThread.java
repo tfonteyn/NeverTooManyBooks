@@ -104,7 +104,7 @@ abstract public class SearchThread extends ManagedTask {
     protected void showException(@StringRes final int id, @NonNull final Exception e) {
         String s;
         try {
-            s = e.getMessage();
+            s = e.getLocalizedMessage();
         } catch (Exception e2) {
             s = e2.getClass().getCanonicalName();
         }

@@ -71,7 +71,7 @@ public class Utils {
      * TODO: unify with {@link #getInputStreamWithTerminator}
      */
     @NonNull
-    public static InputStream getInputStream(@NonNull final String urlText) throws IOException, URISyntaxException {
+    static InputStream getInputStream(@NonNull final String urlText) throws IOException, URISyntaxException {
         final URL url = new URL(urlText);
         final HttpGet httpRequest = new HttpGet(url.toURI());
         final HttpClient httpclient = new DefaultHttpClient();
@@ -203,7 +203,7 @@ public class Utils {
         }
     }
 
-    /*
+    /**
      *@return boolean return true if the application can access the internet
      */
     public static boolean isNetworkAvailable(@NonNull final Context context) {
@@ -346,8 +346,8 @@ public class Utils {
     /**
      * Get a value from a bundle and convert to a long.
      *
-     * @param bundle   Bundle
-     * @param key Key in bundle
+     * @param bundle Bundle
+     * @param key    Key in bundle
      *
      * @return Result
      *
@@ -392,7 +392,35 @@ public class Utils {
         boolean isUniqueById();
     }
 
-    /*
+    private static class ConnectionInfo {
+        @Nullable
+        URLConnection connection = null;
+        @Nullable
+        StatefulBufferedInputStream inputStream = null;
+    }
+
+    public static class StatefulBufferedInputStream extends BufferedInputStream implements Closeable {
+        private boolean mIsOpen = true;
+
+        StatefulBufferedInputStream(@NonNull final InputStream in) {
+            super(in);
+        }
+
+        @Override
+        public void close() throws IOException {
+            try {
+                super.close();
+            } finally {
+                mIsOpen = false;
+            }
+        }
+
+        public boolean isOpen() {
+            return mIsOpen;
+        }
+    }
+
+    /**
      * Check if phone has a network connection
      *
      * @return
@@ -431,51 +459,24 @@ public class Utils {
 			return false;
 		}
 	}
+
+	public static int lookupHost(String hostname) {
+	    InetAddress inetAddress;
+	    try {
+	        inetAddress = InetAddress.getByName(hostname);
+	    } catch (UnknownHostException error) {
+	        return -1;
+	    }
+	    byte[] addrBytes;
+	    int addr;
+	    addrBytes = inetAddress.getAddress();
+	    addr = ((addrBytes[3] & 0xff) << 24)
+	            | ((addrBytes[2] & 0xff) << 16)
+	            | ((addrBytes[1] & 0xff) << 8)
+	            |  (addrBytes[0] & 0xff);
+	    return addr;
+	}
 	*/
 
-//	public static int lookupHost(String hostname) {
-//	    InetAddress inetAddress;
-//	    try {
-//	        inetAddress = InetAddress.getByName(hostname);
-//	    } catch (UnknownHostException error) {
-//	        return -1;
-//	    }
-//	    byte[] addrBytes;
-//	    int addr;
-//	    addrBytes = inetAddress.getAddress();
-//	    addr = ((addrBytes[3] & 0xff) << 24)
-//	            | ((addrBytes[2] & 0xff) << 16)
-//	            | ((addrBytes[1] & 0xff) << 8)
-//	            |  (addrBytes[0] & 0xff);
-//	    return addr;
-//	}
-
-    private static class ConnectionInfo {
-        @Nullable
-        URLConnection connection = null;
-        @Nullable
-        StatefulBufferedInputStream inputStream = null;
-    }
-
-    public static class StatefulBufferedInputStream extends BufferedInputStream implements Closeable {
-        private boolean mIsOpen = true;
-
-        StatefulBufferedInputStream(@NonNull final InputStream in) {
-            super(in);
-        }
-
-        @Override
-        public void close() throws IOException {
-            try {
-                super.close();
-            } finally {
-                mIsOpen = false;
-            }
-        }
-
-        public boolean isOpen() {
-            return mIsOpen;
-        }
-    }
 }
 

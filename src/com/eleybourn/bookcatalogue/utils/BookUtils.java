@@ -30,7 +30,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.FileProvider;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.BookDetailsActivity;
 import com.eleybourn.bookcatalogue.EditBookActivity;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.database.cursors.BookRowView;

@@ -30,11 +30,12 @@ import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BCPreferences;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
+import com.eleybourn.bookcatalogue.UpdateFromInternetActivity;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.BookNotFoundException;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.NetworkException;
@@ -51,6 +52,7 @@ import com.eleybourn.bookcatalogue.searches.goodreads.api.ShowBookByIdApiHandler
 import com.eleybourn.bookcatalogue.searches.goodreads.api.ShowBookByIsbnApiHandler;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.IsbnUtils;
+import com.eleybourn.bookcatalogue.utils.RTE;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -87,7 +89,7 @@ import oauth.signpost.exception.OAuthMessageSignerException;
  * Class to wrap all GoodReads API calls and manage an API connection.
  *
  * ENHANCE: Add 'send to goodreads'/'update from internet' option in book edit menu
- * ENHANCE: Change {@link com.eleybourn.bookcatalogue.UpdateFromInternet} to allow source selection and single-book execution
+ * ENHANCE: Change {@link UpdateFromInternetActivity} to allow source selection and single-book execution
  *
  * ENHANCE: Link an Event to a book, and display in book list with exclamation triangle overwriting cover.
  * ENHANCE: MAYBE Replace Events with something similar in local DB?
@@ -290,11 +292,8 @@ public class GoodreadsManager {
      */
     private void sharedInit() {
         // protection against forgetful developers (me!)
-        if (DEV_KEY.isEmpty()) {
-            throw new IllegalStateException("GoodReads dev key not set in manifest");
-        }
-        if (DEV_SECRET.isEmpty()) {
-            throw new IllegalStateException("GoodReads secret key not set in manifest");
+        if (DEV_KEY.isEmpty() || DEV_SECRET.isEmpty()) {
+            throw new RTE.DeveloperKeyMissingException();
         }
 
         mConsumer = new CommonsHttpOAuthConsumer(DEV_KEY, DEV_SECRET);
@@ -390,14 +389,14 @@ public class GoodreadsManager {
         }
 
         if (BuildConfig.DEBUG) {
-            Logger.debug("GR requestAuthorization authUrl: " + authUrl);
+            Logger.info("GR requestAuthorization authUrl: " + authUrl);
         }
         //FIXME: double check if this ever gives issues!
         if (!authUrl.startsWith("http://") && !authUrl.startsWith("https://")) {
             // Make a valid URL for the parser (some come back without a schema)
             authUrl = "http://" + authUrl;
             if (BuildConfig.DEBUG) {
-                Logger.debug("GR requestAuthorization: replacing with: " + authUrl);
+                Logger.info("GR requestAuthorization: replacing with: " + authUrl);
             }
         }
 
@@ -469,20 +468,18 @@ public class GoodreadsManager {
      *
      * @author Philip Warner
      */
-    @SuppressWarnings("UnusedReturnValue")
-    @NonNull
-    public HttpResponse execute(@NonNull final HttpUriRequest request,
-                                @Nullable final DefaultHandler requestHandler,
-                                final boolean requiresSignature) throws
+    public void execute(@NonNull final HttpUriRequest request,
+                        @Nullable final DefaultHandler requestHandler,
+                        final boolean requiresSignature) throws
             OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException,
             IOException, NotAuthorizedException, BookNotFoundException, NetworkException {
 
         // this should only happen when the developer did not set a dev key in the manifest
         if (!mHasValidCredentials) {
             if (BuildConfig.DEBUG) {
-                Logger.debug("GoodReadManager: mHasValidCredentials == false, when entering execute method");
+                throw new RTE.DeveloperKeyMissingException();
             }
-            return null;
+            return;
         }
 
         // Get a new client
@@ -518,8 +515,6 @@ public class GoodreadsManager {
                 throw new RuntimeException("Unexpected status code from API: "
                         + response.getStatusLine().getStatusCode() + "/" + response.getStatusLine().getReasonPhrase());
         }
-
-        return response;
     }
 
     /**
@@ -586,7 +581,7 @@ public class GoodreadsManager {
     @SuppressWarnings("UnusedReturnValue")
     private boolean parseResponse(@NonNull final HttpResponse response,
                                   @Nullable final DefaultHandler requestHandler) throws
-            IllegalStateException, IOException {
+            IOException {
         boolean parseOk = false;
 
         // Setup the parser
@@ -604,7 +599,7 @@ public class GoodreadsManager {
         } catch (@NonNull ParserConfigurationException | SAXException | IOException e) {
             String s = "unknown";
             try {
-                s = e.getMessage();
+                s = e.getLocalizedMessage();
             } catch (Exception ignored) {
             }
             Logger.error(e, s);
@@ -613,7 +608,7 @@ public class GoodreadsManager {
     }
 
     @SuppressWarnings("unused")
-    @NonNull
+    @Nullable
     public String getUsername() {
         if (!mHasValidCredentials) {
             throw new RuntimeException("GoodReads credentials need to be validated before accessing user data");
@@ -715,17 +710,17 @@ public class GoodreadsManager {
     /**
      * Wrapper to send an entire book, including shelves, to Goodreads.
      *
-     * @param db    DB connection
-     * @param books Cursor pointing to single book to send
+     * @param db          DB connection
+     * @param bookRowView single book to send
      *
      * @return Disposition of book
      */
     @NonNull
     ExportDisposition sendOneBook(@NonNull final CatalogueDBAdapter db,
-                                  @NonNull final BookRowView books) throws
+                                  @NonNull final BookRowView bookRowView) throws
             OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException,
             NotAuthorizedException, IOException, NetworkException, BookNotFoundException {
-        long bookId = books.getId();
+        long bookId = bookRowView.getId();
         long grId;
         long reviewId = 0;
         Bundle grBook = null;
@@ -735,11 +730,11 @@ public class GoodreadsManager {
         GoodreadsBookshelves grShelfList = getShelves();
 
         // Get the book ISBN
-        String isbn = books.getIsbn();
+        String isbn = bookRowView.getIsbn();
 
         // See if the book has a goodreads ID and if it is valid.
         try {
-            grId = books.getGoodreadsBookId();
+            grId = bookRowView.getGoodreadsBookId();
             if (grId != 0) {
                 // Get the book details to make sure we have a valid book ID
                 grBook = this.getBookById(grId);
@@ -806,7 +801,7 @@ public class GoodreadsManager {
             // review.update does not seem to update them properly
             if (exclusiveCount == 0) {
                 String pseudoShelf;
-                if (books.isRead()) {
+                if (bookRowView.isRead()) {
                     pseudoShelf = "Read";
                 } else {
                     pseudoShelf = "To Read";
@@ -874,7 +869,7 @@ public class GoodreadsManager {
             try {
                 // Do not sync Notes<->Review. We will add a 'Review' field later.
                 //this.updateReview(reviewId, books.isRead(), books.getReadEnd(), books.getNotes(), ((int)books.getRating()) );
-                this.updateReview(reviewId, books.isRead() , books.getReadEnd(), null, ((int) books.getRating()));
+                this.updateReview(reviewId, bookRowView.isRead(), bookRowView.getReadEnd(), null, ((int) bookRowView.getRating()));
             } catch (BookNotFoundException e) {
                 return ExportDisposition.error;
             }
@@ -900,7 +895,6 @@ public class GoodreadsManager {
 
         if (!query.trim().isEmpty()) {
             SearchBooksApiHandler searcher = new SearchBooksApiHandler(this);
-            // Run the search
             return searcher.search(query);
         } else {
             throw new IllegalArgumentException("No search criteria specified");
@@ -941,7 +935,7 @@ public class GoodreadsManager {
             // Run the search
             return api.get(isbn, true);
         } else {
-            throw new IllegalArgumentException("No isbn specified");
+            throw new RTE.IsbnInvalidException(isbn);
         }
 
     }
@@ -972,7 +966,7 @@ public class GoodreadsManager {
             private static final long serialVersionUID = 5589234170614368111L;
 
             public NotAuthorizedException() {
-                super(BookCatalogueApp.getResourceString(R.string.goodreads_auth_failed),null);
+                super(BookCatalogueApp.getResourceString(R.string.goodreads_auth_failed), null);
             }
 
             public NotAuthorizedException(final Throwable inner) {

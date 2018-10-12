@@ -34,6 +34,7 @@ import com.eleybourn.bookcatalogue.BCPreferences;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.properties.Property.StringValue;
+import com.eleybourn.bookcatalogue.utils.RTE;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 /**
@@ -131,7 +132,7 @@ public class StringProperty extends ValuePropertyWithGlobalDefault<String> imple
     @NonNull
     public StringProperty set(@NonNull final Property p) {
         if (!(p instanceof StringValue)) {
-            throw new IllegalStateException("Can not find a compatible interface for string parameter");
+            throw new RTE.IllegalTypeException(p.getClass().getCanonicalName());
         }
         StringValue bv = (StringValue) p;
         set(bv.get());

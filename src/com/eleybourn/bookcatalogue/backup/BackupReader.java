@@ -83,6 +83,7 @@ public interface BackupReader extends Closeable {
         /**
          * Check if operation is cancelled
          */
+        @SuppressWarnings("BooleanMethodIsAlwaysInverted")
         boolean isCancelled();
     }
 

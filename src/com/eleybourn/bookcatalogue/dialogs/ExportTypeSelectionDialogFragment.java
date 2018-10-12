@@ -15,6 +15,7 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.backup.Exporter;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.utils.RTE;
 
 import java.io.File;
 import java.util.Date;
@@ -62,7 +63,7 @@ public class ExportTypeSelectionDialogFragment extends DialogFragment {
         super.onAttach(context);
 
         if (!(context instanceof OnExportTypeSelectionDialogResultListener))
-            throw new IllegalStateException("Activity " + context.getClass().getSimpleName() + " must implement OnExportTypeSelectionDialogResultListener");
+            throw new RTE.MustImplementException(context, OnExportTypeSelectionDialogResultListener.class);
 
     }
 

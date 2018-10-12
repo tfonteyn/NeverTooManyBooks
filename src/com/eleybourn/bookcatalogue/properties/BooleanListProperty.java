@@ -25,6 +25,9 @@ import android.support.annotation.StringRes;
 
 import com.eleybourn.bookcatalogue.BCPreferences;
 import com.eleybourn.bookcatalogue.properties.Property.BooleanValue;
+import com.eleybourn.bookcatalogue.utils.RTE;
+
+import java.util.Objects;
 
 /**
  * Extends ListProperty to create a trinary value (or nullable boolean?) with associated editing support.
@@ -45,9 +48,7 @@ public class BooleanListProperty extends ListProperty<Boolean> implements Boolea
     @Override
     protected Boolean getGlobalDefault() {
         Boolean value = getDefaultValue();
-        if (value == null) {
-            throw new IllegalStateException();
-        }
+        Objects.requireNonNull(value);
         return BCPreferences.getBoolean(getPreferenceKey(), value);
     }
 
@@ -96,7 +97,7 @@ public class BooleanListProperty extends ListProperty<Boolean> implements Boolea
     @Override
     public BooleanListProperty set(@NonNull final Property p) {
         if (!(p instanceof BooleanValue))
-            throw new IllegalStateException();
+            throw new RTE.IllegalTypeException(p.getClass().getCanonicalName());
         BooleanValue v = (BooleanValue) p;
         set(v.get());
         return this;

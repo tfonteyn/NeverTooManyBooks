@@ -37,6 +37,7 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
+import com.eleybourn.bookcatalogue.utils.RTE;
 
 import java.util.List;
 
@@ -83,11 +84,11 @@ public class BookshelfDialogFragment extends DialogFragment {
      * Ensure activity supports event
      */
     @Override
-    public void onAttach(Context a) {
-        super.onAttach(a);
+    public void onAttach(Context context) {
+        super.onAttach(context);
 
-        if (!(a instanceof OnBookshelfCheckChangeListener))
-            throw new IllegalStateException("Activity " + a.getClass().getSimpleName() + " must implement OnBookshelfCheckChangeListener");
+        if (!(context instanceof OnBookshelfCheckChangeListener))
+            throw new RTE.MustImplementException(context, OnBookshelfCheckChangeListener.class);
 
     }
 

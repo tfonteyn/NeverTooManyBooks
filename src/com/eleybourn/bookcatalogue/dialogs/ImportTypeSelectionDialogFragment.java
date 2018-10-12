@@ -19,6 +19,7 @@ import com.eleybourn.bookcatalogue.backup.BackupManager;
 import com.eleybourn.bookcatalogue.backup.BackupReader;
 import com.eleybourn.bookcatalogue.backup.Importer;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.utils.RTE;
 
 import java.io.File;
 import java.io.IOException;
@@ -67,7 +68,7 @@ public class ImportTypeSelectionDialogFragment extends DialogFragment {
         super.onAttach(context);
 
         if (!(context instanceof OnImportTypeSelectionDialogResultListener))
-            throw new IllegalStateException("Activity " + context.getClass().getSimpleName() + " must implement OnImportTypeSelectionDialogResultListener");
+            throw new RTE.MustImplementException(context, OnImportTypeSelectionDialogResultListener.class);
 
     }
 

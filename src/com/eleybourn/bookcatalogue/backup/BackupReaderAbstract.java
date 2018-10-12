@@ -24,10 +24,12 @@ import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.utils.SerializationUtils.DeserializationException;
+import com.eleybourn.bookcatalogue.utils.RTE;
+import com.eleybourn.bookcatalogue.utils.RTE.DeserializationException;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 import java.io.File;
@@ -75,8 +77,12 @@ public abstract class BackupReaderAbstract implements BackupReader {
 
         // Get first entity (this will be the entity AFTER the INFO entities)
         ReaderEntity entity = nextEntity();
+
         // While not at end, loop, processing each entry based on type
         while (entity != null && !listener.isCancelled()) {
+            if (DEBUG_SWITCHES.BACKUP_READER && BuildConfig.DEBUG) {
+                Logger.info("Processing " + entity.getName());
+            }
             switch (entity.getType()) {
                 case Books:
                     restoreBooks(listener, entity, importFlags);
@@ -96,14 +102,17 @@ public abstract class BackupReaderAbstract implements BackupReader {
                 case Info:
                     break;
                 default:
-                    throw new IllegalArgumentException("Unknown Entity type: " + entity.getType());
+                    throw new RTE.IllegalTypeException("" + entity.getType());
+            }
+            if (DEBUG_SWITCHES.BACKUP_READER && BuildConfig.DEBUG) {
+                Logger.info("Finished " + entity.getName());
             }
             entity = nextEntity();
         }
         close();
 
-        if (BuildConfig.DEBUG) {
-            Logger.debug("Restored " + coverCount + " covers");
+        if (DEBUG_SWITCHES.BACKUP_READER && BuildConfig.DEBUG) {
+            Logger.info("Restored " + coverCount + " covers");
         }
     }
 
@@ -124,10 +133,10 @@ public abstract class BackupReaderAbstract implements BackupReader {
                 mLastPos = position;
             }
 
-            @Override
-            public boolean isActive() {
-                return !listener.isCancelled();
-            }
+			@Override
+			public boolean isCancelled() {
+				return listener.isCancelled();
+			}
 
             @Override
             public void setMax(final int max) {

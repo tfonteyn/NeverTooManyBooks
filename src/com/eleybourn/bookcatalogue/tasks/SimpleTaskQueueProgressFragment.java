@@ -39,6 +39,7 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTask;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTaskContext;
+import com.eleybourn.bookcatalogue.utils.RTE;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -255,14 +256,15 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
             if (mMessages != null) {
                 for (String message : mMessages) {
                     if (message != null && !message.isEmpty()) {
-                        StandardDialogs.showQuickNotice(this.getActivity(), message);
+                        StandardDialogs.showQuickNotice(getActivity(), message);
                     }
                 }
                 mMessages.clear();
             }
         }
-        //if (! (a instanceof OnSyncTaskCompleteListener))
-        //	throw new RuntimeException("Activity " + a.getClass().getSimpleName() + " must implement OnSyncTaskCompleteListener");
+        //if (! (context instanceof OnSyncTaskCompleteListener)) {
+        //  throw new RTE.MustImplementException(context, OnSyncTaskCompleteListener.class);
+        //}
     }
 
     @Override
@@ -283,7 +285,7 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
         // If no tasks left, exit
         if (!mQueue.hasActiveTasks()) {
             if (DEBUG_SWITCHES.SQPFragment && BuildConfig.DEBUG) {
-                Logger.debug("STQPF: Tasks finished while activity absent, closing");
+                Logger.info("STQPF: Tasks finished while activity absent, closing");
             }
             dismiss();
         }
@@ -354,7 +356,7 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
      */
     private void requestUpdateProgress() {
         if (DEBUG_SWITCHES.SQPFragment && BuildConfig.DEBUG) {
-            Logger.debug("STQPF: " + mMessage + " (" + mProgress + "/" + mMax + ")");
+            Logger.info("STQPF: " + mMessage + " (" + mProgress + "/" + mMax + ")");
         }
         if (Thread.currentThread() == mHandler.getLooper().getThread()) {
             updateProgress();

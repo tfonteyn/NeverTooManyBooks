@@ -23,8 +23,10 @@ package com.eleybourn.bookcatalogue.debug;
 import android.annotation.SuppressLint;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 import java.io.BufferedWriter;
@@ -52,7 +54,10 @@ public class Logger {
     }
 
     /**
-     * Should really only be used from within a code block
+     * Should really only be used from within a code block.
+     * And even then only in problematic places.
+     *
+     * Generates stacktrace!
      *
      * if (BuildConfig.DEBUG) {
      * Logger.debug("blah");
@@ -62,10 +67,16 @@ public class Logger {
         error("DEBUG: " + message);
     }
 
+    /**
+     * Pure info, no stacktrace.
+     */
     public static void info(final String message) {
-        error("INFO: " + message);
+        error(null, "INFO: " + message);
     }
 
+    /**
+     * Generates stacktrace
+     */
     public static void error(@NonNull final String message) {
         error(new RuntimeException(), message);
     }
@@ -74,36 +85,49 @@ public class Logger {
         error(e, "");
     }
 
+    /**
+     * Transforms a Java 'Error' into an Exception, so it's not fatal.
+     *
+     * Generates stacktrace
+     */
     public static void error(@NonNull final Error e) {
         error(new RuntimeException(e), "");
     }
 
     /**
      * Write the exception stacktrace to the error log file
-     * Don't pass error.getMessage(), that one is logged automatically
+     * Will use e.getLocalizedMessage()
      *
      * @param e       The exception to log
      * @param message extra message
      */
-    public static void error(@NonNull final Exception e, @NonNull final String message) {
+    public static void error(@Nullable final Exception e, @NonNull final String message) {
         @SuppressLint("SimpleDateFormat")
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String now = dateFormat.format(new Date());
 
+        String exMsg = null;
         StringWriter stacktrace = new StringWriter();
         PrintWriter pw = new PrintWriter(stacktrace);
-        e.printStackTrace(pw);
+        if (e != null) {
+            e.printStackTrace(pw);
+            exMsg = e.getLocalizedMessage();
+        }
 
-        String exMsg = e.getMessage();
         String error = "An Exception/Error Occurred @ " + now + "\n" +
                 (exMsg != null ? exMsg + "\n" : "") +
                 "In Phone " + Build.MODEL + " (" + Build.VERSION.SDK_INT + ") \n" +
                 message + "\n" +
                 stacktrace;
 
+        if (BuildConfig.DEBUG) {
+            // and this should be the only place where we use System.out ... and even then....
+            System.out.println(error);
+        }
+
         // FIXME Remove Log.error! Replace with ACRA?
-        Log.e(TAG, message);
-        //ACRA.getErrorReporter().handleException(e);
+        Log.e(TAG, message); // message without the exception stuff
+        //ACRA.getErrorReporter().handleException(e); // the exception. TODO: test this for real.
 
         writeToErrorLog(error);
         pw.close();

@@ -5,7 +5,6 @@ import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.ListAdapter;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -47,7 +46,7 @@ public class TouchListViewWithDropListener<T> extends TouchListView implements T
         final int first2 = getFirstVisiblePosition();
 
         if (BuildConfig.DEBUG) {
-            Logger.debug(from + " -> " + to + ", first " + firstPos + "(" + first2 + ")");
+            Logger.info(from + " -> " + to + ", first " + firstPos + "(" + first2 + ")");
         }
         final int newFirst = (to > from && from < firstPos) ? (firstPos - 1) : firstPos;
 
@@ -57,7 +56,7 @@ public class TouchListViewWithDropListener<T> extends TouchListView implements T
             @Override
             public void run() {
                 if (BuildConfig.DEBUG) {
-                    Logger.debug("Positioning to " + newFirst + "+{" + offset + "}");
+                    Logger.info("Positioning to " + newFirst + "+{" + offset + "}");
                 }
                 requestFocusFromTouch();
                 setSelectionFromTop(newFirst, offset);

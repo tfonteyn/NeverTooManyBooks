@@ -36,6 +36,7 @@ import com.eleybourn.bookcatalogue.datamanager.validators.OrValidator;
 import com.eleybourn.bookcatalogue.datamanager.validators.ValidatorException;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
+import com.eleybourn.bookcatalogue.utils.RTE;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -331,9 +332,9 @@ public class DataManager {
                 case SQLiteCursor.FIELD_TYPE_NULL:
                     break;
                 case SQLiteCursor.FIELD_TYPE_BLOB:
-                    throw new IllegalArgumentException("Unsupported column type: 'blob'");
+                    throw new RTE.IllegalTypeException("blob");
                 default:
-                    throw new IllegalArgumentException("Unsupported column type: " + cursor.getType(i));
+                    throw new RTE.IllegalTypeException("" + cursor.getType(i));
             }
         }
     }
@@ -407,8 +408,7 @@ public class DataManager {
     private boolean validate(final boolean crossValidating) {
         boolean isOk = true;
 
-        for (String key : mData.keySet()) {
-            Datum datum = mData.get(key);
+        for (Datum datum : mData.values()) {
             if (datum.hasValidator()) {
                 try {
                     datum.getValidator().validate(this, datum, crossValidating);
@@ -466,13 +466,13 @@ public class DataManager {
             return "No error";
         else {
             StringBuilder message = new StringBuilder();
-            Iterator<ValidatorException> i = mValidationExceptions.iterator();
+            Iterator<ValidatorException> iterator = mValidationExceptions.iterator();
             int cnt = 1;
-            if (i.hasNext())
-                message.append("(").append(cnt).append(") ").append(i.next().getFormattedMessage(res));
-            while (i.hasNext()) {
+            if (iterator.hasNext())
+                message.append("(").append(cnt).append(") ").append(iterator.next().getFormattedMessage(res));
+            while (iterator.hasNext()) {
                 cnt++;
-                message.append(" (").append(cnt).append(") ").append(i.next().getFormattedMessage(res)).append("\n");
+                message.append(" (").append(cnt).append(") ").append(iterator.next().getFormattedMessage(res)).append("\n");
             }
             return message.toString();
         }

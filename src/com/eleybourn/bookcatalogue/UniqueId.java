@@ -48,6 +48,7 @@ public class UniqueId {
     public static final int ACTIVITY_REQUEST_CODE_EDIT_SERIES = 103;
 
     public static final int ACTIVITY_REQUEST_CODE_VIEW_BOOK = 104;
+    public static final int ACTIVITY_REQUEST_CODE_UPDATE_FROM_INTERNET = 105;
 
     public static final int ACTIVITY_REQUEST_CODE_ADD_THUMB_FROM_CAMERA = 201;
     public static final int ACTIVITY_REQUEST_CODE_ADD_THUMB_FROM_GALLERY = 202;

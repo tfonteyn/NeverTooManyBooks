@@ -37,6 +37,7 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * TODO: RecyclerView
@@ -259,12 +260,14 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
         View row = convertView.findViewById(R.id.ROW_DETAILS);
         if (row == null) {
             if (BuildConfig.DEBUG) {
+                // debug so we get stack
                 Logger.debug("R.id.ROW_DETAILS NOT found in " + this);
             }
             // but if we did not define a details row, try row anyhow
             row = convertView.findViewById(R.id.ROW);
             if (BuildConfig.DEBUG) {
-                Logger.debug("Using R.id.ROW instead");
+                // no stack
+                Logger.info("Using R.id.ROW instead");
             }
         }
 
@@ -345,8 +348,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
             view = (View) parent;
         }
         Object o = ViewTagger.getTag(view, R.id.TAG_POSITION);
-        if (o == null)
-            throw new RuntimeException("A view with the tag R.id.ROW was found, but it is not the view for the row");
+        Objects.requireNonNull(o, "A view with the tag R.id.ROW was found, but it is not the view for the row");
         return (Integer) o;
     }
 

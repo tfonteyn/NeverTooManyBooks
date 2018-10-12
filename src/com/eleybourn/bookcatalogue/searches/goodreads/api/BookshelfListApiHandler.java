@@ -78,7 +78,7 @@ public class BookshelfListApiHandler extends ApiHandler {
         //TrivialParser handler = new TrivialParser();
         //mManager.execute(get, handler, true);
         //String s = handler.getHtml();
-        //Logger.debug(s);
+        //Logger.info(s);
 
         // Get a handler and run query.
         XmlResponseParser handler = new XmlResponseParser(mRootFilter);
@@ -90,7 +90,7 @@ public class BookshelfListApiHandler extends ApiHandler {
         Bundle results = mFilters.getData();
 
         if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
-            Logger.debug("Found " + results.getLong(BookshelfListFieldNames.TOTAL) + " shelves in " + (System.currentTimeMillis() - t0) + "ms");
+            Logger.info("Found " + results.getLong(BookshelfListFieldNames.TOTAL) + " shelves in " + (System.currentTimeMillis() - t0) + "ms");
         }
 
         return results;

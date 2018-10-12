@@ -26,6 +26,7 @@ import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.BookNotFoundException;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.NetworkException;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.NotAuthorizedException;
+import com.eleybourn.bookcatalogue.utils.RTE;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -50,10 +51,6 @@ import oauth.signpost.exception.OAuthMessageSignerException;
  */
 @SuppressWarnings("unused")
 public class OwnedBookCreateHandler extends ApiHandler {
-
-	private static class InvalidIsbnException extends RuntimeException {
-		private static final long serialVersionUID = 2652418388349622089L;
-	}
 
 	//public enum ConditionCode {
 	//	BRAND_NEW, LIKE_NEW, VERY_GOOD, GOOD, ACCEPTABLE, POOR
@@ -165,8 +162,8 @@ public class OwnedBookCreateHandler extends ApiHandler {
 		
 		try {
 			id = isbnToId.isbnToId(isbn);
-		} catch (com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.BookNotFoundException e) {
-			throw new InvalidIsbnException();
+		} catch (BookNotFoundException e) {
+			throw new RTE.IsbnInvalidException(e);
 		}
 
 		HttpPost post = new HttpPost(GoodreadsManager.GOODREADS_API_ROOT + "/owned_books.xml");

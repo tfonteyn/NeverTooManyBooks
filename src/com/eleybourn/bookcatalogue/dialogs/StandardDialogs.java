@@ -217,7 +217,7 @@ public class StandardDialogs {
 
         String title;
         try (Cursor cursor = db.fetchBookById(id)) {
-            if (cursor == null || !cursor.moveToFirst()) {
+            if (!cursor.moveToFirst()) {
                 return R.string.unable_to_find_book;
             }
 
@@ -354,7 +354,7 @@ public class StandardDialogs {
                 //LinearLayout list = (LinearLayout)root.findViewById(R.id.list);
                 //for(int i = 0; i < list.getChildCount(); i++) {
                 //	View child = list.getChildAt(i);
-                //	SimpleDialogItem other = (SimpleDialogItem)ViewTagger.getTag(child, R.id.TAG_DIALOG_ITEM);
+                //	SimpleDialogItem other = ViewTagger.getTagOrThrow(child, R.id.TAG_DIALOG_ITEM);
                 //	RadioButton btn = other.getSelector(child);
                 //	btn.setSelected(other == item);
                 //	btn.invalidate();

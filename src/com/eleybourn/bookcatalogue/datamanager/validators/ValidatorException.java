@@ -26,17 +26,18 @@ import android.support.annotation.StringRes;
 /**
  * Exception class for all validation errors. String ID and args are stored for later retrieval.
  *
+ * The messages will be shown to the user, hence the need for String a resource
+ *
  * @author Philip Warner
  */
 public class ValidatorException extends RuntimeException {
     public static final long serialVersionUID = 1L;
-    // String ID of resource string
+    @StringRes
     private final int mStringId;
-    // Args to pass to format function
+    /** Args to pass to format function */
     @NonNull
     private final Object[] mArgs;
 
-    // Constructor
     public ValidatorException(@StringRes final int stringId, @NonNull final Object[] args) {
         mStringId = stringId;
         mArgs = args;

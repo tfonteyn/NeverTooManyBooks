@@ -34,17 +34,20 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.Fields.AfterFieldChangeListener;
 import com.eleybourn.bookcatalogue.Fields.Field;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.datamanager.DataEditor;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
+import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.searches.amazon.AmazonUtils;
 import com.eleybourn.bookcatalogue.utils.BookUtils;
+import com.eleybourn.bookcatalogue.utils.RTE;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -56,7 +59,7 @@ import java.util.Map;
  *
  * @author pjw
  */
-public abstract class EditBookAbstractFragment extends Fragment implements DataEditor {
+public abstract class BookAbstractFragment extends Fragment implements DataEditor {
     /** */
     protected Fields mFields;
 
@@ -75,8 +78,9 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
     public void onAttach(@NonNull final Context context) {
         super.onAttach(context);
 
-        if (!(context instanceof BookEditManager))
-            throw new IllegalStateException("Activity " + context.getClass().getSimpleName() + " must implement BookEditManager");
+        if (!(context instanceof BookEditManager)) {
+            throw new RTE.MustImplementException(context, BookEditManager.class);
+        }
 
         mEditManager = (BookEditManager) context;
         mDb = new CatalogueDBAdapter(context);
@@ -103,21 +107,24 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
 
             menu.add(Menu.NONE, R.id.MENU_BOOK_DUPLICATE, 0, R.string.menu_duplicate)
                     .setIcon(R.drawable.ic_content_copy);
+
 //TODO: enable when done
 //            menu.add(Menu.NONE, R.id.MENU_BOOK_UPDATE_FROM_INTERNET, 0, R.string.internet_update_fields)
 //                    .setIcon(R.drawable.ic_search);
 
-            // TODO: Consider allowing Tweets (or other sharing methods) to work on un-added books.
+            /* TODO: Consider allowing Tweets (or other sharing methods) to work on un-added books.
+             *
+             * Very rarely used, and easy to miss-click, so do not add as action_if_room!
+             *    .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+             */
             menu.add(Menu.NONE, R.id.MENU_SHARE, 0, R.string.menu_share_this)
                     .setIcon(R.drawable.ic_share);
-            // Very rarely used, and easy to miss-click, so do not add as action_if_room!
-            //.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         }
 
         if (this instanceof BookDetailsFragment) {
-            MenuItem item = menu.add(Menu.NONE, R.id.MENU_BOOK_EDIT, 0, R.string.edit_book)
-                    .setIcon(R.drawable.ic_mode_edit);
-            item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+            menu.add(Menu.NONE, R.id.MENU_BOOK_EDIT, 0, R.string.edit_book)
+                    .setIcon(R.drawable.ic_mode_edit)
+                    .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         }
 
         boolean hasAuthor = mEditManager.getBook().getAuthorList().size() > 0;
@@ -169,10 +176,9 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
                 BookUtils.duplicateBook(getActivity(), mDb, currRow);
                 return true;
 
-            //TODO: enable when done
-//                case R.id.MENU_BOOK_UPDATE_FROM_INTERNET:
-//                    updateFromInternet();
-//                    return true;
+            case R.id.MENU_BOOK_UPDATE_FROM_INTERNET:
+                updateFromInternet();
+                return true;
 
             case R.id.MENU_BOOK_EDIT:
                 EditBookActivity.startActivity(getActivity(), currRow, EditBookActivity.TAB_EDIT);
@@ -199,58 +205,11 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
         return false;
     }
 
-    //TODO: enable when done
-    private void updateFromInternet() {
-        Intent intent = new Intent(getActivity(), UpdateFromInternet.class);
-        intent.putExtra(UniqueId.KEY_ID, mEditManager.getBook().getBookId());
-        intent.putExtra(UniqueId.KEY_TITLE, mEditManager.getBook().get(UniqueId.KEY_TITLE).toString());
-        intent.putExtra(UniqueId.KEY_AUTHOR_FORMATTED, mEditManager.getBook().get(UniqueId.KEY_AUTHOR_FORMATTED).toString());
-        startActivityForResult(intent, 1);
-    }
-
-    @Override
-    public void onActivityResult(final int requestCode, final int resultCode, @NonNull final Intent intent) {
-        if (requestCode == 1) {
-            if (resultCode == Activity.RESULT_OK) {
-                String result = intent.getStringExtra("result");
-                //TODO: implement this, then enable menu handling
-            }
-        }
-    }
-
-    @Nullable
-    private String getAuthorFromBook() {
-        ArrayList<Author> list = mEditManager.getBook().getAuthorList();
-        return list.size() > 0 ? list.get(0).getDisplayName() : null;
-    }
-
-    @Nullable
-    private String getSeriesFromBook() {
-        ArrayList<Series> list = mEditManager.getBook().getSeriesList();
-        return list.size() > 0 ? list.get(0).name : null;
-    }
-
     @Override
     public void onPause() {
         super.onPause();
         // This is now done in onPause() since the view may have been deleted when this is called
         onSaveBookDetails(mEditManager.getBook());
-    }
-
-    /**
-     * Called to load data from the Book object when needed.
-     *
-     * @param book   to load from
-     * @param setAllDone Options indicating setAll() has already been called on the mFields object
-     */
-    abstract protected void onLoadBookDetails(@NonNull final Book book,
-                                              @SuppressWarnings("SameParameterValue") final boolean setAllDone);
-
-    /**
-     * Default implementation of code to save existing data to the Book object
-     */
-    protected void onSaveBookDetails(@NonNull final Book book) {
-        mFields.getAll(book);
     }
 
     @Override
@@ -260,8 +219,7 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
         // Load the data and preserve the isDirty() setting
         mFields.setAfterFieldChangeListener(null);
         final boolean wasDirty = mEditManager.isDirty();
-        Book book = mEditManager.getBook();
-        onLoadBookDetails(book, false);
+        onLoadBookDetails(mEditManager.getBook(), false);
         mEditManager.setDirty(wasDirty);
 
         // Set the listener to monitor edits
@@ -279,9 +237,47 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
         mDb.close();
     }
 
+
+    private void updateFromInternet() {
+        Intent intent = new Intent(getActivity(), UpdateFromInternetActivity.class);
+        intent.putExtra(UniqueId.KEY_ID, mEditManager.getBook().getBookId());
+        intent.putExtra(UniqueId.KEY_TITLE, mEditManager.getBook().get(UniqueId.KEY_TITLE).toString());
+        intent.putExtra(UniqueId.KEY_AUTHOR_FORMATTED, mEditManager.getBook().get(UniqueId.KEY_AUTHOR_FORMATTED).toString());
+        startActivityForResult(intent, UniqueId.ACTIVITY_REQUEST_CODE_UPDATE_FROM_INTERNET);
+    }
+
     @Override
-    public void saveAllEdits(@NonNull final DataManager dataManager) {
-        mFields.getAll(mEditManager.getBook());
+    public void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent intent) {
+        if (requestCode == UniqueId.ACTIVITY_REQUEST_CODE_UPDATE_FROM_INTERNET) {
+            if (resultCode == Activity.RESULT_OK && intent != null) {
+                String result = intent.getStringExtra("result");
+                //TODO: implement this in UpdateFromInternetActivity, then enable menu handling
+            }
+        }
+    }
+
+    @Nullable
+    private String getAuthorFromBook() {
+        ArrayList<Author> list = mEditManager.getBook().getAuthorList();
+        return list.size() > 0 ? list.get(0).getDisplayName() : null;
+    }
+
+    @Nullable
+    private String getSeriesFromBook() {
+        ArrayList<Series> list = mEditManager.getBook().getSeriesList();
+        return list.size() > 0 ? list.get(0).name : null;
+    }
+
+    /**
+     * Called to load data from the Book object when needed.
+     *
+     * @param book       to load from
+     * @param setAllDone Options indicating setAll() has already been called on the mFields object
+     */
+    protected void onLoadBookDetails(@NonNull final Book book, final boolean setAllDone) {
+        if (!setAllDone) {
+            mFields.setAll(book);
+        }
     }
 
     /**
@@ -295,6 +291,50 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
     }
 
     /**
+     * Default implementation of code to save existing data to the Book object
+     */
+    protected void onSaveBookDetails(@NonNull final Book book) {
+        mFields.getAll(book);
+    }
+
+    @Override
+    public void saveAllEdits(@NonNull final DataManager dataManager) {
+        mFields.getAll(mEditManager.getBook());
+    }
+
+
+
+    /**
+     * Hides unused fields if they have not any useful data. Checks all text fields
+     * except of author, series and loaned.
+     */
+    protected void showHideFields(final boolean hideIfEmpty) {
+        mFields.resetVisibility();
+
+        showHideField(hideIfEmpty, R.id.publisher, R.id.lbl_publishing, R.id.row_publisher);
+        showHideField(hideIfEmpty, R.id.date_published, R.id.row_date_published);
+        showHideField(hideIfEmpty, R.id.first_publication, R.id.row_first_publication);
+
+        showHideField(hideIfEmpty, R.id.image, R.id.row_image);
+        showHideField(hideIfEmpty, R.id.pages, R.id.row_pages);
+        showHideField(hideIfEmpty, R.id.format, R.id.row_format);
+        showHideField(hideIfEmpty, R.id.genre, R.id.lbl_genre, R.id.row_genre);
+        showHideField(hideIfEmpty, R.id.language, R.id.lbl_language, R.id.row_language);
+        showHideField(hideIfEmpty, R.id.isbn, R.id.row_isbn);
+        showHideField(hideIfEmpty, R.id.series, R.id.row_series, R.id.lbl_series);
+        showHideField(hideIfEmpty, R.id.list_price, R.id.row_list_price);
+        showHideField(hideIfEmpty, R.id.description, R.id.lbl_description, R.id.description_divider);
+
+        // **** MY COMMENTS SECTION ****
+
+        showHideField(hideIfEmpty, R.id.notes, R.id.lbl_notes, R.id.row_notes);
+        showHideField(hideIfEmpty, R.id.read_start, R.id.row_read_start);
+        showHideField(hideIfEmpty, R.id.read_end, R.id.row_read_end);
+        showHideField(hideIfEmpty, R.id.location, R.id.row_location, R.id.row_location);
+        showHideField(hideIfEmpty, R.id.signed, R.id.row_signed);
+    }
+
+    /**
      * Show or Hide text field if it has not any useful data.
      * Don't show a field if it is already hidden (assumed by user preference)
      *
@@ -302,7 +342,7 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
      * @param fieldId       layout resource id of the field
      * @param relatedFields list of fields whose visibility will also be set based on the first field
      */
-    void showHideField(final boolean hideIfEmpty, @IdRes final int fieldId, @NonNull @IdRes final int... relatedFields) {
+    private void showHideField(final boolean hideIfEmpty, @IdRes final int fieldId, @NonNull @IdRes final int... relatedFields) {
         // Get the base view
         final View view = getView().findViewById(fieldId);
         int visibility;
@@ -324,39 +364,11 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
             // Set the related views
             for (int i : relatedFields) {
                 View rv = getView().findViewById(i);
-                if (rv != null)
+                if (rv != null) {
                     rv.setVisibility(visibility);
+                }
             }
         }
-    }
-
-    /**
-     * Hides unused fields if they have not any useful data. Checks all text fields
-     * except of author, series and loaned.
-     */
-    protected void showHideFields(final boolean hideIfEmpty) {
-        mFields.resetVisibility();
-
-        showHideField(hideIfEmpty, R.id.publisher, R.id.lbl_publishing, R.id.row_publisher);
-        showHideField(hideIfEmpty, R.id.date_published, R.id.row_date_published);
-        showHideField(hideIfEmpty, R.id.first_publication, R.id.row_first_publication);
-        showHideField(hideIfEmpty, R.id.image, R.id.row_image);
-        showHideField(hideIfEmpty, R.id.pages, R.id.row_pages);
-        showHideField(hideIfEmpty, R.id.format, R.id.row_format);
-        showHideField(hideIfEmpty, R.id.genre, R.id.lbl_genre, R.id.row_genre);
-        showHideField(hideIfEmpty, R.id.language, R.id.lbl_language, R.id.row_language);
-        showHideField(hideIfEmpty, R.id.isbn, R.id.row_isbn);
-        showHideField(hideIfEmpty, R.id.series, R.id.row_series, R.id.lbl_series);
-        showHideField(hideIfEmpty, R.id.list_price, R.id.row_list_price);
-        showHideField(hideIfEmpty, R.id.description, R.id.lbl_description, R.id.description_divider);
-
-        // **** MY COMMENTS SECTION ****
-
-        showHideField(hideIfEmpty, R.id.notes, R.id.lbl_notes, R.id.row_notes);
-        showHideField(hideIfEmpty, R.id.read_start, R.id.row_read_start);
-        showHideField(hideIfEmpty, R.id.read_end, R.id.row_read_end);
-        showHideField(hideIfEmpty, R.id.location, R.id.row_location, R.id.row_location);
-        showHideField(hideIfEmpty, R.id.signed, R.id.row_signed);
     }
 
     /**
@@ -474,8 +486,9 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
             int nextId = getter.getNext(view);
             if (nextId != View.NO_ID) {
                 int actualNextId = getNextView(list, nextId, getter);
-                if (actualNextId != nextId)
+                if (actualNextId != nextId) {
                     getter.setNext(view, actualNextId);
+                }
             }
         }
 
@@ -493,11 +506,13 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
                                        final int nextId,
                                        @NonNull final INextView getter) {
             final View v = list.get(nextId);
-            if (v == null)
+            if (v == null) {
                 return View.NO_ID;
+            }
 
-            if (v.getVisibility() == View.VISIBLE)
+            if (v.getVisibility() == View.VISIBLE) {
                 return nextId;
+            }
 
             return getNextView(list, getter.getNext(v), getter);
         }
@@ -511,8 +526,7 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
         private static void getViews(@NonNull final View parent,
                                      @NonNull final HashMap<Integer, View> list) {
             // Get the view ID and add it to collection if not already present.
-            @IdRes
-            final int id = parent.getId();
+            @IdRes final int id = parent.getId();
             if (id != View.NO_ID && !list.containsKey(id)) {
                 list.put(id, parent);
             }
@@ -532,28 +546,32 @@ public abstract class EditBookAbstractFragment extends Fragment implements DataE
             void setNext(@NonNull final View v, @IdRes final int id);
         }
 
-        /*
+        /**
          * Debug utility to dump an entire view hierarchy to the output.
-         *
-         * @param depth
-         * @param v
          */
-        //public static void dumpViewTree(int depth, View v) {
-        //	for(int i = 0; i < depth*4; i++)
-        //		System.out.print(" ");
-        //	System.out.print(v.getClass().getName() + " (" + v.getId() + ")" + (v.getId() == R.id.descriptionLabel? "DESC! ->" : " ->"));
-        //	if (v instanceof TextView) {
-        //		String s = ((TextView)v).getText().toString().trim();
-        //		System.out.print(s.substring(0, Math.min(s.length(), 20)));
-        //	} else {
-        //		System.out.println();
-        //	}
-        //	if (v instanceof ViewGroup) {
-        //		ViewGroup g = (ViewGroup)v;
-        //		for(int i = 0; i < g.getChildCount(); i++) {
-        //			dumpViewTree(depth+1, g.getChildAt(i));
-        //		}
-        //	}
-        //}
+        @SuppressWarnings("unused")
+        static void dumpViewTree(final int depth, @NonNull final View v) {
+            StringBuilder sb = new StringBuilder();
+        	for(int i = 0; i < depth*4; i++) {
+                sb.append(" ");
+            }
+            sb.append(v.getClass().getCanonicalName())
+                    .append(" (").append(v.getId()).append(")")
+                    .append(v.getId() == R.id.row_description_label ? "DESC! ->" : " ->");
+
+        	if (v instanceof TextView) {
+        		String s = ((TextView)v).getText().toString().trim();
+        		s = s.substring(0, Math.min(s.length(), 20));
+                sb.append(s);
+        	} else {
+                Logger.info(sb.toString());
+        	}
+        	if (v instanceof ViewGroup) {
+        		ViewGroup g = (ViewGroup)v;
+        		for(int i = 0; i < g.getChildCount(); i++) {
+        			dumpViewTree(depth+1, g.getChildAt(i));
+        		}
+        	}
+        }
     }
 }

@@ -77,7 +77,7 @@ class BookEvents {
     private static final OnClickListener mRetryButtonListener = new OnClickListener() {
         @Override
         public void onClick(@NonNull View view) {
-            BookEvent.BookEventHolder holder = ViewTagger.getTag(view, R.id.TAG_BOOK_EVENT_HOLDER);
+            BookEvent.BookEventHolder holder = ViewTagger.getTagOrThrow(view, R.id.TAG_BOOK_EVENT_HOLDER);
             ((GrSendBookEvent) holder.event).retry();
         }
     };
@@ -154,7 +154,7 @@ class BookEvents {
 
             // Update event info binding; the Views in the holder are unchanged, but when it is reused
             // the Event and ID will change.
-            BookEventHolder holder = ViewTagger.getTag(view, R.id.TAG_BOOK_EVENT_HOLDER);
+            BookEventHolder holder = ViewTagger.getTagOrThrow(view, R.id.TAG_BOOK_EVENT_HOLDER);
             holder.event = this;
             holder.rowId = cursor.getId();
 
@@ -188,7 +188,7 @@ class BookEvents {
             holder.checkbox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(@NonNull CompoundButton buttonView, boolean isChecked) {
-                    BookEventHolder holder = ViewTagger.getTag(buttonView, R.id.TAG_BOOK_EVENT_HOLDER);
+                    BookEventHolder holder = ViewTagger.getTagOrThrow(buttonView, R.id.TAG_BOOK_EVENT_HOLDER);
                     cursor.setIsSelected(holder.rowId, isChecked);
                 }
             });
@@ -213,13 +213,11 @@ class BookEvents {
                 @Override
                 public void run() {
                     try {
-                        GrSendBookEvent event = ViewTagger.getTag(view, R.id.TAG_EVENT);
-                        if (event != null) {
+                        GrSendBookEvent event = ViewTagger.getTagOrThrow(view, R.id.TAG_EVENT);
                             Intent intent = new Intent(context, EditBookActivity.class);
                             intent.putExtra(UniqueId.KEY_ID, event.getBookId());
                             intent.putExtra(EditBookActivity.TAB, EditBookActivity.TAB_EDIT);
                             context.startActivity(intent);
-                        }
                     } catch (Exception ignore) {
                         // not a book event?
                     }
@@ -230,7 +228,7 @@ class BookEvents {
             //items.add(new ContextDialogItem(ctx.getString(R.string.visit_goodreads), new Runnable() {
             //	@Override
             //	public void run() {
-            //		BookEventHolder holder = (BookEventHolder)ViewTagger.getTag(v, R.id.TAG_BOOK_EVENT_HOLDER);
+            //		BookEventHolder holder = ViewTagger.getTagOrThrow(v, R.id.TAG_BOOK_EVENT_HOLDER);
             //		Intent i = new Intent(ctx, GoodreadsSearchCriteria.class);
             //		i.putExtra(GoodreadsSearchCriteria.EXTRA_BOOK_ID, holder.event.getBookId());
             //		ctx.startActivity(i);
@@ -298,14 +296,14 @@ class BookEvents {
             super.bindView(view, context, bindableCursor, appInfo);
 
             // get book details
-            final BookEventHolder holder = ViewTagger.getTag(view, R.id.TAG_BOOK_EVENT_HOLDER);
+            final BookEventHolder holder = ViewTagger.getTagOrThrow(view, R.id.TAG_BOOK_EVENT_HOLDER);
             final CatalogueDBAdapter db = (CatalogueDBAdapter) appInfo;
-            final BooksCursor booksCursor = db.getBookForGoodreadsCursor(mBookId);
-            final BookRowView book = booksCursor.getRowView();
-            try {
+
+            try (BooksCursor booksCursor = db.getBookForGoodreadsCursor(mBookId)) {
                 // Hide parts of view based on current book details.
                 if (booksCursor.moveToFirst()) {
-                    if (book.getIsbn().isEmpty()) {
+                    final BookRowView bookRowView = booksCursor.getRowView();
+                    if (bookRowView.getIsbn().isEmpty()) {
                         holder.retry.setVisibility(View.GONE);
                     } else {
                         holder.retry.setVisibility(View.VISIBLE);
@@ -315,8 +313,6 @@ class BookEvents {
                 } else {
                     holder.retry.setVisibility(View.GONE);
                 }
-            } finally {
-                booksCursor.close();
             }
 
         }
@@ -335,18 +331,16 @@ class BookEvents {
 
             final CatalogueDBAdapter db = (CatalogueDBAdapter) appInfo;
             try (BooksCursor booksCursor = db.getBookForGoodreadsCursor(mBookId)) {
-                final BookRowView book = booksCursor.getRowView();
+                final BookRowView bookRowView = booksCursor.getRowView();
                 if (booksCursor.moveToFirst()) {
-                    if (!book.getIsbn().isEmpty()) {
+                    if (!bookRowView.getIsbn().isEmpty()) {
                         items.add(new ContextDialogItem(context.getString(R.string.retry_task), new Runnable() {
                             @Override
                             public void run() {
                                 try {
-                                    GrSendBookEvent event = ViewTagger.getTag(view, R.id.TAG_EVENT);
-                                    if (event != null) {
+                                    GrSendBookEvent event = ViewTagger.getTagOrThrow(view, R.id.TAG_EVENT);
                                         event.retry();
                                         QueueManager.getQueueManager().deleteEvent(eventId);
-                                    }
                                 } catch (Exception ignore) {
                                     // not a book event?
                                 }

@@ -343,7 +343,7 @@ public class SearchAmazonHandler extends DefaultHandler {
                 } else {
                     if (BuildConfig.DEBUG) {
                         // see what we are missing.
-                        Logger.debug(localName + "->'" + mBuilder + "'");
+                        Logger.info(localName + "->'" + mBuilder + "'");
                     }
                 }
             } //else if (localName.equalsIgnoreCase(TOTAL_RESULTS)){

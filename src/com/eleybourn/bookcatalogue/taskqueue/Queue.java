@@ -193,7 +193,7 @@ public class Queue extends Thread {
                 mDb.setTaskRequeue(task);
                 message = TaskActions.waiting;
             } else {
-                mDb.setTaskFail(task, "Unhandled exception while running task: " + task.getException().getMessage());
+                mDb.setTaskFail(task, "Unhandled exception while running task: " + task.getException().getLocalizedMessage());
                 message = TaskActions.completed;
             }
             mTask.clear();

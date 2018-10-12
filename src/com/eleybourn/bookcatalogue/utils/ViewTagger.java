@@ -26,6 +26,8 @@ import android.support.annotation.Nullable;
 import android.util.SparseArray;
 import android.view.View;
 
+import java.util.Objects;
+
 /**
  * Using View.setTag(int, Object) causes a memory leak if the tag refers, by a strong reference
  * chain, to the view itself (ie. it uses the 'Holder' pattern).
@@ -58,7 +60,7 @@ public class ViewTagger {
 
     /**
      * Internal static method to get (and optionally create) a ViewTagger object
-     * on tha passed view.
+     * on the passed view.
      *
      * @param view       View with tag
      * @param autoCreate Indicates if tagger should be created if not present
@@ -88,36 +90,75 @@ public class ViewTagger {
 
     /**
      * Static method to get the bare tag from the view.
+     * Use this method if you the tag *could* be there
+     *
+     * @see #getTagOrThrow(View)
      *
      * @param view View from which to retrieve tag
      */
+    @SuppressWarnings("unchecked")
     @Nullable
-    public static Object getTag(@NonNull final View view) {
+    public static <T> T getTag(@NonNull final View view) {
         ViewTagger tagger = getTagger(view, false);
         if (tagger == null) {
             return null;
         }
+        return (T) tagger.get();
+    }
 
-        return tagger.get();
+    /**
+     * Static method to get the bare tag from the view.
+     * Use this method if you the tag *should* be there
+     *
+     * @see #getTag(View)
+     *
+     * @param view View from which to retrieve tag
+     */
+    @SuppressWarnings("unchecked")
+    @NonNull
+    public static <T> T getTagOrThrow(@NonNull final View view) {
+        return (T) Objects.requireNonNull(getTag(view), "tag  was null");
+
     }
 
     /**
      * Static method to get the tag matching the ID from the view
+     * Use this method if you the tag *could* be there
      *
      * @param view View from which to retrieve tag
      * @param key  Key of required tag
      *
-     * @return Object with specified tag
+     * @return Object with specified tag, or null if not found
+     *
+     * @throws NullPointerException if the tagger was null
+     *
+     * @see #getTagOrThrow(View, int)
      */
     @SuppressWarnings("unchecked")
     @Nullable
     public static <T> T getTag(@NonNull final View view, @IdRes final int key) {
         ViewTagger tagger = getTagger(view, false);
-        if (tagger == null) {
-            throw new NullPointerException("view has no tagger");
-        }
-
+        Objects.requireNonNull(tagger, "view has no tagger");
         return (T) tagger.get(key);
+    }
+
+    /**
+     * Static method to get the tag matching the ID from the view.
+     * Use this method if you the tag *should* be there
+     *
+     * @param view View from which to retrieve tag
+     * @param key  Key of required tag
+     *
+     * @return Object with specified tag, never null
+     *
+     * @throws NullPointerException if the tag was null
+     *
+     * @see #getTag(View, int)
+     */
+    @SuppressWarnings("unchecked")
+    @NonNull
+    public static <T> T getTagOrThrow(@NonNull final View view, @IdRes final int key) {
+        return (T) Objects.requireNonNull(getTag(view, key), "tag " + key + " was null");
     }
 
     /**

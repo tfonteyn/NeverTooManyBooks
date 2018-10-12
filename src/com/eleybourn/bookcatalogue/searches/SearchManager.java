@@ -241,7 +241,7 @@ public class SearchManager implements TaskManagerListener {
     public void onTaskEnded(@NonNull final TaskManager manager, @NonNull final ManagedTask task) {
         int size;
         if (BuildConfig.DEBUG) {
-            Logger.debug(task.getClass().getSimpleName() + "(" + +task.getId() + ") onTaskEnded starting");
+            Logger.info(task.getClass().getCanonicalName() + "(" + +task.getId() + ") onTaskEnded starting");
         }
 
         // Handle the result, and optionally queue another task
@@ -255,7 +255,7 @@ public class SearchManager implements TaskManagerListener {
             size = mRunningTasks.size();
             if (BuildConfig.DEBUG) {
                 for (ManagedTask t : mRunningTasks) {
-                    Logger.debug(t.getClass().getSimpleName() + "(" + +t.getId() + ") still running");
+                    Logger.info(t.getClass().getCanonicalName() + "(" + +t.getId() + ") still running");
                 }
             }
         }
@@ -264,13 +264,13 @@ public class SearchManager implements TaskManagerListener {
             // a new task, we will stop listening for the new task.
             TaskManager.getMessageSwitch().removeListener(mTaskManager.getSenderId(), this);
             if (BuildConfig.DEBUG) {
-                Logger.debug("SearchManager not listening(1)");
+                Logger.info("SearchManager not listening(1)");
             }
             // Notify the listeners.
             sendResults();
         }
         if (BuildConfig.DEBUG) {
-            Logger.debug(task.getClass().getSimpleName() + "(" + +task.getId() + ") onTaskEnded Exiting");
+            Logger.info(task.getClass().getCanonicalName() + "(" + +task.getId() + ") onTaskEnded Exiting");
         }
     }
 
@@ -299,7 +299,7 @@ public class SearchManager implements TaskManagerListener {
             mRunningTasks.add(thread);
             mTaskManager.addTask(thread);
             if (BuildConfig.DEBUG) {
-                Logger.debug(thread.getClass().getSimpleName() + "(" + +thread.getId() + ") STARTING");
+                Logger.info(thread.getClass().getCanonicalName() + "(" + +thread.getId() + ") STARTING");
             }
         }
         thread.start();
@@ -407,7 +407,7 @@ public class SearchManager implements TaskManagerListener {
         // List for task ends
         TaskManager.getMessageSwitch().addListener(mTaskManager.getSenderId(), this, false);
         if (BuildConfig.DEBUG) {
-            Logger.debug("SearchManager.doSearch listener started");
+            Logger.info("SearchManager.doSearch listener started");
         }
 
         // We really want to ensure we get the same book from each, so if isbn is not present,
@@ -437,7 +437,7 @@ public class SearchManager implements TaskManagerListener {
                 sendResults();
                 TaskManager.getMessageSwitch().removeListener(mTaskManager.getSenderId(), this);
                 if (BuildConfig.DEBUG) {
-                    Logger.debug("SearchManager.doSearch listener stopped");
+                    Logger.info("SearchManager.doSearch listener stopped");
                 }
             }
         }

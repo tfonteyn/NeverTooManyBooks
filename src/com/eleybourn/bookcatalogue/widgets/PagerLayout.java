@@ -74,7 +74,7 @@ public class PagerLayout extends FrameLayout implements ViewPager.OnPageChangeLi
             mPager = (ViewPager) getChildAt(0);
             mPager.addOnPageChangeListener(this);
         } catch (Exception e) {
-            throw new IllegalStateException("The root child of PagerLayout must be a ViewPager");
+            throw new IllegalStateException("The root child of PagerLayout must be a ViewPager", e);
         }
     }
 

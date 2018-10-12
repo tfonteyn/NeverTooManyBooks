@@ -41,7 +41,7 @@ public class BooksCursor extends TrackedCursor implements AutoCloseable {
     private int mIdCol = -2;
     /** Get a RowView */
     @Nullable
-    private BookRowView mView;
+    private BookRowView mBookRowView;
 
     public BooksCursor(@NonNull final SQLiteCursorDriver driver,
                        @NonNull final String editTable,
@@ -61,10 +61,10 @@ public class BooksCursor extends TrackedCursor implements AutoCloseable {
 
     @NonNull
     public BookRowView getRowView() {
-        if (mView == null) {
-            mView = new BookRowView(this);
+        if (mBookRowView == null) {
+            mBookRowView = new BookRowView(this);
         }
-        return mView;
+        return mBookRowView;
     }
 
     /**
@@ -73,6 +73,6 @@ public class BooksCursor extends TrackedCursor implements AutoCloseable {
     @Override
     public void close() {
         super.close();
-        mView = null;
+        mBookRowView = null;
     }
 }

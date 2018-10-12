@@ -69,6 +69,7 @@ import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTaskContext;
 import com.eleybourn.bookcatalogue.utils.BookUtils;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
+import com.eleybourn.bookcatalogue.utils.RTE;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.util.ArrayList;
@@ -157,7 +158,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
      * Return the *absolute* position of the passed view in the list of books.
      */
     int getAbsolutePosition(@NonNull View v) {
-        final BooklistHolder holder = ViewTagger.getTag(v, R.id.TAG_HOLDER);
+        final BooklistHolder holder = ViewTagger.getTagOrThrow(v, R.id.TAG_HOLDER);
         return holder.absolutePosition;
     }
 
@@ -178,7 +179,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
 			if (img.getId() == R.id.read) {
 				img.setMaxHeight((int) (30*BooklistStyle.SCALE));
 				img.setMaxWidth((int) (30*BooklistStyle.SCALE) );
-				Logger.debugln("SCALE READ");
+				Logger.info("SCALE READ");
 				img.requestLayout();
 			} else if (img.getId() == R.id.cover) {
 				img.setMaxHeight((int) (rowView.getMaxThumbnailHeight()*BooklistStyle.SCALE));
@@ -186,9 +187,9 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
 				LayoutParams lp = new LayoutParams(LayoutParams.WRAP_CONTENT, (int) (rowView.getMaxThumbnailHeight()*BooklistStyle.SCALE) );
 				img.setLayoutParams(lp);
 				img.requestLayout();
-				Logger.debugln("SCALE COVER");
+				Logger.info("SCALE COVER");
 			} else {
-				Logger.debugln("UNKNOWN IMAGE");
+				Logger.info("UNKNOWN IMAGE");
 			}
 		}
 		 */
@@ -238,7 +239,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
             ViewTagger.setTag(convertView, R.id.TAG_HOLDER, holder);
             // Indent based on level; we assume rows of a given type only occur at the same level
         } else {
-            holder = ViewTagger.getTag(convertView, R.id.TAG_HOLDER);
+            holder = ViewTagger.getTagOrThrow(convertView, R.id.TAG_HOLDER);
         }
 
         holder.absolutePosition = rowView.getAbsolutePosition();
@@ -268,7 +269,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
             }
         } else if (rowView.getRowKind() == RowKinds.ROW_KIND_BOOK) {
             ArrayList<Series> series = db.getBookSeriesList(rowView.getBookId());
-            if (series != null && series.size() > 0) {
+            if (series.size() > 0) {
                 return series.get(0).name;
             }
         }
@@ -684,7 +685,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                 return new RatingHolder(rowView, DOM_BOOK_RATING.name);
 
             default:
-                throw new IllegalStateException("Invalid row kind " + k);
+                throw new RTE.IllegalTypeException("" + k);
         }
     }
 

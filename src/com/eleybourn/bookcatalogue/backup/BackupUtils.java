@@ -39,6 +39,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -106,7 +107,7 @@ public class BackupUtils {
      * Internal routine to send the passed CollectionAccessor data to an XML file.
      */
     private static void collectionToXml(@NonNull final BufferedWriter out, @NonNull final CollectionAccessor<String> col) throws IOException {
-        out.append("<"+ COLLECTION + ">\n");
+        out.append("<" + COLLECTION + ">\n");
         for (String key : col.keySet()) {
             final String type;
             final String value;
@@ -133,7 +134,7 @@ public class BackupUtils {
                 type = BackupUtils.TYPE_SERIALIZABLE;
                 value = Base64.encodeObject((Serializable) o);
             } else {
-                throw new RuntimeException("Unable write data of type '" + o.getClass().getSimpleName() + "' to XML");
+                throw new RuntimeException("Unable write data of type '" + o.getClass().getCanonicalName() + "' to XML");
             }
             out.append("<item name=\"").append(key).append("\" type=\"").append(type).append("\">").append(value).append("</item>\n");
         }
@@ -149,9 +150,8 @@ public class BackupUtils {
         final ItemInfo info = new ItemInfo();
 
         XmlFilter filter = XmlFilter.buildFilter(rootFilter, COLLECTION, ITEM);
-        if (filter == null) {
-            throw new IOException();
-        }
+        Objects.requireNonNull(filter);
+
         filter.setStartAction(new XmlHandler() {
             @Override
             public void process(@NonNull ElementContext context) {
@@ -262,8 +262,8 @@ public class BackupUtils {
                     mBundle.putBoolean(key, Boolean.parseBoolean(value));
                     break;
                 case TYPE_SERIALIZABLE:
-                   //ENHANCE API 26
-                   // byte[] blob = java.util.Base64.getDecoder().decode(value);
+                    //ENHANCE API 26
+                    // byte[] blob = java.util.Base64.getDecoder().decode(value);
 
                     byte[] blob = Base64.decode(value);
                     mBundle.putSerializable(key, blob);
@@ -341,7 +341,7 @@ public class BackupUtils {
      * @author pjw
      */
     private static class ItemInfo {
-        String name;
         public String type;
+        String name;
     }
 }

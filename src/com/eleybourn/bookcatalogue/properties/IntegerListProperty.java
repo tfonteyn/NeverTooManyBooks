@@ -26,6 +26,9 @@ import android.support.annotation.StringRes;
 
 import com.eleybourn.bookcatalogue.BCPreferences;
 import com.eleybourn.bookcatalogue.properties.Property.IntegerValue;
+import com.eleybourn.bookcatalogue.utils.RTE;
+
+import java.util.Objects;
 
 /**
  * Extends ListProperty to create a nullable integer property with associated editing support.
@@ -44,20 +47,13 @@ public class IntegerListProperty extends ListProperty<Integer> implements Intege
     @Override
     @Nullable
     protected Integer getGlobalDefault() {
-        Integer value = getDefaultValue();
-        if (value == null) {
-            throw new IllegalStateException();
-        }
-        return BCPreferences.getInt(getPreferenceKey(), value);
+        return BCPreferences.getInt(getPreferenceKey(), Objects.requireNonNull(getDefaultValue()));
     }
 
     @Override
     @NonNull
     protected IntegerListProperty setGlobalDefault(@Nullable final Integer value) {
-        if (value == null) {
-            throw new IllegalStateException();
-        }
-        BCPreferences.setInt(getPreferenceKey(), value);
+        BCPreferences.setInt(getPreferenceKey(), Objects.requireNonNull(value));
         return this;
     }
 
@@ -92,7 +88,7 @@ public class IntegerListProperty extends ListProperty<Integer> implements Intege
     @Override
     public IntegerListProperty set(@NonNull final Property p) {
         if (!(p instanceof IntegerValue)) {
-            throw new IllegalStateException("Can not find a compatible interface for integer parameter");
+            throw new RTE.IllegalTypeException(p.getClass().getCanonicalName());
         }
         IntegerValue v = (IntegerValue) p;
         set(v.get());

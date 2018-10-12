@@ -55,6 +55,7 @@ import com.eleybourn.bookcatalogue.dialogs.TextFieldEditorFragment.OnTextFieldEd
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
+import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
@@ -62,14 +63,18 @@ import com.eleybourn.bookcatalogue.utils.Utils;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This class is called by {@link EditBookActivity} and displays the main Books fields Tab
+ *
+ * Note it does not extends directly from {@link BookAbstractFragment}
+ * but uses the {@link BookDetailsAbstractFragment} intermediate instead.
+ * It shares the latter with {@link BookDetailsFragment}
+ */
 public class EditBookFieldsFragment extends BookDetailsAbstractFragment
         implements OnPartialDatePickerListener, OnTextFieldEditorListener, OnBookshelfCheckChangeListener {
 
     private static final String TAG_BOOKSHELVES_DIALOG = "bookshelves_dialog";
 
-    /**
-     * Display the edit fields page
-     */
     @Override
     public View onCreateView(@NonNull final LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable final Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_edit_book_fields, container, false);
@@ -96,8 +101,7 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
                 @Override
                 public void onClick(final View v) {
                     Object object = mFields.getField(R.id.description).getValue();
-                    String description = (object == null ? null : object.toString());
-                    TextFieldEditorFragment.newInstance(R.id.description, R.string.description, description)
+                    TextFieldEditorFragment.newInstance(R.id.description, R.string.description, object.toString())
                             .show(getFragmentManager(), null);
                 }
             });
@@ -186,7 +190,7 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
             mFields.setAdapter(resId, adapter);
 
             // Get the list to use in the AutoComplete stuff
-            AutoCompleteTextView textView = (AutoCompleteTextView) field.getView();
+            AutoCompleteTextView textView = field.getView();
             textView.setAdapter(new ArrayAdapter<>(getActivity(),
                     android.R.layout.simple_dropdown_item_1line,
                     list));
@@ -209,19 +213,12 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
         }
     }
 
-    /**
-     * This function will populate the forms elements in three different ways
-     * 1. If a valid rowId exists it will populate the fields from the database
-     * 2. If fields have been passed from another activity (error.g. ISBNSearch) it will populate the fields from the bundle
-     * 3. It will leave the fields blank for new books.
-     */
-    private void populateFields() {
-        long t0;
-        if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
-            t0 = System.currentTimeMillis();
-        }
-        final Book book = mEditManager.getBook();
-        populateFieldsFromBook(book);
+
+    @Override
+    protected void onLoadBookDetails(@NonNull final Book book, final boolean setAllDone) {
+        super.onLoadBookDetails(book, setAllDone);
+        populateFields(book);
+
         // new book ? populate from Extras
         if (book.getBookId() <= 0) {
             Bundle extras = getActivity().getIntent().getExtras();
@@ -239,47 +236,77 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
                     }
                 }
             }
-            initDefaultShelf();
-            setCoverImage();
-        } //else { //Populating from database
-        //populateFieldsFromBook(book);
-        //getActivity().setTitle(R.string.menu);
-        //}
+            initDefaultBookshelf();
+            // Update the ImageView with the new image
+            setCoverImage(book.getBookId());
+        }
 
-        populateAuthorListField();
-        populateSeriesListField();
+        populateAuthorListField(book);
+        populateSeriesListField(book);
 
         // Restore default visibility and hide unused/unwanted and empty fields
         showHideFields(false);
+    }
 
-        if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
-            Logger.debug("BEF popF: " + (System.currentTimeMillis() - t0));
+    @Override
+    protected void populateFields(@NonNull final Book book) {
+
+        if (getView().findViewById(R.id.anthology) != null) {
+            mFields.getField(R.id.anthology).setValue(book.getString(Book.IS_ANTHOLOGY));
         }
+        setCoverImage(book.getBookId());
+        populateBookshelves(mFields.getField(R.id.bookshelf), book);
+    }
+
+    @Override
+    protected void populateAuthorListField(@NonNull final Book book) {
+        ArrayList<Author> list = book.getAuthorList();
+        if (list.size() != 0 && Utils.pruneList(mDb, list)) {
+            mEditManager.setDirty(true);
+            book.setAuthorList(list);
+        }
+
+        String newText = book.getAuthorTextShort();
+        if (newText == null || newText.isEmpty()) {
+            newText = getString(R.string.set_authors);
+        }
+        mFields.getField(R.id.author).setValue(newText);
+    }
+
+    @Override
+    protected void populateSeriesListField(@NonNull final Book book) {
+        String newText;
+        ArrayList<Series> list = book.getSeriesList();
+        if (list.size() == 0) {
+            newText = getString(R.string.set_series);
+        } else {
+            boolean trimmed = Series.pruneSeriesList(list);
+            trimmed |= Utils.pruneList(mDb, list);
+            if (trimmed) {
+                book.setSeriesList(list);
+            }
+            newText = list.get(0).getDisplayName();
+            if (list.size() > 1) {
+                newText += " " + getString(R.string.and_others);
+            }
+        }
+        mFields.getField(R.id.series).setValue(newText);
     }
 
     /**
      * Use the currently selected bookshelf as default
      */
-    private void initDefaultShelf() {
+    private void initDefaultBookshelf() {
         final Book book = mEditManager.getBook();
         final String list = book.getBookshelfList();
-        if (list == null || list.isEmpty()) {
+        if (list.isEmpty()) {
             String currentShelf = BCPreferences.getStringOrEmpty(BooksOnBookshelf.PREF_BOOKSHELF);
             if (currentShelf.isEmpty()) {
                 currentShelf = mDb.getBookshelfName(Bookshelf.DEFAULT_ID);
             }
-            Field fe = mFields.getField(R.id.bookshelf);
-            fe.setValue(currentShelf);
-            String encoded_shelf = ArrayUtils.encodeListItem(Bookshelf.SEPARATOR, currentShelf);
-            book.setBookshelfList(encoded_shelf);
+            mFields.getField(R.id.bookshelf).setValue(currentShelf);
+            book.setBookshelfList(ArrayUtils.encodeListItem(Bookshelf.SEPARATOR, currentShelf));
         }
-    }
-
-    @Override
-    public void onSaveInstanceState(@NonNull final Bundle outState) {
-        Tracker.enterOnSaveInstanceState(this);
-        super.onSaveInstanceState(outState);
-        Tracker.exitOnSaveInstanceState(this);
     }
 
     @Override
@@ -287,29 +314,29 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
         Tracker.enterOnActivityResult(this, requestCode, resultCode);
         try {
             super.onActivityResult(requestCode, resultCode, intent);
-
+            Book book = mEditManager.getBook();
             // reminder: no, AnthologyTitle is not handled here, has its own Tab
             switch (requestCode) {
                 case UniqueId.ACTIVITY_REQUEST_CODE_EDIT_AUTHORS: {
                     if (resultCode == Activity.RESULT_OK && intent != null && intent.hasExtra(UniqueId.BKEY_AUTHOR_ARRAY)) {
-                        mEditManager.getBook().setAuthorList(ArrayUtils.getAuthorFromIntentExtras(intent));
+                        book.setAuthorList(ArrayUtils.getAuthorFromIntentExtras(intent));
                         mEditManager.setDirty(true);
                     } else {
                         // Even though the dialog was terminated, some authors MAY have been updated/added.
-                        mEditManager.getBook().refreshAuthorList(mDb);
+                        book.refreshAuthorList(mDb);
                     }
                     // We do the fix here because the user may have edited or merged authors; this will
                     // have already been applied to the database so no update is necessary, but we do need
                     // to update the data we display.
                     boolean oldDirty = mEditManager.isDirty();
-                    populateAuthorListField();
+                    populateAuthorListField(book);
                     mEditManager.setDirty(oldDirty);
                     break;
                 }
                 case UniqueId.ACTIVITY_REQUEST_CODE_EDIT_SERIES: {
                     if (resultCode == Activity.RESULT_OK && intent != null && intent.hasExtra(UniqueId.BKEY_SERIES_ARRAY)) {
-                        mEditManager.getBook().setSeriesList(ArrayUtils.getSeriesFromIntentExtras(intent));
-                        populateSeriesListField();
+                        book.setSeriesList(ArrayUtils.getSeriesFromIntentExtras(intent));
+                        populateSeriesListField(book);
                         mEditManager.setDirty(true);
                     }
                     break;
@@ -320,16 +347,6 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
         }
     }
 
-    @Override
-    protected void populateAuthorListField() {
-        ArrayList<Author> list = mEditManager.getBook().getAuthorList();
-        if (list.size() != 0 && Utils.pruneList(mDb, list)) {
-            mEditManager.setDirty(true);
-            mEditManager.getBook().setAuthorList(list);
-        }
-        super.populateAuthorListField();
-    }
-
     /**
      * Show the context menu for the cover thumbnail
      */
@@ -338,13 +355,7 @@ public class EditBookFieldsFragment extends BookDetailsAbstractFragment
         view.showContextMenu();
     }
 
-    @Override
-    protected void onLoadBookDetails(@NonNull final Book book, final boolean setAllDone) {
-        if (!setAllDone) {
-            mFields.setAll(book);
-        }
-        populateFields();
-    }
+
 
     @Override
     public void onCreateOptionsMenu(@NonNull final Menu menu, @NonNull final MenuInflater inflater) {

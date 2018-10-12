@@ -21,7 +21,10 @@ package com.eleybourn.bookcatalogue.backup.tar;
 
 import android.support.annotation.NonNull;
 
+import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.backup.ReaderEntityAbstract;
+import com.eleybourn.bookcatalogue.debug.Logger;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 
@@ -54,6 +57,9 @@ public class TarReaderEntity extends ReaderEntityAbstract {
         mReader = reader;
         mEntry = entry;
         mType = type;
+        if (DEBUG_SWITCHES.BACKUP_READER && BuildConfig.DEBUG) {
+            Logger.info("new TarReaderEntity: type=" + type + ", name=" + entry.getName());
+        }
     }
 
     @NonNull

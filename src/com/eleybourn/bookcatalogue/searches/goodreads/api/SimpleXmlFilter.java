@@ -29,6 +29,7 @@ import com.eleybourn.bookcatalogue.searches.goodreads.api.XmlFilter.XmlHandler;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Class layered on top of XmlFilter to implement a simple set of XML filters to extract
@@ -432,9 +433,7 @@ public class SimpleXmlFilter {
 
         @NonNull
         Bundle popBundle() {
-            if (mLocalBundle == null) {
-                throw new IllegalStateException("Bundle not pushed!");
-            }
+            Objects.requireNonNull(mLocalBundle, "Bundle not pushed!");
             Bundle b = mLocalBundle;
             mLocalBundle = null;
             return b;

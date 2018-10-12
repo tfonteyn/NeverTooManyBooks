@@ -34,10 +34,10 @@ public class ImportThread extends ManagedTask {
             }
         }
 
-        @Override
-        public boolean isActive() {
-            return !ImportThread.this.isCancelled();
-        }
+		@Override
+		public boolean isCancelled() {
+			return ImportThread.this.isCancelled();
+		}
 
         @Override
         public void setMax(final int max) {
@@ -87,11 +87,4 @@ public class ImportThread extends ManagedTask {
         }
     }
 
-    static class ImportException extends RuntimeException {
-        private static final long serialVersionUID = 1660687786319003483L;
-
-        ImportException(String s) {
-            super(s);
-        }
-    }
 }

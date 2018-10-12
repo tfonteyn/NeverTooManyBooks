@@ -106,8 +106,7 @@ public class Book extends DataManager {
         } else if (this.mBookId > 0) {
             reload();
         }
-        // Create special validators
-        initValidators();
+        initValidatorsAndAccessors();
     }
 
     /**
@@ -119,8 +118,7 @@ public class Book extends DataManager {
     @NonNull
     public DataManager clear() {
         super.clear();
-        // Create special validators
-        initValidators();
+        initValidatorsAndAccessors();
         return this;
     }
 
@@ -156,12 +154,11 @@ public class Book extends DataManager {
             // Put all cursor fields in collection
             putAll(book);
 
-            // Get author, series, bookshelf and anthology title lists
+            setBookshelfList(db.getBookshelvesByBookIdAsStringList(mBookId));
+
             setAuthorList(db.getBookAuthorList(mBookId));
             setSeriesList(db.getBookSeriesList(mBookId));
             setContentList(db.getBookAnthologyTitleList(mBookId));
-
-            setBookshelfList(db.getBookshelvesByBookIdAsStringList(mBookId));
 
         } catch (Exception e) {
             Logger.error(e);
@@ -177,7 +174,7 @@ public class Book extends DataManager {
     @Override
     public DataManager putSerializable(@NonNull final String key, @NonNull final Serializable value) {
         if (BuildConfig.DEBUG) {
-            Logger.debug("Book.putSerializable, key=" + key + " , type=" + value.getClass().getCanonicalName());
+            Logger.info("Book.putSerializable, key=" + key + " , type=" + value.getClass().getCanonicalName());
         }
         super.putSerializable(key, value);
         return this;
@@ -322,9 +319,9 @@ public class Book extends DataManager {
     }
 
     /**
-     * Build any special purpose validators
+     * Build any special purpose validators/accessors
      */
-    private void initValidators() {
+    private void initValidatorsAndAccessors() {
         addValidator(UniqueId.KEY_TITLE, nonBlankValidator);
         addValidator(UniqueId.KEY_ANTHOLOGY_BITMASK, integerValidator);
         addValidator(UniqueId.KEY_BOOK_LIST_PRICE, blankOrFloatValidator);
@@ -385,7 +382,7 @@ public class Book extends DataManager {
 
             @Override
             public void set(@NonNull final DataManager data, @NonNull final Datum datum, @NonNull final Bundle rawData, @NonNull final Object value) {
-                throw new IllegalStateException("Bookshelf Text can not be set");
+                throw new UnsupportedOperationException("Bookshelf Text can not be set");
             }
 
             @Override

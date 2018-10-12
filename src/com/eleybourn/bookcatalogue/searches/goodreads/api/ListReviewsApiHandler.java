@@ -282,7 +282,7 @@ public class ListReviewsApiHandler extends ApiHandler {
         Bundle results = mFilters.getData();
 
         if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
-            Logger.debug("Found " + results.getLong(ListReviewsFieldNames.TOTAL) + " books in " + (System.currentTimeMillis() - t0) + "ms");
+            Logger.info("Found " + results.getLong(ListReviewsFieldNames.TOTAL) + " books in " + (System.currentTimeMillis() - t0) + "ms");
         }
 
         return results;

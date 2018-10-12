@@ -205,9 +205,9 @@ public class BooklistPseudoCursor extends AbstractCursor implements BooklistSupp
 
             }
             // DEBUG: Remove dump of MRU list!
-            //Logger.debug("MRU: ");
+            //Logger.info("MRU: ");
             //for(int i = 0; i < MRU_LIST_SIZE; i++)
-            //	Logger.debug(mMruList[(mMruListPos+1+i)%MRU_LIST_SIZE] + " ");
+            //	Logger.info(mMruList[(mMruListPos+1+i)%MRU_LIST_SIZE] + " ");
 
 
             // Set the active cursor, and set its position correctly
@@ -237,7 +237,7 @@ public class BooklistPseudoCursor extends AbstractCursor implements BooklistSupp
         // Purge them
         for (Integer i : toPurge) {
             if (BuildConfig.DEBUG) {
-                Logger.debug("Removing cursor at " + i);
+                Logger.info("Removing cursor at " + i);
             }
             BooklistCursor c = mCursors.remove(i);
             c.close();

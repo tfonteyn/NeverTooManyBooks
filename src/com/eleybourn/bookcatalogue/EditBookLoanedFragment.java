@@ -48,12 +48,12 @@ import com.eleybourn.bookcatalogue.entities.Book;
 import java.util.ArrayList;
 
 /**
- * This class is called by the BookDetailsActivity activity and displays the Loaned Tab
+ * This class is called by {@link EditBookActivity} and displays the Loaned Tab
  *
  * Users can select a book and, from this activity, select a friend to "loan" the book to.
  * This will then be saved in the database for reference.
  */
-public class EditBookLoanedFragment extends EditBookAbstractFragment {
+public class EditBookLoanedFragment extends BookAbstractFragment {
 
     private static final String[] PROJECTION = {
             ContactsContract.Contacts._ID,
@@ -146,13 +146,6 @@ public class EditBookLoanedFragment extends EditBookAbstractFragment {
 
     private void removeLoan() {
         mDb.deleteLoan(mEditManager.getBook().getBookId(), true);
-    }
-
-    @Override
-    protected void onLoadBookDetails(@NonNull final Book book, final boolean setAllDone) {
-        if (!setAllDone) {
-            mFields.setAll(book);
-        }
     }
 
     /**

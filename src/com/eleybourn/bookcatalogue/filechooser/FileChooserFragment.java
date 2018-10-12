@@ -36,6 +36,7 @@ import android.widget.TextView;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.filechooser.FileLister.FileListerListener;
+import com.eleybourn.bookcatalogue.utils.RTE;
 import com.eleybourn.bookcatalogue.widgets.SimpleListAdapter;
 import com.eleybourn.bookcatalogue.widgets.SimpleListAdapter.ViewProvider;
 
@@ -92,7 +93,7 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         if (!(PathChangedListener.class.isInstance(context)))
-            throw new IllegalStateException("Class " + context.getClass().getSimpleName() + " must implement " + PathChangedListener.class.getSimpleName());
+            throw new RTE.MustImplementException(context, PathChangedListener.class);
     }
 
     @Override

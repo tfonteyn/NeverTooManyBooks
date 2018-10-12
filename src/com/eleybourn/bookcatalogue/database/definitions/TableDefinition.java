@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -77,7 +78,7 @@ public class TableDefinition implements AutoCloseable, Cloneable {
      */
     private static void drop(@NonNull final DbSync.SynchronizedDb db, @NonNull final String name) {
         if (BuildConfig.DEBUG) {
-            Logger.debug("Dropping TABLE " + name);
+            Logger.info("Dropping TABLE " + name);
         }
         db.execSQL("DROP TABLE If Exists " + name);
     }
@@ -300,7 +301,7 @@ public class TableDefinition implements AutoCloseable, Cloneable {
     @NonNull
     private TableDefinition addReference(@NonNull final FkReference fk) {
         if (fk.child != this) {
-            throw new IllegalStateException("Foreign key does not include this table as child");
+            throw new IllegalArgumentException("Foreign key does not include this table as child");
         }
         mParents.put(fk.parent, fk);
         fk.parent.addChild(this, fk);
@@ -489,9 +490,9 @@ public class TableDefinition implements AutoCloseable, Cloneable {
         if (BuildConfig.DEBUG) {
             String s = this.getSql(mName, withConstraints, false);
             if (DEBUG_SWITCHES.SQL) {
-                Logger.debug(s);
+                Logger.info(s);
             } else {
-                Logger.debug("Creating table " + s.substring(0, 30));
+                Logger.info("Creating table " + s.substring(0, 30));
             }
         }
         db.execSQL(this.getSql(mName, withConstraints, false));
@@ -757,9 +758,7 @@ public class TableDefinition implements AutoCloseable, Cloneable {
         } else {
             fk = mParents.get(to);
         }
-        if (fk == null) {
-            throw new IllegalStateException("No foreign key between '" + this.getName() + "' AND '" + to.getName() + "'");
-        }
+        Objects.requireNonNull(fk,"No foreign key between '" + this.getName() + "' AND '" + to.getName() + "'");
 
         return fk.getPredicate();
     }

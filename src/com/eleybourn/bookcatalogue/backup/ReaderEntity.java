@@ -23,7 +23,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.utils.SerializationUtils.DeserializationException;
+import com.eleybourn.bookcatalogue.utils.RTE.DeserializationException;
 
 import java.io.File;
 import java.io.IOException;

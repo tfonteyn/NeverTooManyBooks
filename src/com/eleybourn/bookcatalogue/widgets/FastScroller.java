@@ -208,8 +208,9 @@ public class FastScroller {
     private void init(@NonNull final Context context) {
         // Get both the scrollbar states drawables
         final Resources res = context.getResources();
-        useThumbDrawable(res.getDrawable(R.drawable.fastscroller_handle_anim2));
-        mOverlayDrawable = res.getDrawable(R.drawable.fastscroller_overlay_background);
+        useThumbDrawable(res.getDrawable(R.drawable.scrollbar_handle_accelerated_anim2));
+
+        mOverlayDrawable = res.getDrawable(R.drawable.bc_fastscroller_overlay_background);
 
         mScrollCompleted = true;
 

@@ -176,13 +176,9 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity {
     }
 
     private void doContextMenu(@NonNull final AdapterView<?> parent, @NonNull final View v, final int position, final long id) {
-        final Event event = ViewTagger.getTag(v, R.id.TAG_EVENT);
+        final Event event = ViewTagger.getTagOrThrow(v, R.id.TAG_EVENT);
         final List<ContextDialogItem> items = new ArrayList<>();
 
-        if (event == null) {
-            Logger.error("event was null");
-            return;
-        }
         event.addContextMenuItems(this, parent, v, position, id, items, mDb);
 
         if (items.size() > 0) {

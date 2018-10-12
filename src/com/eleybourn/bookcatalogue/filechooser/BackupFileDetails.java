@@ -115,7 +115,7 @@ public class BackupFileDetails implements FileDetails {
             image.setImageDrawable(context.getDrawable(R.drawable.ic_folder));
         } else {
             // Display date and backup details
-            image.setImageDrawable(context.getDrawable(R.drawable.ic_bc_archive));
+            image.setImageDrawable(context.getDrawable(R.drawable.bc_archive));
             date.setVisibility(View.VISIBLE);
             String formattedFleSize = Utils.formatFileSize(mFile.length());
             Resources res = context.getResources();

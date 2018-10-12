@@ -79,7 +79,7 @@ public class TrackedCursor extends SynchronizedCursor implements Closeable {
         if (DEBUG_SWITCHES.TRACKED_CURSOR && BuildConfig.DEBUG) {
             synchronized (mInstanceCount) {
                 mInstanceCount++;
-                Logger.debug("Cursor instances: " + mInstanceCount);
+                Logger.info("Cursor instances: " + mInstanceCount);
             }
 
             // Record who called us. It's only from about the 7th element that matters.
@@ -151,12 +151,12 @@ public class TrackedCursor extends SynchronizedCursor implements Closeable {
             //noinspection UnusedAssignment
             List<TrackedCursor> cursors = getCursors();
             if (cursors == null) {
-                Logger.debug("No cursors");
+                Logger.info("No cursors");
             } else {
                 for (TrackedCursor c : cursors) {
-                    Logger.debug("Cursor " + c.getCursorId());
+                    Logger.info("Cursor " + c.getCursorId());
                     for (StackTraceElement s : c.getStackTrace()) {
-                        Logger.debug(s.getFileName() + "    Line " + s.getLineNumber() + " Method " + s.getMethodName());
+                        Logger.info(s.getFileName() + "    Line " + s.getLineNumber() + " Method " + s.getMethodName());
                     }
                 }
             }
@@ -196,7 +196,7 @@ public class TrackedCursor extends SynchronizedCursor implements Closeable {
             if (!mIsClosedFlg) {
                 synchronized (mInstanceCount) {
                     mInstanceCount--;
-                    Logger.debug("Cursor instances: " + mInstanceCount);
+                    Logger.info("Cursor instances: " + mInstanceCount);
                 }
                 if (mWeakRef != null)
                     synchronized (mCursors) {

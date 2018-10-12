@@ -57,9 +57,11 @@ public class BooleanValidator extends DefaultFieldValidator {
                 value = (Boolean) o;
             } else if (o instanceof Integer) {
                 value = (((Integer) o) != 0);
-            } else {
+            } else if (o != null){
                 String s = o.toString();
                 value = Datum.toBoolean(s, true);
+            } else {
+                value = false;
             }
             data.putBoolean(datum, value);
         } catch (Exception e) {

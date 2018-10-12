@@ -60,7 +60,7 @@ public class BackupTest {
 
     private static void performBackupTar(@NonNull File file) throws IOException {
         if (BuildConfig.DEBUG) {
-            Logger.debug("Starting " + file.getAbsolutePath());
+            Logger.info("Starting " + file.getAbsolutePath());
         }
         new TarBackupContainer(file)
                 .newWriter()
@@ -83,7 +83,7 @@ public class BackupTest {
                             mMessage = message;
                         mPosition += delta;
                         if (BuildConfig.DEBUG) {
-                            Logger.debug("BKP: " + mMessage + " " + mPosition + " of " + mMax);
+                            Logger.info("BKP: " + mMessage + " " + mPosition + " of " + mMax);
                         }
                     }
 
@@ -103,13 +103,13 @@ public class BackupTest {
                     }
                 }, Exporter.EXPORT_ALL, null);
         if (BuildConfig.DEBUG) {
-            Logger.debug("Finished " + file.getAbsolutePath() + ", size = " + file.length());
+            Logger.info("Finished " + file.getAbsolutePath() + ", size = " + file.length());
         }
     }
 
     private static void performRestoreTar(@NonNull File file) throws IOException {
         if (BuildConfig.DEBUG) {
-            Logger.debug("Starting " + file.getAbsolutePath());
+            Logger.info("Starting " + file.getAbsolutePath());
         }
 
         TarBackupContainer bkp = new TarBackupContainer(file);
@@ -137,7 +137,7 @@ public class BackupTest {
                 }
                 mPosition += delta;
                 if (BuildConfig.DEBUG) {
-                    Logger.debug("RST: " + mMessage + " " + mPosition + " of " + mMax);
+                    Logger.info("RST: " + mMessage + " " + mPosition + " of " + mMax);
                 }
             }
 
@@ -148,7 +148,7 @@ public class BackupTest {
         }, Importer.IMPORT_ALL);
 
         if (BuildConfig.DEBUG) {
-            Logger.debug("Finished " + file.getAbsolutePath() + ", size = " + file.length());
+            Logger.info("Finished " + file.getAbsolutePath() + ", size = " + file.length());
         }
     }
 

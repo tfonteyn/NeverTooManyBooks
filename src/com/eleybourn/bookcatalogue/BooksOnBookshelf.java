@@ -84,7 +84,6 @@ import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Activity that displays a flattened book hierarchy based on the Booklist* classes.
@@ -165,7 +164,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
         if (DEBUG_SWITCHES.BOOKS_ON_BOOKSHELF && BuildConfig.DEBUG) {
             synchronized (mInstanceCount) {
                 mInstanceCount++;
-                Logger.debug("BoB instances: " + mInstanceCount);
+                Logger.info("BoB instances: " + mInstanceCount);
             }
         }
     }
@@ -308,7 +307,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
             synchronized (mInstanceCount) {
                 mInstanceCount--;
 
-                Logger.debug("BoB instances: " + mInstanceCount);
+                Logger.info("BoB instances: " + mInstanceCount);
             }
         }
 
@@ -593,8 +592,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                         // Need to check isDead because BooklistPseudoCursor misbehaves when activity
                         // terminates and closes cursor
                         if (mLastTop != firstVisibleItem && !mIsDead && (showHeaderFlags != 0)) {
-                            ListViewHolder holder = ViewTagger.getTag(view, R.id.TAG_HOLDER);
-                            Objects.requireNonNull(holder);
+                            ListViewHolder holder = ViewTagger.getTagOrThrow(view, R.id.TAG_HOLDER);
                             updateListHeader(holder, firstVisibleItem, hasLevel1, hasLevel2, showHeaderFlags);
                         }
                     }
@@ -619,7 +617,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
             oldList.close();
         }
         if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
-            Logger.debug("displayList: " + (System.currentTimeMillis() - t0));
+            Logger.info("displayList: " + (System.currentTimeMillis() - t0));
         }
     }
 
@@ -651,7 +649,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                 int last = lv.getLastVisiblePosition();
                 int centre = (last + first) / 2;
                 if (DEBUG_SWITCHES.BOOKS_ON_BOOKSHELF && BuildConfig.DEBUG) {
-                    Logger.debug("New List: (" + first + ", " + last + ")<-" + centre);
+                    Logger.info("New List: (" + first + ", " + last + ")<-" + centre);
                 }
                 // Get the first 'target' and make it 'best candidate'
                 BookRowInfo best = targetRows.get(0);
@@ -667,12 +665,12 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                 }
 
                 if (DEBUG_SWITCHES.BOOKS_ON_BOOKSHELF && BuildConfig.DEBUG) {
-                    Logger.debug("Best @" + best.listPosition);
+                    Logger.info("Best @" + best.listPosition);
                 }
                 // Try to put at top if not already visible, or only partially visible
                 if (first >= best.listPosition || last <= best.listPosition) {
                     if (DEBUG_SWITCHES.BOOKS_ON_BOOKSHELF && BuildConfig.DEBUG) {
-                        Logger.debug("Adjusting position");
+                        Logger.info("Adjusting position");
                     }
                     // setSelectionFromTop does not seem to always do what is expected.
                     // But adding smoothScrollToPosition seems to get the job done reasonably well.
@@ -699,7 +697,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
 
                     //int newTop = best.listPosition - (last-first)/2;
                     // if (BOOKS_ON_BOOKSHELF && BuildConfig.DEBUG) {
-                    //Logger.debugln("New Top @" + newTop );
+                    //Logger.info("New Top @" + newTop );
                     //}
                     //lv.setSelection(newTop);
                 }
@@ -1101,7 +1099,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                           @StringRes final int stringId,
                           @NonNull final OnClickListener listener) {
         @SuppressLint("InflateParams") // it's a dialog -> root==null
-                TextView view = (TextView) inf.inflate(R.layout.booklist_style_menu_text, null);
+        TextView view = (TextView) inf.inflate(R.layout.booklist_style_menu_text, null);
         Typeface tf = view.getTypeface();
         view.setTypeface(tf, Typeface.ITALIC);
         view.setText(stringId);
@@ -1149,7 +1147,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
      *
      * @return The BooklistBuilder object used to build the data
      */
-    @Nullable
+    @NonNull
     private BooklistBuilder buildBooklist(final boolean isFullRebuild) {
         // If not a full rebuild then just use the current builder to re-query the underlying data
         if (mList != null && !isFullRebuild) {
@@ -1202,7 +1200,7 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
          */
         GetListTask(final boolean isFullRebuild) {
             if (!isFullRebuild && BuildConfig.DEBUG) {
-                Logger.debug("GetListTask constructor, isFullRebuild=false");
+                Logger.info("GetListTask constructor, isFullRebuild=false");
             }
             //TOMF FIXME
             //mIsFullRebuild = isFullRebuild;
@@ -1307,12 +1305,12 @@ public class BooksOnBookshelf extends BookCatalogueActivity implements BooklistC
                 }
 
                 if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
-                    Logger.debug("Build: " + (t1 - t0));
-                    Logger.debug("Position: " + (t2 - t1));
-                    Logger.debug("Select: " + (t3 - t2));
-                    Logger.debug("Count(" + count + "): " + (t4 - t3) + "/" + (t5 - t4) + "/" + (t6 - t5));
-                    Logger.debug("====== ");
-                    Logger.debug("Total: " + (t6 - t0));
+                    Logger.info("Build: " + (t1 - t0));
+                    Logger.info("Position: " + (t2 - t1));
+                    Logger.info("Select: " + (t3 - t2));
+                    Logger.info("Count(" + count + "): " + (t4 - t3) + "/" + (t5 - t4) + "/" + (t6 - t5));
+                    Logger.info("====== ");
+                    Logger.info("Total: " + (t6 - t0));
                 }
                 // Save a flag to say list was loaded at least once successfully
                 mListHasBeenLoaded = true;

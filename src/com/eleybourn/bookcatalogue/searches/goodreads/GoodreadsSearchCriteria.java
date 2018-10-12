@@ -84,19 +84,19 @@ public class GoodreadsSearchCriteria extends BookCatalogueActivity {
                     finish();
                     return;
                 }
-                final BookRowView book = cursor.getRowView();
+                final BookRowView bookRowView = cursor.getRowView();
                 {
-                    String s = book.getPrimaryAuthorNameFormatted();
+                    String s = bookRowView.getPrimaryAuthorNameFormatted();
                     setViewText(R.id.author, s);
                     criteria.append(s).append(" ");
                 }
                 {
-                    String s = book.getTitle();
+                    String s = bookRowView.getTitle();
                     setViewText(R.id.title, s);
                     criteria.append(s).append(" ");
                 }
                 {
-                    String s = book.getIsbn();
+                    String s = bookRowView.getIsbn();
                     setViewText(R.id.isbn, s);
                     criteria.append(s).append(" ");
                 }

@@ -25,6 +25,7 @@ import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.datamanager.validators.DataValidator;
+import com.eleybourn.bookcatalogue.utils.RTE;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -161,7 +162,7 @@ public class Datum {
             if (emptyIsFalse) {
                 return false;
             } else {
-                throw new IllegalArgumentException("Not a valid boolean value");
+                throw new RTE.IllegalTypeException("Not a valid boolean value");
             }
         } else {
             switch (s.trim().toLowerCase()) {
@@ -181,7 +182,7 @@ public class Datum {
                     try {
                         return Integer.parseInt(s) != 0;
                     } catch (NumberFormatException e) {
-                        throw new IllegalArgumentException("Not a valid boolean value");
+                        throw new RTE.IllegalTypeException("Not a valid boolean value");
                     }
             }
         }
@@ -521,7 +522,7 @@ public class Datum {
         if (mAccessor == null) {
             return (T) bundle.getSerializable(mKey);
         } else {
-            throw new IllegalStateException("Accessor not supported for serializable objects");
+            throw new AccessorNotSupportedException("Serializable");
         }
     }
 
@@ -541,7 +542,7 @@ public class Datum {
         if (mAccessor == null) {
             bundle.putSerializable(mKey, value);
         } else {
-            throw new IllegalStateException("Accessor not supported for serializable objects");
+            throw new AccessorNotSupportedException("Serializable");
         }
         return this;
     }
@@ -561,7 +562,7 @@ public class Datum {
         if (mAccessor == null) {
             return bundle.getStringArrayList(mKey);
         } else {
-            throw new IllegalStateException("Accessor not supported for ArrayList<String> objects");
+            throw new AccessorNotSupportedException("ArrayList<String>");
         }
     }
 
@@ -581,8 +582,15 @@ public class Datum {
         if (mAccessor == null) {
             bundle.putStringArrayList(mKey, value);
         } else {
-            throw new IllegalStateException("Accessor not supported for ArrayList<String> objects");
+            throw new AccessorNotSupportedException("ArrayList<String>");
         }
         return this;
+    }
+
+    private class AccessorNotSupportedException extends  IllegalStateException {
+
+        AccessorNotSupportedException(final String typeDescription) {
+            super("Accessor not supported for " + typeDescription + " objects");
+        }
     }
 }

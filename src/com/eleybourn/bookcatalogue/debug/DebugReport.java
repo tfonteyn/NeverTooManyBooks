@@ -83,7 +83,7 @@ public class DebugReport {
 
         } catch (Exception e) {
             // Default if we die
-            return e.getMessage();
+            return e.getLocalizedMessage();
         }
 
         return signedBy.toString();
@@ -156,13 +156,13 @@ public class DebugReport {
             }
         } catch (Exception e) {
             // Don't lose the other debug info if scanner data dies for some reason
-            message.append("Scanner failure: ").append(e.getMessage()).append("\n");
+            message.append("Scanner failure: ").append(e.getLocalizedMessage()).append("\n");
         }
         message.append("\n");
 
         message.append("Details:\n\n").append(activity.getString(R.string.debug_body).toUpperCase()).append("\n\n");
 
-        Logger.debug(message.toString());
+        Logger.info(message.toString());
 
         emailIntent.putExtra(Intent.EXTRA_TEXT, message.toString());
         //has to be an ArrayList

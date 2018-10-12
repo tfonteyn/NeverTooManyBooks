@@ -336,8 +336,7 @@
 
                 <TextView
                     android:id="@+id/signed"
-                    style="@style/bookDetailText"
-                    android:text="@string/no" />
+                    style="@style/bookDetailText" />
 
             </TableRow>
 

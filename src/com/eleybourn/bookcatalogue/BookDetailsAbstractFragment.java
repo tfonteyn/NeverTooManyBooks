@@ -20,27 +20,25 @@ import android.view.View.OnClickListener;
 import android.view.View.OnCreateContextMenuListener;
 import android.widget.ImageView;
 
-import com.eleybourn.bookcatalogue.CoverBrowser.OnImageSelectedListener;
 import com.eleybourn.bookcatalogue.Fields.Field;
-import com.eleybourn.bookcatalogue.cropper.CropImageActivity;
 import com.eleybourn.bookcatalogue.cropper.CropIImage;
+import com.eleybourn.bookcatalogue.cropper.CropImageActivity;
 import com.eleybourn.bookcatalogue.database.CoversDbHelper;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.entities.Book;
-import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.IsbnUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
-import com.eleybourn.bookcatalogue.utils.Utils;
+import com.eleybourn.bookcatalogue.widgets.CoverBrowser;
+import com.eleybourn.bookcatalogue.widgets.CoverBrowser.OnImageSelectedListener;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -48,208 +46,45 @@ import java.util.List;
  * Here we define common method for all children: database and background initializing,
  * initializing fields and display metrics and other common tasks.
  *
- * Basically used by {@link BookDetailsFragment} and {@link EditBookFieldsFragment}
+ * Used by {@link BookDetailsFragment} and {@link EditBookFieldsFragment}
  *
  * @author n.silin
  */
-public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragment {
+public abstract class BookDetailsAbstractFragment extends BookAbstractFragment {
 
     /** Counter used to prevent images being reused accidentally */
     private static int mTempImageCounter = 0;
 
-    /**
-     * Listener for creating context menu for book thumbnail.
-     */
-    private final OnCreateContextMenuListener mCreateBookThumbContextMenuListener = new OnCreateContextMenuListener() {
-        @Override
-        public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
-            MenuItem delete = menu.add(Menu.NONE, R.id.MENU_DELETE_THUMB, 0, R.string.menu_delete_thumb);
-            delete.setIcon(R.drawable.ic_mode_edit);
-
-            // Replace thumbnail
-            SubMenu replaceSubmenu = menu.addSubMenu(Menu.NONE, R.id.SUBMENU_REPLACE_THUMB, 2, R.string.menu_replace_thumb);
-            replaceSubmenu.setIcon(R.drawable.ic_find_replace);
-
-            replaceSubmenu.add(Menu.NONE, R.id.MENU_ADD_THUMB_FROM_CAMERA, 1, R.string.menu_add_thumb_photo)
-                    .setIcon(R.drawable.ic_add_a_photo);
-            replaceSubmenu.add(Menu.NONE, R.id.MENU_ADD_THUMB_FROM_GALLERY, 2, R.string.menu_add_thumb_gallery)
-                    .setIcon(R.drawable.ic_image);
-            replaceSubmenu.add(Menu.NONE, R.id.MENU_ADD_THUMB_ALT_EDITIONS, 3, R.string.menu_thumb_alt_editions)
-                    .setIcon(R.drawable.ic_find_replace);
-
-            // Rotate thumbnail
-            SubMenu submenu = menu.addSubMenu(Menu.NONE, R.id.SUBMENU_ROTATE_THUMB, 3, R.string.menu_rotate_thumb);
-            submenu.setIcon(R.drawable.ic_rotate_right);
-
-            submenu.add(Menu.NONE, R.id.MENU_ROTATE_THUMB_CW, 1, R.string.menu_rotate_thumb_cw)
-                    .setIcon(R.drawable.ic_rotate_right);
-            submenu.add(Menu.NONE, R.id.MENU_ROTATE_THUMB_CCW, 2, R.string.menu_rotate_thumb_ccw)
-                    .setIcon(R.drawable.ic_rotate_left);
-            submenu.add(Menu.NONE, R.id.MENU_ROTATE_THUMB_180, 3, R.string.menu_rotate_thumb_180)
-                    .setIcon(R.drawable.ic_swap_vert);
-            menu.add(Menu.NONE, R.id.MENU_CROP_THUMB, 4, R.string.menu_crop_thumb)
-                    .setIcon(R.drawable.ic_crop);
-        }
-    };
-
     protected ImageUtils.ThumbSize mThumbSize;
+
     @Nullable
     private CoverBrowser mCoverBrowser = null;
-
-    /**
-     * Handler to process a cover selected from the CoverBrowser.
-     */
-    @Nullable
-    private final OnImageSelectedListener mOnImageSelectedListener = new OnImageSelectedListener() {
-        @Override
-        public void onImageSelected(@NonNull final String fileSpec) {
-            if (mCoverBrowser != null) {
-                // Get the current file
-                File bookFile = getCoverFile(mEditManager.getBook().getBookId());
-                File newFile = new File(fileSpec);
-                // Overwrite with new file
-                StorageUtils.renameFile(newFile, bookFile);
-                // update current activity
-                setCoverImage();
-            }
-            if (mCoverBrowser != null) {
-                mCoverBrowser.dismiss();
-            }
-            mCoverBrowser = null;
-        }
-    };
 
     /** Used to display a hint if user rotates a camera image */
     private boolean mGotCameraImage = false;
 
-    @Override
-    public void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent intent) {
-        Tracker.enterOnActivityResult(this, requestCode, resultCode);
-        try {
-            super.onActivityResult(requestCode, resultCode, intent);
-            switch (requestCode) {
-                case UniqueId.ACTIVITY_REQUEST_CODE_ADD_THUMB_FROM_CAMERA:
-                    if (resultCode == Activity.RESULT_OK && intent != null && intent.getExtras() != null) {
-                        addFromCamera(requestCode, resultCode, intent);
-                    }
-                    return;
+    /** the cover image */
+    private ImageView mCoverView;
 
-                case UniqueId.ACTIVITY_REQUEST_CODE_ADD_THUMB_FROM_GALLERY:
-                    if (resultCode == Activity.RESULT_OK) {
-                        addFromGallery(intent);
-                    }
-                    return;
-
-                case UniqueId.ACTIVITY_REQUEST_CODE_CROP_RESULT_EXTERNAL: {
-                    File thumbFile = getCoverFile(mEditManager.getBook().getBookId());
-                    File cropped = this.getCroppedTempCoverFile();
-                    if (resultCode == Activity.RESULT_OK) {
-                        if (cropped.exists()) {
-                            StorageUtils.renameFile(cropped, thumbFile);
-                            // Update the ImageView with the new image
-                            setCoverImage();
-                        } else {
-                            Tracker.handleEvent(this, "onActivityResult(" + requestCode + "," + resultCode + ") - result OK, no image file", Tracker.States.Running);
-                        }
-                    } else {
-                        Tracker.handleEvent(this, "onActivityResult(" + requestCode + "," + resultCode + ") - bad result", Tracker.States.Running);
-                        StorageUtils.deleteFile(cropped);
-                    }
-                    return;
-                }
-
-                case UniqueId.ACTIVITY_REQUEST_CODE_CROP_RESULT_INTERNAL: {
-                    File thumbFile = getCoverFile(mEditManager.getBook().getBookId());
-                    File cropped = this.getCroppedTempCoverFile();
-                    if (resultCode == Activity.RESULT_OK) {
-                        if (cropped.exists()) {
-                            StorageUtils.renameFile(cropped, thumbFile);
-                            // Update the ImageView with the new image
-                            setCoverImage();
-                        }
-                    }
-                    return;
-                }
-                default:
-                    Logger.error("unknown result code");
-            }
-        } finally {
-            Tracker.exitOnActivityResult(this, requestCode, resultCode);
-        }
-    }
-
-    private void addFromGallery(@Nullable final Intent intent) {
-        @SuppressWarnings("ConstantConditions")
-        Uri selectedImageUri = intent.getData();
-
-        if (selectedImageUri != null) {
-            boolean imageOk = false;
-            // If no 'content' scheme, then use the content resolver.
-            try {
-                InputStream in = getContext().getContentResolver().openInputStream(selectedImageUri);
-                imageOk = StorageUtils.saveInputStreamToFile(in, getCoverFile(mEditManager.getBook().getBookId()));
-            } catch (FileNotFoundException e) {
-                Logger.error(e, "Unable to copy content to file");
-            }
-            if (imageOk) {
-                // Update the ImageView with the new image
-                setCoverImage();
-            } else {
-                String s = getString(R.string.could_not_copy_image) + ". " + getString(R.string.if_the_problem_persists);
-                StandardDialogs.showQuickNotice(this.getActivity(), s);
-            }
-        } else {
-            /* Deal with the case where the chooser returns a null intent. This seems to happen
-             * when the filename is not properly understood by the choose (eg. an apostrophe in
-             * the file name confuses ES File Explorer in the current version as of 23-Sep-2012. */
-            StandardDialogs.showQuickNotice(this.getActivity(), R.string.could_not_copy_image);
-        }
-    }
-
-    private void addFromCamera(final int requestCode, final int resultCode, @NonNull final Intent intent) {
-        Bitmap bitmap = (Bitmap) intent.getExtras().get(CropIImage.BKEY_DATA);
-        if (bitmap != null && bitmap.getWidth() > 0 && bitmap.getHeight() > 0) {
-            Matrix m = new Matrix();
-            m.postRotate(BCPreferences.getAutoRotateCameraImagesInDegrees());
-            bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), m, true);
-
-            File cameraFile = getCameraTempCoverFile();
-            FileOutputStream out;
-            // Create a file to copy the thumbnail into
-            try {
-                out = new FileOutputStream(cameraFile.getAbsoluteFile());
-            } catch (FileNotFoundException e) {
-                Logger.error(e);
-                return;
-            }
-
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
-
-            cropCoverImage(cameraFile);
-            mGotCameraImage = true;
-        } else {
-            Tracker.handleEvent(this, "onActivityResult(" + requestCode + "," + resultCode + ") - camera image empty", Tracker.States.Running);
-        }
-    }
-
-    /* Note that you should use setContentView() method in descendant before running this.
-     */
     @Override
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
         // See how big the display is and use that to set bitmap sizes
-        mThumbSize = ImageUtils.getThumbSizes(getActivity());
+        setThumbSize(getActivity());
 
+        // add all fields.
         initFields();
 
+        // need this in other parts
+        mCoverView = getView().findViewById(R.id.image);
+
         //Set zooming by default on clicking on image
-        getView().findViewById(R.id.image).setOnClickListener(new OnClickListener() {
+        mCoverView.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                long bookId = mEditManager.getBook().getBookId();
-                ImageUtils.showZoomedThumb(getActivity(), getCoverFile(bookId));
+                ImageUtils.showZoomedThumb(getActivity(), getCoverFile(mEditManager.getBook().getBookId()));
             }
         });
     }
@@ -268,32 +103,16 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
     }
 
     @Override
-    public void onResume() {
-        Tracker.enterOnResume(this);
-        super.onResume();
-        Tracker.exitOnResume(this);
-    }
-
-    @Override
-    public void onDestroy() {
-        Tracker.enterOnDestroy(this);
-        super.onDestroy();
-        mDb.close();
-        Tracker.exitOnDestroy(this);
-    }
-
-    @Override
     public boolean onContextItemSelected(@NonNull final MenuItem item) {
         Tracker.handleEvent(this, "Context Menu Item " + item.getItemId(), Tracker.States.Enter);
 
         try {
-            ImageView thumbView = getView().findViewById(R.id.image);
             File thumbFile = getCoverFile(mEditManager.getBook().getBookId());
 
             switch (item.getItemId()) {
                 case R.id.MENU_DELETE_THUMB:
-                    deleteThumbnail();
-                    ImageUtils.fetchFileIntoImageView(thumbView, thumbFile, mThumbSize.normal, mThumbSize.normal, true);
+                    deleteCoverFile();
+                    ImageUtils.fetchFileIntoImageView(mCoverView, thumbFile, mThumbSize.normal, mThumbSize.normal, true);
                     return true;
 
                 case R.id.SUBMENU_ROTATE_THUMB:
@@ -306,56 +125,33 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
 
                 case R.id.MENU_ROTATE_THUMB_CW:
                     rotateThumbnail(90);
-                    ImageUtils.fetchFileIntoImageView(thumbView, thumbFile, mThumbSize.normal, mThumbSize.normal, true);
+                    ImageUtils.fetchFileIntoImageView(mCoverView, thumbFile, mThumbSize.normal, mThumbSize.normal, true);
                     return true;
 
                 case R.id.MENU_ROTATE_THUMB_CCW:
                     rotateThumbnail(-90);
-                    ImageUtils.fetchFileIntoImageView(thumbView, thumbFile, mThumbSize.normal, mThumbSize.normal, true);
+                    ImageUtils.fetchFileIntoImageView(mCoverView, thumbFile, mThumbSize.normal, mThumbSize.normal, true);
                     return true;
 
                 case R.id.MENU_ROTATE_THUMB_180:
                     rotateThumbnail(180);
-                    ImageUtils.fetchFileIntoImageView(thumbView, thumbFile, mThumbSize.normal, mThumbSize.normal, true);
-                    return true;
-
-                case R.id.MENU_ADD_THUMB_FROM_CAMERA:
-                    // Increment the temp counter and cleanup the temp directory
-                    mTempImageCounter++;
-                    StorageUtils.cleanupTempDirectory();
-                    // Get a photo
-                    Intent pIntent = new Intent("android.media.action.IMAGE_CAPTURE");
-//				We don't do this because we have no reliable way to rotate a large image
-//				without producing memory exhaustion; Android does not include a file-based
-//				image rotation.
-//				File f = this.getCameraTempCoverFile();
-//	            StorageUtils.deleteFile(f);
-//				pIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
-                    startActivityForResult(pIntent, UniqueId.ACTIVITY_REQUEST_CODE_ADD_THUMB_FROM_CAMERA);
-                    return true;
-
-                case R.id.MENU_ADD_THUMB_FROM_GALLERY:
-                    Intent gIntent = new Intent();
-                    gIntent.setType("image/*");
-                    gIntent.setAction(Intent.ACTION_GET_CONTENT);
-                    startActivityForResult(Intent.createChooser(gIntent, getString(R.string.select_picture)),
-                            UniqueId.ACTIVITY_REQUEST_CODE_ADD_THUMB_FROM_GALLERY);
+                    ImageUtils.fetchFileIntoImageView(mCoverView, thumbFile, mThumbSize.normal, mThumbSize.normal, true);
                     return true;
 
                 case R.id.MENU_CROP_THUMB:
                     cropCoverImage(thumbFile);
                     return true;
 
+                case R.id.MENU_ADD_THUMB_FROM_CAMERA:
+                    getCoverFromCamera();
+                    return true;
+
+                case R.id.MENU_ADD_THUMB_FROM_GALLERY:
+                    getCoverFromGallery();
+                    return true;
+
                 case R.id.MENU_ADD_THUMB_ALT_EDITIONS:
-                    Field isbnField = mFields.getField(R.id.isbn);
-                    String isbn = isbnField.getValue().toString();
-                    if (IsbnUtils.isValid(isbn)) {
-                        mCoverBrowser = new CoverBrowser(getActivity(), isbn, mOnImageSelectedListener);
-                        mCoverBrowser.showEditionCovers();
-                    } else {
-                        //Snackbar.make(isbnField.getView(), R.string.editions_require_isbn, Snackbar.LENGTH_LONG).show();
-                        StandardDialogs.showQuickNotice(getActivity(), R.string.editions_require_isbn);
-                    }
+                    getCoverFromAlternativeEditions();
                     return true;
             }
             return super.onContextItemSelected(item);
@@ -364,138 +160,148 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
         }
     }
 
-    private void cropCoverImage(@NonNull final File thumbFile) {
-        if (BCPreferences.getUseExternalImageCropper()) {
-            cropCoverImageExternal(thumbFile);
-        } else {
-            cropCoverImageInternal(thumbFile);
-        }
-    }
-
-    private void cropCoverImageInternal(@NonNull final File thumbFile) {
-        Intent intent = new Intent(getActivity(), CropImageActivity.class);
-        // here you have to pass absolute path to your file
-        intent.putExtra(CropIImage.BKEY_IMAGE_PATH, thumbFile.getAbsolutePath());
-        intent.putExtra(CropIImage.BKEY_SCALE, true);
-        intent.putExtra(CropIImage.BKEY_NO_FACE_DETECTION, true);
-        intent.putExtra(CropIImage.BKEY_WHOLE_IMAGE, BCPreferences.getCropFrameWholeImage());
-        // Get and set the output file spec, and make sure it does not already exist.
-        File cropped = this.getCroppedTempCoverFile();
-        StorageUtils.deleteFile(cropped);
-
-        intent.putExtra(CropIImage.BKEY_OUTPUT, cropped.getAbsolutePath());
-        startActivityForResult(intent, UniqueId.ACTIVITY_REQUEST_CODE_CROP_RESULT_INTERNAL);
-    }
-
-    /**
-     * Experimental
-     *
-     */
-    private void cropCoverImageExternal(@NonNull final File thumbFile) {
-        Tracker.handleEvent(this, "cropCoverImageExternal", Tracker.States.Enter);
+    @Override
+    public void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent intent) {
+        Tracker.enterOnActivityResult(this, requestCode, resultCode);
         try {
-            // this is actually not an official interface; theoretically this might not be there 'tomorrow'
-            Intent intent = new Intent("com.android.camera.action.CROP");
+            super.onActivityResult(requestCode, resultCode, intent);
+            switch (requestCode) {
+                case UniqueId.ACTIVITY_REQUEST_CODE_ADD_THUMB_FROM_CAMERA:
+                    if (resultCode == Activity.RESULT_OK && intent != null && intent.getExtras() != null) {
+                        addCoverFromCamera(requestCode, resultCode, intent);
+                    }
+                    return;
 
-            // this will open any image file
-            intent.setDataAndType(Uri.fromFile(new File(thumbFile.getAbsolutePath())), "image/*");
+                case UniqueId.ACTIVITY_REQUEST_CODE_ADD_THUMB_FROM_GALLERY:
+                    if (resultCode == Activity.RESULT_OK) {
+                        addCoverFromGallery(intent);
+                    }
+                    return;
 
-            intent.putExtra(CropIImage.BKEY_CROP, true);
-            intent.putExtra(CropIImage.BKEY_SCALE, true);
-            intent.putExtra(CropIImage.BKEY_NO_FACE_DETECTION, true);
+                case UniqueId.ACTIVITY_REQUEST_CODE_CROP_RESULT_INTERNAL:
+                case UniqueId.ACTIVITY_REQUEST_CODE_CROP_RESULT_EXTERNAL: {
+                    if (resultCode == Activity.RESULT_OK) {
+                        File cropped = this.getCroppedTempCoverFile();
+                        if (cropped.exists()) {
+                            File thumbFile = getCoverFile(mEditManager.getBook().getBookId());
+                            StorageUtils.renameFile(cropped, thumbFile);
+                            // Update the ImageView with the new image
+                            setCoverImage(mEditManager.getBook().getBookId());
+                        } else {
+                            Tracker.handleEvent(this, "onActivityResult(" + requestCode + "," + resultCode + ") - result OK, no image file", Tracker.States.Running);
+                        }
+                    } else {
+                        Tracker.handleEvent(this, "onActivityResult(" + requestCode + "," + resultCode + ") - bad result", Tracker.States.Running);
+                        StorageUtils.deleteFile(this.getCroppedTempCoverFile());
+                    }
+                    return;
+                }
 
-            // True to return a Bitmap, false to directly save the cropped image
-            intent.putExtra(CropIImage.BKEY_RETURN_DATA, false);
-            // Save output image in uri
-            File cropped = this.getCroppedTempCoverFile();
-            StorageUtils.deleteFile(cropped);
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(new File(cropped.getAbsolutePath())));
-
-            List<ResolveInfo> list = getActivity().getPackageManager().queryIntentActivities(intent, 0);
-            int size = list.size();
-            if (size == 0) {
-                StandardDialogs.showQuickNotice(getActivity(), R.string.no_external_crop_app);
-            } else {
-                startActivityForResult(intent, UniqueId.ACTIVITY_REQUEST_CODE_CROP_RESULT_EXTERNAL);
+                default:
+                    Logger.error("unknown result code");
             }
         } finally {
-            Tracker.handleEvent(this, "cropCoverImageExternal", Tracker.States.Exit);
+            Tracker.exitOnActivityResult(this, requestCode, resultCode);
         }
     }
 
     /**
-     * Delete the provided thumbnail
+     * Add all book fields with corresponding validators. Note this is NOT where we set values.
      */
-    private void deleteThumbnail() {
-        try {
-            File thumbFile = getCoverFile(mEditManager.getBook().getBookId());
-            StorageUtils.deleteFile(thumbFile);
-        } catch (Exception e) {
-            Logger.error(e);
+    protected void initFields() {
+        /* Title has some post-processing on the text, to move leading 'A', 'The' etc to the end.
+         * While we could do it in a formatter, it it not really a display-oriented function and
+         * is handled in pre-processing in the database layer since it also needs to be applied
+         * to imported record etc.
+         */
+        mFields.add(R.id.title, UniqueId.KEY_TITLE, null);
+
+        mFields.add(R.id.author, "", UniqueId.KEY_AUTHOR_FORMATTED, null);
+        mFields.add(R.id.format, UniqueId.KEY_BOOK_FORMAT, null);
+        mFields.add(R.id.genre, UniqueId.KEY_BOOK_GENRE, null);
+        mFields.add(R.id.isbn, UniqueId.KEY_ISBN, null);
+        mFields.add(R.id.language, UniqueId.KEY_BOOK_LANGUAGE, null);
+        mFields.add(R.id.list_price, UniqueId.KEY_BOOK_LIST_PRICE, null);
+        mFields.add(R.id.pages, UniqueId.KEY_BOOK_PAGES, null);
+        mFields.add(R.id.series, UniqueId.KEY_SERIES_NAME, UniqueId.KEY_SERIES_NAME, null);
+        mFields.add(R.id.signed, UniqueId.KEY_BOOK_SIGNED, null);
+
+
+        /* Anthology needs an accessor, see {@link Book#initValidators()}*/
+        if (getView().findViewById(R.id.anthology) != null) {
+            mFields.add(R.id.anthology, Book.IS_ANTHOLOGY, null);
         }
-        invalidateCachedThumbnail();
-    }
 
-    /**
-     * Get the File object for the cover of the book we are editing.
-     * If the book is new (0), return the standard temp file.
-     */
-    @NonNull
-    private File getCoverFile(final long bookId) {
-        if (bookId == 0) {
-            return StorageUtils.getTempCoverFile();
-        } else {
-            return StorageUtils.getCoverFile(mDb.getBookUuid(bookId));
+        if (getView().findViewById(R.id.publisher) != null) {
+            mFields.add(R.id.publisher, UniqueId.KEY_BOOK_PUBLISHER, null);
         }
-    }
 
-    /**
-     * Get a temp file for camera images
-     */
-    private File getCameraTempCoverFile() {
-        return StorageUtils.getTempCoverFile("camera", "" + mTempImageCounter);
-    }
-
-    /**
-     * Get a temp file for cropping output
-     */
-    private File getCroppedTempCoverFile() {
-        return StorageUtils.getTempCoverFile("cropped", "" + mTempImageCounter);
-    }
-
-    /**
-     * Populate Author field
-     * If there is no data shows "Set author..."
-     */
-    protected void populateAuthorListField() {
-        String newText = mEditManager.getBook().getAuthorTextShort();
-        if (newText == null || newText.isEmpty()) {
-            newText = getString(R.string.set_authors);
+        if (getView().findViewById(R.id.date_published) != null) {
+            mFields.add(R.id.date_published, UniqueId.KEY_BOOK_DATE_PUBLISHED, UniqueId.KEY_BOOK_DATE_PUBLISHED,
+                    null, new Fields.DateFieldFormatter());
         }
-        mFields.getField(R.id.author).setValue(newText);
+        //TOMF it's a date but we only used the year, do we need DateFieldFormatter ?
+        mFields.add(R.id.first_publication, UniqueId.KEY_FIRST_PUBLICATION, UniqueId.KEY_FIRST_PUBLICATION, null);
+
+        mFields.add(R.id.description, UniqueId.KEY_DESCRIPTION, null)
+                .setShowHtml(true);
+
+        mFields.add(R.id.bookshelf, UniqueId.BKEY_BOOKSHELF_TEXT, null)
+                .doNoFetch = true; // Output-only field
+
+        mFields.add(R.id.image, "", UniqueId.BKEY_THUMBNAIL, null);
+        mFields.getField(R.id.image).getView().setOnCreateContextMenuListener(
+                new OnCreateContextMenuListener() {
+                    @Override
+                    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+                        menu.add(Menu.NONE, R.id.MENU_DELETE_THUMB, 0, R.string.menu_delete_thumb)
+                                .setIcon(R.drawable.ic_mode_edit);
+
+                        SubMenu replaceThumbnailSubmenu = menu.addSubMenu(Menu.NONE, R.id.SUBMENU_REPLACE_THUMB, 2, R.string.menu_replace_thumb);
+                        replaceThumbnailSubmenu.setIcon(R.drawable.ic_find_replace);
+
+                        replaceThumbnailSubmenu.add(Menu.NONE, R.id.MENU_ADD_THUMB_FROM_CAMERA, 1, R.string.menu_add_thumb_photo)
+                                .setIcon(R.drawable.ic_add_a_photo);
+                        replaceThumbnailSubmenu.add(Menu.NONE, R.id.MENU_ADD_THUMB_FROM_GALLERY, 2, R.string.menu_add_thumb_gallery)
+                                .setIcon(R.drawable.ic_image);
+                        replaceThumbnailSubmenu.add(Menu.NONE, R.id.MENU_ADD_THUMB_ALT_EDITIONS, 3, R.string.menu_thumb_alt_editions)
+                                .setIcon(R.drawable.ic_find_replace);
+
+                        SubMenu rotateThumbnailSubmenu = menu.addSubMenu(Menu.NONE, R.id.SUBMENU_ROTATE_THUMB, 3, R.string.menu_rotate_thumb);
+                        rotateThumbnailSubmenu.setIcon(R.drawable.ic_rotate_right);
+
+                        rotateThumbnailSubmenu.add(Menu.NONE, R.id.MENU_ROTATE_THUMB_CW, 1, R.string.menu_rotate_thumb_cw)
+                                .setIcon(R.drawable.ic_rotate_right);
+                        rotateThumbnailSubmenu.add(Menu.NONE, R.id.MENU_ROTATE_THUMB_CCW, 2, R.string.menu_rotate_thumb_ccw)
+                                .setIcon(R.drawable.ic_rotate_left);
+                        rotateThumbnailSubmenu.add(Menu.NONE, R.id.MENU_ROTATE_THUMB_180, 3, R.string.menu_rotate_thumb_180)
+                                .setIcon(R.drawable.ic_swap_vert);
+                        menu.add(Menu.NONE, R.id.MENU_CROP_THUMB, 4, R.string.menu_crop_thumb)
+                                .setIcon(R.drawable.ic_crop);
+                    }
+                });
     }
 
+
+    abstract protected void populateFields(@NonNull final Book book);
+
+    abstract protected void populateAuthorListField(@NonNull final Book book);
+
+    abstract protected void populateSeriesListField(@NonNull final Book book);
+
     /**
-     * Populate Series field
-     * If there is no data shows "Set series..."
+     * Gets all bookshelves for the book from database and populate corresponding field with them.
+     *
+     * @param field to populate with the shelves
+     * @param book  from which the shelves will be taken
+     *
+     * @return <tt>true</tt>if populated, false otherwise
      */
-    protected void populateSeriesListField() {
-        String newText;
-        ArrayList<Series> list = mEditManager.getBook().getSeriesList();
-        if (list.size() == 0) {
-            newText = getString(R.string.set_series);
-        } else {
-            boolean trimmed = Series.pruneSeriesList(list);
-            trimmed |= Utils.pruneList(mDb, list);
-            if (trimmed) {
-                mEditManager.getBook().setSeriesList(list);
-            }
-            newText = list.get(0).getDisplayName();
-            if (list.size() > 1) {
-                newText += " " + getString(R.string.and_others);
-            }
-        }
-        mFields.getField(R.id.series).setValue(newText);
+    protected boolean populateBookshelves(@NonNull final Field field, @NonNull final Book book) {
+        // Display the selected bookshelves
+        String bookshelfText = book.getString(Book.BOOKSHELF_TEXT);
+        field.setValue(bookshelfText);
+        return !bookshelfText.isEmpty();
     }
 
     /**
@@ -538,11 +344,214 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
                 attempts--;
                 if (attempts > 1) {
                     System.gc();
-                } else  {
+                } else {
                     throw new RuntimeException(e);
                 }
             }
         }
+    }
+
+    //<editor-fold desc="Cover crop Operations">
+    private void cropCoverImage(@NonNull final File thumbFile) {
+        if (BCPreferences.getUseExternalImageCropper()) {
+            cropCoverImageExternal(thumbFile);
+        } else {
+            cropCoverImageInternal(thumbFile);
+        }
+    }
+
+    /**
+     * Get a temp file for cropping output
+     */
+    private File getCroppedTempCoverFile() {
+        return StorageUtils.getTempCoverFile("cropped", "" + mTempImageCounter);
+    }
+
+    private void cropCoverImageInternal(@NonNull final File thumbFile) {
+        Intent intent = new Intent(getActivity(), CropImageActivity.class);
+        // here you have to pass absolute path to your file
+        intent.putExtra(CropIImage.BKEY_IMAGE_PATH, thumbFile.getAbsolutePath());
+        intent.putExtra(CropIImage.BKEY_SCALE, true);
+        intent.putExtra(CropIImage.BKEY_NO_FACE_DETECTION, true);
+        intent.putExtra(CropIImage.BKEY_WHOLE_IMAGE, BCPreferences.getCropFrameWholeImage());
+        // Get and set the output file spec, and make sure it does not already exist.
+        File cropped = this.getCroppedTempCoverFile();
+        StorageUtils.deleteFile(cropped);
+
+        intent.putExtra(CropIImage.BKEY_OUTPUT, cropped.getAbsolutePath());
+        startActivityForResult(intent, UniqueId.ACTIVITY_REQUEST_CODE_CROP_RESULT_INTERNAL);
+    }
+
+    /**
+     * Experimental
+     */
+    private void cropCoverImageExternal(@NonNull final File thumbFile) {
+        Tracker.handleEvent(this, "cropCoverImageExternal", Tracker.States.Enter);
+        try {
+            // this is actually not an official interface; theoretically this might not be there 'tomorrow'
+            Intent intent = new Intent("com.android.camera.action.CROP");
+
+            // this will open any image file
+            intent.setDataAndType(Uri.fromFile(new File(thumbFile.getAbsolutePath())), "image/*");
+
+            intent.putExtra(CropIImage.BKEY_CROP, true);
+            intent.putExtra(CropIImage.BKEY_SCALE, true);
+            intent.putExtra(CropIImage.BKEY_NO_FACE_DETECTION, true);
+
+            // True to return a Bitmap, false to directly save the cropped image
+            intent.putExtra(CropIImage.BKEY_RETURN_DATA, false);
+            // Save output image in uri
+            File cropped = this.getCroppedTempCoverFile();
+            StorageUtils.deleteFile(cropped);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(new File(cropped.getAbsolutePath())));
+
+            List<ResolveInfo> list = getActivity().getPackageManager().queryIntentActivities(intent, 0);
+            int size = list.size();
+            if (size == 0) {
+                StandardDialogs.showQuickNotice(getActivity(), R.string.no_external_crop_app);
+            } else {
+                startActivityForResult(intent, UniqueId.ACTIVITY_REQUEST_CODE_CROP_RESULT_EXTERNAL);
+            }
+        } finally {
+            Tracker.handleEvent(this, "cropCoverImageExternal", Tracker.States.Exit);
+        }
+    }
+    //</editor-fold>
+
+    //<editor-fold desc="Cover replacement operations">
+
+    protected void setCoverImage(final long bookId) {
+        ImageUtils.fetchFileIntoImageView(mCoverView, getCoverFile(bookId), mThumbSize.normal, mThumbSize.normal, true);
+    }
+
+    protected void setCoverImage(final long bookId, final int maxWidth, final int maxHeight) {
+        ImageUtils.fetchFileIntoImageView(mCoverView, getCoverFile(bookId), maxWidth, maxHeight, true);
+    }
+
+    private void getCoverFromCamera() {
+        // Increment the temp counter and cleanup the temp directory
+        mTempImageCounter++;
+        StorageUtils.cleanupTempDirectory();
+        // Get a photo
+        Intent pIntent = new Intent("android.media.action.IMAGE_CAPTURE");
+                    /*
+				        We don't do this because we have no reliable way to rotate a large image
+				        without producing memory exhaustion; Android does not include a file-based
+				        image rotation.
+
+				        File f = this.getCameraTempCoverFile();
+	                    StorageUtils.deleteFile(f);
+				        pIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
+                    */
+        startActivityForResult(pIntent, UniqueId.ACTIVITY_REQUEST_CODE_ADD_THUMB_FROM_CAMERA);
+    }
+
+    private void addCoverFromCamera(final int requestCode, final int resultCode, @NonNull final Intent intent) {
+        Bitmap bitmap = (Bitmap) intent.getExtras().get(CropIImage.BKEY_DATA);
+        if (bitmap != null && bitmap.getWidth() > 0 && bitmap.getHeight() > 0) {
+            Matrix m = new Matrix();
+            m.postRotate(BCPreferences.getAutoRotateCameraImagesInDegrees());
+            bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), m, true);
+
+            File cameraFile = StorageUtils.getTempCoverFile("camera", "" + mTempImageCounter);
+            FileOutputStream out;
+            // Create a file to copy the thumbnail into
+            try {
+                out = new FileOutputStream(cameraFile.getAbsoluteFile());
+            } catch (FileNotFoundException e) {
+                Logger.error(e);
+                return;
+            }
+
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+
+            cropCoverImage(cameraFile);
+            mGotCameraImage = true;
+        } else {
+            Tracker.handleEvent(this, "onActivityResult(" + requestCode + "," + resultCode + ") - camera image empty", Tracker.States.Running);
+        }
+    }
+
+    private void getCoverFromGallery() {
+        Intent gIntent = new Intent();
+        gIntent.setType("image/*");
+        gIntent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(gIntent, getString(R.string.select_picture)),
+                UniqueId.ACTIVITY_REQUEST_CODE_ADD_THUMB_FROM_GALLERY);
+    }
+
+    private void addCoverFromGallery(@Nullable final Intent intent) {
+        Uri selectedImageUri = intent.getData();
+
+        if (selectedImageUri != null) {
+            boolean imageOk = false;
+            // If no 'content' scheme, then use the content resolver.
+            try {
+                InputStream in = getContext().getContentResolver().openInputStream(selectedImageUri);
+                imageOk = StorageUtils.saveInputStreamToFile(in, getCoverFile(mEditManager.getBook().getBookId()));
+            } catch (FileNotFoundException e) {
+                Logger.error(e, "Unable to copy content to file");
+            }
+            if (imageOk) {
+                // Update the ImageView with the new image
+                setCoverImage(mEditManager.getBook().getBookId());
+            } else {
+                String s = getString(R.string.could_not_copy_image) + ". " + getString(R.string.if_the_problem_persists);
+                StandardDialogs.showQuickNotice(this.getActivity(), s);
+            }
+        } else {
+            /* Deal with the case where the chooser returns a null intent. This seems to happen
+             * when the filename is not properly understood by the choose (eg. an apostrophe in
+             * the file name confuses ES File Explorer in the current version as of 23-Sep-2012. */
+            StandardDialogs.showQuickNotice(this.getActivity(), R.string.could_not_copy_image);
+        }
+    }
+
+    private void getCoverFromAlternativeEditions() {
+        Field isbnField = mFields.getField(R.id.isbn);
+        String isbn = isbnField.getValue().toString();
+        if (IsbnUtils.isValid(isbn)) {
+            mCoverBrowser = new CoverBrowser(getActivity(), isbn, new OnImageSelectedListener() {
+                @Override
+                public void onImageSelected(@NonNull final String fileSpec) {
+                    if (mCoverBrowser != null) {
+                        // Get the current file
+                        File bookFile = getCoverFile(mEditManager.getBook().getBookId());
+                        File newFile = new File(fileSpec);
+                        // Overwrite with new file
+                        StorageUtils.renameFile(newFile, bookFile);
+                        // Update the ImageView with the new image
+                        setCoverImage(mEditManager.getBook().getBookId());
+                        mCoverBrowser.dismiss();
+                        mCoverBrowser = null;
+                    }
+                }
+            });
+            mCoverBrowser.showEditionCovers();
+        } else {
+            //Snackbar.make(isbnField.getView(), R.string.editions_require_isbn, Snackbar.LENGTH_LONG).show();
+            StandardDialogs.showQuickNotice(getActivity(), R.string.editions_require_isbn);
+        }
+    }
+
+    //</editor-fold>
+
+    public void setThumbSize(@NonNull final Activity activity) {
+        mThumbSize = ImageUtils.getThumbSizes(activity);
+    }
+
+
+    /**
+     * Delete the provided thumbnail
+     */
+    private void deleteCoverFile() {
+        try {
+            File thumbFile = getCoverFile(mEditManager.getBook().getBookId());
+            StorageUtils.deleteFile(thumbFile);
+        } catch (Exception e) {
+            Logger.error(e);
+        }
+        invalidateCachedThumbnail();
     }
 
     /**
@@ -551,8 +560,8 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
     private void invalidateCachedThumbnail() {
         final long bookId = mEditManager.getBook().getBookId();
         if (bookId != 0) {
-            try (CoversDbHelper coversDbHelper = CoversDbHelper.getInstance(getContext())) {
-                coversDbHelper.deleteBookCover(mDb.getBookUuid(bookId));
+            try {
+                CoversDbHelper.getInstance(getContext()).deleteBookCover(mDb.getBookUuid(bookId));
             } catch (Exception e) {
                 Logger.error(e, "Error cleaning up cached cover images");
             }
@@ -560,119 +569,17 @@ public abstract class BookDetailsAbstractFragment extends EditBookAbstractFragme
     }
 
     /**
-     * Add all book fields with corresponding validators. Note this is NOT where we set values.
+     * Get the File object for the cover of the book we are editing.
+     * If the book is new (0), return the standard temp file.
      */
-    private void initFields() {
-        /* Title has some post-processing on the text, to move leading 'A', 'The' etc to the end.
-         * While we could do it in a formatter, it it not really a display-oriented function and
-         * is handled in pre-processing in the database layer since it also needs to be applied
-         * to imported record etc.
-         */
-        mFields.add(R.id.title, UniqueId.KEY_TITLE, null);
-
-        /* Anthology needs special handling, see {@link Book#initValidators()}*/
-        if (getView().findViewById(R.id.anthology) != null) {
-            mFields.add(R.id.anthology, Book.IS_ANTHOLOGY, null);
-        }
-
-        if (getView().findViewById(R.id.publisher) != null) {
-            mFields.add(R.id.publisher, UniqueId.KEY_BOOK_PUBLISHER, null);
-        }
-
-        if (getView().findViewById(R.id.date_published) != null) {
-            mFields.add(R.id.date_published, UniqueId.KEY_BOOK_DATE_PUBLISHED, UniqueId.KEY_BOOK_DATE_PUBLISHED,
-                    null, new Fields.DateFieldFormatter());
-        }
-        //TOMF it's a date but we only used the year, do we need DateFieldFormatter ?
-        mFields.add(R.id.first_publication, UniqueId.KEY_FIRST_PUBLICATION, UniqueId.KEY_FIRST_PUBLICATION, null);
-
-        mFields.add(R.id.description, UniqueId.KEY_DESCRIPTION, null)
-                .setShowHtml(true);
-
-        mFields.add(R.id.bookshelf, UniqueId.BKEY_BOOKSHELF_TEXT, null)
-                .doNoFetch = true; // Output-only field
-
-        mFields.add(R.id.image, "", UniqueId.BKEY_THUMBNAIL, null);
-        mFields.getField(R.id.image).getView().setOnCreateContextMenuListener(mCreateBookThumbContextMenuListener);
-
-
-        mFields.add(R.id.author, "", UniqueId.KEY_AUTHOR_FORMATTED, null);
-        mFields.add(R.id.format, UniqueId.KEY_BOOK_FORMAT, null);
-        mFields.add(R.id.genre, UniqueId.KEY_BOOK_GENRE, null);
-        mFields.add(R.id.isbn, UniqueId.KEY_ISBN, null);
-        mFields.add(R.id.language, UniqueId.KEY_BOOK_LANGUAGE, null);
-        mFields.add(R.id.list_price, UniqueId.KEY_BOOK_LIST_PRICE, null);
-        mFields.add(R.id.pages, UniqueId.KEY_BOOK_PAGES, null);
-        mFields.add(R.id.series, UniqueId.KEY_SERIES_NAME, UniqueId.KEY_SERIES_NAME, null);
-        mFields.add(R.id.signed, UniqueId.KEY_BOOK_SIGNED, null);
-    }
-
-    /**
-     * Populate all fields (See {@link #mFields} ) except of authors and series fields with
-     * data from database. To set authors and series fields use {@link #populateAuthorListField()}
-     * and {@link #populateSeriesListField()} methods.
-     * Data defined by its _id in db.
-     */
-    protected void populateFieldsFromBook(@NonNull final Book book) {
-        // From the database (edit)
-        try {
-            populateBookDetailsFields(book);
-            setBookThumbnail(book.getBookId(), mThumbSize.normal, mThumbSize.normal);
-
-        } catch (Exception e) {
-            Logger.error(e);
-        }
-
-        populateBookshelvesField(mFields, book);
-    }
-
-    /**
-     * Inflates all fields with data from cursor and populates UI fields with it.
-     */
-    protected void populateBookDetailsFields(@NonNull final Book book) {
-        View ant = getView().findViewById(R.id.anthology);
-        if (ant != null) {
-            Integer val = book.getInt(Book.IS_ANTHOLOGY);
-            mFields.getField(R.id.anthology).setValue(val.toString()); // Set checked if ant != 0
+    @NonNull
+    private File getCoverFile(final long bookId) {
+        if (bookId == 0) {
+            return StorageUtils.getTempCoverFile();
+        } else {
+            return StorageUtils.getCoverFile(mDb.getBookUuid(bookId));
         }
     }
 
-    /**
-     * Sets book thumbnail
-     */
-    protected void setBookThumbnail(final long bookId, final int maxWidth, final int maxHeight) {
-        // Sets book thumbnail
-        ImageView iv = getView().findViewById(R.id.image);
-        ImageUtils.fetchFileIntoImageView(iv, getCoverFile(bookId), maxWidth, maxHeight, true);
-    }
 
-    /**
-     * Gets all bookshelves for the book from database and populate corresponding field with them.
-     *
-     * @param fields   Fields containing book information
-     * @param book the book
-     *
-     * @return <tt>true</tt>if populated, false otherwise
-     */
-    protected boolean populateBookshelvesField(@NonNull final Fields fields, @NonNull final Book book) {
-        boolean result = false;
-        try {
-            // Display the selected bookshelves
-            Field bookshelfTextFe = fields.getField(R.id.bookshelf);
-            String bookshelfText = book.getString(Book.BOOKSHELF_TEXT);
-            bookshelfTextFe.setValue(bookshelfText);
-            if (!bookshelfText.isEmpty()) {
-                result = true;
-            }
-        } catch (Exception e) {
-            Logger.error(e);
-        }
-        return result;
-    }
-
-    protected void setCoverImage() {
-        ImageView iv = getView().findViewById(R.id.image);
-        ImageUtils.fetchFileIntoImageView(iv, getCoverFile(mEditManager.getBook().getBookId()), mThumbSize.normal, mThumbSize.normal, true);
-        invalidateCachedThumbnail();
-    }
 }

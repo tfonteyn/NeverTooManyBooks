@@ -212,7 +212,7 @@ public class BCPreferences {
                 sb.append("\n").append(key).append("=").append(value);
             }
             sb.append("\n\n");
-            Logger.debug(sb.toString());
+            Logger.info(sb.toString());
         }
     }
 }

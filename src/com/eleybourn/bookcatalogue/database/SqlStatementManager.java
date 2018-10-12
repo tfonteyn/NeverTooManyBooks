@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Utility class to manage the construction and closure of persisted SQLiteStatement objects.
@@ -57,8 +58,7 @@ public class SqlStatementManager implements AutoCloseable {
 
     @NonNull
     public SynchronizedStatement add(@NonNull final String name, @NonNull final String sql) {
-        if (mSyncedDb == null)
-            throw new RuntimeException("Database not set when SqlStatementManager created");
+        Objects.requireNonNull(mSyncedDb,"Database not set when SqlStatementManager created");
         return add(mSyncedDb, name, sql);
     }
 
@@ -74,8 +74,7 @@ public class SqlStatementManager implements AutoCloseable {
 
 //    @NonNull
 //    public SynchronizedStatement addOrGet(@NonNull final String name, @NonNull final String sql) {
-//        if (mSyncedDb == null)
-//            throw new RuntimeException("Database not set when SqlStatementManager created");
+//        Objects.requireNonNull(mSyncedDb, "Database not set when SqlStatementManager created");
 //        return addOrGet(mSyncedDb, name, sql);
 //    }
 //

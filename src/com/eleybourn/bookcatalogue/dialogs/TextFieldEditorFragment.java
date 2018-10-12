@@ -27,6 +27,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 
 import com.eleybourn.bookcatalogue.UniqueId;
+import com.eleybourn.bookcatalogue.utils.RTE;
 
 /**
  * Fragment wrapper for the {@link TextFieldEditor} dialog
@@ -72,11 +73,11 @@ public class TextFieldEditorFragment extends DialogFragment {
 	 * Ensure activity supports event
 	 */
 	@Override
-	public void onAttach(@NonNull final Context a) {
-		super.onAttach(a);
+	public void onAttach(@NonNull final Context context) {
+		super.onAttach(context);
 
-		if (! (a instanceof OnTextFieldEditorListener))
-			throw new IllegalStateException("Activity " + a.getClass().getSimpleName() + " must implement OnTextFieldEditorListener");
+		if (! (context instanceof OnTextFieldEditorListener))
+			throw new RTE.MustImplementException(context, OnTextFieldEditorListener.class);
 		
 	}
 

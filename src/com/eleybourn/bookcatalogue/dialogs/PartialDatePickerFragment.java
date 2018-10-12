@@ -27,6 +27,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 
 import com.eleybourn.bookcatalogue.UniqueId;
+import com.eleybourn.bookcatalogue.utils.RTE;
 
 /**
  * Fragment wrapper for the PartialDatePicker dialog
@@ -80,11 +81,11 @@ public class PartialDatePickerFragment extends DialogFragment {
      * Check the activity supports the interface
      */
     @Override
-    public void onAttach(@NonNull final Context a) {
-        super.onAttach(a);
+    public void onAttach(@NonNull final Context context) {
+        super.onAttach(context);
 
-        if (!(a instanceof OnPartialDatePickerListener)) {
-            throw new IllegalStateException("Activity " + a.getClass().getSimpleName() + " must implement OnPartialDatePickerListener");
+        if (!(context instanceof OnPartialDatePickerListener)) {
+            throw new RTE.MustImplementException(context, OnPartialDatePickerListener.class);
         }
 
     }

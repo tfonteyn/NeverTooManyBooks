@@ -44,10 +44,10 @@ import com.eleybourn.bookcatalogue.utils.DateUtils;
 
 import java.util.Date;
 
-/*
- * A book catalogue application that integrates with Google Books.
+/**
+ * This class is called by {@link EditBookActivity} and displays the Notes Tab
  */
-public class EditBookNotesFragment extends EditBookAbstractFragment implements OnPartialDatePickerListener {
+public class EditBookNotesFragment extends BookAbstractFragment implements OnPartialDatePickerListener {
 
     @Override
     public View onCreateView(@NonNull final LayoutInflater inflater,
@@ -86,7 +86,7 @@ public class EditBookNotesFragment extends EditBookAbstractFragment implements O
 
                 final Field field = mFields.getField(R.id.location);
                 // Get the list to use in the AutoComplete stuff
-                AutoCompleteTextView textView = (AutoCompleteTextView) field.getView();
+                AutoCompleteTextView textView = field.getView();
                 textView.setAdapter(new ArrayAdapter<>(getActivity(),
                         android.R.layout.simple_dropdown_item_1line,
                         mEditManager.getLocations()));
@@ -144,13 +144,16 @@ public class EditBookNotesFragment extends EditBookAbstractFragment implements O
             mFields.addCrossValidator(new Fields.FieldCrossValidator() {
                 public void validate(@NonNull final Fields fields, @NonNull final Bundle values) {
                     String start = values.getString(UniqueId.KEY_BOOK_READ_START);
-                    if (start == null || start.isEmpty())
+                    if (start == null || start.isEmpty()) {
                         return;
+                    }
                     String end = values.getString(UniqueId.KEY_BOOK_READ_END);
-                    if (end == null || end.isEmpty())
+                    if (end == null || end.isEmpty()) {
                         return;
-                    if (start.compareToIgnoreCase(end) > 0)
+                    }
+                    if (start.compareToIgnoreCase(end) > 0) {
                         throw new ValidatorException(R.string.vldt_read_start_after_end, new Object[]{});
+                    }
                 }
             });
 
@@ -180,7 +183,7 @@ public class EditBookNotesFragment extends EditBookAbstractFragment implements O
 
     private String getDateFrom(final int fieldResId) {
         Object value = mFields.getField(fieldResId).getValue();
-        if (value == null || value.toString().isEmpty()) {
+        if (value.toString().isEmpty()) {
             return DateUtils.toSqlDateTime(new Date());
         } else {
             return value.toString();
@@ -213,20 +216,15 @@ public class EditBookNotesFragment extends EditBookAbstractFragment implements O
 
     @Override
     public void onPause() {
-        Tracker.enterOnPause(this);
-        Book book = mEditManager.getBook();
-        mFields.getAll(book);
+        mFields.getAll(mEditManager.getBook());
         super.onPause();
-        Tracker.exitOnPause(this);
     }
 
     @Override
     protected void onLoadBookDetails(@NonNull final Book book, final boolean setAllDone) {
-        if (!setAllDone)
-            mFields.setAll(book);
-        // No special handling required; the setAll() done by the caller is enough
+        super.onLoadBookDetails(book,setAllDone);
+
         // Restore default visibility and hide unused/unwanted and empty fields
         showHideFields(false);
     }
-
 }

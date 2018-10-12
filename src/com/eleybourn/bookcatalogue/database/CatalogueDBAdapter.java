@@ -57,6 +57,7 @@ import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.IsbnUtils;
+import com.eleybourn.bookcatalogue.utils.RTE;
 import com.eleybourn.bookcatalogue.utils.SerializationUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
@@ -458,7 +459,7 @@ public class CatalogueDBAdapter {
         if (DEBUG_SWITCHES.DB_ADAPTER && BuildConfig.DEBUG) {
             synchronized (mDebugInstanceCount) {
                 mDebugInstanceCount++;
-                Logger.debug("CatDBA instances: " + mDebugInstanceCount);
+                Logger.info("CatDBA instances: " + mDebugInstanceCount);
                 //debugAddInstance(this);
             }
         }
@@ -497,9 +498,9 @@ public class CatalogueDBAdapter {
         for (InstanceRefDebug ref : mInstances) {
             CatalogueDBAdapter refDb = ref.get();
             if (refDb == null) {
-                Logger.debug("<-- **** Missing ref (not closed?) **** vvvvvvv");
+                Logger.info("<-- **** Missing ref (not closed?) **** vvvvvvv");
                 Logger.error(ref.getCreationException());
-                Logger.debug("--> **** Missing ref (not closed?) **** ^^^^^^^");
+                Logger.info("--> **** Missing ref (not closed?) **** ^^^^^^^");
             } else {
                 if (refDb == db) {
                     toDelete.add(ref);
@@ -529,9 +530,9 @@ public class CatalogueDBAdapter {
     public static void debugDumpInstances() {
         for (InstanceRefDebug ref : mInstances) {
             if (ref.get() == null) {
-                Logger.debug("<-- **** Missing ref (not closed?) **** vvvvvvv");
+                Logger.info("<-- **** Missing ref (not closed?) **** vvvvvvv");
                 Logger.error(ref.getCreationException());
-                Logger.debug("--> **** Missing ref (not closed?) **** ^^^^^^^");
+                Logger.info("--> **** Missing ref (not closed?) **** ^^^^^^^");
             } else {
                 Logger.error(ref.getCreationException());
             }
@@ -1498,7 +1499,7 @@ public class CatalogueDBAdapter {
             return rowsAffected;
         } catch (Exception e) {
             Logger.error(e);
-            throw new DBExceptions.UpdateException("Error updating book from " + book + ": " + e.getMessage(), e);
+            throw new DBExceptions.UpdateException("Error updating book from " + book + ": " + e.getLocalizedMessage(), e);
         } finally {
             if (syncLock != null) {
                 mSyncedDb.endTransaction(syncLock);
@@ -1512,7 +1513,7 @@ public class CatalogueDBAdapter {
      */
     private void insertBookDependents(final long bookId, final @NonNull Book book) {
         String bookshelf = book.getBookshelfList();
-        if (bookshelf != null && !bookshelf.isEmpty()) {
+        if (!bookshelf.isEmpty()) {
             insertBookBookshelf(bookId, ArrayUtils.decodeList(Bookshelf.SEPARATOR, bookshelf), false);
         }
 
@@ -1739,7 +1740,7 @@ public class CatalogueDBAdapter {
             } catch (Exception e) {
                 Logger.error(e);
                 throw new DBExceptions.InsertException("Error adding series '" + entry.name +
-                        "' {" + seriesId + "} to book " + bookId + ": " + e.getMessage(), e);
+                        "' {" + seriesId + "} to book " + bookId + ": " + e.getLocalizedMessage(), e);
             }
         }
     }
@@ -1765,12 +1766,12 @@ public class CatalogueDBAdapter {
         // remove all links between Book and AnthologyTitle's
         int rowsAffected = deleteAnthologyTitlesByBookId(bookId, false);
         if (BuildConfig.DEBUG) {
-            Logger.debug("deleteAnthologyTitlesByBookId: " + rowsAffected);
+            Logger.info("deleteAnthologyTitlesByBookId: " + rowsAffected);
         }
         if (list.size() > 0) {
             for (AnthologyTitle anthologyTitle : list) {
                 if (BuildConfig.DEBUG) {
-                    Logger.debug("Adding AnthologyTitlesByBookId: " + anthologyTitle);
+                    Logger.info("Adding AnthologyTitlesByBookId: " + anthologyTitle);
                 }
                 long authorId = getOrInsertAuthorId(anthologyTitle.getAuthor());
                 // insert new stories, or get the id from existing stories
@@ -1778,9 +1779,9 @@ public class CatalogueDBAdapter {
                 // create the book<->anthologyTitle link
                 long baId = insertOrUpdateBookAnthology(anthologyId, bookId, false);
                 if (BuildConfig.DEBUG) {
-                    Logger.debug("     authorId   : " + authorId);
-                    Logger.debug("     anthologyId: " + anthologyId);
-                    Logger.debug("     baId       : " + baId);
+                    Logger.info("     authorId   : " + authorId);
+                    Logger.info("     anthologyId: " + anthologyId);
+                    Logger.info("     baId       : " + baId);
                 }
             }
         }
@@ -1851,7 +1852,7 @@ public class CatalogueDBAdapter {
                 }
             } catch (Exception e) {
                 Logger.error(e);
-                throw new DBExceptions.InsertException("Error adding author '" + author + "' {" + authorId + "} to book " + bookId + ": " + e.getMessage(), e);
+                throw new DBExceptions.InsertException("Error adding author '" + author + "' {" + authorId + "} to book " + bookId + ": " + e.getLocalizedMessage(), e);
             }
         }
 
@@ -2171,7 +2172,7 @@ public class CatalogueDBAdapter {
 
 
         if (DEBUG_SWITCHES.SQL && DEBUG_SWITCHES.DB_ADAPTER && BuildConfig.DEBUG) {
-            Logger.debug("getAllBooksSql:\n\n" + fullSql);
+            Logger.info("getAllBooksSql:\n\n" + fullSql);
         }
         return fullSql;
     }
@@ -2214,7 +2215,7 @@ public class CatalogueDBAdapter {
     @NonNull
     public BooksCursor fetchBookById(final long bookId) throws DBExceptions.NotFoundException {
         BooksCursor cursor = fetchBooks(TBL_BOOKS.dot(DOM_ID) + "=?", new String[]{Long.toString(bookId)}, "");
-        if (cursor == null || !cursor.moveToFirst()) {
+        if (!cursor.moveToFirst()) {
             throw new DBExceptions.NotFoundException("Failed to find bookId=" + bookId);
         }
         return cursor;
@@ -2225,7 +2226,7 @@ public class CatalogueDBAdapter {
 
     /**
      * Return a book (Cursor) that matches the given ISBN.
-     * Note: MAYBE RETURN MORE THAN ONE BOOK
+     * Note: CAN RETURN MORE THAN ONE BOOK
      *
      * @param isbnList list of ISBN(s) to retrieve
      *
@@ -2236,7 +2237,7 @@ public class CatalogueDBAdapter {
     @NonNull
     public BooksCursor fetchBooksByIsbnList(@NonNull final List<String> isbnList) {
         if (isbnList.size() == 0) {
-            throw new IllegalArgumentException("No ISBNs specified in lookup");
+            throw new IllegalArgumentException("isbnList was empty");
         }
 
         StringBuilder where = new StringBuilder(TBL_BOOKS.dot(DOM_BOOK_ISBN));
@@ -2452,7 +2453,7 @@ public class CatalogueDBAdapter {
                     style = SerializationUtils.deserializeObject(blob);
                     style.id = id;
                     list.add(style);
-                } catch (SerializationUtils.DeserializationException e) {
+                } catch (RTE.DeserializationException e) {
                     // Not much we can do; just delete it. Really should only happen in development.
                     deleteBooklistStyle(id);
                 }
@@ -3163,6 +3164,7 @@ public class CatalogueDBAdapter {
      *
      * @return A new BooksCursor
      */
+    @NonNull
     private BooksCursor fetchBooks(@NonNull final String sql, @NonNull final String[] selectionArgs) {
         return (BooksCursor) mSyncedDb.rawQueryWithFactory(mBooksFactory, sql, selectionArgs, "");
     }
@@ -3301,7 +3303,7 @@ public class CatalogueDBAdapter {
             if (DEBUG_SWITCHES.DB_ADAPTER && BuildConfig.DEBUG) {
                 synchronized (mDebugInstanceCount) {
                     mDebugInstanceCount--;
-                    Logger.debug("CatDBA instances: " + mDebugInstanceCount);
+                    Logger.info("CatDBA instances: " + mDebugInstanceCount);
                     //debugRemoveInstance(this);
                 }
             }
@@ -3361,7 +3363,7 @@ public class CatalogueDBAdapter {
             throw new DBExceptions.TransactionException();
         }
 
-        final BookRowView book = books.getRowView();
+        final BookRowView bookRowView = books.getRowView();
 
         // Build the SQL to get author details for a book.
 
@@ -3414,7 +3416,7 @@ public class CatalogueDBAdapter {
             seriesText.setLength(0);
             titleText.setLength(0);
             // Get list of authors
-            try (Cursor c = mSyncedDb.rawQuery(authorBaseSql, new String[]{Long.toString(book.getId())})) {
+            try (Cursor c = mSyncedDb.rawQuery(authorBaseSql, new String[]{Long.toString(bookRowView.getId())})) {
                 // Get column indexes, if not already got
                 if (colGivenNames < 0) {
                     colGivenNames = c.getColumnIndex(DOM_AUTHOR_GIVEN_NAMES.name);
@@ -3432,7 +3434,7 @@ public class CatalogueDBAdapter {
             }
 
             // Get list of series
-            try (Cursor c = mSyncedDb.rawQuery(seriesBaseSql, new String[]{Long.toString(book.getId())})) {
+            try (Cursor c = mSyncedDb.rawQuery(seriesBaseSql, new String[]{Long.toString(bookRowView.getId())})) {
                 // Get column indexes, if not already got
                 if (colSeriesInfo < 0) {
                     colSeriesInfo = c.getColumnIndex("seriesInfo");
@@ -3445,7 +3447,7 @@ public class CatalogueDBAdapter {
             }
 
             // Get list of anthology data (author and title)
-            try (Cursor c = mSyncedDb.rawQuery(anthologyBaseSql, new String[]{Long.toString(book.getId())})) {
+            try (Cursor c = mSyncedDb.rawQuery(anthologyBaseSql, new String[]{Long.toString(bookRowView.getId())})) {
                 // Get column indexes, if not already got
                 if (colAnthologyAuthorInfo < 0) {
                     colAnthologyAuthorInfo = c.getColumnIndex("anthologyAuthorInfo");
@@ -3465,15 +3467,15 @@ public class CatalogueDBAdapter {
             // Set the parameters and call
             bindStringOrNull(stmt, 1, authorText.toString());
             // Titles should only contain title, not SERIES
-            bindStringOrNull(stmt, 2, book.getTitle() + "; " + titleText);
+            bindStringOrNull(stmt, 2, bookRowView.getTitle() + "; " + titleText);
             // We could add a 'series' column, or just add it as part of the description
-            bindStringOrNull(stmt, 3, book.getDescription() + seriesText);
-            bindStringOrNull(stmt, 4, book.getNotes());
-            bindStringOrNull(stmt, 5, book.getPublisherName());
-            bindStringOrNull(stmt, 6, book.getGenre());
-            bindStringOrNull(stmt, 7, book.getLocation());
-            bindStringOrNull(stmt, 8, book.getIsbn());
-            stmt.bindLong(9, book.getId());
+            bindStringOrNull(stmt, 3, bookRowView.getDescription() + seriesText);
+            bindStringOrNull(stmt, 4, bookRowView.getNotes());
+            bindStringOrNull(stmt, 5, bookRowView.getPublisherName());
+            bindStringOrNull(stmt, 6, bookRowView.getGenre());
+            bindStringOrNull(stmt, 7, bookRowView.getLocation());
+            bindStringOrNull(stmt, 8, bookRowView.getIsbn());
+            stmt.bindLong(9, bookRowView.getId());
 
             stmt.execute();
         }
@@ -3528,7 +3530,7 @@ public class CatalogueDBAdapter {
                 ftsSendBooks(books, mInsertFtsStmt);
             } finally {
                 if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
-                    Logger.debug("Inserted FTS in " + (System.currentTimeMillis() - t0) + "ms");
+                    Logger.info("Inserted FTS in " + (System.currentTimeMillis() - t0) + "ms");
                 }
             }
         } catch (Exception e) {
@@ -3566,7 +3568,7 @@ public class CatalogueDBAdapter {
                 ftsSendBooks(books, mUpdateFtsStmt);
             } finally {
                 if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
-                    Logger.debug("Updated FTS in " + (System.currentTimeMillis() - t0) + "ms");
+                    Logger.info("Updated FTS in " + (System.currentTimeMillis() - t0) + "ms");
                 }
             }
         } catch (Exception e) {
@@ -3597,7 +3599,7 @@ public class CatalogueDBAdapter {
             mDeleteFtsStmt.bindLong(1, bookId);
             mDeleteFtsStmt.execute();
             if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
-                Logger.debug("Deleted FROM FTS in " + (System.currentTimeMillis() - t0) + "ms");
+                Logger.info("Deleted FROM FTS in " + (System.currentTimeMillis() - t0) + "ms");
             }
         } catch (Exception e) {
             Logger.error(e, "Failed to delete FTS");
@@ -3664,7 +3666,7 @@ public class CatalogueDBAdapter {
         }
 
         if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
-            Logger.debug("rebuildFts in " + (System.currentTimeMillis() - t0) + "ms");
+            Logger.info("rebuildFts in " + (System.currentTimeMillis() - t0) + "ms");
         }
     }
 

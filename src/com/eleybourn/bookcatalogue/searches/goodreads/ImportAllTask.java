@@ -240,7 +240,7 @@ class ImportAllTask extends GenericTask {
                 c = null;
 
                 List<String> list = extractIsbnList(review);
-                if (list != null && list.size() > 0) {
+                if (list.size() > 0) {
                     c = db.fetchBooksByIsbnList(list);
                     found = c.moveToFirst();
                 }
@@ -248,13 +248,13 @@ class ImportAllTask extends GenericTask {
 
             if (found) {
                 // If found, update ALL related books
-                BookRowView rv = c.getRowView();
+                BookRowView bookRowView = c.getRowView();
                 do {
                     // Check for abort
                     if (this.isAborting()) {
                         break;
                     }
-                    updateBook(db, rv, review);
+                    updateBook(db, bookRowView, review);
                 } while (c.moveToNext());
             } else {
                 // Create the book

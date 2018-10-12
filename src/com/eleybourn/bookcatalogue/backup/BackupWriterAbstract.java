@@ -117,7 +117,7 @@ public abstract class BackupWriterAbstract implements BackupWriter {
         }
 
         if (BuildConfig.DEBUG) {
-            Logger.debug("Closed writer");
+            Logger.info("Closed writer");
         }
     }
 

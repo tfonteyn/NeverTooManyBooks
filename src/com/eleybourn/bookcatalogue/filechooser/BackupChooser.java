@@ -40,6 +40,7 @@ import com.eleybourn.bookcatalogue.utils.Utils;
 
 import java.io.File;
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * FileChooser activity to choose an archive file to open/save
@@ -65,7 +66,7 @@ public class BackupChooser extends FileChooser implements
 
     /** The backup file that will be created (if saving) */
     @Nullable
-    private File mBackupFile = null;
+    private File mBackupFile;
 
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,9 +76,7 @@ public class BackupChooser extends FileChooser implements
 
         if (savedInstanceState != null && savedInstanceState.containsKey(BKEY_FILENAME)) {
             String fileSpec = savedInstanceState.getString(BKEY_FILENAME);
-            if (fileSpec == null) {
-                throw new IllegalArgumentException("No BKEY_FILENAME passed in ?");
-            }
+            Objects.requireNonNull(fileSpec ,"No BKEY_FILENAME passed in ?");
             mBackupFile = new File(fileSpec);
         }
     }
@@ -167,7 +166,9 @@ public class BackupChooser extends FileChooser implements
                     return;
                 }
                 // Show a helpful message
-                String msg = getString(R.string.archive_complete_details, mBackupFile.getParent(), mBackupFile.getName(), Utils.formatFileSize(mBackupFile.length()));
+                @SuppressWarnings("ConstantConditions")
+                String msg = getString(R.string.archive_complete_details, mBackupFile.getParent(),
+                        mBackupFile.getName(), Utils.formatFileSize(mBackupFile.length()));
                 MessageDialogFragment frag = MessageDialogFragment.newInstance(TASK_ID_SAVE,
                         R.string.backup_to_archive, msg);
                 frag.show(getSupportFragmentManager(), null);

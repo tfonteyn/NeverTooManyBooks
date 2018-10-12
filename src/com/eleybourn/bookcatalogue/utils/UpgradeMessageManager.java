@@ -115,11 +115,11 @@ public class UpgradeMessageManager {
         }
 
         boolean first = true;
-        for (UpgradeMessage m : mMessages) {
-            if (m.version > lastVersion) {
+        for (UpgradeMessage msg : mMessages) {
+            if (msg.version > lastVersion) {
                 if (!first)
                     message.append("\n");
-                message.append(m.getMessage());
+                message.append(msg.getLocalizedMessage());
                 first = false;
             }
         }
@@ -154,7 +154,7 @@ public class UpgradeMessageManager {
         }
 
         @NonNull
-        public String getMessage() {
+        public String getLocalizedMessage() {
             return BookCatalogueApp.getResourceString(messageId);
         }
     }

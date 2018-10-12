@@ -57,16 +57,19 @@ public class SearchAdmin extends BookCatalogueActivity {
             public void onClick(final View v) {
 
                 Holder holder = (Holder) mTabLayout.getTabAt(TAB_HOSTS).getTag();
+                //noinspection ConstantConditions
                 AdminHostsFragment ahf = ((AdminHostsFragment) holder.fragment);
                 ahf.saveState();
 
                 holder = (Holder) mTabLayout.getTabAt(TAB_SEARCH_ORDER).getTag();
+                //noinspection ConstantConditions
                 AdminSearchOrderFragment asf = ((AdminSearchOrderFragment) holder.fragment);
                 ArrayList<SearchManager.SearchSite> list = asf.getList();
                 if (list != null) {
                     SearchManager.setSearchOrder(list);
                 }
                 holder = (Holder) mTabLayout.getTabAt(TAB_SEARCH_COVER_ORDER).getTag();
+                //noinspection ConstantConditions
                 asf = ((AdminSearchOrderFragment) holder.fragment);
                 list = asf.getList();
                 if (list != null) {
@@ -95,6 +98,7 @@ public class SearchAdmin extends BookCatalogueActivity {
         @Override
         public void onTabSelected(@NonNull final TabLayout.Tab tab) {
             Holder holder = (Holder) tab.getTag();
+            //noinspection ConstantConditions
             replaceTab(holder.fragment);
         }
 

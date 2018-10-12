@@ -23,13 +23,12 @@ package com.eleybourn.bookcatalogue.searches.goodreads.api;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.BookNotFoundException;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.NetworkException;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.NotAuthorizedException;
 import com.eleybourn.bookcatalogue.utils.IsbnUtils;
+import com.eleybourn.bookcatalogue.utils.RTE;
 
 import org.apache.http.client.methods.HttpGet;
 
@@ -62,7 +61,7 @@ public class ShowBookByIsbnApiHandler extends ShowBookApiHandler {
 			OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException,
 			NotAuthorizedException, BookNotFoundException, IOException, NetworkException {
 		if (!IsbnUtils.isValid(isbn)) {
-			throw new IllegalArgumentException(BookCatalogueApp.getResourceString(R.string.invalid_isbn_x_specified_in_search, isbn));
+			throw new RTE.IsbnInvalidException(isbn);
 		}
 
 		// Setup API call //

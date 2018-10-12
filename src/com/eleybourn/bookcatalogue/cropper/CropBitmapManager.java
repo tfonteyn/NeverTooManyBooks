@@ -180,7 +180,7 @@ class CropBitmapManager {
 //	 }
 //	 }
 
-	@Nullable
+	@NonNull
     public static synchronized CropBitmapManager instance() {
 		if (sManager == null) {
 			sManager = new CropBitmapManager();

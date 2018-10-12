@@ -1,6 +1,5 @@
 package com.eleybourn.bookcatalogue;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -15,10 +14,8 @@ import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.Fields.Field;
 import com.eleybourn.bookcatalogue.Fields.FieldFormatter;
-import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.datamanager.Datum;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.entities.AnthologyTitle;
 import com.eleybourn.bookcatalogue.entities.Author;
@@ -26,7 +23,6 @@ import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.utils.BookUtils;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
-import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 import java.util.ArrayList;
@@ -47,91 +43,113 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
      * Main audience: the collector who wants *everything* of a certain author.
      */
     @Override
-    public View onCreateView(@NonNull final LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable final Bundle savedInstanceState) {
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container,
+                             @Nullable final Bundle savedInstanceState) {
         return inflater.inflate(R.layout.book_details, container, false);
     }
 
     @Override
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        /* In superclass onCreate method we initialize fields, background,
-         * display metrics and other. So see super.onActivityCreated */
         super.onActivityCreated(savedInstanceState);
 
-        // Set additional (non book details) fields before their populating
-        addFields();
-
-        /*
-         * We have to override this value to initialize book thumb with right size.
-         * You have to see in book_details.xml to get dividing coefficient
-         */
-        mThumbSize = ImageUtils.getThumbSizes(getActivity());
+        // override parent as our Activity determines the 'right' dividing coefficient
+        setThumbSize(getActivity());
 
         if (savedInstanceState == null) {
             HintManager.displayHint(getActivity(), R.string.hint_view_only_help, null);
         }
-
-        // Just format a binary value as yes/no/blank
-        mFields.getField(R.id.signed).formatter = new BinaryYesNoEmptyFormatter();
     }
 
     @Override
-    /* The only difference from super class method is initializing of additional
-     * fields needed for read-only mode (user notes, loaned, etc.) */
-    protected void populateFieldsFromBook(@NonNull final Book book) {
+    protected void onLoadBookDetails(@NonNull final Book book, final boolean setAllDone) {
+        super.onLoadBookDetails(book, setAllDone);
+        populateFields(book);
+        populateAuthorListField(book);
+        populateSeriesListField(book);
+    }
+
+    @Override
+    protected void populateFields(@NonNull final Book book) {
         try {
-            populateBookDetailsFields(book);
+            setCoverImage(book.getBookId(), mThumbSize.normal, mThumbSize.normal * 2);
 
-            // Set maximum aspect ratio width : height = 1 : 2
-            setBookThumbnail(book.getBookId(), mThumbSize.normal, mThumbSize.normal * 2);
-
-            // Additional fields for read-only mode which are not initialized automatically
+            // Additional fields which are not initialized automatically
             showReadStatus(book);
             showLoanedInfo(book.getBookId());
             showSignedStatus(book.isSigned());
             formatFormatSection(book);
             formatPublishingSection(book);
+
             if (book.getInt(Book.IS_ANTHOLOGY) > 0) {
                 showTOC(book);
             }
 
             // Restore default visibility and hide unused/unwanted and empty fields
             showHideFields(true);
+
         } catch (Exception e) {
             Logger.error(e);
         }
 
         // Populate bookshelves and hide the field if bookshelves are not set.
-        if (!populateBookshelvesField(mFields, book)) {
+        if (!populateBookshelves(mFields.getField(R.id.bookshelf), book)) {
             getView().findViewById(R.id.lbl_bookshelves).setVisibility(View.GONE);
+        }
+
+    }
+
+    @Override
+    protected void populateAuthorListField(@NonNull final Book book) {
+        ArrayList<Author> authors = book.getAuthorList();
+        int authorsCount = authors.size();
+        if (authorsCount == 0) {
+            // Hide author field if it is not set
+            getView().findViewById(R.id.author).setVisibility(View.GONE);
+        } else {
+            StringBuilder builder = new StringBuilder();
+            builder.append(getString(R.string.book_details_readonly_by));
+            builder.append(" ");
+            for (int i = 0; i < authorsCount; i++) {
+                builder.append(authors.get(i).getDisplayName());
+                if (i != authorsCount - 1) {
+                    builder.append(", ");
+                }
+            }
+            mFields.getField(R.id.author).setValue(builder.toString());
         }
     }
 
-    private void showTOC(@NonNull final Book book) {
-        View headerSection = getView().findViewById(R.id.toc_row);
-        final ArrayList<AnthologyTitle> list = book.getContentList();
-        if (list.isEmpty()) {
-            // book is an Anthology, but the user has not added any titles (yet)
-            headerSection.setVisibility(View.GONE);
-            return;
-        }
-        headerSection.setVisibility(View.VISIBLE);
+    @Override
+    protected void populateSeriesListField(@NonNull final Book book) {
+        ArrayList<Series> series = book.getSeriesList();
+        int seriesCount = series.size();
 
-        AnthologyTitleListAdapter adapter = new AnthologyTitleListAdapter(getActivity(), R.layout.row_anthology, list);
-        final ListView contentSection = getView().findViewById(R.id.toc);
-        contentSection.setAdapter(adapter);
+        if (seriesCount == 0 || !mFields.getField(R.id.series).visible) {
+            // Hide 'Series' label and data
+            getView().findViewById(R.id.lbl_series).setVisibility(View.GONE);
+            getView().findViewById(R.id.series).setVisibility(View.GONE);
+        } else {
+            // Show 'Series' label and data
+            getView().findViewById(R.id.lbl_series).setVisibility(View.VISIBLE);
+            getView().findViewById(R.id.series).setVisibility(View.VISIBLE);
 
-        Button btn = getView().findViewById(R.id.toc_button);
-        btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (contentSection.getVisibility() == View.VISIBLE) {
-                    contentSection.setVisibility(View.GONE);
-                } else {
-                    contentSection.setVisibility(View.VISIBLE);
-                    justifyListViewHeightBasedOnChildren(contentSection);
+            String newText = "";
+            Series.pruneSeriesList(series);
+            Utils.pruneList(mDb, series);
+            StringBuilder builder = new StringBuilder();
+            for (int i = 0; i < seriesCount; i++) {
+                builder.append("    ").append(series.get(i).getDisplayName());
+                if (i != seriesCount - 1) {
+                    builder.append("<br/>");
                 }
             }
-        });
+            newText = builder.toString();
+
+            mFields.getField(R.id.series)
+                    .setShowHtml(true) /* so <br/> work */
+                    .setValue(newText);
+        }
     }
 
     /**
@@ -162,68 +180,17 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
         listView.requestLayout();
     }
 
-    @Override
-    /* Override populating author field. Hide the field if author not set or
-     * shows author (or authors through ',') with 'by' at the beginning. */
-    protected void populateAuthorListField() {
-        ArrayList<Author> authors = mEditManager.getBook().getAuthorList();
-        int authorsCount = authors.size();
-        if (authorsCount == 0) {
-            // Hide author field if it is not set
-            getView().findViewById(R.id.author).setVisibility(View.GONE);
-        } else {
-            StringBuilder builder = new StringBuilder();
-            builder.append(getString(R.string.book_details_readonly_by));
-            builder.append(" ");
-            for (int i = 0; i < authorsCount; i++) {
-                builder.append(authors.get(i).getDisplayName());
-                if (i != authorsCount - 1) {
-                    builder.append(", ");
-                }
-            }
-            mFields.getField(R.id.author).setValue(builder.toString());
-        }
-    }
-
-    @Override
-    protected void populateSeriesListField() {
-        ArrayList<Series> series = mEditManager.getBook().getSeriesList();
-
-        if (series.size() == 0 || !mFields.getField(R.id.series).visible) {
-            // Hide 'Series' label and data
-            getView().findViewById(R.id.lbl_series).setVisibility(View.GONE);
-            getView().findViewById(R.id.series).setVisibility(View.GONE);
-        } else {
-            // Show 'Series' label and data
-            getView().findViewById(R.id.lbl_series).setVisibility(View.VISIBLE);
-            getView().findViewById(R.id.series).setVisibility(View.VISIBLE);
-
-            String newText = "";
-            Series.pruneSeriesList(series);
-            Utils.pruneList(mDb, series);
-            int seriesCount = series.size();
-            if (seriesCount > 0) {
-                StringBuilder builder = new StringBuilder();
-                for (int i = 0; i < seriesCount; i++) {
-                    builder.append("    ").append(series.get(i).getDisplayName());
-                    if (i != seriesCount - 1) {
-                        builder.append("<br/>");
-                    }
-                }
-                newText = builder.toString();
-            }
-            mFields.getField(R.id.series)
-                    .setShowHtml(true) /* so <br/> work */
-                    .setValue(newText);
-        }
-    }
-
     /**
-     * Add other fields of book to details fields. We need this method to automatically
-     * populate some fields during populating.
-     * Note that it should be performed before populating.
+     * Overriding, as we need additional fields added.
      */
-    private void addFields() {
+    @Override
+    protected void initFields() {
+        // do the base fields
+        super.initFields();
+
+        // format binary values as yes/no/blank for simple displaying
+        mFields.getField(R.id.signed).formatter = new BinaryYesNoEmptyFormatter();
+
         // From 'My comments' tab
         mFields.add(R.id.rating, UniqueId.KEY_BOOK_RATING, null);
         mFields.add(R.id.notes, UniqueId.KEY_NOTES, null)
@@ -247,7 +214,7 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
         if (FieldVisibilityActivity.isVisible(UniqueId.KEY_BOOK_PAGES)) {
             Field pagesField = mFields.getField(R.id.pages);
             String pages = book.getString(UniqueId.KEY_BOOK_PAGES);
-            hasPages = pages != null && !pages.isEmpty();
+            hasPages = !pages.isEmpty();
             if (hasPages) {
                 pagesField.setValue(getString(R.string.book_details_readonly_pages, pages));
             }
@@ -256,8 +223,7 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
         if (FieldVisibilityActivity.isVisible(UniqueId.KEY_BOOK_FORMAT)) {
             Field formatField = mFields.getField(R.id.format);
             String format = book.getString(UniqueId.KEY_BOOK_FORMAT);
-            boolean hasFormat = format != null && !format.isEmpty();
-            if (hasFormat) {
+            if (!format.isEmpty()) {
                 if (hasPages && FieldVisibilityActivity.isVisible(UniqueId.KEY_BOOK_PAGES)) {
                     formatField.setValue(getString(R.string.brackets, format));
                 } else {
@@ -273,7 +239,7 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
      */
     private void formatPublishingSection(@NonNull final Book book) {
         String date = book.getString(UniqueId.KEY_BOOK_DATE_PUBLISHED);
-        boolean hasDate = date != null && !date.isEmpty();
+        boolean hasDate = !date.isEmpty();
         if (hasDate) {
             Date d = DateUtils.parseDate(date);
             if (d != null) {
@@ -283,7 +249,7 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
 
         String value;
         String pub = book.getString(UniqueId.KEY_BOOK_PUBLISHER);
-        if (pub != null && !pub.isEmpty()) {
+        if (!pub.isEmpty()) {
             if (hasDate) {
                 value = pub + "; " + date;
             } else {
@@ -318,13 +284,44 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
     }
 
     /**
+     * Show or hide the Table Of Content section aka AnthologyTitles
+     */
+    private void showTOC(@NonNull final Book book) {
+        View headerSection = getView().findViewById(R.id.toc_row);
+        final ArrayList<AnthologyTitle> list = book.getContentList();
+        if (list.isEmpty()) {
+            // book is an Anthology, but the user has not added any titles (yet)
+            headerSection.setVisibility(View.GONE);
+            return;
+        }
+        headerSection.setVisibility(View.VISIBLE);
+
+        AnthologyTitleListAdapter adapter = new AnthologyTitleListAdapter(getActivity(), R.layout.row_anthology, list);
+        final ListView contentSection = getView().findViewById(R.id.toc);
+        contentSection.setAdapter(adapter);
+
+        Button btn = getView().findViewById(R.id.toc_button);
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (contentSection.getVisibility() == View.VISIBLE) {
+                    contentSection.setVisibility(View.GONE);
+                } else {
+                    contentSection.setVisibility(View.VISIBLE);
+                    justifyListViewHeightBasedOnChildren(contentSection);
+                }
+            }
+        });
+    }
+
+    /**
      * Sets read status of the book if needed. Shows green tick if book is read.
      *
      * @param book the book
      */
     private void showReadStatus(@NonNull final Book book) {
-        final CheckedTextView readField = getView().findViewById(R.id.read);
         boolean visible = FieldVisibilityActivity.isVisible(UniqueId.KEY_BOOK_READ);
+        final CheckedTextView readField = getView().findViewById(R.id.read);
         readField.setVisibility(visible ? View.VISIBLE : View.GONE);
 
         if (visible) {
@@ -344,30 +341,10 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
 
     /**
      * Show signed status of the book. Set text 'yes' if signed. Otherwise it is 'No'.
-     *
      */
     private void showSignedStatus(final boolean isSigned) {
-        if (isSigned) {
-            TextView v = getView().findViewById(R.id.signed);
-            v.setText(getString(android.R.string.yes));
-        }
-    }
-
-    /**
-     * Updates all fields of book from database.
-     */
-    private void updateFields(@NonNull final Book book) {
-        populateFieldsFromBook(book);
-        // Populate author and series fields
-        populateAuthorListField();
-        populateSeriesListField();
-    }
-
-    @Override
-    protected void onLoadBookDetails(@NonNull final Book book, final boolean setAllDone) {
-        if (!setAllDone)
-            mFields.setAll(book);
-        updateFields(book);
+        TextView v = getView().findViewById(R.id.signed);
+        v.setText(getString(isSigned ? R.string.yes : R.string.no));
     }
 
     @Override
@@ -382,7 +359,7 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
     }
 
     public void onResume() {
-        // If we are read-only, returning here from somewhere else and have an ID...reload!
+        // returning here from somewhere else (e.g. from editing the book) and have an ID...reload!
         Book book = mEditManager.getBook();
         if (book.getBookId() != 0) {
             book.reload();
@@ -400,14 +377,14 @@ public class BookDetailsFragment extends BookDetailsAbstractFragment {
         /**
          * Display as a human-friendly date
          */
-        @Nullable
+        @NonNull
         public String format(@NonNull final Field f, @Nullable final String source) {
             if (source == null) {
-                return null;
+                return "";
             }
             try {
                 boolean val = Datum.toBoolean(source, false);
-                return BookDetailsFragment.this.getString(val ? android.R.string.yes : android.R.string.no);
+                return BookDetailsFragment.this.getString(val ? R.string.yes : R.string.no);
             } catch (IllegalArgumentException e) {
                 return source;
             }

@@ -165,6 +165,7 @@ public class GoodreadsSearchResults extends BookCatalogueListActivity {
         ResultsAdapter() {
             super(GoodreadsSearchResults.this, 0, mList);
             // Save Inflater for later use
+            //noinspection ConstantConditions
             mInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }
 
@@ -198,7 +199,7 @@ public class GoodreadsSearchResults extends BookCatalogueListActivity {
                 }
             } else {
                 // Recycling: just get the holder
-                holder = (ListHolder) ViewTagger.getTag(convertView);
+                holder = ViewTagger.getTagOrThrow(convertView);
             }
 
             synchronized (convertView) {

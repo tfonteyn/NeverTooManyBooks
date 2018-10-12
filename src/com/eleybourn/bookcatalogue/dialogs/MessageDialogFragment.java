@@ -13,6 +13,7 @@ import android.support.v7.app.AlertDialog;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.utils.RTE;
 
 public class MessageDialogFragment extends DialogFragment {
     private static final String TITLE_ID = "titleId";
@@ -74,8 +75,7 @@ public class MessageDialogFragment extends DialogFragment {
         super.onAttach(context);
 
         if (!(context instanceof OnMessageDialogResultListener))
-            throw new IllegalStateException("Activity " + context.getClass().getSimpleName() + " must implement OnMessageDialogResultListener");
-
+            throw new RTE.MustImplementException(context, OnMessageDialogResultListener.class);
     }
 
     /**

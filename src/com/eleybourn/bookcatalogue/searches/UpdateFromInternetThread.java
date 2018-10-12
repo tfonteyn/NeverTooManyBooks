@@ -18,13 +18,18 @@
  * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.eleybourn.bookcatalogue;
+package com.eleybourn.bookcatalogue.searches;
 
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.FieldUsages;
+import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -32,10 +37,10 @@ import com.eleybourn.bookcatalogue.entities.AnthologyTitle;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.Series;
-import com.eleybourn.bookcatalogue.searches.SearchManager;
 import com.eleybourn.bookcatalogue.tasks.ManagedTask;
 import com.eleybourn.bookcatalogue.tasks.TaskManager;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
+import com.eleybourn.bookcatalogue.utils.RTE;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
@@ -73,8 +78,8 @@ public class UpdateFromInternetThread extends ManagedTask {
     /** current book ID */
     private long mCurrentBookId = 0;
     /** current book UUID */
-    @Nullable
-    private String mCurrentBookUuid = null;
+    @NonNull
+    private String mCurrentBookUuid = "";
     /** The (subset) of fields relevant to the current book */
     private FieldUsages mCurrentBookFieldUsages;
     /** DB connection */
@@ -172,6 +177,7 @@ public class UpdateFromInternetThread extends ManagedTask {
                 // Get the book ID
                 mCurrentBookId = Utils.getLongFromBundle(mOriginalBookData, UniqueId.KEY_ID);
                 // Get the book UUID
+                //noinspection ConstantConditions
                 mCurrentBookUuid = mOriginalBookData.getString(UniqueId.KEY_BOOK_UUID);
                 // Get the extra data about the book
                 mOriginalBookData.putSerializable(UniqueId.BKEY_AUTHOR_ARRAY, mDb.getBookAuthorList(mCurrentBookId));
@@ -202,8 +208,8 @@ public class UpdateFromInternetThread extends ManagedTask {
                                 break;
                             case COPY_IF_BLANK:
                                 // Handle special cases
-                                // - If it's a thumbnail, then see if it's missing or empty.
                                 switch (usage.fieldName) {
+                                    // - If it's a thumbnail, then see if it's missing or empty.
                                     case UniqueId.BKEY_THUMBNAIL:
                                         File file = StorageUtils.getCoverFile(mCurrentBookUuid);
                                         if (!file.exists() || file.length() == 0) {
@@ -317,7 +323,7 @@ public class UpdateFromInternetThread extends ManagedTask {
     @SuppressWarnings("SameReturnValue")
     private boolean onSearchFinished(@NonNull final Bundle newBookData, final boolean cancelled) {
         if (BuildConfig.DEBUG) {
-            Logger.debug("onSearchFinished (cancel = " + cancelled + ")");
+            Logger.info("onSearchFinished (cancel = " + cancelled + ")");
         }
 
         // Set cancelled flag if the task was cancelled
@@ -423,6 +429,7 @@ public class UpdateFromInternetThread extends ManagedTask {
                                     break;
                             }
                             break;
+
                         case ADD_EXTRA:
                             // Handle arrays (note: before you're clever, and collapse this to one... Android Studio hides the type in the <~> notation!
                             switch (usage.fieldName) {
@@ -437,7 +444,7 @@ public class UpdateFromInternetThread extends ManagedTask {
                                     break;
                                 default:
                                     // No idea how to handle this for non-arrays
-                                    throw new IllegalStateException("Illegal usage '" + usage.usage + "' specified for field '" + usage.fieldName + "'");
+                                    throw new RTE.IllegalTypeException("Illegal usage '" + usage.usage + "' specified for field '" + usage.fieldName + "'");
                             }
                             break;
                     }

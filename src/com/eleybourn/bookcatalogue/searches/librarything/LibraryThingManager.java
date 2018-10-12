@@ -35,6 +35,7 @@ import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.IsbnUtils;
+import com.eleybourn.bookcatalogue.utils.RTE;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 import org.xml.sax.Attributes;
@@ -153,7 +154,7 @@ public class LibraryThingManager {
         String path = String.format(EDITIONS_URL, isbn);
         // static publicEntry point to LT, so check
         if (!IsbnUtils.isValid(isbn)) {
-            throw new IllegalArgumentException("Can not get editions without an ISBN");
+            throw new RTE.IsbnInvalidException(isbn);
         }
 
         List<String> editions = new ArrayList<>();
@@ -483,14 +484,14 @@ public class LibraryThingManager {
     void search(@NonNull final String isbn, @NonNull final Bundle book, final boolean fetchThumbnail) {
         String devKey = getDevKey();
         if (devKey.isEmpty()) {
-            throw new RuntimeException("Developer Key not available");
+            throw new RTE.DeveloperKeyMissingException();
         }
 
         // Base path for an ISBN search
         String path = String.format(DETAIL_URL, devKey, isbn);
 
-        if (isbn.isEmpty()) {
-            throw new IllegalArgumentException();
+        if (!IsbnUtils.isValid(isbn)) {
+            throw new RTE.IsbnInvalidException(isbn);
         }
 
         URL url;
@@ -529,7 +530,7 @@ public class LibraryThingManager {
     private String getCoverImageUrl(@NonNull final String isbn, @NonNull final ImageSizes size) {
         String devKey = getDevKey();
         if (devKey.isEmpty()) {
-            throw new RuntimeException("Developer Key not available");
+            throw new RTE.DeveloperKeyMissingException();
         }
 
         String path;
@@ -560,7 +561,7 @@ public class LibraryThingManager {
     public File getCoverImage(@NonNull final String isbn, @Nullable final Bundle book, @NonNull final ImageSizes size) {
         String url = getCoverImageUrl(isbn, size);
         if (DEBUG_SWITCHES.LIBRARY_THING && BuildConfig.DEBUG) {
-            Logger.debug("LTM: " + url + " " + isbn + " " + size);
+            Logger.info("LTM: " + url + " " + isbn + " " + size);
         }
 
         // Make sure we follow LibraryThing ToS (no more than 1 request/second).

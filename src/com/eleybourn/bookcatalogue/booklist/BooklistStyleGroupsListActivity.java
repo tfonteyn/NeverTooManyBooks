@@ -111,7 +111,7 @@ public class BooklistStyleGroupsListActivity extends EditObjectListActivity<Grou
 
     @Override
     protected void onAdd(@NonNull final View view) {
-        throw new IllegalStateException("Unexpected call to 'onAdd'");
+        throw new UnsupportedOperationException("Unexpected call to 'onAdd'");
     }
 
     /**
@@ -119,9 +119,7 @@ public class BooklistStyleGroupsListActivity extends EditObjectListActivity<Grou
      */
     @Override
     protected void onSetupView(@NonNull final View target, @NonNull final GroupWrapper wrapper) {
-        // Get a Holder
-        Holder holder;
-        holder = ViewTagger.getTag(target, R.id.TAG_HOLDER);
+        Holder holder = ViewTagger.getTag(target, R.id.TAG_HOLDER);
         if (holder == null) {
             // New view, so build the Holder
             holder = new Holder();
@@ -135,12 +133,10 @@ public class BooklistStyleGroupsListActivity extends EditObjectListActivity<Grou
             holder.present.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(@NonNull View v) {
-                    Holder h = ViewTagger.getTag(v, R.id.TAG_HOLDER);
-                    if (h != null) {
-                        boolean newStatus = !h.wrapper.present;
-                        h.wrapper.present = newStatus;
-                        h.present.setChecked(newStatus);
-                    }
+                    Holder h = ViewTagger.getTagOrThrow(v, R.id.TAG_HOLDER);
+                    boolean newStatus = !h.wrapper.present;
+                    h.wrapper.present = newStatus;
+                    h.present.setChecked(newStatus);
                 }
             });
         }

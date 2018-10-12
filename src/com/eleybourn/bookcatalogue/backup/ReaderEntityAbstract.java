@@ -25,7 +25,7 @@ import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.backup.tar.TarBackupContainer;
 import com.eleybourn.bookcatalogue.utils.SerializationUtils;
-import com.eleybourn.bookcatalogue.utils.SerializationUtils.DeserializationException;
+import com.eleybourn.bookcatalogue.utils.RTE.DeserializationException;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 import java.io.BufferedReader;
@@ -47,7 +47,7 @@ public abstract class ReaderEntityAbstract implements ReaderEntity {
     @Override
     public void saveToDirectory(@NonNull final File dir) throws IOException {
         if (!dir.isDirectory()) {
-            throw new IllegalStateException("Not a directory");
+            throw new IllegalArgumentException("Not a directory");
         }
 
         // Build the new File and save
@@ -67,7 +67,8 @@ public abstract class ReaderEntityAbstract implements ReaderEntity {
      */
     @NonNull
     public Bundle getBundle() throws IOException {
-        final BufferedReader in = new BufferedReaderNoClose(new InputStreamReader(getStream(), TarBackupContainer.UTF8), TarBackupContainer.BUFFER_SIZE);
+        final BufferedReader in = new BufferedReaderNoClose(new InputStreamReader(getStream(),
+                TarBackupContainer.UTF8), TarBackupContainer.BUFFER_SIZE);
         return BackupUtils.bundleFromXml(in);
     }
 
@@ -75,7 +76,8 @@ public abstract class ReaderEntityAbstract implements ReaderEntity {
      * Read the input as XML and put it into a SharedPreferences
      */
     public void getPreferences(@NonNull final SharedPreferences prefs) throws IOException {
-        final BufferedReader in = new BufferedReaderNoClose(new InputStreamReader(getStream(), TarBackupContainer.UTF8), TarBackupContainer.BUFFER_SIZE);
+        final BufferedReader in = new BufferedReaderNoClose(new InputStreamReader(getStream(),
+                TarBackupContainer.UTF8), TarBackupContainer.BUFFER_SIZE);
         BackupUtils.preferencesFromXml(in, prefs);
     }
 

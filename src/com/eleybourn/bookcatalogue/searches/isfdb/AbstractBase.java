@@ -36,6 +36,7 @@ abstract class AbstractBase {
     String mPath;
     Document mDoc;
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     boolean loadPage() {
         if (mDoc == null) {
             try {

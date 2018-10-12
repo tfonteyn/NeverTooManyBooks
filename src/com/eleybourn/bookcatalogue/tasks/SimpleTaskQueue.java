@@ -26,11 +26,13 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -119,7 +121,7 @@ public class SimpleTaskQueue {
         mName = name;
         mMaxTasks = maxTasks;
         if (maxTasks < 1 || maxTasks > 10)
-            throw new IllegalArgumentException("Illegal value for maxTasks");
+            throw new IllegalArgumentException("maxTasks=" + maxTasks);
     }
 
     /**
@@ -168,7 +170,9 @@ public class SimpleTaskQueue {
             mManagedTaskCount++;
         }
 
-        //Logger.debug("SimpleTaskQueue(added): " + mExecutionStack.size());
+        if (BuildConfig.DEBUG) {
+            Logger.info("SimpleTaskQueue(added): " + mExecutionStack.size());
+        }
         synchronized (this) {
             int qSize = mExecutionStack.size();
             int nThreads = mThreads.size();
@@ -372,7 +376,7 @@ public class SimpleTaskQueue {
     }
 
     public interface SimpleTaskContext {
-        @Nullable
+        @NonNull
         CatalogueDBAdapter getDb();
 
         void setRequiresFinish(final boolean requiresFinish);
@@ -410,12 +414,10 @@ public class SimpleTaskQueue {
         /**
          * Accessor when behaving as a context
          */
-        @Nullable
+        @NonNull
         @Override
         public CatalogueDBAdapter getDb() {
-            if (activeThread == null) {
-                throw new IllegalStateException("SimpleTaskWrapper can only be used in a context during the run() stage");
-            }
+            Objects.requireNonNull(activeThread, "SimpleTaskWrapper can only be used in a context during the run() stage");
             return activeThread.getDb();
         }
 
@@ -462,7 +464,9 @@ public class SimpleTaskQueue {
                         }
                     }
 
-                    //Logger.debug("SimpleTaskQueue(run): " + mQueue.size());
+                    if (BuildConfig.DEBUG) {
+                        Logger.info("SimpleTaskQueue(run): " + mExecutionStack.size());
+                    }
                     handleRequest(this, req);
                 }
             } catch (InterruptedException ignore) {
@@ -480,7 +484,7 @@ public class SimpleTaskQueue {
         /**
          * @return a database connection associated with this Task
          */
-        @Nullable
+        @NonNull
         public CatalogueDBAdapter getDb() {
             if (mDb == null) {
                 // Reminder: don't make/put the context in a static variable! -> Memory Leak!

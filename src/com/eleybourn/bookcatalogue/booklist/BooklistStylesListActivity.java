@@ -39,7 +39,7 @@ import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
-import com.eleybourn.bookcatalogue.utils.SerializationUtils;
+import com.eleybourn.bookcatalogue.utils.RTE;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.util.ArrayList;
@@ -100,8 +100,7 @@ public class BooklistStylesListActivity extends EditObjectListActivity<BooklistS
 
     @Override
     protected void onSetupView(@NonNull final View target, @NonNull final BooklistStyle style) {
-        Holder holder;
-        holder = ViewTagger.getTag(target, R.id.TAG_HOLDER);
+        Holder holder = ViewTagger.getTag(target, R.id.TAG_HOLDER);
         if (holder == null) {
             holder = new Holder();
             holder.preferred = target.findViewById(R.id.preferred);
@@ -116,13 +115,11 @@ public class BooklistStylesListActivity extends EditObjectListActivity<BooklistS
             holder.preferred.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(@NonNull View v) {
-                    Holder h = ViewTagger.getTag(v, R.id.TAG_HOLDER);
-                    if (h != null) {
+                    Holder h = ViewTagger.getTagOrThrow(v, R.id.TAG_HOLDER);
                         boolean newStatus = !h.style.isPreferred();
                         h.style.setPreferred(newStatus);
                         h.preferred.setChecked(newStatus);
                         onListChanged();
-                    }
                 }
             });
         }
@@ -205,7 +202,7 @@ public class BooklistStylesListActivity extends EditObjectListActivity<BooklistS
             try {
                 style = style.getClone();
                 style.setName(style.getDisplayName());
-            } catch (SerializationUtils.DeserializationException e) {
+            } catch (RTE.DeserializationException e) {
                 Logger.error(e);
                 StandardDialogs.showQuickNotice(this, R.string.unexpected_error);
                 return;

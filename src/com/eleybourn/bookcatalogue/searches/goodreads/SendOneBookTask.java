@@ -102,13 +102,13 @@ public class SendOneBookTask extends GenericTask {
         db.open();
 
         try (BooksCursor books = db.getBookForGoodreadsCursor(mBookId)) {
-            final BookRowView book = books.getRowView();
+            final BookRowView bookRowView = books.getRowView();
             while (books.moveToNext()) {
                 // Try to export one book
                 ExportDisposition disposition;
                 Exception exportException = null;
                 try {
-                    disposition = grManager.sendOneBook(db, book);
+                    disposition = grManager.sendOneBook(db, bookRowView);
                 } catch (Exception e) {
                     disposition = ExportDisposition.error;
                     exportException = e;

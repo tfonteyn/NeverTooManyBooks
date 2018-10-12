@@ -24,9 +24,9 @@
     <application
         android:name="com.eleybourn.bookcatalogue.BookCatalogueApp"
         android:allowBackup="true"
-        android:icon="@drawable/ic_bc_launcher4"
+        android:icon="@drawable/bc_launcher4"
         android:label="@string/app_name"
-        android:logo="@drawable/ic_bc_launcher4"
+        android:logo="@drawable/bc_launcher4"
         android:supportsRtl="false"
         android:theme="@style/AppTheme">
 
@@ -128,7 +128,7 @@
         <activity android:name="com.eleybourn.bookcatalogue.filechooser.BackupChooser" />
 
         <!-- AdministrationFunctions: Update Fields -->
-        <activity android:name="com.eleybourn.bookcatalogue.UpdateFromInternet" />
+        <activity android:name="com.eleybourn.bookcatalogue.UpdateFromInternetActivity" />
 
         <!-- AdministrationFunctions: Credentials -->
         <activity

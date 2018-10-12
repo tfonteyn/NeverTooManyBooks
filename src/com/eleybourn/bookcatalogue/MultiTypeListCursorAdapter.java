@@ -61,6 +61,7 @@ public class MultiTypeListCursorAdapter extends CursorAdapter implements FastScr
                                @NonNull final Cursor cursor,
                                @NonNull final MultiTypeListHandler handler) {
         super(activity, cursor);
+        //noinspection ConstantConditions
         mInflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mActivity = activity;
         mHandler = handler;
@@ -137,9 +138,9 @@ public class MultiTypeListCursorAdapter extends CursorAdapter implements FastScr
         cursor.moveToPosition(savedPos);
 
         if (BuildConfig.DEBUG) {
-            Logger.debug("MultiTypeListCursorAdapter.getSectionTextForPosition");
+            Logger.info("MultiTypeListCursorAdapter.getSectionTextForPosition");
             for (String s : section) {
-                Logger.debug("Section: " + s);
+                Logger.info("Section: " + s);
             }
         }
         Tracker.exitFunction(this, "getSectionTextForPosition");

@@ -14,9 +14,9 @@ import android.widget.ImageView;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
-import com.eleybourn.bookcatalogue.GetThumbnailTask;
+import com.eleybourn.bookcatalogue.tasks.GetThumbnailTask;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.ThumbnailCacheWriterTask;
+import com.eleybourn.bookcatalogue.tasks.ThumbnailCacheWriterTask;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.CoversDbHelper;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -97,7 +97,7 @@ public class ImageUtils {
         final int samplePow2 = (int) Math.pow(2, Math.ceil(Math.log(idealSampleSize) / Math.log(2)));
 
         if (DEBUG_SWITCHES.IMAGE_UTILS && BuildConfig.DEBUG) {
-            Logger.debug("fetchFileIntoImageView:\n" +
+            Logger.info("fetchFileIntoImageView:\n" +
                     " filename = " + fileSpec + "\n" +
                     "  exact       = " + exact + "\n" +
                     "  maxWidth    = " + maxWidth + ", opt.outWidth = " + opt.outWidth + ", widthRatio   = " + widthRatio + "\n" +
@@ -146,7 +146,7 @@ public class ImageUtils {
         }
 
         if (DEBUG_SWITCHES.IMAGE_UTILS && BuildConfig.DEBUG) {
-            Logger.debug("\n" +
+            Logger.info("\n" +
                     "bm.width = " + bm.getWidth() + "\n" +
                     "bm.height = " + bm.getHeight() + "\n"
             );
@@ -247,7 +247,7 @@ public class ImageUtils {
         Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length, new BitmapFactory.Options());
 
         if (BuildConfig.DEBUG) {
-            Logger.debug("Array " + bytes.length + " bytes, bitmap " + bitmap.getHeight() + "x" + bitmap.getWidth());
+            Logger.info("Array " + bytes.length + " bytes, bitmap " + bitmap.getHeight() + "x" + bitmap.getWidth());
         }
         return bitmap;
     }
