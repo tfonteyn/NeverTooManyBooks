@@ -54,6 +54,7 @@ import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsRegister;
 import com.eleybourn.bookcatalogue.searches.librarything.AdministrationLibraryThing;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
+import com.eleybourn.bookcatalogue.taskqueue.QueueManager;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
@@ -63,12 +64,23 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * TODO: Snackbar: decide Toast/Snackbar ? preference setting ?
+ * TODO: Snackbar: needs styling
+ * TODO: Snackbar: uses getDecorView for now. Ideally it should use a View "carefully chosen"
+ *
+ * Reminder: we still have {@link QueueManager#doToast(String)} which operate without access to 'anything'
+ *
+ */
 public class StandardDialogs {
     //FIXME: make this a preference, or dump toast ?
     private static final boolean USE_SNACKBAR = true;
 
     private static final String UNKNOWN = "<" + BookCatalogueApp.getResourceString(R.string.unknown_uc) + ">";
 
+    /**
+     * Shielding the actual implementation of Toast/Snackbar or whatever is next.
+     */
     public static void showQuickNotice(@NonNull final Activity activity, @StringRes final int message) {
         if (USE_SNACKBAR) {
             Snackbar.make(activity.getWindow().getDecorView(), message, Snackbar.LENGTH_LONG).show();
@@ -77,6 +89,9 @@ public class StandardDialogs {
         }
     }
 
+    /**
+     * Shielding the actual implementation of Toast/Snackbar or whatever is next.
+     */
     public static void showQuickNotice(@NonNull final Activity activity, @NonNull final String message) {
         if (USE_SNACKBAR) {
             Snackbar.make(activity.getWindow().getDecorView(), message, Snackbar.LENGTH_LONG).show();
@@ -86,7 +101,7 @@ public class StandardDialogs {
     }
 
     /**
-     * Show a dialog asking if unsaved edits should be ignored. Finish if so.
+     * Show a dialog asking if unsaved edits should be ignored. Finish activity if so.
      */
     public static void showConfirmUnsavedEditsDialog(@NonNull final Activity activity, @Nullable final Runnable r) {
         AlertDialog dialog = new AlertDialog.Builder(activity)

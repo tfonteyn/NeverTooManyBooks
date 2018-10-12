@@ -109,7 +109,7 @@ abstract public class SearchThread extends ManagedTask {
             s = e2.getClass().getCanonicalName();
         }
         String msg = String.format(getString(R.string.search_exception), getString(id), s);
-        doToast(msg);
+        showQuickNotice(msg);
     }
 
     /**

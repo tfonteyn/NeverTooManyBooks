@@ -187,7 +187,7 @@ abstract class CropImageViewTouchBase extends AppCompatImageView {
     // defined as follows: if the image is scaled down below the
     // view's dimensions then center it (literally). If the image
     // is scaled larger than the view and is translated out of view
-    // then translate it back into view (i.error. eliminate black bars).
+    // then translate it back into view (i.e. eliminate black bars).
     protected void center(final boolean horizontal, final boolean vertical) {
         if (mBitmapDisplayed.getBitmap() == null) {
             return;

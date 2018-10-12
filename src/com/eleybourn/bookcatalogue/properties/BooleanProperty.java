@@ -114,17 +114,13 @@ public class BooleanProperty extends ValuePropertyWithGlobalDefault<Boolean> imp
         holder.property.setViewValues(holder, value);
     }
 
-    /** Set the checkbox and text fields based on passed value.TOMF */
+    /** Set the checkbox and text fields based on passed value */
     private void setViewValues(@NonNull final Holder holder, @Nullable final Boolean value) {
         if (value != null) {
             // We have a value, so setup based on it
             holder.cb.setChecked(value);
             holder.name.setText(this.getNameResourceId());
-            if (value) {
-                holder.value.setText(R.string.yes);
-            } else {
-                holder.value.setText(R.string.no);
-            }
+            holder.value.setText(value ? R.string.yes : R.string.no);
             holder.cb.setPressed(false);
         } else {
             // Null value; use defaults.
@@ -138,16 +134,13 @@ public class BooleanProperty extends ValuePropertyWithGlobalDefault<Boolean> imp
     @Override
     @NonNull
     protected Boolean getGlobalDefault() {
-        Boolean b = getDefaultValue();
-        Objects.requireNonNull(b);
-        return BCPreferences.getBoolean(getPreferenceKey(), b);
+        return BCPreferences.getBoolean(getPreferenceKey(), Objects.requireNonNull(getDefaultValue()));
     }
 
     @Override
     @Nullable
     protected BooleanProperty setGlobalDefault(@Nullable final Boolean value) {
-        Objects.requireNonNull(value);
-        BCPreferences.setBoolean(getPreferenceKey(), value);
+        BCPreferences.setBoolean(getPreferenceKey(), Objects.requireNonNull(value));
         return this;
     }
 

@@ -39,7 +39,6 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTask;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTaskContext;
-import com.eleybourn.bookcatalogue.utils.RTE;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,7 +61,7 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
     private final Handler mHandler = new Handler();
     /** List of messages to be sent to the underlying activity, but not yet sent */
     private final List<TaskMessage> mTaskMessages = new ArrayList<>();
-    /** List of messages queued; only used if activity not present when showToast() is called */
+    /** List of messages queued; only used if activity not present when showQuickNotice() is called */
     @Nullable
     private List<String> mMessages = null;
     /** Options indicating dialog was cancelled */
@@ -203,16 +202,16 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
     }
 
     /**
-     * Utility routine to display a Toast message or queue it as appropriate.
+     * Utility routine to display a message or queue it as appropriate.
      */
-    public void showToast(@NonNull final String message) {
+    public void showQuickNotice(@NonNull final String message) {
         // Can only display in main thread.
         if (Looper.getMainLooper().getThread() == Thread.currentThread()) {
             synchronized (this) {
                 if (this.getActivity() != null) {
                     StandardDialogs.showQuickNotice(this.getActivity(), message);
                 } else {
-                    // Assume the toast message was sent before the fragment was displayed; this
+                    // Assume the message was sent before the fragment was displayed; this
                     // list will be read in onAttach
                     if (mMessages == null) {
                         mMessages = new ArrayList<>();
@@ -225,7 +224,7 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    showToast(message);
+                    showQuickNotice(message);
                 }
             });
         }

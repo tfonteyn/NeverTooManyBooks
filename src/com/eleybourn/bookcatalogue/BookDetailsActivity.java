@@ -124,7 +124,7 @@ public class BookDetailsActivity extends BookCatalogueActivity {
      *
      * 1. If a valid rowId exists it will populate the fields from the database
      *
-     * 2. If fields have been passed from another activity (error.g. {@link BookISBNSearchActivity}) it
+     * 2. If fields have been passed from another activity (e.g. {@link BookISBNSearchActivity}) it
      * will populate the fields from the bundle
      *
      * 3. It will leave the fields blank for new books.

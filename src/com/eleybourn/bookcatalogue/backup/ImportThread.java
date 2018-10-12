@@ -70,12 +70,12 @@ public class ImportThread extends ManagedTask {
             new CsvImporter().importBooks(in, mCoverFinder, mImportListener, Importer.IMPORT_ALL);
 
             if (isCancelled()) {
-                doToast(getString(R.string.cancelled));
+                showQuickNotice(getString(R.string.cancelled));
             } else {
-                doToast(getString(R.string.import_complete));
+                showQuickNotice(getString(R.string.import_complete));
             }
         } catch (IOException e) {
-            doToast(BookCatalogueApp.getResourceString(R.string.import_failed_is_location_correct));
+            showQuickNotice(BookCatalogueApp.getResourceString(R.string.import_failed_is_location_correct));
             Logger.error(e);
         } finally {
             if (in != null && in.getChannel().isOpen())

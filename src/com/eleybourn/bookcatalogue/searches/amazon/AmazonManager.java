@@ -34,6 +34,7 @@ public class AmazonManager {
     /**
      * This searches the amazon REST site based on a specific isbn.
      * It proxies through theagiledirector.com due to amazon not supporting mobile devices
+     * FIXME: can we avoid this ?
      *
      * @param isbn The ISBN to search for
      */
@@ -43,7 +44,7 @@ public class AmazonManager {
                               @NonNull final Bundle book,
                               final boolean fetchThumbnail) {
 
-        String path = "https://bc.theagiledirector.com/getRest_v3.php"; //TOMF?
+        String path = "https://bc.theagiledirector.com/getRest_v3.php";
         if (!isbn.isEmpty()) {
             path += "?isbn=" + isbn;
         } else {

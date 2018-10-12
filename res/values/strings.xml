@@ -1,28 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- ####################################################################################### -->
+    <!-- Creators etc -->
 
-    <string name="app_name" translatable="false">Book Catalogue</string>
-    <string name="system_app_name" translatable="false">Book Catalogue</string>
-    <string name="isbn" translatable="false">ISBN</string>
-    <string name="website" translatable="false">https://wiki.github.com/eleybourn/Book-Catalogue/</string>
-    <string name="sourcecode" translatable="false">https://github.com/eleybourn/Book-Catalogue</string>
-    <string name="helppage" translatable="false">https://github.com/eleybourn/Book-Catalogue/wiki/Help</string>
     <string name="contact1" translatable="false">eleybourn@gmail.com</string>
     <string name="contact2" translatable="false">philip.warner@rhyme.com.au</string>
     <string name="debug_email" translatable="false">eleybourn@gmail.com;grunthos@rhyme.com.au</string>
-    <string name="brackets" translatable="false">(%1$s)</string>
-    <!-- Used for concatenating two strings, eg. "3 books, 2 covers" (probably only important on RTL languages)-->
-    <string name="a_comma_b" translatable="false">%1$s, %2$s</string>
-    <!-- Preference value for a specific language. First arg is name in it's own language, second arg is name in current locale -->
-    <string name="preferred_language_x" translatable="false">%1$s (%2$s)</string>
-    <string name="series_number_prefixes" translatable="false">(#|number|num|num.|no|no.|nr|nr.|book|bk|bk.|volume|vol|vol.|tome|part|pt.|)</string>
-    <string name="a_bracket_b_bracket" translatable="false">%1$s (%2$s)</string>
-    <string name="single_string" translatable="false">%1s</string>
 
-    <string name="goodreads" translatable="false">goodreads</string>
+    <string name="website" translatable="false">https://wiki.github.com/eleybourn/Book-Catalogue/</string>
+    <string name="sourcecode" translatable="false">https://github.com/eleybourn/Book-Catalogue</string>
+    <string name="helppage" translatable="false">https://github.com/eleybourn/Book-Catalogue/wiki/Help</string>
+
+    <string name="app_name" translatable="false">Book Catalogue</string>
+    <string name="system_app_name" translatable="false">Book Catalogue</string>
+
+    <!-- ####################################################################################### -->
+    <!-- External sites / trademarks / acronyms -->
+
+    <string name="goodreads" translatable="false">Goodreads</string>
     <string name="google_books" translatable="false">Google Books</string>
     <string name="goodreads_url" translatable="false">http://www.goodreads.com</string>
     <string name="ISFDB" translatable="false">http://www.isfdb.org</string>
+
+    <string name="isbn" translatable="false">ISBN</string>
+
+    <!-- ####################################################################################### -->
+
+    <!-- TODO: make this user controlled ? -->
+    <string name="series_number_prefixes" translatable="false">(#|number|num|num.|no|no.|nr|nr.|book|bk|bk.|volume|vol|vol.|tome|part|pt.|)</string>
+
+    <!-- Preference value for a specific language. First arg is name in it's own language, second arg is name in current locale -->
+    <string name="preferred_language_x" translatable="false">%1$s (%2$s)</string>
+
+    <!-- ####################################################################################### -->
+    <!-- very specific ... don't ask, don't look -->
+    <string name="single_string" translatable="false">%1s</string>
+    <string name="brackets" translatable="false">(%1$s)</string>
+
+    <!-- order formatters (mainly for RTL which we don't support yet) -->
+    <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
+    <string name="a_comma_b">%1$s, %2$s</string>
+    <string name="label_colon_value">%1$s: %2$s</string>
+
+    <!-- ####################################################################################### -->
+    <!-- translatable strings follow -->
+    <!-- ####################################################################################### -->
 
     <string name="menu_insert">Add Book</string>
     <string name="menu_delete">Delete Book</string>
@@ -202,7 +224,6 @@
     <string name="click_on_thumb">Click on a thumbnail to display a larger image</string>
     <string name="loading">Loading&#8230;</string>
     <string name="image_not_found">Image Not Found</string>
-
     <string name="select_min_1_field">Select at least one field to update</string>
     <string name="usage_copy_if_blank">Copy if blank</string>
     <string name="usage_add_extra">Appends extra data</string>
@@ -243,7 +264,6 @@
     <string name="retry_task">Retry</string>
     <string name="delete_event">Delete Event</string>
     <string name="delete_task">Delete Task</string>
-
     <string name="my_books">My Books</string>
     <string name="loan_return_book">Loan, Return or Edit Book</string>
     <string name="admin_and_prefs">Admin and Preferences</string>
@@ -296,14 +316,14 @@
     <string name="x_of_y">%1$d of %2$d</string>
     <string name="send_book_to_goodreads">Send book %1$s to goodreads</string>
     <string name="erase_cover_cache">Erase cover cache</string>
-    <string name="crash_toast_text">BookCatalogue has crashed unexpectedly. Please help us to make the application better by reporting this crash.</string>
+    <string name="crash_message_text">BookCatalogue has crashed unexpectedly. Please help us to make the application better by reporting this crash.</string>
     <string name="crash_notif_ticker_text">BookCatalogue has crashed</string>
     <string name="crash_notif_title">BookCatalogue Crash</string>
     <string name="crash_notif_text">Please click here for details</string>
     <string name="crash_dialog_title">BookCatalogue Crash</string>
     <string name="crash_dialog_text">It looks like BookCatalogue has crashed. If possible describe anything you think may be relevant below and press "OK" to send us an email about the crash. You will see the email before it is sent.</string>
     <string name="crash_dialog_comment_prompt">Your comments (or just leave blank):</string>
-    <string name="crash_dialog_ok_toast">Thank you!</string>
+    <string name="crash_dialog_ok_message">Thank you!</string>
     <string name="booklist_read">Read</string>
     <string name="booklist_unread">Unread</string>
 
@@ -1026,10 +1046,18 @@ and you can edit the book via the options menu using the menu button or overflow
         <item>Light</item>
     </string-array>
 
+    <!-- new or forgotten in previous releases system messages -->
     <string name="storage_error_preparing_card">Preparing storage</string>
     <string name="storage_error_no_card">No storage ?</string>
     <string name="storage_error_no_space">Not enough space</string>
+    <string name="starting">Starting</string>
+    <string name="done">Done</string>
+    <string name="share">Share</string>
+    <string name="send_mail">Send mail…</string>
+    <string name="no_external_crop_app">Can not find image crop app</string>
+    <string name="no_style_found">Could not find appropriate style</string>
 
+    <!-- filters -->
     <string name="select_based_on_signed_status">Select based on \'Signed\' status</string>
     <string name="select_signed_yes">Select signed books only</string>
     <string name="select_signed_no">Select unsigned books only</string>
@@ -1040,15 +1068,16 @@ and you can edit the book via the options menu using the menu button or overflow
     <string name="select_loaned_yes">Select loaned books only</string>
     <string name="select_loaned_no">Select non-loaned only</string>
 
-    <string name="menu_mark_as_read">Mark as read</string>
-    <string name="menu_mark_as_unread">Mark as unread</string>
-    <string name="menu_edit_publisher">Edit Publisher&#8230;</string>
+    <string name="set_as_read">Mark as read</string>
+    <string name="set_as_unread">Mark as unread</string>
+
+    <string name="edit_publisher">Edit Publisher&#8230;</string>
     <string name="edit_publisher_details">Edit Publisher Details</string>
-    <string name="menu_edit_language">Edit Language&#8230;</string>
+    <string name="edit_language">Edit Language&#8230;</string>
     <string name="edit_language_details">Edit Language Details</string>
-    <string name="menu_edit_location">Edit Location&#8230;</string>
+    <string name="edit_location">Edit Location&#8230;</string>
     <string name="edit_location_details">Edit Location Details</string>
-    <string name="menu_edit_genre">Edit Genre&#8230;</string>
+    <string name="edit_genre">Edit Genre&#8230;</string>
     <string name="edit_genre_details">Edit Genre Details</string>
 
     <string name="search_sites">Search Sites</string>
@@ -1058,23 +1087,16 @@ and you can edit the book via the options menu using the menu button or overflow
     <string name="search_with_text">Search: %1$s</string>
     <string name="searching_isfdb">Searching ISFDB</string>
 
-
     <string name="title_reorder">a|A|an|An|the|The</string>
     <string name="internet_update_fields">Update Fields</string>
-    <string name="share">Share</string>
     <string name="share_book_im_reading">I\'m reading %1$s by %2$s %3$s %4$s</string>
-    <string name="done">Done</string>
-    <string name="starting">Starting</string>
-    <string name="send_mail">Send mail…</string>
-    <string name="no_external_crop_app">Can not find image crop app</string>
+
     <string name="initial_bookshelf">Default</string>
     <string name="try_again">Try again</string>
-    <string name="content">Content</string>
     <string name="table_of_content">Table Of Content</string>
+    <string name="content">Content</string>
     <string name="populate_anthology_titles">Automatically Populate (ISFDB only)</string>
     <string name="first_publication">First Publication</string>
-    <string name="no_style_found">Could not find appropriate style</string>
-    <string name="label_colon_value">%1$s: %2$s</string>
 
     <!-- End: Added/Updated in  [Next Version]  -->
 

@@ -102,7 +102,7 @@ abstract public class ManagedTask extends Thread {
         //do nothing
     }
 
-    /** Called to do the main thread work. Can use doProgress() and doToast() to display messages. */
+    /** Called to do the main thread work. Can use doProgress() and showQuickNotice() to display messages. */
     abstract protected void onRun() throws InterruptedException;
 
     /**
@@ -128,12 +128,12 @@ abstract public class ManagedTask extends Thread {
     }
 
     /**
-     * Utility to ask TaskManager to display a toast message
+     * Utility to ask TaskManager to display a message
      *
      * @param message Message to display
      */
-    protected void doToast(@NonNull final String message) {
-        mManager.doToast(message);
+    protected void showQuickNotice(@NonNull final String message) {
+        mManager.showQuickNotice(message);
     }
 
 

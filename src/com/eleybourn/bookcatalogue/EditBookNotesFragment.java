@@ -216,7 +216,7 @@ public class EditBookNotesFragment extends BookAbstractFragment implements OnPar
 
     @Override
     public void onPause() {
-        mFields.getAll(mEditManager.getBook());
+        mFields.getAllInto(mEditManager.getBook());
         super.onPause();
     }
 

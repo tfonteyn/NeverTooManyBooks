@@ -156,7 +156,7 @@
         <!-- Booklist Preferences -->
         <activity android:name="com.eleybourn.bookcatalogue.booklist.BooklistPreferencesActivity" />
 
-        <!-- Other preferences (error.g. non-booklist -->
+        <!-- Other preferences (e.g. non-booklist -->
         <activity android:name="com.eleybourn.bookcatalogue.PreferencesActivity" />
 
         <!-- view a book -->

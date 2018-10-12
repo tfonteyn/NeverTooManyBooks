@@ -241,7 +241,7 @@ public abstract class BookDetailsAbstractFragment extends BookAbstractFragment {
                     null, new Fields.DateFieldFormatter());
         }
         //TOMF it's a date but we only used the year, do we need DateFieldFormatter ?
-        mFields.add(R.id.first_publication, UniqueId.KEY_FIRST_PUBLICATION, UniqueId.KEY_FIRST_PUBLICATION, null);
+        mFields.add(R.id.first_publication, UniqueId.KEY_FIRST_PUBLICATION, null);
 
         mFields.add(R.id.description, UniqueId.KEY_DESCRIPTION, null)
                 .setShowHtml(true);

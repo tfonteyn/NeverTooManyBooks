@@ -118,11 +118,11 @@ public class AdministrationLibraryThing extends BookCatalogueActivity {
                                 tmpFile.deleteOnExit();
                                 long length = tmpFile.length();
                                 if (length < 100) {
-                                    // Queue a toast message
-                                    fragment.showToast(getString(R.string.incorrect_key));
+                                    // Queue a message
+                                    fragment.showQuickNotice(getString(R.string.incorrect_key));
                                 } else {
-                                    // Queue a toast message
-                                    fragment.showToast(getString(R.string.correct_key));
+                                    // Queue a message
+                                    fragment.showQuickNotice(getString(R.string.correct_key));
                                 }
                                 StorageUtils.deleteFile(tmpFile);
                             }

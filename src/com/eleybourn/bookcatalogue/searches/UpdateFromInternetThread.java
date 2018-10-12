@@ -311,7 +311,7 @@ public class UpdateFromInternetThread extends ManagedTask {
     @Override
     public void onThreadFinish() {
         try {
-            mManager.doToast(mFinalMessage);
+            mManager.showQuickNotice(mFinalMessage);
         } finally {
             cleanup();
         }
@@ -330,7 +330,7 @@ public class UpdateFromInternetThread extends ManagedTask {
         if (cancelled) {
             cancelTask();
         } else if (newBookData.size() == 0) {
-            mManager.doToast("Unable to find book details");
+            mManager.showQuickNotice("Unable to find book details");
         }
 
         // Save the local data from the context so we can start a new search

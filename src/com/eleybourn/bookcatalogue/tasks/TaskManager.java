@@ -283,12 +283,12 @@ public class TaskManager implements AutoCloseable {
     }
 
     /**
-     * Make a toast message for the caller. Queue in UI thread if necessary.
+     * Make a message for the caller. Queue in UI thread if necessary.
      *
      * @param message Message to send
      */
-    public void doToast(@NonNull final String message) {
-        mMessageSwitch.send(mMessageSenderId, new OnToastMessage(message));
+    public void showQuickNotice(@NonNull final String message) {
+        mMessageSwitch.send(mMessageSenderId, new OnShowQuickNotice(message));
     }
 
     /**
@@ -360,7 +360,7 @@ public class TaskManager implements AutoCloseable {
 
         void onProgress(final int count, final int max, @NonNull final String message);
 
-        void onToast(@NonNull final String message);
+        void onShowQuickNotice(@NonNull final String message);
 
         void onFinished();
     }
@@ -409,17 +409,17 @@ public class TaskManager implements AutoCloseable {
         }
     }
 
-    public static class OnToastMessage implements Message<TaskManagerListener> {
+    public static class OnShowQuickNotice implements Message<TaskManagerListener> {
         @NonNull
         private final String mMessage;
 
-        OnToastMessage(@NonNull final String message) {
+        OnShowQuickNotice(@NonNull final String message) {
             mMessage = message;
         }
 
         @Override
         public boolean deliver(@NonNull final TaskManagerListener listener) {
-            listener.onToast(mMessage);
+            listener.onShowQuickNotice(mMessage);
             return false;
         }
     }

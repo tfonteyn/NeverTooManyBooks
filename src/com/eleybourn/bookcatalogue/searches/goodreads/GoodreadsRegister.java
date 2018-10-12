@@ -127,7 +127,7 @@ public class GoodreadsRegister extends BookCatalogueActivity {
 			@Override
 			public void onFinish(@NonNull final SimpleTaskQueueProgressFragment fragment, @Nullable final Exception exception) {
 				if (mMessage != 0)
-					fragment.showToast(fragment.getString(mMessage));
+					fragment.showQuickNotice(fragment.getString(mMessage));
 			}
 
 		};

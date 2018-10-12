@@ -277,14 +277,14 @@
     <string name="send_book_to_goodreads">Enviar libro %1$s a goodreads</string>
 
     <string name="erase_cover_cache">Borrar caché de portadas</string>
-    <string name="crash_toast_text">BookCatalogue se ha detenido de forma inesperada. Por favor, ayúdenos a mejorar la aplicación reportando este problema.</string>
+    <string name="crash_message_text">BookCatalogue se ha detenido de forma inesperada. Por favor, ayúdenos a mejorar la aplicación reportando este problema.</string>
     <string name="crash_notif_ticker_text">BookCatalogue se ha detenido</string>
     <string name="crash_notif_title">Error de BookCatalogue</string>
     <string name="crash_notif_text">Pulse para ver más detalles</string>
     <string name="crash_dialog_title">Error de BookCatalogue</string>
     <string name="crash_dialog_text">Parece que BookCatalogue se ha detenido. Si es posible, indique cualquier detalle que usted considere relevante y pulse OK para enviarnos un correo electrónico sobre el problema. Podrá revisar el correo antes de que se envíe.</string>
     <string name="crash_dialog_comment_prompt">Sus comentarios (puede dejarlos en blanco):</string>
-    <string name="crash_dialog_ok_toast">¡Muchas gracias!</string>
+    <string name="crash_dialog_ok_message">¡Muchas gracias!</string>
     <string name="no_series">(sin serie)</string>
     <string name="booklist_read">Leídos</string>
     <string name="booklist_unread">No leídos</string>

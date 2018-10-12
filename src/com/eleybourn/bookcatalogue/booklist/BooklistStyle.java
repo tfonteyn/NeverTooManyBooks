@@ -134,7 +134,7 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
     /** the scaling for 'condensed' text */
     public static final float SCALE = 0.8f;
 
-    /** Use condensed text, error.g. {@link #SCALE} */
+    /** Use condensed text, e.g. {@link #SCALE} */
     private static final String PREF_CONDENSED_TEXT = PREF_SHOW_EXTRAS_PREFIX + BooklistStyle.SFX_CONDENSED;
 
     // Extra fields to show at the book level

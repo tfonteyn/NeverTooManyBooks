@@ -111,7 +111,7 @@ public class UniqueId {
     public static final String BKEY_DIRTY = "Dirty";
 
 
-    //TODO: migrate to calling these BKEY and making them fixed (error.g. no 'calling' .name)
+    //TODO: migrate to calling these BKEY and making them fixed (e.g. no 'calling' .name)
     // once we cleaned up the over-use of the DOM equiv
 
     // multi-table use

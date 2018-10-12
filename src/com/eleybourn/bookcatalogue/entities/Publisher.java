@@ -67,7 +67,7 @@ public class Publisher implements Serializable {
     /**
      * Two Publishers are equal if:
      * - it's the same Object duh..
-     * - one or both of them is 'new' (error.g. id == 0) but their names are equal
+     * - one or both of them is 'new' (e.g. id == 0) but their names are equal
      * - ids are equal
      *
      * Compare is CASE SENSITIVE !

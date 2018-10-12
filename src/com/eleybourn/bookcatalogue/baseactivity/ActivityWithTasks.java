@@ -132,10 +132,10 @@ abstract public class ActivityWithTasks extends BookCatalogueActivity {
         }
 
         /**
-         * Display a Toast message
+         * Display a message
          */
         @Override
-        public void onToast(@NonNull final String message) {
+        public void onShowQuickNotice(@NonNull final String message) {
             StandardDialogs.showQuickNotice(ActivityWithTasks.this, message);
         }
 

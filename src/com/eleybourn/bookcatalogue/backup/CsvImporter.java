@@ -23,7 +23,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
@@ -31,6 +30,7 @@ import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer.SyncLock;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.AnthologyTitle;
 import com.eleybourn.bookcatalogue.entities.Author;
+import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
@@ -185,14 +185,13 @@ public class CsvImporter implements Importer {
                 requireNonBlankOrThrow(book, row, UniqueId.KEY_TITLE);
                 final String title = book.getString(UniqueId.KEY_TITLE);
 
-                // Keep author handling local
+                // Handle these here, lookup id's etc, but do not write to db!
+                // storing the book data does all that
                 handleAuthors(mDb, book);
-
-                // Keep series handling local
                 handleSeries(mDb, book);
-
-                // Keep anthology handling local
                 if (book.containsKey(UniqueId.KEY_ANTHOLOGY_BITMASK)) {
+                    // ignore the actual value of the bitmask! it will be 'reset' to mirror
+                    // what we actually have when storing the book data
                     handleAnthology(mDb, book);
                 }
 
@@ -343,53 +342,32 @@ public class CsvImporter implements Importer {
      */
     private void handleAnthology(@NonNull final CatalogueDBAdapter db,
                                  @NonNull final Book book) {
-        if (book.getLong(UniqueId.KEY_ANTHOLOGY_BITMASK) > 0) {
-            String anthologyTitlesAsStringList =  book.getString(UniqueId.BKEY_ANTHOLOGY_DETAILS);
-            if (!anthologyTitlesAsStringList.isEmpty()) {
-                ArrayList<String> list = ArrayUtils.decodeList(anthologyTitlesAsStringList);
-                // There is *always* one; but it will be empty if no titles present
-                if (!list.get(0).isEmpty()) {
-                    ArrayList<AnthologyTitle> ata = new ArrayList<>();
-                    long bookId = book.getLong(UniqueId.KEY_ID);
-                    for (String title : list) {
-                        // as titles are saved as a repeated "title|", the 'last' one is also an empty one.
-                        // "Islands In The Sky * Clarke, Arthur C.|The Sands Of Mars * Clarke, Arthur C.|Eartlight * Clarke, Arthur C.|"
-                        //  But let's not assume and keep this general
-                        if (!title.isEmpty()) {
-                            ata.add(new AnthologyTitle(title, bookId));
-                        }
+
+        String anthologyTitlesAsStringList = book.getString(UniqueId.BKEY_ANTHOLOGY_DETAILS);
+        if (!anthologyTitlesAsStringList.isEmpty()) {
+            ArrayList<String> list = ArrayUtils.decodeList(anthologyTitlesAsStringList);
+            // There is *always* one; but it will be empty if no titles present
+            if (!list.get(0).isEmpty()) {
+                ArrayList<AnthologyTitle> ata = new ArrayList<>();
+                long bookId = book.getLong(UniqueId.KEY_ID);
+                for (String title : list) {
+                    // as titles are saved as a repeated "title|", the 'last' one is also an empty one.
+                    // "Islands In The Sky * Clarke, Arthur C.|The Sands Of Mars * Clarke, Arthur C.|Earthlight * Clarke, Arthur C.|"
+                    //  But let's not assume and keep this general
+                    if (!title.isEmpty()) {
+                        ata.add(new AnthologyTitle(title, bookId));
                     }
-                    // fixup the id's
-                    Utils.pruneList(db, ata);
-                    book.setContentList(ata);
                 }
+                // fixup the id's
+                Utils.pruneList(db, ata);
+                book.setContentList(ata);
             }
         }
+
         // remove the unneeded string encoded set
         book.remove(UniqueId.BKEY_ANTHOLOGY_DETAILS);
     }
-//    private void handleAnthology(@NonNull final CatalogueDBAdapter db,
-//                                 @NonNull final Book book) {
-//        if (book.getLong(UniqueId.KEY_ANTHOLOGY_BITMASK) > 0) {
-//            String anthologyTitlesAsStringList =  book.getString(UniqueId.BKEY_ANTHOLOGY_DETAILS);
-//            if (!anthologyTitlesAsStringList.isEmpty()) {
-//                String[] anthology_titles = anthologyTitlesAsStringList.split("\\" + ArrayUtils.MULTI_STRING_SEPARATOR);
-//                // There is *always* one; but it will be empty if no titles present
-//                if (!anthology_titles[0].isEmpty()) {
-//                    ArrayList<AnthologyTitle> ata = new ArrayList<>();
-//                    long bookId = book.getLong(UniqueId.KEY_ID);
-//                    for (String title : anthology_titles) {
-//                        ata.add(new AnthologyTitle(title, bookId));
-//                    }
-//                    // fixup the id's
-//                    Utils.pruneList(db, ata);
-//                    book.setContentList(ata);
-//                }
-//            }
-//        }
-//        // remove the unneeded string encoded set
-//        book.remove(UniqueId.BKEY_ANTHOLOGY_DETAILS);
-//    }
+
     /**
      * Database access is strictly limited to fetching id's
      */
@@ -444,11 +422,9 @@ public class CsvImporter implements Importer {
 
         // A pre-existing bug sometimes results in blank author-details due to bad underlying data
         // (it seems a 'book' record gets written without an 'author' record; should not happen)
-        // so we allow blank author_details and full in a regional version of "Author, Unknown"
+        // so we allow blank author_details and fill in a regional version of "Author, Unknown"
         if (authorDetails.isEmpty()) {
             authorDetails = BookCatalogueApp.getResourceString(R.string.author) + ", " + BookCatalogueApp.getResourceString(R.string.unknown);
-            //String s = BookCatalogueApp.getResourceString(R.string.column_is_blank);
-            //throw new ImportException(String.format(s, DatabaseDefinitions.BKEY_AUTHOR_DETAILS, row));
         }
 
         // Now build the array for authors

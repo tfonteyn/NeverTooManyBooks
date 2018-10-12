@@ -712,7 +712,7 @@ public class UpgradeDatabase {
             mMessage += "* The save button will always be visible on the edit book screen\n\n";
             mMessage += "* Searching for a single space will clear the search results page\n\n";
             mMessage += "* The Date Picker will now appear in a popup in order to save space on the screen (Requested by several people)\n\n";
-            mMessage += "* To improve speed when sorting by title, the titles will be broken up by the first character. Remember prefixes such as 'the' and 'a' are listed after the title, error.g. 'The Trigger' becomes 'Trigger, The'\n\n";
+            mMessage += "* To improve speed when sorting by title, the titles will be broken up by the first character. Remember prefixes such as 'the' and 'a' are listed after the title, e.g. 'The Trigger' becomes 'Trigger, The'\n\n";
         }
         if (curVersion == 48) {
             curVersion++;

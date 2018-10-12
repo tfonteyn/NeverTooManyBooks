@@ -60,7 +60,7 @@ public class Bookshelf implements Serializable, Utils.ItemWithIdFixup {
     /**
      * Two bookshelves are equal if:
      * - it's the same Object duh..
-     * - one or both of them is 'new' (error.g. id == 0) but their names are equal
+     * - one or both of them is 'new' (e.g. id == 0) but their names are equal
      * - ids are equal
      *
      * Compare is CASE SENSITIVE !

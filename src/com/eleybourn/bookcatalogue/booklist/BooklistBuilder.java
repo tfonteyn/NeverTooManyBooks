@@ -2353,7 +2353,7 @@ public class BooklistBuilder implements AutoCloseable {
         @NonNull
         @SuppressWarnings("unchecked")
         ArrayList<DomainDefinition> cloneGroups() {
-            //TOMF
+            //TOMF: shallow copy, is that enough ? TODO: check calling code
             //      * Returns a shallow copy of this <tt>ArrayList</tt> instance.  (The
             //     * elements themselves are not copied.)
             return (ArrayList<DomainDefinition>) mGroups.clone();

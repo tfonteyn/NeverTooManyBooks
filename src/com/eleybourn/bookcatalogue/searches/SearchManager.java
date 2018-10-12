@@ -282,7 +282,7 @@ public class SearchManager implements TaskManagerListener {
     }
 
     @Override
-    public void onToast(@NonNull final String message) {
+    public void onShowQuickNotice(@NonNull final String message) {
     }
 
     @Override
@@ -602,7 +602,7 @@ public class SearchManager implements TaskManagerListener {
 
         // If book is not found or missing required data, warn the user
         if (authors == null || authors.isEmpty() || title == null || title.isEmpty()) {
-            mTaskManager.doToast(BookCatalogueApp.getResourceString(R.string.book_not_found));
+            mTaskManager.showQuickNotice(BookCatalogueApp.getResourceString(R.string.book_not_found));
         }
 
         // All done, Pass the data back

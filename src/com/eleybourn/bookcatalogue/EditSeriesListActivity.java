@@ -156,7 +156,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
             return;
         }
 
-        if ((to.name.compareTo(from.name) == 0)) {  // TOMF
+        if ((to.name.compareTo(from.name) == 0)) {  // TOMF: verify....
             // Same name, different number... just update
             from.copyFrom(to);
             Series.pruneSeriesList(mList);

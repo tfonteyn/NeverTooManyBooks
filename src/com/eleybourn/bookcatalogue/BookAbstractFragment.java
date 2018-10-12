@@ -294,12 +294,12 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
      * Default implementation of code to save existing data to the Book object
      */
     protected void onSaveBookDetails(@NonNull final Book book) {
-        mFields.getAll(book);
+        mFields.getAllInto(book);
     }
 
     @Override
     public void saveAllEdits(@NonNull final DataManager dataManager) {
-        mFields.getAll(mEditManager.getBook());
+        mFields.getAllInto(mEditManager.getBook());
     }
 
 
@@ -383,7 +383,7 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
 
         void setDirty(final boolean isDirty);
 
-        @Nullable
+        @NonNull
         Book getBook();
 
         void setRowId(final long id);

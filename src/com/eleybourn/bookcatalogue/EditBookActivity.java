@@ -87,7 +87,9 @@ public class EditBookActivity extends BookCatalogueActivity
     private final CatalogueDBAdapter mDb = new CatalogueDBAdapter(this);
     private boolean mIsDirtyFlg = false;
     private long mRowId;
-    @Nullable
+    /** initialised in {@link #onCreate(Bundle)} */
+    @SuppressWarnings("NullableProblems")
+    @NonNull
     private Book mBook;
 
     private TabLayout mTabLayout;
@@ -489,7 +491,7 @@ public class EditBookActivity extends BookCatalogueActivity
         mIsDirtyFlg = dirty;
     }
 
-    @Nullable
+    @NonNull
     @Override
     public Book getBook() {
         return mBook;

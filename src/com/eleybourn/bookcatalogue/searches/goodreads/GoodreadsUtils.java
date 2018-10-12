@@ -91,11 +91,11 @@ public class GoodreadsUtils {
                             @NonNull final SimpleTaskContext taskContext) {
 
                 if (BCQueueManager.getQueueManager().hasActiveTasks(BCQueueManager.CAT_GOODREADS_IMPORT_ALL)) {
-                    fragment.showToast(fragment.getString(R.string.requested_task_is_already_queued));
+                    fragment.showQuickNotice(fragment.getString(R.string.requested_task_is_already_queued));
                     return;
                 }
                 if (BCQueueManager.getQueueManager().hasActiveTasks(BCQueueManager.CAT_GOODREADS_EXPORT_ALL)) {
-                    fragment.showToast(fragment.getString(R.string.export_task_is_already_queued));
+                    fragment.showQuickNotice(fragment.getString(R.string.export_task_is_already_queued));
                     return;
                 }
 
@@ -110,13 +110,13 @@ public class GoodreadsUtils {
                     });
                     return;
                 } else if (msg != 0) {
-                    fragment.showToast(fragment.getString(msg));
+                    fragment.showQuickNotice(fragment.getString(msg));
                     return;
                 }
 
                 if (!fragment.isCancelled()) {
                     QueueManager.getQueueManager().enqueueTask(new ImportAllTask(isSync), BCQueueManager.QUEUE_MAIN);
-                    fragment.showToast(fragment.getString(R.string.task_has_been_queued_in_background));
+                    fragment.showQuickNotice(fragment.getString(R.string.task_has_been_queued_in_background));
                 }
             }
         };
@@ -187,7 +187,7 @@ public class GoodreadsUtils {
                         }
                     });
                 } else {
-                    fragment.showToast(fragment.getString(msg));
+                    fragment.showQuickNotice(fragment.getString(msg));
                 }
 
             }
@@ -270,7 +270,7 @@ public class GoodreadsUtils {
                         return;
 
                     default:
-                        fragment.showToast(fragment.getString(getState()));
+                        fragment.showQuickNotice(fragment.getString(getState()));
                         break;
                 }
             }

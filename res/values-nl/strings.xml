@@ -273,14 +273,14 @@
     <string name="x_of_y">%1$d van %2$d</string>
     <string name="send_book_to_goodreads">Zend boek %1$s naar goodreads</string>
     <string name="erase_cover_cache">Wis boekomslag cache</string>
-    <string name="crash_toast_text">BookCatalogue is onverwacht gecrasht. Help ons aub de toepassing beter te maken door deze crash te melden.</string>
+    <string name="crash_message_text">BookCatalogue is onverwacht gecrasht. Help ons aub de toepassing beter te maken door deze crash te melden.</string>
     <string name="crash_notif_ticker_text">BookCatalogue is gecrasht</string>
     <string name="crash_notif_title">BookCatalogue crash</string>
     <string name="crash_notif_text">Tik hier voor details</string>
     <string name="crash_dialog_title">BookCatalogue crash</string>
     <string name="crash_dialog_text">Het lijkt er op dat BookCatalogue is gecrasht. Beschrijf indien mogelijk hieronder wat de oorzaak kan zijn en druk op "OK" om ons een e-mail te sturen over deze crash. U kunt het bericht inzien voordat het wordt verzonden.</string>
     <string name="crash_dialog_comment_prompt">Uw commentaar (of laat dit leeg):</string>
-    <string name="crash_dialog_ok_toast">Dank u!</string>
+    <string name="crash_dialog_ok_message">Dank u!</string>
     <string name="no_series">(geen series)</string>
     <string name="booklist_read">Gelezen</string>
     <string name="booklist_unread">Ongelezen</string>
@@ -945,8 +945,8 @@ Zie "Meer voorkeuren" voor de relevante instelling.
 
     <!-- Begin: Added/Updated in [Next Version] DO NOT TRANSLATE YET! MAY CHANGE OR BE DELETED! -->
     <string name="title_reorder">de|De|een|Een|het|Het</string>
-    <string name="menu_mark_as_read">Markeer als gelezen</string>
-    <string name="menu_mark_as_unread">Markeer als ongelezen</string>
+    <string name="set_as_read">Markeer als gelezen</string>
+    <string name="set_as_unread">Markeer als ongelezen</string>
     <string name="content">Inhoud</string>
     <string name="done">Klaar</string>
     <string name="edit_genre_details">Genre bewerken</string>
@@ -956,10 +956,10 @@ Zie "Meer voorkeuren" voor de relevante instelling.
     <string name="first_publication">Vroegste publicatie</string>
     <string name="initial_bookshelf">Standaard</string>
     <string name="internet_update_fields">Bijwerken velden</string>
-    <string name="menu_edit_genre">Genre bewerken&#8230;</string>
-    <string name="menu_edit_language">Taal bewerken&#8230;</string>
-    <string name="menu_edit_location">Locatie bewerken&#8230;</string>
-    <string name="menu_edit_publisher">Uitgever bewerken&#8230;</string>
+    <string name="edit_genre">Genre bewerken&#8230;</string>
+    <string name="edit_language">Taal bewerken&#8230;</string>
+    <string name="edit_location">Locatie bewerken&#8230;</string>
+    <string name="edit_publisher">Uitgever bewerken&#8230;</string>
     <string name="no_external_crop_app">Externe crop applicatie niet gevonden</string>
     <string name="no_style_found">Stijl niet gevonden</string>
     <string name="preferred_theme">Interface thema</string>

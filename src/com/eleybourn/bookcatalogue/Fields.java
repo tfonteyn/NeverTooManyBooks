@@ -245,7 +245,7 @@ public class Fields extends ArrayList<Fields.Field> {
      *
      * @return The resulting Field.
      */
-    @Nullable
+    @NonNull
     public Field add(final int fieldId,
                      @NonNull final String sourceColumn,
                      @Nullable final FieldValidator fieldValidator) {
@@ -262,7 +262,7 @@ public class Fields extends ArrayList<Fields.Field> {
      *
      * @return The resulting Field.
      */
-    @Nullable
+    @NonNull
     public Field add(final int fieldId,
                      @NonNull final String sourceColumn,
                      @Nullable final FieldValidator fieldValidator,
@@ -280,7 +280,7 @@ public class Fields extends ArrayList<Fields.Field> {
      *
      * @return The resulting Field.
      */
-    @Nullable
+    @NonNull
     @SuppressWarnings("UnusedReturnValue")
     public Field add(final int fieldId,
                      @NonNull final String sourceColumn,
@@ -300,15 +300,15 @@ public class Fields extends ArrayList<Fields.Field> {
      *
      * @return The resulting Field.
      */
-    @Nullable
+    @NonNull
     public Field add(final int fieldId,
                      @NonNull final String sourceColumn,
                      @NonNull final String visibilityGroup,
                      @Nullable final FieldValidator fieldValidator,
                      @Nullable final FieldFormatter formatter) {
-        Field fe = new Field(this, fieldId, sourceColumn, visibilityGroup, fieldValidator, formatter);
-        this.add(fe);
-        return fe;
+        Field field = new Field(this, fieldId, sourceColumn, visibilityGroup, fieldValidator, formatter);
+        this.add(field);
+        return field;
     }
 
     /**
@@ -389,7 +389,7 @@ public class Fields extends ArrayList<Fields.Field> {
      *
      * @param data Cursor to load Field objects from.
      */
-    public void getAll(@NonNull final DataManager data) {
+    public void getAllInto(@NonNull final DataManager data) {
         for (Field field : this) {
             if (!field.column.isEmpty()) {
                 field.getValue(data);

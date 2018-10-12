@@ -900,7 +900,7 @@ public class CatalogueDBAdapter {
     }
 
     /**
-     * @return author id, or 0 (error.g. 'new') when not found
+     * @return author id, or 0 (e.g. 'new') when not found
      */
     public long getAuthorIdByName(@NonNull final String familyName, @NonNull final String givenNames) {
         if (mGetAuthorIdStmt == null) {

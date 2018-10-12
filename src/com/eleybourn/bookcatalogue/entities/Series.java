@@ -294,7 +294,7 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
 
     /**
      * Two series are equal if:
-     * - one or both of them is 'new' (error.g. id == 0) and their names are equal
+     * - one or both of them is 'new' (e.g. id == 0) and their names are equal
      * - ids are equal
      *
      * So the number plays NO ROLE !

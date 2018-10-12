@@ -78,7 +78,7 @@ import java.util.Set;
                 ReportField.CUSTOM_DATA,
                 ReportField.STACK_TRACE},
         //optional, displayed as soon as the crash occurs, before collecting data which can take a few seconds
-        resToastText = R.string.crash_toast_text,
+        resToastText = R.string.crash_message_text,
         resNotifTickerText = R.string.crash_notif_ticker_text,
         resNotifTitle = R.string.crash_notif_title,
         resNotifText = R.string.crash_notif_text,
@@ -87,8 +87,8 @@ import java.util.Set;
         resDialogTitle = R.string.crash_dialog_title,
         // optional. when defined, adds a user text field input with this text resource as a label
         resDialogCommentPrompt = R.string.crash_dialog_comment_prompt,
-        // optional. displays a Toast message when the user accepts to send a report.
-        resDialogOkToast = R.string.crash_dialog_ok_toast
+        // optional. displays a message when the user accepts to send a report.
+        resDialogOkToast = R.string.crash_dialog_ok_message
 )
 
 public class BookCatalogueApp extends Application {
@@ -453,7 +453,7 @@ public class BookCatalogueApp extends Application {
 
     /**
      *
-     * @param theme     allows to override the app theme, f.error. with Dialog Themes
+     * @param theme     allows to override the app theme, f.e. with Dialog Themes
      * @param attr      resource id to get
      *
      * @return resolved attribute

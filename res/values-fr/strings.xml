@@ -357,14 +357,14 @@
     <string name="send_all_to_goodreads_result">%1$d livres traités : %2$d envoyés avec succès, %3$d sans ISBN et %4$d avec ISBN mais non trouvés sur Goodreads</string>
     <string name="send_book_to_goodreads">Envoyer le livre %1$s à Goodreads</string>
     <string name="erase_cover_cache">Effacer le cache des couvertures</string>
-    <string name="crash_toast_text">Book Catalogue a planté. Merci de nous aider en reportant ce crash.</string>
+    <string name="crash_message_text">Book Catalogue a planté. Merci de nous aider en reportant ce crash.</string>
     <string name="crash_notif_ticker_text">Book Catalogue a planté.</string>
     <string name="crash_notif_title">Plantage de Book Catalogue</string>
     <string name="crash_notif_text">Merci de cliquer ici pour obtenir des détails</string>
     <string name="crash_dialog_title">Plantage de Book Catalogue</string>
     <string name="crash_dialog_text">Book Catalogue a planté. Décrivez ci-dessous tout ce qui vous semble opportun et pressez « OK » pour nous envoyer un courriel à propos de ce plantage. Vous pourrez lire votre courriel avant son envoi.</string>
     <string name="crash_dialog_comment_prompt">Votre commentaire (ou laisser vide) :</string>
-    <string name="crash_dialog_ok_toast">Merci !</string>
+    <string name="crash_dialog_ok_message">Merci !</string>
     <string name="no_series">(aucune série)</string>
     <string name="booklist_read">Lu</string>
     <string name="booklist_unread">Non lu</string>
@@ -921,8 +921,8 @@
 
     <!-- Begin: Added/Updated in [Next Version] DO NOT TRANSLATE YET! MAY CHANGE OR BE DELETED! -->
     <string name="title_reorder">le|Le|la|La|les|Les</string>
-    <string name="menu_mark_as_read">Marqué comme lu</string>
-    <string name="menu_mark_as_unread">Maqué comme non lu</string>
+    <string name="set_as_read">Marqué comme lu</string>
+    <string name="set_as_unread">Maqué comme non lu</string>
 
     <!-- End: Added/Updated in [Next Version] -->
 

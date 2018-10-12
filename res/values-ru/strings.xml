@@ -271,14 +271,14 @@
     <string name="x_of_y">%1$d из %2$d</string>
     <string name="send_book_to_goodreads">Отправить книгу %1$s на Goodreads</string>
     <string name="erase_cover_cache">Очистить кэш обложек</string>
-    <string name="crash_toast_text">BookCatalogue завершилось с ошибкой. Пожалуйста, помогите нам сделать приложение лучше, отправив эту ошибку.</string>
+    <string name="crash_message_text">BookCatalogue завершилось с ошибкой. Пожалуйста, помогите нам сделать приложение лучше, отправив эту ошибку.</string>
     <string name="crash_notif_ticker_text">BookCatalogue завершилось с ошибкой</string>
     <string name="crash_notif_title">Ошибка BookCatalogue</string>
     <string name="crash_notif_text">Пожайлуйста, нажмите сюда для подробностей</string>
     <string name="crash_dialog_title">Ошибка BookCatalogue</string>
     <string name="crash_dialog_text">BookCatalogue завершился с ошибкой. Пожалуйста, если хотите, опишите что-нибудь, что, по вашему мнению, могло быть связано с этим. Нажмите "ОК", чтобы отправить по почте. Вы увидите e-mail перед отправлением.</string>
     <string name="crash_dialog_comment_prompt">Ваши комментарии (или оставьте пустым):</string>
-    <string name="crash_dialog_ok_toast">Спасибо!</string>
+    <string name="crash_dialog_ok_message">Спасибо!</string>
     <string name="no_series">(без серии)</string>
     <string name="booklist_read">Прочитана</string>
     <string name="booklist_unread">Не прочитана</string>

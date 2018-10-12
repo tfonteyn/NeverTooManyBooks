@@ -339,7 +339,7 @@ class DBAdapter {
             db.delete(TBL_EVENT, whereClause, null);
 
             // Remove orphaned tasks THAT WERE SUCCESSFUL
-            whereClause = "NOT EXISTS(SELECT * FROM " + TBL_EVENT + " error WHERE error." + DOM_TASK_ID + "=" + TBL_TASK + "." + DOM_ID + ")"
+            whereClause = "NOT EXISTS(SELECT * FROM " + TBL_EVENT + " e WHERE e." + DOM_TASK_ID + "=" + TBL_TASK + "." + DOM_ID + ")"
                     + " AND " + DOM_STATUS_CODE + " = 'S'";
             db.delete(TBL_TASK, whereClause, null);
             db.setTransactionSuccessful();

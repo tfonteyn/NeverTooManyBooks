@@ -270,14 +270,14 @@
     <string name="x_of_y">%1$d z %2$d</string>
     <string name="send_book_to_goodreads">Poslat knihu %1$s do Goodreads</string>
     <string name="erase_cover_cache">Vymazat vyrovnávací paměť pro obálky</string>
-    <string name="crash_toast_text">Došlo k neočekávanému pádu aplikace BookCatalogue. Prosím pomozte nám zlepšit aplikaci a informujte nás o tomto problému.</string>
+    <string name="crash_message_text">Došlo k neočekávanému pádu aplikace BookCatalogue. Prosím pomozte nám zlepšit aplikaci a informujte nás o tomto problému.</string>
     <string name="crash_notif_ticker_text">BookCatalogue spadl</string>
     <string name="crash_notif_title">BookCatalogue spadl</string>
     <string name="crash_notif_text">Klikněte zde pro více informací</string>
     <string name="crash_dialog_title">BookCatalogue spadl</string>
     <string name="crash_dialog_text">Vypadá to, že došlo k neočekávanému pádu aplikace BookCatalogue. Napište nám prosím o tomto problému všechny informace, které považujete za relevantní, a tlačítkem "OK" nám je odešlete. Před odesláním mailu budete mít ještě možnost jej zkontrolovat.</string>
     <string name="crash_dialog_comment_prompt">Váš komentář (nepovinné):</string>
-    <string name="crash_dialog_ok_toast">Děkujeme!</string>
+    <string name="crash_dialog_ok_message">Děkujeme!</string>
     <string name="no_series">(žádná série)</string>
     <string name="booklist_read">Přečteno</string>
     <string name="booklist_unread">Nepřečteno</string>

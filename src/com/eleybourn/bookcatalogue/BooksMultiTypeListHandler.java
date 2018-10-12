@@ -307,9 +307,9 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                     addMenuItem(menu, R.id.MENU_BOOK_EDIT, R.string.edit_book, R.drawable.ic_mode_edit);
                     addMenuItem(menu, R.id.MENU_BOOK_EDIT_NOTES, R.string.edit_book_notes, R.drawable.ic_note);
                     if (rowView.isRead()) {
-                        addMenuItem(menu, R.id.MENU_BOOK_UNREAD, R.string.menu_mark_as_unread, R.drawable.btn_check_buttonless_off);
+                        addMenuItem(menu, R.id.MENU_BOOK_UNREAD, R.string.set_as_unread, R.drawable.btn_check_buttonless_off);
                     } else {
-                        addMenuItem(menu, R.id.MENU_BOOK_READ, R.string.menu_mark_as_read, R.drawable.btn_check_buttonless_on);
+                        addMenuItem(menu, R.id.MENU_BOOK_READ, R.string.set_as_read, R.drawable.btn_check_buttonless_on);
                     }
                     addMenuItem(menu, R.id.MENU_BOOK_EDIT_LOANS, R.string.edit_book_friends, R.drawable.ic_people);
                     addMenuItem(menu, R.id.MENU_BOOK_SEND_TO_GOODREADS, R.string.edit_book_send_to_gr,
@@ -331,28 +331,28 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                 case RowKinds.ROW_KIND_PUBLISHER: {
                     String s = rowView.getPublisherName();
                     if (!s.isEmpty()) {
-                        addMenuItem(menu, R.id.MENU_PUBLISHER_EDIT, R.string.menu_edit_publisher, R.drawable.ic_mode_edit);
+                        addMenuItem(menu, R.id.MENU_PUBLISHER_EDIT, R.string.edit_publisher, R.drawable.ic_mode_edit);
                     }
                     break;
                 }
                 case RowKinds.ROW_KIND_LANGUAGE: {
                     String s = rowView.getLanguage();
                     if (!s.isEmpty()) {
-                        addMenuItem(menu, R.id.MENU_LANGUAGE_EDIT, R.string.menu_edit_language, R.drawable.ic_mode_edit);
+                        addMenuItem(menu, R.id.MENU_LANGUAGE_EDIT, R.string.edit_language, R.drawable.ic_mode_edit);
                     }
                     break;
                 }
                 case RowKinds.ROW_KIND_LOCATION: {
                     String s = rowView.getLocation();
                     if (!s.isEmpty()) {
-                        addMenuItem(menu, R.id.MENU_LOCATION_EDIT, R.string.menu_edit_location, R.drawable.ic_mode_edit);
+                        addMenuItem(menu, R.id.MENU_LOCATION_EDIT, R.string.edit_location, R.drawable.ic_mode_edit);
                     }
                     break;
                 }
                 case RowKinds.ROW_KIND_GENRE: {
                     String s = rowView.getGenre();
                     if (!s.isEmpty()) {
-                        addMenuItem(menu, R.id.MENU_GENRE_EDIT, R.string.menu_edit_genre, R.drawable.ic_mode_edit);
+                        addMenuItem(menu, R.id.MENU_GENRE_EDIT, R.string.edit_genre, R.drawable.ic_mode_edit);
                     }
                     break;
                 }
