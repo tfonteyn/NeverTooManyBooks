@@ -50,7 +50,7 @@
                 android:id="@+id/dev_key"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/developer_key"
+                android:hint="@string/lt_developer_key"
                 android:inputType="text"
                 android:singleLine="true"
                 tools:ignore="Autofill" />

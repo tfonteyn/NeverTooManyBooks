@@ -19,6 +19,7 @@
  */
 package com.eleybourn.bookcatalogue.datamanager.validators;
 
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.datamanager.DataManager;

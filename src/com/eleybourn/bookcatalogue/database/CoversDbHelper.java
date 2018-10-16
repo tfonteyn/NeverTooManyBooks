@@ -30,6 +30,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQuery;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.widget.ImageView;
@@ -117,7 +118,7 @@ public class CoversDbHelper implements AutoCloseable {
      * Will be used if you create "new" instances yourself, so it's a nice debug as well.
      */
     @NonNull
-    private static Integer mCountToGetInstance = 0;
+    private static Integer mNumberOfInstances = 0;
     /** Our singleton */
     private static CoversDbHelper mInstance;
 
@@ -157,9 +158,9 @@ public class CoversDbHelper implements AutoCloseable {
         }
 
         synchronized (this) {
-            mCountToGetInstance++;
+            mNumberOfInstances++;
             if (BuildConfig.DEBUG) {
-                Logger.info("CovDBA instances created: " + mCountToGetInstance);
+                Logger.info("CovDBA instances created: " + mNumberOfInstances);
             }
         }
     }
@@ -168,7 +169,9 @@ public class CoversDbHelper implements AutoCloseable {
      * Get the 'covers' DB from external storage.
      *
      * Always use as:
-     * try(CoversDbHelper coversDbHelper = CoversDbHelper.getInstance()) { use coversDbHelper here }
+     * try (CoversDbHelper coversDbHelper = CoversDbHelper.getInstance()) {
+     *    use coversDbHelper here
+     * }
      *
      * or call close() yourself ... but if you forget, you might waste resources
      *
@@ -204,12 +207,12 @@ public class CoversDbHelper implements AutoCloseable {
     @Override
     public void close() {
         synchronized (this) {
-            mCountToGetInstance--;
+            mNumberOfInstances--;
             if (BuildConfig.DEBUG) {
-                Logger.info("CovDBA instances left: " + mCountToGetInstance);
+                Logger.info("CovDBA instances left: " + mNumberOfInstances);
             }
 
-            if (mCountToGetInstance == 0) {
+            if (mNumberOfInstances == 0) {
                 if (mSyncedDb != null) {
                     mStatements.close();
                 }
@@ -428,7 +431,7 @@ public class CoversDbHelper implements AutoCloseable {
 
         CoversHelper(@NonNull final Context context,
                      @NonNull final String dbFilePath,
-                     @NonNull final CursorFactory factory) {
+                     @SuppressWarnings("SameParameterValue") @NonNull final CursorFactory factory) {
             super(context, dbFilePath, factory, COVERS_DATABASE_VERSION);
         }
 
@@ -436,7 +439,11 @@ public class CoversDbHelper implements AutoCloseable {
          * As with SQLiteOpenHelper, routine called to create DB
          */
         @Override
+        @CallSuper
         public void onCreate(@NonNull final SQLiteDatabase db) {
+            if (BuildConfig.DEBUG) {
+                Logger.info("Creating database: " + db.getPath());
+            }
             TableDefinition.createTables(new SynchronizedDb(db, mSynchronizer), TABLES);
         }
 
@@ -444,8 +451,12 @@ public class CoversDbHelper implements AutoCloseable {
          * As with SQLiteOpenHelper, routine called to upgrade DB
          */
         @Override
+        @CallSuper
         public void onUpgrade(@NonNull final SQLiteDatabase db, final int oldVersion, final int newVersion) {
-            throw new RuntimeException("Upgrades not handled yet!");
+            if (BuildConfig.DEBUG) {
+                Logger.info("Upgrading database: " + db.getPath());
+            }
+            throw new IllegalStateException("Upgrades not handled yet!");
         }
     }
 }

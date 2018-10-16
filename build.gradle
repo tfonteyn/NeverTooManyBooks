@@ -44,6 +44,7 @@ dependencies {
     implementation 'commons-codec:commons-codec:1.11'
     implementation 'oauth.signpost:signpost-core:1.2.1.2'
     implementation 'oauth.signpost:signpost-commonshttp4:1.2.1.2'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
 }
 
 

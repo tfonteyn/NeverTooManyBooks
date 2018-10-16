@@ -106,7 +106,7 @@ public abstract class ReaderEntityAbstract implements ReaderEntity {
      * @author pjw
      */
     private static class BufferedReaderNoClose extends BufferedReader {
-        BufferedReaderNoClose(@NonNull final Reader in, final int flags) {
+        BufferedReaderNoClose(@NonNull final Reader in, @SuppressWarnings("SameParameterValue") final int flags) {
             super(in, flags);
         }
 

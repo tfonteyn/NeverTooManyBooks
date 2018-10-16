@@ -21,6 +21,8 @@
 package com.eleybourn.bookcatalogue;
 
 import android.os.Bundle;
+import android.support.annotation.CallSuper;
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -28,7 +30,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.ImageView;
 
 import com.eleybourn.bookcatalogue.Fields.AfterFieldChangeListener;
 import com.eleybourn.bookcatalogue.Fields.Field;
@@ -43,11 +44,29 @@ import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * This class is called by {@link EditBookActivity} and displays the Notes Tab
  */
 public class EditBookNotesFragment extends BookAbstractFragment implements OnPartialDatePickerListener {
+
+    /** Lists in database so far, we cache them for performance */
+    private List<String> mLocations;
+
+    /**
+     * Load a location list; reloading this list every time a tab changes is slow.
+     * So we cache it.
+     *
+     * @return List of locations
+     */
+    @NonNull
+    public List<String> getLocations() {
+        if (mLocations == null) {
+            mLocations = mDb.getLocations();
+        }
+        return mLocations;
+    }
 
     @Override
     public View onCreateView(@NonNull final LayoutInflater inflater,
@@ -57,105 +76,17 @@ public class EditBookNotesFragment extends BookAbstractFragment implements OnPar
     }
 
     @Override
+    @CallSuper
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         Tracker.enterOnCreate(this);
         try {
             super.onActivityCreated(savedInstanceState);
 
             if (savedInstanceState != null) {
-                mEditManager.setDirty(savedInstanceState.getBoolean(UniqueId.BKEY_DIRTY));
+                getEditBookManager().setDirty(false);
             }
 
-            //FieldValidator blankOrDateValidator = new Fields.OrValidator(new Fields.BlankValidator(), new Fields.DateValidator());
-            FieldFormatter dateFormatter = new Fields.DateFieldFormatter();
-
-            mFields.add(R.id.rating, UniqueId.KEY_BOOK_RATING, null);
-            mFields.add(R.id.rating_label, "", UniqueId.KEY_BOOK_RATING, null);
-            mFields.add(R.id.read, UniqueId.KEY_BOOK_READ, null);
-            mFields.add(R.id.notes, UniqueId.KEY_NOTES, null);
-            mFields.add(R.id.signed, UniqueId.KEY_BOOK_SIGNED, null);
-
-            /* location
-             *  TODO: unify with {@link EditBookFieldsFragment#setupMenuMoreButton}
-             */
-            {
-                mFields.add(R.id.location, UniqueId.KEY_BOOK_LOCATION, null);
-                ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(),
-                        android.R.layout.simple_dropdown_item_1line, mEditManager.getLocations());
-                mFields.setAdapter(R.id.location, adapter);
-
-                final Field field = mFields.getField(R.id.location);
-                // Get the list to use in the AutoComplete stuff
-                AutoCompleteTextView textView = field.getView();
-                textView.setAdapter(new ArrayAdapter<>(getActivity(),
-                        android.R.layout.simple_dropdown_item_1line,
-                        mEditManager.getLocations()));
-                // Get the drop-down button for the list and setup dialog
-                ImageView button = getView().findViewById(R.id.location_button);
-                button.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        StandardDialogs.selectStringDialog(getActivity().getLayoutInflater(),
-                                getString(R.string.location),
-                                mEditManager.getLocations(), field.getValue().toString(),
-                                new StandardDialogs.SimpleDialogOnClickListener() {
-                                    @Override
-                                    public void onClick(@NonNull final StandardDialogs.SimpleDialogItem item) {
-                                        field.setValue(item.toString());
-                                    }
-                                });
-                    }
-                });
-            }
-
-            Field field;
-            // ENHANCE: Add a partial date validator. Or not.
-            field = mFields.add(R.id.read_start, UniqueId.KEY_BOOK_READ_START, null, dateFormatter);
-            field.getView().setOnClickListener(new View.OnClickListener() {
-                public void onClick(View view) {
-                    PartialDatePickerFragment frag = PartialDatePickerFragment.newInstance()
-                            .setTitle(R.string.read_start)
-                            .setDialogId(R.id.read_start); // Set to the destination field ID
-                    try {
-                        frag.setDate(getDateFrom(R.id.read_start));
-                    } catch (Exception ignore) {
-                        // use the default date
-                    }
-
-                    frag.show(getFragmentManager(), null);
-                }
-            });
-
-            field = mFields.add(R.id.read_end, UniqueId.KEY_BOOK_READ_END, null, dateFormatter);
-            field.getView().setOnClickListener(new View.OnClickListener() {
-                public void onClick(View view) {
-                    PartialDatePickerFragment frag = PartialDatePickerFragment.newInstance()
-                            .setTitle(R.string.read_end)
-                            .setDialogId(R.id.read_end); // Set to the destination field ID
-                    try {
-                        frag.setDate(getDateFrom(R.id.read_end));
-                    } catch (Exception ignore) {
-                        // use the default date
-                    }
-                    frag.show(getFragmentManager(), null);
-                }
-            });
-
-            mFields.addCrossValidator(new Fields.FieldCrossValidator() {
-                public void validate(@NonNull final Fields fields, @NonNull final Bundle values) {
-                    String start = values.getString(UniqueId.KEY_BOOK_READ_START);
-                    if (start == null || start.isEmpty()) {
-                        return;
-                    }
-                    String end = values.getString(UniqueId.KEY_BOOK_READ_END);
-                    if (end == null || end.isEmpty()) {
-                        return;
-                    }
-                    if (start.compareToIgnoreCase(end) > 0) {
-                        throw new ValidatorException(R.string.vldt_read_start_after_end, new Object[]{});
-                    }
-                }
-            });
+            initFields();
 
             try {
                 ViewUtils.fixFocusSettings(getView());
@@ -165,23 +96,110 @@ public class EditBookNotesFragment extends BookAbstractFragment implements OnPar
                 Logger.error(e);
             }
 
-            mFields.setAfterFieldChangeListener(new AfterFieldChangeListener() {
-                @Override
-                public void afterFieldChange(@NonNull final Field field, @Nullable final String newValue) {
-                    mEditManager.setDirty(true);
-                }
-            });
-
-            // Setup the background
-            //Utils.init(R.drawable.bc_background_gradient_dim, this, false);
-
         } catch (Exception e) {
             Logger.error(e);
         }
         Tracker.exitOnCreate(this);
     }
 
-    private String getDateFrom(final int fieldResId) {
+    protected void initFields() {
+
+        mFields.add(R.id.rating, UniqueId.KEY_BOOK_RATING, null);
+        mFields.add(R.id.lbl_rating, "", UniqueId.KEY_BOOK_RATING, null);
+        mFields.add(R.id.read, UniqueId.KEY_BOOK_READ, null);
+        mFields.add(R.id.notes, UniqueId.KEY_NOTES, null);
+        mFields.add(R.id.signed, UniqueId.KEY_BOOK_SIGNED, null);
+
+        /* location  TODO: unify with {@link EditBookFieldsFragment#setupMenuMoreButton} */
+        mFields.add(R.id.location, UniqueId.KEY_BOOK_LOCATION, null);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(),
+                android.R.layout.simple_dropdown_item_1line, getLocations());
+        mFields.setAdapter(R.id.location, adapter);
+
+        final Field locationField = mFields.getField(R.id.location);
+        // Get the list to use in the AutoComplete stuff
+        AutoCompleteTextView textView = locationField.getView();
+        textView.setAdapter(new ArrayAdapter<>(getActivity(),
+                android.R.layout.simple_dropdown_item_1line, getLocations()));
+        // Get the drop-down button for the list and setup dialog
+        getView().findViewById(R.id.location_button)
+                .setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        StandardDialogs.selectStringDialog(getActivity().getLayoutInflater(),
+                                getString(R.string.location),
+                                getLocations(), locationField.getValue().toString(),
+                                new StandardDialogs.SimpleDialogOnClickListener() {
+                                    @Override
+                                    public void onClick(@NonNull final StandardDialogs.SimpleDialogItem item) {
+                                        locationField.setValue(item.toString());
+                                    }
+                                });
+                    }
+                });
+
+        // ENHANCE: Add a partial date validator. Or not.
+        //FieldValidator blankOrDateValidator = new Fields.OrValidator(new Fields.BlankValidator(), new Fields.DateValidator());
+        FieldFormatter dateFormatter = new Fields.DateFieldFormatter();
+
+        Field field;
+        field = mFields.add(R.id.read_start, UniqueId.KEY_BOOK_READ_START, null, dateFormatter);
+        field.getView().setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                PartialDatePickerFragment frag = PartialDatePickerFragment.newInstance()
+                        .setTitle(R.string.read_start)
+                        .setDialogId(R.id.read_start); // Set to the destination field ID
+                try {
+                    frag.setDate(getDateFrom(R.id.read_start));
+                } catch (Exception ignore) {
+                    // use the default date
+                }
+
+                frag.show(getFragmentManager(), null);
+            }
+        });
+
+        field = mFields.add(R.id.read_end, UniqueId.KEY_BOOK_READ_END, null, dateFormatter);
+        field.getView().setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                PartialDatePickerFragment frag = PartialDatePickerFragment.newInstance()
+                        .setTitle(R.string.read_end)
+                        .setDialogId(R.id.read_end); // Set to the destination field ID
+                try {
+                    frag.setDate(getDateFrom(R.id.read_end));
+                } catch (Exception ignore) {
+                    // use the default date
+                }
+                frag.show(getFragmentManager(), null);
+            }
+        });
+
+        mFields.addCrossValidator(new Fields.FieldCrossValidator() {
+            public void validate(@NonNull final Fields fields, @NonNull final Bundle values) {
+                String start = values.getString(UniqueId.KEY_BOOK_READ_START);
+                if (start == null || start.isEmpty()) {
+                    return;
+                }
+                String end = values.getString(UniqueId.KEY_BOOK_READ_END);
+                if (end == null || end.isEmpty()) {
+                    return;
+                }
+                if (start.compareToIgnoreCase(end) > 0) {
+                    throw new ValidatorException(R.string.vldt_read_start_after_end, new Object[]{});
+                }
+            }
+        });
+
+        mFields.setAfterFieldChangeListener(new AfterFieldChangeListener() {
+            @Override
+            public void afterFieldChange(@NonNull final Field field, @Nullable final String newValue) {
+                getEditBookManager().setDirty(true);
+            }
+        });
+    }
+
+    @NonNull
+    private String getDateFrom(@IdRes final int fieldResId) {
         Object value = mFields.getField(fieldResId).getValue();
         if (value.toString().isEmpty()) {
             return DateUtils.toSqlDateTime(new Date());
@@ -198,9 +216,10 @@ public class EditBookNotesFragment extends BookAbstractFragment implements OnPar
     @Override
     public void onPartialDatePickerSet(final int dialogId,
                                        @NonNull final PartialDatePickerFragment dialog,
-                                       @Nullable final Integer year, @Nullable final Integer month, @Nullable final Integer day) {
-        String value = DateUtils.buildPartialDate(year, month, day);
-        mFields.getField(dialogId).setValue(value);
+                                       @Nullable final Integer year,
+                                       @Nullable final Integer month,
+                                       @Nullable final Integer day) {
+        mFields.getField(dialogId).setValue(DateUtils.buildPartialDate(year, month, day));
         dialog.dismiss();
     }
 
@@ -215,14 +234,16 @@ public class EditBookNotesFragment extends BookAbstractFragment implements OnPar
     }
 
     @Override
+    @CallSuper
     public void onPause() {
-        mFields.getAllInto(mEditManager.getBook());
+        mFields.getAllInto(getBook());
         super.onPause();
     }
 
     @Override
+    @CallSuper
     protected void onLoadBookDetails(@NonNull final Book book, final boolean setAllDone) {
-        super.onLoadBookDetails(book,setAllDone);
+        super.onLoadBookDetails(book, setAllDone);
 
         // Restore default visibility and hide unused/unwanted and empty fields
         showHideFields(false);

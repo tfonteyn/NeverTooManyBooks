@@ -62,7 +62,7 @@ public class BackupLister extends FileLister {
             if (entry.getName().toUpperCase().endsWith(".BCBK")) {
                 BackupReader reader = null;
                 try {
-                    reader = BackupManager.readBackup(entry);
+                    reader = BackupManager.readFrom(entry);
                     fd.setInfo(reader.getInfo());
                     reader.close();
                 } catch (IOException e) {

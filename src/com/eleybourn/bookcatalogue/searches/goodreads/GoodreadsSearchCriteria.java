@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue.searches.goodreads;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.CallSuper;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -30,7 +31,7 @@ import android.view.View.OnClickListener;
 import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
+import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
 import com.eleybourn.bookcatalogue.database.cursors.BooksCursor;
@@ -45,7 +46,7 @@ import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
  *
  * @author Philip Warner
  */
-public class GoodreadsSearchCriteria extends BookCatalogueActivity {
+public class GoodreadsSearchCriteria extends BaseActivity {
     private static final String EXTRA_BOOK_ID = "bookId";
 
     private CatalogueDBAdapter mDb;
@@ -57,6 +58,7 @@ public class GoodreadsSearchCriteria extends BookCatalogueActivity {
     }
 
     @Override
+    @CallSuper
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -80,7 +82,7 @@ public class GoodreadsSearchCriteria extends BookCatalogueActivity {
 
             try (BooksCursor cursor = mDb.fetchBookById(mBookId)){
                 if (!cursor.moveToFirst()) {
-                    StandardDialogs.showQuickNotice(this, R.string.book_no_longer_exists);
+                    StandardDialogs.showBriefMessage(this, R.string.book_no_longer_exists);
                     finish();
                     return;
                 }
@@ -152,7 +154,7 @@ public class GoodreadsSearchCriteria extends BookCatalogueActivity {
         String criteria = getViewText(R.id.search_text);
 
         if (criteria.isEmpty()) {
-            StandardDialogs.showQuickNotice(this, R.string.please_enter_search_criteria);
+            StandardDialogs.showBriefMessage(this, R.string.please_enter_search_criteria);
             return;
         }
 
@@ -161,10 +163,8 @@ public class GoodreadsSearchCriteria extends BookCatalogueActivity {
         this.startActivity(i);
     }
 
-    /**
-     * Cleanup
-     */
     @Override
+    @CallSuper
     public void onDestroy() {
         super.onDestroy();
         if (mDb != null)

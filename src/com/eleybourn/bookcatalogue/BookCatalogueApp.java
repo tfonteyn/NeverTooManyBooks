@@ -32,6 +32,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.support.annotation.ArrayRes;
+import android.support.annotation.CallSuper;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -52,9 +53,11 @@ import org.acra.annotation.ReportsCrashes;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
@@ -94,6 +97,20 @@ import java.util.Set;
 public class BookCatalogueApp extends Application {
     /** the name used for calls to Context.getSharedPreferences(name, ...) */
     public static final String APP_SHARED_PREFERENCES = "bookCatalogue";
+    private static final String TAG = "App";
+
+    /** Preferred interface locale */
+    public static final String PREF_APP_LOCALE = TAG + ".Locale";
+    /** Theme */
+    public static final String PREF_APP_THEME = TAG + ".Theme";
+
+    /** Implementation to use for {@link com.eleybourn.bookcatalogue.dialogs.StandardDialogs#showBriefMessage} */
+    public static final String PREF_APP_BRIEF_MESSAGE = TAG + ".BriefMessage";
+
+    /** Last full backup date */
+    public static final String PREF_LAST_BACKUP_DATE = "Backup.LastDate";
+    /** Last full backup file path */
+    public static final String PREF_LAST_BACKUP_FILE = "Backup.LastFile";
 
     /**
      * NEWKIND: add new supported themes here and in R.array.supported_themes,
@@ -114,16 +131,71 @@ public class BookCatalogueApp extends Application {
             R.style.AppTheme_Dialog_Alert,
             R.style.AppTheme_Dialog_Alert_Light
     };
-
+    /** Set of OnLocaleChangedListeners */
+    private static final Set<WeakReference<OnLocaleChangedListener>> mOnLocaleChangedListeners = new HashSet<>();
     private static int mLastTheme;
+    /** Never store a context in a static, use the instance instead */
+    private static BookCatalogueApp mInstance;
+    /** Used to sent notifications regarding tasks */
+    @Nullable
+    private static NotificationManager mNotifier;
+    private static BCQueueManager mQueueManager = null;
+    /** List of supported locales */
+    @Nullable
+    private static List<String> mSupportedLocales = null;
+    /** The locale used at startup; so that we can revert to system locale if we want to */
+    private static Locale mInitialLocale = Locale.getDefault();
+    /** User-specified default locale */
+    @Nullable
+    private static Locale mPreferredLocale = null;
+    /** Last locale used so; cached so we can check if it has genuinely changed */
+    @Nullable
+    private static Locale mLastLocale = null;
+
+
+    /**
+     * Shared Preferences Listener
+     *
+     * Currently it just handles Locale changes and propagates it to any listeners.
+     */
+    @Nullable
+    private final SharedPreferences.OnSharedPreferenceChangeListener mPrefsListener =
+            new SharedPreferences.OnSharedPreferenceChangeListener() {
+                @Override
+                public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+                    switch (key) {
+                        case PREF_APP_LOCALE:
+                            String prefLocale = getSharedPreferences().getString(PREF_APP_LOCALE, null);
+                            if (prefLocale != null && !prefLocale.isEmpty()) {
+                                mPreferredLocale = localeFromName(prefLocale);
+                            } else {
+                                mPreferredLocale = getSystemLocal();
+                            }
+                            applyPreferredLocaleIfNecessary(getBaseContext().getResources());
+                            notifyLocaleChanged();
+                            break;
+                        case PREF_APP_THEME:
+                            //TODO: implement global theme change ?
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            };
+    @SuppressWarnings("unused")
+    public BookCatalogueApp() {
+        super();
+        mInstance = this;
+    }
 
     /**
      * Tests if the Theme has changed + updates the global setting
-     *TODO: check OnSharedPreferenceChangeListener ?
-     * @return  true is a change was detected
+     * TODO: check OnSharedPreferenceChangeListener ?
+     *
+     * @return true is a change was detected
      */
     public synchronized static boolean hasThemeChanged() {
-        int current = BCPreferences.getTheme(DEFAULT_THEME);
+        int current = getSharedPreferences().getInt(PREF_APP_THEME, DEFAULT_THEME);
         if (current != mLastTheme) {
             mLastTheme = current;
             return true;
@@ -140,39 +212,18 @@ public class BookCatalogueApp extends Application {
     public static int getDialogThemeResId() {
         return DIALOG_THEMES[mLastTheme];
     }
+
     @SuppressWarnings("unused")
     @StyleRes
     public static int getDialogAlertThemeResId() {
         return DIALOG_ALERT_THEMES[mLastTheme];
     }
 
-    /** Set of OnLocaleChangedListeners */
-    private static final Set<WeakReference<OnLocaleChangedListener>> mOnLocaleChangedListeners = new HashSet<>();
-    /** Never store a context in a static, use the instance instead */
-    private static BookCatalogueApp mInstance;
-    /** Used to sent notifications regarding tasks */
-    @Nullable
-    private static NotificationManager mNotifier;
-
-    @Nullable
-    private static BCQueueManager mQueueManager = null;
-    /** List of supported locales */
-    @Nullable
-    private static List<String> mSupportedLocales = null;
-    /** The locale used at startup; so that we can revert to system locale if we want to */
-    private static Locale mInitialLocale = Locale.getDefault();
-    /** User-specified default locale */
-    @Nullable
-    private static Locale mPreferredLocale = null;
-    /** Last locale used so; cached so we can check if it has genuinely changed */
-    @Nullable
-    private static Locale mLastLocale = null;
-
     /**
      * Tests if the Locale has changed + updates the global setting
-     *TODO: check OnSharedPreferenceChangeListener ?
+     * TODO: check OnSharedPreferenceChangeListener ?
      *
-     * @return  true is a change was detected
+     * @return true is a change was detected
      */
     public synchronized static boolean hasLocalChanged(@NonNull final Resources res) {
         Locale current = mPreferredLocale;
@@ -182,43 +233,6 @@ public class BookCatalogueApp extends Application {
             return true;
         }
         return false;
-    }
-
-
-    /**
-     * Shared Preferences Listener
-     *
-     * Currently it just handles Locale changes and propagates it to any listeners.
-     */
-    @Nullable
-    private final SharedPreferences.OnSharedPreferenceChangeListener mPrefsListener =
-            new SharedPreferences.OnSharedPreferenceChangeListener() {
-        @Override
-        public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-            switch (key) {
-                case BCPreferences.PREF_APP_LOCALE:
-                    String prefLocale = BCPreferences.getLocale();
-                    if (prefLocale != null && !prefLocale.isEmpty()) {
-                        mPreferredLocale = localeFromName(prefLocale);
-                    } else {
-                        mPreferredLocale = getSystemLocal();
-                    }
-                    applyPreferredLocaleIfNecessary(getBaseContext().getResources());
-                    notifyLocaleChanged();
-                    break;
-                case BCPreferences.PREF_APP_THEME:
-                    //TODO: implement global theme change ?
-                    break;
-                default:
-                    break;
-            }
-        }
-    };
-
-    @SuppressWarnings("unused")
-    public BookCatalogueApp() {
-        super();
-        mInstance = this;
     }
 
     /**
@@ -304,7 +318,7 @@ public class BookCatalogueApp extends Application {
      *
      * @return QueueManager object
      */
-    @Nullable
+    @NonNull
     public static BCQueueManager getQueueManager() {
         return mQueueManager;
     }
@@ -346,8 +360,9 @@ public class BookCatalogueApp extends Application {
     /**
      * Read a string from the META tags in the Manifest.
      *
-     * @param name  string to read
-     * @return      value
+     * @param name string to read
+     *
+     * @return value
      */
     @NonNull
     public static String getManifestString(@Nullable final String name) {
@@ -433,46 +448,68 @@ public class BookCatalogueApp extends Application {
         return mInitialLocale;
     }
 
-    /** no point in storing a local reference, the thing itself is a singleton */
     @NonNull
     public static SharedPreferences getSharedPreferences() {
-        return mInstance.getApplicationContext().getSharedPreferences(APP_SHARED_PREFERENCES, MODE_PRIVATE);
+        // no point in storing a local reference, the thing itself is a singleton
+        return mInstance.getApplicationContext().getSharedPreferences(BookCatalogueApp.APP_SHARED_PREFERENCES, Context.MODE_PRIVATE);
     }
 
     /**
      * Using the global app theme.
      *
-     * @param attr  resource id to get
+     * @param attr resource id to get
      *
      * @return resolved attribute
      */
     @SuppressWarnings("unused")
-    public static int getAttr(final int attr){
+    public static int getAttr(final int attr) {
         return getAttr(mInstance.getApplicationContext().getTheme(), attr);
     }
 
     /**
-     *
-     * @param theme     allows to override the app theme, f.e. with Dialog Themes
-     * @param attr      resource id to get
+     * @param theme allows to override the app theme, f.e. with Dialog Themes
+     * @param attr  resource id to get
      *
      * @return resolved attribute
      */
-    public static int getAttr(@NonNull final Resources.Theme theme, @IdRes final int attr){
+    public static int getAttr(@NonNull final Resources.Theme theme, @IdRes final int attr) {
         TypedValue tv = new TypedValue();
         theme.resolveAttribute(attr, tv, true);
         return tv.resourceId;
     }
+
+    /**
+     * DEBUG method
+     */
+    @SuppressWarnings("unused")
+    public static void dumpPreferences() {
+        if (BuildConfig.DEBUG) {
+            StringBuilder sb = new StringBuilder("\n\nSharedPreferences: ");
+            Map<String, ?> map = getSharedPreferences().getAll();
+            List<String> keyList = new ArrayList<>(map.keySet());
+            String[] keys = keyList.toArray(new String[]{});
+            Arrays.sort(keys);
+
+            for (String key : keys) {
+                Object value = map.get(key);
+                sb.append("\n").append(key).append("=").append(value);
+            }
+            sb.append("\n\n");
+            Logger.info(sb.toString());
+        }
+    }
+
     /**
      * Most real initialization should go here, since before this point, the App is still
      * 'Under Construction'.
      */
     @Override
+    @CallSuper
     public void onCreate() {
         // Get the preferred locale as soon as possible
         try {
             mInitialLocale = Locale.getDefault();
-            String prefLocale = BCPreferences.getLocale();
+            String prefLocale = Prefs.getString(PREF_APP_LOCALE, null);
             if (prefLocale != null && !prefLocale.isEmpty()) {
                 mPreferredLocale = localeFromName(prefLocale);
                 applyPreferredLocaleIfNecessary(getBaseContext().getResources());
@@ -497,7 +534,7 @@ public class BookCatalogueApp extends Application {
         }
 
         // Initialise the Theme
-        mLastTheme = BCPreferences.getTheme(DEFAULT_THEME);
+        mLastTheme = Prefs.getInt(PREF_APP_THEME, DEFAULT_THEME);
 
         super.onCreate();
 
@@ -532,6 +569,7 @@ public class BookCatalogueApp extends Application {
      * Monitor configuration changes (like rotation) to make sure we reset the locale.
      */
     @Override
+    @CallSuper
     public void onConfigurationChanged(@NonNull final Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         if (mPreferredLocale != null) {
@@ -544,5 +582,112 @@ public class BookCatalogueApp extends Application {
      */
     public interface OnLocaleChangedListener {
         void onLocaleChanged();
+    }
+
+    /**
+     * Class to manage application preferences.
+     *
+     * @author Philip Warner
+     */
+    public static class Prefs {
+
+        private Prefs() {
+        }
+
+        /** Get a named boolean preference */
+        public static boolean getBoolean(@NonNull final String name, final boolean defaultValue) {
+            boolean result;
+            try {
+                result = getSharedPreferences().getBoolean(name, defaultValue);
+            } catch (ClassCastException e) {
+                result = defaultValue;
+            }
+            return result;
+        }
+
+        /** Set a named boolean preference */
+        public static void putBoolean(@NonNull final String name, final boolean value) {
+            SharedPreferences.Editor ed = edit();
+            try {
+                ed.putBoolean(name, value);
+            } finally {
+                ed.commit();
+            }
+        }
+
+        /**
+         * Get a named string preference
+         *
+         * @param name the string to get
+         *
+         * @return the found string, or the empty string when not found.
+         */
+        @NonNull
+        public static String getStringOrEmpty(@Nullable final String name) {
+            String result;
+            try {
+                result = getSharedPreferences().getString(name, "");
+            } catch (ClassCastException e) {
+                result = "";
+            }
+            return result;
+        }
+
+        /** Get a named string preference */
+        @Nullable
+        public static String getString(@Nullable final String name, @Nullable final String defaultValue) {
+            String result;
+            try {
+                result = getSharedPreferences().getString(name, defaultValue);
+            } catch (ClassCastException e) {
+                result = defaultValue;
+            }
+            return result;
+        }
+
+        /** Set a named string preference */
+        public static void putString(@NonNull final String name, @Nullable final String value) {
+            SharedPreferences.Editor ed = edit();
+            try {
+                ed.putString(name, value);
+            } finally {
+                ed.commit();
+            }
+        }
+
+        /** Get a named string preference */
+        public static int getInt(@NonNull final String name, final int defaultValue) {
+            int result;
+            try {
+                result = getSharedPreferences().getInt(name, defaultValue);
+            } catch (ClassCastException e) {
+                result = defaultValue;
+            }
+            return result;
+        }
+
+        /** Set a named string preference */
+        public static void putInt(@NonNull final String name, final int value) {
+            SharedPreferences.Editor ed = edit();
+            try {
+                ed.putInt(name, value);
+            } finally {
+                ed.commit();
+            }
+        }
+
+        public static void remove(@NonNull final String name) {
+            SharedPreferences.Editor ed = edit();
+            try {
+                ed.remove(name);
+            } finally {
+                ed.commit();
+            }
+        }
+
+        /** Get a standard preferences editor for mass updates */
+        public static SharedPreferences.Editor edit() {
+            return getSharedPreferences().edit();
+        }
     }
 }

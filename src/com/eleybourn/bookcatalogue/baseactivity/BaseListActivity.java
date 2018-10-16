@@ -3,6 +3,7 @@ package com.eleybourn.bookcatalogue.baseactivity;
 import android.app.Activity;
 import android.app.ListActivity;
 import android.os.Handler;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.AdapterView;
@@ -14,14 +15,25 @@ import com.eleybourn.bookcatalogue.R;
 import java.util.Objects;
 
 /**
- * This has now become a copy from {@link ListActivity} but extending {@link BookCatalogueActivity}
+ * This has now become a copy from {@link ListActivity} but extending {@link BaseActivity}
  *
  * You must have a layout with the file name
  * res/layout/list_activity.xml
  * and containing something like this:
  * <pre>
  * <?xml version="1.0" encoding="utf-8"?>
- * <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+ * <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+ * android:layout_width="match_parent"
+ * android:layout_height="match_parent"
+ * android:orientation="vertical">
+ *
+ * <FrameLayout
+ * android:id="@+id/header"
+ * android:layout_width="match_parent"
+ * android:layout_height="wrap_content"
+ * android:orientation="vertical" />
+ *
+ * <FrameLayout
  * android:layout_width="match_parent"
  * android:layout_height="0dp"
  * android:layout_weight="1"
@@ -38,12 +50,20 @@ import java.util.Objects;
  * android:layout_height="wrap_content"
  * android:visibility="gone" />
  * </FrameLayout>
+ *
+ * <FrameLayout
+ * android:id="@+id/footer"
+ * android:layout_width="match_parent"
+ * android:layout_height="wrap_content"
+ * android:orientation="vertical" />
+ * </LinearLayout>
  * </pre>
  */
-abstract public class BookCatalogueListActivity extends BookCatalogueActivity {
+abstract public class BaseListActivity extends BaseActivity {
 
     private final Handler mHandler = new Handler();
     private final AdapterView.OnItemClickListener mOnClickListener = new AdapterView.OnItemClickListener() {
+
         public void onItemClick(final AdapterView<?> parent, @NonNull final View v, final int position, final long id) {
             onListItemClick((ListView) parent, v, position, id);
         }
@@ -64,9 +84,9 @@ abstract public class BookCatalogueListActivity extends BookCatalogueActivity {
 
     /**
      * This method will be called when an item in the list is selected.
-     * Subclasses should override. Subclasses can call
-     * getListView().getItemAtPosition(position) if they need to access the
-     * data associated with the selected item.
+     * Subclasses should override.
+     * Subclasses can call {@link #getListView().getItemAtPosition}
+     * if they need to access the data associated with the selected item.
      *
      * @param l        The ListView where the click happened
      * @param v        The view that was clicked within the ListView
@@ -80,6 +100,7 @@ abstract public class BookCatalogueListActivity extends BookCatalogueActivity {
      * @see Activity#onDestroy()
      */
     @Override
+    @CallSuper
     protected void onDestroy() {
         mHandler.removeCallbacks(mRequestFocus);
         super.onDestroy();
@@ -92,11 +113,12 @@ abstract public class BookCatalogueListActivity extends BookCatalogueActivity {
      * @see Activity#onContentChanged()
      */
     @Override
+    @CallSuper
     public void onContentChanged() {
         super.onContentChanged();
         View emptyView = findViewById(android.R.id.empty);
         mList = findViewById(android.R.id.list);
-        Objects.requireNonNull(mList,"Your content must have a ListView whose id attribute is '@android:id/list'");
+        Objects.requireNonNull(mList, "Your content must have a ListView whose id attribute is '@android:id/list'");
 
         if (emptyView != null) {
             mList.setEmptyView(emptyView);

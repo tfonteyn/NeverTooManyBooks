@@ -32,7 +32,7 @@ import android.support.annotation.Nullable;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.RTE;
 import com.eleybourn.bookcatalogue.utils.SerializationUtils;
-import com.eleybourn.bookcatalogue.widgets.BindableItemCursorAdapter;
+import com.eleybourn.bookcatalogue.adapters.BindableItemCursorAdapter;
 
 import java.util.Date;
 

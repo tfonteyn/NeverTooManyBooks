@@ -22,7 +22,7 @@
             android:text="@string/read" />
 
         <TextView
-            android:id="@+id/rating_label"
+            android:id="@+id/lbl_rating"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/rating"

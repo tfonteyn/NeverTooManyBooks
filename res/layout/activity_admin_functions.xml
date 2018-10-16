@@ -29,13 +29,13 @@
                 android:text="@string/general" />
 
             <TextView
-                android:id="@+id/fields_label"
+                android:id="@+id/lbl_fields"
                 style="@style/prefsItem"
                 android:drawableStart="@drawable/ic_visibility"
                 android:text="@string/menu_manage_fields" />
 
             <TextView
-                android:id="@+id/edit_styles_label"
+                android:id="@+id/lbl_edit_styles"
                 style="@style/prefsItem"
                 android:drawableStart="@drawable/ic_style"
                 android:text="@string/edit_book_list_styles" />
@@ -49,25 +49,25 @@
                 android:text="@string/data_import_export" />
 
             <TextView
-                android:id="@+id/backup_catalogue_label"
+                android:id="@+id/lbl_backup_catalogue"
                 style="@style/prefsItem"
                 android:drawableStart="@drawable/ic_file_upload"
                 android:text="@string/backup_to_archive" />
 
             <TextView
-                android:id="@+id/restore_catalogue_label"
+                android:id="@+id/lbl_restore_catalogue"
                 style="@style/prefsItem"
                 android:drawableStart="@drawable/ic_file_download"
                 android:text="@string/import_from_archive" />
 
             <TextView
-                android:id="@+id/export_label"
+                android:id="@+id/lbl_export"
                 style="@style/prefsItem"
                 android:drawableStart="@drawable/ic_file_upload"
                 android:text="@string/export_to_csv" />
 
             <TextView
-                android:id="@+id/import_label"
+                android:id="@+id/lbl_import"
                 style="@style/prefsItem"
                 android:drawableStart="@drawable/ic_file_download"
                 android:text="@string/import_from_csv" />
@@ -81,28 +81,28 @@
                 android:text="@string/internet_update_fields" />
 
             <TextView
-                android:id="@+id/update_internet_label"
+                android:id="@+id/lbl_update_internet"
                 style="@style/prefsItem"
                 android:drawableStart="@drawable/ic_content_copy"
                 android:text="@string/update_fields" />
 
             <TextView
-                android:id="@+id/sync_with_goodreads_label"
+                android:id="@+id/lbl_sync_with_goodreads"
                 style="@style/prefsItem"
                 android:drawableStart="@drawable/ic_autorenew"
-                android:text="@string/sync_with_goodreads" />
+                android:text="@string/gr_sync_with_goodreads" />
 
             <TextView
-                android:id="@+id/import_all_from_goodreads_label"
+                android:id="@+id/lbl_import_all_from_goodreads"
                 style="@style/prefsItem"
                 android:drawableStart="@drawable/ic_file_download"
-                android:text="@string/import_all_from_goodreads" />
+                android:text="@string/gr_import_all_from_goodreads" />
 
             <TextView
-                android:id="@+id/send_books_to_goodreads_label"
+                android:id="@+id/lbl_send_books_to_goodreads"
                 style="@style/prefsItem"
                 android:drawableStart="@drawable/ic_send"
-                android:text="@string/send_books_to_goodreads" />
+                android:text="@string/gr_send_book" />
 
             <View style="@style/listDividerHorizontal" />
             <!-- CREDENTIALS -->
@@ -138,25 +138,25 @@
                 android:text="@string/search_sites" />
 
             <TextView
-                android:id="@+id/background_tasks_label"
+                android:id="@+id/lbl_background_tasks"
                 style="@style/prefsItem"
                 android:drawableStart="@drawable/ic_format_list_bulleted"
                 android:text="@string/background_tasks" />
 
             <TextView
-                android:id="@+id/reset_hints_label"
+                android:id="@+id/lbl_reset_hints"
                 style="@style/prefsItem"
                 android:drawableStart="@drawable/ic_undo"
                 android:text="@string/reset_hints" />
 
             <TextView
-                android:id="@+id/erase_cover_cache_label"
+                android:id="@+id/lbl_erase_cover_cache"
                 style="@style/prefsItem"
                 android:drawableStart="@drawable/ic_close"
                 android:text="@string/erase_cover_cache" />
 
             <TextView
-                android:id="@+id/backup_label"
+                android:id="@+id/lbl_backup"
                 style="@style/prefsItem"
                 android:drawableStart="@drawable/ic_file_upload"
                 android:text="@string/copy_database" />

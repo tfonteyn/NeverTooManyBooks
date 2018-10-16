@@ -557,6 +557,7 @@ public class Datum {
      *
      * @return The data
      */
+    @SuppressWarnings("unused")
     @Nullable
     ArrayList<String> getStringArrayList(@SuppressWarnings("unused") @NonNull final DataManager data, @NonNull final Bundle bundle) {
         if (mAccessor == null) {
@@ -576,7 +577,7 @@ public class Datum {
      *
      * @return The data manager for chaining
      */
-    @SuppressWarnings("UnusedReturnValue")
+    @SuppressWarnings("unused")
     @NonNull
     Datum putStringArrayList(@NonNull final Bundle bundle, @NonNull final ArrayList<String> value) {
         if (mAccessor == null) {

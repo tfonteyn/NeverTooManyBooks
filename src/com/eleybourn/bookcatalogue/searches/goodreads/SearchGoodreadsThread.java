@@ -21,8 +21,8 @@
 package com.eleybourn.bookcatalogue.searches.goodreads;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
 
-import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.searches.SearchManager;
@@ -30,6 +30,9 @@ import com.eleybourn.bookcatalogue.searches.SearchThread;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.BookNotFoundException;
 import com.eleybourn.bookcatalogue.tasks.TaskManager;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.UnknownHostException;
 import java.util.List;
 
 import oauth.signpost.exception.OAuthCommunicationException;
@@ -53,34 +56,53 @@ public class SearchGoodreadsThread extends SearchThread {
 
     @Override
     protected void onRun() {
-        this.doProgress(getString(R.string.searching_goodreads), 0);
+        @StringRes final int R_ID_SEARCHING = R.string.searching_goodreads;
+
+        doProgress(getString(R_ID_SEARCHING), 0);
 
         GoodreadsManager grMgr = new GoodreadsManager();
-        try {
-            if (!mIsbn.isEmpty()) {
-                mBookData = grMgr.getBookByIsbn(mIsbn);
-            } else {
-                // if both empty, no search
-                if (mAuthor.isEmpty() && mTitle.isEmpty()) {
-                    return;
+        if (grMgr.isAvailable()) {
+            try {
+                if (!mIsbn.isEmpty()) {
+                    mBookData = grMgr.getBookByIsbn(mIsbn);
+                } else {
+                    // if both empty, no search
+                    if (mAuthor.isEmpty() && mTitle.isEmpty()) {
+                        return;
+                    }
+
+                    List<GoodreadsWork> list = grMgr.search(mAuthor + " " + mTitle);
+                    if (list.size() > 0) {
+                        GoodreadsWork w = list.get(0);
+                        mBookData = grMgr.getBookById(w.bookId);
+                    }
                 }
-                List<GoodreadsWork> list = grMgr.search(mAuthor + " " + mTitle);
-                if (list.size() > 0) {
-                    GoodreadsWork w = list.get(0);
-                    mBookData = grMgr.getBookById(w.bookId);
-                }
-            }
-        } catch (BookNotFoundException ignore) {
-        } catch (@NonNull OAuthMessageSignerException | OAuthExpectationFailedException | OAuthCommunicationException
-                | GoodreadsManager.Exceptions.NotAuthorizedException e) {
-            // Added to stop confusing a new developer (me!).... the dev keys need to be in the manifest
-            if (BuildConfig.DEBUG) {
+            } catch (BookNotFoundException ignore) {
+                // ignore, to bad.
+            } catch (GoodreadsManager.Exceptions.NotAuthorizedException |
+                    OAuthMessageSignerException | OAuthExpectationFailedException | OAuthCommunicationException
+                    e) {
+                // not actually sure if any of these will ever surface here?
+                // but for completeness/curiosity/paranoia sake
+                // see if we can capture any in our logs and fix anything obvious
                 Logger.error(e);
-                showException(R.string.searching_goodreads, e);
+                showError(R_ID_SEARCHING, R.string.gr_auth_failed);
+
+            } catch (java.net.SocketTimeoutException e) {
+                showError(R_ID_SEARCHING, R.string.network_timeout);
+
+            } catch (MalformedURLException | UnknownHostException e) {
+                Logger.error(e);
+                showError(R_ID_SEARCHING, R.string.search_configuration_error);
+
+            } catch (GoodreadsManager.Exceptions.NetworkException | IOException e) { // added NetworkException
+                showError(R_ID_SEARCHING, R.string.error_search_failed);
+                Logger.error(e);
+
+            } catch (Exception e) {
+                Logger.error(e);
+                showException(R_ID_SEARCHING, e);
             }
-        } catch (Exception e) {
-            Logger.error(e);
-            showException(R.string.searching_goodreads, e);
         }
     }
 

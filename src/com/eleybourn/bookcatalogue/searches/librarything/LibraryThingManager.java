@@ -22,7 +22,9 @@ package com.eleybourn.bookcatalogue.searches.librarything;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.ParseException;
 import android.os.Bundle;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -101,15 +103,14 @@ public class LibraryThingManager {
     /** App context (for prefs) */
     private final Context mAppContext;
 
-    @NonNull
-    public static String getBaseURL() {
-        return BASE_URL;
-    }
-
     public LibraryThingManager(@NonNull final Context context) {
         mAppContext = context.getApplicationContext();
     }
 
+    @NonNull
+    public static String getBaseURL() {
+        return BASE_URL;
+    }
 
     /**
      * Use mLastRequestTime to determine how long until the next request is allowed; and
@@ -146,7 +147,6 @@ public class LibraryThingManager {
 
     /**
      * Search for edition data.
-     *
      */
     @NonNull
     public static List<String> searchEditions(@NonNull final String isbn) {
@@ -188,300 +188,301 @@ public class LibraryThingManager {
 
     /**
      * Search LibraryThing for an ISBN using the Web API.
-     *  @param isbn     ISBN to lookup
+     *
+     * A typical (and thorough) LibraryThing ISBN response looks like:
+     *
+     * <?xml version="1.0" encoding="UTF-8"?>
+     * <response stat="ok">
+     * <ltml xmlns="http://www.librarything.com/" version="1.1">
+     * <item id="5196084" type="work">
+     * <author id="28" authorcode="asimovisaac">Isaac Asimov</author>
+     * <url>http://www.librarything.com/work/5196084</url>
+     * <commonknowledge>
+     * <fieldList>
+     * <field type="4" name="awards" displayName="Awards and honors">
+     * <versionList>
+     * <version id="3324305" archived="0" lang="eng">
+     * <date timestamp="1296476301">Mon, 31 Jan 2011 07:18:21 -0500</date>
+     * <person id="325052"><name>Cecrow</name><url>http://www.librarything.com/profile/Cecrow</url></person>
+     * <factList>
+     * <fact>1001 Books You Must Read Before You Die (2006/2008/2010 Edition)</fact>
+     * <fact>Astounding/Analog Science Fiction and Fact All-Time Poll (placed 23, 1952)</fact>
+     * <fact>Astounding/Analog Science Fiction and Fact All-Time Poll (placed 21, 1956)</fact>
+     * <fact>Harenberg Buch der 1000 B�cher (1. Ausgabe)</fact>
+     * <fact>501 Must-Read Books (Science Fiction)</fact>
+     * </factList>
+     * </version>
+     * </versionList>
+     * </field>
+     * <field type="37" name="movies" displayName="Related movies">
+     * <versionList>
+     * <version id="3120269" archived="0" lang="eng">
+     * <date timestamp="1292202792">Sun, 12 Dec 2010 20:13:12 -0500</date>
+     * <person id="656066">
+     * <name>Scottneumann</name>
+     * <url>http://www.librarything.com/profile/Scottneumann</url>
+     * </person>
+     * <factList>
+     * <fact>Robots (1988 | tt0174170)</fact>
+     * <fact>I, Robot (2004 | tt0343818)</fact>
+     * <fact>The Outer Limits: I Robot (1963 | tt0056777)</fact>
+     * </factList>
+     * </version>
+     * </versionList>
+     * </field>
+     * <field type="40" name="publisherseries" displayName="Publisher Series">
+     * <versionList>
+     * <version id="2971007" archived="0" lang="eng">
+     * <date timestamp="1289497446">Thu, 11 Nov 2010 12:44:06 -0500</date>
+     * <person id="3929">
+     * <name>sonyagreen</name>
+     * <url>http://www.librarything.com/profile/sonyagreen</url>
+     * </person>
+     * <factList>
+     * <fact>Voyager Classics</fact>
+     * </factList>
+     * </version>
+     * </versionList>
+     * </field>
+     * <field type="14" name="description" displayName="Description">
+     * <versionList>
+     * <version id="2756634" archived="0" lang="eng">
+     * <date timestamp="1281897478">Sun, 15 Aug 2010 14:37:58 -0400</date>
+     * <person id="203279">
+     * <name>jseger9000</name>
+     * <url>http://www.librarything.com/profile/jseger9000</url>
+     * </person>
+     * <factList>
+     * <fact>&lt;![CDATA[ Contents:&lt;br&gt;&lt;br&gt;Introduction&lt;br&gt;Robbie&lt;br&gt;Runaround&lt
+     * ;br&gt;Reason&lt;br&gt;Catch That Rabbit&lt;br&gt;Liar!&lt;br&gt;Little Lost Robot&lt
+     * ;br&gt;Escape!&lt;br&gt;Evidence&lt;br&gt;The Evitable Conflict ]]&gt;
+     * </fact>
+     * </factList>
+     * </version>
+     * </versionList>
+     * </field>
+     * <field type="23" name="series" displayName="Series">
+     * <versionList>
+     * <version id="2742329" archived="0" lang="eng">
+     * <date timestamp="1281338643">Mon, 09 Aug 2010 03:24:03 -0400</date>
+     * <person id="1162290">
+     * <name>larry.auld</name>
+     * <url>http://www.librarything.com/profile/larry.auld</url>
+     * </person>
+     * <factList>
+     * <fact>Isaac Asimov's Robot Series (0.1)</fact>
+     * <fact>Robot/Foundation</fact>
+     * <fact>Robot/Empire/Foundation - Chronological (book 1)</fact>
+     * </factList>
+     * </version>
+     * </versionList>
+     * </field>
+     * <field type="16" name="originalpublicationdate" displayName="Original publication date">
+     * <versionList>
+     * <version id="2554955" archived="0" lang="eng">
+     * <date timestamp="1275746736">Sat, 05 Jun 2010 10:05:36 -0400</date>
+     * <person id="125174">
+     * <name>paulhurtley</name>
+     * <url>http://www.librarything.com/profile/paulhurtley</url>
+     * </person>
+     * <factList>
+     * <fact>1950 (Collection)</fact>
+     * <fact>1944 (Catch that Rabbit)</fact>
+     * <fact>1945 (Escape!)</fact>
+     * <fact>1946 (Evidence)</fact>
+     * <fact>1950 (The Evitable Conflict)</fact>
+     * <fact>1941  (Liar)</fact>
+     * <fact>1947  (Little Lost Robot)</fact>
+     * <fact>1940  (Robbie)</fact>
+     * <fact>1942  (Runaround)</fact>
+     * <fact>1941  (Reason)</fact>
+     * </factList>
+     * </version>
+     * </versionList>
+     * </field>
+     * <field type="27" name="quotations" displayName="Quotations">
+     * <versionList>
+     * <version id="2503597" archived="0" lang="eng">
+     * <date timestamp="1274377341">Thu, 20 May 2010 13:42:21 -0400</date>
+     * <person id="1797">
+     * <name>lorax</name>
+     * <url>http://www.librarything.com/profile/lorax</url>
+     * </person>
+     * <factList>
+     * <fact>&lt;![CDATA[ The Three Laws of Robotics
+     * 1. A robot may not injure a human being, or, through inaction, allow a human being to come to harm.
+     * 2. A robot must obey the orders given it by human beings except where such orders would conflict
+     * with the First Law.
+     * 3. A robot must protect its own existence as long as such protection does not conflict with the
+     * First or Second Law.  ]]&gt;
+     * </fact>
+     * </factList>
+     * </version>
+     * </versionList>
+     * </field>
+     * <field type="30" name="dedication" displayName="Dedication">
+     * <versionList>
+     * <version id="2503596" archived="0" lang="eng">
+     * <date timestamp="1274377341">Thu, 20 May 2010 13:42:21 -0400</date>
+     * <person id="1797">
+     * <name>lorax</name>
+     * <url>http://www.librarything.com/profile/lorax</url>
+     * </person>
+     * <factList>
+     * <fact>&lt;![CDATA[ To John W. Campbell, Jr., who godfathered the robots ]]&gt;</fact>
+     * </factList>
+     * </version>
+     * </versionList>
+     * </field>
+     * <field type="26" name="lastwords" displayName="Last words">
+     * <versionList>
+     * <version id="2503594" archived="0" lang="eng">
+     * <date timestamp="1274377340">Thu, 20 May 2010 13:42:20 -0400</date>
+     * <person id="1797">
+     * <name>lorax</name>
+     * <url>http://www.librarything.com/profile/lorax</url>
+     * </person>
+     * <factList>
+     * <fact>&lt;![CDATA[ Robbie:&lt;br&gt;"Well," said Mrs. Weston, at last, "I guess he can stay with us until he rusts." ]]&gt;</fact>
+     * <fact>&lt;![CDATA[ Runaround:&lt;br&gt;"Space Station," said Donovan, "here I come." ]]&gt;</fact>
+     * <fact>&lt;![CDATA[ Reason"&lt;br&gt;He grinned � and went into the ship.  Muller would be here for several weeks � ]]&gt;</fact>
+     * <fact>&lt;![CDATA[ Catch That Rabbit:&lt;br&gt;****&lt;br&gt;**** too spoilerish! ]]&gt;</fact>
+     * <fact>&lt;![CDATA[ Liar:&lt;br&gt;"Liar!" ]]&gt;</fact>
+     * <fact>&lt;![CDATA[ Little Lost Robot:&lt;br&gt;"� His very superiority caught him.  Good-by General" ]]&gt;</fact>
+     * <fact>&lt;![CDATA[ Escape:&lt;br&gt;To which Bogert added absently, "Strictly according to the contract, too." ]]&gt;</fact>
+     * <fact>&lt;![CDATA[ Evidence:&lt;br&gt;Stephen Byerley chuckled.  "I must reply that that is a somewhat farfetched idea."&lt;br&gt;The door closed behind her. ]]&gt;</fact>
+     * <fact>&lt;![CDATA[ The Evitable Conflict:&lt;br&gt;And the fire behind the quartz went out and only a curl of smoke was left to indicate its place. ]]&gt;</fact>
+     * <fact>&lt;![CDATA[ &lt;i&gt;She died last month at the age of eighty-two.&lt;/i&gt; ]]&gt;</fact>
+     * </factList>
+     * </version>
+     * </versionList>
+     * </field>
+     * <field type="25" name="firstwords" displayName="First words">
+     * <versionList>
+     * <version id="2503593" archived="0" lang="eng">
+     * <date timestamp="1274377340">Thu, 20 May 2010 13:42:20 -0400</date>
+     * <person id="1797">
+     * <name>lorax</name>
+     * <url>http://www.librarything.com/profile/lorax</url>
+     * </person>
+     * <factList>
+     * <fact>&lt;![CDATA[ Robbie:&lt;br&gt;"Ninety-eight � ninety-nine � &lt;i&gt;one hundred&lt;/i&gt;." ]]&gt;</fact>
+     * <fact>&lt;![CDATA[ Runaround:&lt;br&gt;It was one of Gregory Powell's favorite platitudes that nothing was to
+     * be gained from excitement, so when Mike Donovan came leaping down the stairs toward him, red hair matted
+     * with perspiration, Powell frowned. ]]&gt;
+     * </fact>
+     * <fact>&lt;![CDATA[ Reason:&lt;br&gt;Half a year later, the boys had changed their minds. ]]&gt;</fact>
+     * <fact>&lt;![CDATA[ Catch That Rabbit:&lt;br&gt;The vacation was longer than two weeks. ]]&gt;</fact>
+     * <fact>&lt;![CDATA[ Liar!&lt;br&gt;Alfred Lanning lit his cigar carefully, but the tips of his fingers were trembling slightly. ]]&gt;</fact>
+     * <fact>&lt;![CDATA[ Little Lost Robot:&lt;br&gt;When I did see Susan Calvin again, it was at the door of her office. ]]&gt;</fact>
+     * <fact>&lt;![CDATA[ Escape!:&lt;br&gt;When Susan Calvin returned from Hyper Base, Alfred Lanning was waiting for her. ]]&gt;</fact>
+     * <fact>&lt;![CDATA[ Evidence:&lt;br&gt;Francis Quinn was a politician of the new school. ]]&gt;</fact>
+     * <fact>&lt;![CDATA[ The Evitable Conflict:&lt;br&gt;The Co-ordinator, in his private study, had that medieval curiosity, a fireplace. ]]&gt;</fact>
+     * <fact>&lt;![CDATA[ &lt;i&gt;I looked at my notes and I didn't like them.&lt;/i&gt; (Introduction) ]]&gt;</fact>
+     * </factList>
+     * </version>
+     * </versionList>
+     * </field>
+     * <field type="21" name="canonicaltitle" displayName="Canonical title">
+     * <versionList>
+     * <version id="2503590" archived="0" lang="eng">
+     * <date timestamp="1274377338">Thu, 20 May 2010 13:42:18 -0400</date>
+     * <person id="1797">
+     * <name>lorax</name>
+     * <url>http://www.librarything.com/profile/lorax</url>
+     * </person>
+     * <factList>
+     * <fact>I, Robot</fact>
+     * </factList>
+     * </version>
+     * </versionList>
+     * </field>
+     * <field type="3" name="characternames" displayName="People/Characters">
+     * <versionList>
+     * <version id="2503589" archived="0" lang="eng">
+     * <date timestamp="1274377337">Thu, 20 May 2010 13:42:17 -0400</date>
+     * <person id="1797">
+     * <name>lorax</name>
+     * <url>http://www.librarything.com/profile/lorax</url>
+     * </person>
+     * <factList>
+     * <fact>Susan Calvin</fact>
+     * <fact>Cutie (QT1)</fact>
+     * <fact>Gregory Powell</fact>
+     * <fact>Mike Donovan</fact>
+     * <fact>Robbie (RB-series)</fact>
+     * <fact>Mr. Weston</fact>
+     * <fact>Gloria Weston</fact>
+     * <fact>Mrs. Weston</fact>
+     * <fact>SPD-13 (Speedy)</fact>
+     * <fact>Speedy (SPD-13)</fact>
+     * <fact>QT1 (Cutie)</fact>
+     * <fact>The Master</fact>
+     * <fact>Prophet of the Master</fact>
+     * <fact>Ren� Descartes</fact>
+     * <fact>DV-5 (Dave)</fact><fact>Dave (DV-5)</fact>
+     * <fact>HRB-34 (Herbie)</fact>
+     * <fact>Herbie (HRB-34)</fact>
+     * <fact>Gerald Black</fact>
+     * <fact>NS-2 (Nestor)</fact>
+     * <fact>Nestor (NS-2)</fact>
+     * <fact>Peter Bogert</fact>
+     * <fact>The Brain (computer)</fact>
+     * <fact>Stephen Byerley</fact>
+     * <fact>Francis Quinn</fact>
+     * </factList>
+     * </version>
+     * </versionList>
+     * </field>
+     * <field type="2" name="placesmentioned" displayName="Important places">
+     * <versionList>
+     * <version id="2503588" archived="0" lang="eng">
+     * <date timestamp="1274377336">Thu, 20 May 2010 13:42:16 -0400</date>
+     * <person id="1797">
+     * <name>lorax</name>
+     * <url>http://www.librarything.com/profile/lorax</url>
+     * </person>
+     * <factList>
+     * <fact>Mercury</fact>
+     * <fact>New York, New York, USA</fact>
+     * <fact>Roosevelt Building</fact>
+     * <fact>U.S. Robots and Mechanical Men factory</fact>
+     * <fact>Hyper Base</fact>
+     * </factList>
+     * </version>
+     * </versionList>
+     * </field>
+     * </fieldList>
+     * </commonknowledge>
+     * </item>
+     * <legal>By using this data you agree to the LibraryThing API terms of service.</legal>
+     * </ltml>
+     * </response>
+     *
+     * A less well-known work produces rather less data:
+     *
+     * <?xml version="1.0" encoding="UTF-8"?>
+     * <response stat="ok">
+     * <ltml xmlns="http://www.librarything.com/" version="1.1">
+     * <item id="255375" type="work">
+     * <author id="359458" authorcode="fallonmary">Mary Fallon</author>
+     * <url>http://www.librarything.com/work/255375</url>
+     * <commonknowledge/>
+     * </item>
+     * <legal>By using this data you agree to the LibraryThing API terms of service.</legal>
+     * </ltml>
+     * </response>
+     *
+     * but in both cases, it should be noted that the covers are still available.
+     *
+     * @param isbn ISBN to lookup
      * @param book Collection to save results in
      *
-     *                 A typical (and thorough) LibraryThing ISBN response looks like (with formatting added):
-     *
-     *                 <?xml version="1.0" encoding="UTF-8"?>
-     *                 <response stat="ok">
-     *                 <ltml xmlns="http://www.librarything.com/" version="1.1">
-     *                 <item id="5196084" type="work">
-     *                 <author id="28" authorcode="asimovisaac">Isaac Asimov</author>
-     *                 <url>http://www.librarything.com/work/5196084</url>
-     *                 <commonknowledge>
-     *                 <fieldList>
-     *                 <field type="4" name="awards" displayName="Awards and honors">
-     *                 <versionList>
-     *                 <version id="3324305" archived="0" lang="eng">
-     *                 <date timestamp="1296476301">Mon, 31 Jan 2011 07:18:21 -0500</date>
-     *                 <person id="325052"><name>Cecrow</name><url>http://www.librarything.com/profile/Cecrow</url></person>
-     *                 <factList>
-     *                 <fact>1001 Books You Must Read Before You Die (2006/2008/2010 Edition)</fact>
-     *                 <fact>Astounding/Analog Science Fiction and Fact All-Time Poll (placed 23, 1952)</fact>
-     *                 <fact>Astounding/Analog Science Fiction and Fact All-Time Poll (placed 21, 1956)</fact>
-     *                 <fact>Harenberg Buch der 1000 B�cher (1. Ausgabe)</fact>
-     *                 <fact>501 Must-Read Books (Science Fiction)</fact>
-     *                 </factList>
-     *                 </version>
-     *                 </versionList>
-     *                 </field>
-     *                 <field type="37" name="movies" displayName="Related movies">
-     *                 <versionList>
-     *                 <version id="3120269" archived="0" lang="eng">
-     *                 <date timestamp="1292202792">Sun, 12 Dec 2010 20:13:12 -0500</date>
-     *                 <person id="656066">
-     *                 <name>Scottneumann</name>
-     *                 <url>http://www.librarything.com/profile/Scottneumann</url>
-     *                 </person>
-     *                 <factList>
-     *                 <fact>Robots (1988 | tt0174170)</fact>
-     *                 <fact>I, Robot (2004 | tt0343818)</fact>
-     *                 <fact>The Outer Limits: I Robot (1963 | tt0056777)</fact>
-     *                 </factList>
-     *                 </version>
-     *                 </versionList>
-     *                 </field>
-     *                 <field type="40" name="publisherseries" displayName="Publisher Series">
-     *                 <versionList>
-     *                 <version id="2971007" archived="0" lang="eng">
-     *                 <date timestamp="1289497446">Thu, 11 Nov 2010 12:44:06 -0500</date>
-     *                 <person id="3929">
-     *                 <name>sonyagreen</name>
-     *                 <url>http://www.librarything.com/profile/sonyagreen</url>
-     *                 </person>
-     *                 <factList>
-     *                 <fact>Voyager Classics</fact>
-     *                 </factList>
-     *                 </version>
-     *                 </versionList>
-     *                 </field>
-     *                 <field type="14" name="description" displayName="Description">
-     *                 <versionList>
-     *                 <version id="2756634" archived="0" lang="eng">
-     *                 <date timestamp="1281897478">Sun, 15 Aug 2010 14:37:58 -0400</date>
-     *                 <person id="203279">
-     *                 <name>jseger9000</name>
-     *                 <url>http://www.librarything.com/profile/jseger9000</url>
-     *                 </person>
-     *                 <factList>
-     *                 <fact>&lt;![CDATA[ Contents:&lt;br&gt;&lt;br&gt;Introduction&lt;br&gt;Robbie&lt;br&gt;Runaround&lt
-     *                 ;br&gt;Reason&lt;br&gt;Catch That Rabbit&lt;br&gt;Liar!&lt;br&gt;Little Lost Robot&lt
-     *                 ;br&gt;Escape!&lt;br&gt;Evidence&lt;br&gt;The Evitable Conflict ]]&gt;
-     *                 </fact>
-     *                 </factList>
-     *                 </version>
-     *                 </versionList>
-     *                 </field>
-     *                 <field type="23" name="series" displayName="Series">
-     *                 <versionList>
-     *                 <version id="2742329" archived="0" lang="eng">
-     *                 <date timestamp="1281338643">Mon, 09 Aug 2010 03:24:03 -0400</date>
-     *                 <person id="1162290">
-     *                 <name>larry.auld</name>
-     *                 <url>http://www.librarything.com/profile/larry.auld</url>
-     *                 </person>
-     *                 <factList>
-     *                 <fact>Isaac Asimov's Robot Series (0.1)</fact>
-     *                 <fact>Robot/Foundation</fact>
-     *                 <fact>Robot/Empire/Foundation - Chronological (book 1)</fact>
-     *                 </factList>
-     *                 </version>
-     *                 </versionList>
-     *                 </field>
-     *                 <field type="16" name="originalpublicationdate" displayName="Original publication date">
-     *                 <versionList>
-     *                 <version id="2554955" archived="0" lang="eng">
-     *                 <date timestamp="1275746736">Sat, 05 Jun 2010 10:05:36 -0400</date>
-     *                 <person id="125174">
-     *                 <name>paulhurtley</name>
-     *                 <url>http://www.librarything.com/profile/paulhurtley</url>
-     *                 </person>
-     *                 <factList>
-     *                 <fact>1950 (Collection)</fact>
-     *                 <fact>1944 (Catch that Rabbit)</fact>
-     *                 <fact>1945 (Escape!)</fact>
-     *                 <fact>1946 (Evidence)</fact>
-     *                 <fact>1950 (The Evitable Conflict)</fact>
-     *                 <fact>1941  (Liar)</fact>
-     *                 <fact>1947  (Little Lost Robot)</fact>
-     *                 <fact>1940  (Robbie)</fact>
-     *                 <fact>1942  (Runaround)</fact>
-     *                 <fact>1941  (Reason)</fact>
-     *                 </factList>
-     *                 </version>
-     *                 </versionList>
-     *                 </field>
-     *                 <field type="27" name="quotations" displayName="Quotations">
-     *                 <versionList>
-     *                 <version id="2503597" archived="0" lang="eng">
-     *                 <date timestamp="1274377341">Thu, 20 May 2010 13:42:21 -0400</date>
-     *                 <person id="1797">
-     *                 <name>lorax</name>
-     *                 <url>http://www.librarything.com/profile/lorax</url>
-     *                 </person>
-     *                 <factList>
-     *                 <fact>&lt;![CDATA[ The Three Laws of Robotics
-     *                 1. A robot may not injure a human being, or, through inaction, allow a human being to come to harm.
-     *                 2. A robot must obey the orders given it by human beings except where such orders would conflict
-     *                 with the First Law.
-     *                 3. A robot must protect its own existence as long as such protection does not conflict with the
-     *                 First or Second Law.  ]]&gt;
-     *                 </fact>
-     *                 </factList>
-     *                 </version>
-     *                 </versionList>
-     *                 </field>
-     *                 <field type="30" name="dedication" displayName="Dedication">
-     *                 <versionList>
-     *                 <version id="2503596" archived="0" lang="eng">
-     *                 <date timestamp="1274377341">Thu, 20 May 2010 13:42:21 -0400</date>
-     *                 <person id="1797">
-     *                 <name>lorax</name>
-     *                 <url>http://www.librarything.com/profile/lorax</url>
-     *                 </person>
-     *                 <factList>
-     *                 <fact>&lt;![CDATA[ To John W. Campbell, Jr., who godfathered the robots ]]&gt;</fact>
-     *                 </factList>
-     *                 </version>
-     *                 </versionList>
-     *                 </field>
-     *                 <field type="26" name="lastwords" displayName="Last words">
-     *                 <versionList>
-     *                 <version id="2503594" archived="0" lang="eng">
-     *                 <date timestamp="1274377340">Thu, 20 May 2010 13:42:20 -0400</date>
-     *                 <person id="1797">
-     *                 <name>lorax</name>
-     *                 <url>http://www.librarything.com/profile/lorax</url>
-     *                 </person>
-     *                 <factList>
-     *                 <fact>&lt;![CDATA[ Robbie:&lt;br&gt;"Well," said Mrs. Weston, at last, "I guess he can stay with us until he rusts." ]]&gt;</fact>
-     *                 <fact>&lt;![CDATA[ Runaround:&lt;br&gt;"Space Station," said Donovan, "here I come." ]]&gt;</fact>
-     *                 <fact>&lt;![CDATA[ Reason"&lt;br&gt;He grinned � and went into the ship.  Muller would be here for several weeks � ]]&gt;</fact>
-     *                 <fact>&lt;![CDATA[ Catch That Rabbit:&lt;br&gt;****&lt;br&gt;**** too spoilerish! ]]&gt;</fact>
-     *                 <fact>&lt;![CDATA[ Liar:&lt;br&gt;"Liar!" ]]&gt;</fact>
-     *                 <fact>&lt;![CDATA[ Little Lost Robot:&lt;br&gt;"� His very superiority caught him.  Good-by General" ]]&gt;</fact>
-     *                 <fact>&lt;![CDATA[ Escape:&lt;br&gt;To which Bogert added absently, "Strictly according to the contract, too." ]]&gt;</fact>
-     *                 <fact>&lt;![CDATA[ Evidence:&lt;br&gt;Stephen Byerley chuckled.  "I must reply that that is a somewhat farfetched idea."&lt;br&gt;The door closed behind her. ]]&gt;</fact>
-     *                 <fact>&lt;![CDATA[ The Evitable Conflict:&lt;br&gt;And the fire behind the quartz went out and only a curl of smoke was left to indicate its place. ]]&gt;</fact>
-     *                 <fact>&lt;![CDATA[ &lt;i&gt;She died last month at the age of eighty-two.&lt;/i&gt; ]]&gt;</fact>
-     *                 </factList>
-     *                 </version>
-     *                 </versionList>
-     *                 </field>
-     *                 <field type="25" name="firstwords" displayName="First words">
-     *                 <versionList>
-     *                 <version id="2503593" archived="0" lang="eng">
-     *                 <date timestamp="1274377340">Thu, 20 May 2010 13:42:20 -0400</date>
-     *                 <person id="1797">
-     *                 <name>lorax</name>
-     *                 <url>http://www.librarything.com/profile/lorax</url>
-     *                 </person>
-     *                 <factList>
-     *                 <fact>&lt;![CDATA[ Robbie:&lt;br&gt;"Ninety-eight � ninety-nine � &lt;i&gt;one hundred&lt;/i&gt;." ]]&gt;</fact>
-     *                 <fact>&lt;![CDATA[ Runaround:&lt;br&gt;It was one of Gregory Powell's favorite platitudes that nothing was to
-     *                 be gained from excitement, so when Mike Donovan came leaping down the stairs toward him, red hair matted
-     *                 with perspiration, Powell frowned. ]]&gt;
-     *                 </fact>
-     *                 <fact>&lt;![CDATA[ Reason:&lt;br&gt;Half a year later, the boys had changed their minds. ]]&gt;</fact>
-     *                 <fact>&lt;![CDATA[ Catch That Rabbit:&lt;br&gt;The vacation was longer than two weeks. ]]&gt;</fact>
-     *                 <fact>&lt;![CDATA[ Liar!&lt;br&gt;Alfred Lanning lit his cigar carefully, but the tips of his fingers were trembling slightly. ]]&gt;</fact>
-     *                 <fact>&lt;![CDATA[ Little Lost Robot:&lt;br&gt;When I did see Susan Calvin again, it was at the door of her office. ]]&gt;</fact>
-     *                 <fact>&lt;![CDATA[ Escape!:&lt;br&gt;When Susan Calvin returned from Hyper Base, Alfred Lanning was waiting for her. ]]&gt;</fact>
-     *                 <fact>&lt;![CDATA[ Evidence:&lt;br&gt;Francis Quinn was a politician of the new school. ]]&gt;</fact>
-     *                 <fact>&lt;![CDATA[ The Evitable Conflict:&lt;br&gt;The Co-ordinator, in his private study, had that medieval curiosity, a fireplace. ]]&gt;</fact>
-     *                 <fact>&lt;![CDATA[ &lt;i&gt;I looked at my notes and I didn't like them.&lt;/i&gt; (Introduction) ]]&gt;</fact>
-     *                 </factList>
-     *                 </version>
-     *                 </versionList>
-     *                 </field>
-     *                 <field type="21" name="canonicaltitle" displayName="Canonical title">
-     *                 <versionList>
-     *                 <version id="2503590" archived="0" lang="eng">
-     *                 <date timestamp="1274377338">Thu, 20 May 2010 13:42:18 -0400</date>
-     *                 <person id="1797">
-     *                 <name>lorax</name>
-     *                 <url>http://www.librarything.com/profile/lorax</url>
-     *                 </person>
-     *                 <factList>
-     *                 <fact>I, Robot</fact>
-     *                 </factList>
-     *                 </version>
-     *                 </versionList>
-     *                 </field>
-     *                 <field type="3" name="characternames" displayName="People/Characters">
-     *                 <versionList>
-     *                 <version id="2503589" archived="0" lang="eng">
-     *                 <date timestamp="1274377337">Thu, 20 May 2010 13:42:17 -0400</date>
-     *                 <person id="1797">
-     *                 <name>lorax</name>
-     *                 <url>http://www.librarything.com/profile/lorax</url>
-     *                 </person>
-     *                 <factList>
-     *                 <fact>Susan Calvin</fact>
-     *                 <fact>Cutie (QT1)</fact>
-     *                 <fact>Gregory Powell</fact>
-     *                 <fact>Mike Donovan</fact>
-     *                 <fact>Robbie (RB-series)</fact>
-     *                 <fact>Mr. Weston</fact>
-     *                 <fact>Gloria Weston</fact>
-     *                 <fact>Mrs. Weston</fact>
-     *                 <fact>SPD-13 (Speedy)</fact>
-     *                 <fact>Speedy (SPD-13)</fact>
-     *                 <fact>QT1 (Cutie)</fact>
-     *                 <fact>The Master</fact>
-     *                 <fact>Prophet of the Master</fact>
-     *                 <fact>Ren� Descartes</fact>
-     *                 <fact>DV-5 (Dave)</fact><fact>Dave (DV-5)</fact>
-     *                 <fact>HRB-34 (Herbie)</fact>
-     *                 <fact>Herbie (HRB-34)</fact>
-     *                 <fact>Gerald Black</fact>
-     *                 <fact>NS-2 (Nestor)</fact>
-     *                 <fact>Nestor (NS-2)</fact>
-     *                 <fact>Peter Bogert</fact>
-     *                 <fact>The Brain (computer)</fact>
-     *                 <fact>Stephen Byerley</fact>
-     *                 <fact>Francis Quinn</fact>
-     *                 </factList>
-     *                 </version>
-     *                 </versionList>
-     *                 </field>
-     *                 <field type="2" name="placesmentioned" displayName="Important places">
-     *                 <versionList>
-     *                 <version id="2503588" archived="0" lang="eng">
-     *                 <date timestamp="1274377336">Thu, 20 May 2010 13:42:16 -0400</date>
-     *                 <person id="1797">
-     *                 <name>lorax</name>
-     *                 <url>http://www.librarything.com/profile/lorax</url>
-     *                 </person>
-     *                 <factList>
-     *                 <fact>Mercury</fact>
-     *                 <fact>New York, New York, USA</fact>
-     *                 <fact>Roosevelt Building</fact>
-     *                 <fact>U.S. Robots and Mechanical Men factory</fact>
-     *                 <fact>Hyper Base</fact>
-     *                 </factList>
-     *                 </version>
-     *                 </versionList>
-     *                 </field>
-     *                 </fieldList>
-     *                 </commonknowledge>
-     *                 </item>
-     *                 <legal>By using this data you agree to the LibraryThing API terms of service.</legal>
-     *                 </ltml>
-     *                 </response>
-     *
-     *                 A less well-known work produces rather less data:
-     *
-     *                 <?xml version="1.0" encoding="UTF-8"?>
-     *                 <response stat="ok">
-     *                 <ltml xmlns="http://www.librarything.com/" version="1.1">
-     *                 <item id="255375" type="work">
-     *                 <author id="359458" authorcode="fallonmary">Mary Fallon</author>
-     *                 <url>http://www.librarything.com/work/255375</url>
-     *                 <commonknowledge/>
-     *                 </item>
-     *                 <legal>By using this data you agree to the LibraryThing API terms of service.</legal>
-     *                 </ltml>
-     *                 </response>
-     *
-     *                 but in both cases, in both cases it should be noted that the covers are still available.
-     *
-     *
-     *
-     * call {@link #isAvailable()} before calling this method
+     *             call {@link #isAvailable()} before calling this method
      */
-    void search(@NonNull final String isbn, @NonNull final Bundle book, final boolean fetchThumbnail) {
+    void search(@NonNull final String isbn,
+                @NonNull final Bundle /* out */ book,
+                final boolean fetchThumbnail) throws IOException {
         String devKey = getDevKey();
         if (devKey.isEmpty()) {
             throw new RTE.DeveloperKeyMissingException();
@@ -510,8 +511,8 @@ public class LibraryThingManager {
 
             parser.parse(Utils.getInputStreamWithTerminator(url), entryHandler);
 
-            // Don't bother catching general exceptions, they will be caught by the caller.
-        } catch (@NonNull ParserConfigurationException | SAXException | java.io.IOException e) {
+            // only catch exceptions related to the parsing, others will be caught by the caller.
+        } catch (ParserConfigurationException | ParseException | SAXException e) {
             Logger.error(e);
         }
 
@@ -570,7 +571,7 @@ public class LibraryThingManager {
         // Save it with an _LT suffix
         String fileSpec = ImageUtils.saveThumbnailFromUrl(url, "_LT_" + size + "_" + isbn);
         if (!fileSpec.isEmpty() && book != null) {
-            ArrayUtils.addOrAppend(book, UniqueId.BKEY_THUMBNAIL_USCORE, fileSpec);
+            ArrayUtils.addOrAppend(book, UniqueId.BKEY_THUMBNAIL_FILES_SPEC, fileSpec);
         }
         return fileSpec.isEmpty() ? null : new File(fileSpec);
     }
@@ -631,12 +632,14 @@ public class LibraryThingManager {
         }
 
         @Override
+        @CallSuper
         public void characters(final char[] ch, final int start, final int length) throws SAXException {
             super.characters(ch, start, length);
             mBuilder.append(ch, start, length);
         }
 
         @Override
+        @CallSuper
         public void endElement(final String uri, @NonNull final String localName, final String name) throws SAXException {
             super.endElement(uri, localName, name);
 
@@ -673,12 +676,14 @@ public class LibraryThingManager {
         }
 
         @Override
+        @CallSuper
         public void characters(final char[] ch, final int start, final int length) throws SAXException {
             super.characters(ch, start, length);
             mBuilder.append(ch, start, length);
         }
 
         @Override
+        @CallSuper
         public void startElement(final String uri, @NonNull final String localName, final String name, @NonNull final Attributes attributes) throws SAXException {
             super.startElement(uri, localName, name, attributes);
 
@@ -714,6 +719,7 @@ public class LibraryThingManager {
         }
 
         @Override
+        @CallSuper
         public void endElement(final String uri, @NonNull final String localName, final String name) throws SAXException {
             super.endElement(uri, localName, name);
 

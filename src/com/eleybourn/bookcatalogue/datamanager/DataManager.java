@@ -250,13 +250,21 @@ public class DataManager {
         return this;
     }
 
-    /** Get a String value */
+    /**
+     * Get a String value
+     *
+     * @return Value of the data, can be empty, but never null
+     */
     @NonNull
     public String getString(@NonNull final String key) {
         return mData.get(key).getString(this, mBundle);
     }
 
-    /** Get a String value */
+    /**
+     * Get a String value
+     *
+     * @return Value of the data, can be empty, but never null
+     */
     @NonNull
     public String getString(@NonNull final Datum datum) {
         return datum.getString(this, mBundle);

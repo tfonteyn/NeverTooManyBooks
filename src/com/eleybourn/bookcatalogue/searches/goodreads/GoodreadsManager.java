@@ -28,7 +28,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.BCPreferences;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
@@ -152,6 +151,11 @@ public class GoodreadsManager {
         sharedInit();
     }
 
+    /** developer check. */
+    public boolean isAvailable() {
+        return !DEV_KEY.isEmpty() && !DEV_SECRET.isEmpty();
+    }
+
     /**
      * Clear the credentials from the preferences and local cache
      */
@@ -160,8 +164,8 @@ public class GoodreadsManager {
         mAccessSecret = "";
         mHasValidCredentials = false;
         // Get the stored token values from prefs, and setup the consumer if present
-        BCPreferences.setString(ACCESS_TOKEN, "");
-        BCPreferences.setString(ACCESS_SECRET, "");
+        BookCatalogueApp.Prefs.putString(ACCESS_TOKEN, "");
+        BookCatalogueApp.Prefs.putString(ACCESS_SECRET, "");
     }
 
     /**
@@ -175,8 +179,8 @@ public class GoodreadsManager {
 
         // Get the stored token values from prefs, and setup the consumer if present
 
-        mAccessToken = BCPreferences.getStringOrEmpty(ACCESS_TOKEN);
-        mAccessSecret = BCPreferences.getStringOrEmpty(ACCESS_SECRET);
+        mAccessToken = BookCatalogueApp.Prefs.getStringOrEmpty(ACCESS_TOKEN);
+        mAccessSecret = BookCatalogueApp.Prefs.getStringOrEmpty(ACCESS_SECRET);
 
         return !(mAccessToken.isEmpty() || mAccessSecret.isEmpty());
     }
@@ -263,7 +267,7 @@ public class GoodreadsManager {
      */
     @Nullable
     static Date getLastSyncDate() {
-        String last = BCPreferences.getString(LAST_SYNC_DATE, null);
+        String last = BookCatalogueApp.Prefs.getString(LAST_SYNC_DATE, null);
         if (last == null || last.isEmpty()) {
             return null;
         } else {
@@ -282,7 +286,7 @@ public class GoodreadsManager {
      * @param d Last date
      */
     static void setLastSyncDate(@Nullable final Date d) {
-        BCPreferences.setString(LAST_SYNC_DATE, d == null ? null : DateUtils.toSqlDateTime(d));
+        BookCatalogueApp.Prefs.putString(LAST_SYNC_DATE, d == null ? null : DateUtils.toSqlDateTime(d));
     }
 
     /**
@@ -337,8 +341,8 @@ public class GoodreadsManager {
      */
     private boolean validateCredentials() {
         // Get the stored token values from prefs, and setup the consumer
-        mAccessToken = BCPreferences.getStringOrEmpty(ACCESS_TOKEN);
-        mAccessSecret = BCPreferences.getStringOrEmpty(ACCESS_SECRET);
+        mAccessToken = BookCatalogueApp.Prefs.getStringOrEmpty(ACCESS_TOKEN);
+        mAccessSecret = BookCatalogueApp.Prefs.getStringOrEmpty(ACCESS_SECRET);
 
         mConsumer.setTokenWithSecret(mAccessToken, mAccessSecret);
 
@@ -401,10 +405,10 @@ public class GoodreadsManager {
         }
 
         // Save the token; this object may well be destroyed before the web page has returned.
-        SharedPreferences.Editor ed = BCPreferences.edit();
+        final SharedPreferences.Editor ed = context.getSharedPreferences(BookCatalogueApp.APP_SHARED_PREFERENCES, Context.MODE_PRIVATE).edit();
         ed.putString(REQUEST_TOKEN, mConsumer.getToken());
         ed.putString(REQUEST_SECRET, mConsumer.getTokenSecret());
-        ed.commit();
+        ed.apply();
 
         // Open the web page
         android.content.Intent browserIntent = new android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(authUrl));
@@ -417,10 +421,10 @@ public class GoodreadsManager {
      *
      * @author Philip Warner
      */
-    void handleAuthentication() throws NotAuthorizedException {
+    void handleAuthentication(@NonNull final Context context) throws NotAuthorizedException {
         // Get the saved request tokens.
-        String tokenString = BCPreferences.getStringOrEmpty(REQUEST_TOKEN);
-        String secretString = BCPreferences.getStringOrEmpty(REQUEST_SECRET);
+        String tokenString = BookCatalogueApp.Prefs.getStringOrEmpty(REQUEST_TOKEN);
+        String secretString = BookCatalogueApp.Prefs.getStringOrEmpty(REQUEST_SECRET);
 
         if (tokenString.isEmpty() || secretString.isEmpty()) {
             throw new IllegalStateException("Expected a request token to be stored in preferences; none found");
@@ -443,10 +447,10 @@ public class GoodreadsManager {
         mAccessToken = mConsumer.getToken();
         mAccessSecret = mConsumer.getTokenSecret();
 
-        SharedPreferences.Editor ed = BCPreferences.edit();
+        final SharedPreferences.Editor ed = context.getSharedPreferences(BookCatalogueApp.APP_SHARED_PREFERENCES, Context.MODE_PRIVATE).edit();
         ed.putString(ACCESS_TOKEN, mAccessToken);
         ed.putString(ACCESS_SECRET, mAccessSecret);
-        ed.commit();
+        ed.apply();
     }
 
     /**
@@ -611,7 +615,7 @@ public class GoodreadsManager {
     @Nullable
     public String getUsername() {
         if (!mHasValidCredentials) {
-            throw new RuntimeException("GoodReads credentials need to be validated before accessing user data");
+            throw new IllegalStateException("GoodReads credentials need to be validated before accessing user data");
         }
 
         return mUsername;
@@ -619,7 +623,7 @@ public class GoodreadsManager {
 
     public long getUserId() {
         if (!mHasValidCredentials) {
-            throw new RuntimeException("GoodReads credentials need to be validated before accessing user data");
+            throw new IllegalStateException("GoodReads credentials need to be validated before accessing user data");
         }
 
         return mUserId;
@@ -966,11 +970,11 @@ public class GoodreadsManager {
             private static final long serialVersionUID = 5589234170614368111L;
 
             public NotAuthorizedException() {
-                super(BookCatalogueApp.getResourceString(R.string.goodreads_auth_failed), null);
+                super(BookCatalogueApp.getResourceString(R.string.gr_auth_failed), null);
             }
 
             public NotAuthorizedException(final Throwable inner) {
-                super(BookCatalogueApp.getResourceString(R.string.goodreads_auth_failed), inner);
+                super(BookCatalogueApp.getResourceString(R.string.gr_auth_failed), inner);
             }
         }
 
@@ -986,7 +990,7 @@ public class GoodreadsManager {
             private static final long serialVersionUID = -4233137984910957925L;
 
             public NetworkException(@Nullable final Throwable inner) {
-                super(BookCatalogueApp.getResourceString(R.string.goodreads_access_error), inner);
+                super(BookCatalogueApp.getResourceString(R.string.gr_access_error), inner);
             }
         }
     }

@@ -52,6 +52,7 @@ public class Terminator {
      * Dummy method to make sure static initialization is done. Needs to be
      * called from main thread (usually at app startup).
      */
+    @SuppressWarnings("EmptyMethod")
     public static void init() {
     }
 

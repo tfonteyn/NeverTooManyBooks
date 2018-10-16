@@ -25,6 +25,7 @@
     <item name="MENU_BOOK_EDIT_LOANS" type="id"/>
     <item name="MENU_BOOK_SEND_TO_GOODREADS" type="id"/>
 
+    <item name="MENU_AUTHOR_DETAILS" type="id"/>
     <item name="MENU_AUTHOR_EDIT" type="id"/>
     <item name="MENU_FORMAT_EDIT" type="id"/>
     <item name="MENU_GENRE_EDIT" type="id"/>
@@ -77,8 +78,8 @@
 
     <!-- BEGIN used by {@link SimpleListAdapter} and {@link EditObjectListActivity} -->
     <item name="ROW" type="id" />
-    <item name="ROW_INFO" type="id" />  <!-- used by {@link BooksMultiTypeListHandler} to hide/show rows -->
-    <item name="ROW_DETAILS" type="id" /> <!-- TODO: isn't this the same as ROW_INFO ? -->
+    <item name="ROW_INFO" type="id" />  <!-- used by {@link BooksMultiTypeListHandler} to hide/show rows TODO: can't we use ROW_DETAIL for this ?-->
+    <item name="ROW_DETAILS" type="id" />
     <item name="ROW_UP" type="id"/>
     <item name="ROW_DOWN" type="id"/>
     <item name="ROW_DELETE" type="id"/>

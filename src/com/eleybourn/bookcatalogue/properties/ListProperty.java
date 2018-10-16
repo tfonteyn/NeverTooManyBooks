@@ -67,8 +67,8 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
                  @NonNull final String uniqueId,
                  @NonNull final PropertyGroup group,
                  @StringRes final int nameResourceId,
-                 @Nullable final T defaultValue,
-                 @Nullable final T value) {
+                 @SuppressWarnings("SameParameterValue") @Nullable final T defaultValue,
+                 @SuppressWarnings("SameParameterValue") @Nullable final T value) {
         super(uniqueId, group, nameResourceId, defaultValue, value);
         mList = list;
     }

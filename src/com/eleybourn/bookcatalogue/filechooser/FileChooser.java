@@ -20,6 +20,7 @@
 package com.eleybourn.bookcatalogue.filechooser;
 
 import android.os.Bundle;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -29,7 +30,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
+import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.filechooser.FileChooserFragment.FileDetails;
 import com.eleybourn.bookcatalogue.filechooser.FileChooserFragment.PathChangedListener;
@@ -45,7 +46,7 @@ import java.util.ArrayList;
  *
  * @author pjw
  */
-public abstract class FileChooser extends BookCatalogueActivity implements
+public abstract class FileChooser extends BaseActivity implements
         SimpleTaskQueueProgressFragment.OnAllTasksFinishedListener,
         SimpleTaskQueueProgressFragment.OnTaskFinishedListener,
         FileLister.FileListerListener,
@@ -76,6 +77,7 @@ public abstract class FileChooser extends BookCatalogueActivity implements
     }
 
     @Override
+    @CallSuper
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -150,7 +152,7 @@ public abstract class FileChooser extends BookCatalogueActivity implements
             FileChooserFragment bf = (FileChooserFragment) frag;
             File file = bf.getSelectedFile();
             if (!file.exists() || !file.isFile()) {
-                StandardDialogs.showQuickNotice(this, R.string.please_select_an_existing_file);
+                StandardDialogs.showBriefMessage(this, R.string.please_select_an_existing_file);
                 return;
             }
             onOpen(file);
@@ -166,7 +168,7 @@ public abstract class FileChooser extends BookCatalogueActivity implements
             FileChooserFragment bf = (FileChooserFragment) frag;
             File file = bf.getSelectedFile();
             if ((file.exists() && !file.isFile())) {
-                StandardDialogs.showQuickNotice(this, R.string.please_select_a_non_directory);
+                StandardDialogs.showBriefMessage(this, R.string.please_select_a_non_directory);
                 return;
             }
             onSave(file);

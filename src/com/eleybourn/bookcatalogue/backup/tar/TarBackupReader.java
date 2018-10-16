@@ -19,6 +19,7 @@
  */
 package com.eleybourn.bookcatalogue.backup.tar;
 
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -63,7 +64,7 @@ public class TarBackupReader extends BackupReaderAbstract {
         // Process the INFO entry. Should be first.
         ReaderEntity info = nextEntity();
         if (info == null || info.getType() != BackupEntityType.Info)
-            throw new RuntimeException("Not a valid backup");
+            throw new IOException("Not a valid backup");
 
         // Save the INFO
         mInfo = new BackupInfo(info.getBundle());
@@ -134,6 +135,7 @@ public class TarBackupReader extends BackupReaderAbstract {
     }
 
     @Override
+    @CallSuper
     public void close() throws IOException {
         super.close();
         mInput.close();

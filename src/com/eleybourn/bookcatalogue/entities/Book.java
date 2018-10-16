@@ -21,6 +21,7 @@ package com.eleybourn.bookcatalogue.entities;
 
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -49,7 +50,9 @@ import java.util.List;
  */
 public class Book extends DataManager {
 
-    /** Key for accessor to the underlying {@link UniqueId#KEY_ANTHOLOGY_BITMASK} */
+    /** Key for accessor to the underlying {@link UniqueId#KEY_ANTHOLOGY_BITMASK}
+     * boolean! only return "0" or "1"
+     */
     public static final String IS_ANTHOLOGY = "+IsAnthology";
 
     /** Key for accessor (read-only), for the user-readable string list of Bookshelves */
@@ -116,10 +119,16 @@ public class Book extends DataManager {
      */
     @Override
     @NonNull
+    @CallSuper
     public DataManager clear() {
         super.clear();
         initValidatorsAndAccessors();
         return this;
+    }
+
+    /** hide the special accessor */
+    public boolean isAnthology() {
+        return getInt(IS_ANTHOLOGY) > 0;
     }
 
     //TODO: can we simplify this ? not just a 'string' but structured data with proper ID's
@@ -158,7 +167,7 @@ public class Book extends DataManager {
 
             setAuthorList(db.getBookAuthorList(mBookId));
             setSeriesList(db.getBookSeriesList(mBookId));
-            setContentList(db.getBookAnthologyTitleList(mBookId));
+            setContentList(db.getAnthologyTitleListByBook(mBookId));
 
         } catch (Exception e) {
             Logger.error(e);
@@ -172,6 +181,7 @@ public class Book extends DataManager {
      */
     @NonNull
     @Override
+    @CallSuper
     public DataManager putSerializable(@NonNull final String key, @NonNull final Serializable value) {
         if (BuildConfig.DEBUG) {
             Logger.info("Book.putSerializable, key=" + key + " , type=" + value.getClass().getCanonicalName());
@@ -206,6 +216,7 @@ public class Book extends DataManager {
      * @return List of authors
      */
     @NonNull
+    @CallSuper
     public ArrayList<Author> getAuthorList() {
         ArrayList<Author> list = super.getSerializable(UniqueId.BKEY_AUTHOR_ARRAY);
         return list != null ? list : new ArrayList<Author>();
@@ -214,6 +225,7 @@ public class Book extends DataManager {
     /**
      * Special Accessor
      */
+    @CallSuper
     public void setAuthorList(@NonNull final ArrayList<Author> list) {
         super.putSerializable(UniqueId.BKEY_AUTHOR_ARRAY, list);
     }
@@ -224,6 +236,7 @@ public class Book extends DataManager {
      * @return List of series
      */
     @NonNull
+    @CallSuper
     public ArrayList<Series> getSeriesList() {
         ArrayList<Series> list = super.getSerializable(UniqueId.BKEY_SERIES_ARRAY);
         return list != null ? list : new ArrayList<Series>();
@@ -252,6 +265,7 @@ public class Book extends DataManager {
     /**
      * Special Accessor
      */
+    @CallSuper
     public void setSeriesList(@NonNull final ArrayList<Series> list) {
         super.putSerializable(UniqueId.BKEY_SERIES_ARRAY, list);
     }
@@ -262,6 +276,7 @@ public class Book extends DataManager {
      * @return List of anthology titles
      */
     @NonNull
+    @CallSuper
     public ArrayList<AnthologyTitle> getContentList() {
         ArrayList<AnthologyTitle> list = super.getSerializable(UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY);
         return list != null ? list : new ArrayList<AnthologyTitle>();
@@ -270,6 +285,7 @@ public class Book extends DataManager {
     /**
      * Special Accessor
      */
+    @CallSuper
     public void setContentList(@NonNull final ArrayList<AnthologyTitle> list) {
         super.putSerializable(UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY, list);
     }
@@ -279,13 +295,6 @@ public class Book extends DataManager {
      */
     public boolean isRead() {
         return getInt(UniqueId.KEY_BOOK_READ) != 0;
-    }
-
-    /**
-     * Convenience Accessor
-     */
-    public boolean isSigned() {
-        return getInt(UniqueId.KEY_BOOK_SIGNED) != 0;
     }
 
     /**
@@ -335,13 +344,15 @@ public class Book extends DataManager {
          *  10 = not an ant, multiple authors -> not in the wild, but cold be Omnibus of a set of novels
          *  11 = ant from multiple authors
          *  So for now, the field should be 0,1,3
+         *
+         *  TODO: enumerator {@link AnthologyTitle.Type}
          */
         addAccessor(IS_ANTHOLOGY, new DataAccessor() {
             @NonNull
             @Override
             public Object get(@NonNull final DataManager data, @NonNull final Datum datum, @NonNull final Bundle rawData) {
-                Integer mask = data.getInt(UniqueId.KEY_ANTHOLOGY_BITMASK);
-                return mask != 0 ? "1" : "0";
+                Integer bitmask = data.getInt(UniqueId.KEY_ANTHOLOGY_BITMASK);
+                return bitmask != 0 ? "1" : "0";
             }
 
             /**
@@ -354,14 +365,14 @@ public class Book extends DataManager {
                             @NonNull final Datum datum,
                             @NonNull final Bundle rawData,
                             @NonNull final Object value) {
-                Integer mask = getInt(UniqueId.KEY_ANTHOLOGY_BITMASK);
+                Integer bitmask = getInt(UniqueId.KEY_ANTHOLOGY_BITMASK);
                 // Parse the string the CheckBox returns us (0 or 1)
                 if (Datum.toBoolean(value)) {
-                    mask |= 0x01;
+                    bitmask |= 0x01;
                 } else {
-                    mask &= 0xFFFFFFFE;
+                    bitmask &= 0xFFFFFFFE;
                 }
-                putInt(UniqueId.KEY_ANTHOLOGY_BITMASK, mask);
+                putInt(UniqueId.KEY_ANTHOLOGY_BITMASK, bitmask);
 
             }
 

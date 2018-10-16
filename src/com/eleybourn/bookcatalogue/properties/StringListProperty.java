@@ -24,7 +24,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 
-import com.eleybourn.bookcatalogue.BCPreferences;
+import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.utils.RTE;
 
 /**
@@ -43,13 +43,13 @@ public class StringListProperty extends ListProperty<String> implements Property
 
     @Override
     protected String getGlobalDefault() {
-        return BCPreferences.getString(getPreferenceKey(), getDefaultValue());
+        return BookCatalogueApp.Prefs.getString(getPreferenceKey(), getDefaultValue());
     }
 
     @NonNull
     @Override
     protected StringListProperty setGlobalDefault(@Nullable final String value) {
-        BCPreferences.setString(getPreferenceKey(), value);
+        BookCatalogueApp.Prefs.putString(getPreferenceKey(), value);
         return this;
     }
 

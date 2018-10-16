@@ -38,7 +38,7 @@
 
         <RelativeLayout
             android:id="@id/ROW_DETAILS"
-            layout="@layout/row_anthology"
+            layout="@layout/row_anthology_with_author"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"

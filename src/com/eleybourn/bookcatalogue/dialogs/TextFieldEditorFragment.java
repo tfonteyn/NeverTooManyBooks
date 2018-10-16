@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue.dialogs;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
@@ -73,6 +74,7 @@ public class TextFieldEditorFragment extends DialogFragment {
 	 * Ensure activity supports event
 	 */
 	@Override
+	@CallSuper
 	public void onAttach(@NonNull final Context context) {
 		super.onAttach(context);
 

@@ -17,6 +17,8 @@ package com.eleybourn.bookcatalogue;
  */
 public final class DEBUG_SWITCHES {
 
+    public static final boolean TMP_ANTHOLOGY = true;
+
     /** enable timers for performance measurements */
     public static final boolean TIMERS = false;
 

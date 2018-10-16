@@ -6,8 +6,8 @@ import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.TextView;
 
+import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter;
 import com.eleybourn.bookcatalogue.entities.AnthologyTitle;
-import com.eleybourn.bookcatalogue.widgets.SimpleListAdapter;
 
 import java.util.ArrayList;
 
@@ -19,9 +19,9 @@ public class AnthologyTitleListAdapter extends SimpleListAdapter<AnthologyTitle>
     @NonNull
     private final Context mContext;
 
-    AnthologyTitleListAdapter(@NonNull final Context context,
-                              @LayoutRes final int rowViewId,
-                              @NonNull final ArrayList<AnthologyTitle> items) {
+    public AnthologyTitleListAdapter(@NonNull final Context context,
+                                     @LayoutRes final int rowViewId,
+                                     @NonNull final ArrayList<AnthologyTitle> items) {
         super(context, rowViewId, items);
         mContext = context;
     }
@@ -30,27 +30,33 @@ public class AnthologyTitleListAdapter extends SimpleListAdapter<AnthologyTitle>
     protected void onSetupView(@NonNull final View convertView,
                                @NonNull final AnthologyTitle item) {
 
-        TextView vAuthor = convertView.findViewById(R.id.author);
-        vAuthor.setText(item.getAuthor().getDisplayName());
-
+        // always
         TextView vTitle = convertView.findViewById(R.id.title);
         vTitle.setText(item.getTitle());
 
+        TextView vAuthor = convertView.findViewById(R.id.author);
+        if (vAuthor != null) {
+            vAuthor.setText(item.getAuthor().getDisplayName());
+        }
+
+        // maybe not there
         TextView vYear = convertView.findViewById(R.id.year);
-        String year = item.getFirstPublication();
-        if (year.isEmpty()) {
-            vYear.setVisibility(View.GONE);
-        } else {
-            vYear.setVisibility(View.VISIBLE);
-            vYear.setText(mContext.getString(R.string.brackets, item.getFirstPublication()));
+        if (vYear != null) {
+            String year = item.getFirstPublication();
+            if (year.isEmpty()) {
+                vYear.setVisibility(View.GONE);
+            } else {
+                vYear.setVisibility(View.VISIBLE);
+                vYear.setText(mContext.getString(R.string.brackets, item.getFirstPublication()));
+            }
         }
     }
 
     /**
      * Called when an otherwise inactive part of the row is clicked.
      *
-     * @param target   The view clicked
-     * @param item     The object associated with this row
+     * @param target The view clicked
+     * @param item   The object associated with this row
      */
     @Override
     protected void onRowClick(@NonNull final View target, @NonNull final AnthologyTitle item, final int position) {

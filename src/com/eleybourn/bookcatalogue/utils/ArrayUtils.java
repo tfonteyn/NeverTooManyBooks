@@ -410,6 +410,7 @@ public class ArrayUtils<T> {
      *
      * @return Converted string
      */
+    @SuppressWarnings("SameParameterValue")
     @NonNull
     private String encodeList(final char delim, @NonNull final List<T> list) {
         StringBuilder ns = new StringBuilder();
@@ -443,6 +444,7 @@ public class ArrayUtils<T> {
      *
      * @return Array of strings resulting from list
      */
+    @SuppressWarnings("SameParameterValue")
     @NonNull
     private ArrayList<T> decodeList(final char delim, @Nullable final String s, final boolean allowBlank) {
         StringBuilder ns = new StringBuilder();

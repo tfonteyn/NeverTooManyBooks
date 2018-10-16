@@ -1,7 +1,7 @@
 /*
  * @copyright 2012 Philip Warner
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -21,6 +21,7 @@
 package com.eleybourn.bookcatalogue.baseactivity;
 
 import android.os.Bundle;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.ViewGroup;
@@ -31,27 +32,28 @@ import com.eleybourn.bookcatalogue.properties.Properties;
 
 /**
  * Base class to display simple preference-based options to the user.
- * 
+ *
  * @author Philip Warner
  */
-abstract public class PreferencesBaseActivity extends BookCatalogueActivity {
+abstract public class PreferencesBaseActivity extends BaseActivity {
 
-	/** Setup the views in the layout */
-	abstract protected void setupViews(@NonNull final Properties globalProps);
+    /** Setup the views in the layout */
+    abstract protected void initViews(@NonNull final Properties globalProps);
 
-	@Override
-	public void onCreate(@Nullable final Bundle savedInstanceState) {
-		try {
-			super.onCreate(savedInstanceState);
+    @Override
+    @CallSuper
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        try {
+            super.onCreate(savedInstanceState);
 
-			Properties globalProps = new Properties();
-			setupViews(globalProps);
+            Properties globalProps = new Properties();
+            initViews(globalProps);
 
-			ViewGroup styleProps = findViewById(R.id.dynamic_properties);
-			globalProps.buildView(getLayoutInflater(), styleProps);
+            ViewGroup styleProps = findViewById(R.id.dynamic_properties);
+            globalProps.buildView(getLayoutInflater(), styleProps);
 
-		} catch (Exception e) {
-			Logger.error(e);
-		}
-	}
+        } catch (Exception e) {
+            Logger.error(e);
+        }
+    }
 }

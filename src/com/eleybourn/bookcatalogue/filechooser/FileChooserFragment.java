@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue.filechooser;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -37,8 +38,8 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.filechooser.FileLister.FileListerListener;
 import com.eleybourn.bookcatalogue.utils.RTE;
-import com.eleybourn.bookcatalogue.widgets.SimpleListAdapter;
-import com.eleybourn.bookcatalogue.widgets.SimpleListAdapter.ViewProvider;
+import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter;
+import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter.ViewProvider;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -90,6 +91,7 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
      * Ensure activity supports event
      */
     @Override
+    @CallSuper
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         if (!(PathChangedListener.class.isInstance(context)))
@@ -102,6 +104,7 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
     }
 
     @Override
+    @CallSuper
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
@@ -146,7 +149,7 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
         String parent = mRootPath.getParent();
         if (parent == null) {
             //Snackbar.make(this.getView(), R.string.no_parent_directory_found, Snackbar.LENGTH_LONG).show();
-            StandardDialogs.showQuickNotice(getActivity(), R.string.no_parent_directory_found);
+            StandardDialogs.showBriefMessage(getActivity(), R.string.no_parent_directory_found);
             return;
         }
         mRootPath = new File(parent);
@@ -158,6 +161,7 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
      * Save our root path and list
      */
     @Override
+    @CallSuper
     public void onSaveInstanceState(@Nullable final Bundle state) {
         super.onSaveInstanceState(state);
         state.putString(BKEY_ROOT_PATH, mRootPath.getAbsolutePath());

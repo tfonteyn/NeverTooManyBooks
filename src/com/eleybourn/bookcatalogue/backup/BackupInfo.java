@@ -101,8 +101,7 @@ public class BackupInfo {
             info.putString(INFO_APPPACKAGE, appInfo.packageName);
             info.putString(INFO_APPVERSIONNAME, appInfo.versionName);
             info.putInt(INFO_APPVERSIONCODE, appInfo.versionCode);
-        } catch (Exception e1) {
-            // Not much we can do inside error logger...
+        } catch (PackageManager.NameNotFoundException ignore) {
         }
         info.putInt(INFO_SDK, Build.VERSION.SDK_INT);
         return new BackupInfo(info);

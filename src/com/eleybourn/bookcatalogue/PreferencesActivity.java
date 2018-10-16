@@ -21,6 +21,7 @@
 package com.eleybourn.bookcatalogue;
 
 import android.os.Bundle;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -39,6 +40,8 @@ import com.eleybourn.bookcatalogue.utils.SoundManager;
 
 import java.util.Locale;
 
+import static com.eleybourn.bookcatalogue.BookAbstractFragmentWithCoverImage.PREF_AUTOROTATE_CAMERA_IMAGES_DEFAULT;
+
 /**
  * Activity to display the 'Preferences' dialog and maintain the preferences.
  *
@@ -53,6 +56,11 @@ public class PreferencesActivity extends PreferencesBaseActivity {
             .add(90, R.string.menu_rotate_thumb_cw)
             .add(-90, R.string.menu_rotate_thumb_ccw)
             .add(180, R.string.menu_rotate_thumb_180);
+
+    /** List of supported BriefMessage implementation */
+    private static final ItemEntries<Integer> mBriefMessageItems = new ItemEntries<Integer>()
+            .add(0, R.string.bm_toast)
+            .add(1, R.string.bm_snackbar);
 
     /** List of supported locales */
     private static final ItemEntries<String> mLocalesListItems = getLocalesListItems();
@@ -86,23 +94,31 @@ public class PreferencesActivity extends PreferencesBaseActivity {
              * Enabling/disabling read-only mode when opening book. If enabled book
              * is opened in read-only mode (editing through menu), else in edit mode.
              */
-            .add(new BooleanProperty(BCPreferences.PREF_OPEN_BOOK_READ_ONLY,
+            .add(new BooleanProperty(BooksOnBookshelf.PREF_OPEN_BOOK_READ_ONLY,
                     PropertyGroup.GRP_USER_INTERFACE, R.string.prefs_global_opening_book_mode)
                     .setDefaultValue(true)
-                    .setPreferenceKey(BCPreferences.PREF_OPEN_BOOK_READ_ONLY)
+                    .setPreferenceKey(BooksOnBookshelf.PREF_OPEN_BOOK_READ_ONLY)
                     .setGlobal(true))
 
-            .add(new StringListProperty(mLocalesListItems, BCPreferences.PREF_APP_LOCALE,
+            .add(new StringListProperty(mLocalesListItems, BookCatalogueApp.PREF_APP_LOCALE,
                     PropertyGroup.GRP_USER_INTERFACE, R.string.preferred_interface_language)
-                    .setPreferenceKey(BCPreferences.PREF_APP_LOCALE)
+                    .setPreferenceKey(BookCatalogueApp.PREF_APP_LOCALE)
                     .setGlobal(true)
                     .setWeight(200)
                     .setGroup(PropertyGroup.GRP_USER_INTERFACE))
 
-            .add(new IntegerListProperty(mAppThemeItems, BCPreferences.PREF_APP_THEME,
+            .add(new IntegerListProperty(mAppThemeItems, BookCatalogueApp.PREF_APP_THEME,
                     PropertyGroup.GRP_USER_INTERFACE, R.string.preferred_theme)
                     .setDefaultValue(BookCatalogueApp.DEFAULT_THEME)
-                    .setPreferenceKey(BCPreferences.PREF_APP_THEME)
+                    .setPreferenceKey(BookCatalogueApp.PREF_APP_THEME)
+                    .setGlobal(true)
+                    .setWeight(200)
+                    .setGroup(PropertyGroup.GRP_USER_INTERFACE))
+
+            .add(new IntegerListProperty(mBriefMessageItems, BookCatalogueApp.PREF_APP_BRIEF_MESSAGE,
+                    PropertyGroup.GRP_USER_INTERFACE, R.string.preferred_brief_message_tech)
+                    .setDefaultValue(0)
+                    .setPreferenceKey(BookCatalogueApp.PREF_APP_BRIEF_MESSAGE)
                     .setGlobal(true)
                     .setWeight(200)
                     .setGroup(PropertyGroup.GRP_USER_INTERFACE))
@@ -135,22 +151,22 @@ public class PreferencesActivity extends PreferencesBaseActivity {
              * GRP_THUMBNAILS:
              ******************************************************************************/
 
-            .add(new BooleanProperty(BCPreferences.PREF_CROP_FRAME_WHOLE_IMAGE,
+            .add(new BooleanProperty(BookAbstractFragmentWithCoverImage.PREF_CROP_FRAME_WHOLE_IMAGE,
                     PropertyGroup.GRP_THUMBNAILS, R.string.default_crop_frame_is_whole_image)
                     .setDefaultValue(false)
-                    .setPreferenceKey(BCPreferences.PREF_CROP_FRAME_WHOLE_IMAGE)
+                    .setPreferenceKey(BookAbstractFragmentWithCoverImage.PREF_CROP_FRAME_WHOLE_IMAGE)
                     .setGlobal(true))
 
-            .add(new IntegerListProperty(mRotationListItems, BCPreferences.PREF_AUTOROTATE_CAMERA_IMAGES,
+            .add(new IntegerListProperty(mRotationListItems, BookAbstractFragmentWithCoverImage.PREF_AUTOROTATE_CAMERA_IMAGES,
                     PropertyGroup.GRP_THUMBNAILS, R.string.auto_rotate_camera_images)
-                    .setDefaultValue(90)
-                    .setPreferenceKey(BCPreferences.PREF_AUTOROTATE_CAMERA_IMAGES)
+                    .setDefaultValue(PREF_AUTOROTATE_CAMERA_IMAGES_DEFAULT)
+                    .setPreferenceKey(BookAbstractFragmentWithCoverImage.PREF_AUTOROTATE_CAMERA_IMAGES)
                     .setGlobal(true))
 
-            .add(new BooleanProperty(BCPreferences.PREF_USE_EXTERNAL_IMAGE_CROPPER,
+            .add(new BooleanProperty(BookAbstractFragmentWithCoverImage.PREF_USE_EXTERNAL_IMAGE_CROPPER,
                     PropertyGroup.GRP_THUMBNAILS, R.string.use_external_image_cropper)
                     .setDefaultValue(false)
-                    .setPreferenceKey(BCPreferences.PREF_USE_EXTERNAL_IMAGE_CROPPER)
+                    .setPreferenceKey(BookAbstractFragmentWithCoverImage.PREF_USE_EXTERNAL_IMAGE_CROPPER)
                     .setGlobal(true))
 
             /* *****************************************************************************
@@ -158,10 +174,10 @@ public class PreferencesActivity extends PreferencesBaseActivity {
              ******************************************************************************/
 
             // Book list compatibility mode setting
-            .add(new IntegerListProperty(mListGenerationOptionsListItems, BCPreferences.PREF_BOOKLIST_GENERATION_MODE,
+            .add(new IntegerListProperty(mListGenerationOptionsListItems, BooklistBuilder.PREF_BOOKLIST_GENERATION_MODE,
                     PropertyGroup.GRP_ADVANCED_OPTIONS, R.string.booklist_generation)
                     .setDefaultValue(BooklistBuilder.BOOKLIST_GENERATE_AUTOMATIC)
-                    .setPreferenceKey(BCPreferences.PREF_BOOKLIST_GENERATION_MODE)
+                    .setPreferenceKey(BooklistBuilder.PREF_BOOKLIST_GENERATION_MODE)
                     .setGlobal(true));
 
     /**
@@ -217,6 +233,7 @@ public class PreferencesActivity extends PreferencesBaseActivity {
     }
 
     @Override
+    @CallSuper
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // Make sure the names are correct
@@ -226,6 +243,7 @@ public class PreferencesActivity extends PreferencesBaseActivity {
     }
 
     @Override
+    @CallSuper
     public void onPause() {
         // Don't bother listening since we check for locale changes in onResume of super class
         BookCatalogueApp.unregisterOnLocaleChangedListener(mLocaleListener);
@@ -233,6 +251,7 @@ public class PreferencesActivity extends PreferencesBaseActivity {
     }
 
     @Override
+    @CallSuper
     public void onResume() {
         super.onResume();
         // Listen for locale changes (this activity CAN change it)
@@ -243,7 +262,7 @@ public class PreferencesActivity extends PreferencesBaseActivity {
      * Display current preferences and set handlers to catch changes.
      */
     @Override
-    protected void setupViews(@NonNull Properties globalProps) {
+    protected void initViews(@NonNull Properties globalProps) {
         // Add the locally constructed properties
         for (Property p : mProperties)
             globalProps.add(p);

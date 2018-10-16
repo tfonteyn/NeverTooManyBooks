@@ -78,7 +78,7 @@ abstract public class SearchThread extends ManagedTask {
 
     /**
      * Look in the data for a title, if present try to get a series name from it.
-     * In any case, clear the title (and save if none saved already) so that the
+     * In any case, clean the title (and save if none saved already) so that the
      * next lookup will overwrite with a possibly new title.
      */
     protected void checkForSeriesName() {
@@ -87,20 +87,23 @@ abstract public class SearchThread extends ManagedTask {
             if (thisTitle != null) {
                 SeriesDetails details = Series.findSeriesFromBookTitle(thisTitle);
                 if (details != null && !details.name.isEmpty()) {
-                    List<Series> sl;
+                    List<Series> list;
                     if (mBookData.containsKey(UniqueId.BKEY_SERIES_DETAILS)) {
-                        sl = ArrayUtils.getSeriesUtils().decodeList(mBookData.getString(UniqueId.BKEY_SERIES_DETAILS), false);
+                        list = ArrayUtils.getSeriesUtils().decodeList(mBookData.getString(UniqueId.BKEY_SERIES_DETAILS), false);
                     } else {
-                        sl = new ArrayList<>();
+                        list = new ArrayList<>();
                     }
-                    sl.add(new Series(details.name, details.position));
-                    mBookData.putString(UniqueId.BKEY_SERIES_DETAILS, ArrayUtils.getSeriesUtils().encodeList(sl));
+                    list.add(new Series(details.name, details.position));
+                    mBookData.putString(UniqueId.BKEY_SERIES_DETAILS, ArrayUtils.getSeriesUtils().encodeList(list));
                     mBookData.putString(UniqueId.KEY_TITLE, thisTitle.substring(0, details.startChar - 1).trim());
                 }
             }
         }
     }
 
+    /**
+     * Show an unexpected exception message
+     */
     protected void showException(@StringRes final int id, @NonNull final Exception e) {
         String s;
         try {
@@ -108,7 +111,15 @@ abstract public class SearchThread extends ManagedTask {
         } catch (Exception e2) {
             s = e2.getClass().getCanonicalName();
         }
-        String msg = String.format(getString(R.string.search_exception), getString(id), s);
+        String msg = String.format(getString(R.string.error_search_exception), getString(id), s);
+        showQuickNotice(msg);
+    }
+
+    /**
+     * Show a 'known' error, without the dreaded exception message
+     */
+    protected void showError(@StringRes final int id, @StringRes final int error) {
+        String msg = String.format(getString(R.string.error_search_exception), getString(id), error);
         showQuickNotice(msg);
     }
 

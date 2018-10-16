@@ -3,6 +3,7 @@ package com.eleybourn.bookcatalogue.dialogs;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.CallSuper;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -10,7 +11,6 @@ import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.CheckBox;
 import android.widget.Checkable;
 import android.widget.RadioButton;
 
@@ -61,6 +61,7 @@ public class ExportAdvancedDialogFragment extends DialogFragment {
      * Ensure activity supports event
      */
     @Override
+    @CallSuper
     public void onAttach(Context context) {
         super.onAttach(context);
 
@@ -168,13 +169,13 @@ public class ExportAdvancedDialogFragment extends DialogFragment {
         settings.dateFrom = null;
 
         Dialog dialog = this.getDialog();
-        if (((CheckBox) dialog.findViewById(R.id.books_check)).isChecked()) {
+        if (((Checkable) dialog.findViewById(R.id.books_check)).isChecked()) {
             settings.options |= Exporter.EXPORT_DETAILS;
         }
-        if (((CheckBox) dialog.findViewById(R.id.covers_check)).isChecked()) {
+        if (((Checkable) dialog.findViewById(R.id.covers_check)).isChecked()) {
             settings.options |= Exporter.EXPORT_COVERS;
         }
-        if (((CheckBox) dialog.findViewById(R.id.preferences_check)).isChecked()) {
+        if (((Checkable) dialog.findViewById(R.id.preferences_check)).isChecked()) {
             settings.options |= Exporter.EXPORT_PREFERENCES | Exporter.EXPORT_STYLES;
         }
 
@@ -188,7 +189,7 @@ public class ExportAdvancedDialogFragment extends DialogFragment {
                 settings.dateFrom = DateUtils.parseDate(v.toString());
             } catch (Exception e) {
                 //Snackbar.make(v, R.string.no_date, Snackbar.LENGTH_LONG).show();
-                StandardDialogs.showQuickNotice(getActivity(), R.string.no_date);
+                StandardDialogs.showBriefMessage(getActivity(), R.string.no_date);
                 return null;
             }
         }

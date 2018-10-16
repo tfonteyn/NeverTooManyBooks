@@ -21,6 +21,7 @@
 package com.eleybourn.bookcatalogue;
 
 import android.app.Activity;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
@@ -30,6 +31,7 @@ public class EditLocationDialog extends EditStringDialog {
         super(activity, db, onChanged);
     }
 
+    @CallSuper
     public void edit(@NonNull final String s) {
         super.edit(s, R.layout.dialog_edit_location, R.string.edit_location_details);
     }

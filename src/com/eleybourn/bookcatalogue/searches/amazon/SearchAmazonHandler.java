@@ -21,6 +21,7 @@
 package com.eleybourn.bookcatalogue.searches.amazon;
 
 import android.os.Bundle;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
@@ -220,6 +221,7 @@ public class SearchAmazonHandler extends DefaultHandler {
     }
 
     @Override
+    @CallSuper
     public void characters(final char[] ch, final int start, final int length) throws SAXException {
         super.characters(ch, start, length);
         mBuilder.append(ch, start, length);
@@ -258,7 +260,7 @@ public class SearchAmazonHandler extends DefaultHandler {
                                         @SuppressWarnings("SameParameterValue") @NonNull final String value) {
         if (!mBookData.containsKey(key)
                 || mBookData.getString(key).isEmpty()
-                || mBookData.getString(key).equals(value)) {
+                || value.equals(mBookData.getString(key))) {
             mBookData.putString(key, mBuilder.toString());
         }
     }
@@ -267,11 +269,12 @@ public class SearchAmazonHandler extends DefaultHandler {
      * Overridden method to get the best thumbnail, if present.
      */
     @Override
+    @CallSuper
     public void endDocument() {
         if (mFetchThumbnail && !mThumbnailUrl.isEmpty()) {
             String fileSpec = ImageUtils.saveThumbnailFromUrl(mThumbnailUrl, "_AM");
             if (!fileSpec.isEmpty())
-                ArrayUtils.addOrAppend(mBookData, UniqueId.BKEY_THUMBNAIL_USCORE, fileSpec);
+                ArrayUtils.addOrAppend(mBookData, UniqueId.BKEY_THUMBNAIL_FILES_SPEC, fileSpec);
         }
     }
 
@@ -283,6 +286,7 @@ public class SearchAmazonHandler extends DefaultHandler {
      * Also download the thumbnail and store in a tmp location
      */
     @Override
+    @CallSuper
     public void endElement(final String uri, @NonNull final String localName, final String name) throws SAXException {
         super.endElement(uri, localName, name);
         try {
@@ -314,15 +318,15 @@ public class SearchAmazonHandler extends DefaultHandler {
                     addIfNotPresent(UniqueId.KEY_TITLE);
                 } else if (localName.equalsIgnoreCase(EAN) || localName.equalsIgnoreCase(E_ISBN)) {
                     String tmp = mBuilder.toString();
-                    if (!mBookData.containsKey(UniqueId.KEY_ISBN)
-                            || mBookData.getString(UniqueId.KEY_ISBN).length() < tmp.length()) {
-                        mBookData.putString(UniqueId.KEY_ISBN, tmp);
+                    if (!mBookData.containsKey(UniqueId.KEY_BOOK_ISBN)
+                            || mBookData.getString(UniqueId.KEY_BOOK_ISBN).length() < tmp.length()) {
+                        mBookData.putString(UniqueId.KEY_BOOK_ISBN, tmp);
                     }
                 } else if (localName.equalsIgnoreCase(ISBN_OLD)) {
                     String tmp = mBuilder.toString();
-                    if (!mBookData.containsKey(UniqueId.KEY_ISBN)
-                            || mBookData.getString(UniqueId.KEY_ISBN).length() < tmp.length()) {
-                        mBookData.putString(UniqueId.KEY_ISBN, tmp);
+                    if (!mBookData.containsKey(UniqueId.KEY_BOOK_ISBN)
+                            || mBookData.getString(UniqueId.KEY_BOOK_ISBN).length() < tmp.length()) {
+                        mBookData.putString(UniqueId.KEY_BOOK_ISBN, tmp);
                     }
                 } else if (localName.equalsIgnoreCase(PUBLISHER)) {
                     addIfNotPresent(UniqueId.KEY_BOOK_PUBLISHER);
@@ -363,6 +367,7 @@ public class SearchAmazonHandler extends DefaultHandler {
      * Start the XML document and the StringBuilder object
      */
     @Override
+    @CallSuper
     public void startDocument() throws SAXException {
         super.startDocument();
         mBuilder = new StringBuilder();
@@ -375,6 +380,7 @@ public class SearchAmazonHandler extends DefaultHandler {
      * Start each XML element. Specifically identify when we are in the item element and set the appropriate flag.
      */
     @Override
+    @CallSuper
     public void startElement(final String uri, @NonNull final String localName, final String name, final Attributes attributes) throws SAXException {
         super.startElement(uri, localName, name, attributes);
         if (!done && localName.equalsIgnoreCase(ENTRY)) {

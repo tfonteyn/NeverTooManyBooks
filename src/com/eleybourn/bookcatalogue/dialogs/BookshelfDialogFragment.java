@@ -20,8 +20,8 @@
 package com.eleybourn.bookcatalogue.dialogs;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
@@ -31,6 +31,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 
 import com.eleybourn.bookcatalogue.R;
@@ -84,6 +85,7 @@ public class BookshelfDialogFragment extends DialogFragment {
      * Ensure activity supports event
      */
     @Override
+    @CallSuper
     public void onAttach(Context context) {
         super.onAttach(context);
 
@@ -101,6 +103,7 @@ public class BookshelfDialogFragment extends DialogFragment {
      * Save instance variables that we need
      */
     @Override
+    @CallSuper
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         outState.putString(BKEY_LIST, mCurrList);
         outState.putString(BKEY_TEXT, mCurrText);
@@ -147,6 +150,7 @@ public class BookshelfDialogFragment extends DialogFragment {
 //        return mSyncedDb.rawQuery(sql, new String[]{});
 //    }
     @Override
+    @CallSuper
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
@@ -198,9 +202,10 @@ public class BookshelfDialogFragment extends DialogFragment {
         for (Bookshelf bookshelf : allBookshelves) {
             String db_encoded_bookshelf = ArrayUtils.encodeListItem(Bookshelf.SEPARATOR, bookshelf.name);
 
-            final CheckBox cb = new CheckBox(getActivity());
+            final CompoundButton cb = new CheckBox(getActivity());
             cb.setChecked((shelves.contains(Bookshelf.SEPARATOR + db_encoded_bookshelf + Bookshelf.SEPARATOR)));
-            cb.setHintTextColor(Color.WHITE);
+            //TODO: not sure... just delete, or use an attr so light-theme works.
+            //cb.setHintTextColor(Color.WHITE);
             cb.setHint(bookshelf.name);
             // Setup a click listener that sends all clicks back to the calling activity and maintains the two lists
             cb.setOnClickListener(new OnClickListener() {

@@ -7,6 +7,7 @@ import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue;
 import com.eleybourn.bookcatalogue.utils.IsbnUtils;
 import com.eleybourn.bookcatalogue.utils.RTE;
 
+import java.net.SocketTimeoutException;
 import java.util.List;
 
 class ISFDBEditionsTask implements SimpleTaskQueue.SimpleTask {
@@ -24,9 +25,9 @@ class ISFDBEditionsTask implements SimpleTaskQueue.SimpleTask {
     }
 
     @Override
-    public void run(@NonNull final SimpleTaskQueue.SimpleTaskContext taskContext) {
+    public void run(@NonNull final SimpleTaskQueue.SimpleTaskContext taskContext) throws SocketTimeoutException {
         Editions bookEditions = new Editions(isbn);
-        editions = bookEditions.fetchEditions();
+        editions = bookEditions.fetch();
     }
 
     @Override

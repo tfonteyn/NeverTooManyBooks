@@ -66,6 +66,7 @@ public class BookshelfListApiHandler extends ApiHandler {
     public Bundle run(final int page)
             throws OAuthMessageSignerException, OAuthExpectationFailedException,
             OAuthCommunicationException, NotAuthorizedException, BookNotFoundException, IOException, NetworkException {
+        @SuppressWarnings("UnusedAssignment")
         long t0 = System.currentTimeMillis();
 
         // Sort by update_dte (descending) so sync is faster. Specify 'shelf=all' because it seems goodreads returns

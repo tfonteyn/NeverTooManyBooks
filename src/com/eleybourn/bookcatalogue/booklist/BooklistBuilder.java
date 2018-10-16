@@ -28,7 +28,6 @@ import android.database.sqlite.SQLiteQuery;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.BCPreferences;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
@@ -165,13 +164,15 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_SERIE
  * @author Philip Warner
  */
 public class BooklistBuilder implements AutoCloseable {
-    /**
-     * BookList Compatibility mode property values
-     */
+
+    /** Force list construction to compatible mode (compatible with Android 1.6) */
+    public static final String PREF_BOOKLIST_GENERATION_MODE = "App.BooklistGenerationMode";
+    /** BookList Compatibility mode property values */
     public static final int BOOKLIST_GENERATE_OLD_STYLE = 1;
     public static final int BOOKLIST_GENERATE_FLAT_TRIGGER = 2;
     public static final int BOOKLIST_GENERATE_NESTED_TRIGGER = 3;
     public static final int BOOKLIST_GENERATE_AUTOMATIC = 4;
+
     /**
      * Convenience expression for the SQL which gets formatted author names in 'Last, Given' form
      */
@@ -259,7 +260,7 @@ public class BooklistBuilder implements AutoCloseable {
     //private static String LOANED_TO_SQL = null;
     //private static String getLoanedToSql() {
     //	if (LOANED_TO_SQL == null) {
-    //		LOANED_TO_SQL = "Coalesce( (Select " + TBL_LOAN.dot(KEY_LOANED_TO) + " From " + TBL_LOAN.ref() +
+    //		LOANED_TO_SQL = "Coalesce( (Select " + TBL_LOAN.dot(DOM_LOANED_TO) + " From " + TBL_LOAN.ref() +
     //				" Where " + TBL_LOAN.dot(DOM_BOOK_ID) + " = " + TBL_BOOKS.dot(DOM_ID) + "), '" + BookCatalogueApp.getResourceString(R.string.available) + ")";
     //	}
     //	return LOANED_TO_SQL;
@@ -503,6 +504,7 @@ public class BooklistBuilder implements AutoCloseable {
                       @NonNull String searchText) {
         Tracker.handleEvent(this, "build-" + getId(), Tracker.States.Enter);
         try {
+            @SuppressWarnings("UnusedAssignment")
             long t0 = System.currentTimeMillis();
 
             // Cleanup searchText
@@ -550,8 +552,8 @@ public class BooklistBuilder implements AutoCloseable {
 
             // We can not use triggers to fill in headings in API < 8 since SQLite 3.5.9 is broken
             // Allow for the user preferences to override in case another build is broken.
-            final int listMode = BCPreferences.getInt(
-                    BCPreferences.PREF_BOOKLIST_GENERATION_MODE,
+            final int listMode = BookCatalogueApp.Prefs.getInt(
+                    PREF_BOOKLIST_GENERATION_MODE,
                     BooklistBuilder.BOOKLIST_GENERATE_AUTOMATIC);
             boolean useTriggers;
             boolean flatTriggers = false;
@@ -582,6 +584,7 @@ public class BooklistBuilder implements AutoCloseable {
             // reverse sort if they are not used.
             final int sortDescendingMask = (useTriggers ? SummaryBuilder.FLAG_SORT_DESCENDING : 0);
 
+            @SuppressWarnings("UnusedAssignment")
             long t0a = System.currentTimeMillis();
 
             for (BooklistGroup booklistGroup : mStyle) {
@@ -831,6 +834,7 @@ public class BooklistBuilder implements AutoCloseable {
                 //</editor-fold>
             }
 
+            @SuppressWarnings("UnusedAssignment")
             long t0b = System.currentTimeMillis();
 
             // Want the UUID for the book so we can get thumbs
@@ -862,6 +866,7 @@ public class BooklistBuilder implements AutoCloseable {
                     flags = SummaryBuilder.FLAG_NONE;
                 summary.addDomain(info.domain, info.sourceExpression, flags);
             }
+            @SuppressWarnings("UnusedAssignment")
             long t0c = System.currentTimeMillis();
 
 
@@ -876,6 +881,7 @@ public class BooklistBuilder implements AutoCloseable {
             */
             SqlComponents sqlCmp = summary.buildSqlComponents(mStyle.getGroupAt(0).getCompoundKey());
 
+            @SuppressWarnings("UnusedAssignment")
             long t0d = System.currentTimeMillis();
 
             /*
@@ -943,10 +949,9 @@ public class BooklistBuilder implements AutoCloseable {
             // Append the resulting join tables to our initial insert statement
             sqlCmp.join = join.toString();
 
-            //
-            // Now build the 'where' clause.
-            //
+            @SuppressWarnings("UnusedAssignment")
             long t0e = System.currentTimeMillis();
+            // Now build the 'where' clause.
             StringBuilder where = build_whereClause(bookshelf, authorWhere, bookWhere, loaned_to, seriesName, searchText, hasGroupBOOKSHELF);
 
             // If we got any conditions, add them to the initial insert statement
@@ -956,6 +961,7 @@ public class BooklistBuilder implements AutoCloseable {
                 sqlCmp.where = "";
             }
 
+            @SuppressWarnings("UnusedAssignment")
             long t1 = System.currentTimeMillis();
             // Check if the collation we use is case sensitive; bug introduced in ICS was to make UNICODE not CI.
             // Due to bugs in other language sorting, we are now forced to use a different collation  anyway, but
@@ -1028,9 +1034,11 @@ public class BooklistBuilder implements AutoCloseable {
 			*/
 
             // We are good to go.
+            @SuppressWarnings("UnusedAssignment")
             long t1a = System.currentTimeMillis();
             //mSyncedDb.execSQL("PRAGMA synchronous = OFF"); -- Has very little effect
             SyncLock txLock = mSyncedDb.beginTransaction(true);
+            @SuppressWarnings("UnusedAssignment")
             long t1b = System.currentTimeMillis();
             try {
                 //
@@ -1042,6 +1050,7 @@ public class BooklistBuilder implements AutoCloseable {
                 ////
                 //// Code to manually insert each row
                 ////
+                //@SuppressWarnings("UnusedAssignment")
                 //long TM0 = System.currentTimeMillis();
                 //String selStmt = sqlCmp.select + " from " + sqlCmp.join + " " + sqlCmp.where + " Order by " + sortIndexColumnList;
                 //final Cursor selCsr = mSyncedDb.rawQuery(selStmt);
@@ -1092,6 +1101,7 @@ public class BooklistBuilder implements AutoCloseable {
                 //	insStmt.execute();
                 //}
                 //selCsr.close();
+                //@SuppressWarnings("UnusedAssignment")
                 //long TM1 = System.currentTimeMillis();
                 //Logger.info("Time to MANUALLY INSERT: " + (TM1-TM0));
 
@@ -1111,6 +1121,7 @@ public class BooklistBuilder implements AutoCloseable {
                                     "\n FROM\n" + sqlCmp.join + sqlCmp.where + " ORDER BY " + sortColNameList);
                     mBaseBuildStmt.execute();
                     t2 = System.currentTimeMillis();
+                    //noinspection UnusedAssignment
                     t3 = t2;
                 } else {
                     // Without triggers we just get the base rows and add summary later
@@ -1118,6 +1129,7 @@ public class BooklistBuilder implements AutoCloseable {
                             sqlCmp.insertSelect + sqlCmp.join + sqlCmp.where);
                     //Logger.info("Base Build:\n" + sql);
                     mBaseBuildStmt.execute();
+                    //noinspection UnusedAssignment
                     t2 = System.currentTimeMillis();
 
                     // Now build each summary level query based on the prior level.
@@ -1158,6 +1170,7 @@ public class BooklistBuilder implements AutoCloseable {
                     }
 
                     // Build an index
+                    //noinspection UnusedAssignment
                     t3 = System.currentTimeMillis();
                     // Build an index if it will help sorting
                     // - *If* collation is case-sensitive, don't bother with index, since everything is wrapped in lower().
@@ -1169,9 +1182,11 @@ public class BooklistBuilder implements AutoCloseable {
                     }
                 }
 
-                // Analyze the table
+                @SuppressWarnings("UnusedAssignment")
                 long t3a = System.currentTimeMillis();
+                // Analyze the table
                 mSyncedDb.execSQL("analyze " + mListTable);
+                @SuppressWarnings("UnusedAssignment")
                 long t3b = System.currentTimeMillis();
 
                 // Now build a lookup table to match row sort position to row ID. This is used to match a specific
@@ -1227,6 +1242,7 @@ public class BooklistBuilder implements AutoCloseable {
                         break;
                 }
 
+                @SuppressWarnings("UnusedAssignment")
                 long t4 = System.currentTimeMillis();
                 // Create index on nav table
                 {
@@ -1236,6 +1252,7 @@ public class BooklistBuilder implements AutoCloseable {
                     ixStmt.execute();
                 }
 
+                @SuppressWarnings("UnusedAssignment")
                 long t4a = System.currentTimeMillis();
                 {
                     // Essential for main query! If not present, will make getCount() take ages because main query is a cross with no index.
@@ -1245,16 +1262,20 @@ public class BooklistBuilder implements AutoCloseable {
                     ixStmt.execute();
                 }
 
+                @SuppressWarnings("UnusedAssignment")
                 long t4b = System.currentTimeMillis();
                 mSyncedDb.execSQL("analyze " + mNavTable);
+                @SuppressWarnings("UnusedAssignment")
                 long t4c = System.currentTimeMillis();
-
+                @SuppressWarnings("UnusedAssignment")
                 long t8 = System.currentTimeMillis();
                 //stmt = makeStatement(ix1Sql);
                 //mLevelBuildStmts.add(stmt);
                 //stmt.execute();
+                @SuppressWarnings("UnusedAssignment")
                 long t9 = System.currentTimeMillis();
                 //mSyncedDb.execSQL(ix2Sql);
+                @SuppressWarnings("UnusedAssignment")
                 long t10 = System.currentTimeMillis();
                 //mSyncedDb.execSQL("analyze " + mTableName);
 
@@ -1479,7 +1500,7 @@ public class BooklistBuilder implements AutoCloseable {
             int kind = mStyle.getGroupAt(0).kind;
             if (mDeleteListNodeSettingsStmt == null) {
                 mDeleteListNodeSettingsStmt = mStatements.add("mDeleteListNodeSettingsStmt",
-                        "DELETE FROM " + TBL_BOOK_LIST_NODE_SETTINGS + " WHERE "+ DOM_ROW_KIND + "=?");
+                        "DELETE FROM " + TBL_BOOK_LIST_NODE_SETTINGS + " WHERE " + DOM_ROW_KIND + "=?");
             }
             mDeleteListNodeSettingsStmt.bindLong(1, kind);
             mDeleteListNodeSettingsStmt.execute();
@@ -1771,7 +1792,7 @@ public class BooklistBuilder implements AutoCloseable {
             if (mDeleteListNodeSettingStmt == null) {
                 mDeleteListNodeSettingStmt = mStatements.add("mDeleteSettingsStmt",
                         "DELETE FROM " + TBL_BOOK_LIST_NODE_SETTINGS + " WHERE " + DOM_ROW_KIND + "=? AND " +
-                        DOM_ROOT_KEY + " IN (SELECT DISTINCT " + DOM_ROOT_KEY + " FROM " + mNavTable + " WHERE " + DOM_ID + "=?)");
+                                DOM_ROOT_KEY + " IN (SELECT DISTINCT " + DOM_ROOT_KEY + " FROM " + mNavTable + " WHERE " + DOM_ID + "=?)");
             }
             mDeleteListNodeSettingStmt.bindLong(1, kind);
             mDeleteListNodeSettingStmt.bindLong(2, rowId);
@@ -1873,7 +1894,7 @@ public class BooklistBuilder implements AutoCloseable {
      * Return a list cursor starting at a given offset, using a given limit.
      */
     @NonNull
-    BooklistCursor getOffsetCursor(final int position, final int size) {
+    BooklistCursor getOffsetCursor(final int position, @SuppressWarnings("SameParameterValue") final int size) {
         // Get the domains
         StringBuilder domains = new StringBuilder();
         final String prefix = mListTable.getAlias() + ".";
@@ -1932,6 +1953,7 @@ public class BooklistBuilder implements AutoCloseable {
      * Utility routine to perform a single count query.
      */
     private int pseudoCount(@NonNull final String name, @NonNull final String countSql) {
+        @SuppressWarnings("UnusedAssignment")
         long tc0 = System.currentTimeMillis();
         int cnt;
         try (SynchronizedStatement stmt = mSyncedDb.compileStatement(countSql)) {
@@ -2062,6 +2084,7 @@ public class BooklistBuilder implements AutoCloseable {
      * For COLLAPSE: Mark all non-root rows as invisible/unexpanded and mark all root nodes as visible/unexpanded.
      */
     public void expandAll(final boolean expand) {
+        @SuppressWarnings("UnusedAssignment")
         long t0 = System.currentTimeMillis();
         if (expand) {
             String sql = "UPDATE " + mNavTable + " SET expanded=1, visible=1";
@@ -2373,8 +2396,10 @@ public class BooklistBuilder implements AutoCloseable {
         void recreateTable() {
             //mListTable.setIsTemporary(true); commented in original code
 
+            @SuppressWarnings("UnusedAssignment")
             long t0 = System.currentTimeMillis();
             mListTable.drop(mSyncedDb);
+            @SuppressWarnings("UnusedAssignment")
             long t1 = System.currentTimeMillis();
             mListTable.create(mSyncedDb, false);
 

@@ -12,7 +12,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.BCPreferences;
+import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.scanner.Pic2ShopScanner;
@@ -131,7 +131,7 @@ public class DebugReport {
 
         // Scanners installed
         try {
-            message.append("Pref. Scanner: ").append(BCPreferences.getInt(ScannerManager.PREF_PREFERRED_SCANNER, -1)).append("\n");
+            message.append("Pref. Scanner: ").append(BookCatalogueApp.Prefs.getInt(ScannerManager.PREF_PREFERRED_SCANNER, -1)).append("\n");
             String[] scanners = new String[]{ZxingScanner.ACTION, Pic2ShopScanner.Free.ACTION, Pic2ShopScanner.Pro.ACTION};
             for (String scanner : scanners) {
                 message.append("Scanner [").append(scanner).append("]:\n");
@@ -201,7 +201,7 @@ public class DebugReport {
 
         } catch (NullPointerException e) {
             Logger.error(e);
-            StandardDialogs.showQuickNotice(activity, R.string.export_failed_sdcard);
+            StandardDialogs.showBriefMessage(activity, R.string.error_export_failed);
         }
     }
 }

@@ -20,11 +20,11 @@
 package com.eleybourn.bookcatalogue.filechooser;
 
 import android.os.Bundle;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 
-import com.eleybourn.bookcatalogue.BCPreferences;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.BackupManager;
@@ -36,11 +36,14 @@ import com.eleybourn.bookcatalogue.dialogs.MessageDialogFragment;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressFragment;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressFragment.FragmentTask;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
+import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 import java.io.File;
 import java.util.Date;
 import java.util.Objects;
+
+import static com.eleybourn.bookcatalogue.BookCatalogueApp.PREF_LAST_BACKUP_FILE;
 
 /**
  * FileChooser activity to choose an archive file to open/save
@@ -68,6 +71,8 @@ public class BackupChooser extends FileChooser implements
     @Nullable
     private File mBackupFile;
 
+    @CallSuper
+    @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -99,7 +104,9 @@ public class BackupChooser extends FileChooser implements
     @NonNull
     @Override
     protected FileChooserFragment getChooserFragment() {
-        return FileChooserFragment.newInstance(BCPreferences.getLastBackupFile(), getDefaultFileName());
+        String lastBackupFile = BookCatalogueApp.Prefs.getString(PREF_LAST_BACKUP_FILE, StorageUtils.getSharedStorage().getAbsolutePath());
+        //noinspection ConstantConditions
+        return FileChooserFragment.newInstance(lastBackupFile, getDefaultFileName());
     }
 
     /**
@@ -115,6 +122,7 @@ public class BackupChooser extends FileChooser implements
      * Save the state
      */
     @Override
+    @CallSuper
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         if (mBackupFile != null) {
@@ -151,7 +159,7 @@ public class BackupChooser extends FileChooser implements
         switch (taskId) {
             case TASK_ID_SAVE: {
                 if (!success) {
-                    String msg = getString(R.string.backup_failed)
+                    String msg = getString(R.string.error_backup_failed)
                             + " " + getString(R.string.please_check_sd_writable)
                             + "\n\n" + getString(R.string.if_the_problem_persists);
 
@@ -225,10 +233,10 @@ public class BackupChooser extends FileChooser implements
                                                   @NonNull final ImportTypeSelectionDialogFragment.ImportSettings settings) {
         switch (settings.options) {
             case Importer.IMPORT_ALL:
-                BackupManager.restoreCatalogue(this, settings.file, TASK_ID_OPEN, Importer.IMPORT_ALL);
+                BackupManager.restore(this, settings.file, TASK_ID_OPEN, Importer.IMPORT_ALL);
                 break;
             case Importer.IMPORT_NEW_OR_UPDATED:
-                BackupManager.restoreCatalogue(this, settings.file, TASK_ID_OPEN, Importer.IMPORT_NEW_OR_UPDATED);
+                BackupManager.restore(this, settings.file, TASK_ID_OPEN, Importer.IMPORT_NEW_OR_UPDATED);
                 break;
         }
     }
@@ -239,20 +247,20 @@ public class BackupChooser extends FileChooser implements
                                                   @NonNull final ExportTypeSelectionDialogFragment.ExportSettings settings) {
         switch (settings.options) {
             case Exporter.EXPORT_ALL:
-                mBackupFile = BackupManager.backupCatalogue(this, settings.file, TASK_ID_SAVE, Exporter.EXPORT_ALL, null);
+                mBackupFile = BackupManager.backup(this, settings.file, TASK_ID_SAVE, Exporter.EXPORT_ALL, null);
                 break;
             case Exporter.EXPORT_NOTHING:
                 return;
             default:
                 if (settings.dateFrom == null) {
-                    String lastBackup = BCPreferences.getLastBackupDate();
+                    String lastBackup = BookCatalogueApp.Prefs.getString(BookCatalogueApp.PREF_LAST_BACKUP_DATE, null);
                     if (lastBackup != null && !lastBackup.isEmpty()) {
                         settings.dateFrom = DateUtils.parseDate(lastBackup);
                     } else {
                         settings.dateFrom = null;
                     }
                 }
-                mBackupFile = BackupManager.backupCatalogue(this, settings.file, TASK_ID_SAVE, settings.options, settings.dateFrom);
+                mBackupFile = BackupManager.backup(this, settings.file, TASK_ID_SAVE, settings.options, settings.dateFrom);
                 break;
         }
     }

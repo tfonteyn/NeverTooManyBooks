@@ -20,10 +20,11 @@
 
 package com.eleybourn.bookcatalogue.booklist;
 
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.BCPreferences;
+import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
@@ -83,7 +84,7 @@ public class BooklistStyles extends ArrayList<BooklistStyle> {
     @NonNull
     private static Set<String> getPreferredStyleNames() {
         Set<String> names = new HashSet<>();
-        String itemStr = BCPreferences.getString(PREF_MENU_ITEMS, null);
+        String itemStr = BookCatalogueApp.Prefs.getString(PREF_MENU_ITEMS, null);
         if (itemStr != null && !itemStr.isEmpty()) {
             List<String> list = ArrayUtils.decodeList(itemStr);
             for (String name : list) {
@@ -214,7 +215,7 @@ public class BooklistStyles extends ArrayList<BooklistStyle> {
         BooklistStyles styles = new BooklistStyles();
 
         // Get the user preference
-        String itemStr = BCPreferences.getString(PREF_MENU_ITEMS, null);
+        String itemStr = BookCatalogueApp.Prefs.getString(PREF_MENU_ITEMS, null);
         if (itemStr != null && !itemStr.isEmpty()) {
             // Break it up and process in order
             List<String> list = ArrayUtils.decodeList(itemStr);
@@ -285,7 +286,7 @@ public class BooklistStyles extends ArrayList<BooklistStyle> {
                 items.append(ArrayUtils.encodeListItem(style.getCanonicalName()));
             }
         }
-        BCPreferences.setString(PREF_MENU_ITEMS, items.toString());
+        BookCatalogueApp.Prefs.putString(PREF_MENU_ITEMS, items.toString());
     }
 
     /**
@@ -295,6 +296,8 @@ public class BooklistStyles extends ArrayList<BooklistStyle> {
      *
      * @return <tt>true</tt> (as specified by {@link Collection#add})
      */
+    @CallSuper
+    @Override
     public boolean add(@NonNull final BooklistStyle style) {
         style.setPreferred(mPreferredStyleNames.contains(style.getCanonicalName()));
         return super.add(style);

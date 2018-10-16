@@ -18,10 +18,11 @@
  * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.eleybourn.bookcatalogue.widgets;
+package com.eleybourn.bookcatalogue.adapters;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -92,6 +93,7 @@ public class BindableItemCursorAdapter extends CursorAdapter {
     }
 
     @Override
+    @CallSuper
     public void notifyDataSetChanged() {
         super.notifyDataSetChanged();
         // Clear cached stuff

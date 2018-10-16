@@ -18,7 +18,7 @@
  * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.eleybourn.bookcatalogue;
+package com.eleybourn.bookcatalogue.adapters;
 
 import android.app.Activity;
 import android.content.Context;
@@ -30,6 +30,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 
+import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.widgets.FastScroller;
@@ -57,9 +58,9 @@ public class MultiTypeListCursorAdapter extends CursorAdapter implements FastScr
 
     //FIXME: https://www.androiddesignpatterns.com/2012/07/loaders-and-loadermanager-background.html
 
-    MultiTypeListCursorAdapter(@NonNull final Activity activity,
-                               @NonNull final Cursor cursor,
-                               @NonNull final MultiTypeListHandler handler) {
+    public MultiTypeListCursorAdapter(@NonNull final Activity activity,
+                                      @NonNull final Cursor cursor,
+                                      @NonNull final MultiTypeListHandler handler) {
         super(activity, cursor);
         //noinspection ConstantConditions
         mInflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -72,7 +73,7 @@ public class MultiTypeListCursorAdapter extends CursorAdapter implements FastScr
      */
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        throw new RuntimeException("MultiTypeListCursorAdapter.bindView is unsupported");
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -81,7 +82,7 @@ public class MultiTypeListCursorAdapter extends CursorAdapter implements FastScr
     @NonNull
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        throw new RuntimeException("MultiTypeListCursorAdapter.newView is unsupported");
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -95,9 +96,9 @@ public class MultiTypeListCursorAdapter extends CursorAdapter implements FastScr
         // NOTE: It DOES NOT fix the error; just gathers more debug info
         //
         if (cursor.isClosed()) {
-            throw new RuntimeException("Attempt to get type of item on closed cursor (" + cursor + ")");
+            throw new IllegalStateException("Attempt to get type of item on closed cursor (" + cursor + ")");
         } else if (position >= cursor.getCount()) {
-            throw new RuntimeException("Attempt to get type of item beyond end of cursor (" + cursor + ")");
+            throw new IllegalStateException("Attempt to get type of item beyond end of cursor (" + cursor + ")");
         } else {
             cursor.moveToPosition(position);
             return mHandler.getItemViewType(cursor);

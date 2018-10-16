@@ -6,6 +6,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,9 +26,9 @@ class Editions extends AbstractBase {
      * @return a list with native ISFDB book id's pointing to individual editions (with the same isbn)
      */
     @NonNull
-    long[] getBookIds() {
+    long[] getBookIds() throws SocketTimeoutException {
         if (mEditions == null) {
-            fetchEditions();
+            fetch();
         }
         long[] ids = new long[mEditions.size()];
 
@@ -44,7 +45,7 @@ class Editions extends AbstractBase {
      *
      * @return a list with URLs pointing to individual editions (with the same isbn)
      */
-    List<String> fetchEditions() {
+    List<String> fetch() throws SocketTimeoutException {
         if (mEditions == null) {
             mEditions = new ArrayList<>();
         }
@@ -52,8 +53,7 @@ class Editions extends AbstractBase {
             return mEditions;
         }
 
-        findEntries(mDoc, "tr.table0");
-        findEntries(mDoc, "tr.table1");
+        findEntries(mDoc, "tr.table0", "tr.table1");
         // if no editions, we were redirected to the book itself
         if (mEditions.size() == 0) {
             mEditions.add(mDoc.location());
@@ -62,14 +62,16 @@ class Editions extends AbstractBase {
         return mEditions;
     }
 
-    private void findEntries(@NonNull final Document doc, @NonNull final String selector) {
-        Elements entries = doc.select(selector);
-        for (Element entry : entries) {
-            Element edLink = entry.select("a").first(); // first column has the book link
-            if (edLink != null) {
-                String url = edLink.attr("href");
-                if (url != null) {
-                    mEditions.add(url);
+    private void findEntries(@NonNull final Document doc, @NonNull final String... selectors) {
+        for (String selector : selectors) {
+            Elements entries = doc.select(selector);
+            for (Element entry : entries) {
+                Element edLink = entry.select("a").first(); // first column has the book link
+                if (edLink != null) {
+                    String url = edLink.attr("href");
+                    if (url != null) {
+                        mEditions.add(url);
+                    }
                 }
             }
         }

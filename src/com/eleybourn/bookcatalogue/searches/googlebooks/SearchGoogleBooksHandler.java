@@ -20,6 +20,7 @@
 
 package com.eleybourn.bookcatalogue.searches.googlebooks;
 
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 
 import org.xml.sax.Attributes;
@@ -151,12 +152,14 @@ class SearchGoogleBooksHandler extends DefaultHandler {
     }
 
     @Override
+    @CallSuper
     public void characters(@NonNull final char[] ch, final int start, final int length) throws SAXException {
         super.characters(ch, start, length);
         builder.append(ch, start, length);
     }
 
     @Override
+    @CallSuper
     public void endElement(@NonNull final String uri,
                            @NonNull final String localName,
                            @NonNull final String name) throws SAXException {
@@ -177,12 +180,14 @@ class SearchGoogleBooksHandler extends DefaultHandler {
     }
 
     @Override
+    @CallSuper
     public void startDocument() throws SAXException {
         super.startDocument();
         builder = new StringBuilder();
     }
 
     @Override
+    @CallSuper
     public void startElement(@NonNull final String uri,
                              @NonNull final String localName,
                              @NonNull final String name,

@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue.booklist;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -32,7 +33,7 @@ import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
-import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
+import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
@@ -48,7 +49,7 @@ import com.eleybourn.bookcatalogue.utils.ViewTagger;
  *
  * @author Philip Warner
  */
-public class BooklistStylePropertiesActivity extends BookCatalogueActivity {
+public class BooklistStylePropertiesActivity extends BaseActivity {
     private static final String TAG = "BooklistStyleProperties";
     /** Parameter used to pass data to this activity */
     public static final String BKEY_STYLE = TAG + ".Style";
@@ -72,6 +73,7 @@ public class BooklistStylePropertiesActivity extends BookCatalogueActivity {
     }
 
     @Override
+    @CallSuper
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -146,7 +148,7 @@ public class BooklistStylePropertiesActivity extends BookCatalogueActivity {
         try {
             mProperties.validate();
         } catch (ValidationException e) {
-            StandardDialogs.showQuickNotice(this, e.getLocalizedMessage());
+            StandardDialogs.showBriefMessage(this, e.getLocalizedMessage());
             return;
         }
 
@@ -161,10 +163,12 @@ public class BooklistStylePropertiesActivity extends BookCatalogueActivity {
     }
 
     @Override
+    @CallSuper
     protected void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent intent) {
-        super.onActivityResult(requestCode, resultCode, intent);
+        super.onActivityResult(requestCode,resultCode,intent);
+
         switch (requestCode) {
-            case UniqueId.ACTIVITY_REQUEST_CODE_BOOKLIST_STYLE_GROUPS:
+            case UniqueId.ACTIVITY_REQUEST_CODE_BOOKLIST_STYLE_GROUPS: {
                 // When groups have been edited, copy them to this style.
                 if (intent != null && intent.hasExtra(BooklistStyleGroupsListActivity.BKEY_STYLE)) {
                     BooklistStyle editedStyle = null;
@@ -179,6 +183,7 @@ public class BooklistStylePropertiesActivity extends BookCatalogueActivity {
                     }
                 }
                 break;
+            }
         }
     }
 
@@ -194,10 +199,8 @@ public class BooklistStylePropertiesActivity extends BookCatalogueActivity {
         return mDb;
     }
 
-    /**
-     * Cleanup.
-     */
     @Override
+    @CallSuper
     protected void onDestroy() {
         super.onDestroy();
         if (mDb != null) {

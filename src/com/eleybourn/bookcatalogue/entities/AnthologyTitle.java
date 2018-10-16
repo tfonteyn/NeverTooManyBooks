@@ -24,6 +24,7 @@ import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
+import com.eleybourn.bookcatalogue.utils.RTE;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 import java.io.Serializable;
@@ -53,6 +54,7 @@ public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
      * "anthology title * author "
      */
     public static final char TITLE_AUTHOR_DELIM = '*';
+
     /**
      * Used by:
      * - ISFDB import of anthology titles
@@ -62,7 +64,7 @@ public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
      *
      * pattern finds (1960), group 1 will then contain the pure 1960
      */
-    public static final Pattern YEAR_FROM_STRING = Pattern.compile("\\(([1|2]\\d\\d\\d)\\)");
+    private static final Pattern YEAR_FROM_STRING = Pattern.compile("\\(([1|2]\\d\\d\\d)\\)");
     public static final char SEPARATOR = ',';
 
     /**
@@ -103,6 +105,24 @@ public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
         mAuthor = author;
         mTitle = title.trim();
         mFirstPublicationDate = publicationDate;
+    }
+
+    /**
+     * Helper to check if all titles in a list have the same author.
+     */
+    public static boolean isSingleAuthor(@NonNull final List<AnthologyTitle> results) {
+        // check if its all the same author or not
+        boolean sameAuthor = true;
+        if (results.size() > 1) {
+            Author author = results.get(0).getAuthor();
+            for (AnthologyTitle t : results) { // yes, we check 0 twice.. oh well.
+                sameAuthor = author.equals(t.getAuthor());
+                if (!sameAuthor) {
+                    break;
+                }
+            }
+        }
+        return sameAuthor;
     }
 
     /**
@@ -197,7 +217,6 @@ public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
         mFirstPublicationDate = publicationDate;
     }
 
-
     @Override
     public long fixupId(@NonNull final CatalogueDBAdapter db) {
         this.mAuthor.id = db.getAuthorIdByName(mAuthor.familyName, mAuthor.givenNames);
@@ -237,5 +256,35 @@ public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
     public int hashCode() {
 
         return Objects.hash(id, mAuthor, mTitle);
+    }
+
+    public enum Type {
+        no, singleAuthor, multipleAuthors;
+
+        public int getBitmask() {
+            switch (this) {
+                case no:
+                    return 0x00;
+                case singleAuthor:
+                    return 0x01;
+                case multipleAuthors:
+                    return 0x11;
+                default:
+                    return 0x00;
+            }
+        }
+
+        public Type get(final int bitmask) {
+            switch (bitmask) {
+                case 0x00:
+                    return no;
+                case 0x01:
+                    return singleAuthor;
+                case 0x11:
+                    return multipleAuthors;
+                default:
+                    throw new RTE.IllegalTypeException("" + bitmask);
+            }
+        }
     }
 }

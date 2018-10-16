@@ -21,6 +21,7 @@
 package com.eleybourn.bookcatalogue.booklist;
 
 import android.database.AbstractCursor;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -345,10 +346,10 @@ public class BooklistPseudoCursor extends AbstractCursor implements BooklistSupp
     }
 
     /**
-     * Implement re-query; this needs to invalidate our existing cursors and
-     * call the superclass
+     * Implement re-query; this needs to invalidate our existing cursors and call the superclass
      */
     @Override
+    @CallSuper
     public boolean requery() {
         clearCursors();
         mPseudoCount = null;
@@ -375,6 +376,7 @@ public class BooklistPseudoCursor extends AbstractCursor implements BooklistSupp
      * Close this cursor and all related cursors.
      */
     @Override
+    @CallSuper
     public void close() {
         Tracker.handleEvent(this, "Close " + this, Tracker.States.Enter);
         super.close();

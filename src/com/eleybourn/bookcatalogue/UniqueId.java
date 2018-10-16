@@ -1,6 +1,8 @@
 package com.eleybourn.bookcatalogue;
 
 import com.eleybourn.bookcatalogue.backup.CsvImporter;
+import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
+import com.eleybourn.bookcatalogue.entities.Book;
 
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FAMILY_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FORMATTED;
@@ -72,14 +74,22 @@ public class UniqueId {
 
     // END Codes used for startActivityForResult / onActivityResult
 
+
+    /** If set when calling startActivity, it will override the default layout for that activity.
+     *  This is done in {@link BaseActivity} */
+    public static final String BKEY_LAYOUT = "layout";
+
+    /** used to pass a Bundle with book data around; e.g. before becoming an actual {@link Book} */
+    public static final String BKEY_BOOK_DATA = "bookData";
+
+
     /* Bundle keys for serialised ArrayList<Entity> */
     public static final String BKEY_AUTHOR_ARRAY = "author_array";
     public static final String BKEY_SERIES_ARRAY = "series_array";
     public static final String BKEY_ANTHOLOGY_TITLES_ARRAY = "anthology_titles_array";
 
-    /* encoded strings containing more then one piece of data. */
-
     /** string-encoded - used in import/export and internet searches, never change the string! */
+    //TODO: these can become ArrayList<String> which is supported by Bundle
     public static final String BKEY_AUTHOR_DETAILS = "author_details";
     /** string-encoded - used in import/export and internet searches, never change the string! */
     public static final String BKEY_SERIES_DETAILS = "series_details";
@@ -94,32 +104,30 @@ public class UniqueId {
     /** If a search site indicates in any form it's an eBook, we store it as KEY_BOOK_FORMAT with "eBook" */
     public static final String BVAL_FORMAT_EBOOK = "eBook";
 
+    /** fileSpec of a thumbnail fetches from the internet */
+    public static final String BKEY_THUMBNAIL_FILES_SPEC = "__thumbnail";
+
+
     //^^^^ all verified & used correctly
 
     // the ones below still need checking
 
-    /** used in {@link CsvImporter} (maybe from old versions?) + {@link BookDetailsAbstractFragment} seems not used. */
+    /** used in {@link CsvImporter} (maybe from old versions?) + {@link BookAbstractFragmentWithCoverImage} seems not used. */
     public static final String BKEY_BOOKSHELF_TEXT = "bookshelf_text";
 
-    public static final String BKEY_BOOK_DATA = "bookData";
+    //TODO: cleaned up any over-use of the DOM equiv
 
-    //TODO: why two....
-    public static final String BKEY_THUMBNAIL = "thumbnail";
-    public static final String BKEY_THUMBNAIL_USCORE = "__thumbnail";
+    public static final String KEY_BOOK_THUMBNAIL = "thumbnail";
 
-    /** seems to be only ever read as a boolean in savedInstanceState, but never set TODO: find out why in original code, and if needed ? */
-    public static final String BKEY_DIRTY = "Dirty";
-
-
-    //TODO: migrate to calling these BKEY and making them fixed (e.g. no 'calling' .name)
-    // once we cleaned up the over-use of the DOM equiv
-
-    // multi-table use
+    // mapped to the database, (potential) multi-table use
     public static final String KEY_ID = DOM_ID.name;
     public static final String KEY_TITLE = DOM_TITLE.name;
     public static final String KEY_FIRST_PUBLICATION = DOM_FIRST_PUBLICATION.name;
+    public static final String KEY_NOTES = DOM_BOOK_NOTES.name;
+    public static final String KEY_DESCRIPTION = DOM_DESCRIPTION.name;
+    public static final String KEY_LAST_UPDATE_DATE = DOM_LAST_UPDATE_DATE.name;
 
-    // single table use
+    // mapped to the database, single table use
     public static final String KEY_ANTHOLOGY_BITMASK = DOM_BOOK_ANTHOLOGY_BITMASK.name;
 
     public static final String KEY_AUTHOR_ID = DOM_AUTHOR_ID.name;
@@ -135,10 +143,13 @@ public class UniqueId {
     public static final String KEY_BOOK_DATE_PUBLISHED = DOM_BOOK_DATE_PUBLISHED.name;
     public static final String KEY_BOOK_FORMAT = DOM_BOOK_FORMAT.name;
     public static final String KEY_BOOK_GENRE = DOM_BOOK_GENRE.name;
+    public static final String KEY_BOOK_GOODREADS_LAST_SYNC_DATE = DOM_BOOK_GOODREADS_LAST_SYNC_DATE.name;
+    public static final String KEY_BOOK_ISBN = DOM_BOOK_ISBN.name;
     public static final String KEY_BOOK_LANGUAGE = DOM_BOOK_LANGUAGE.name;
     public static final String KEY_BOOK_LIST_PRICE = DOM_BOOK_LIST_PRICE.name;
     public static final String KEY_BOOK_LOCATION = DOM_BOOK_LOCATION.name;
     public static final String KEY_BOOK_PAGES = DOM_BOOK_PAGES.name;
+    public static final String KEY_BOOK_PUBLISHER = DOM_BOOK_PUBLISHER.name;
     public static final String KEY_BOOK_RATING = DOM_BOOK_RATING.name;
     public static final String KEY_BOOK_READ = DOM_BOOK_READ.name;
     public static final String KEY_BOOK_READ_END = DOM_BOOK_READ_END.name;
@@ -148,13 +159,5 @@ public class UniqueId {
     public static final String KEY_SERIES_NAME = DOM_SERIES_NAME.name;
     public static final String KEY_SERIES_NUM = DOM_BOOK_SERIES_NUM.name;
 
-    // decide.... book only ? or ?
-    public static final String KEY_NOTES = DOM_BOOK_NOTES.name;
-    public static final String KEY_LOANED_TO = DOM_LOANED_TO.name;
-    public static final String KEY_BOOK_PUBLISHER = DOM_BOOK_PUBLISHER.name;
-    public static final String KEY_DESCRIPTION = DOM_DESCRIPTION.name;
-
-    public static final String KEY_ISBN = DOM_BOOK_ISBN.name;
-    public static final String KEY_GOODREADS_LAST_SYNC_DATE = DOM_BOOK_GOODREADS_LAST_SYNC_DATE.name;
-    public static final String KEY_LAST_UPDATE_DATE = DOM_LAST_UPDATE_DATE.name;
+    public static final String KEY_LOAN_LOANED_TO = DOM_LOANED_TO.name;
 }

@@ -4,13 +4,13 @@ import android.net.ParseException;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.BCPreferences;
+import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 import org.xml.sax.SAXException;
 
-import java.net.MalformedURLException;
+import java.io.IOException;
 import java.net.URL;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -24,11 +24,11 @@ public class AmazonManager {
     @NonNull
     public static String getBaseURL() {
         //noinspection ConstantConditions
-        return BCPreferences.getString(PREFS_HOST_URL, "http://www.amazon.com");
+        return BookCatalogueApp.Prefs.getString(PREFS_HOST_URL, "http://www.amazon.com");
     }
 
     public static void setBaseURL(@NonNull final String url) {
-        BCPreferences.setString(PREFS_HOST_URL, url);
+        BookCatalogueApp.Prefs.putString(PREFS_HOST_URL, url);
     }
 
     /**
@@ -42,7 +42,7 @@ public class AmazonManager {
                               @NonNull String author,
                               @NonNull String title,
                               @NonNull final Bundle book,
-                              final boolean fetchThumbnail) {
+                              final boolean fetchThumbnail) throws IOException {
 
         String path = "https://bc.theagiledirector.com/getRest_v3.php";
         if (!isbn.isEmpty()) {
@@ -78,10 +78,10 @@ public class AmazonManager {
             parser = factory.newSAXParser();
             // We can't Toast anything here, so let exceptions fall through.
             parser.parse(Utils.getInputStreamWithTerminator(url), handler);
-        } catch (@NonNull MalformedURLException | ParserConfigurationException | ParseException | SAXException e) {
-            Logger.error(e, "Error parsing XML");
-        } catch (Exception e) {
-            Logger.error(e, "Error retrieving or parsing XML");
+
+            // only catch exceptions related to the parsing, others will be caught by the caller.
+        } catch (ParserConfigurationException | ParseException |SAXException e) {
+            Logger.error(e);
         }
     }
 }

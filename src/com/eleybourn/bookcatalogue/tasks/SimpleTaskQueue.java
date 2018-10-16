@@ -348,8 +348,20 @@ public class SimpleTaskQueue {
     public interface SimpleTask {
         /**
          * Method called in queue thread to perform the background task.
+         *
+         * 2018-10-14: added throws Exception to allow us to throw custom exceptions
+         * Based on  {@link #handleRequest} where we have:
+         * try {
+         *             task.run(taskWrapper);
+         *         } catch (Exception e) {
+         *             taskWrapper.exception = e;
+         *
+         * Otherwise onFinish can not get our thrown exceptions
+         *
+         * The alternative was to change the argument to being a {@link SimpleTaskWrapper}
+         * and access the {@link SimpleTaskWrapper#exception}
          */
-        void run(@NonNull final SimpleTaskContext taskContext);
+        void run(@NonNull final SimpleTaskContext taskContext) throws Exception;
 
         /**
          * Method called in UI thread after the background task has finished.
@@ -377,7 +389,7 @@ public class SimpleTaskQueue {
 
     public interface SimpleTaskContext {
         @NonNull
-        CatalogueDBAdapter getDb();
+        CatalogueDBAdapter getOpenDb();
 
         void setRequiresFinish(final boolean requiresFinish);
 
@@ -413,12 +425,16 @@ public class SimpleTaskQueue {
 
         /**
          * Accessor when behaving as a context
+         *
+         * Do not close the database!
+         *
+         * Returns a {@link CatalogueDBAdapter} which it gets from the {@link SimpleTaskQueueThread}
          */
         @NonNull
         @Override
-        public CatalogueDBAdapter getDb() {
+        public CatalogueDBAdapter getOpenDb() {
             Objects.requireNonNull(activeThread, "SimpleTaskWrapper can only be used in a context during the run() stage");
-            return activeThread.getDb();
+            return activeThread.getOpenDb();
         }
 
         @Override
@@ -442,6 +458,21 @@ public class SimpleTaskQueue {
         /** DB Connection, if task requests one. Survives while thread is alive */
         @Nullable
         CatalogueDBAdapter mDb = null;
+
+        /**
+         * Do not close the database!
+         *
+         * @return a database connection associated with this Task
+         */
+        @NonNull
+        public CatalogueDBAdapter getOpenDb() {
+            if (mDb == null) {
+                // Reminder: don't make/put the context in a static variable! -> Memory Leak!
+                mDb = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
+                mDb.open();
+            }
+            return mDb;
+        }
 
         /**
          * Main worker thread logic
@@ -481,17 +512,6 @@ public class SimpleTaskQueue {
             }
         }
 
-        /**
-         * @return a database connection associated with this Task
-         */
-        @NonNull
-        public CatalogueDBAdapter getDb() {
-            if (mDb == null) {
-                // Reminder: don't make/put the context in a static variable! -> Memory Leak!
-                mDb = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
-                mDb.open();
-            }
-            return mDb;
-        }
+
     }
 }

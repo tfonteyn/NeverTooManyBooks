@@ -46,21 +46,21 @@ import java.util.regex.Pattern;
  */
 public class TarBackupContainer implements BackupContainer {
     /** Used in the storage and identification of data store in TAR file */
-    public static final String BOOKS_FILE = "books.csv";
+    static final String BOOKS_FILE = "books.csv";
     /** Used in the storage and identification of data store in TAR file */
-    public static final Pattern BOOKS_PATTERN = Pattern.compile("^books_.*\\.csv$", Pattern.CASE_INSENSITIVE);
+    static final Pattern BOOKS_PATTERN = Pattern.compile("^books_.*\\.csv$", Pattern.CASE_INSENSITIVE);
     /** Used in the storage and identification of data store in TAR file */
-    public static final String DB_FILE = "snapshot.db";
+    static final String DB_FILE = "snapshot.db";
     /** Used in the storage and identification of data store in TAR file */
-    public static final String INFO_FILE = "INFO.xml";
+    static final String INFO_FILE = "INFO.xml";
     /** Used in the storage and identification of data store in TAR file */
-    public static final Pattern INFO_PATTERN = Pattern.compile("^INFO_.*\\.xml$", Pattern.CASE_INSENSITIVE);
+    static final Pattern INFO_PATTERN = Pattern.compile("^INFO_.*\\.xml$", Pattern.CASE_INSENSITIVE);
     /** Used in the storage and identification of data store in TAR file */
-    public static final String STYLE_PREFIX = "style.blob.";
+    static final String STYLE_PREFIX = "style.blob.";
     /** Used in the storage and identification of data store in TAR file */
-    public static final Pattern STYLE_PATTERN = Pattern.compile("^" + STYLE_PREFIX + "[0-9]*$", Pattern.CASE_INSENSITIVE);
+    static final Pattern STYLE_PATTERN = Pattern.compile("^" + STYLE_PREFIX + "[0-9]*$", Pattern.CASE_INSENSITIVE);
     /** Used in the storage and identification of data store in TAR file */
-    public static final String PREFERENCES = "preferences";
+    static final String PREFERENCES = "preferences";
     /** UNICODE stream type for read/write text files */
     public static final String UTF8 = "utf8";
     /** Buffer size for buffered streams */

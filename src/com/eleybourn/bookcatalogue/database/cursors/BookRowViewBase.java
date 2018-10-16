@@ -312,14 +312,14 @@ public class BookRowViewBase {
         return mCursor.getInt(mSignedCol);
     }
 
-    public final long getAnthologyMask() {
+    public final int getAnthologyMask() {
         if (mAnthologyMaskCol < 0) {
             mAnthologyMaskCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_ANTHOLOGY_BITMASK.name);
             if (mAnthologyMaskCol < 0) {
                 throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_BOOK_ANTHOLOGY_BITMASK.name);
             }
         }
-        return mCursor.getLong(mAnthologyMaskCol);
+        return mCursor.getInt(mAnthologyMaskCol);
     }
 
     public final String getDateAdded() {

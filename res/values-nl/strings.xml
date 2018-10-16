@@ -27,22 +27,22 @@
     <string name="confirm_save_bs">Boekenplank opslaan</string>
     <string name="menu_delete_bs">Boekenplank verwijderen</string>
     <string name="delete_1st_bs">De eerste boekenplank kan niet verwijderd worden</string>
-    <string name="bookshelf_label">Boekenplank: </string>
+    <string name="lbl_bookshelf">Boekenplank: </string>
     <string name="all_books">Alle Boeken</string>
     <string name="isbn_found">ISBN gescand. Zoeken op Internet.</string>
     <string name="title_isbn_search">ISBN zoeken</string>
     <string name="title_manage_bs">Boekenplank beheren</string>
     <string name="title_edit_bs">Boekenplank bewerken</string>
-    <string name="search_label">Zoeken naar boeken</string>
+    <string name="lbl_search">Zoeken naar boeken</string>
     <string name="search_hint">zoeken naar auteurs of titels</string>
     <string name="book_not_found">Het gescande boek is niet gevonden. U kunt de juiste streepjescode aan de achterkant van de omslag vinden. Vul anders de gegevens handmatig in.</string>
     <string name="series_num">#</string>
     <string name="import_data">Boeken Importeren</string>
     <string name="import_alert">Waarschuwing. Het importeren van gegevens kan bestaande boekgegevens onbedoeld bijwerken met nieuwe informatie als de UUID-kolom niet aanwezig is en de id in het import-bestand dezelfde is als het bestaande id. Dit is meestal geen bezwaar als u een veld in een exportbestand heeft veranderd. Als u een nieuwe boek item heeft gemaakt, of iemand anders zijn boeken importeert, zorg dan dat het UUID veld aanwezig is of dat het id veld leeg is.</string>
-    <string name="import_failed_is_location_correct">FOUT: Import van gegevens (van SD kaart) mislukt. Staat het bestand op de juiste plaats?</string>
+    <string name="error_import_failed_is_location_correct">FOUT: Import van gegevens (van SD kaart) mislukt. Staat het bestand op de juiste plaats?</string>
     <string name="search_title">Book Catalogue: Zoekresultaten</string>
     <string name="results_found">Gevonden resultaten</string>
-    <string name="administration_label">Administratieve Functies</string>
+    <string name="lbl_administration">Administratieve Functies</string>
     <string name="menu_administration">Beheer</string>
     <string name="install_scan">Om uw boeken via de ISBN streepjescode te kunnen scannen moet u de Zxing, pic2shop of Google Goggles streepjescode scanner app installeren.</string>
     <string name="install_scan_title">Streepjescode Scanner Installeren</string>
@@ -52,18 +52,18 @@
     <string name="edit_book">Boek bewerken</string>
     <string name="edit_book_notes">Mijn Commentaar</string>
     <string name="edit_book_friends">Boek uitlenen</string>
-    <string name="unknown_error">Er is een onbekende fout opgetreden</string>
+    <string name="error_unknown">Er is een onbekende fout opgetreden</string>
     <string name="notes">Notities</string>
     <string name="loaned_to">Dit boek is uitgeleend aan:</string>
-    <string name="nobody">Niemand</string>
+    <string name="loaned_to_nobody">Niemand</string>
     <string name="loan_to">Leen boek aan:</string>
-    <string name="returned">Teruggebracht</string>
+    <string name="loan_returned">Teruggebracht</string>
     <string name="name">Naam</string>
-    <string name="website_lbl">Webpagina:</string>
-    <string name="sourcecode_label">Broncode:</string>
-    <string name="contact_label">Contacten:</string>
-    <string name="donate_label">Doneren</string>
-    <string name="about_label">Over deze App</string>
+    <string name="lbl_website">Webpagina:</string>
+    <string name="lbl_sourcecode">Broncode:</string>
+    <string name="lbl_contacts">Contacten:</string>
+    <string name="lbl_donate">Doneren</string>
+    <string name="lbl_about">Over deze App</string>
     <string name="list_price">Prijs</string>
     <string name="update_fields">Automatisch Velden bijwerken</string>
     <string name="select_fields_to_update">Selecteer bij te werken velden</string>
@@ -71,8 +71,8 @@
     <string name="overwrite_thumbnail">Dit zal de geselecteerde velden zoals getoond bijwerken, maar miniaturen kunnen desgewenst voor Alle boeken worden gedownload.\n\nWilt u alle miniaturen overschrijven? Waarschuwing: dit kan een lange tijd in beslag nemen. </string>
     <string name="yes">Ja</string>
     <string name="no">Nee</string>
-    <string name="search_fail">Het zoeken naar het boek is mislukt. Controleer uw netwerk instellingen.</string>
-    <string name="search_exception">Zoeken mislukt terwijl %1$s: %2$s</string>
+    <string name="error_search_failed">Het zoeken naar het boek is mislukt. Controleer uw netwerk instellingen.</string>
+    <string name="error_search_exception">Zoeken mislukt terwijl %1$s: %2$s</string>
     <string name="menu_delete_thumb">Verwijder miniatuur</string>
     <string name="help">Help</string>
     <string name="menu_manage_fields">Zichtbaarheid velden beheren</string>
@@ -83,7 +83,7 @@
     <string name="menu_delete_anthology">Verwijder titels uit bloemlezing</string>
     <string name="is_anthology">Is dit boek een bloemlezing?</string>
     <string name="populate_anthology_titles">Automatisch titels invullen (EXPERIMENTEEL)</string>
-    <string name="automatic_population_failed">Automatisch titels invullen mislukt</string>
+    <string name="error_anthology_automatic_population_failed">Automatisch titels invullen mislukt</string>
     <string name="anthology">Bloemlezing</string>
     <string name="anthology_confirm">Bevestig dat deze bloemlezingtitels (voor het merendeel) correct zijn</string>
     <string name="anthology_save">Opslaan</string>
@@ -124,11 +124,11 @@
     <string name="vldt_failed">Validatie mislukt voor \'%s\'</string>
     <string name="vldt_read_start_after_end">De begindatum voor lezen moet vóór de einddatum liggen</string>
     <string name="backup_success">Back-up gelukt</string>
-    <string name="backup_failed">Back-up mislukt</string>
-    <string name="file_must_contain_column">Bestandsnaam moet een kolomnaam %s bevatten</string>
-    <string name="file_must_contain_any_column">Bestandsnaam moet een kolom met de volgende namen bevatten: %s</string>
-    <string name="column_is_blank">Kolom %1$s is leeg op rij %2$s</string>
-    <string name="columns_are_blank">Kolommen %1$s zijn allemaal leeg op rij %2$d</string>
+    <string name="error_backup_failed">Back-up mislukt</string>
+    <string name="error_file_must_contain_column">Bestandsnaam moet een kolomnaam %s bevatten</string>
+    <string name="error_file_must_contain_any_column">Bestandsnaam moet een kolom met de volgende namen bevatten: %s</string>
+    <string name="error_column_is_blank">Kolom %1$s is leeg op rij %2$s</string>
+    <string name="error_columns_are_blank">Kolommen %1$s zijn allemaal leeg op rij %2$d</string>
     <string name="save">Opslaan</string>
     <string name="add">Toevoegen</string>
     <string name="no_authors_yet">Er zijn geen auteurs voor dit boek. Voeg er een toe met het tekstveld en de knop bovenin dit scherm.</string>
@@ -144,8 +144,8 @@
     <string name="author_is_blank">Auteurveld is leeg</string>
     <string name="series_already_in_list">Serie staat al in de lijst</string>
     <string name="series_is_blank">Serieveld is leeg</string>
-    <string name="export_failed_sdcard">Export mislukt - kon niet naar de SD kaart wegschrijven</string>
-    <string name="thumbnail_failed_sdcard">Miniatuur download mislukt - kon niet naar de SD kaart wegschrijven</string>
+    <string name="error_export_failed">Export mislukt - kon niet naar de SD kaart wegschrijven</string>
+    <string name="error_download_thumbnail_failed">Miniatuur download mislukt - kon niet naar de SD kaart wegschrijven</string>
     <string name="skip_title">Overslaan van - %s</string>
     <string name="num_books_searched">%s Boeken gezocht</string>
     <string name="cancelled_info">Geannuleerd - %s</string>
@@ -191,10 +191,10 @@
     <string name="lt_register_text">Registeren bij LibraryThing</string>
     <string name="lt_dev_key_text">Aanvragen LibraryThing ontwikkelaarssleutel</string>
     <string name="lt_got_key">Zodra u de sleutel heeft (of als u die al heeft) kunt u die hieronder in het tekstveld invullen om zo gebruik te maken van de extra gegevensbron.</string>
-    <string name="developer_key">Ontwikkelaarssleutel</string>
-    <string name="require_library_thing_info">Deze functie vereist een LibraryThing ontwikkelaarssleutel. Wilt u meer informatie over LibraryThing?</string>
-    <string name="uses_library_thing_info">Deze functie profiteert van een LibraryThing ontwikkelaarssleutel. Wilt u meer informatie over LibraryThing, of dit bericht uitschakelen?\n\nLibraryThing informatie kan worden gevonden onder het LibraryThing tabblad van de Administratie pagina\'s.</string>
-    <string name="reg_library_thing_title">LibraryThing Registratie</string>
+    <string name="lt_developer_key">Ontwikkelaarssleutel</string>
+    <string name="lt_required_info">Deze functie vereist een LibraryThing ontwikkelaarssleutel. Wilt u meer informatie over LibraryThing?</string>
+    <string name="lt_uses_info">Deze functie profiteert van een LibraryThing ontwikkelaarssleutel. Wilt u meer informatie over LibraryThing, of dit bericht uitschakelen?\n\nLibraryThing informatie kan worden gevonden onder het LibraryThing tabblad van de Administratie pagina\'s.</string>
+    <string name="lt_registration_title">LibraryThing Registratie</string>
     <string name="more_info">Meer Info.</string>
     <string name="disable_dialogue">Bericht uitschakelen</string>
     <string name="lt_reset_messages_info">Van tijd tot tijd kan deze toepassing optionele berichten weergeven over LibraryThing. Druk op de knop hieronder om alle berichten die zijn uitgeschakeld te herstellen.</string>
@@ -210,9 +210,9 @@
     <string name="debug_body">Beschrijf in het kort de problemen die u heeft ondervonden.</string>
     <string name="menu_duplicate">Dupliceer boek</string>
     <string name="cannot_edit_system">U kunt de systeemwaarden niet bewerken</string>
-    <string name="incorrect_key">Uw LibraryThing ontwikkelaarssleutel was niet juist, of er kon geen verbinding worden gemaakt met het netwerk ter verificatie.</string>
-    <string name="correct_key">Uw LibraryThing ontwikkelaarssleutel is geldig.</string>
-    <string name="no_connection">Geen Internet verbinding beschikbaar.</string>
+    <string name="lt_incorrect_key">Uw LibraryThing ontwikkelaarssleutel was niet juist, of er kon geen verbinding worden gemaakt met het netwerk ter verificatie.</string>
+    <string name="lt_correct_key">Uw LibraryThing ontwikkelaarssleutel is geldig.</string>
+    <string name="error_no_internet_connection">Geen Internet verbinding beschikbaar.</string>
     <string name="menu_share_this">Delen</string>
     <string name="email_export">Wilt u dit exportbestand als e-mail ergens heen sturen?</string>
     <string name="menu_crop_thumb">Miniatuur bijsnijden</string>
@@ -224,21 +224,21 @@
     <string name="my_books">Mijn Boeken</string>
     <string name="loan_return_book">boeken bewerken, uitlenen of terugbrengen</string>
     <string name="admin_and_prefs">Administratie en voorkeuren</string>
-    <string name="edit_book_send_to_gr">Zend naar Goodreads</string>
-    <string name="goodreads_auth_blurb_part1">goodreads is een website met de missie: "mensen helpen boeken te vinden en te delen met anderen".
+    <string name="gr_send_to_goodreads">Zend naar Goodreads</string>
+    <string name="gr_auth_blurb_part1">goodreads is een website met de missie: "mensen helpen boeken te vinden en te delen met anderen".
     										  Ze hebben een uitgebreide database met boeken en boekbesprekingen. Als geregistreerde gebruiker 
     										  kan BookCatalogue uw boeken, boekenplanken en boekbesprekingen exporteren en importeren naar en van goodreads. 
     										  BookCatalogue is een op zichzelf staande applicatie en heeft goodreads niet nodig, maar als u toch geïnteresseerd 
     										  bent kunt u zich registreren op:</string>
-    <string name="goodreads_auth_blurb_part2">Eenmaal geregistreerd, of als u al gebruiker bent, kunt u BookCatalogue toestemming verlenen de goodreads gegevens 
+    <string name="gr_auth_blurb_part2">Eenmaal geregistreerd, of als u al gebruiker bent, kunt u BookCatalogue toestemming verlenen de goodreads gegevens
     										  te benaderen door op de knop hier beneden te drukken. 
     										  Het brengt u naar een web pagina waar u op goodreads moet inloggen en deze applicatie moet autoriseren. 
     										  Wij zullen nooit in staat zijn uw wachtwoord te zien en u kunt ten alle tijden de toegang uitschakelen via de goodreads website. 
     										  Dankzij de grilligheid van het Internet kunt u blijven zitten met een lege pagina. Tik dan op de Terug-toets om hier terug te keren!</string>
-    <string name="goodreads_auth_blurb_part3">Maar onthoud goed&#8230; er is geen noodzaak om dit te doen: BookCatalogue werkt prima zonder goodreads!</string>
-    <string name="authorize_access">Toegang autoriseren</string>
-    <string name="authorize_access_already_auth">Het lijkt erop dat u deze applicatie al toegang heeft verleend. Alle goodreads functies moet reeds beschikbaar zijn</string>
-    <string name="goodreads_access_error">Er was een netwerkprobleem terwijl u probeerde toegang te krijgen tot goodreads. controleer of de website van goodreads in de lucht is en als het probleem aanhoudt maak dan contact met ondersteuning</string>
+    <string name="gr_auth_blurb_part3">Maar onthoud goed&#8230; er is geen noodzaak om dit te doen: BookCatalogue werkt prima zonder goodreads!</string>
+    <string name="gr_auth_access">Toegang autoriseren</string>
+    <string name="gr_auth_access_already_auth">Het lijkt erop dat u deze applicatie al toegang heeft verleend. Alle goodreads functies moet reeds beschikbaar zijn</string>
+    <string name="gr_access_error">Er was een netwerkprobleem terwijl u probeerde toegang te krijgen tot goodreads. controleer of de website van goodreads in de lucht is en als het probleem aanhoudt maak dan contact met ondersteuning</string>
     <string name="other_preferences">Meer voorkeuren</string>
     <string name="user_interface">Gebruikersinterface</string>
     <string name="background_tasks">Achtergrondtaken</string>
@@ -250,7 +250,7 @@
     <string name="search_internet">Internet doorzoeken</string>
     <string name="show_results">Toon resultaten</string>
     <string name="rebuild_fts">FTS opnieuw opbouwen (alleen alpha!)</string>
-    <string name="send_books_to_goodreads">Zend boeken naar goodreads</string>
+    <string name="gr_send_book">Zend boeken naar goodreads</string>
     <string name="legacy_task">Verlopen taken</string>
     <string name="occurred_at">opgetreden op %1$s</string>
     <string name="unknown_uc">ONBEKEND</string>
@@ -259,19 +259,19 @@
     <string name="no_matching_book_found">Geen overeenkomstig boek gevonden</string>
     <string name="no_isbn_stored_for_book">Geen ISBN opgeslagen voor boek</string>
     <string name="select_an_action">Selecteer een actie</string>
-    <string name="goodreads_auth_check">Goodreads autorisatie controle</string>
-    <string name="goodreads_auth_failed">Goodreads autorisatie mislukt</string>
-    <string name="goodreads_auth_successful">Goodreads autorisatie gelukt</string>
+    <string name="gr_auth_check">Goodreads autorisatie controle</string>
+    <string name="gr_auth_failed">Goodreads autorisatie mislukt</string>
+    <string name="gr_auth_successful">Goodreads autorisatie gelukt</string>
     <string name="authorized">Geautoriseerd</string>
     <string name="not_authorized">Niet geautoriseerd</string>
-    <string name="goodreads_auth_error">Goodreads autorisatie leidde tot een fout.</string>
+    <string name="gr_auth_error">Goodreads autorisatie leidde tot een fout.</string>
     <string name="if_the_problem_persists">Als het probleem aanhoud, maak dan contact met ondersteuning via Help in het hoofdmenu.</string>
     <string name="book_no_longer_exists">Het gespecificeerde boek bestaat niet meer</string>
     <string name="please_enter_search_criteria">Vul de zoekcriteria in</string>
     <string name="error_while_searching">Fout tijdens het zoeken.</string>
-    <string name="send_all_to_goodreads_result">%1$d boeken verwerkt: %2$d met succes verzonden, %3$d zonder ISBN en %4$d met ISBN maar niet gevonden in goodreads</string>
+    <string name="gr_send_all_books_results">%1$d boeken verwerkt: %2$d met succes verzonden, %3$d zonder ISBN en %4$d met ISBN maar niet gevonden in goodreads</string>
     <string name="x_of_y">%1$d van %2$d</string>
-    <string name="send_book_to_goodreads">Zend boek %1$s naar goodreads</string>
+    <string name="gr_send_book_to_goodreads">Zend boek %1$s naar goodreads</string>
     <string name="erase_cover_cache">Wis boekomslag cache</string>
     <string name="crash_message_text">BookCatalogue is onverwacht gecrasht. Help ons aub de toepassing beter te maken door deze crash te melden.</string>
     <string name="crash_notif_ticker_text">BookCatalogue is gecrasht</string>
@@ -380,7 +380,7 @@
     <string name="edit">Bewerken</string>
     <string name="groupings">Groeperingen</string>
     <string name="preferences">Voorkeuren</string>
-    <string name="unexpected_error">Er is een onverwachte fout opgetreden. Zend ons aub de details via de \'Help\' optie in het hoofdmenu</string>
+    <string name="error_unexpected_error">Er is een onverwachte fout opgetreden. Zend ons aub de details via de \'Help\' optie in het hoofdmenu</string>
     <string name="delete_style">Stijl verwijderen</string>
     <string name="edit_style">Stijl bewerken</string>
     <string name="clone_style">Stijl klonen</string>
@@ -390,11 +390,11 @@
     <string name="user_defined">Gebruiker-gedefinieerd</string>
     <string name="builtin">Ingebouwd</string>
     <string name="sort_unread">Ongelezen (Auteur/Serie)</string>
-    <string name="import_all_from_goodreads">Importeer alles uit goodreads</string>
+    <string name="gr_import_all_from_goodreads">Importeer alles uit goodreads</string>
     <string name="requested_task_is_already_queued">aangevraagde taak staat al in de wachtrij</string>
     <string name="export_task_is_already_queued">Een exporttaak staat al in de wachtrij en moet eerst beëindigd worden voordat deze taak uitgevoerd kan worden</string>
     <string name="import_task_is_already_queued">Een importtaak staat al in de wachtrij en moet eerst beëindigd worden voordat deze taak uitgevoerd kan worden</string>
-    <string name="goodreads_action_cannot_blah_blah">Deze actie kan niet worden voltooid voordat deze applicatie door goodreads is geautoriseerd. Probeer het nog eens als de autorisatie is geslaagd.
+    <string name="gr_action_cannot_blah_blah">Deze actie kan niet worden voltooid voordat deze applicatie door goodreads is geautoriseerd. Probeer het nog eens als de autorisatie is geslaagd.
                                                      \n\nWilt u de autorisatie nu doen?</string>
     <string name="tell_me_more">Vertel me meer</string>
     <string name="retry_x_of_y_next_at_z">Probeer %1$d van %2$d opnieuw op %3$s</string>
@@ -402,14 +402,14 @@
     <string name="failed">Mislukt</string>
     <string name="queued">In de wachtrij</string>
     <string name="unknown">Onbekend</string>
-    <string name="send_books_to_goodreads_blurb">Dit zendt uw bibliotheek naar goodreads.
+    <string name="gr_send_books_to_goodreads_blurb">Dit zendt uw bibliotheek naar goodreads.
     										\n\nU kunt er voor kiezen alle boeken te sturen of alleen de boeken die u heeft bijgewerkt 
     										sinds deze werden gekopieerd van of naar goodreads (inclusief alle boeken die nog niet  
     										werden verzonden) of u kunt de update annuleren.
     										\n\nAls u nog nooit boeken heeft verzonden is er geen verschil tussen de eerste twee opties.</string>
     <string name="send_all">Zend alles</string>
     <string name="send_updated">Zend bijgewerkte</string>
-    <string name="sync_with_goodreads">Synchroniseer met goodreads</string>
+    <string name="gr_sync_with_goodreads">Synchroniseer met goodreads</string>
     <string name="cover_options_cc_ellipsis">Boekomslag opties&#8230;</string>
     <string name="show_events_ellipsis">Toon gebeurtenissen&#8230;</string>
     <string name="hint_authors_book_may_appear_more_than_once">Als boeken worden getoond met alle auteurs, kunnen ze meermalen voorkomen in de lijst. Het verwijderen van één van die boeken heeft tot gevolg dat alle exemplaren worden verwijderd uit de lijst.</string>
@@ -422,13 +422,13 @@
     <string name="task_has_been_queued_in_background">Taak is op de achtergrond in de wachtrij gezet</string>
     <string name="hint_startup_screen">Dit is het standaard BookCatalogue opstartscherm. Als u dat wilt kunt u direct in \'Mijn Boeken\' opstarten. Het opstartscherm kan veranderd worden bij Voorkeuren.</string>
     <string name="upgrading_ellipsis">Upgrading&#8230;</string>
-    <string name="explain_goodreads_no_isbn">Het geselecteerde boek heeft geen ISBN en kan niet automatisch worden gesynchroniseerd met goodreads. 
+    <string name="gr_explain_goodreads_no_isbn">Het geselecteerde boek heeft geen ISBN en kan niet automatisch worden gesynchroniseerd met goodreads.
     									De simpelste oplossing is om:
     									\n\n(1) het boek te verwijderen uit BookCatalogue
     									\n\n(2) het boek handmatig toe te voegen aan goodreads via hun website
     									\n\n(3) synchroniseren met goodreads
     									\n\nDit zal als resultaat hebben dat het boek opnieuw wordt aangemaakt in BookCatalogue en dat de twee van af dat moment gekoppeld blijven.</string>
-    <string name="explain_goodreads_no_match">Het ISBN van het geselecteerde boek kon niet worden gevonden in goodreads. Er zijn twee mogelijke oorzaken hiervoor: 
+    <string name="gr_explain_goodreads_no_match">Het ISBN van het geselecteerde boek kon niet worden gevonden in goodreads. Er zijn twee mogelijke oorzaken hiervoor:
     									Of de boekgegevens zijn onjuist (controleer het ISBN), óf het boek staat niet in goodreads. 
     									\n\nAls u de boekgegevens in BookCatalogue gaat veranderen drukt u daarna op de \'Probeer opnieuw\' knop en controleert of de op de achtergrond opgestarte taak met succes is beëindigd. 
     									\n\nAls de boekgegevens correct lijken en het boek nog steeds niet kan worden gevonden dan moet een boek met dat ISBN handmatig worden toegevoegd aan goodreads via hun  website. Nadat dat is gedaan kunt u proberen het boek opnieuw te zenden.</string>
@@ -868,7 +868,7 @@ Zie "Meer voorkeuren" voor de relevante instelling.
     <string name="zxing_scanner">Zxing Scanner</string>
 
     <!-- Heading in 'about' dialog -->
-    <string name="special_thanks_label">Speciale dankbetuiging</string>
+    <string name="lbl_special_thanks">Speciale dankbetuiging</string>
 
     <!-- Credits in the 'about' dialog -->
     <string name="translators_blurb">BookCatalogue is het resultaat van de inspanning van vele personen en zou niet zo\'n grote verspreiding kennen zonder de genereuse hulp van vrijwillige vertalers: Eugenio Davolio, José M. Galdo, Imkal, Gideon van Melle, Emir Sarı, Nick Silin, and Robert Wetzlmayr (als we iemand zijn vergeten, laat het ons aub weten).</string>

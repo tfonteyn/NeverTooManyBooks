@@ -54,7 +54,7 @@ public class SendOneBookTask extends GenericTask {
      * @param bookId Book to send
      */
     public SendOneBookTask(final long bookId) {
-        super(BookCatalogueApp.getResourceString(R.string.send_book_to_goodreads, bookId));
+        super(BookCatalogueApp.getResourceString(R.string.gr_send_book_to_goodreads, bookId));
         mBookId = bookId;
     }
 

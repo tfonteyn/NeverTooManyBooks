@@ -24,6 +24,7 @@ package com.eleybourn.bookcatalogue.widgets;
 
 import android.content.Context;
 import android.graphics.Point;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
@@ -68,6 +69,7 @@ public class PagerLayout extends FrameLayout implements ViewPager.OnPageChangeLi
     }
 
     @Override
+    @CallSuper
     protected void onFinishInflate() {
         super.onFinishInflate();
         try {

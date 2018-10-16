@@ -26,7 +26,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingBottom="@dimen/padding_border_quad"
-                android:text="@string/goodreads_auth_blurb_part1"
+                android:text="@string/gr_auth_blurb_part1"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <!-- URL -->
@@ -44,7 +44,7 @@
                 android:layout_height="wrap_content"
                 android:paddingBottom="@dimen/padding_border_quad"
                 android:paddingTop="@dimen/padding_border_quad"
-                android:text="@string/goodreads_auth_blurb_part2"
+                android:text="@string/gr_auth_blurb_part2"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <!-- BUTTON -->
@@ -54,7 +54,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:text="@string/authorize_access" />
+                android:text="@string/gr_auth_access" />
 
             <!-- BLURB 3 -->
 
@@ -63,7 +63,7 @@
                 android:layout_height="wrap_content"
                 android:paddingBottom="@dimen/padding_border_quad"
                 android:paddingTop="@dimen/padding_border_quad"
-                android:text="@string/goodreads_auth_blurb_part3"
+                android:text="@string/gr_auth_blurb_part3"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
             <!-- BUTTON -->
 

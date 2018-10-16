@@ -24,6 +24,7 @@ import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
@@ -60,12 +61,13 @@ public class BooklistStylesListActivity extends EditObjectListActivity<BooklistS
         super(null, R.layout.booklist_styles_edit_list, R.layout.booklist_styles_edit_row);
     }
 
-    public static void startActivity(@NonNull final Activity from) {
+    public static void startActivityForResult(@NonNull final Activity from) {
         Intent intent = new Intent(from, BooklistStylesListActivity.class);
         from.startActivityForResult(intent, UniqueId.ACTIVITY_REQUEST_CODE_BOOKLIST_STYLES);
     }
 
     @Override
+    @CallSuper
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         try {
             super.onCreate(savedInstanceState);
@@ -116,10 +118,10 @@ public class BooklistStylesListActivity extends EditObjectListActivity<BooklistS
                 @Override
                 public void onClick(@NonNull View v) {
                     Holder h = ViewTagger.getTagOrThrow(v, R.id.TAG_HOLDER);
-                        boolean newStatus = !h.style.isPreferred();
-                        h.style.setPreferred(newStatus);
-                        h.preferred.setChecked(newStatus);
-                        onListChanged();
+                    boolean newStatus = !h.style.isPreferred();
+                    h.style.setPreferred(newStatus);
+                    h.preferred.setChecked(newStatus);
+                    onListChanged();
                 }
             });
         }
@@ -136,11 +138,6 @@ public class BooklistStylesListActivity extends EditObjectListActivity<BooklistS
             holder.kind.setText(R.string.builtin);
         }
     }
-
-//    @Override
-//    protected void onListItemClick(ListView l, View v, int position, long id) {
-//        super.onListItemClick(l, v, position, id);
-//    }
 
     /**
      * TODO: is this a good idea ? wouldn't we expect a 'real' context menu ?
@@ -204,7 +201,7 @@ public class BooklistStylesListActivity extends EditObjectListActivity<BooklistS
                 style.setName(style.getDisplayName());
             } catch (RTE.DeserializationException e) {
                 Logger.error(e);
-                StandardDialogs.showQuickNotice(this, R.string.unexpected_error);
+                StandardDialogs.showBriefMessage(this, R.string.error_unexpected_error);
                 return;
             }
         }
@@ -220,12 +217,13 @@ public class BooklistStylesListActivity extends EditObjectListActivity<BooklistS
     }
 
     @Override
-    protected void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+    @CallSuper
+    protected void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent intent) {
+        super.onActivityResult(requestCode,resultCode,intent);
 
         switch (requestCode) {
             case UniqueId.ACTIVITY_REQUEST_CODE_BOOKLIST_STYLE:
-                handleStyleResult(data);
+                handleStyleResult(intent);
                 break;
         }
     }

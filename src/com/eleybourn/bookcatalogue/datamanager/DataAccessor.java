@@ -33,8 +33,13 @@ public interface DataAccessor {
     Object get(@NonNull final DataManager data, @NonNull final Datum datum, @NonNull final Bundle rawData);
 
     /** Set the specified Datum in the passed DataManager and bundle */
-    void set(@NonNull final DataManager data, @NonNull final Datum datum, @NonNull final Bundle rawData, @NonNull final Object value);
+    void set(@SuppressWarnings("unused") @NonNull final DataManager data,
+             @NonNull final Datum datum,
+             @NonNull final Bundle rawData,
+             @NonNull final Object value);
 
     /** Check if the specified Datum is present in the passed DataManager and bundle */
-    boolean isPresent(@NonNull final DataManager data, @NonNull final Datum datum, @NonNull final Bundle rawData);
+    boolean isPresent(@SuppressWarnings("unused") @NonNull final DataManager data,
+                      @SuppressWarnings("unused") @NonNull final Datum datum,
+                      @NonNull final Bundle rawData);
 }

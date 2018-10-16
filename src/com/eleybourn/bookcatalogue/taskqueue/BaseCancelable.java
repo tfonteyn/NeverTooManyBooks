@@ -69,6 +69,7 @@ public abstract class BaseCancelable<T> implements Cancelable<T> {
     /**
      * Frees the result (which is not null) when the task has been canceled.
      */
+    @SuppressWarnings("EmptyMethod")
     protected void freeCanceledResult(T result) {
         // Do nothing by default;
     }

@@ -20,6 +20,7 @@
 package com.eleybourn.bookcatalogue.backup.tar;
 
 import android.content.SharedPreferences;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.backup.BackupContainer;
@@ -172,6 +173,7 @@ public class TarBackupWriter extends BackupWriterAbstract {
     }
 
     @Override
+    @CallSuper
     public void close() throws IOException {
         super.close();
         mOutput.close();

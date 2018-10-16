@@ -2,9 +2,10 @@ package com.eleybourn.bookcatalogue;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.CallSuper;
 import android.support.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
+import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 
 /**
  * This is a placeholder class to deal with the surprising number of old shortcuts that
@@ -19,8 +20,10 @@ import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
  * 
  * @author Philip Warner
  */
-public class BookCatalogue extends BookCatalogueActivity {
+public class BookCatalogue extends BaseActivity {
 
+	@CallSuper
+	@Override
 	public void onCreate(@Nullable final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Intent i = new Intent(this, StartupActivity.class);

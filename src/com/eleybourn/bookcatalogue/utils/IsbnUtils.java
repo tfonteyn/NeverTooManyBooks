@@ -28,6 +28,7 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class IsbnUtils {
     private IsbnUtils() {
@@ -137,7 +138,7 @@ public class IsbnUtils {
          *
          * UPC Prefix -- ISBN Prefix mapping file (may not be complete)
          */
-        private static final HashMap<String, String> UPC_2_ISBN_PREFIX = new HashMap<>();
+        private static final Map<String, String> UPC_2_ISBN_PREFIX = new HashMap<>();
 
         static {
             UPC_2_ISBN_PREFIX.put("014794", "08041");

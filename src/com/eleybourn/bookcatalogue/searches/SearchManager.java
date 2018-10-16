@@ -121,19 +121,18 @@ public class SearchManager implements TaskManagerListener {
 
         mPreferredCoverSearchOrder = new ArrayList<>(mCoverSearchOrderDefaults);
 
-        SharedPreferences prefs = BookCatalogueApp.getSharedPreferences();
         for (SearchSite site : mSearchOrderDefaults) {
-            site.enabled = prefs.getBoolean(TAG + "." + site.name + ".enabled", site.enabled);
-            site.order = prefs.getInt(TAG + "." + site.name + ".order", site.order);
-            site.reliability = prefs.getInt(TAG + "." + site.name + ".reliability", site.reliability);
+            site.enabled = BookCatalogueApp.Prefs.getBoolean(TAG + "." + site.name + ".enabled", site.enabled);
+            site.order = BookCatalogueApp.Prefs.getInt(TAG + "." + site.name + ".order", site.order);
+            site.reliability = BookCatalogueApp.Prefs.getInt(TAG + "." + site.name + ".reliability", site.reliability);
 
             mReliabilityOrder.set(site.reliability, site);
             mPreferredSearchOrder.set(site.order, site);
         }
 
         for (SearchSite site : mCoverSearchOrderDefaults) {
-            site.enabled = prefs.getBoolean(TAG + "." + site.name + ".cover.enabled", site.enabled);
-            site.order = prefs.getInt(TAG + "." + site.name + ".cover.order", site.order);
+            site.enabled = BookCatalogueApp.Prefs.getBoolean(TAG + "." + site.name + ".cover.enabled", site.enabled);
+            site.order = BookCatalogueApp.Prefs.getInt(TAG + "." + site.name + ".cover.order", site.order);
 
             mPreferredCoverSearchOrder.set(site.order, site);
         }
@@ -203,7 +202,7 @@ public class SearchManager implements TaskManagerListener {
 
     static void setSearchOrder(@NonNull final ArrayList<SearchSite> newList) {
         mPreferredSearchOrder = newList;
-        SharedPreferences.Editor e = BookCatalogueApp.getSharedPreferences().edit();
+        SharedPreferences.Editor e = BookCatalogueApp.Prefs.edit();
         for (SearchSite site : newList) {
             e.putInt(TAG + "." + site.name + ".reliability", site.reliability);
             e.putBoolean(TAG + "." + site.name + ".enabled", site.enabled);
@@ -219,7 +218,7 @@ public class SearchManager implements TaskManagerListener {
 
     static void setCoverSearchOrder(@NonNull final ArrayList<SearchSite> newList) {
         mPreferredCoverSearchOrder = newList;
-        SharedPreferences.Editor e = BookCatalogueApp.getSharedPreferences().edit();
+        SharedPreferences.Editor e = BookCatalogueApp.Prefs.edit();
         for (SearchSite site : newList) {
             e.putBoolean(TAG + "." + site.name + ".cover.enabled", site.enabled);
             e.putInt(TAG + "." + site.name + ".cover.order", site.order);
@@ -299,7 +298,7 @@ public class SearchManager implements TaskManagerListener {
             mRunningTasks.add(thread);
             mTaskManager.addTask(thread);
             if (BuildConfig.DEBUG) {
-                Logger.info(thread.getClass().getCanonicalName() + "(" + +thread.getId() + ") STARTING");
+                Logger.info(thread.getClass().getCanonicalName() + "(id=" + +thread.getId() + ") STARTING");
             }
         }
         thread.start();
@@ -384,7 +383,7 @@ public class SearchManager implements TaskManagerListener {
         }
 
         if (mRunningTasks.size() > 0) {
-            throw new RuntimeException("Attempting to start new search while previous search running");
+            throw new IllegalStateException("Attempting to start new search while previous search running");
         }
 
         // Save the flags
@@ -489,7 +488,7 @@ public class SearchManager implements TaskManagerListener {
                 } else if (UniqueId.BKEY_ANTHOLOGY_DETAILS.equals(key)) {
                     appendData(key, bookData, mBookData);
 
-                } else if (UniqueId.BKEY_THUMBNAIL_USCORE.equals(key)) {
+                } else if (UniqueId.BKEY_THUMBNAIL_FILES_SPEC.equals(key)) {
                     appendData(key, bookData, mBookData);
 
                 } else if (UniqueId.KEY_BOOK_DATE_PUBLISHED.equals(key)) {// Grab a different date if we can parse it.
@@ -528,8 +527,8 @@ public class SearchManager implements TaskManagerListener {
             for (SearchSite site : mReliabilityOrder) {
                 if (mSearchResults.containsKey(site.id)) {
                     Bundle bookData = mSearchResults.get(site.id);
-                    if (bookData.containsKey(UniqueId.KEY_ISBN)) {
-                        if (IsbnUtils.matches(mIsbn, bookData.getString(UniqueId.KEY_ISBN))) {
+                    if (bookData.containsKey(UniqueId.KEY_BOOK_ISBN)) {
+                        if (IsbnUtils.matches(mIsbn, bookData.getString(UniqueId.KEY_BOOK_ISBN))) {
                             results.add(site.id);
                         }
                     } else {
@@ -539,7 +538,7 @@ public class SearchManager implements TaskManagerListener {
             }
             results.addAll(uncertain);
             // Add the passed ISBN first; avoid overwriting
-            mBookData.putString(UniqueId.KEY_ISBN, mIsbn);
+            mBookData.putString(UniqueId.KEY_BOOK_ISBN, mIsbn);
         } else {
             // If ISBN was not passed, then just use the default order
             for (SearchSite site : mReliabilityOrder) {
@@ -576,12 +575,12 @@ public class SearchManager implements TaskManagerListener {
         }
 
         // Try to use/construct isbn
-        String isbn = mBookData.getString(UniqueId.KEY_ISBN);
+        String isbn = mBookData.getString(UniqueId.KEY_BOOK_ISBN);
         if (isbn == null || isbn.isEmpty()) {
             isbn = mIsbn;
         }
         if (isbn != null && !isbn.isEmpty()) {
-            mBookData.putString(UniqueId.KEY_ISBN, isbn);
+            mBookData.putString(UniqueId.KEY_BOOK_ISBN, isbn);
         }
 
         // Try to use/construct series
@@ -691,7 +690,7 @@ public class SearchManager implements TaskManagerListener {
                 mSearchingAsin = false;
                 // Clear the 'isbn'
                 mIsbn = "";
-                if (Utils.isNonBlankString(bookData, UniqueId.KEY_ISBN)) {
+                if (Utils.isNonBlankString(bookData, UniqueId.KEY_BOOK_ISBN)) {
                     // We got an ISBN, so pretend we were searching for an ISBN
                     mWaitingForIsbn = true;
                 } else {
@@ -705,10 +704,10 @@ public class SearchManager implements TaskManagerListener {
                 }
             }
             if (mWaitingForIsbn) {
-                if (Utils.isNonBlankString(bookData, UniqueId.KEY_ISBN)) {
+                if (Utils.isNonBlankString(bookData, UniqueId.KEY_BOOK_ISBN)) {
                     mWaitingForIsbn = false;
                     // Start the other two...even if they have run before
-                    mIsbn = bookData.getString(UniqueId.KEY_ISBN);
+                    mIsbn = bookData.getString(UniqueId.KEY_BOOK_ISBN);
                     startSearches(mSearchFlags);
                 } else {
                     // Start next one that has not run.

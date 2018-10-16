@@ -38,15 +38,6 @@ public class DBExceptions {
 
 //    // left as a reminder: don't bother, just return a '0' for nothing deleted
 //    static class DeleteException extends RuntimeException {
-//        DeleteException() {
-//            super();
-//        }
-//        DeleteException(@Nullable final Exception inner) {
-//            super(inner);
-//        }
-//        DeleteException(@Nullable final String msg, @Nullable final Exception inner) {
-//            super(msg, inner);
-//        }
 //    }
 
     public static class ColumnNotPresent extends RuntimeException {
@@ -74,7 +65,8 @@ public class DBExceptions {
         LockException(@Nullable final String msg) {
             super(msg);
         }
-        LockException(@Nullable final String msg, @Nullable final Exception inner) {
+        LockException(@SuppressWarnings("SameParameterValue") @Nullable final String msg,
+                      @Nullable final Exception inner) {
             super(msg, inner);
         }
     }

@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.database.DbSync;
+import com.eleybourn.bookcatalogue.utils.RTE;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -107,7 +108,7 @@ public class TableInfo implements Iterable<TableInfo.ColumnInfo> {
                         col.typeClass = CLASS_INTEGER;
                         break;
                     default:
-                        throw new RuntimeException("Unknown data type '" + tName + "'");
+                        throw new RTE.IllegalTypeException(tName);
                 }
 
                 allColumns.put(col.name.toLowerCase(), col);

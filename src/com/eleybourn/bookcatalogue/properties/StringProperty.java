@@ -20,6 +20,7 @@
 
 package com.eleybourn.bookcatalogue.properties;
 
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
@@ -30,7 +31,6 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.eleybourn.bookcatalogue.BCPreferences;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.properties.Property.StringValue;
@@ -96,19 +96,20 @@ public class StringProperty extends ValuePropertyWithGlobalDefault<String> imple
     @Override
     @Nullable
     protected String getGlobalDefault() {
-        return BCPreferences.getString(getPreferenceKey(), getDefaultValue());
+        return BookCatalogueApp.Prefs.getString(getPreferenceKey(), getDefaultValue());
     }
 
     /** Set underlying preferences value */
     @Override
     @NonNull
     protected StringProperty setGlobalDefault(@Nullable final String value) {
-        BCPreferences.setString(getPreferenceKey(), value);
+        BookCatalogueApp.Prefs.putString(getPreferenceKey(), value);
         return this;
     }
 
     @Override
     @NonNull
+    @CallSuper
     public StringProperty setDefaultValue(@Nullable final String value) {
         super.setDefaultValue(value);
         return this;
@@ -116,6 +117,7 @@ public class StringProperty extends ValuePropertyWithGlobalDefault<String> imple
 
     @Override
     @NonNull
+    @CallSuper
     public StringProperty setWeight(final int weight) {
         super.setWeight(weight);
         return this;
@@ -123,6 +125,7 @@ public class StringProperty extends ValuePropertyWithGlobalDefault<String> imple
 
     @Override
     @NonNull
+    @CallSuper
     public StringProperty setGroup(@NonNull final PropertyGroup group) {
         super.setGroup(group);
         return this;
@@ -152,6 +155,7 @@ public class StringProperty extends ValuePropertyWithGlobalDefault<String> imple
 
     @Override
     @NonNull
+    @CallSuper
     public String toString() {
         return "StringProperty{" +
                 "mRequireNonBlank=" + mRequireNonBlank +

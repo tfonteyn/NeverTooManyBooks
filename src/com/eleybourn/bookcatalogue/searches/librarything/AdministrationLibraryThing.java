@@ -25,17 +25,16 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
-import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTaskContext;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressFragment;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressFragment.FragmentTask;
@@ -50,7 +49,7 @@ import java.io.File;
  *
  * @author Philip Warner
  */
-public class AdministrationLibraryThing extends BookCatalogueActivity {
+public class AdministrationLibraryThing extends BaseActivity {
 
     @Override
     protected int getLayoutId() {
@@ -58,20 +57,13 @@ public class AdministrationLibraryThing extends BookCatalogueActivity {
     }
 
     @Override
+    @CallSuper
     public void onCreate(@Nullable final Bundle savedInstanceState) {
-        try {
-            super.onCreate(savedInstanceState);
-            setTitle(R.string.library_thing);
-            setupPage();
-        } catch (Exception e) {
-            Logger.error(e);
-        }
-    }
+        super.onCreate(savedInstanceState);
+        setTitle(R.string.library_thing);
 
-    private void setupPage() {
         /* LT Reg Link */
-        TextView register = findViewById(R.id.register_url);
-        register.setOnClickListener(new OnClickListener() {
+        findViewById(R.id.register_url).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(LibraryThingManager.getBaseURL() + "/"));
@@ -119,10 +111,10 @@ public class AdministrationLibraryThing extends BookCatalogueActivity {
                                 long length = tmpFile.length();
                                 if (length < 100) {
                                     // Queue a message
-                                    fragment.showQuickNotice(getString(R.string.incorrect_key));
+                                    fragment.showBriefMessage(getString(R.string.lt_incorrect_key));
                                 } else {
                                     // Queue a message
-                                    fragment.showQuickNotice(getString(R.string.correct_key));
+                                    fragment.showBriefMessage(getString(R.string.lt_correct_key));
                                 }
                                 StorageUtils.deleteFile(tmpFile);
                             }

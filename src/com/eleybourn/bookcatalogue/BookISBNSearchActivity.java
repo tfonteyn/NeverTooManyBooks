@@ -25,6 +25,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.CallSuper;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -35,14 +36,12 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.Checkable;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
-import android.widget.ImageButton;
 
-import com.eleybourn.bookcatalogue.baseactivity.ActivityWithTasks;
+import com.eleybourn.bookcatalogue.baseactivity.BaseActivityWithTasks;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
@@ -73,7 +72,7 @@ import java.util.Set;
  * For books, the ASIN is the same as the ISBN number, but for all other products a new ASIN
  * is created when the item is uploaded to their catalogue.
  */
-public class BookISBNSearchActivity extends ActivityWithTasks {
+public class BookISBNSearchActivity extends BaseActivityWithTasks {
     public static final String BKEY_BY = "by";
     public static final String BY_ISBN = "isbn";
     public static final String BY_NAME = "name";
@@ -129,7 +128,6 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
         }
     };
 
-    @Nullable
     private String mBy;
 
     /**
@@ -151,19 +149,20 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
     }
 
     @Override
+    @CallSuper
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         Tracker.enterOnCreate(this);
         try {
             boolean network_available = Utils.isNetworkAvailable(this);
             if (!network_available) {
-                StandardDialogs.showQuickNotice(this, R.string.no_connection);
+                StandardDialogs.showBriefMessage(this, R.string.error_no_internet_connection);
                 finish();
                 return;
             }
 
             // Must do this before super.onCreate as getLayoutId() needs them
             Bundle extras = getIntent().getExtras();
-            mIsbn = extras.getString(UniqueId.KEY_ISBN);
+            mIsbn = extras.getString(UniqueId.KEY_BOOK_ISBN);
             mBy = extras.getString(BKEY_BY);
 
             super.onCreate(savedInstanceState);
@@ -200,8 +199,8 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
             if (mIsbn == null && (mBy == null || mBy.isEmpty())) {
                 Logger.error("Empty args for BookISBNSearchActivity");
                 if (savedInstanceState != null) {
-                    if (mIsbn == null && savedInstanceState.containsKey(UniqueId.KEY_ISBN)) {
-                        mIsbn = savedInstanceState.getString(UniqueId.KEY_ISBN);
+                    if (mIsbn == null && savedInstanceState.containsKey(UniqueId.KEY_BOOK_ISBN)) {
+                        mIsbn = savedInstanceState.getString(UniqueId.KEY_BOOK_ISBN);
                     }
                     if (savedInstanceState.containsKey(BKEY_BY)) {
                         mBy = savedInstanceState.getString(BKEY_BY);
@@ -278,7 +277,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
 
 
         // Setup the 'Allow ASIN' button
-        final CheckBox allowAsinCb = this.findViewById(R.id.asinCheckbox);
+        final CompoundButton allowAsinCb = this.findViewById(R.id.asinCheckbox);
         allowAsinCb.setOnCheckedChangeListener(new OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -297,20 +296,19 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
             }
         });
 
-        setupNumberButton(R.id.isbn_0, "0");
-        setupNumberButton(R.id.isbn_1, "1");
-        setupNumberButton(R.id.isbn_2, "2");
-        setupNumberButton(R.id.isbn_3, "3");
-        setupNumberButton(R.id.isbn_4, "4");
-        setupNumberButton(R.id.isbn_5, "5");
-        setupNumberButton(R.id.isbn_6, "6");
-        setupNumberButton(R.id.isbn_7, "7");
-        setupNumberButton(R.id.isbn_8, "8");
-        setupNumberButton(R.id.isbn_9, "9");
-        setupNumberButton(R.id.isbn_X, "X");
+        initKeypadButton(R.id.isbn_0, "0");
+        initKeypadButton(R.id.isbn_1, "1");
+        initKeypadButton(R.id.isbn_2, "2");
+        initKeypadButton(R.id.isbn_3, "3");
+        initKeypadButton(R.id.isbn_4, "4");
+        initKeypadButton(R.id.isbn_5, "5");
+        initKeypadButton(R.id.isbn_6, "6");
+        initKeypadButton(R.id.isbn_7, "7");
+        initKeypadButton(R.id.isbn_8, "8");
+        initKeypadButton(R.id.isbn_9, "9");
+        initKeypadButton(R.id.isbn_X, "X");
 
-        ImageButton buttonDel = findViewById(R.id.isbn_del);
-        buttonDel.setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.isbn_del).setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 try {
                     int start = mIsbnText.getSelectionStart();
@@ -332,8 +330,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
             }
         });
 
-        Button confirmButton = findViewById(R.id.search);
-        confirmButton.setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.search).setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 String mIsbn = mIsbnText.getText().toString().trim();
                 go(mIsbn, "", "");
@@ -341,9 +338,8 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
         });
     }
 
-    private void setupNumberButton(@IdRes final int id, @NonNull final String text) {
-        Button button = findViewById(id);
-        button.setOnClickListener(new View.OnClickListener() {
+    private void initKeypadButton(@IdRes final int id, @NonNull final String text) {
+        findViewById(id).setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 handleIsbnKey(text);
             }
@@ -374,7 +370,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
                 startScannerActivity();
             } else {
                 // It's a saved state, so see if we have an ISBN
-                String isbn = savedInstanceState.getString(UniqueId.KEY_ISBN);
+                String isbn = savedInstanceState.getString(UniqueId.KEY_BOOK_ISBN);
                 if (isbn != null && !isbn.isEmpty()) {
                     go(isbn, "", "");
                 }
@@ -583,7 +579,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
                     } else {
                         msg = R.string.x_is_not_a_valid_isbn;
                     }
-                    StandardDialogs.showQuickNotice(this, getString(msg, mIsbn));
+                    StandardDialogs.showBriefMessage(this, getString(msg, mIsbn));
                     if (mMode == MODE_SCAN) {
                         // Optionally beep if scan failed.
                         SoundManager.beepLow();
@@ -618,7 +614,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
                         dialog.setButton(AlertDialog.BUTTON_NEUTRAL, getString(R.string.edit_book),
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(final DialogInterface dialog, final int which) {
-                                        EditBookActivity.startActivity(BookISBNSearchActivity.this,
+                                        EditBookActivity.startActivityForResult(BookISBNSearchActivity.this,
                                                 existingId, EditBookActivity.TAB_EDIT);
                                     }
                                 });
@@ -670,7 +666,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
                 mIsbn = "";
             } catch (Exception e) {
                 Logger.error(e);
-                StandardDialogs.showQuickNotice(this, R.string.search_fail);
+                StandardDialogs.showBriefMessage(this, R.string.error_search_failed);
                 finish();
             }
         } else {
@@ -690,7 +686,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
                 }
             } else {
                 getTaskManager().doProgress(getString(R.string.adding_book_ellipsis));
-                EditBookActivity.startActivity(this, bookData);
+                EditBookActivity.startActivityForResult(this, bookData);
                 // Clear the data entry fields ready for the next one
                 clearFields();
             }
@@ -704,6 +700,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
     }
 
     @Override
+    @CallSuper
     protected void onPause() {
         Tracker.enterOnPause(this);
         super.onPause();
@@ -714,6 +711,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
     }
 
     @Override
+    @CallSuper
     protected void onResume() {
         Tracker.enterOnResume(this);
         super.onResume();
@@ -724,6 +722,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
     }
 
     @Override
+    @CallSuper
     protected void onDestroy() {
         Tracker.enterOnDestroy(this);
         super.onDestroy();
@@ -734,8 +733,9 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
     }
 
     @Override
+    @CallSuper
     protected void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent intent) {
-        super.onActivityResult(requestCode, resultCode, intent);
+        super.onActivityResult(requestCode,resultCode,intent);
         switch (requestCode) {
             case UniqueId.ACTIVITY_REQUEST_CODE_ADD_BOOK_SCAN: {
                 mScannerStarted = false;
@@ -775,7 +775,6 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
 
         // No matter what the activity was, rebuild the author list in case a new author was added.
         initAuthorList();
-
     }
 
     private void initAuthorList() {
@@ -819,6 +818,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
      * Ensure the TaskManager is restored.
      */
     @Override
+    @CallSuper
     protected void onRestoreInstanceState(@NonNull Bundle instanceState) {
 
         mSearchManagerId = instanceState.getLong(SEARCH_MANAGER_ID);
@@ -831,6 +831,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
     }
 
     @Override
+    @CallSuper
     protected void onSaveInstanceState(@NonNull Bundle instanceState) {
         super.onSaveInstanceState(instanceState);
 
@@ -838,8 +839,8 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
         // handsets. Search for "BUG NOTE 1" in this source file for a discussion
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
-            if (extras.containsKey(UniqueId.KEY_ISBN)) {
-                instanceState.putString(UniqueId.KEY_ISBN, extras.getString(UniqueId.KEY_ISBN));
+            if (extras.containsKey(UniqueId.KEY_BOOK_ISBN)) {
+                instanceState.putString(UniqueId.KEY_BOOK_ISBN, extras.getString(UniqueId.KEY_BOOK_ISBN));
             }
             if (extras.containsKey(BKEY_BY)) {
                 instanceState.putString(BKEY_BY, extras.getString(BKEY_BY));
@@ -856,7 +857,7 @@ public class BookISBNSearchActivity extends ActivityWithTasks {
         // Save the current search details as this may be called as a result of a rotate during an alert dialog.
         // note: these don't actually are getting read ? TODO: make 100% sure, then delete
         instanceState.putString(UniqueId.KEY_AUTHOR_NAME, mAuthor);
-        instanceState.putString(UniqueId.KEY_ISBN, mIsbn);
+        instanceState.putString(UniqueId.KEY_BOOK_ISBN, mIsbn);
         instanceState.putString(UniqueId.KEY_TITLE, mTitle);
     }
 }

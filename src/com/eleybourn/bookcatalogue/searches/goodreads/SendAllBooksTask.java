@@ -21,6 +21,7 @@
 package com.eleybourn.bookcatalogue.searches.goodreads;
 
 import android.content.Context;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
@@ -63,7 +64,7 @@ public class SendAllBooksTask extends GenericTask {
      * Constructor
      */
     SendAllBooksTask(final boolean updatesOnly) {
-        super(BookCatalogueApp.getResourceString(R.string.send_books_to_goodreads));
+        super(BookCatalogueApp.getResourceString(R.string.gr_send_book));
         mUpdatesOnly = updatesOnly;
     }
 
@@ -189,8 +190,8 @@ public class SendAllBooksTask extends GenericTask {
 
         // Notify the user: '15 books processed: 3 sent successfully, 5 with no ISBN and 7 with ISBN but not found in goodreads'
         BookCatalogueApp.showNotification(
-                context, context.getString(R.string.send_books_to_goodreads),
-                context.getString(R.string.send_all_to_goodreads_result, mCount, mSent, mNoIsbn, mNotFound));
+                context, context.getString(R.string.gr_send_book),
+                context.getString(R.string.gr_send_all_books_results, mCount, mSent, mNoIsbn, mNotFound));
 
         return true;
     }
@@ -200,6 +201,7 @@ public class SendAllBooksTask extends GenericTask {
      */
     @NonNull
     @Override
+    @CallSuper
     public String getDescription() {
         return super.getDescription() + " (" + BookCatalogueApp.getResourceString(R.string.x_of_y, mCount, mTotalBooks) + ")";
     }

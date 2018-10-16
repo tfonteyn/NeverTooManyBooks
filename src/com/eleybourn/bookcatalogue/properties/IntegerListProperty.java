@@ -20,11 +20,12 @@
 
 package com.eleybourn.bookcatalogue.properties;
 
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 
-import com.eleybourn.bookcatalogue.BCPreferences;
+import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.properties.Property.IntegerValue;
 import com.eleybourn.bookcatalogue.utils.RTE;
 
@@ -47,18 +48,19 @@ public class IntegerListProperty extends ListProperty<Integer> implements Intege
     @Override
     @Nullable
     protected Integer getGlobalDefault() {
-        return BCPreferences.getInt(getPreferenceKey(), Objects.requireNonNull(getDefaultValue()));
+        return BookCatalogueApp.Prefs.getInt(getPreferenceKey(), Objects.requireNonNull(getDefaultValue()));
     }
 
     @Override
     @NonNull
     protected IntegerListProperty setGlobalDefault(@Nullable final Integer value) {
-        BCPreferences.setInt(getPreferenceKey(), Objects.requireNonNull(value));
+        BookCatalogueApp.Prefs.putInt(getPreferenceKey(), Objects.requireNonNull(value));
         return this;
     }
 
     @NonNull
     @Override
+    @CallSuper
     public IntegerListProperty setGlobal(final boolean isGlobal) {
         super.setGlobal(isGlobal);
         return this;
@@ -66,6 +68,7 @@ public class IntegerListProperty extends ListProperty<Integer> implements Intege
 
     @NonNull
     @Override
+    @CallSuper
     public IntegerListProperty setDefaultValue(final Integer value) {
         super.setDefaultValue(value);
         return this;
@@ -73,12 +76,14 @@ public class IntegerListProperty extends ListProperty<Integer> implements Intege
 
     @Nullable
     @Override
+    @CallSuper
     public Integer getDefaultValue() {
         return super.getDefaultValue();
     }
 
     @NonNull
     @Override
+    @CallSuper
     public IntegerListProperty setPreferenceKey(@NonNull final String key) {
         super.setPreferenceKey(key);
         return this;
@@ -99,6 +104,7 @@ public class IntegerListProperty extends ListProperty<Integer> implements Intege
      *
      * @return value itself, or 0 when null
      */
+    @CallSuper
     public int getInt() {
         Integer value = super.getResolvedValue();
         return (value != null ? value : 0);

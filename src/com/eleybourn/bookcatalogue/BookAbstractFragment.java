@@ -24,6 +24,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.CallSuper;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -34,6 +35,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.Fields.AfterFieldChangeListener;
@@ -51,7 +54,6 @@ import com.eleybourn.bookcatalogue.utils.RTE;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -62,32 +64,47 @@ import java.util.Map;
 public abstract class BookAbstractFragment extends Fragment implements DataEditor {
     /** */
     protected Fields mFields;
-
-    /** A link to the {@link BookEditManager} for this fragment (the activity) */
-    protected BookEditManager mEditManager;
     /** Database instance */
     protected CatalogueDBAdapter mDb;
+    /** A link to the Activity which implements {@link BookEditManager}  */
+    private BookEditManager mEditBookManager = null;
+
+    /**
+     * FIXME: this is a kludge... ever since pulling edit/show book apart. Needs redoing
+     */
+    @NonNull
+    public BookEditManager getEditBookManager() {
+        return mEditBookManager;
+    }
+
+    protected Book getBook() {
+        return getEditBookManager().getBook();
+    }
 
     @Override
+    @CallSuper
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.setHasOptionsMenu(true);
     }
 
     @Override
+    @CallSuper
     public void onAttach(@NonNull final Context context) {
         super.onAttach(context);
 
+        // both Show and Edit activities have this one, so MUST have or coding issues.
         if (!(context instanceof BookEditManager)) {
             throw new RTE.MustImplementException(context, BookEditManager.class);
         }
+        mEditBookManager = (BookEditManager) context;
 
-        mEditManager = (BookEditManager) context;
         mDb = new CatalogueDBAdapter(context);
         mDb.open();
     }
 
     @Override
+    @CallSuper
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mFields = new Fields(this);
@@ -97,10 +114,11 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
      * Define the common menu options; each subclass can add more as necessary
      */
     @Override
+    @CallSuper
     public void onCreateOptionsMenu(@NonNull final Menu menu, @NonNull final MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         //menu.clear();
-        final long currRow = mEditManager.getBook().getBookId();
+        final long currRow = getBook().getBookId();
         if (currRow != 0) {
             menu.add(Menu.NONE, R.id.MENU_BOOK_DELETE, 0, R.string.menu_delete)
                     .setIcon(R.drawable.ic_mode_edit);
@@ -127,13 +145,13 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
                     .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         }
 
-        boolean hasAuthor = mEditManager.getBook().getAuthorList().size() > 0;
+        boolean hasAuthor = getBook().getAuthorList().size() > 0;
         if (hasAuthor) {
             menu.add(Menu.NONE, R.id.MENU_AMAZON_BOOKS_BY_AUTHOR, 0, R.string.amazon_books_by_author)
                     .setIcon(R.drawable.ic_search);
         }
 
-        if (mEditManager.getBook().getSeriesList().size() > 0) {
+        if (getBook().getSeriesList().size() > 0) {
             if (hasAuthor) {
                 menu.add(Menu.NONE, R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES, 0, R.string.amazon_books_by_author_in_series)
                         .setIcon(R.drawable.ic_search);
@@ -148,8 +166,9 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
      * statement to call the appropriate functions (or other activities)
      */
     @Override
+    @CallSuper
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        final long currRow = mEditManager.getBook().getBookId();
+        final long currRow = getBook().getBookId();
         switch (item.getItemId()) {
             case R.id.SUBMENU_REPLACE_THUMB:
                 if (this instanceof EditBookFieldsFragment) {
@@ -159,10 +178,12 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
                 return false;
 
             case R.id.MENU_SHARE:
+                //noinspection ConstantConditions
                 BookUtils.shareBook(getActivity(), mDb, currRow);
                 return true;
 
             case R.id.MENU_BOOK_DELETE:
+                //noinspection ConstantConditions
                 BookUtils.deleteBook(getActivity(), mDb, currRow,
                         new Runnable() {
                             @Override
@@ -173,6 +194,7 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
                 return true;
 
             case R.id.MENU_BOOK_DUPLICATE:
+                //noinspection ConstantConditions
                 BookUtils.duplicateBook(getActivity(), mDb, currRow);
                 return true;
 
@@ -181,11 +203,13 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
                 return true;
 
             case R.id.MENU_BOOK_EDIT:
-                EditBookActivity.startActivity(getActivity(), currRow, EditBookActivity.TAB_EDIT);
+                //noinspection ConstantConditions
+                EditBookActivity.startActivityForResult(getActivity(), currRow, EditBookActivity.TAB_EDIT);
                 return true;
 
             case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR: {
                 String author = getAuthorFromBook();
+                //noinspection ConstantConditions
                 AmazonUtils.openSearchPage(getActivity(), author, null);
                 return true;
             }
@@ -206,48 +230,54 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
     }
 
     @Override
+    @CallSuper
     public void onPause() {
         super.onPause();
         // This is now done in onPause() since the view may have been deleted when this is called
-        onSaveBookDetails(mEditManager.getBook());
+        onSaveBookDetails(getBook());
     }
 
     @Override
+    @CallSuper
     public void onResume() {
         super.onResume();
 
-        // Load the data and preserve the isDirty() setting
+        // Load the data while preserving the isDirty() status
         mFields.setAfterFieldChangeListener(null);
-        final boolean wasDirty = mEditManager.isDirty();
-        onLoadBookDetails(mEditManager.getBook(), false);
-        mEditManager.setDirty(wasDirty);
+        final boolean wasDirty = mEditBookManager.isDirty();
+        onLoadBookDetails(getBook(), false);
+        mEditBookManager.setDirty(wasDirty);
 
         // Set the listener to monitor edits
         mFields.setAfterFieldChangeListener(new AfterFieldChangeListener() {
             @Override
             public void afterFieldChange(@NonNull Field field, @Nullable final String newValue) {
-                mEditManager.setDirty(true);
+                mEditBookManager.setDirty(true);
             }
         });
     }
 
     @Override
+    @CallSuper
     public void onDestroy() {
         super.onDestroy();
         mDb.close();
     }
 
-
     private void updateFromInternet() {
+        Book book = getBook();
         Intent intent = new Intent(getActivity(), UpdateFromInternetActivity.class);
-        intent.putExtra(UniqueId.KEY_ID, mEditManager.getBook().getBookId());
-        intent.putExtra(UniqueId.KEY_TITLE, mEditManager.getBook().get(UniqueId.KEY_TITLE).toString());
-        intent.putExtra(UniqueId.KEY_AUTHOR_FORMATTED, mEditManager.getBook().get(UniqueId.KEY_AUTHOR_FORMATTED).toString());
+        intent.putExtra(UniqueId.KEY_ID, book.getBookId());
+        intent.putExtra(UniqueId.KEY_TITLE, book.get(UniqueId.KEY_TITLE).toString());
+        intent.putExtra(UniqueId.KEY_AUTHOR_FORMATTED, book.get(UniqueId.KEY_AUTHOR_FORMATTED).toString());
         startActivityForResult(intent, UniqueId.ACTIVITY_REQUEST_CODE_UPDATE_FROM_INTERNET);
     }
 
     @Override
+    @CallSuper
     public void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent intent) {
+        super.onActivityResult(requestCode,resultCode,intent);
+
         if (requestCode == UniqueId.ACTIVITY_REQUEST_CODE_UPDATE_FROM_INTERNET) {
             if (resultCode == Activity.RESULT_OK && intent != null) {
                 String result = intent.getStringExtra("result");
@@ -258,13 +288,13 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
 
     @Nullable
     private String getAuthorFromBook() {
-        ArrayList<Author> list = mEditManager.getBook().getAuthorList();
+        ArrayList<Author> list = getBook().getAuthorList();
         return list.size() > 0 ? list.get(0).getDisplayName() : null;
     }
 
     @Nullable
     private String getSeriesFromBook() {
-        ArrayList<Series> list = mEditManager.getBook().getSeriesList();
+        ArrayList<Series> list = getBook().getSeriesList();
         return list.size() > 0 ? list.get(0).name : null;
     }
 
@@ -274,6 +304,7 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
      * @param book       to load from
      * @param setAllDone Options indicating setAll() has already been called on the mFields object
      */
+    @CallSuper
     protected void onLoadBookDetails(@NonNull final Book book, final boolean setAllDone) {
         if (!setAllDone) {
             mFields.setAll(book);
@@ -285,71 +316,88 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
      */
     @Override
     public final void reloadData(@NonNull final DataManager dataManager) {
-        final boolean wasDirty = mEditManager.isDirty();
-        onLoadBookDetails(mEditManager.getBook(), false);
-        mEditManager.setDirty(wasDirty);
+        final boolean wasDirty = mEditBookManager.isDirty();
+        onLoadBookDetails(getBook(), false);
+        mEditBookManager.setDirty(wasDirty);
     }
 
     /**
      * Default implementation of code to save existing data to the Book object
      */
+    @CallSuper
     protected void onSaveBookDetails(@NonNull final Book book) {
         mFields.getAllInto(book);
     }
 
     @Override
+    @CallSuper
     public void saveAllEdits(@NonNull final DataManager dataManager) {
-        mFields.getAllInto(mEditManager.getBook());
+        mFields.getAllInto(getBook());
     }
 
-
-
     /**
-     * Hides unused fields if they have not any useful data. Checks all text fields
-     * except of author, series and loaned.
+     * Hides unused fields if they have not any useful data.
+     * Checks all text fields except of author, series, loaned.
+     *
+     * The latter and non-text fields are handled in
+     * {@link EditBookFieldsFragment} or {@link BookDetailsFragment}
+     * - bookshelf
+     * - anthology/toc
+     * - read status
+     * - rating
+     *
+     * @see FieldVisibilityActivity
      */
     protected void showHideFields(final boolean hideIfEmpty) {
         mFields.resetVisibility();
+
+        showHideField(hideIfEmpty, R.id.image, R.id.row_image);
+
+        showHideField(hideIfEmpty, R.id.isbn, R.id.row_isbn);
+        showHideField(hideIfEmpty, R.id.series, R.id.row_series, R.id.lbl_series);
+        showHideField(hideIfEmpty, R.id.description, R.id.lbl_description, R.id.description_divider);
 
         showHideField(hideIfEmpty, R.id.publisher, R.id.lbl_publishing, R.id.row_publisher);
         showHideField(hideIfEmpty, R.id.date_published, R.id.row_date_published);
         showHideField(hideIfEmpty, R.id.first_publication, R.id.row_first_publication);
 
-        showHideField(hideIfEmpty, R.id.image, R.id.row_image);
         showHideField(hideIfEmpty, R.id.pages, R.id.row_pages);
+        showHideField(hideIfEmpty, R.id.list_price, R.id.row_list_price);
         showHideField(hideIfEmpty, R.id.format, R.id.row_format);
         showHideField(hideIfEmpty, R.id.genre, R.id.lbl_genre, R.id.row_genre);
         showHideField(hideIfEmpty, R.id.language, R.id.lbl_language, R.id.row_language);
-        showHideField(hideIfEmpty, R.id.isbn, R.id.row_isbn);
-        showHideField(hideIfEmpty, R.id.series, R.id.row_series, R.id.lbl_series);
-        showHideField(hideIfEmpty, R.id.list_price, R.id.row_list_price);
-        showHideField(hideIfEmpty, R.id.description, R.id.lbl_description, R.id.description_divider);
 
         // **** MY COMMENTS SECTION ****
 
         showHideField(hideIfEmpty, R.id.notes, R.id.lbl_notes, R.id.row_notes);
+        showHideField(hideIfEmpty, R.id.location, R.id.row_location, R.id.row_location);
         showHideField(hideIfEmpty, R.id.read_start, R.id.row_read_start);
         showHideField(hideIfEmpty, R.id.read_end, R.id.row_read_end);
-        showHideField(hideIfEmpty, R.id.location, R.id.row_location, R.id.row_location);
         showHideField(hideIfEmpty, R.id.signed, R.id.row_signed);
+
+        //NEWKIND: when adding fields that can be invisible, add them here
     }
 
     /**
-     * Show or Hide text field if it has not any useful data.
+     * Text fields:
+     * Hide text field if it has not any useful data.
      * Don't show a field if it is already hidden (assumed by user preference)
+     *
+     * ImageView:
+     * use the visibility status of the ImageView to show/hide the relatedFields
      *
      * @param hideIfEmpty   hide if empty
      * @param fieldId       layout resource id of the field
      * @param relatedFields list of fields whose visibility will also be set based on the first field
      */
-    private void showHideField(final boolean hideIfEmpty, @IdRes final int fieldId, @NonNull @IdRes final int... relatedFields) {
-        // Get the base view
+    protected void showHideField(final boolean hideIfEmpty,
+                                 @IdRes final int fieldId,
+                                 @NonNull @IdRes final int... relatedFields) {
         final View view = getView().findViewById(fieldId);
-        int visibility;
         if (view != null) {
-            visibility = view.getVisibility();
+            int visibility = view.getVisibility();
             if (hideIfEmpty) {
-                if (view.getVisibility() != View.GONE) {
+                if (visibility != View.GONE) {
                     // Determine if we should hide it
                     if (view instanceof ImageView) {
                         visibility = view.getVisibility();
@@ -371,47 +419,57 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
         }
     }
 
+
     /**
      * Interface that any containing activity must implement.
      *
      * @author pjw
      */
     public interface BookEditManager {
+
+        @NonNull
+        Book getBook();
+
         void addAnthologyTab(final boolean showAnthology);
 
         boolean isDirty();
 
         void setDirty(final boolean isDirty);
-
-        @NonNull
-        Book getBook();
-
-        void setRowId(final long id);
-
-        @NonNull
-        List<String> getFormats();
-
-        @NonNull
-        List<String> getGenres();
-
-        @NonNull
-        List<String> getLanguages();
-
-        @NonNull
-        List<String> getLocations();
-
-        @NonNull
-        List<String> getPublishers();
     }
 
-    public static class ViewUtils {
+    static class ViewUtils {
         private ViewUtils() {
+        }
+
+        /**
+         * Gets the total number of rows from the adapter, then use that to set the ListView to the
+         * full height so all rows are visible (no scrolling)
+         *
+         * Does nothing if the adapter is null, or if the view is not visible
+         */
+        static void justifyListViewHeightBasedOnChildren(@NonNull final ListView listView) {
+            ListAdapter adapter = listView.getAdapter();
+            if (adapter == null || listView.getVisibility() != View.VISIBLE) {
+                return;
+            }
+
+            int totalHeight = 0;
+            for (int i = 0; i < adapter.getCount(); i++) {
+                View listItem = adapter.getView(i, null, listView);
+                listItem.measure(0, 0);
+                totalHeight += listItem.getMeasuredHeight();
+            }
+
+            ViewGroup.LayoutParams layoutParams = listView.getLayoutParams();
+            layoutParams.height = totalHeight + (listView.getDividerHeight() * (adapter.getCount()));
+            listView.setLayoutParams(layoutParams);
+            listView.requestLayout();
         }
 
         /**
          * Ensure that next up/down/left/right View is visible for all sub-views of the passed view.
          */
-        public static void fixFocusSettings(@NonNull final View root) {
+        static void fixFocusSettings(@NonNull final View root) {
             final INextView getDown = new INextView() {
                 @Override
                 public int getNext(@NonNull final View v) {
@@ -458,7 +516,7 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
             };
 
             @SuppressLint("UseSparseArrays")
-            HashMap<Integer, View> vh = new HashMap<>();
+            Map<Integer, View> vh = new HashMap<>();
             getViews(root, vh);
 
             for (Map.Entry<Integer, View> ve : vh.entrySet()) {
@@ -480,7 +538,7 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
          * @param view   View to check
          * @param getter Methods to get/set 'next' view
          */
-        private static void fixNextView(@NonNull final HashMap<Integer, View> list,
+        private static void fixNextView(@NonNull final Map<Integer, View> list,
                                         @NonNull final View view,
                                         @NonNull final INextView getter) {
             int nextId = getter.getNext(view);
@@ -502,7 +560,7 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
          *
          * @return ID if first visible 'next' view
          */
-        private static int getNextView(@NonNull final HashMap<Integer, View> list,
+        private static int getNextView(@NonNull final Map<Integer, View> list,
                                        final int nextId,
                                        @NonNull final INextView getter) {
             final View v = list.get(nextId);
@@ -524,7 +582,7 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
          * @param list   Collection
          */
         private static void getViews(@NonNull final View parent,
-                                     @NonNull final HashMap<Integer, View> list) {
+                                     @NonNull final Map<Integer, View> list) {
             // Get the view ID and add it to collection if not already present.
             @IdRes final int id = parent.getId();
             if (id != View.NO_ID && !list.containsKey(id)) {
@@ -540,38 +598,38 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
             }
         }
 
-        private interface INextView {
-            int getNext(@NonNull final View v);
-
-            void setNext(@NonNull final View v, @IdRes final int id);
-        }
-
         /**
          * Debug utility to dump an entire view hierarchy to the output.
          */
         @SuppressWarnings("unused")
-        static void dumpViewTree(final int depth, @NonNull final View v) {
+        static void debugDumpViewTree(final int depth, @NonNull final View view) {
             StringBuilder sb = new StringBuilder();
-        	for(int i = 0; i < depth*4; i++) {
+            for (int i = 0; i < depth * 4; i++) {
                 sb.append(" ");
             }
-            sb.append(v.getClass().getCanonicalName())
-                    .append(" (").append(v.getId()).append(")")
-                    .append(v.getId() == R.id.row_description_label ? "DESC! ->" : " ->");
+            sb.append(view.getClass().getCanonicalName())
+                    .append(" (").append(view.getId()).append(")")
+                    .append(view.getId() == R.id.lbl_row_description ? "DESC! ->" : " ->");
 
-        	if (v instanceof TextView) {
-        		String s = ((TextView)v).getText().toString().trim();
-        		s = s.substring(0, Math.min(s.length(), 20));
+            if (view instanceof TextView) {
+                String s = ((TextView) view).getText().toString().trim();
+                s = s.substring(0, Math.min(s.length(), 20));
                 sb.append(s);
-        	} else {
+            } else {
                 Logger.info(sb.toString());
-        	}
-        	if (v instanceof ViewGroup) {
-        		ViewGroup g = (ViewGroup)v;
-        		for(int i = 0; i < g.getChildCount(); i++) {
-        			dumpViewTree(depth+1, g.getChildAt(i));
-        		}
-        	}
+            }
+            if (view instanceof ViewGroup) {
+                ViewGroup g = (ViewGroup) view;
+                for (int i = 0; i < g.getChildCount(); i++) {
+                    debugDumpViewTree(depth + 1, g.getChildAt(i));
+                }
+            }
+        }
+
+        private interface INextView {
+            int getNext(@NonNull final View v);
+
+            void setNext(@NonNull final View v, @IdRes final int id);
         }
     }
 }

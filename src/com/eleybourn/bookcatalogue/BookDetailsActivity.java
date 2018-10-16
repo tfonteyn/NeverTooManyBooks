@@ -23,6 +23,7 @@ package com.eleybourn.bookcatalogue;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -31,7 +32,7 @@ import android.view.GestureDetector;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 
-import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
+import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.booklist.FlattenedBooklist;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.datamanager.DataEditor;
@@ -41,7 +42,8 @@ import com.eleybourn.bookcatalogue.entities.Book;
 /**
  * @author Evan Leybourn
  */
-public class BookDetailsActivity extends BookCatalogueActivity {
+public class BookDetailsActivity extends BaseActivity
+        implements BookAbstractFragment.BookEditManager {
 
     private static final String BKEY_FLATTENED_BOOKLIST_POSITION = "FlattenedBooklistPosition";
     private static final String BKEY_FLATTENED_BOOKLIST = "FlattenedBooklist";
@@ -51,22 +53,22 @@ public class BookDetailsActivity extends BookCatalogueActivity {
     private FlattenedBooklist mList = null;
     @Nullable
     private GestureDetector mGestureDetector;
-    private long mRowId;
-    @Nullable
+
+    private long mBookId;
     private Book mBook;
 
     /**
-     * Load in read-only mode.
+     * Convenience method to start this Activity.
      *
-     * @param activity  Current activity from which we start
-     * @param id        The id of the book to view
+     * @param activity  from which we start
+     * @param id        of the book to view
      * @param listTable (Optional) name of the temp table containing a list of book IDs.
      * @param position  (Optional) position in underlying book list.
      */
-    public static void startActivity(@NonNull final Activity activity,
-                                     final long id,
-                                     @Nullable final String listTable,
-                                     @Nullable final Integer position) {
+    public static void startActivityForResult(@NonNull final Activity activity,
+                                              final long id,
+                                              @Nullable final String listTable,
+                                              @Nullable final Integer position) {
         Intent intent = new Intent(activity, BookDetailsActivity.class);
         intent.putExtra(UniqueId.KEY_ID, id);
         intent.putExtra(BKEY_FLATTENED_BOOKLIST, listTable);
@@ -82,6 +84,7 @@ public class BookDetailsActivity extends BookCatalogueActivity {
     }
 
     @Override
+    @CallSuper
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         Tracker.enterOnCreate(this);
         super.onCreate(savedInstanceState);
@@ -89,12 +92,16 @@ public class BookDetailsActivity extends BookCatalogueActivity {
 
         Bundle extras = getIntent().getExtras();
 
-        mRowId = getBookId(savedInstanceState, extras);
-        mBook = initBook(mRowId, savedInstanceState == null ? extras : savedInstanceState);
+        mBookId = getBookId(savedInstanceState, extras);
+        mBook = initBook(mBookId, savedInstanceState == null ? extras : savedInstanceState);
 
         BookDetailsFragment details = new BookDetailsFragment();
         details.setArguments(extras);
-        replaceFragment(details);
+
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment, details)
+                .commit();
 
         initBooklist(extras, savedInstanceState);
 
@@ -140,6 +147,12 @@ public class BookDetailsActivity extends BookCatalogueActivity {
         }
     }
 
+    @NonNull
+    @Override
+    public Book getBook() {
+        return mBook;
+    }
+
     /**
      * If we are passed a flat book list, get it and validate it
      */
@@ -162,12 +175,12 @@ public class BookDetailsActivity extends BookCatalogueActivity {
                         pos = 0;
                     }
                     mList.moveTo(pos);
-                    while (mList.getBookId() != mRowId) {
+                    while (mList.getBookId() != mBookId) {
                         if (!mList.moveNext()) {
                             break;
                         }
                     }
-                    if (mList.getBookId() != mRowId) {
+                    if (mList.getBookId() != mBookId) {
                         mList.close();
                         mList = null;
                     } else {
@@ -206,8 +219,8 @@ public class BookDetailsActivity extends BookCatalogueActivity {
                     }
                     if (moved) {
                         long id = mList.getBookId();
-                        if (mRowId != id) {
-                            mRowId = id;
+                        if (mBookId != id) {
+                            mBookId = id;
                             mBook = initBook(id, null);
                             Fragment frag = getSupportFragmentManager().findFragmentById(R.id.fragment);
                             if (frag instanceof DataEditor) {
@@ -239,6 +252,7 @@ public class BookDetailsActivity extends BookCatalogueActivity {
      * We override the dispatcher because the ScrollView will consume all events otherwise.
      */
     @Override
+    @CallSuper
     public boolean dispatchTouchEvent(MotionEvent event) {
         if (mGestureDetector != null && mGestureDetector.onTouchEvent(event)) {
             return true;
@@ -249,6 +263,7 @@ public class BookDetailsActivity extends BookCatalogueActivity {
     }
 
     @Override
+    @CallSuper
     protected void onDestroy() {
         Tracker.enterOnDestroy(this);
         super.onDestroy();
@@ -264,6 +279,7 @@ public class BookDetailsActivity extends BookCatalogueActivity {
      * the database being closed by the deeply dodgy auto-close code in Android.
      */
     @Override
+    @CallSuper
     public void onPause() {
         if (mList != null) {
             mList.close();
@@ -275,11 +291,12 @@ public class BookDetailsActivity extends BookCatalogueActivity {
     }
 
     @Override
+    @CallSuper
     protected void onSaveInstanceState(@NonNull final Bundle outState) {
         Tracker.enterOnSaveInstanceState(this);
         super.onSaveInstanceState(outState);
 
-        outState.putLong(UniqueId.KEY_ID, mRowId);
+        outState.putLong(UniqueId.KEY_ID, mBookId);
         outState.putBundle(UniqueId.BKEY_BOOK_DATA, mBook.getRawData());
         if (mList != null) {
             outState.putInt(BKEY_FLATTENED_BOOKLIST_POSITION, (int) mList.getPosition());
@@ -298,6 +315,7 @@ public class BookDetailsActivity extends BookCatalogueActivity {
      * menu handler; handle the 'home' key, otherwise, pass on the event
      */
     @Override
+    @CallSuper
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
@@ -309,10 +327,33 @@ public class BookDetailsActivity extends BookCatalogueActivity {
         }
     }
 
-    private void replaceFragment(@NonNull final Fragment fragment) {
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.fragment, fragment)
-                .commit();
+    /**
+     * Not used, has to be implemented
+     * @see BookAbstractFragment.BookEditManager
+     */
+    @Override
+    public void addAnthologyTab(final boolean showAnthology) {
+    }
+    /**
+     * Not used, has to be implemented
+     * @see BookAbstractFragment.BookEditManager
+     */
+    private boolean mDirty;
+
+    /**
+     * Not used, has to be implemented
+     * @see BookAbstractFragment.BookEditManager
+     */
+    @Override
+    public boolean isDirty() {
+        return mDirty;
+    }
+    /**
+     * Not used, has to be implemented
+     * @see BookAbstractFragment.BookEditManager
+     */
+    @Override
+    public void setDirty(final boolean isDirty) {
+        mDirty = isDirty;
     }
 }

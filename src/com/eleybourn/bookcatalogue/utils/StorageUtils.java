@@ -586,7 +586,7 @@ public class StorageUtils {
         /**
          * Constructor
          */
-        FileDateComparator(final int direction) {
+        FileDateComparator(@SuppressWarnings("SameParameterValue") final int direction) {
             mDirection = direction < 0 ? -1 : 1;
         }
 

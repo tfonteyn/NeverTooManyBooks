@@ -23,6 +23,8 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
+import android.support.annotation.CallSuper;
+import android.support.annotation.ColorInt;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -75,6 +77,7 @@ public class TouchListView extends ListView {
     private static final int FLING = 0;
     private static final int SLIDE_RIGHT = 1;
     private static final int SLIDE_LEFT = 2;
+
     private final Rect mTempRect = new Rect();
     private final int mTouchSlop;
     @Nullable
@@ -105,6 +108,7 @@ public class TouchListView extends ListView {
     //private int mItemHeightExpanded=-1;
     @IdRes
     private int grabberId = -1;
+    @ColorInt
     private int dragndropBackgroundColor = Color.TRANSPARENT;
     /** Set to true at start of a new drag operation */
     private boolean mWasFirstExpansion = false;
@@ -133,31 +137,32 @@ public class TouchListView extends ListView {
     }
 
     @Override
-    final public void addHeaderView(View v, Object data, boolean isSelectable) {
+    final public void addHeaderView(@NonNull final View v, @NonNull final Object data, final boolean isSelectable) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    final public void addHeaderView(View v) {
+    final public void addHeaderView(@NonNull final View v) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    final public void addFooterView(View v, Object data, boolean isSelectable) {
+    final public void addFooterView(@NonNull final View v, @NonNull final Object data, final boolean isSelectable) {
         if (mRemoveMode == SLIDE_LEFT || mRemoveMode == SLIDE_RIGHT) {
             throw new UnsupportedOperationException();
         }
     }
 
     @Override
-    final public void addFooterView(View v) {
+    final public void addFooterView(@NonNull final View v) {
         if (mRemoveMode == SLIDE_LEFT || mRemoveMode == SLIDE_RIGHT) {
             throw new UnsupportedOperationException();
         }
     }
 
     @Override
-    public boolean onInterceptTouchEvent(@NonNull MotionEvent ev) {
+    @CallSuper
+    public boolean onInterceptTouchEvent(@NonNull final MotionEvent ev) {
         if (mRemoveListener != null && mGestureDetector == null) {
             if (mRemoveMode == FLING) {
                 mGestureDetector = new GestureDetector(getContext(), new SimpleOnGestureListener() {
@@ -241,7 +246,7 @@ public class TouchListView extends ListView {
         return (view.findViewById(grabberId) != null);
     }
 
-    /*
+    /**
      * pointToPosition() doesn't consider invisible views, but we
      * need to, so implement a slightly different version.
      */
@@ -280,7 +285,7 @@ public class TouchListView extends ListView {
         }
     }
 
-    /*
+    /**
      * Restore size and visibility for all list items
      */
     private void unExpandViews(final boolean deletion) {
@@ -318,17 +323,16 @@ public class TouchListView extends ListView {
         }
     }
 
-    /* Adjust visibility and size to make it appear as though
-     * an item is being dragged around and other items are making
-     * room for it:
-     * If dropping the item would result in it still being in the
-     * same place, then make the dragged list item's size normal,
-     * but make the item invisible.
-     * Otherwise, if the dragged list item is still on screen, make
-     * it as small as possible and expand the item below the insert
-     * point.
-     * If the dragged item is not on screen, only expand the item
-     * below the current insert point.
+    /** Adjust visibility and size to make it appear as though an item is being dragged around
+     * and other items are making room for it:
+     *
+     * If dropping the item would result in it still being in the same place, then make the
+     * dragged list item's size normal, but make the item invisible.
+     *
+     * Otherwise, if the dragged list item is still on screen, make it as small as possible
+     * and expand the item below the insert point.
+     *
+     * If the dragged item is not on screen, only expand the item below the current insert point.
      */
     private void doExpansion(final boolean firstTime) {
 
@@ -406,7 +410,8 @@ public class TouchListView extends ListView {
     }
 
     @Override
-    public boolean onTouchEvent(@NonNull MotionEvent ev) {
+    @CallSuper
+    public boolean onTouchEvent(@NonNull final MotionEvent ev) {
         if (mGestureDetector != null) {
             mGestureDetector.onTouchEvent(ev);
         }

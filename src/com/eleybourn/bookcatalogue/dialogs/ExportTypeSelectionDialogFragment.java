@@ -3,6 +3,7 @@ package com.eleybourn.bookcatalogue.dialogs;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.CallSuper;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -59,6 +60,7 @@ public class ExportTypeSelectionDialogFragment extends DialogFragment {
      * Ensure activity supports event
      */
     @Override
+    @CallSuper
     public void onAttach(Context context) {
         super.onAttach(context);
 

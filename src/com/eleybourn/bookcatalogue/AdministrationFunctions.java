@@ -26,6 +26,7 @@ import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
@@ -35,7 +36,7 @@ import android.view.View.OnClickListener;
 import com.eleybourn.bookcatalogue.backup.CsvExporter;
 import com.eleybourn.bookcatalogue.backup.ExportThread;
 import com.eleybourn.bookcatalogue.backup.ImportThread;
-import com.eleybourn.bookcatalogue.baseactivity.ActivityWithTasks;
+import com.eleybourn.bookcatalogue.baseactivity.BaseActivityWithTasks;
 import com.eleybourn.bookcatalogue.booklist.BooklistStylesListActivity;
 import com.eleybourn.bookcatalogue.database.CoversDbHelper;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -62,7 +63,7 @@ import java.util.List;
  *
  * @author Evan Leybourn
  */
-public class AdministrationFunctions extends ActivityWithTasks {
+public class AdministrationFunctions extends BaseActivityWithTasks {
     private static final int ACTIVITY_BOOKSHELF = 1;
     private static final int ACTIVITY_FIELD_VISIBILITY = 2;
 
@@ -87,10 +88,11 @@ public class AdministrationFunctions extends ActivityWithTasks {
     }
 
     @Override
+    @CallSuper
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         try {
             super.onCreate(savedInstanceState);
-            this.setTitle(R.string.administration_label);
+            this.setTitle(R.string.lbl_administration);
 
             Bundle extras = getIntent().getExtras();
             if (extras != null && extras.containsKey(DO_AUTO)) {
@@ -123,7 +125,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
     private void setupAdminPage() {
         /* Manage Field Visibility */
         {
-            View v = findViewById(R.id.fields_label);
+            View v = findViewById(R.id.lbl_fields);
             // Make line flash when clicked.
             v.setBackgroundResource(android.R.drawable.list_selector_background);
             v.setOnClickListener(new OnClickListener() {
@@ -136,7 +138,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
 
         /* Edit Book list styles */
         {
-            View v = findViewById(R.id.edit_styles_label);
+            View v = findViewById(R.id.lbl_edit_styles);
             // Make line flash when clicked.
             v.setBackgroundResource(android.R.drawable.list_selector_background);
             v.setOnClickListener(new OnClickListener() {
@@ -149,7 +151,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
 
         /* Export (backup) to Archive */
         {
-            View v = findViewById(R.id.backup_catalogue_label);
+            View v = findViewById(R.id.lbl_backup_catalogue);
             // Make line flash when clicked.
             v.setBackgroundResource(android.R.drawable.list_selector_background);
             v.setOnClickListener(new OnClickListener() {
@@ -163,7 +165,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
         /* Import from Archive */
         {
             /* Restore Catalogue Link */
-            View v = findViewById(R.id.restore_catalogue_label);
+            View v = findViewById(R.id.lbl_restore_catalogue);
             // Make line flash when clicked.
             v.setBackgroundResource(android.R.drawable.list_selector_background);
             v.setOnClickListener(new OnClickListener() {
@@ -176,7 +178,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
 
         /* Export to CSV */
         {
-            View v = findViewById(R.id.export_label);
+            View v = findViewById(R.id.lbl_export);
             // Make line flash when clicked.
             v.setBackgroundResource(android.R.drawable.list_selector_background);
             v.setOnClickListener(new OnClickListener() {
@@ -189,7 +191,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
 
         /* Import From CSV */
         {
-            View v = findViewById(R.id.import_label);
+            View v = findViewById(R.id.lbl_import);
             // Make line flash when clicked.
             v.setBackgroundResource(android.R.drawable.list_selector_background);
             v.setOnClickListener(new OnClickListener() {
@@ -203,7 +205,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
 
         /* Automatically Update Fields */
         {
-            View v = findViewById(R.id.update_internet_label);
+            View v = findViewById(R.id.lbl_update_internet);
             // Make line flash when clicked.
             v.setBackgroundResource(android.R.drawable.list_selector_background);
             v.setOnClickListener(new OnClickListener() {
@@ -216,7 +218,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
 
         /* Goodreads Synchronize */
         {
-            View v = findViewById(R.id.sync_with_goodreads_label);
+            View v = findViewById(R.id.lbl_sync_with_goodreads);
             // Make line flash when clicked.
             v.setBackgroundResource(android.R.drawable.list_selector_background);
             v.setOnClickListener(new OnClickListener() {
@@ -229,7 +231,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
 
         /* Goodreads Import */
         {
-            View v = findViewById(R.id.import_all_from_goodreads_label);
+            View v = findViewById(R.id.lbl_import_all_from_goodreads);
             // Make line flash when clicked.
             v.setBackgroundResource(android.R.drawable.list_selector_background);
             v.setOnClickListener(new OnClickListener() {
@@ -242,7 +244,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
 
         /* Goodreads Export (send to) */
         {
-            View v = findViewById(R.id.send_books_to_goodreads_label);
+            View v = findViewById(R.id.lbl_send_books_to_goodreads);
             // Make line flash when clicked.
             v.setBackgroundResource(android.R.drawable.list_selector_background);
             v.setOnClickListener(new OnClickListener() {
@@ -297,7 +299,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
 
         /* Background Tasks */
         {
-            View v = findViewById(R.id.background_tasks_label);
+            View v = findViewById(R.id.lbl_background_tasks);
             // Make line flash when clicked.
             v.setBackgroundResource(android.R.drawable.list_selector_background);
             v.setOnClickListener(new OnClickListener() {
@@ -310,7 +312,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
 
         /* Reset Hints */
         {
-            View v = findViewById(R.id.reset_hints_label);
+            View v = findViewById(R.id.lbl_reset_hints);
             // Make line flash when clicked.
             v.setBackgroundResource(android.R.drawable.list_selector_background);
             v.setOnClickListener(new OnClickListener() {
@@ -318,14 +320,14 @@ public class AdministrationFunctions extends ActivityWithTasks {
                 public void onClick(View v) {
                     HintManager.resetHints();
                     //Snackbar.make(v, R.string.hints_have_been_reset, Snackbar.LENGTH_LONG).show();
-                    StandardDialogs.showQuickNotice(AdministrationFunctions.this, R.string.hints_have_been_reset);
+                    StandardDialogs.showBriefMessage(AdministrationFunctions.this, R.string.hints_have_been_reset);
                 }
             });
         }
 
         // Erase cover cache
         {
-            View v = findViewById(R.id.erase_cover_cache_label);
+            View v = findViewById(R.id.lbl_erase_cover_cache);
             // Make line flash when clicked.
             v.setBackgroundResource(android.R.drawable.list_selector_background);
             v.setOnClickListener(new OnClickListener() {
@@ -340,7 +342,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
 
         /* Copy database for tech support */
         {
-            View v = findViewById(R.id.backup_label);
+            View v = findViewById(R.id.lbl_backup);
             // Make line flash when clicked.
             v.setBackgroundResource(android.R.drawable.list_selector_background);
             v.setOnClickListener(new OnClickListener() {
@@ -348,7 +350,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
                 public void onClick(View v) {
                     StorageUtils.backupDatabaseFile();
                     //Snackbar.make(v, R.string.backup_success, Snackbar.LENGTH_LONG).show();
-                    StandardDialogs.showQuickNotice(AdministrationFunctions.this, R.string.backup_success);
+                    StandardDialogs.showBriefMessage(AdministrationFunctions.this, R.string.backup_success);
                 }
             });
 
@@ -388,7 +390,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
      * Load the Edit Book List Styles Activity
      */
     private void manageBooklistStyles() {
-        BooklistStylesListActivity.startActivity(this);
+        BooklistStylesListActivity.startActivityForResult(this);
     }
 
     /**
@@ -415,7 +417,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
         List<File> files = StorageUtils.findCsvFiles();
         // If none, exit with message
         if (files.size() == 0) {
-            StandardDialogs.showQuickNotice(this, R.string.no_export_files_found);
+            StandardDialogs.showBriefMessage(this, R.string.no_export_files_found);
         } else {
             if (files.size() == 1) {
                 // If only 1, just use it
@@ -462,6 +464,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
     }
 
     @Override
+    @CallSuper
     public void onResume() {
         super.onResume();
         if (mExportOnStartup) {
@@ -509,7 +512,7 @@ public class AdministrationFunctions extends ActivityWithTasks {
                             startActivity(Intent.createChooser(emailIntent, "Send mail..."));
                         } catch (NullPointerException e) {
                             Logger.error(e);
-                            StandardDialogs.showQuickNotice(AdministrationFunctions.this, R.string.export_failed_sdcard);
+                            StandardDialogs.showBriefMessage(AdministrationFunctions.this, R.string.error_export_failed);
                         }
 
                         dialog.dismiss();

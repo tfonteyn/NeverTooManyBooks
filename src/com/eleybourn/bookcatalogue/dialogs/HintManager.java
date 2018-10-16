@@ -33,7 +33,6 @@ import android.view.View.OnClickListener;
 import android.widget.Checkable;
 import android.widget.TextView;
 
-import com.eleybourn.bookcatalogue.BCPreferences;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.utils.Utils;
@@ -69,8 +68,8 @@ public class HintManager {
         mHints.put(R.string.hint_background_tasks, new Hint("BACKGROUND_TASKS"));
         mHints.put(R.string.hint_background_task_events, new Hint("BACKGROUND_TASK_EVENTS"));
         mHints.put(R.string.hint_startup_screen, new Hint("STARTUP_SCREEN"));
-        mHints.put(R.string.explain_goodreads_no_isbn, new Hint("explain_goodreads_no_isbn"));
-        mHints.put(R.string.explain_goodreads_no_match, new Hint("explain_goodreads_no_match"));
+        mHints.put(R.string.gr_explain_goodreads_no_isbn, new Hint("explain_goodreads_no_isbn"));
+        mHints.put(R.string.gr_explain_goodreads_no_match, new Hint("explain_goodreads_no_match"));
         mHints.put(R.string.hint_booklist_style_menu, new Hint("hint_booklist_style_menu"));
         mHints.put(R.string.hint_autorotate_camera_images, new Hint("hint_autorotate_camera_images"));
         mHints.put(R.string.hint_view_only_book_details, new Hint("hint_view_only_book_details"));
@@ -185,14 +184,14 @@ public class HintManager {
          * @param visible Options indicating future visibility
          */
         public void setVisibility(final boolean visible) {
-            BCPreferences.edit().putBoolean(getFullPrefName(), visible).commit();
+            BookCatalogueApp.Prefs.putBoolean(getFullPrefName(), visible);
         }
 
         /**
          * Check if this hint should be shown
          */
         boolean shouldBeShown() {
-            return !hasBeenDisplayed() && BCPreferences.getBoolean(getFullPrefName(), true);
+            return !hasBeenDisplayed() && BookCatalogueApp.Prefs.getBoolean(getFullPrefName(), true);
         }
 
         boolean hasBeenDisplayed() {

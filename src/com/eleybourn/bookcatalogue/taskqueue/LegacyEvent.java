@@ -77,8 +77,10 @@ public class LegacyEvent extends Event {
                          @NonNull final Context context,
                          @NonNull final BindableItemCursor cursor,
                          @NonNull final Object appInfo) {
-        ((TextView) view.findViewById(TEXT_FIELD_1)).setText("Legacy Event Placeholder for Event #" + this.getId());
-        ((TextView) view.findViewById(TEXT_FIELD_2)).setText("This event is obsolete and can not be recovered. It is probably advisable to delete it.");
+        ((TextView) view.findViewById(TEXT_FIELD_1))
+                .setText("Legacy Event Placeholder for Event #" + this.getId());
+        ((TextView) view.findViewById(TEXT_FIELD_2))
+                .setText("This event is obsolete and can not be recovered. It is probably advisable to delete it.");
     }
 
     @Override

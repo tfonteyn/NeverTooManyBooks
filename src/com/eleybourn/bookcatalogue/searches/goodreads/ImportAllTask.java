@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue.searches.goodreads;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -93,7 +94,7 @@ class ImportAllTask extends GenericTask {
      * Constructor
      */
     ImportAllTask(final boolean isSync) {
-        super(BookCatalogueApp.getResourceString(R.string.import_all_from_goodreads));
+        super(BookCatalogueApp.getResourceString(R.string.gr_import_all_from_goodreads));
         mPosition = 0;
         mIsSync = isSync;
         // If it's a sync job, then find date of last successful sync and only apply
@@ -297,7 +298,7 @@ class ImportAllTask extends GenericTask {
     private List<String> extractIsbnList(@NonNull final Bundle review) {
         List<String> list = new ArrayList<>();
         ArrayUtils.addIfHasValue(list, review.getString(ListReviewsFieldNames.ISBN13));
-        ArrayUtils.addIfHasValue(list, review.getString(UniqueId.KEY_ISBN));
+        ArrayUtils.addIfHasValue(list, review.getString(UniqueId.KEY_BOOK_ISBN));
         return list;
     }
 
@@ -333,7 +334,7 @@ class ImportAllTask extends GenericTask {
         Book book = buildBundle(db, null, review);
         long id = db.insertBook(book);
         if (id > 0) {
-            if (book.getBoolean(UniqueId.BKEY_THUMBNAIL)) {
+            if (book.getBoolean(UniqueId.KEY_BOOK_THUMBNAIL)) {
                 String uuid = db.getBookUuid(id);
                 File thumb = StorageUtils.getTempCoverFile();
                 File real = StorageUtils.getCoverFile(uuid);
@@ -385,7 +386,7 @@ class ImportAllTask extends GenericTask {
             }
 
             if (bestLen > 0) {
-                book.putString(UniqueId.KEY_ISBN, best);
+                book.putString(UniqueId.KEY_BOOK_ISBN, best);
             }
         }
 
@@ -436,10 +437,11 @@ class ImportAllTask extends GenericTask {
             } else {
                 thumbnail = null;
             }
+
             if (thumbnail != null) {
                 String fileSpec = ImageUtils.saveThumbnailFromUrl(thumbnail, GoodreadsUtils.GOODREADS_FILENAME_SUFFIX);
                 if (!fileSpec.isEmpty()) {
-                    book.appendOrAdd(UniqueId.BKEY_THUMBNAIL_USCORE, fileSpec);
+                    book.appendOrAdd(UniqueId.BKEY_THUMBNAIL_FILES_SPEC, fileSpec);
                 }
                 book.cleanupThumbnails();
             }
@@ -494,7 +496,7 @@ class ImportAllTask extends GenericTask {
         // We need to set BOTH of these fields, otherwise the add/update method will set the
         // last_update_date for us, and that will most likely be set ahead of the GR update date
         String now = DateUtils.toSqlDateTime(new Date());
-        book.putString(UniqueId.KEY_GOODREADS_LAST_SYNC_DATE, now);
+        book.putString(UniqueId.KEY_BOOK_GOODREADS_LAST_SYNC_DATE, now);
         book.putString(UniqueId.KEY_LAST_UPDATE_DATE, now);
 
         return book;
@@ -581,6 +583,7 @@ class ImportAllTask extends GenericTask {
      */
     @Override
     @NonNull
+    @CallSuper
     public String getDescription() {
         String base = super.getDescription();
         if (mUpdatesAfter == null) {

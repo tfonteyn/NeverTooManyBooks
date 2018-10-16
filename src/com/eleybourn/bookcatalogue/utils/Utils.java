@@ -24,6 +24,7 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.Html;
@@ -92,6 +93,13 @@ public class Utils {
      * Utility routine to get the data from a URL. Makes sure timeout is set to
      * avoid application stalling.
      *
+     * TODO: using the jdk one right now. This means com.android.okhttp
+     * https://square.github.io/okhttp/
+     *
+     * There are indeed some issues with it, see for example {@link com.eleybourn.bookcatalogue.searches.isfdb.ISFDBBook}
+     * But just using Apache as here and some other places might not be the best solution.
+     * Needs investigating though. Below code mentions 2010; we're now 2018 after all.
+     *
      * @param url URL to retrieve
      *
      * @return InputStream
@@ -125,7 +133,6 @@ public class Utils {
                      */
 
                     // If at some stage in the future the casting code breaks...use the Apache one.
-                    //TODO: do this anyhow, the jdk one is 'not really good'
                     //final HttpClient client = new DefaultHttpClient();
                     //final HttpParams httpParameters = client.getParams();
                     //
@@ -233,7 +240,7 @@ public class Utils {
                                            @NonNull final String key) {
         if (bundle.containsKey(key)) {
             String s = bundle.getString(key);
-            return (s != null && !s.isEmpty());
+            return (s != null && !s.trim().isEmpty());
         } else {
             return false;
         }
@@ -407,6 +414,7 @@ public class Utils {
         }
 
         @Override
+        @CallSuper
         public void close() throws IOException {
             try {
                 super.close();

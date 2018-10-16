@@ -26,7 +26,7 @@ import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
-import com.eleybourn.bookcatalogue.baseactivity.ActivityWithTasks;
+import com.eleybourn.bookcatalogue.baseactivity.BaseActivityWithTasks;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.messaging.MessageSwitch;
 import com.eleybourn.bookcatalogue.messaging.MessageSwitch.Message;
@@ -35,14 +35,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Class used to manager a collection of background threads for a {@link ActivityWithTasks} subclass.
+ * Class used to manager a collection of background threads for a {@link BaseActivityWithTasks} subclass.
  *
  * Part of three components that make this easier:
  *
  * {@link TaskManager}
  * handles the management of multiple threads sharing a ProgressDialog
  *
- * {@link ActivityWithTasks}
+ * {@link BaseActivityWithTasks}
  * Uses a TaskManager (and communicates with it) to handle progress messages for threads.
  * Deals with orientation changes in cooperation with TaskManager.
  *
@@ -131,7 +131,7 @@ public class TaskManager implements AutoCloseable {
      */
     public void addTask(@NonNull final ManagedTask task) {
         if (mIsClosing) {
-            throw new RuntimeException("Can not add a task when closing down");
+            throw new IllegalStateException("Can not add a task when closing down");
         }
 
         mCancelling = false;
@@ -194,7 +194,7 @@ public class TaskManager implements AutoCloseable {
     }
 
     /**
-     * Update the base progress message. Used (generally) by the ActivityWithTasks to
+     * Update the base progress message. Used (generally) by the BaseActivityWithTasks to
      * display some text above the task info. Set to null to ensure ProgressDialog will
      * be removed.
      */

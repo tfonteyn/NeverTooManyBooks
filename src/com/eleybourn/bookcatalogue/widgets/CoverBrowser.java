@@ -162,7 +162,7 @@ public class CoverBrowser {
         }
 
         if (!IsbnUtils.isValid(mIsbn)) {
-            StandardDialogs.showQuickNotice(mActivity, R.string.no_isbn_no_editions);
+            StandardDialogs.showBriefMessage(mActivity, R.string.no_isbn_no_editions);
             shutdown();
             return;
         }
@@ -380,7 +380,7 @@ public class CoverBrowser {
         @Override
         public void onFinish(@Nullable final Exception e) {
             if (mEditions.isEmpty()) {
-                StandardDialogs.showQuickNotice(mActivity, R.string.no_editions);
+                StandardDialogs.showBriefMessage(mActivity, R.string.no_editions);
                 shutdown();
                 return;
             }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="contact_label">Contact:</string>
+    <string name="lbl_contacts">Contact:</string>
     <string name="series_num">No</string>
 
     <!-- Begin : What's New Section -->
@@ -112,21 +112,21 @@
     <string name="confirm_save_bs">Sauvegarder la bibliothèque</string>
     <string name="menu_delete_bs">Supprimer la bibliothèque</string>
     <string name="delete_1st_bs">Impossible de supprimer la première bibliothèque</string>
-    <string name="bookshelf_label">Bibliothèque : </string>
+    <string name="lbl_bookshelf">Bibliothèque : </string>
     <string name="all_books">Tous les livres</string>
     <string name="isbn_found">ISBN scanné. Recherche en cours.</string>
     <string name="title_isbn_search">recherche par ISBN</string>
     <string name="title_manage_bs">gérer les biblothèques</string>
     <string name="title_edit_bs">modifier la bibliothèque</string>
-    <string name="search_label">Rechercher des livres</string>
+    <string name="lbl_search">Rechercher des livres</string>
     <string name="search_hint">Rechercher un auteur ou un titre</string>
     <string name="book_not_found">Le livre n\'a pas été trouvé. Il est parfois possible de trouver le code barre à l\'intérieur de la première page de couverture. Sinon merci d\'entrer les détails manuellement.</string>
     <string name="import_data">Importer les livres</string>
     <string name="import_alert">Attention ! L\'import de données peut provoquer la mise à jour de livres avec de nouvelles informations si les identifiants importés sont identiques à ceux existants. Cela est généralement correct si vous n\'avez modifié qu\'un champ dans un fichier exporté. Si vous avez intégralement créé un livre, assurez vous que le champ identifiant est vide.</string>
-    <string name="import_failed_is_location_correct">Erreur: l\'import depuis la carte SD a échoué. Le fichier se trouve-t-il au bon endroit ?</string>
+    <string name="error_import_failed_is_location_correct">Erreur: l\'import depuis la carte SD a échoué. Le fichier se trouve-t-il au bon endroit ?</string>
     <string name="search_title">Book Catalogue : résultats de recherche</string>
     <string name="results_found">Des résultats ont été trouvés.</string>
-    <string name="administration_label">Administration</string>
+    <string name="lbl_administration">Administration</string>
     <string name="menu_administration">Admin</string>
     <string name="install_scan_title">Installer le scanner de code barre</string>
     <string name="version_number">Numéro de version :</string>
@@ -135,17 +135,17 @@
     <string name="edit_book">Modifier le livre</string>
     <string name="edit_book_notes">Votre commentaire</string>
     <string name="edit_book_friends">Prêter le livre</string>
-    <string name="unknown_error">Une erreur inconnue s\'est produite</string>
+    <string name="error_unknown">Une erreur inconnue s\'est produite</string>
     <string name="notes">Notes</string>
     <string name="loaned_to">Ce livre a été prêté à :</string>
-    <string name="nobody">Personne</string>
+    <string name="loaned_to_nobody">Personne</string>
     <string name="loan_to">Prêter le livre à :</string>
-    <string name="returned">Rendu</string>
+    <string name="loan_returned">Rendu</string>
     <string name="name">Nom</string>
-    <string name="website_lbl">Site web :</string>
-    <string name="sourcecode_label">Code source :</string>
-    <string name="donate_label">Don</string>
-    <string name="about_label">À propos de cette application</string>
+    <string name="lbl_website">Site web :</string>
+    <string name="lbl_sourcecode">Code source :</string>
+    <string name="lbl_donate">Don</string>
+    <string name="lbl_about">À propos de cette application</string>
     <string name="list_price">Liste de prix</string>
     <string name="update_fields">Mise à jour automatique des champs</string>
     <string name="select_fields_to_update">Sélection des champs à mettre à jour</string>
@@ -153,8 +153,8 @@
     <string name="overwrite_thumbnail">Les champs sélectionnés vont être mis à jour tels que montré ; en option, les vignettes peuvent être téléchargées pour tous les livres.\n\nVoulez-vous remplacer toutes les vignettes existantes ? Attention, cela peut prendre du temps.</string>
     <string name="yes">Oui</string>
     <string name="no">Non</string>
-    <string name="search_fail">La recherche du livre a échoué. Merci de vérifier vos réglages réseau.</string>
-    <string name="search_exception">Recherche en échec pendant %1$s : %2$s</string>
+    <string name="error_search_failed">La recherche du livre a échoué. Merci de vérifier vos réglages réseau.</string>
+    <string name="error_search_exception">Recherche en échec pendant %1$s : %2$s</string>
     <string name="menu_delete_thumb">Supprimer la vignette</string>
     <string name="help">Aide</string>
     <string name="menu_manage_fields">Gérer la visibilité des champs</string>
@@ -165,7 +165,7 @@
     <string name="menu_delete_anthology">Supprimer ce titre de l\'anthologie</string>
     <string name="is_anthology">Ce livre est-il une anthologie ?</string>
     <string name="populate_anthology_titles">Renseigner les titres automatiquement (expérimental)</string>
-    <string name="automatic_population_failed">La recherche automatique des titres a échoué.</string>
+    <string name="error_anthology_automatic_population_failed">La recherche automatique des titres a échoué.</string>
     <string name="anthology">Anthologie</string>
     <string name="anthology_confirm">Merci de confirmer que les titres de cette anthologie sont corrects.</string>
     <string name="anthology_save">Sauvegarder</string>
@@ -206,11 +206,11 @@
     <string name="vldt_failed">La validation a échoué pour \'%s\'</string>
     <string name="vldt_read_start_after_end">La date de début de lecture est après la date de fin</string>
     <string name="backup_success">Sauvegarde réussie</string>
-    <string name="backup_failed">Sauvegarde échouée</string>
-    <string name="file_must_contain_column">Le fichier doit contenir une colonne nommée %s</string>
-    <string name="file_must_contain_any_column">Le fichier doit contenir au moins une des colonnes suivantes : %s</string>
-    <string name="column_is_blank">La colonne %1$s est vide à la ligne %2$s</string>
-    <string name="columns_are_blank">Les colonnes %1$s sont toutes vides à la ligne %2$d</string>
+    <string name="error_backup_failed">Sauvegarde échouée</string>
+    <string name="error_file_must_contain_column">Le fichier doit contenir une colonne nommée %s</string>
+    <string name="error_file_must_contain_any_column">Le fichier doit contenir au moins une des colonnes suivantes : %s</string>
+    <string name="error_column_is_blank">La colonne %1$s est vide à la ligne %2$s</string>
+    <string name="error_columns_are_blank">Les colonnes %1$s sont toutes vides à la ligne %2$d</string>
     <string name="save">Sauvegarder</string>
     <string name="add">Ajouter</string>
     <string name="no_authors_yet">Il n\'y a pas d\'auteur pour ce livre. Veuillez en ajouter un en utilisant la zone de texte et le bouton en haut de cet écran.</string>
@@ -226,8 +226,8 @@
     <string name="author_is_blank">Le champ « auteur » est vide</string>
     <string name="series_already_in_list">La série est déjà dans la liste</string>
     <string name="series_is_blank">Le champ « série » est vide</string>
-    <string name="export_failed_sdcard">Export en échec : impossible d\'écrire sur la carte SD</string>
-    <string name="thumbnail_failed_sdcard">Téléchargement de miniature en échec : impossible d\'écrire sur la carte SD</string>
+    <string name="error_export_failed">Export en échec : impossible d\'écrire sur la carte SD</string>
+    <string name="error_download_thumbnail_failed">Téléchargement de miniature en échec : impossible d\'écrire sur la carte SD</string>
     <string name="skip_title">Passer - %s</string>
     <string name="num_books_searched">%s livres recherchés</string>
     <string name="cancelled_info">Annulé - %s</string>
@@ -273,10 +273,10 @@
     <string name="lt_register_text">S\'enregistrer auprès de LibraryThing</string>
     <string name="lt_dev_key_text">Demander une clé développeur LibraryThing</string>
     <string name="lt_got_key">Une fois votre clé développeur obtenue (ou si vous en avez déjà une), entrez la simplement ci-dessous et elle sera utilisée pour obtenir des données supplémentaires.</string>
-    <string name="developer_key">Clé développeur</string>
-    <string name="require_library_thing_info">Cette fonctionnalité nécessite une clé développeur LibraryThing. Voulez-vous obtenir plus d\'informations à propos de LibraryThing ?</string>
-    <string name="uses_library_thing_info">Cette fonctionnalité est améliorée par l\'utilisation d\'une clé développeur LibraryThing. Voulez-vous obtenir plus d\'informations à propos de LibraryThing, ou désactiver ce message ?\n\nDes informations sur LibraryThing peuvent être obtenues dans l\'onglet LibraryThing des écrans d\'administration.</string>
-    <string name="reg_library_thing_title">Enregistrement LibraryThing</string>
+    <string name="lt_developer_key">Clé développeur</string>
+    <string name="lt_required_info">Cette fonctionnalité nécessite une clé développeur LibraryThing. Voulez-vous obtenir plus d\'informations à propos de LibraryThing ?</string>
+    <string name="lt_uses_info">Cette fonctionnalité est améliorée par l\'utilisation d\'une clé développeur LibraryThing. Voulez-vous obtenir plus d\'informations à propos de LibraryThing, ou désactiver ce message ?\n\nDes informations sur LibraryThing peuvent être obtenues dans l\'onglet LibraryThing des écrans d\'administration.</string>
+    <string name="lt_registration_title">Enregistrement LibraryThing</string>
     <string name="more_info">Plus d\'informations.</string>
     <string name="disable_dialogue">Désactiver ce message</string>
     <string name="lt_reset_messages_info">De temps en temps, cette application peut afficher des messages optionnels concernant LibraryThing. Pressez le bouton ci-dessous pour réactiver les messages désactivés.</string>
@@ -293,7 +293,7 @@
     <string name="debug_body">Merci de prendre le temps de décrire brièvement le problème que vous rencontrez.</string>
     <string name="menu_duplicate">Livre en double</string>
     <string name="cannot_edit_system">Vous ne pouvez pas modifier les valeurs du système</string>
-    <string name="no_connection">Pas de connexion Internet disponible.</string>
+    <string name="error_no_internet_connection">Pas de connexion Internet disponible.</string>
     <string name="menu_share_this">Partager</string>
     <string name="email_export">Souhaitez-vous envoyer cet export par courriel ?</string>
     <string name="task_errors">Erreurs de tâches</string>
@@ -304,25 +304,25 @@
     <string name="my_books">Mes livres</string>
     <string name="loan_return_book">Prêter, retourner ou modifier le livre</string>
     <string name="admin_and_prefs">Administration et préférences</string>
-    <string name="edit_book_send_to_gr">Envoyer à Goodreads</string>
-    <string name="goodreads_auth_blurb_part1">Goodreads est un site qui s\'est donné pour mission « d\'aider les gens à trouver et à partager les livres qu\'ils aiment ».
+    <string name="gr_send_to_goodreads">Envoyer à Goodreads</string>
+    <string name="gr_auth_blurb_part1">Goodreads est un site qui s\'est donné pour mission « d\'aider les gens à trouver et à partager les livres qu\'ils aiment ».
 		Ils disposent d\'une large base de données de livres et de critiques, et si vous êtes un utilisateur enregistré sur Goodreads,
 		BookCatalogue peut y exporter ou en importer vos livres, vos bibliothèques et critiques.
 		BookCatalogue est une application indépendante et ne nécessite pas Goodreads,
 		mais si vous êtes interessé vous pouvez vous enregistrer ici :</string>
-    <string name="goodreads_auth_blurb_part2">Une fois enregistré ou si vous êtes déjà utilisateur de Goodreads, vous pouvez autoriser BookCatalogue
+    <string name="gr_auth_blurb_part2">Une fois enregistré ou si vous êtes déjà utilisateur de Goodreads, vous pouvez autoriser BookCatalogue
 		à accéder à vos données Goodreads en pressant le bouton ci-dessous. Vous serez redirigé vers une page
 		sur laquelle vous devrez vous connecter à Goodreads et autoriser cette application. Nous n\'aurons jamais
 		connaissance de votre mot de passe, et vous pourrez désactiver cet accès sur le site Goodreads.
 		Il est possible que vous arriviez sur une page blanche. Cliquez simplement sur le bouton « retour » pour revenir ici !</string>
     <string name="location_of_book">Emplacement du livre</string>
-    <string name="incorrect_key">Votre clé de développeur LibraryThing est incorrecte ou nous n\'avons pas pu nous connecter au réseau pour la vérifier.</string>
-    <string name="correct_key">Votre clé de développeur LibraryThing est valable.</string>
+    <string name="lt_incorrect_key">Votre clé de développeur LibraryThing est incorrecte ou nous n\'avons pas pu nous connecter au réseau pour la vérifier.</string>
+    <string name="lt_correct_key">Votre clé de développeur LibraryThing est valable.</string>
     <string name="menu_crop_thumb">Recadrer la vignette</string>
-    <string name="goodreads_auth_blurb_part3">Mais rappelez-vous&#8230; il n\'est pas nécessaire de faire tout cela : BookCatalogue fonctionne très bien sans ça !</string>
-    <string name="authorize_access">Autoriser l\'accès</string>
-    <string name="authorize_access_already_auth">Il semble que vous avez déjà autorisé cette application. Toutes les fonctionnalités Goodreads devraient être déjà disponibles.</string>
-    <string name="goodreads_access_error">Problème réseau lors de l\'accès à Goodreads : vérifiez que le site Goodreads est disponible et si le problème persiste, prenez contact avec le support.</string>
+    <string name="gr_auth_blurb_part3">Mais rappelez-vous&#8230; il n\'est pas nécessaire de faire tout cela : BookCatalogue fonctionne très bien sans ça !</string>
+    <string name="gr_auth_access">Autoriser l\'accès</string>
+    <string name="gr_auth_access_already_auth">Il semble que vous avez déjà autorisé cette application. Toutes les fonctionnalités Goodreads devraient être déjà disponibles.</string>
+    <string name="gr_access_error">Problème réseau lors de l\'accès à Goodreads : vérifiez que le site Goodreads est disponible et si le problème persiste, prenez contact avec le support.</string>
     <string name="other_preferences">Autres préférences</string>
     <string name="user_interface">Interface utilisateur</string>
     <string name="background_tasks">Tâches en arrière plan</string>
@@ -334,7 +334,7 @@
     <string name="search_internet">Chercher sur Internet</string>
     <string name="show_results">Montrer les résultats</string>
     <string name="rebuild_fts">Re-construire FTS (alpha uniquement !)</string>
-    <string name="send_books_to_goodreads">Envoyer les livres à Goodreads</string>
+    <string name="gr_send_book">Envoyer les livres à Goodreads</string>
     <string name="legacy_task">Tâches anciennes</string>
     <string name="occurred_at">S\'est produit à %1$s</string>
     <string name="unknown_uc">Inconnu</string>
@@ -343,19 +343,19 @@
     <string name="no_matching_book_found">Aucun livre correspondant n\'a été trouvé</string>
     <string name="no_isbn_stored_for_book">Aucun ISBN enregistré pour ce livre</string>
     <string name="select_an_action">Choisissez une action</string>
-    <string name="goodreads_auth_check">Autorisation Goodreads en cours</string>
-    <string name="goodreads_auth_failed">Échec de l\'autorisation Goodreads</string>
-    <string name="goodreads_auth_successful">Autorisation Goodreads accordée</string>
+    <string name="gr_auth_check">Autorisation Goodreads en cours</string>
+    <string name="gr_auth_failed">Échec de l\'autorisation Goodreads</string>
+    <string name="gr_auth_successful">Autorisation Goodreads accordée</string>
     <string name="authorized">Autorisé</string>
     <string name="not_authorized">Non autorisé</string>
-    <string name="goodreads_auth_error">Autorisation Goodreads en erreur.</string>
+    <string name="gr_auth_error">Autorisation Goodreads en erreur.</string>
     <string name="if_the_problem_persists">Si le problème persiste, contactez le support via l\'aide du menu principal.</string>
     <string name="book_no_longer_exists">Le livre demandé n\'existe plus</string>
     <string name="please_enter_search_criteria">Merci d\'entrer vos critères de recherche</string>
     <string name="error_while_searching">Erreur lors de la recherche.</string>
     <string name="x_of_y">%1$d de %2$d</string>
-    <string name="send_all_to_goodreads_result">%1$d livres traités : %2$d envoyés avec succès, %3$d sans ISBN et %4$d avec ISBN mais non trouvés sur Goodreads</string>
-    <string name="send_book_to_goodreads">Envoyer le livre %1$s à Goodreads</string>
+    <string name="gr_send_all_books_results">%1$d livres traités : %2$d envoyés avec succès, %3$d sans ISBN et %4$d avec ISBN mais non trouvés sur Goodreads</string>
+    <string name="gr_send_book_to_goodreads">Envoyer le livre %1$s à Goodreads</string>
     <string name="erase_cover_cache">Effacer le cache des couvertures</string>
     <string name="crash_message_text">Book Catalogue a planté. Merci de nous aider en reportant ce crash.</string>
     <string name="crash_notif_ticker_text">Book Catalogue a planté.</string>
@@ -459,7 +459,7 @@
     <string name="edit">Modifier</string>
     <string name="groupings">Groupes</string>
     <string name="preferences">Préférences</string>
-    <string name="unexpected_error">Une erreur inattendue s\'est produite. Merci d\'envoyer les détails au support par l\'option « aide » du menu principal.</string>
+    <string name="error_unexpected_error">Une erreur inattendue s\'est produite. Merci d\'envoyer les détails au support par l\'option « aide » du menu principal.</string>
     <string name="delete_style">Supprimer le style</string>
     <string name="edit_style">Modifier le style</string>
     <string name="clone_style">Cloner le style</string>
@@ -469,11 +469,11 @@
     <string name="user_defined">Défini par l\'utilisateur</string>
     <string name="builtin">Par défaut</string>
     <string name="sort_unread">Non lu (auteur / séries)</string>
-    <string name="import_all_from_goodreads">Tout importer depuis Goodreads</string>
+    <string name="gr_import_all_from_goodreads">Tout importer depuis Goodreads</string>
     <string name="requested_task_is_already_queued">La tâche demandée est déjà en cours d\'attente</string>
     <string name="export_task_is_already_queued">Un export est déjà en cours et doit être terminé avant que cette tâche ne démarre.</string>
     <string name="import_task_is_already_queued">Un import est déjà en cours et doit être terminé avant que cette tâche ne démarre.</string>
-    <string name="goodreads_action_cannot_blah_blah">Cette action ne peut être menée tant que cette application n\'est pas autorisée par Goodreads. Merci de ré-essayer après autorisation.\n\nVoulez-vous l\'autoriser maintenent ?</string>
+    <string name="gr_action_cannot_blah_blah">Cette action ne peut être menée tant que cette application n\'est pas autorisée par Goodreads. Merci de ré-essayer après autorisation.\n\nVoulez-vous l\'autoriser maintenent ?</string>
     <string name="tell_me_more">En savoir plus</string>
     <string name="completed">Terminé</string>
     <string name="failed">Échoué</string>
@@ -481,10 +481,10 @@
     <string name="unknown">Inconnu</string>
     <string name="send_all">Tout envoyer</string>
     <string name="send_updated">Envoi mis à jour</string>
-    <string name="sync_with_goodreads">Synchroniser avec goodreads</string>
+    <string name="gr_sync_with_goodreads">Synchroniser avec goodreads</string>
     <string name="cover_options_cc_ellipsis">Options de couverture&#8230;</string>
     <string name="show_events_ellipsis">Montrer les événement&#8230;</string>
-    <string name="send_books_to_goodreads_blurb">Vous êtes sur le point d\'envoyer votre bibliothèque à Goodreads.
+    <string name="gr_send_books_to_goodreads_blurb">Vous êtes sur le point d\'envoyer votre bibliothèque à Goodreads.
 		\n\nVous pouvez envoyer tous vos livres ou uniquement ceux que vous avez mis à jour
 		depuis qu\'ils ont été copiés depuis ou vers Goodreads (y compris
 		ceux qui n\'ont pas encore été envoyés) ou vous pouvez annuler cette mise à jour.
@@ -502,13 +502,13 @@
     <string name="task_has_been_queued_in_background">La tâche a été placée en file d\'attente.</string>
     <string name="hint_startup_screen">« Voici l\'écran de démarrage par défaut de Book Catalogue. Si vous le souhaitez, vous pouvez démarrer directement dans « mes livres » ; l\'écran de démarrage préféré peut être modifié dans les préférences. »</string>
     <string name="upgrading_ellipsis">Mise à niveau&#8230;</string>
-    <string name="explain_goodreads_no_isbn">Les livres sélectionnés n\'ont pas d\'ISBN ; il est impossible de les synchroniser avec Goodreads.
+    <string name="gr_explain_goodreads_no_isbn">Les livres sélectionnés n\'ont pas d\'ISBN ; il est impossible de les synchroniser avec Goodreads.
 		La solution la plus simple est de:
 		\n\n(1) supprimer le livre de BookCatalogue
 		\n\n(2) ajouter manuellement le livre à Goodreads par leur interface web
 		\n\n(3) Synchroniser avec goodreads
 		\n\nLe livre sera re-créé dans Book Catalogue et les deux livres seront alors liés.</string>
-    <string name="explain_goodreads_no_match">L\'ISBN du livre choisi n\'a pas pu être trouvé sur goodreads. Il existe de multiples causes à ça :
+    <string name="gr_explain_goodreads_no_match">L\'ISBN du livre choisi n\'a pas pu être trouvé sur goodreads. Il existe de multiples causes à ça :
 		soit les données du livre sont erronées (vérifiez l\'ISBN), soit le livre n\'est pas sur Goodreads.
 		\n\nSi vous modifiez les données sur Book Catalogue, pressez simplement sur le bouton \'Ré-essayer\' et assurez vous
 		que la tâche associée est exécutée avec succès.
@@ -846,7 +846,7 @@
     <!-- Preference VALUE, displayed in a preference activity -->
     <string name="zxing_scanner">Zxing Scanner</string>
     <!-- Heading in 'about' dialog -->
-    <string name="special_thanks_label">Remerciements particuliers </string>
+    <string name="lbl_special_thanks">Remerciements particuliers </string>
     <!-- Credits in the 'about' dialog -->
 
     <!-- End: Added/Updated in 5.1.0 -->

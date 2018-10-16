@@ -129,13 +129,13 @@ public class AmazonUtils {
         } catch (Exception ae) {
             // An Amazon error should not crash the app
             Logger.error(ae, "Unable to call the Amazon API");
-            StandardDialogs.showQuickNotice(activity, R.string.unexpected_error);
+            StandardDialogs.showBriefMessage(activity, R.string.error_unexpected_error);
             // This code works, but Amazon have a nasty tendency to cancel Associate IDs...
             //String baseUrl = "http://www.amazon.com/gp/search?index=books&tag=philipwarneri-20&tracking_id=philipwarner-20";
             //String extra = buildSearchArgs(author, series);
             //if (extra != null && !extra.isEmpty()) {
             //	Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(baseUrl + extra));
-            //	context.startActivity(intent);
+            //	context.startActivityForResult(intent);
             //}
         }
     }

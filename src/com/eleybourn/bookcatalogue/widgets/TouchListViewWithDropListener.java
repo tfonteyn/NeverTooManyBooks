@@ -21,6 +21,7 @@ public class TouchListViewWithDropListener<T> extends TouchListView implements T
         setDropListener(this);
     }
 
+    @SuppressWarnings("EmptyMethod")
     private void onListChanged() {
     }
 

@@ -4,7 +4,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.BCPreferences;
+import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.StartupActivity;
 import com.eleybourn.bookcatalogue.database.definitions.TableInfo;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -208,7 +208,7 @@ public class UpgradeDatabase {
      * @param toRemove	List of fields to be removed from the source table (ignored in copy)
      */
     private static void copyTableSafely(@NonNull final DbSync.SynchronizedDb sdb,
-                                        @NonNull final String from,
+                                        @SuppressWarnings("SameParameterValue") @NonNull final String from,
                                         @NonNull final String to,
                                         @NonNull final String... toRemove) {
         // Get the source info
@@ -240,7 +240,7 @@ public class UpgradeDatabase {
 
     static void recreateAndReloadTable(@NonNull final DbSync.SynchronizedDb db,
                                        @NonNull final String tableName,
-                                       @NonNull final String createStatement,
+                                       @SuppressWarnings("SameParameterValue") @NonNull final String createStatement,
                                        @NonNull final String... toRemove) {
         final String tempName = "recreate_tmp";
         db.execSQL("ALTER TABLE " + tableName + " RENAME TO " + tempName);
@@ -1118,7 +1118,7 @@ public class UpgradeDatabase {
         if (curVersion == 74) {
             curVersion++;
             // StartupActivity.scheduleAuthorSeriesFixUp();
-            BCPreferences.setBoolean(StartupActivity.V74_PREF_AUTHOR_SERIES_FIX_UP_REQUIRED, true);
+            BookCatalogueApp.Prefs.putBoolean(StartupActivity.V74_PREF_AUTHOR_SERIES_FIX_UP_REQUIRED, true);
             mMessage += "New in v4.0.3\n\n";
             mMessage += "* ISBN validation when searching/scanning and error beep when scanning (with preference to turn it off)\n\n";
             mMessage += "* 'Loaned' list now shows available books under the heading 'Available'\n\n";

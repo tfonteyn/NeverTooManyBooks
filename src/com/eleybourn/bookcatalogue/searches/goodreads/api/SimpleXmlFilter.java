@@ -38,7 +38,7 @@ import java.util.Objects;
  * @author Philip Warner
  */
 public class SimpleXmlFilter {
-    @Nullable
+    @NonNull
     private static final XmlHandler mHandleStart = new XmlHandler() {
         @Override
         public void process(@NonNull ElementContext context) {
@@ -72,7 +72,7 @@ public class SimpleXmlFilter {
 
         }
     };
-    @Nullable
+    @NonNull
     private static final XmlHandler mHandleFinish = new XmlHandler() {
         @Override
         public void process(@NonNull ElementContext context) {
@@ -96,7 +96,7 @@ public class SimpleXmlFilter {
 
         }
     };
-    @Nullable
+    @NonNull
     private static final XmlHandler mTextHandler = new XmlHandler() {
         @Override
         public void process(@NonNull ElementContext context) {
@@ -104,46 +104,46 @@ public class SimpleXmlFilter {
             c.getData().putString(c.collectField, context.body.trim());
         }
     };
-    @Nullable
+    @NonNull
     private static final XmlHandler mLongHandler = new XmlHandler() {
 
         @Override
         public void process(@NonNull ElementContext context) {
-            final BuilderContext c = (BuilderContext) context.userArg;
-            final String name = c.collectField;
+            final BuilderContext bc = (BuilderContext) context.userArg;
+            final String name = bc.collectField;
             try {
                 long l = Long.parseLong(context.body.trim());
-                c.getData().putLong(name, l);
+                bc.getData().putLong(name, l);
             } catch (Exception ignore) {
                 // Ignore but don't add
             }
         }
     };
-    @Nullable
+    @NonNull
     private static final XmlHandler mDoubleHandler = new XmlHandler() {
 
         @Override
         public void process(@NonNull ElementContext context) {
-            final BuilderContext c = (BuilderContext) context.userArg;
-            final String name = c.collectField;
+            final BuilderContext bc = (BuilderContext) context.userArg;
+            final String name = bc.collectField;
             try {
                 double d = Double.parseDouble(context.body.trim());
-                c.getData().putDouble(name, d);
+                bc.getData().putDouble(name, d);
             } catch (Exception ignore) {
                 // Ignore but don't add
             }
         }
     };
-    @Nullable
+    @NonNull
     private static final XmlHandler mBooleanHandler = new XmlHandler() {
 
         @Override
         public void process(@NonNull ElementContext context) {
-            final BuilderContext c = (BuilderContext) context.userArg;
-            final String name = c.collectField;
+            final BuilderContext bc = (BuilderContext) context.userArg;
+            final String name = bc.collectField;
             try {
                 boolean b = textToBoolean(context.body.trim());
-                c.getData().putBoolean(name, b);
+                bc.getData().putBoolean(name, b);
             } catch (Exception ignore) {
                 // Ignore but don't add
             }
@@ -244,7 +244,7 @@ public class SimpleXmlFilter {
     }
 
     @NonNull
-    SimpleXmlFilter popTo(@NonNull final String tag) {
+    SimpleXmlFilter popTo(@SuppressWarnings("SameParameterValue") @NonNull final String tag) {
         int last = mTags.size() - 1;
         while (!mTags.get(last).equalsIgnoreCase(tag)) {
             if (last == 0) {
@@ -257,6 +257,7 @@ public class SimpleXmlFilter {
         return this;
     }
 
+    @SuppressWarnings("unused")
     @NonNull
     SimpleXmlFilter booleanAttr(@NonNull final String key, @NonNull final String attrName) {
         List<AttrFilter> attrs = getAttrFilters();
@@ -264,6 +265,7 @@ public class SimpleXmlFilter {
         return this;
     }
 
+    @SuppressWarnings("unused")
     @NonNull
     SimpleXmlFilter doubleAttr(@NonNull final String attrName, @NonNull final String key) {
         List<AttrFilter> attrs = getAttrFilters();
@@ -278,6 +280,7 @@ public class SimpleXmlFilter {
         return this;
     }
 
+    @SuppressWarnings("SameParameterValue")
     @NonNull
     SimpleXmlFilter stringAttr(@NonNull final String attrName, @NonNull final String key) {
         List<AttrFilter> attrs = getAttrFilters();
@@ -303,24 +306,28 @@ public class SimpleXmlFilter {
         return this;
     }
 
+    @SuppressWarnings("SameParameterValue")
     @NonNull
     SimpleXmlFilter booleanBody(@NonNull final String tag, @NonNull final String fieldName) {
         setCollector(tag, mBooleanHandler, fieldName);
         return this;
     }
 
+    @SuppressWarnings("unused")
     @NonNull
     SimpleXmlFilter doubleBody(@NonNull final String fieldName) {
         setCollector(mDoubleHandler, fieldName);
         return this;
     }
 
+    @SuppressWarnings("SameParameterValue")
     @NonNull
     SimpleXmlFilter doubleBody(@NonNull final String tag, @NonNull final String fieldName) {
         setCollector(tag, mDoubleHandler, fieldName);
         return this;
     }
 
+    @SuppressWarnings("unused")
     @NonNull
     public SimpleXmlFilter longBody(@NonNull final String fieldName) {
         setCollector(mLongHandler, fieldName);
@@ -346,6 +353,7 @@ public class SimpleXmlFilter {
     }
 
     public interface XmlListener {
+        @SuppressWarnings("EmptyMethod")
         void onStart(@NonNull final SimpleXmlFilter.BuilderContext bc, @NonNull final ElementContext c);
 
         void onFinish(@NonNull final SimpleXmlFilter.BuilderContext bc, @NonNull final ElementContext c);

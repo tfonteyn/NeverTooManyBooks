@@ -98,7 +98,7 @@ public class Author implements Serializable, Utils.ItemWithIdFixup {
                     fLen = 2;
                 }
                 sName = names[names.length - 1];
-                /* e.g. Foo Bar Jr  FIXME: needs internationalisation ? */
+                /* e.g. Foo Bar Jr  FIXME: needs internationalisation ?  */
                 if (sName.matches("[Jj]r|[Jj]unior|[Ss]r|[Ss]enior")) {
                     family.append(names[names.length - 2]).append(" ");
                     fLen = 2;
@@ -204,7 +204,7 @@ public class Author implements Serializable, Utils.ItemWithIdFixup {
      * - one or both of them is 'new' (e.g. id == 0) but their names are equal
      * - ids are equal
      *
-     * Compare is CASE SENSITIVE !
+     * Compare is CASE SENSITIVE ! This allows correcting case mistakes.
      */
     @Override
     public boolean equals(@Nullable final Object o) {

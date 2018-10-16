@@ -32,7 +32,7 @@
             android:layout_height="wrap_content">
 
             <TextView
-                android:id="@+id/heading"
+                android:id="@+id/lbl_author"
                 style="@style/editorFieldHeader"
                 android:text="@string/author" />
 
@@ -43,7 +43,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentStart="true"
-                android:layout_below="@id/heading">
+                android:layout_below="@id/lbl_author">
 
                 <requestFocus />
             </Button>
@@ -54,7 +54,7 @@
             android:layout_height="wrap_content">
 
             <TextView
-                android:id="@+id/heading"
+                android:id="@+id/lbl_title"
                 style="@style/editorFieldHeader"
                 android:labelFor="@id/title"
                 android:text="@string/title" />
@@ -62,7 +62,7 @@
             <EditText
                 android:id="@+id/title"
                 style="@style/bookOrSeriesTitleTextEntry"
-                android:layout_below="@id/heading"
+                android:layout_below="@id/lbl_title"
                 tools:ignore="Autofill" />
         </RelativeLayout>
 
@@ -72,7 +72,7 @@
             android:layout_height="wrap_content">
 
             <TextView
-                android:id="@+id/heading"
+                android:id="@+id/lbl_isbn"
                 style="@style/editorFieldHeader"
                 android:layout_alignParentTop="false"
                 android:layout_centerVertical="true"
@@ -83,7 +83,7 @@
                 android:id="@+id/isbn"
                 style="@style/editorFieldText"
                 android:layout_alignParentStart="false"
-                android:layout_toEndOf="@id/heading"
+                android:layout_toEndOf="@id/lbl_isbn"
                 android:inputType="text"
                 tools:ignore="Autofill" />
         </RelativeLayout>
@@ -101,7 +101,7 @@
             android:layout_height="wrap_content">
 
             <TextView
-                android:id="@+id/heading"
+                android:id="@+id/lbl_series"
                 style="@style/editorFieldHeader"
                 android:text="@string/series" />
 
@@ -112,7 +112,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentStart="true"
-                android:layout_below="@id/heading" />
+                android:layout_below="@id/lbl_series" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -121,7 +121,7 @@
             android:layout_height="wrap_content">
 
             <TextView
-                android:id="@+id/heading"
+                android:id="@+id/lbl_publisher"
                 style="@style/editorFieldHeader"
                 android:labelFor="@id/publisher"
                 android:text="@string/publisher" />
@@ -129,7 +129,7 @@
             <AutoCompleteTextView
                 android:id="@+id/publisher"
                 style="@style/personalNameTextEntry"
-                android:layout_below="@id/heading"
+                android:layout_below="@id/lbl_publisher"
                 android:layout_centerVertical="true"
                 android:layout_toStartOf="@id/publisher_button"
                 android:completionThreshold="2" />
@@ -150,7 +150,7 @@
             android:layout_height="wrap_content">
 
             <TextView
-                android:id="@+id/date_published_heading"
+                android:id="@+id/lbl_date_published"
                 style="@style/editorFieldHeader"
                 android:text="@string/date_published" />
 
@@ -161,7 +161,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentStart="true"
-                android:layout_below="@id/date_published_heading" />
+                android:layout_below="@id/lbl_date_published" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -170,20 +170,19 @@
             android:layout_height="wrap_content">
 
             <TextView
-                android:id="@+id/heading"
+                android:id="@+id/lbl_first_publication"
                 style="@style/editorFieldHeader"
                 android:labelFor="@id/first_publication"
                 android:text="@string/first_publication" />
 
-            <EditText
+            <Button
                 android:id="@+id/first_publication"
-                style="@style/editorFieldText"
-                android:layout_below="@id/heading"
-                android:layout_centerVertical="true"
-                android:inputType="number"
-                android:maxLength="4"
-                android:singleLine="true"
-                tools:ignore="Autofill" />
+                style="@style/dataEntryButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@id/lbl_first_publication" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -192,7 +191,7 @@
             android:layout_height="wrap_content">
 
             <TextView
-                android:id="@+id/heading"
+                android:id="@+id/lbl_bookshelves"
                 style="@style/editorFieldHeader"
                 android:text="@string/bookshelves" />
 
@@ -203,7 +202,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentStart="true"
-                android:layout_below="@id/heading" />
+                android:layout_below="@id/lbl_bookshelves" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -212,7 +211,7 @@
             android:layout_height="wrap_content">
 
             <TextView
-                android:id="@+id/heading"
+                android:id="@+id/lbl_pages"
                 style="@style/editorFieldHeader"
                 android:labelFor="@id/pages"
                 android:text="@string/pages" />
@@ -220,7 +219,7 @@
             <EditText
                 android:id="@+id/pages"
                 style="@style/editorFieldText"
-                android:layout_below="@id/heading"
+                android:layout_below="@id/lbl_pages"
                 android:layout_centerVertical="true"
                 android:inputType="number"
                 tools:ignore="Autofill" />
@@ -232,7 +231,7 @@
             android:layout_height="wrap_content">
 
             <TextView
-                android:id="@+id/heading"
+                android:id="@+id/lbl_list_price"
                 style="@style/editorFieldHeader"
                 android:labelFor="@id/list_price"
                 android:text="@string/list_price" />
@@ -240,7 +239,7 @@
             <EditText
                 android:id="@+id/list_price"
                 style="@style/editorFieldText"
-                android:layout_below="@id/heading"
+                android:layout_below="@id/lbl_list_price"
                 android:layout_centerVertical="true"
                 android:inputType="numberDecimal"
                 tools:ignore="Autofill" />
@@ -252,7 +251,7 @@
             android:layout_height="wrap_content">
 
             <TextView
-                android:id="@+id/heading"
+                android:id="@+id/lbl_format"
                 style="@style/editorFieldHeader"
                 android:labelFor="@id/format"
                 android:text="@string/format" />
@@ -260,7 +259,7 @@
             <AutoCompleteTextView
                 android:id="@+id/format"
                 style="@style/editorFieldText"
-                android:layout_below="@id/heading"
+                android:layout_below="@id/lbl_format"
                 android:layout_centerVertical="true"
                 android:layout_toStartOf="@id/format_button"
                 android:completionThreshold="2"
@@ -280,7 +279,7 @@
             android:layout_height="wrap_content">
 
             <TextView
-                android:id="@+id/heading"
+                android:id="@+id/lbl_genre"
                 style="@style/editorFieldHeader"
                 android:labelFor="@id/genre"
                 android:text="@string/genre" />
@@ -288,7 +287,7 @@
             <AutoCompleteTextView
                 android:id="@+id/genre"
                 style="@style/editorFieldText"
-                android:layout_below="@id/heading"
+                android:layout_below="@id/lbl_genre"
                 android:layout_centerVertical="true"
                 android:layout_toStartOf="@id/genre_button"
                 android:completionThreshold="2"
@@ -308,7 +307,7 @@
             android:layout_height="wrap_content">
 
             <TextView
-                android:id="@+id/heading"
+                android:id="@+id/lbl_language"
                 style="@style/editorFieldHeader"
                 android:labelFor="@id/language"
                 android:text="@string/language" />
@@ -317,7 +316,7 @@
             <AutoCompleteTextView
                 android:id="@+id/language"
                 style="@style/editorFieldText"
-                android:layout_below="@id/heading"
+                android:layout_below="@id/lbl_language"
                 android:layout_centerVertical="true"
                 android:layout_toStartOf="@id/language_button"
                 android:completionThreshold="2"
@@ -331,13 +330,14 @@
                 tools:ignore="ContentDescription" />
         </RelativeLayout>
 
+        <!-- the id for the layout is only for use by a debug method -->
         <RelativeLayout
-            android:id="@+id/row_description_label"
+            android:id="@+id/lbl_row_description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <TextView
-                android:id="@+id/heading"
+                android:id="@+id/lbl_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingTop="12dp"
@@ -347,7 +347,7 @@
             <ImageView
                 android:id="@+id/description_edit_button"
                 style="@style/dropDownMenuButton"
-                android:layout_alignBottom="@id/heading"
+                android:layout_alignBottom="@id/lbl_description"
                 app:srcCompat="@drawable/ic_mode_edit"
                 tools:ignore="ContentDescription" />
         </RelativeLayout>

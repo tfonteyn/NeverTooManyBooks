@@ -54,49 +54,53 @@ public class BookUtils {
 
     /**
      * Open a new book editing activity with fields copied from saved book.
-     * Saved book (original of duplicating) is defined by its row _id in database.
      *
-     * @param bookId The id of the book to copy fields
+     * @param bookId from which to copy fields
      */
     public static void duplicateBook(@NonNull final Activity activity,
                                      @NonNull final CatalogueDBAdapter db,
                                      final long bookId) {
-        final Bundle mBookData = new Bundle();
+        final Bundle bookData = new Bundle();
         try (BooksCursor cursor = db.fetchBookById(bookId)) {
             BookRowView bookRowView = cursor.getRowView();
             cursor.moveToFirst();
 
-            mBookData.putLong(UniqueId.KEY_ANTHOLOGY_BITMASK, bookRowView.getAnthologyMask());
-            mBookData.putString(UniqueId.KEY_BOOK_DATE_PUBLISHED, bookRowView.getDatePublished());
-            mBookData.putString(UniqueId.KEY_DESCRIPTION, bookRowView.getDescription());
-            mBookData.putString(UniqueId.KEY_BOOK_FORMAT, bookRowView.getFormat());
-            mBookData.putString(UniqueId.KEY_BOOK_GENRE, bookRowView.getGenre());
-            mBookData.putString(UniqueId.KEY_ISBN, bookRowView.getIsbn());
-            mBookData.putString(UniqueId.KEY_BOOK_LIST_PRICE, bookRowView.getListPrice());
-            mBookData.putString(UniqueId.KEY_BOOK_LANGUAGE, bookRowView.getLanguage());
-            mBookData.putString(UniqueId.KEY_BOOK_LOCATION, bookRowView.getLocation());
-            mBookData.putString(UniqueId.KEY_NOTES, bookRowView.getNotes());
-            mBookData.putString(UniqueId.KEY_BOOK_PAGES, bookRowView.getPages());
-            mBookData.putString(UniqueId.KEY_BOOK_PUBLISHER, bookRowView.getPublisherName());
-            mBookData.putDouble(UniqueId.KEY_BOOK_RATING, bookRowView.getRating());
-            mBookData.putInt(UniqueId.KEY_BOOK_READ, bookRowView.getRead());
-            mBookData.putString(UniqueId.KEY_BOOK_READ_END, bookRowView.getReadEnd());
-            mBookData.putString(UniqueId.KEY_BOOK_READ_START, bookRowView.getReadStart());
-            mBookData.putInt(UniqueId.KEY_BOOK_SIGNED, bookRowView.getSigned());
-            mBookData.putString(UniqueId.KEY_TITLE, bookRowView.getTitle());
+            bookData.putSerializable(UniqueId.BKEY_AUTHOR_ARRAY, db.getBookAuthorList(bookId));
+            bookData.putSerializable(UniqueId.BKEY_SERIES_ARRAY, db.getBookSeriesList(bookId));
 
-            mBookData.putSerializable(UniqueId.BKEY_AUTHOR_ARRAY, db.getBookAuthorList(bookId));
-            mBookData.putSerializable(UniqueId.BKEY_SERIES_ARRAY, db.getBookSeriesList(bookId));
-            mBookData.putSerializable(UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY, db.getBookAnthologyTitleList(bookId));
+            bookData.putString(UniqueId.KEY_TITLE, bookRowView.getTitle());
+            bookData.putString(UniqueId.KEY_BOOK_ISBN, bookRowView.getIsbn());
+            bookData.putString(UniqueId.KEY_DESCRIPTION, bookRowView.getDescription());
+
+            bookData.putInt(UniqueId.KEY_ANTHOLOGY_BITMASK, bookRowView.getAnthologyMask());
+            bookData.putSerializable(UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY, db.getAnthologyTitleListByBook(bookId));
+
+            bookData.putString(UniqueId.KEY_BOOK_PUBLISHER, bookRowView.getPublisherName());
+            bookData.putString(UniqueId.KEY_BOOK_DATE_PUBLISHED, bookRowView.getDatePublished());
+            bookData.putString(UniqueId.KEY_FIRST_PUBLICATION, bookRowView.getFirstPublication());
+
+            bookData.putString(UniqueId.KEY_BOOK_FORMAT, bookRowView.getFormat());
+            bookData.putString(UniqueId.KEY_BOOK_GENRE, bookRowView.getGenre());
+            bookData.putString(UniqueId.KEY_BOOK_LIST_PRICE, bookRowView.getListPrice());
+            bookData.putString(UniqueId.KEY_BOOK_LANGUAGE, bookRowView.getLanguage());
+            bookData.putString(UniqueId.KEY_BOOK_PAGES, bookRowView.getPages());
+
+            bookData.putString(UniqueId.KEY_NOTES, bookRowView.getNotes());
+            bookData.putDouble(UniqueId.KEY_BOOK_RATING, bookRowView.getRating());
+            bookData.putInt(UniqueId.KEY_BOOK_SIGNED, bookRowView.getSigned());
+            bookData.putString(UniqueId.KEY_BOOK_LOCATION, bookRowView.getLocation());
+            bookData.putInt(UniqueId.KEY_BOOK_READ, bookRowView.getRead());
+            bookData.putString(UniqueId.KEY_BOOK_READ_END, bookRowView.getReadEnd());
+            bookData.putString(UniqueId.KEY_BOOK_READ_START, bookRowView.getReadStart());
 
         } catch (CursorIndexOutOfBoundsException e) {
-            StandardDialogs.showQuickNotice(activity, R.string.unknown_error);
+            StandardDialogs.showBriefMessage(activity, R.string.error_unknown);
             Logger.error(e);
             return;
         }
 
         Intent intent = new Intent(activity, EditBookActivity.class);
-        intent.putExtra(UniqueId.BKEY_BOOK_DATA, mBookData);
+        intent.putExtra(UniqueId.BKEY_BOOK_DATA, bookData);
         activity.startActivityForResult(intent, UniqueId.ACTIVITY_REQUEST_CODE_ADD_BOOK_MANUALLY);
     }
 
@@ -120,7 +124,7 @@ public class BookUtils {
             }
         });
         if (res != 0) {
-            StandardDialogs.showQuickNotice(activity, res);
+            StandardDialogs.showBriefMessage(activity, res);
         }
     }
 

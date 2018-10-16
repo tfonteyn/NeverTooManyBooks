@@ -11,7 +11,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
+import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.taskqueue.QueueManager;
 import com.eleybourn.bookcatalogue.tasks.BCQueueManager;
@@ -26,7 +26,7 @@ public class GoodreadsUtils {
     /**
      * Show the goodreads options list
      */
-    public static void showGoodreadsOptions(@NonNull final BookCatalogueActivity activity) {
+    public static void showGoodreadsOptions(@NonNull final BaseActivity activity) {
         LayoutInflater inf = activity.getLayoutInflater();
         @SuppressLint("InflateParams") // root==null as it's a dialog
         View root = inf.inflate(R.layout.goodreads_options_list, null);
@@ -37,7 +37,7 @@ public class GoodreadsUtils {
 
         /* Goodreads SYNC Link */
         {
-            View view = grDialog.findViewById(R.id.sync_with_goodreads_label);
+            View view = grDialog.findViewById(R.id.lbl_sync_with_goodreads);
             // Make line flash when clicked.
             view.setBackgroundResource(android.R.drawable.list_selector_background);
             view.setOnClickListener(new OnClickListener() {
@@ -51,7 +51,7 @@ public class GoodreadsUtils {
 
         /* Goodreads IMPORT Link */
         {
-            View view = grDialog.findViewById(R.id.import_all_from_goodreads_label);
+            View view = grDialog.findViewById(R.id.lbl_import_all_from_goodreads);
             // Make line flash when clicked.
             view.setBackgroundResource(android.R.drawable.list_selector_background);
             view.setOnClickListener(new OnClickListener() {
@@ -65,7 +65,7 @@ public class GoodreadsUtils {
 
         /* Goodreads EXPORT Link */
         {
-            View view = grDialog.findViewById(R.id.send_books_to_goodreads_label);
+            View view = grDialog.findViewById(R.id.lbl_send_books_to_goodreads);
             // Make line flash when clicked.
             view.setBackgroundResource(android.R.drawable.list_selector_background);
             view.setOnClickListener(new OnClickListener() {
@@ -83,7 +83,7 @@ public class GoodreadsUtils {
      *
      * We use a FragmentTask so that network access does not occur in the UI thread.
      */
-    public static void importAllFromGoodreads(@NonNull final BookCatalogueActivity context, final boolean isSync) {
+    public static void importAllFromGoodreads(@NonNull final BaseActivity context, final boolean isSync) {
 
         FragmentTask task = new FragmentTaskAbstract() {
             @Override
@@ -91,11 +91,11 @@ public class GoodreadsUtils {
                             @NonNull final SimpleTaskContext taskContext) {
 
                 if (BCQueueManager.getQueueManager().hasActiveTasks(BCQueueManager.CAT_GOODREADS_IMPORT_ALL)) {
-                    fragment.showQuickNotice(fragment.getString(R.string.requested_task_is_already_queued));
+                    fragment.showBriefMessage(fragment.getString(R.string.requested_task_is_already_queued));
                     return;
                 }
                 if (BCQueueManager.getQueueManager().hasActiveTasks(BCQueueManager.CAT_GOODREADS_EXPORT_ALL)) {
-                    fragment.showQuickNotice(fragment.getString(R.string.export_task_is_already_queued));
+                    fragment.showBriefMessage(fragment.getString(R.string.export_task_is_already_queued));
                     return;
                 }
 
@@ -110,13 +110,13 @@ public class GoodreadsUtils {
                     });
                     return;
                 } else if (msg != 0) {
-                    fragment.showQuickNotice(fragment.getString(msg));
+                    fragment.showBriefMessage(fragment.getString(msg));
                     return;
                 }
 
                 if (!fragment.isCancelled()) {
                     QueueManager.getQueueManager().enqueueTask(new ImportAllTask(isSync), BCQueueManager.QUEUE_MAIN);
-                    fragment.showQuickNotice(fragment.getString(R.string.task_has_been_queued_in_background));
+                    fragment.showBriefMessage(fragment.getString(R.string.task_has_been_queued_in_background));
                 }
             }
         };
@@ -187,7 +187,7 @@ public class GoodreadsUtils {
                         }
                     });
                 } else {
-                    fragment.showQuickNotice(fragment.getString(msg));
+                    fragment.showBriefMessage(fragment.getString(msg));
                 }
 
             }
@@ -201,7 +201,7 @@ public class GoodreadsUtils {
      * Optionally, display a dialog warning the user that goodreads authentication is required; gives them
      * the options: 'request now', 'more info' or 'cancel'.
      */
-    public static void sendBooksToGoodreads(@NonNull final BookCatalogueActivity ctx) {
+    public static void sendBooksToGoodreads(@NonNull final BaseActivity ctx) {
 
         FragmentTaskAbstract task = new FragmentTaskAbstract() {
             /**
@@ -223,8 +223,8 @@ public class GoodreadsUtils {
                         if (context != null) {
                             // Get the title
                             final AlertDialog dialog = new AlertDialog.Builder(context)
-                                    .setTitle(R.string.send_books_to_goodreads)
-                                    .setMessage(R.string.send_books_to_goodreads_blurb)
+                                    .setTitle(R.string.gr_send_book)
+                                    .setMessage(R.string.gr_send_books_to_goodreads_blurb)
                                     .setIconAttribute(android.R.attr.alertDialogIcon)
                                     .create();
 
@@ -270,7 +270,7 @@ public class GoodreadsUtils {
                         return;
 
                     default:
-                        fragment.showQuickNotice(fragment.getString(getState()));
+                        fragment.showBriefMessage(fragment.getString(getState()));
                         break;
                 }
             }

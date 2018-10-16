@@ -22,7 +22,7 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.Map;
 
 //
 // ImageList and Image classes have one-to-one correspondence.
@@ -49,7 +49,7 @@ import java.util.HashMap;
  */
 interface CropIImageList extends Parcelable {
 	@NonNull
-    HashMap<String, String> getBucketIds();
+	Map<String, String> getBucketIds();
 
 	void deactivate();
 

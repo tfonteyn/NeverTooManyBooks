@@ -1,6 +1,7 @@
 package com.eleybourn.bookcatalogue.searches.librarything;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
@@ -9,6 +10,10 @@ import com.eleybourn.bookcatalogue.searches.SearchManager;
 import com.eleybourn.bookcatalogue.searches.SearchThread;
 import com.eleybourn.bookcatalogue.tasks.TaskManager;
 import com.eleybourn.bookcatalogue.utils.IsbnUtils;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.UnknownHostException;
 
 
 /**
@@ -29,18 +34,30 @@ public class SearchLibraryThingThread extends SearchThread {
 
     @Override
     protected void onRun() {
-
         if (IsbnUtils.isValid(mIsbn)) {
-            this.doProgress(getString(R.string.searching_library_thing), 0);
+            @StringRes final int R_ID_SEARCHING = R.string.searching_library_thing;
+            doProgress(getString(R_ID_SEARCHING), 0);
             LibraryThingManager ltm = new LibraryThingManager(BookCatalogueApp.getAppContext());
+            // do we have a dev kev ?
             if (ltm.isAvailable()) {
                 try {
                     ltm.search(mIsbn, mBookData, mFetchThumbnail);
-                    // Look for series name and clear KEY_TITLE
+                    // Look for series name and clean KEY_TITLE
                     checkForSeriesName();
+
+                } catch (java.net.SocketTimeoutException e) {
+                    showError(R_ID_SEARCHING, R.string.network_timeout);
+                } catch (MalformedURLException | UnknownHostException e) {
+                    Logger.error(e);
+                    showError(R_ID_SEARCHING, R.string.search_configuration_error);
+
+                } catch (IOException e) {
+                    showError(R_ID_SEARCHING, R.string.error_search_failed);
+                    Logger.error(e);
+
                 } catch (Exception e) {
                     Logger.error(e);
-                    showException(R.string.searching_library_thing, e);
+                    showException(R_ID_SEARCHING, e);
                 }
             }
 

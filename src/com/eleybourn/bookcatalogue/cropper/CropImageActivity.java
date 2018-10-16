@@ -33,6 +33,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.View;
@@ -235,7 +236,7 @@ public class CropImageActivity extends CropMonitoredActivity {
 
                     if (mNumFaces > 1) {
                         String msg = "Multi face crop help not available.";
-                        StandardDialogs.showQuickNotice(CropImageActivity.this, msg);
+                        StandardDialogs.showBriefMessage(CropImageActivity.this, msg);
                     }
                 }
             });
@@ -258,7 +259,7 @@ public class CropImageActivity extends CropMonitoredActivity {
         }
 
         if (noStorageText != null) {
-            StandardDialogs.showQuickNotice(activity, noStorageText);
+            StandardDialogs.showBriefMessage(activity, noStorageText);
         }
     }
 
@@ -279,6 +280,7 @@ public class CropImageActivity extends CropMonitoredActivity {
     }
 
     @Override
+    @CallSuper
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         // Do this first to avoid 'must be first errors'
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -523,6 +525,7 @@ public class CropImageActivity extends CropMonitoredActivity {
     }
 
     @Override
+    @CallSuper
     protected void onPause() {
         super.onPause();
         CropBitmapManager.instance().cancelThreadDecoding(mDecodingThreads);
@@ -531,6 +534,7 @@ public class CropImageActivity extends CropMonitoredActivity {
     }
 
     @Override
+    @CallSuper
     protected void onDestroy() {
         super.onDestroy();
         if (mBitmap != null && !mBitmap.isRecycled()) {

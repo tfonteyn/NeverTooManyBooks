@@ -2,14 +2,17 @@ package com.eleybourn.bookcatalogue.searches.isfdb;
 
 import android.support.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.BCPreferences;
+import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.EditBookAnthologyFragment;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
+import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 
 abstract class AbstractBase {
 
@@ -36,17 +39,63 @@ abstract class AbstractBase {
     String mPath;
     Document mDoc;
 
+    /**
+     * the connect call uses a set of defaults. For example the user-agent:
+     * {@link org.jsoup.helper.HttpConnection#DEFAULT_UA}
+     *
+     * The content encoding by default is: "Accept-Encoding", "gzip"
+     */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    boolean loadPage() {
+    boolean loadPage() throws SocketTimeoutException {
         if (mDoc == null) {
+            /* Originally using:  mDoc = Jsoup.connect(mPath).followRedirects(true).get();
+               but that seems to leak connections upon error
+             */
+            Connection con = Jsoup.connect(mPath)
+                    .followRedirects(true)
+                    .method(Connection.Method.GET)
+                    .ignoreHttpErrors(false);
+            Connection.Response response = null;
             try {
-                mDoc = Jsoup.connect(mPath)
-                        .userAgent(BCPreferences.JSOUP_USER_AGENT)
-                        .followRedirects(true)
-                        .get();
+                /*
+                 * @throws java.net.MalformedURLException if the request URL is not a HTTP or HTTPS URL, or is otherwise malformed
+                 * @throws HttpStatusException(IOException) if the response is not OK and HTTP response errors are not ignored
+                 * @throws UnsupportedMimeTypeException if the response mime type is not supported and those errors are not ignored
+                 * @throws java.net.SocketTimeoutException if the connection times out
+                 * @throws IOException on error
+                 */
+                response = con.execute();
+
+                /*
+                 * @throws IOException on error
+                 */
+                mDoc = response.parse();
+
+            } catch (java.net.SocketTimeoutException e) {
+                throw e;
             } catch (IOException e) {
+                if (BuildConfig.DEBUG) {
+                    Logger.info("charset      : " + response.charset());
+                    Logger.info("contentType  : " + response.contentType());
+                    Logger.info("statusCode   : " + response.statusCode());
+                    Logger.info("statusMessage: " + response.statusMessage());
+                    Logger.info("contentType  : " + response.contentType());
+                }
                 Logger.error(e, mPath);
                 return false;
+            } finally {
+                // W/OkHttpClient: A connection to http://www.isfdb.org/ was leaked. Did you forget to close a response body?
+                // is this what they mean ? Mr. Internet mentions a lot of response.body().close; but that seems to be newer versions.
+                if (mDoc == null && response != null) {
+                    try {
+                        Logger.info("Trying to close the body of " + mPath);
+                        BufferedInputStream s = response.bodyStream();
+                        if (s != null) {
+                            s.close();
+                        }
+                    } catch (IOException ignore) {
+                    }
+                }
             }
         }
         return true;

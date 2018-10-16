@@ -189,9 +189,9 @@ public class CsvImporter implements Importer {
                 // storing the book data does all that
                 handleAuthors(mDb, book);
                 handleSeries(mDb, book);
-                if (book.containsKey(UniqueId.KEY_ANTHOLOGY_BITMASK)) {
-                    // ignore the actual value of the bitmask! it will be 'reset' to mirror
-                    // what we actually have when storing the book data
+                if (book.containsKey(UniqueId.BKEY_ANTHOLOGY_DETAILS)) {
+                    // ignore the actual value of the UniqueId.KEY_ANTHOLOGY_BITMASK! it will be
+                    // 'reset' to mirror what we actually have when storing the book data
                     handleAnthology(mDb, book);
                 }
 
@@ -564,7 +564,7 @@ public class CsvImporter implements Importer {
             }
         }
 
-        throw new ImportException(BookCatalogueApp.getResourceString(R.string.file_must_contain_any_column,
+        throw new ImportException(BookCatalogueApp.getResourceString(R.string.error_file_must_contain_any_column,
                 Utils.join(",", names)));
     }
 
@@ -575,7 +575,7 @@ public class CsvImporter implements Importer {
         if (!book.getString(name).isEmpty()) {
             return;
         }
-        throw new ImportException(BookCatalogueApp.getResourceString(R.string.column_is_blank, name, row));
+        throw new ImportException(BookCatalogueApp.getResourceString(R.string.error_column_is_blank, name, row));
     }
 
     @SuppressWarnings("unused")
@@ -588,7 +588,7 @@ public class CsvImporter implements Importer {
             }
         }
 
-        throw new ImportException(BookCatalogueApp.getResourceString(R.string.columns_are_blank, Utils.join(",", names), row));
+        throw new ImportException(BookCatalogueApp.getResourceString(R.string.error_columns_are_blank, Utils.join(",", names), row));
     }
 
 }

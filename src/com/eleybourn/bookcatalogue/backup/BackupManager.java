@@ -19,11 +19,12 @@
  */
 package com.eleybourn.bookcatalogue.backup;
 
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 
-import com.eleybourn.bookcatalogue.BCPreferences;
+import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.BackupReader.BackupReaderListener;
@@ -68,17 +69,17 @@ public class BackupManager {
      * We use a FragmentTask so that long actions do not occur in the UI thread.
      */
     @NonNull
-    public static File backupCatalogue(@NonNull final FragmentActivity context,
-                                       @NonNull final File requestedFile,
-                                       final int taskId,
-                                       final int backupFlags,
-                                       @Nullable final Date since) {
+    public static File backup(@NonNull final FragmentActivity context,
+                              @NonNull final File requestedFile,
+                              final int taskId,
+                              final int backupFlags,
+                              @Nullable final Date since) {
         final int flags = backupFlags & Exporter.EXPORT_MASK;
         if (flags == 0) {
             throw new IllegalArgumentException("Backup flags must be specified");
         }
         //if (flags == (Exporter.EXPORT_ALL | Exporter.EXPORT_NEW_OR_UPDATED) ) {
-        //	throw new RuntimeException("Illegal backup flag combination: ALL and NEW_OR_UPDATED");
+        //	throw new IllegalArgumentException("Illegal backup flag combination: ALL and NEW_OR_UPDATED");
         //}
 
         final File resultingFile = cleanupFile(requestedFile);
@@ -147,6 +148,7 @@ public class BackupManager {
             }
 
             @Override
+            @CallSuper
             public void onFinish(@NonNull final SimpleTaskQueueProgressFragment fragment, @Nullable final Exception e) {
                 super.onFinish(fragment, e);
                 if (e != null) {
@@ -155,9 +157,9 @@ public class BackupManager {
                 fragment.setSuccess(mBackupOk);
                 if (mBackupOk) {
                     if ((backupFlags == Exporter.EXPORT_ALL)) {
-                        BCPreferences.setLastBackupDate(mBackupDate);
+                        BookCatalogueApp.Prefs.putString(BookCatalogueApp.PREF_LAST_BACKUP_DATE, mBackupDate);
                     }
-                    BCPreferences.setLastBackupFile(resultingFile.getAbsolutePath());
+                    BookCatalogueApp.Prefs.putString(BookCatalogueApp.PREF_LAST_BACKUP_FILE, resultingFile.getAbsolutePath());
                 }
             }
 
@@ -173,10 +175,10 @@ public class BackupManager {
      *
      * We use a FragmentTask so that long actions do not occur in the UI thread.
      */
-    public static void restoreCatalogue(@NonNull final FragmentActivity context,
-                                        @NonNull final File inputFile,
-                                        final int taskId,
-                                        final int importFlags) {
+    public static void restore(@NonNull final FragmentActivity context,
+                               @NonNull final File inputFile,
+                               final int taskId,
+                               final int importFlags) {
 
         final FragmentTask task = new FragmentTaskAbstract() {
             @Override
@@ -184,7 +186,7 @@ public class BackupManager {
                 try {
                     Logger.info("Importing " + inputFile.getAbsolutePath());
 
-                    readBackup(inputFile).restore(new BackupReaderListener() {
+                    readFrom(inputFile).restore(new BackupReaderListener() {
                         @Override
                         public void setMax(int max) {
                             fragment.setMax(max);
@@ -216,13 +218,13 @@ public class BackupManager {
     /**
      * Create a BackupReader for the specified file.
      *
-     * @param file File to read
+     * @param file to read from
      *
      * @return a new reader
      *
      * @throws IOException (inaccessible, invalid other other errors)
      */
-    public static BackupReader readBackup(@NonNull final File file) throws IOException {
+    public static BackupReader readFrom(@NonNull final File file) throws IOException {
         if (!file.exists()) {
             throw new FileNotFoundException("Attempt to open non-existent backup file");
         }

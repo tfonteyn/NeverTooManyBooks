@@ -38,7 +38,7 @@ abstract class EditStringDialog {
     EditStringDialog(@NonNull final Activity activity,
                      @NonNull final CatalogueDBAdapter db,
                      @NonNull final Runnable onChanged,
-                     @LayoutRes final int adapterResId,
+                     @SuppressWarnings("SameParameterValue") @LayoutRes final int adapterResId,
                      @NonNull final List<String> list) {
         this.mActivity = activity;
         mOnChanged = onChanged;
@@ -62,7 +62,7 @@ abstract class EditStringDialog {
             public void onClick(View v) {
                 String newName = nameView.getText().toString().trim();
                 if (newName.isEmpty()) {
-                    StandardDialogs.showQuickNotice(mActivity, R.string.name_can_not_be_blank);
+                    StandardDialogs.showBriefMessage(mActivity, R.string.name_can_not_be_blank);
                     return;
                 }
                 dialog.dismiss();

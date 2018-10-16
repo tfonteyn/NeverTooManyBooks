@@ -25,6 +25,7 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnKeyListener;
 import android.os.Bundle;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.KeyEvent;
@@ -41,7 +42,7 @@ import com.eleybourn.bookcatalogue.tasks.TaskManager.TaskManagerController;
 import com.eleybourn.bookcatalogue.tasks.TaskManager.TaskManagerListener;
 
 /**
- * TODO: Remove this!!!! Fragments makes ActivityWithTasks mostly redundant.
+ * TODO: Remove this!!!! Fragments makes BaseActivityWithTasks mostly redundant.
  *
  * Base class for handling tasks in background while displaying a {@link ProgressDialog}.
  *
@@ -50,7 +51,7 @@ import com.eleybourn.bookcatalogue.tasks.TaskManager.TaskManagerListener;
  * {@link TaskManager}
  * handles the management of multiple threads sharing a progressDialog
  *
- * {@link ActivityWithTasks}
+ * {@link BaseActivityWithTasks}
  * Uses a TaskManager (and communicates with it) to handle progress messages for threads.
  * Deals with orientation changes in cooperation with TaskManager.
  *
@@ -59,7 +60,7 @@ import com.eleybourn.bookcatalogue.tasks.TaskManager.TaskManagerListener;
  *
  * @author Philip Warner
  */
-abstract public class ActivityWithTasks extends BookCatalogueActivity {
+abstract public class BaseActivityWithTasks extends BaseActivity {
     private static final String BKEY_TASK_MANAGER_ID = "TaskManagerId";
     /** ID of associated TaskManager */
     private long mTaskManagerId = 0;
@@ -107,14 +108,14 @@ abstract public class ActivityWithTasks extends BookCatalogueActivity {
         @Override
         public void onTaskEnded(@NonNull final TaskManager manager, @NonNull final ManagedTask task) {
             // Just pass this one on
-            ActivityWithTasks.this.onTaskEnded(task);
+            BaseActivityWithTasks.this.onTaskEnded(task);
         }
 
         @Override
         public void onProgress(final int count, final int max, @NonNull final String message) {
             if (BuildConfig.DEBUG) {
                 String dbgMsg = count + "/" + max + ", '" + message.replace("\n", "\\n") + "'";
-                Tracker.handleEvent(ActivityWithTasks.this, "SearchProgress " + dbgMsg, States.Running);
+                Tracker.handleEvent(BaseActivityWithTasks.this, "SearchProgress " + dbgMsg, States.Running);
                 Logger.info("PRG: " + dbgMsg);
             }
 
@@ -136,7 +137,7 @@ abstract public class ActivityWithTasks extends BookCatalogueActivity {
          */
         @Override
         public void onShowQuickNotice(@NonNull final String message) {
-            StandardDialogs.showQuickNotice(ActivityWithTasks.this, message);
+            StandardDialogs.showBriefMessage(BaseActivityWithTasks.this, message);
         }
 
         /**
@@ -151,6 +152,7 @@ abstract public class ActivityWithTasks extends BookCatalogueActivity {
     };
 
     @Override
+    @CallSuper
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -188,6 +190,7 @@ abstract public class ActivityWithTasks extends BookCatalogueActivity {
     }
 
     @Override
+    @CallSuper
     protected void onPause() {
         super.onPause();
         // Stop listening
@@ -205,6 +208,7 @@ abstract public class ActivityWithTasks extends BookCatalogueActivity {
     }
 
     @Override
+    @CallSuper
     protected void onResume() {
         super.onResume();
 
@@ -263,7 +267,7 @@ abstract public class ActivityWithTasks extends BookCatalogueActivity {
     }
 
     private void createProgressDialog(final boolean wantInDeterminate) {
-        mProgressDialog = new ProgressDialog(ActivityWithTasks.this);
+        mProgressDialog = new ProgressDialog(BaseActivityWithTasks.this);
         mProgressDialog.setCancelable(false);
         mProgressDialog.setCanceledOnTouchOutside(false);
 
@@ -299,11 +303,12 @@ abstract public class ActivityWithTasks extends BookCatalogueActivity {
      * Save the TaskManager ID for later retrieval
      */
     @Override
+    @CallSuper
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
         if (mTaskManagerId != 0) {
-            outState.putLong(ActivityWithTasks.BKEY_TASK_MANAGER_ID, mTaskManagerId);
+            outState.putLong(BaseActivityWithTasks.BKEY_TASK_MANAGER_ID, mTaskManagerId);
         }
     }
 }

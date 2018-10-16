@@ -94,6 +94,7 @@ public class PartialDatePicker extends AlertDialog {
      * @param month    Starting month
      * @param day      Starting day
      */
+    @SuppressWarnings("SameParameterValue")
     private PartialDatePicker(@NonNull final Activity activity,
                               @Nullable final Integer year,
                               @Nullable final Integer month,
@@ -298,9 +299,9 @@ public class PartialDatePicker extends AlertDialog {
                             public void onClick(final View v) {
                                 // Ensure the date is 'hierarchically valid'; require year, if month is non-null, require month if day non-null
                                 if (mDay != null && mDay > 0 && (mMonth == null || mMonth == 0)) {
-                                    StandardDialogs.showQuickNotice(mActivity, R.string.if_day_is_specified_month_and_year_must_be);
+                                    StandardDialogs.showBriefMessage(mActivity, R.string.if_day_is_specified_month_and_year_must_be);
                                 } else if (mMonth != null && mMonth > 0 && mYear == null) {
-                                    StandardDialogs.showQuickNotice(mActivity, R.string.if_month_is_specified_year_must_be);
+                                    StandardDialogs.showBriefMessage(mActivity, R.string.if_month_is_specified_year_must_be);
                                 } else {
                                     if (mListener != null)
                                         mListener.onDateSet(PartialDatePicker.this, mYear, mMonth, mDay);

@@ -22,6 +22,7 @@ import android.graphics.Matrix;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.AppCompatImageView;
@@ -93,6 +94,7 @@ abstract class CropImageViewTouchBase extends AppCompatImageView {
     }
 
     @Override
+    @CallSuper
     protected void onLayout(final boolean changed, final int left, final int top, final int right,
                             final int bottom) {
         super.onLayout(changed, left, top, right, bottom);
@@ -114,6 +116,7 @@ abstract class CropImageViewTouchBase extends AppCompatImageView {
     }
 
     @Override
+    @CallSuper
     public boolean onKeyDown(final int keyCode, final KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK && getScale() > 1.0f) {
             // If we're zoomed in, pressing Back jumps out to show the entire
@@ -129,6 +132,7 @@ abstract class CropImageViewTouchBase extends AppCompatImageView {
         setImageBitmap(bitmap, 0);
     }
 
+    @CallSuper
     private void setImageBitmap(@Nullable final Bitmap bitmap, final int rotation) {
         super.setImageBitmap(bitmap);
         Drawable d = getDrawable();
@@ -183,11 +187,13 @@ abstract class CropImageViewTouchBase extends AppCompatImageView {
         mMaxZoom = maxZoom();
     }
 
-    // Center as much as possible in one or both axis. Centering is
-    // defined as follows: if the image is scaled down below the
-    // view's dimensions then center it (literally). If the image
-    // is scaled larger than the view and is translated out of view
-    // then translate it back into view (i.e. eliminate black bars).
+    /**
+     * Center as much as possible in one or both axis. Centering is defined as follows:
+     * if the image is scaled down below the view's dimensions then center it (literally).
+     * If the image is scaled larger than the view and is translated out of view then
+     * translate it back into view (i.e. eliminate black bars).
+     */
+    @SuppressWarnings("SameParameterValue")
     protected void center(final boolean horizontal, final boolean vertical) {
         if (mBitmapDisplayed.getBitmap() == null) {
             return;
@@ -237,18 +243,17 @@ abstract class CropImageViewTouchBase extends AppCompatImageView {
     }
 
     /**
-     * We get 'unsupported feature' crashes if the option to always use GL is turned on.
+     * FIXME: We get 'unsupported feature' crashes if the option to always use GL is turned on.
      * See:
      * http://developer.android.com/guide/topics/graphics/hardware-accel.html
      * http://stackoverflow.com/questions/13676059/android-unsupportedoperationexception-at-canvas-clippath
      * so for API level > 11, we turn it off manually.
      */
-    //@SuppressLint("NewApi")
     private void forceSoftwareRenderer() {
         this.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
     }
 
-    protected float getValue(@NonNull final Matrix matrix, final int whichValue) {
+    protected float getValue(@NonNull final Matrix matrix, @SuppressWarnings("SameParameterValue") final int whichValue) {
         matrix.getValues(mMatrixValues);
         return mMatrixValues[whichValue];
     }
@@ -363,7 +368,7 @@ abstract class CropImageViewTouchBase extends AppCompatImageView {
         zoomOut(SCALE_RATE);
     }
 
-    protected void zoomIn(final float rate) {
+    protected void zoomIn(@SuppressWarnings("SameParameterValue") final float rate) {
         if (getScale() >= mMaxZoom) {
             return; // Don't let the user zoom into the molecular level.
         }
@@ -378,7 +383,7 @@ abstract class CropImageViewTouchBase extends AppCompatImageView {
         setImageMatrix(getImageViewMatrix());
     }
 
-    protected void zoomOut(final float rate) {
+    protected void zoomOut(@SuppressWarnings("SameParameterValue") final float rate) {
         if (mBitmapDisplayed.getBitmap() == null) {
             return;
         }

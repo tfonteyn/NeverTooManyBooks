@@ -9,7 +9,7 @@
         android:id="@+id/toolbar"
         style="@style/toolbar" />
 
-        <LinearLayout
+        <FrameLayout
             android:id="@+id/fragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

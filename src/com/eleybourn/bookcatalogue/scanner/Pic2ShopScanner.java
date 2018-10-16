@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.utils.RTE;
 
 import java.util.Arrays;
 
@@ -82,7 +83,7 @@ public class Pic2ShopScanner implements Scanner {
         // only for Pro:
         String barcodeFormat = intent.getStringExtra(Pro.FORMAT);
         if (barcodeFormat != null && !Arrays.asList(Pro.BARCODE_TYPES).contains(barcodeFormat)) {
-            throw new RuntimeException("Unexpected format for barcode: " + barcodeFormat);
+            throw new RTE.IllegalTypeException("Unexpected format for barcode: " + barcodeFormat);
         }
 
         return barcode;
@@ -120,7 +121,7 @@ public class Pic2ShopScanner implements Scanner {
 //    private static void launchMarketToInstallApp(@NonNull final Context context, @NonNull final String packageName) {
 //        try {
 //            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + packageName));
-//            context.startActivity(intent);
+//            context.startActivityForResult(intent);
 //        } catch (ActivityNotFoundException e) {
 //            Logger.error(e, "Google Play not installed.");
 //        }

@@ -19,6 +19,7 @@
  */
 package com.eleybourn.bookcatalogue.datamanager.validators;
 
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.R;
@@ -42,6 +43,7 @@ public class DateValidator extends DefaultFieldValidator {
     }
 
     @Override
+    @CallSuper
     public void validate(@NonNull final DataManager data, @NonNull final Datum datum, final boolean crossValidating)
             throws ValidatorException {
         if (datum.isHidden()) {

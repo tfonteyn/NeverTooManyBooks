@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue.searches;
 
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -158,7 +159,7 @@ public class UpdateFromInternetThread extends ManagedTask {
         int counter = 0;
         /* Test write to the SDCard; abort if not writable */
         if (StorageUtils.isWriteProtected()) {
-            mFinalMessage = getString(R.string.thumbnail_failed_sdcard);
+            mFinalMessage = getString(R.string.error_download_thumbnail_failed);
             return;
         }
         // had order: "b." + DatabaseDefinitions.DOM_ID ... why ? -> removed
@@ -182,16 +183,16 @@ public class UpdateFromInternetThread extends ManagedTask {
                 // Get the extra data about the book
                 mOriginalBookData.putSerializable(UniqueId.BKEY_AUTHOR_ARRAY, mDb.getBookAuthorList(mCurrentBookId));
                 mOriginalBookData.putSerializable(UniqueId.BKEY_SERIES_ARRAY, mDb.getBookSeriesList(mCurrentBookId));
-                mOriginalBookData.putSerializable(UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY, mDb.getBookAnthologyTitleList(mCurrentBookId));
+                mOriginalBookData.putSerializable(UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY, mDb.getAnthologyTitleListByBook(mCurrentBookId));
 
                 // Grab the searchable fields. Ideally we will have an ISBN but we may not.
-                String isbn = mOriginalBookData.getString(UniqueId.KEY_ISBN);
+                String isbn = mOriginalBookData.getString(UniqueId.KEY_BOOK_ISBN);
                 // Make sure ISBN is not NULL (legacy data, and possibly set to null when adding new book)
                 if (isbn == null) {
                     isbn = "";
                 }
-                String author = mOriginalBookData.getString(UniqueId.KEY_AUTHOR_FORMATTED);
-                String title = mOriginalBookData.getString(UniqueId.KEY_TITLE);
+                String author = mOriginalBookData.getString(UniqueId.KEY_AUTHOR_FORMATTED,"");
+                String title = mOriginalBookData.getString(UniqueId.KEY_TITLE,"");
 
                 // Reset the fields we want for THIS book
                 mCurrentBookFieldUsages = new FieldUsages();
@@ -210,7 +211,7 @@ public class UpdateFromInternetThread extends ManagedTask {
                                 // Handle special cases
                                 switch (usage.fieldName) {
                                     // - If it's a thumbnail, then see if it's missing or empty.
-                                    case UniqueId.BKEY_THUMBNAIL:
+                                    case UniqueId.KEY_BOOK_THUMBNAIL:
                                         File file = StorageUtils.getCoverFile(mCurrentBookUuid);
                                         if (!file.exists() || file.length() == 0) {
                                             mCurrentBookFieldUsages.put(usage);
@@ -260,7 +261,7 @@ public class UpdateFromInternetThread extends ManagedTask {
                 }
 
                 // Cache the value to indicate we need thumbnails (or not).
-                boolean tmpThumbWanted = mCurrentBookFieldUsages.containsKey(UniqueId.BKEY_THUMBNAIL);
+                boolean tmpThumbWanted = mCurrentBookFieldUsages.containsKey(UniqueId.KEY_BOOK_THUMBNAIL);
 
                 if (tmpThumbWanted) {
                     // delete any temporary thumbnails //
@@ -372,7 +373,7 @@ public class UpdateFromInternetThread extends ManagedTask {
         for (FieldUsages.FieldUsage usage : requestedFields.values()) {
             if (newBookData.containsKey(usage.fieldName)) {
                 // Handle thumbnail specially
-                if (usage.fieldName.equals(UniqueId.BKEY_THUMBNAIL)) {
+                if (usage.fieldName.equals(UniqueId.KEY_BOOK_THUMBNAIL)) {
                     File downloadedFile = StorageUtils.getTempCoverFile();
                     boolean copyThumb = false;
                     if (usage.usage == FieldUsages.Usages.COPY_IF_BLANK) {
@@ -484,6 +485,7 @@ public class UpdateFromInternetThread extends ManagedTask {
     }
 
     @Override
+    @CallSuper
     protected void finalize() throws Throwable {
         cleanup();
         super.finalize();

@@ -38,7 +38,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Class to hold book-related series data. Used in lists and import/export.
+ * Class to hold book-related series data.
  *
  * @author Philip Warner
  */
@@ -80,12 +80,10 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
         A Series as defined in the database is really just id+name
         The number is of course related to the book itself.
 
-        So, when are two series equal ?
-        TODO: the presence of 'number' in this class creates confusion. Should be moved to the book itself.
+        ENHANCE: This class does not represent a Series, but a "BookInSeries"
      */
     public long id;
     public String name;
-
     public String number;
 
     public Series(@NonNull final String encodedName) {
@@ -108,6 +106,20 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
         this.id = id;
         this.name = name.trim();
         this.number = cleanupSeriesPosition(number);
+    }
+
+    @NonNull
+    public String getDisplayName() {
+        if (number != null && !number.isEmpty()) {
+            return name + " (" + number + ")";
+        } else {
+            return name;
+        }
+    }
+
+    @NonNull
+    public String getSortName() {
+        return getDisplayName();
     }
 
     /**
@@ -232,19 +244,7 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
 
     }
 
-    @NonNull
-    public String getDisplayName() {
-        if (number != null && !number.isEmpty()) {
-            return name + " (" + number + ")";
-        } else {
-            return name;
-        }
-    }
 
-    @NonNull
-    public String getSortName() {
-        return getDisplayName();
-    }
 
     /**
      * Support for Serializable/encoding to a text file
@@ -269,7 +269,7 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
     /**
      * Replace local details from another series
      *
-     * @param source Author to copy
+     * @param source Series to copy
      */
     public void copyFrom(@NonNull final Series source) {
         name = source.name;
@@ -294,12 +294,10 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
 
     /**
      * Two series are equal if:
-     * - one or both of them is 'new' (e.g. id == 0) and their names are equal
+     * - one or both of them is 'new' (e.g. id == 0) and their names AND numbers are equal
      * - ids are equal
      *
-     * So the number plays NO ROLE !
-     *
-     * Compare is CASE SENSITIVE !
+     * Compare is CASE SENSITIVE ! This allows correcting case mistakes.
      */
     @Override
     public boolean equals(@Nullable final Object o) {
@@ -311,7 +309,7 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
         }
         Series series = (Series) o;
         if (id == 0 || series.id == 0) {
-            return Objects.equals(name, series.name);
+            return Objects.equals(name, series.name) && Objects.equals(number, series.number);
         }
         return (id == series.id);
     }

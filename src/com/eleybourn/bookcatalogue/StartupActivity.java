@@ -26,11 +26,12 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
-import android.content.SharedPreferences.Editor;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
@@ -64,12 +65,10 @@ import java.lang.ref.WeakReference;
 public class StartupActivity extends AppCompatActivity {
 
     private static final String TAG = "StartupActivity";
-
-    /** Options to indicate FTS rebuild is required at startup */
-    private static final String PREF_FTS_REBUILD_REQUIRED = TAG + ".FtsRebuildRequired";
     /** obsolete from v74 */
     public static final String V74_PREF_AUTHOR_SERIES_FIX_UP_REQUIRED = TAG + ".FAuthorSeriesFixupRequired";
-
+    /** Options to indicate FTS rebuild is required at startup */
+    private static final String PREF_FTS_REBUILD_REQUIRED = TAG + ".FtsRebuildRequired";
     private static final String PREFS_STATE_OPENED = "state_opened";
     /** Number of times the app has been started */
     private static final String PREF_START_COUNT = "Startup.StartCount";
@@ -93,11 +92,12 @@ public class StartupActivity extends AppCompatActivity {
     /** Queue for executing startup tasks, if any */
     @Nullable
     private SimpleTaskQueue mTaskQueue = null;
-    /** Progress Dialog for startup tasks
-     *  ENHANCE: this is a global requirement: ProgressDialog is deprecated in API 26
-     *  https://developer.android.com/reference/android/app/ProgressDialog
-     *  Suggested: ProgressBar or Notification.
-     *  Alternative maybe: SnackBar (recommended replacement for Toast)
+    /**
+     * Progress Dialog for startup tasks
+     * ENHANCE: this is a global requirement: ProgressDialog is deprecated in API 26
+     * https://developer.android.com/reference/android/app/ProgressDialog
+     * Suggested: ProgressBar or Notification.
+     * Alternative maybe: SnackBar (recommended replacement for Toast)
      */
     @Nullable
     @Deprecated
@@ -111,7 +111,7 @@ public class StartupActivity extends AppCompatActivity {
 
     /** Set the flag to indicate an FTS rebuild is required */
     public static void scheduleFtsRebuild() {
-        BCPreferences.setBoolean(PREF_FTS_REBUILD_REQUIRED, true);
+        BookCatalogueApp.Prefs.putBoolean(PREF_FTS_REBUILD_REQUIRED, true);
     }
 
     /**
@@ -129,6 +129,7 @@ public class StartupActivity extends AppCompatActivity {
     }
 
     @Override
+    @CallSuper
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -339,17 +340,17 @@ public class StartupActivity extends AppCompatActivity {
     }
 
     private void proposeBackup() {
-        int opened = BCPreferences.getInt(PREFS_STATE_OPENED, BACKUP_PROMPT_WAIT);
-        int startCount = BCPreferences.getInt(PREF_START_COUNT, 0) + 1;
+        int opened = BookCatalogueApp.Prefs.getInt(PREFS_STATE_OPENED, BACKUP_PROMPT_WAIT);
+        int startCount = BookCatalogueApp.Prefs.getInt(PREF_START_COUNT, 0) + 1;
 
-        Editor ed = BCPreferences.edit();
+        final SharedPreferences.Editor ed = getSharedPreferences(BookCatalogueApp.APP_SHARED_PREFERENCES, MODE_PRIVATE).edit();
         if (opened == 0) {
             ed.putInt(PREFS_STATE_OPENED, BACKUP_PROMPT_WAIT);
         } else {
             ed.putInt(PREFS_STATE_OPENED, opened - 1);
         }
         ed.putInt(PREF_START_COUNT, startCount);
-        ed.commit();
+        ed.apply();
 
         mShowAmazonHint = ((startCount % AMAZON_PROMPT_WAIT) == 0);
 
@@ -405,6 +406,7 @@ public class StartupActivity extends AppCompatActivity {
     }
 
     @Override
+    @CallSuper
     public void onDestroy() {
         super.onDestroy();
         if (mTaskQueue != null) {
@@ -421,11 +423,11 @@ public class StartupActivity extends AppCompatActivity {
      * and results arrays which should be treated as a cancellation.
      * </p>
      *
-     * @param requestCode The request code passed in {@link #requestPermissions(String[], int)}.
-     * @param permissions The requested permissions. Never null.
+     * @param requestCode  The request code passed in {@link #requestPermissions(String[], int)}.
+     * @param permissions  The requested permissions. Never null.
      * @param grantResults The grant results for the corresponding permissions
-     *     which is either {@link android.content.pm.PackageManager#PERMISSION_GRANTED}
-     *     or {@link android.content.pm.PackageManager#PERMISSION_DENIED}. Never null.
+     *                     which is either {@link android.content.pm.PackageManager#PERMISSION_GRANTED}
+     *                     or {@link android.content.pm.PackageManager#PERMISSION_DENIED}. Never null.
      *
      * @see #requestPermissions(String[], int)
      */
@@ -455,12 +457,12 @@ public class StartupActivity extends AppCompatActivity {
 
         @Override
         public void run(@NonNull final SimpleTaskContext taskContext) {
-            // Get a DB to make sure the FTS rebuild flag is set appropriately
-            CatalogueDBAdapter db = taskContext.getDb();
-            if (BCPreferences.getBoolean(PREF_FTS_REBUILD_REQUIRED, false)) {
+            // Get a DB to make sure the FTS rebuild flag is set appropriately, do not close the database!
+            CatalogueDBAdapter db = taskContext.getOpenDb();
+            if (BookCatalogueApp.Prefs.getBoolean(PREF_FTS_REBUILD_REQUIRED, false)) {
                 updateProgress(R.string.rebuilding_search_index);
                 db.rebuildFts();
-                BCPreferences.setBoolean(PREF_FTS_REBUILD_REQUIRED, false);
+                BookCatalogueApp.Prefs.putBoolean(PREF_FTS_REBUILD_REQUIRED, false);
             }
         }
 
@@ -474,21 +476,23 @@ public class StartupActivity extends AppCompatActivity {
 
         @Override
         public void run(@NonNull final SimpleTaskContext taskContext) {
-
-            CatalogueDBAdapter db = taskContext.getDb();
-
             updateProgress(R.string.optimizing_databases);
+
+            // Get a DB connection, do not close the database!
+            CatalogueDBAdapter db = taskContext.getOpenDb();
             db.analyzeDb();
+
             if (BooklistPreferencesActivity.isThumbnailCacheEnabled()) {
                 try (CoversDbHelper coversDbHelper = CoversDbHelper.getInstance(StartupActivity.this)) {
                     coversDbHelper.analyze();
                 }
             }
 
-            if (BCPreferences.getBoolean(V74_PREF_AUTHOR_SERIES_FIX_UP_REQUIRED, false)) {
+            if (BookCatalogueApp.Prefs.getBoolean(V74_PREF_AUTHOR_SERIES_FIX_UP_REQUIRED, false)) {
                 UpgradeDatabase.v74_fixupAuthorsAndSeries(db);
-                BCPreferences.remove(V74_PREF_AUTHOR_SERIES_FIX_UP_REQUIRED);
+                BookCatalogueApp.Prefs.remove(V74_PREF_AUTHOR_SERIES_FIX_UP_REQUIRED);
             }
+
         }
 
         @Override

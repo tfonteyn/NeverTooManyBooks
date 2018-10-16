@@ -27,21 +27,21 @@
     <string name="confirm_save_bs">Kitaplığı kaydet</string>
     <string name="menu_delete_bs">Kitaplığı sil</string>
     <string name="delete_1st_bs">Birinci kitaplık silinemiyor</string>
-    <string name="bookshelf_label">Kitaplık: </string>
+    <string name="lbl_bookshelf">Kitaplık: </string>
     <string name="all_books">Tüm kitaplar</string>
     <string name="title_isbn_search">ISBN arama</string>
     <string name="title_manage_bs">Kitaplıkları yönet</string>
     <string name="title_edit_bs">Kitaplığı düzenle</string>
-    <string name="search_label">Kitap ara</string>
+    <string name="lbl_search">Kitap ara</string>
     <string name="search_hint">Yazar veya kitap adı ara</string>
     <string name="book_not_found">Aranan kitap bulunamadı. Bazen doğru barkodu kitap kapağının içinde bulabilirsiniz. Bulamazsanız, bilgileri elle giriniz.</string>
     <string name="series_num">#</string>
     <string name="import_data">Kitapları içe aktar</string>
     <string name="import_alert">Uyarı: Bilgileri içe aktarırken eğer içe aktardığınız dosyaların ID numarası var olan bir kitabın ID\'si ile aynı ise, varolan kitap verilerinin üstüne yazılmasına neden olabilir. Eğer dışa aktarılmış bir dosyada bir giriyi değiştirdiyseniz bu sorun değildir; ancak yeni bir kitap girişi oluşturuyorsanız ID bölümünün boş olduğundan emin olun.</string>
-    <string name="import_failed_is_location_correct">Hata: SD karttan içe aktarma başarısız oldu. Dosyalar yerli yerinde mi acaba?</string>
+    <string name="error_import_failed_is_location_correct">Hata: SD karttan içe aktarma başarısız oldu. Dosyalar yerli yerinde mi acaba?</string>
     <string name="search_title">Kitap kataloğu: Arama sonuçları</string>
     <string name="results_found">Sonuç bulundu</string>
-    <string name="administration_label">Yönetim işlevleri</string>
+    <string name="lbl_administration">Yönetim işlevleri</string>
     <string name="menu_administration">Ayarlar</string>
     <string name="install_scan">ISBN barkodu ile kitap taramak için Zxing barkod tarayıcısı uygulamasını yüklemelisiniz. Yüklemek için Tamam\'a, atlamak için Vazgeç\'e basın.</string>
     <string name="install_scan_title">Barkod Tarayıcıyı yükleyin</string>
@@ -51,18 +51,18 @@
     <string name="edit_book">Kitap düzenle</string>
     <string name="edit_book_notes">Yorumlarınız</string>
     <string name="edit_book_friends">Kitabı ödünç ver</string>
-    <string name="unknown_error">Bilinmeyen bir hata oluştu</string>
+    <string name="error_unknown">Bilinmeyen bir hata oluştu</string>
     <string name="notes">Notlar</string>
     <string name="loaned_to">Kitabın ödünç verildiği kişi:</string>
-    <string name="nobody">Hiç kimse</string>
+    <string name="loaned_to_nobody">Hiç kimse</string>
     <string name="loan_to">Şuna ödünç ver:</string>
-    <string name="returned">Geri geldi</string>
+    <string name="loan_returned">Geri geldi</string>
     <string name="name">Ad</string>
-    <string name="website_lbl">İnteret Sayfası</string>
-    <string name="sourcecode_label">Kaynak kodu</string>
-    <string name="contact_label">İletişim</string>
-    <string name="donate_label">Bağış yap</string>
-    <string name="about_label">Uygulama hakkında</string>
+    <string name="lbl_website">İnteret Sayfası</string>
+    <string name="lbl_sourcecode">Kaynak kodu</string>
+    <string name="lbl_contacts">İletişim</string>
+    <string name="lbl_donate">Bağış yap</string>
+    <string name="lbl_about">Uygulama hakkında</string>
     <string name="list_price">Fiyatı</string>
     <string name="update_fields">Alanları kendiliğinden doldur</string>
     <string name="select_fields_to_update">Güncellenecek alanları seçin</string>
@@ -70,8 +70,8 @@
     <string name="overwrite_thumbnail">Bu işlem seçili alanları gösterildiği biçimde güncelleyecektir, ancak küçük resimler seçime bağlı olarak tüm kitaplar için de indirilebilir.\n\nVar olan tüm küçük resimlerin üzerine yazmak istiyor musunuz? Bu işlem uzun sürebilir. </string>
     <string name="yes">Evet</string>
     <string name="no">Hayır</string>
-    <string name="search_fail">Kitap araması başarısız oldu. Ağ ayarlarınızı denetleyiniz.</string>
-    <string name="search_exception">%1$s sırasında arama başarısız oldu: %2$s</string>
+    <string name="error_search_failed">Kitap araması başarısız oldu. Ağ ayarlarınızı denetleyiniz.</string>
+    <string name="error_search_exception">%1$s sırasında arama başarısız oldu: %2$s</string>
     <string name="menu_delete_thumb">Küçük resmi sil</string>
     <string name="help">Yardım</string>
     <string name="menu_manage_fields">Alan görünürlüğünü yönet</string>
@@ -82,7 +82,7 @@
     <string name="menu_delete_anthology">Seçkiden eser sil</string>
     <string name="is_anthology">Bu kitap bir seçkide var mı?</string>
     <string name="populate_anthology_titles">Kitap adlarını kendiliğinden doldur (DENEYSEL ÖZELLİK)</string>
-    <string name="automatic_population_failed">Kitap adlarının kendiliğinden doldurulması başarısız oldu</string>
+    <string name="error_anthology_automatic_population_failed">Kitap adlarının kendiliğinden doldurulması başarısız oldu</string>
     <string name="anthology">Seçmeler</string>
     <string name="anthology_confirm">Lütfen bu seçki adlarının doğru olduğunu onaylayın</string>
     <string name="anthology_save">Kaydet</string>
@@ -121,11 +121,11 @@
     <string name="vldt_failed">\'%s\' için doğrulama başarısız</string>
     <string name="vldt_read_start_after_end">Okunmaya başlama süresi bitiş süresinden sonra</string>
     <string name="backup_success">Yedekleme başarılı!</string>
-    <string name="backup_failed">Yedekleme başarısız!</string>
-    <string name="file_must_contain_column">Dosya adı %s adında bir sütun içermeli</string>
-    <string name="file_must_contain_any_column">Dosya, %s adlarından birini kullanan bir sütun içermeli</string>
-    <string name="column_is_blank">Sütun %1$s %2$s numaralı satırda boş</string>
-    <string name="columns_are_blank">%1$s sütunlarının hepsi %2$d satırında boş</string>
+    <string name="error_backup_failed">Yedekleme başarısız!</string>
+    <string name="error_file_must_contain_column">Dosya adı %s adında bir sütun içermeli</string>
+    <string name="error_file_must_contain_any_column">Dosya, %s adlarından birini kullanan bir sütun içermeli</string>
+    <string name="error_column_is_blank">Sütun %1$s %2$s numaralı satırda boş</string>
+    <string name="error_columns_are_blank">%1$s sütunlarının hepsi %2$d satırında boş</string>
     <string name="save">Kaydet</string>
     <string name="add">Ekle</string>
     <string name="no_authors_yet">Bu kitap için hiçbir yazar eklenmemiş. Ekranın üst kısmındaki metin alanı ve düğmeyi kullanarak yazar ekleyin.</string>
@@ -141,8 +141,8 @@
     <string name="author_is_blank">Yazar alanı boş</string>
     <string name="series_already_in_list">Seri zaten ekli</string>
     <string name="series_is_blank">Seri alanı boş</string>
-    <string name="export_failed_sdcard">Dışa aktarma başarısız - SD karta yazılamadı</string>
-    <string name="thumbnail_failed_sdcard">Ufak resim indirmesi başarısız - SD karta yazılamadı</string>
+    <string name="error_export_failed">Dışa aktarma başarısız - SD karta yazılamadı</string>
+    <string name="error_download_thumbnail_failed">Ufak resim indirmesi başarısız - SD karta yazılamadı</string>
     <string name="skip_title">Atla - %s</string>
     <string name="num_books_searched">%s kitap arandı</string>
     <string name="cancelled_info">İptal edildi - %s</string>
@@ -188,10 +188,10 @@
     <string name="lt_register_text">LibraryThing\'e kayıt ol</string>
     <string name="lt_dev_key_text">LibraryThing geliştirici anahtarı iste</string>
     <string name="lt_got_key">Geliştirici anahtarını aldığınızda (veya sizde halihazırda varsa) yalnızca aşağıdaki alana girin, sonrasında bu anahtar ek verileri almak için kullanılacaktır.</string>
-    <string name="developer_key">Geliştirici anahtarı</string>
-    <string name="require_library_thing_info">Bu özellik bir LibraryThing geliştirici anahtarı gerektirmektedir. LibraryThing hakkında daha fazla bilgi almak ister misiniz?</string>
-    <string name="uses_library_thing_info">Bu özellik bir LibraryThing geliştirici anahtarından yararlanır. LibraryThing hakkında daha fazla bilgi almak mı ister, yoksa bu iletiyi devre dışı bırakmak mı istersiniz?\n\nLibraryThing üzerine bilgi Yönetim bölümünün LibraryThing sekmesinde bulunabilir.</string>
-    <string name="reg_library_thing_title">LibraryThing Kayıt</string>
+    <string name="lt_developer_key">Geliştirici anahtarı</string>
+    <string name="lt_required_info">Bu özellik bir LibraryThing geliştirici anahtarı gerektirmektedir. LibraryThing hakkında daha fazla bilgi almak ister misiniz?</string>
+    <string name="lt_uses_info">Bu özellik bir LibraryThing geliştirici anahtarından yararlanır. LibraryThing hakkında daha fazla bilgi almak mı ister, yoksa bu iletiyi devre dışı bırakmak mı istersiniz?\n\nLibraryThing üzerine bilgi Yönetim bölümünün LibraryThing sekmesinde bulunabilir.</string>
+    <string name="lt_registration_title">LibraryThing Kayıt</string>
     <string name="more_info">Ek bilgi</string>
     <string name="disable_dialogue">İletiyi kapat</string>
     <string name="lt_reset_messages_info">Bazen bu uygulama LibraryThing\'den isteğe bağlı iletiler gösterebilir. Devre dışı kalmış olabilecek bu iletileri sıfırlamak için aşağıdaki düğmeye dokunun.</string>
@@ -207,9 +207,9 @@
     <string name="debug_body">Lütfen yaşamakta olduğunuz sorunu kısaca anlatınız.</string>
     <string name="menu_duplicate">Kitabı kopyala</string>
     <string name="cannot_edit_system">Sistem değerlerini düzenleyemezsiniz</string>
-    <string name="incorrect_key">Ya LibraryThing geliştirici anahtarınız yanlış ya da biz doğrulama için ağa bağlanamadık.</string>
-    <string name="correct_key">LibraryThing geliştirici anahtarınız geçerli.</string>
-    <string name="no_connection">Ağ bağlantısı yok.</string>
+    <string name="lt_incorrect_key">Ya LibraryThing geliştirici anahtarınız yanlış ya da biz doğrulama için ağa bağlanamadık.</string>
+    <string name="lt_correct_key">LibraryThing geliştirici anahtarınız geçerli.</string>
+    <string name="error_no_internet_connection">Ağ bağlantısı yok.</string>
     <string name="menu_share_this">Paylaş</string>
     <string name="email_export">Dışarı aktarılan veriyi e-posta ile göndermemizi ister misiniz?</string>
     <string name="menu_crop_thumb">Küçük resmi kırp</string>
@@ -221,19 +221,19 @@
     <string name="my_books">Kitaplarım</string>
     <string name="loan_return_book">Ödünç ver, geri al veya kitabı düzenle</string>
     <string name="admin_and_prefs">Yönetim ve Seçenekler</string>
-    <string name="edit_book_send_to_gr">Goodreads\'e gönder</string>
-    <string name="goodreads_auth_blurb_part1">Goodreads, ağ sayfasında belirtildiği üzere ereği \"kişilerin sevdiği kitapları bulmasına ve paylaşmasına yardımcı olmak\" olan bir servistir.
+    <string name="gr_send_to_goodreads">Goodreads\'e gönder</string>
+    <string name="gr_auth_blurb_part1">Goodreads, ağ sayfasında belirtildiği üzere ereği \"kişilerin sevdiği kitapları bulmasına ve paylaşmasına yardımcı olmak\" olan bir servistir.
  										Çok geniş bir kitap ve yorum veritabanına iye olan Goodreads\'te kayıtlı bir  											    		    
  										kullanıcı iseniz BookCatalogue Goodreads\'ten kitaplarınızı, raflarınızı ve yorumlarınızı
  										alabilir veya Goodreads\'e gönderebilir. BookCatalogue kendi başına bir uygulama olup
  										Goodreads\'i gerektirmemektedir, ancak ilgilendiyseniz buradan kayıt olabilirsiniz:</string>
-    <string name="goodreads_auth_blurb_part2">Kayıt olduktan sonra veya kayıtlı bir kullanıcı iseniz Goodreads verilerinize ulaşmak için aşağıdaki düğmeye basın. 
+    <string name="gr_auth_blurb_part2">Kayıt olduktan sonra veya kayıtlı bir kullanıcı iseniz Goodreads verilerinize ulaşmak için aşağıdaki düğmeye basın.
 										Sizi Goodreads\'e giriş yapabileceğiniz bir ağ sayfasına yönlendirecektir. Açarsözünüzü (şifrenizi) biz 										    kesinlikle görmeyeceğiz ve dilediğiniz zaman erişimi Goodreads ağ sayfasından iptal edebilirsiniz. 
 										Bazen boş bir bete düşerseniz geri düğmesine basıp buraya dönebilirsiniz!</string>
-    <string name="goodreads_auth_blurb_part3">Ancak unutmayın&#8230; bunu yapmanız zorunlu değil, BookCatalogue tek başına da gayet de çalışır!</string>
-    <string name="authorize_access">Erişime izin ver</string>
-    <string name="authorize_access_already_auth">Bu uygulamayı zaten önceden yetkilendirmişsiniz. Tüm Goodreads işlevleri halihazırda kullanılabilir olmalı</string>
-    <string name="goodreads_access_error">Goodreads\'e erişmeye çalışırken bir ağ sorunu oluştu. Lütfen Goodreads ağ sayfasının çalışıyor olduğundan emin olun, sorun sürerse lütfen destek bölümü ile iletişime geçin.</string>
+    <string name="gr_auth_blurb_part3">Ancak unutmayın&#8230; bunu yapmanız zorunlu değil, BookCatalogue tek başına da gayet de çalışır!</string>
+    <string name="gr_auth_access">Erişime izin ver</string>
+    <string name="gr_auth_access_already_auth">Bu uygulamayı zaten önceden yetkilendirmişsiniz. Tüm Goodreads işlevleri halihazırda kullanılabilir olmalı</string>
+    <string name="gr_access_error">Goodreads\'e erişmeye çalışırken bir ağ sorunu oluştu. Lütfen Goodreads ağ sayfasının çalışıyor olduğundan emin olun, sorun sürerse lütfen destek bölümü ile iletişime geçin.</string>
     <string name="other_preferences">Diğer seçenekler</string>
     <string name="user_interface">Kullanıcı arayüzü</string>
     <string name="background_tasks">Ardalan görevleri</string>
@@ -245,7 +245,7 @@
     <string name="search_internet">Genelağ\'da ara</string>
     <string name="show_results">Sonuçları göster</string>
     <string name="rebuild_fts">FTS\'yi yeniden yapıla (aşırı deneysel)</string>
-    <string name="send_books_to_goodreads">Kitapları GoodReads\'e gönder</string>
+    <string name="gr_send_book">Kitapları GoodReads\'e gönder</string>
     <string name="legacy_task">Eski görev</string>
     <string name="occurred_at">%1$s içinde oluştu</string>
     <string name="unknown_uc">BİLİNMEYEN</string>
@@ -254,19 +254,19 @@
     <string name="no_matching_book_found">Eşleşen kitap bulunamadı</string>
     <string name="no_isbn_stored_for_book">Bu kitap için bir ISBN depolanmamış</string>
     <string name="select_an_action">Bir eylem seçin</string>
-    <string name="goodreads_auth_check">Goodreads yetkilendirme denetimi</string>
-    <string name="goodreads_auth_failed">Goodreads yetkilendirmesi başarısız</string>
-    <string name="goodreads_auth_successful">Goodreads yetkilendirmesi başarılı</string>
+    <string name="gr_auth_check">Goodreads yetkilendirme denetimi</string>
+    <string name="gr_auth_failed">Goodreads yetkilendirmesi başarısız</string>
+    <string name="gr_auth_successful">Goodreads yetkilendirmesi başarılı</string>
     <string name="authorized">Yetkilendirilmiş</string>
     <string name="not_authorized">Yetkilendirilmemiş</string>
-    <string name="goodreads_auth_error">Goodreads yetkilendirmesi bir hataya neden oldu</string>
+    <string name="gr_auth_error">Goodreads yetkilendirmesi bir hataya neden oldu</string>
     <string name="if_the_problem_persists">Eğer sorun sürerse lütfen ana seçkedeki Yardım bölümünden destek ile iletişime geçin.</string>
     <string name="book_no_longer_exists">Belirtilen kitap artık yok</string>
     <string name="please_enter_search_criteria">Lütfen arama kriteri girin</string>
     <string name="error_while_searching">Arama sırasında hata</string>
-    <string name="send_all_to_goodreads_result">%1$d kitap işlendi: %2$d tanesi başarıyla gönderildi, %3$d tanesinin ISBN\'si yok ve %4$d tanesinin ISBN\'si Goodreads\'te bulunamadı</string>
+    <string name="gr_send_all_books_results">%1$d kitap işlendi: %2$d tanesi başarıyla gönderildi, %3$d tanesinin ISBN\'si yok ve %4$d tanesinin ISBN\'si Goodreads\'te bulunamadı</string>
     <string name="x_of_y">%1$d (Toplam %2$d)</string>
-    <string name="send_book_to_goodreads">Bu kitabı Goodreads\'e gönder: %1$s</string>
+    <string name="gr_send_book_to_goodreads">Bu kitabı Goodreads\'e gönder: %1$s</string>
     <string name="erase_cover_cache">Kapak önbelleğini sil</string>
     <string name="crash_message_text">BookCatalogue bilinmeyen bir nedenle çöktü. Uygulamanın kalitesini iyileştirebilmemiz için lütfen bu çökmeyi rapor edin.</string>
     <string name="crash_notif_ticker_text">BookCatalogue çöktü</string>
@@ -373,7 +373,7 @@
     <string name="edit">Düzenle</string>
     <string name="groupings">Öbeklemeler</string>
     <string name="preferences">Yeğlenenler</string>
-    <string name="unexpected_error">Beklenmeyen bir hata oluştu, lütfen olayla ilgili ayrıntıları ana seçkedeki \'Yardım\' seçeneğinden bize gönderin</string>
+    <string name="error_unexpected_error">Beklenmeyen bir hata oluştu, lütfen olayla ilgili ayrıntıları ana seçkedeki \'Yardım\' seçeneğinden bize gönderin</string>
     <string name="delete_style">Biçemi sil</string>
     <string name="edit_style">Biçemi düzenle</string>
     <string name="clone_style">Biçemi çoğalt</string>
@@ -383,18 +383,18 @@
     <string name="user_defined">Kullanıcı tanımlı</string>
     <string name="builtin">Yerleşik</string>
     <string name="sort_unread">Okunmayan (Yazar/Seri)</string>
-    <string name="import_all_from_goodreads">Tümünü Goodreads\'den içe aktar</string>
+    <string name="gr_import_all_from_goodreads">Tümünü Goodreads\'den içe aktar</string>
     <string name="requested_task_is_already_queued">İstenen görev kuyrukta bekliyor</string>
     <string name="export_task_is_already_queued">Bir dışa aktarma görevi kuyrukta bekliyor ve bu görev başlayabilmesi için önce bitirilmesi gerek</string>
     <string name="import_task_is_already_queued">Bir içe aktarma görevi kuyrukta bekliyor ve bu görev başlayabilmesi için önce bitirilmesi gerek</string>
-    <string name="goodreads_action_cannot_blah_blah">Bu uygulama Goodreads ağ sayfasında yetkilendirilmeden verilen bu görev tamamlanamaz. Uygulamayı yetkilendirdikten sonra yeniden deneyiniz. \n\nŞimdi yetkilendirmek istiyor musunuz?</string>
+    <string name="gr_action_cannot_blah_blah">Bu uygulama Goodreads ağ sayfasında yetkilendirilmeden verilen bu görev tamamlanamaz. Uygulamayı yetkilendirdikten sonra yeniden deneyiniz. \n\nŞimdi yetkilendirmek istiyor musunuz?</string>
     <string name="tell_me_more">Bilgi ver</string>
     <string name="retry_x_of_y_next_at_z">Yeniden dene: %1$d (Toplam %2$d), sonraki: %3$s</string>
     <string name="completed">Tamamlandı</string>
     <string name="failed">Başarısız</string>
     <string name="queued">Kuyrukta</string>
     <string name="unknown">Bilinmeyen</string>
-    <string name="send_books_to_goodreads_blurb">Bu işlem kitaplığınızı Goodreads\'e gönderecektir.
+    <string name="gr_send_books_to_goodreads_blurb">Bu işlem kitaplığınızı Goodreads\'e gönderecektir.
     										\n\nİster tüm kitaplarınızı gönderebilir veya son göndermenizden bu yana güncellenen, alınan 
     										veya gönderilen kitapları seçebilir (henüz gönderilmeyen 
     										kitaplar da dahil olmak üzere) veya güncellemeyi iptal edebilirsiniz.
@@ -402,7 +402,7 @@
     										arasında hiçbir ayrım bulunmamaktadır.</string>
     <string name="send_all">Tümünü gönder</string>
     <string name="send_updated">Güncellenenleri gönder</string>
-    <string name="sync_with_goodreads">Goodreads ile eşitle</string>
+    <string name="gr_sync_with_goodreads">Goodreads ile eşitle</string>
     <string name="cover_options_cc_ellipsis">Kapak seçenekleri&#8230;</string>
     <string name="show_events_ellipsis">Olayları göster&#8230;</string>
     <string name="hint_authors_book_may_appear_more_than_once">Eğer her yazar için gösteriliyorsa, tek bir kitap bir dizelgede birden fazla görünebilir. Böyle bir durumda bu kitaplardan birini silmek dizelgeden tüm girileri silecektir.</string>
@@ -415,13 +415,13 @@
     <string name="task_has_been_queued_in_background">Görev ardalanda kuyruğa yerleştirildi</string>
     <string name="hint_startup_screen">Bu ölçünlü BookCatalogue başlangıç ekranıdır. Eğer isterseniz doğrudan \'Kitaplarım\'; ekranından başlayabilirsiniz. Başlangıç ekranı yeğlenenlerden değiştirilebilir.</string>
     <string name="upgrading_ellipsis">Yükseltiliyor&#8230;</string>
-    <string name="explain_goodreads_no_isbn">Seçili kitabın bir ISBN numarası yok, dolayısıyla Goodreads ile özdevinimli olarak eşitlenmesi olanaklı değil. 
+    <string name="gr_explain_goodreads_no_isbn">Seçili kitabın bir ISBN numarası yok, dolayısıyla Goodreads ile özdevinimli olarak eşitlenmesi olanaklı değil.
     									En yalın çözüm olarak:
     									\n\n(1) Kitabı Goodreads\'ten silin,
     									\n\n(2) Kitabı Goodreads\'e el ile ağ sayfasından ekleyin,
     									\n\n(3) Goodreads ile eşitleme yapın.
     									\n\nBu kitabın BookCatalogue\'de yeniden oluşturulmasını sağlar ve her iki giri birbiri ile sürekli eşitlenmiş kalacaktır.</string>
-    <string name="explain_goodreads_no_match">Seçili kitabın ISBN\'si Goodreads\'te bulunamadı. Bunun olası iki nedeni vardır: 
+    <string name="gr_explain_goodreads_no_match">Seçili kitabın ISBN\'si Goodreads\'te bulunamadı. Bunun olası iki nedeni vardır:
     									Ya kitap için girdiğiniz veri hatalı (ISBN\'yi kontrol edin) veya kitap Goodreads\'te bulunmuyor. 
     									\n\nEğer BookCatalogue\'de herhangi bir veriyi değiştirirseniz, yalnızca \'Yeniden dene\' düğmesine basın 
     									ve oluşan ardalan görevinin başarıyla tamamlanıp tamamlanmadığına bakın. 
@@ -839,7 +839,7 @@
     <!-- Preference VALUE, displayed in a preference activity -->
     <string name="zxing_scanner">Zxing Tarayıcı</string>
     <!-- Heading in 'about' dialog -->
-    <string name="special_thanks_label">Teşekkürlerimizle</string>
+    <string name="lbl_special_thanks">Teşekkürlerimizle</string>
     <!-- Credits in the 'about' dialog -->
     <string name="translators_blurb">Kitap Kataloğu birçok kişinin emeğinin ürünü olan bir yazılım. Burada gönüllü çevirmenlerimizin katkılarını belirtmeden olmaz; onların çabaları olmadan bu kadar fazla kişiye ulaşamazdık. Bu güzel insanlar: Eugenio Davolio, José M. Galdo, Imkal, Gideon van Melle, Emir Sarı, Nick Silin ve Robert Wetzlmayr (eğer unuttuğumuz birisi var ise lütfen belirtin).</string>
     <!-- End: Added/Updated in 5.1.0 -->

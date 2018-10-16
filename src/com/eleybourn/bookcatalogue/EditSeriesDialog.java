@@ -63,7 +63,7 @@ public class EditSeriesDialog {
                 AutoCompleteTextView seriesView = dialog.findViewById(R.id.series);
                 String newName = seriesView.getText().toString().trim();
                 if (newName.isEmpty()) {
-                    StandardDialogs.showQuickNotice(mContext, R.string.series_is_blank);
+                    StandardDialogs.showBriefMessage(mContext, R.string.series_is_blank);
                     return;
                 }
                 confirmEdit(series, new Series(newName, ""));

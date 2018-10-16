@@ -75,7 +75,7 @@ public class ImportThread extends ManagedTask {
                 showQuickNotice(getString(R.string.import_complete));
             }
         } catch (IOException e) {
-            showQuickNotice(BookCatalogueApp.getResourceString(R.string.import_failed_is_location_correct));
+            showQuickNotice(BookCatalogueApp.getResourceString(R.string.error_import_failed_is_location_correct));
             Logger.error(e);
         } finally {
             if (in != null && in.getChannel().isOpen())

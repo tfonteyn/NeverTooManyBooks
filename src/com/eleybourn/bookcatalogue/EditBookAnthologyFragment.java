@@ -23,6 +23,7 @@ package com.eleybourn.bookcatalogue;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.CallSuper;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -40,7 +41,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ListView;
 
@@ -49,6 +50,7 @@ import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.entities.AnthologyTitle;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Book;
+import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.searches.isfdb.HandlesISFDB;
 import com.eleybourn.bookcatalogue.searches.isfdb.ISFDBManager;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
@@ -60,7 +62,7 @@ import java.util.List;
  * This class is called by {@link EditBookActivity} and displays the Anthology (aka Content) Tab
  */
 public class EditBookAnthologyFragment extends BookAbstractFragment implements HandlesISFDB {
-    // context menu specific for Anthology
+    /** context menu specific for Anthology */
     private static final int MENU_POPULATE_ISFDB = 100;
 
     private EditText mTitleText;
@@ -68,11 +70,13 @@ public class EditBookAnthologyFragment extends BookAbstractFragment implements H
     private AutoCompleteTextView mAuthorText;
     private String mIsbn;
     private String mBookAuthor;
-    private Button mAdd;
-    private CheckBox mSame;
+    private Button mAddButton;
+    private CompoundButton mSingleAuthor;
+
     @Nullable
     private Integer mEditPosition = null;
     private ArrayList<AnthologyTitle> mList;
+    private ListView mListView;
 
     /**
      * ISFDB editions (url's) of a book(isbn)
@@ -88,103 +92,104 @@ public class EditBookAnthologyFragment extends BookAbstractFragment implements H
     }
 
     /**
-     * Display the edit fields page
-     */
-    @Override
-    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        loadPage();
-    }
-
-    /**
      * Display the main manage anthology page. This has three parts.
      * 1. Setup the "Same Author" checkbox
      * 2. Setup the "Add Title" fields
-     * 3. Populate the "Title List" - {@link #fillContentList};
+     * 3. Populate the "Title List" - {@link #populateContentList};
      */
-    private void loadPage() {
+    @Override
+    @CallSuper
+    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
-        final Book book = mEditManager.getBook();
-        mBookAuthor = book.getString(UniqueId.KEY_AUTHOR_FORMATTED);
-        mIsbn = book.getString(UniqueId.KEY_ISBN);
+        final Book book = getBook();
 
-        // Setup the same author field
-        boolean singleAuthor = ((book.getInt(UniqueId.KEY_ANTHOLOGY_BITMASK) & DatabaseDefinitions.DOM_ANTHOLOGY_MULTIPLE_AUTHORS) == 0);
-        mSame = getView().findViewById(R.id.same_author);
-        mSame.setChecked(singleAuthor);
-        mSame.setOnClickListener(new View.OnClickListener() {
+        // Author AutoCompleteTextView
+        //noinspection ConstantConditions
+        mAuthorText = getView().findViewById(R.id.add_author);
+        //noinspection ConstantConditions
+        ArrayAdapter<String> author_adapter = new ArrayAdapter<>(getActivity(),
+                android.R.layout.simple_dropdown_item_1line, mDb.getAuthors());
+        mAuthorText.setAdapter(author_adapter);
+
+        // mSingleAuthor checkbox
+        mSingleAuthor = getView().findViewById(R.id.same_author);
+        mSingleAuthor.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                saveState(mEditManager.getBook());
-                loadPage();
+                mAuthorText.setVisibility(mSingleAuthor.isChecked() ? View.GONE : View.VISIBLE);
             }
         });
 
-        // Author AutoCompleteTextView
-        ArrayAdapter<String> author_adapter = new ArrayAdapter<>(getActivity(),
-                android.R.layout.simple_dropdown_item_1line, mDb.getAuthors());
-        mAuthorText = getView().findViewById(R.id.add_author);
-        mAuthorText.setAdapter(author_adapter);
-        mAuthorText.setVisibility(mSame.isChecked() ? View.GONE : View.VISIBLE);
+        // Setup the same author field and makes the Author visible or not
+        int bitmask = book.getInt(UniqueId.KEY_ANTHOLOGY_BITMASK);
+        boolean singleAuthor = (1 == (bitmask & DatabaseDefinitions.DOM_ANTHOLOGY_SINGLE_AUTHOR));
+        initSingleAuthorStatus(singleAuthor);
 
-        mTitleText = getView().findViewById(R.id.add_title);
+        mBookAuthor = book.getString(UniqueId.KEY_AUTHOR_FORMATTED);
+        mIsbn = book.getString(UniqueId.KEY_BOOK_ISBN);
         mPubDateText = getView().findViewById(R.id.add_year);
+        mTitleText = getView().findViewById(R.id.add_title);
+        mListView = getView().findViewById(android.R.id.list);
 
-        mAdd = getView().findViewById(R.id.add_button);
-        mAdd.setOnClickListener(new View.OnClickListener() {
+        mAddButton = getView().findViewById(R.id.add_button);
+        mAddButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 String pubDate = mPubDateText.getText().toString().trim();
                 String title = mTitleText.getText().toString().trim();
                 String author = mAuthorText.getText().toString().trim();
-                if (mSame.isChecked()) {
+                if (mSingleAuthor.isChecked()) {
                     author = mBookAuthor;
                 }
-                AnthologyTitleListAdapterForEditing antAdapter = ((AnthologyTitleListAdapterForEditing)
-                        EditBookAnthologyFragment.this.getListView().getAdapter());
+                ArrayAdapter<AnthologyTitle> adapter = EditBookAnthologyFragment.this.getListAdapter();
 
                 if (mEditPosition == null) {
                     AnthologyTitle anthologyTitle = new AnthologyTitle(new Author(author), title, pubDate);
                     anthologyTitle.setBookId(book.getBookId());
-                    antAdapter.add(anthologyTitle);
+                    // not bothering with position, the insert to the database takes care of that
+                    adapter.add(anthologyTitle);
                 } else {
-                    AnthologyTitle anthologyTitle = antAdapter.getItem(mEditPosition);
+                    AnthologyTitle anthologyTitle = adapter.getItem(mEditPosition);
                     anthologyTitle.setAuthor(new Author(author));
                     anthologyTitle.setTitle(title);
                     anthologyTitle.setFirstPublication(pubDate);
 
-                    antAdapter.notifyDataSetChanged();
+                    adapter.notifyDataSetChanged();
 
                     mEditPosition = null;
-                    mAdd.setText(R.string.anthology_add);
+                    mAddButton.setText(R.string.anthology_add);
                 }
 
                 mPubDateText.setText("");
                 mTitleText.setText("");
                 mAuthorText.setText("");
-                //fillContentList();
-                mEditManager.setDirty(true);
+                //populateContentList();
+                getEditBookManager().setDirty(true);
             }
         });
 
-        fillContentList();
+        populateContentList();
+    }
+
+    public void initSingleAuthorStatus(final boolean singleAuthor) {
+        mSingleAuthor.setChecked(singleAuthor);
+        mAuthorText.setVisibility(singleAuthor ? View.GONE : View.VISIBLE);
     }
 
     /**
      * Populate the list view with the book content table
      */
-    private void fillContentList() {
-
-        final ListView listView = getListView();
-
+    private void populateContentList() {
         // Get all of the rows from the database and create the item list
-        mList = mEditManager.getBook().getContentList();
+        mList = getBook().getContentList();
 
         // Now create a simple cursor adapter and set it to display
-        AnthologyTitleListAdapterForEditing adapter = new AnthologyTitleListAdapterForEditing(getActivity(), R.layout.row_edit_anthology, mList);
-        listView.setAdapter(adapter);
+        ArrayAdapter<AnthologyTitle> adapter = new AnthologyTitleListAdapterForEditing(getActivity(),
+                R.layout.row_edit_anthology, mList);
+        mListView.setAdapter(adapter);
 
-        registerForContextMenu(listView);
+        registerForContextMenu(mListView);
         // click on a list entry, puts it in edit fields
-        listView.setOnItemClickListener(new OnItemClickListener() {
+        mListView.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long id) {
                 mEditPosition = position;
@@ -192,7 +197,7 @@ public class EditBookAnthologyFragment extends BookAbstractFragment implements H
                 mPubDateText.setText(anthologyTitle.getFirstPublication());
                 mTitleText.setText(anthologyTitle.getTitle());
                 mAuthorText.setText(anthologyTitle.getAuthor().getDisplayName());
-                mAdd.setText(R.string.anthology_save);
+                mAddButton.setText(R.string.anthology_save);
             }
         });
     }
@@ -202,9 +207,13 @@ public class EditBookAnthologyFragment extends BookAbstractFragment implements H
      */
     @NonNull
     private ListView getListView() {
-        return (ListView) getView().findViewById(android.R.id.list);
+        return mListView;
     }
 
+    @SuppressWarnings("unchecked")
+    private <T extends ArrayAdapter<AnthologyTitle>> T getListAdapter() {
+        return (T) getListView().getAdapter();
+    }
     /**
      * we got one or more editions from ISFDB
      */
@@ -219,15 +228,33 @@ public class EditBookAnthologyFragment extends BookAbstractFragment implements H
     /**
      * we got a book
      *
-     * @param bookData our book from ISFDB. Any li
+     * @param bookData our book from ISFDB.
      */
     @Override
     public void onGotISFDBBook(@NonNull final Bundle bookData) {
-        final List<AnthologyTitle> results = ArrayUtils.getAnthologyTitleFromBundle(bookData);
+        String encoded_content_list = bookData.getString(UniqueId.BKEY_ANTHOLOGY_DETAILS);
+        final List<AnthologyTitle> results = ArrayUtils.getAnthologyTitleUtils().decodeList(encoded_content_list, false);
+        bookData.remove(UniqueId.BKEY_ANTHOLOGY_DETAILS);
 
-        if (results == null) {
-            StandardDialogs.showQuickNotice(getActivity(), R.string.automatic_population_failed);
-            return;
+        String encoded_series_list = bookData.getString(UniqueId.BKEY_SERIES_DETAILS);
+        if (encoded_content_list != null) {
+            ArrayList<Series> inBook = getBook().getSeriesList();
+            List<Series> series = ArrayUtils.getSeriesUtils().decodeList(encoded_series_list, false);
+            for (Series s : series) {
+                if (!inBook.contains(s)) {
+                    inBook.add(s);
+                }
+            }
+            getBook().setSeriesList(inBook);
+            //Logger.info("onGotISFDBBook: series=" + series);
+        }
+
+        String bookFirstPublication = bookData.getString(UniqueId.KEY_FIRST_PUBLICATION);
+        if (bookFirstPublication != null) {
+            //Logger.info("onGotISFDBBook: first pub=" + bookFirstPublication);
+            if (getBook().getString(UniqueId.KEY_FIRST_PUBLICATION).isEmpty()) {
+                getBook().putString(UniqueId.KEY_FIRST_PUBLICATION, bookFirstPublication);
+            }
         }
 
         StringBuilder msg = new StringBuilder();
@@ -239,7 +266,7 @@ public class EditBookAnthologyFragment extends BookAbstractFragment implements H
         }
 
         AlertDialog dialog = new AlertDialog.Builder(getActivity())
-                .setTitle(results.isEmpty() ? R.string.automatic_population_failed : R.string.anthology_confirm)
+                .setTitle(results.isEmpty() ? R.string.error_anthology_automatic_population_failed : R.string.anthology_confirm)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .setMessage(msg)
                 .create();
@@ -248,21 +275,9 @@ public class EditBookAnthologyFragment extends BookAbstractFragment implements H
             dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(android.R.string.ok),
                     new DialogInterface.OnClickListener() {
                         public void onClick(final DialogInterface dialog, final int which) {
-                            // check if its all the same author or not
-                            boolean sameAuthor = true;
-                            if (results.size() > 1) {
-                                Author author = results.get(0).getAuthor();
-                                for (AnthologyTitle t : results) { // yes, we check 0 twice.. oh well.
-                                    sameAuthor = author.equals(t.getAuthor());
-                                    if (!sameAuthor) {
-                                        break;
-                                    }
-                                }
-                            }
-                            mSame.setChecked(sameAuthor);
+                            initSingleAuthorStatus(AnthologyTitle.isSingleAuthor(results));
                             mList.addAll(results);
-                            AnthologyTitleListAdapterForEditing adapter = ((AnthologyTitleListAdapterForEditing)
-                                    EditBookAnthologyFragment.this.getListView().getAdapter());
+                            ArrayAdapter<AnthologyTitle> adapter = EditBookAnthologyFragment.this.getListAdapter();
                             adapter.notifyDataSetChanged();
                         }
                     });
@@ -291,8 +306,10 @@ public class EditBookAnthologyFragment extends BookAbstractFragment implements H
 
     /**
      * Run each time the menu button is pressed. This will setup the options menu
+     * Need to use this as we want the menu cleared before.
      */
     @Override
+    @CallSuper
     public void onPrepareOptionsMenu(@NonNull final Menu menu) {
         menu.clear();
         menu.add(Menu.NONE, MENU_POPULATE_ISFDB, 0, R.string.populate_anthology_titles)
@@ -305,10 +322,11 @@ public class EditBookAnthologyFragment extends BookAbstractFragment implements H
      * call the appropriate functions (or other activities)
      */
     @Override
+    @CallSuper
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         switch (item.getItemId()) {
             case MENU_POPULATE_ISFDB:
-                StandardDialogs.showQuickNotice(getActivity(), R.string.connecting_to_web_site);
+                StandardDialogs.showBriefMessage(getActivity(), R.string.connecting_to_web_site);
                 ISFDBManager.searchEditions(mIsbn, this);
                 return true;
         }
@@ -316,19 +334,21 @@ public class EditBookAnthologyFragment extends BookAbstractFragment implements H
     }
 
     @Override
+    @CallSuper
     public void onCreateContextMenu(@NonNull final ContextMenu menu, @NonNull final View v, @NonNull final ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
         menu.add(Menu.NONE, R.id.MENU_DELETE_ANTHOLOGY, 0, R.string.menu_delete_anthology);
     }
 
     @Override
+    @CallSuper
     public boolean onContextItemSelected(@NonNull final MenuItem item) {
         switch (item.getItemId()) {
             case R.id.MENU_DELETE_ANTHOLOGY:
                 AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
-                AnthologyTitleListAdapterForEditing adapter = ((AnthologyTitleListAdapterForEditing) getListView().getAdapter());
+                ArrayAdapter<AnthologyTitle> adapter = getListAdapter();
                 adapter.remove(adapter.getItem((int) info.id));
-                mEditManager.setDirty(true);
+                getEditBookManager().setDirty(true);
                 return true;
         }
         return super.onContextItemSelected(item);
@@ -339,20 +359,23 @@ public class EditBookAnthologyFragment extends BookAbstractFragment implements H
         // multiple authors is now automatically done during database access. The checkbox is only
         // a visual aid for hiding/showing the author EditText.
         // So while this command is 'correct', it does not stop (and does not bother) the user
-        // setting it wrong. insert/update into the database will correctly set it.
+        // setting it wrong. insert/update into the database will correctly set it by simply looking at
+        // at the toc itself
         book.putInt(UniqueId.KEY_ANTHOLOGY_BITMASK,
-                mSame.isChecked() ?
+                mSingleAuthor.isChecked() ?
                         DatabaseDefinitions.DOM_ANTHOLOGY_SINGLE_AUTHOR
                         : DatabaseDefinitions.DOM_ANTHOLOGY_MULTIPLE_AUTHORS ^ DatabaseDefinitions.DOM_ANTHOLOGY_SINGLE_AUTHOR);
     }
 
     @Override
+    @CallSuper
     public void onPause() {
         super.onPause();
-        saveState(mEditManager.getBook());
+        saveState(getBook());
     }
 
     @Override
+    @CallSuper
     protected void onSaveBookDetails(@NonNull final Book book) {
         super.onSaveBookDetails(book);
         saveState(book);
@@ -361,7 +384,7 @@ public class EditBookAnthologyFragment extends BookAbstractFragment implements H
     private class AnthologyTitleListAdapterForEditing extends AnthologyTitleListAdapter {
 
         AnthologyTitleListAdapterForEditing(@NonNull final Context context,
-                                            @LayoutRes final int rowViewId,
+                                            @SuppressWarnings("SameParameterValue") @LayoutRes final int rowViewId,
                                             @NonNull final ArrayList<AnthologyTitle> items) {
             super(context, rowViewId, items);
         }
@@ -372,12 +395,12 @@ public class EditBookAnthologyFragment extends BookAbstractFragment implements H
             mTitleText.setText(item.getTitle());
             mAuthorText.setText(item.getAuthor().getDisplayName());
             mEditPosition = position;
-            mAdd.setText(R.string.anthology_save);
+            mAddButton.setText(R.string.anthology_save);
         }
 
         @Override
         protected void onListChanged() {
-            mEditManager.setDirty(true);
+            getEditBookManager().setDirty(true);
         }
     }
 }

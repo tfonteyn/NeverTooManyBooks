@@ -282,15 +282,15 @@ public class ImageUtils {
 
 
     /**
-     * If there is a {@link UniqueId#BKEY_THUMBNAIL_USCORE} key, pick the largest image, rename it
-     * and delete the others. Finally, remove the key. and set BKEY_THUMBNAIL to true
+     * If there is a {@link UniqueId#BKEY_THUMBNAIL_FILES_SPEC} key, pick the largest image, rename it
+     * and delete the others. Finally, remove the key. and set KEY_BOOK_THUMBNAIL to true
      */
     public static void cleanupThumbnails(@Nullable final Bundle result) {
-        if (result == null || !result.containsKey(UniqueId.BKEY_THUMBNAIL_USCORE)) {
+        if (result == null || !result.containsKey(UniqueId.BKEY_THUMBNAIL_FILES_SPEC)) {
             return;
         }
 
-        String s = result.getString(UniqueId.BKEY_THUMBNAIL_USCORE);
+        String s = result.getString(UniqueId.BKEY_THUMBNAIL_FILES_SPEC);
         if (s == null) {
             return;
         }
@@ -334,8 +334,8 @@ public class ImageUtils {
             StorageUtils.renameFile(new File(files.get(bestFileIndex)), StorageUtils.getTempCoverFile());
         }
         // Finally, cleanup the data
-        result.remove(UniqueId.BKEY_THUMBNAIL_USCORE);
-        result.putBoolean(UniqueId.BKEY_THUMBNAIL, true);
+        result.remove(UniqueId.BKEY_THUMBNAIL_FILES_SPEC);
+        result.putBoolean(UniqueId.KEY_BOOK_THUMBNAIL, true);
     }
 
     /**
@@ -347,7 +347,7 @@ public class ImageUtils {
 
         // Check if we have a file and/or it is valid
         if (thumbFile == null || !thumbFile.exists()) {
-            StandardDialogs.showQuickNotice(activity, R.string.cover_not_set);
+            StandardDialogs.showBriefMessage(activity, R.string.cover_not_set);
         } else {
             BitmapFactory.Options opt = new BitmapFactory.Options();
             opt.inJustDecodeBounds = true;
@@ -355,7 +355,7 @@ public class ImageUtils {
 
             // If no size info, assume file bad and return appropriate icon
             if (opt.outHeight <= 0 || opt.outWidth <= 0) {
-                StandardDialogs.showQuickNotice(activity, R.string.cover_corrupt);
+                StandardDialogs.showBriefMessage(activity, R.string.cover_corrupt);
             } else {
                 final Dialog dialog = new StandardDialogs.BasicDialog(activity, R.style.ZoomedImage);
 

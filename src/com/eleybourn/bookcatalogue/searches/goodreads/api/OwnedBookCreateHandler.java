@@ -20,6 +20,7 @@
 
 package com.eleybourn.bookcatalogue.searches.goodreads.api;
 
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
@@ -93,6 +94,7 @@ public class OwnedBookCreateHandler extends ApiHandler {
 		//int mWorkId = 0;
 
 		@Override
+		@CallSuper
 		public void characters(@NonNull final char[] ch, final int start, final int length) throws SAXException {
 			super.characters(ch, start, length);
 			mBuilder.append(ch, start, length);
@@ -111,6 +113,7 @@ public class OwnedBookCreateHandler extends ApiHandler {
 		//}
 
 		@Override
+		@CallSuper
 		public void startElement(@NonNull final String uri, @NonNull final String localName, @NonNull final String name, @NonNull final Attributes attributes) throws SAXException {
 			super.startElement(uri, localName, name, attributes);
 
@@ -120,6 +123,7 @@ public class OwnedBookCreateHandler extends ApiHandler {
 		}
 
 		@Override
+		@CallSuper
 		public void endElement(@NonNull final String uri, @NonNull final String localName, @NonNull final String name) throws SAXException {
 			super.endElement(uri, localName, name);
 

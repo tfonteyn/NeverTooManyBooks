@@ -1,6 +1,7 @@
 package com.eleybourn.bookcatalogue.searches;
 
 import android.os.Bundle;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
@@ -8,11 +9,11 @@ import android.support.v4.app.Fragment;
 import android.view.View;
 
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
+import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 
 import java.util.ArrayList;
 
-public class SearchAdmin extends BookCatalogueActivity {
+public class SearchAdmin extends BaseActivity {
 
     private static final int TAB_HOSTS = 0;
     private static final int TAB_SEARCH_ORDER = 1;
@@ -25,6 +26,7 @@ public class SearchAdmin extends BookCatalogueActivity {
     }
 
     @Override
+    @CallSuper
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTitle(R.string.search_internet);
@@ -87,19 +89,15 @@ public class SearchAdmin extends BookCatalogueActivity {
         });
     }
 
-    private void replaceTab(@NonNull final Fragment fragment) {
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.fragment, fragment)
-                .commit();
-    }
-
     private class TabListener implements TabLayout.OnTabSelectedListener {
         @Override
         public void onTabSelected(@NonNull final TabLayout.Tab tab) {
             Holder holder = (Holder) tab.getTag();
             //noinspection ConstantConditions
-            replaceTab(holder.fragment);
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fragment, holder.fragment)
+                    .commit();
         }
 
         @Override

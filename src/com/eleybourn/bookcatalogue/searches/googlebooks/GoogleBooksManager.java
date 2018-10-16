@@ -1,10 +1,11 @@
 package com.eleybourn.bookcatalogue.searches.googlebooks;
 
+import android.net.ParseException;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.BCPreferences;
+import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
@@ -30,11 +31,11 @@ public class GoogleBooksManager {
     @NonNull
     public static String getBaseURL() {
         //noinspection ConstantConditions
-        return BCPreferences.getString(PREFS_HOST_URL, "http://books.google.com");
+        return BookCatalogueApp.Prefs.getString(PREFS_HOST_URL, "http://books.google.com");
     }
 
     public static void setBaseURL(@NonNull final String url) {
-        BCPreferences.setString(PREFS_HOST_URL, url);
+        BookCatalogueApp.Prefs.putString(PREFS_HOST_URL, url);
     }
 
     @Nullable
@@ -42,12 +43,12 @@ public class GoogleBooksManager {
         Bundle mBookData = new Bundle();
         try {
             search(isbn, "", "", mBookData, true);
-            if (mBookData.containsKey(UniqueId.BKEY_THUMBNAIL_USCORE)
-                    && mBookData.getString(UniqueId.BKEY_THUMBNAIL_USCORE) != null) {
-                File f = new File(Objects.requireNonNull(mBookData.getString(UniqueId.BKEY_THUMBNAIL_USCORE)));
-                File newName = new File(f.getAbsolutePath() + "_" + isbn);
-                StorageUtils.renameFile(f, newName);
-                return newName;
+            if (mBookData.containsKey(UniqueId.BKEY_THUMBNAIL_FILES_SPEC)
+                    && mBookData.getString(UniqueId.BKEY_THUMBNAIL_FILES_SPEC) != null) {
+                File fromFile = new File(Objects.requireNonNull(mBookData.getString(UniqueId.BKEY_THUMBNAIL_FILES_SPEC)));
+                File toFile = new File(fromFile.getAbsolutePath() + "_" + isbn);
+                StorageUtils.renameFile(fromFile, toFile);
+                return toFile;
             } else {
                 return null;
             }
@@ -60,8 +61,8 @@ public class GoogleBooksManager {
     public static void search(@NonNull final String isbn,
                               @NonNull String author,
                               @NonNull String title,
-                              @NonNull final Bundle book,
-                              final boolean fetchThumbnail) {
+                              @NonNull final Bundle /* out */ book,
+                              final boolean fetchThumbnail) throws IOException {
 
         String path = getBaseURL() + "/books/feeds/volumes";
         if (!isbn.isEmpty()) {
@@ -92,8 +93,9 @@ public class GoogleBooksManager {
                 parser = factory.newSAXParser();
                 parser.parse(Utils.getInputStreamWithTerminator(url), entryHandler);
             }
-            // Don't bother catching general exceptions, they will be caught by the caller.
-        } catch (@NonNull ParserConfigurationException | IOException | SAXException e) {
+
+            // only catch exceptions related to the parsing, others will be caught by the caller.
+        } catch (ParserConfigurationException | ParseException |SAXException e) {
             Logger.error(e);
         }
     }

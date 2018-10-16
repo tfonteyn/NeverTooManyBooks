@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue.database.cursors;
 
 import android.database.sqlite.SQLiteCursorDriver;
 import android.database.sqlite.SQLiteQuery;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -71,6 +72,7 @@ public class BooksCursor extends TrackedCursor implements AutoCloseable {
      * Clear the RowView
      */
     @Override
+    @CallSuper
     public void close() {
         super.close();
         mBookRowView = null;

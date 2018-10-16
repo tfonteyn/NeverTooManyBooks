@@ -32,6 +32,7 @@ import android.database.sqlite.SQLiteDoneException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQuery;
 import android.database.sqlite.SQLiteStatement;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -171,10 +172,9 @@ public class DbSync {
         @NonNull
         SyncLock getExclusiveLock() {
             final Thread ourThread = Thread.currentThread();
-            long t0;
-            if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
-                t0 = System.currentTimeMillis();
-            }
+            @SuppressWarnings("UnusedAssignment")
+            long t0 = System.currentTimeMillis();
+
             // Synchronize with other code
             mLock.lock();
             try {
@@ -503,7 +503,7 @@ public class DbSync {
          * @return the row ID of the newly inserted row, or -1 if an error occurred
          */
         long insert(@NonNull final String table,
-                    @Nullable final String nullColumnHack,
+                    @SuppressWarnings("SameParameterValue") @Nullable final String nullColumnHack,
                     @NonNull final ContentValues cv) {
             SyncLock syncLock = null;
             if (mTxLock != null) {
@@ -1070,6 +1070,7 @@ public class DbSync {
          * Wrapper that uses a lock before calling underlying method.
          */
         @Override
+        @CallSuper
         public boolean requery() {
             SyncLock sharedLock = mSync.getSharedLock();
             try {

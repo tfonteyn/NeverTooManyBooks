@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue.database.cursors;
 
 import android.database.sqlite.SQLiteCursorDriver;
 import android.database.sqlite.SQLiteQuery;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -148,7 +149,7 @@ public class TrackedCursor extends SynchronizedCursor implements Closeable {
      */
     public static void dumpCursors() {
         if (DEBUG_SWITCHES.TRACKED_CURSOR && BuildConfig.DEBUG) {
-            //noinspection UnusedAssignment
+            @SuppressWarnings("UnusedAssignment")
             List<TrackedCursor> cursors = getCursors();
             if (cursors == null) {
                 Logger.info("No cursors");
@@ -190,6 +191,7 @@ public class TrackedCursor extends SynchronizedCursor implements Closeable {
      * Remove from collection on close.
      */
     @Override
+    @CallSuper
     public void close() {
         super.close();
         if (DEBUG_SWITCHES.TRACKED_CURSOR && BuildConfig.DEBUG) {
@@ -216,6 +218,7 @@ public class TrackedCursor extends SynchronizedCursor implements Closeable {
      * Note this is not guaranteed to be called by the JVM !
      */
     @Override
+    @CallSuper
     public void finalize() {
         if (DEBUG_SWITCHES.TRACKED_CURSOR && BuildConfig.DEBUG) {
             if (mWeakRef != null) {

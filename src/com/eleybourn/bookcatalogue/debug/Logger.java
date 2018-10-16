@@ -45,10 +45,16 @@ import java.util.Date;
  * INFO:
  *
  * error methods will always print a stacktrace (even if you do not pass in an exception)
+ *
+ *  FIXME Remove Log.error! Replace with ACRA?
+ *  ACRA.getErrorReporter().handleException(e);
  */
 public class Logger {
 
     private static final String TAG = "BC Logger";
+
+    @SuppressLint("SimpleDateFormat")
+    private static final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     private Logger() {
     }
@@ -71,7 +77,8 @@ public class Logger {
      * Pure info, no stacktrace.
      */
     public static void info(final String message) {
-        error(null, "INFO: " + message);
+        Log.e(TAG, "INFO: " + message);
+        writeToErrorLog("INFO: " + message);
     }
 
     /**
@@ -102,10 +109,7 @@ public class Logger {
      * @param message extra message
      */
     public static void error(@Nullable final Exception e, @NonNull final String message) {
-        @SuppressLint("SimpleDateFormat")
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String now = dateFormat.format(new Date());
-
         String exMsg = null;
         StringWriter stacktrace = new StringWriter();
         PrintWriter pw = new PrintWriter(stacktrace);
@@ -120,14 +124,13 @@ public class Logger {
                 message + "\n" +
                 stacktrace;
 
+        // Log the exception to the console in full when in debug, but only the message when deployed.
+        // Either way, the exception will be in the physical logfile.
         if (BuildConfig.DEBUG) {
-            // and this should be the only place where we use System.out ... and even then....
-            System.out.println(error);
+            Log.e(TAG, error);
+        } else {
+            Log.e(TAG, message); // message without the exception stuff
         }
-
-        // FIXME Remove Log.error! Replace with ACRA?
-        Log.e(TAG, message); // message without the exception stuff
-        //ACRA.getErrorReporter().handleException(e); // the exception. TODO: test this for real.
 
         writeToErrorLog(error);
         pw.close();

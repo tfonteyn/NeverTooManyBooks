@@ -23,6 +23,7 @@ package com.eleybourn.bookcatalogue.baseactivity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.CallSuper;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -36,7 +37,7 @@ import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
-import com.eleybourn.bookcatalogue.widgets.SimpleListAdapter;
+import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter;
 import com.eleybourn.bookcatalogue.widgets.TouchListView;
 import com.eleybourn.bookcatalogue.widgets.TouchListViewWithDropListener;
 
@@ -54,7 +55,7 @@ import java.util.Objects;
  * - confirm
  * - add (OPTIONAL)
  *
- * Row View must have layout ID set to "@id/ROW_DETAILS" (defined in ids.xml)
+ * Row View must have layout ID set to "@id/ROW" (defined in ids.xml)
  *
  * The row view is tagged using TAG_POSITION,, to save the rows position for
  * use when moving the row up/down or deleting it.
@@ -85,7 +86,7 @@ import java.util.Objects;
  *
  * @author Philip Warner
  */
-abstract public class EditObjectListActivity<T extends Serializable> extends BookCatalogueListActivity {
+abstract public class EditObjectListActivity<T extends Serializable> extends BaseListActivity {
 
     /** The key to use in the Bundle to get the array */
     @Nullable
@@ -190,6 +191,7 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Boo
      * @return <tt>true</tt>if handled
      */
     @SuppressWarnings({"unused", "SameReturnValue"})
+    @CallSuper
     protected boolean onRowLongClick(@NonNull final View target, @NonNull final T object, final int position) {
         return true;
     }
@@ -198,15 +200,16 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Boo
      * @return  true if delete is allowed to happen
      */
     @SuppressWarnings({"unused", "SameReturnValue"})
+    @CallSuper
     protected boolean onRowDelete(@NonNull final View target, @NonNull final T object, final int position) {
         return true;
     }
 
-    @SuppressWarnings("unused")
+    @SuppressWarnings({"unused", "EmptyMethod"})
     protected void onRowDown(@NonNull final View target, @NonNull final T object, final int position) {
     }
 
-    @SuppressWarnings("unused")
+    @SuppressWarnings({"unused", "EmptyMethod"})
     protected void onRowUp(@NonNull final View target, @NonNull final T object, final int position) {
     }
     /**
@@ -271,6 +274,7 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Boo
     }
 
     @Override
+    @CallSuper
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         try {
@@ -279,9 +283,9 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Boo
             mDb.open();
 
             // Add handlers for 'Save', 'Cancel' and 'Add' (if resources are defined)
-            setupListener(R.id.confirm, mSaveListener);
-            setupListener(R.id.cancel, mCancelListener);
-            setupListener(R.id.add, mAddListener);
+            setOnClickListener(R.id.confirm, mSaveListener);
+            setOnClickListener(R.id.cancel, mCancelListener);
+            setOnClickListener(R.id.add, mAddListener);
 
             // Ask the subclass to setup the list; we need this before building the adapter.
             if (savedInstanceState != null && mBKey != null && savedInstanceState.containsKey(mBKey)) {
@@ -322,7 +326,7 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Boo
      * @param viewId Resource ID
      * @param listener  Listener
      */
-    private void setupListener(@IdRes final int viewId, @NonNull final OnClickListener listener) {
+    private void setOnClickListener(@IdRes final int viewId, @NonNull final OnClickListener listener) {
         View v = this.findViewById(viewId);
         if (v != null) {
             v.setOnClickListener(listener);
@@ -351,6 +355,7 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Boo
      * Ensure that the list is saved.
      */
     @Override
+    @CallSuper
     protected void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
         // save list
@@ -372,11 +377,13 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Boo
      * class.
      */
     @Override
+    @CallSuper
     public void onRestoreInstanceState(final Bundle state) {
         super.onRestoreInstanceState(state);
     }
 
     @Override
+    @CallSuper
     protected void onDestroy() {
         super.onDestroy();
         if (mDb != null)
@@ -404,7 +411,9 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Boo
         }
 
         @Override
+        @CallSuper
         protected boolean onRowLongClick(@NonNull final View target, @NonNull final T item, final int position) {
+            super.onRowLongClick(target,item,position);
             return EditObjectListActivity.this.onRowLongClick(target, item, position);
         }
 
@@ -414,7 +423,9 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Boo
         }
 
         @Override
+        @CallSuper
         protected boolean onRowDelete(@NonNull final View target, @NonNull final T item, final int position) {
+            super.onRowDelete(target,item,position);
             return EditObjectListActivity.this.onRowDelete(target, item, position);
         }
 

@@ -26,6 +26,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.support.annotation.CallSuper;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -65,38 +66,37 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * TODO: Snackbar: decide Toast/Snackbar ? preference setting ?
+ * FIXME: decide Toast/Snackbar ? it's a preference setting for now... but overkill (bigger app)
  * TODO: Snackbar: needs styling
- * TODO: Snackbar: uses getDecorView for now. Ideally it should use a View "carefully chosen"
+ * TODO: Snackbar: uses getDecorView for now so it's always at the bottom of the screen.
  *
  * Reminder: we still have {@link QueueManager#doToast(String)} which operate without access to 'anything'
+ * If in doubt, search for "Toast.makeText"
  *
  */
 public class StandardDialogs {
-    //FIXME: make this a preference, or dump toast ?
-    private static final boolean USE_SNACKBAR = true;
 
     private static final String UNKNOWN = "<" + BookCatalogueApp.getResourceString(R.string.unknown_uc) + ">";
 
     /**
      * Shielding the actual implementation of Toast/Snackbar or whatever is next.
      */
-    public static void showQuickNotice(@NonNull final Activity activity, @StringRes final int message) {
-        if (USE_SNACKBAR) {
-            Snackbar.make(activity.getWindow().getDecorView(), message, Snackbar.LENGTH_LONG).show();
-        } else {
+    public static void showBriefMessage(@NonNull final Activity activity, @StringRes final int message) {
+        if (0 == BookCatalogueApp.Prefs.getInt(BookCatalogueApp.PREF_APP_BRIEF_MESSAGE, 0)) {
             Toast.makeText(activity, message, Toast.LENGTH_LONG).show();
+        } else {
+            Snackbar.make(activity.getWindow().getDecorView(), message, Snackbar.LENGTH_LONG).show();
         }
     }
 
     /**
      * Shielding the actual implementation of Toast/Snackbar or whatever is next.
      */
-    public static void showQuickNotice(@NonNull final Activity activity, @NonNull final String message) {
-        if (USE_SNACKBAR) {
-            Snackbar.make(activity.getWindow().getDecorView(), message, Snackbar.LENGTH_LONG).show();
-        } else {
+    public static void showBriefMessage(@NonNull final Activity activity, @NonNull final String message) {
+        if (0 == BookCatalogueApp.Prefs.getInt(BookCatalogueApp.PREF_APP_BRIEF_MESSAGE, 0)) {
             Toast.makeText(activity, message, Toast.LENGTH_LONG).show();
+        } else {
+            Snackbar.make(activity.getWindow().getDecorView(), message, Snackbar.LENGTH_LONG).show();
         }
     }
 
@@ -142,11 +142,11 @@ public class StandardDialogs {
         int msgId;
         final String prefName = LibraryThingManager.PREFS_LT_HIDE_ALERT + "_" + prefSuffix;
         if (!ltRequired) {
-            msgId = R.string.uses_library_thing_info;
+            msgId = R.string.lt_uses_info;
             SharedPreferences prefs = context.getSharedPreferences(BookCatalogueApp.APP_SHARED_PREFERENCES, android.content.Context.MODE_PRIVATE);
             showAlert = !prefs.getBoolean(prefName, false);
         } else {
-            msgId = R.string.require_library_thing_info;
+            msgId = R.string.lt_required_info;
             showAlert = true;
         }
 
@@ -154,7 +154,7 @@ public class StandardDialogs {
             return;
 
         final AlertDialog dialog = new AlertDialog.Builder(context).setMessage(msgId)
-                .setTitle(R.string.reg_library_thing_title)
+                .setTitle(R.string.lt_registration_title)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .create();
 
@@ -290,8 +290,8 @@ public class StandardDialogs {
     public static void goodreadsAuthAlert(@NonNull final FragmentActivity context) {
         // Get the title
         final AlertDialog dialog = new AlertDialog.Builder(context)
-                .setTitle(R.string.authorize_access)
-                .setMessage(R.string.goodreads_action_cannot_blah_blah)
+                .setTitle(R.string.gr_auth_access)
+                .setMessage(R.string.gr_action_cannot_blah_blah)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .create();
 
@@ -549,6 +549,7 @@ public class StandardDialogs {
 
         @Override
         @NonNull
+        @CallSuper
         public View getView(@NonNull final LayoutInflater inflater) {
             View view = super.getView(inflater);
             TextView name = view.findViewById(R.id.name);

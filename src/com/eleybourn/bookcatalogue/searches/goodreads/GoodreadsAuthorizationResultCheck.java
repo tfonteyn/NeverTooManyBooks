@@ -44,32 +44,32 @@ class GoodreadsAuthorizationResultCheck extends GenericTask {
     private static final long serialVersionUID = -5502292652351148420L;
 
     GoodreadsAuthorizationResultCheck() {
-        super(BookCatalogueApp.getResourceString(R.string.goodreads_auth_check));
+        super(BookCatalogueApp.getResourceString(R.string.gr_auth_check));
     }
 
     @Override
     public boolean run(@NonNull final QueueManager manager, @NonNull final Context context) {
         GoodreadsManager grMgr = new GoodreadsManager();
         try {
-            grMgr.handleAuthentication();
+            grMgr.handleAuthentication(context);
             if (grMgr.hasValidCredentials()) {
                 Logger.info("GoodreadsAuthorizationResultCheck: OK");
 
                 BookCatalogueApp.showNotification(context, context.getString(R.string.authorized),
-                        context.getString(R.string.goodreads_auth_successful));
+                        context.getString(R.string.gr_auth_successful));
             } else {
                 Logger.info("GoodreadsAuthorizationResultCheck: FAILED, no exception?");
                 BookCatalogueApp.showNotification(context, context.getString(R.string.not_authorized),
-                        context.getString(R.string.goodreads_auth_failed));
+                        context.getString(R.string.gr_auth_failed));
             }
         } catch (NotAuthorizedException e) {
             Logger.error(e);
             BookCatalogueApp.showNotification(context, context.getString(R.string.not_authorized),
-                    context.getString(R.string.goodreads_auth_failed));
+                    context.getString(R.string.gr_auth_failed));
         } catch (Exception e) {
             Logger.error(e);
             BookCatalogueApp.showNotification(context, context.getString(R.string.not_authorized),
-                    context.getString(R.string.goodreads_auth_error)
+                    context.getString(R.string.gr_auth_error)
                             + " " + context.getString(R.string.if_the_problem_persists));
         }
 

@@ -24,6 +24,7 @@ import android.annotation.SuppressLint;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.CallSuper;
 import android.support.annotation.Nullable;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -37,7 +38,7 @@ import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
+import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
@@ -49,11 +50,11 @@ import java.util.TimerTask;
  * number of hits more or less in real time. The user can choose to see a full list at any
  * time.
  *
- * ENHANCE: Finish or DELETE FTS activity.
+ * ENHANCE: Finish ! FTS activity.
  *
  * @author Philip Warner
  */
-public class SearchCatalogue extends BookCatalogueActivity {
+public class SearchCatalogue extends BaseActivity {
     /** Handle inter-thread messages */
     private final Handler mSCHandler = new Handler();
     private CatalogueDBAdapter mDb;
@@ -119,6 +120,7 @@ public class SearchCatalogue extends BookCatalogueActivity {
     }
 
     @Override
+    @CallSuper
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -127,9 +129,11 @@ public class SearchCatalogue extends BookCatalogueActivity {
         mDb.open();
 
         View root = this.findViewById(R.id.root);
-        EditText criteria = this.findViewById(R.id.criteria);
+
         EditText author = this.findViewById(R.id.author);
         EditText title = this.findViewById(R.id.title);
+        EditText criteria = this.findViewById(R.id.criteria);
+
         Button showResults = this.findViewById(R.id.search);
         Button ftsRebuild = this.findViewById(R.id.rebuild);
 
@@ -251,6 +255,7 @@ public class SearchCatalogue extends BookCatalogueActivity {
      * When activity pauses, stop timer.
      */
     @Override
+    @CallSuper
     protected void onPause() {
         super.onPause();
         stopIdleTimer();
@@ -260,6 +265,7 @@ public class SearchCatalogue extends BookCatalogueActivity {
      * When activity resumes, mark search as dirty
      */
     @Override
+    @CallSuper
     protected void onResume() {
         super.onResume();
         userIsActive(true);
@@ -269,6 +275,7 @@ public class SearchCatalogue extends BookCatalogueActivity {
      * Cleanup
      */
     @Override
+    @CallSuper
     public void onDestroy() {
         super.onDestroy();
         try {

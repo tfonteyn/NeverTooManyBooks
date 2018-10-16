@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue.dialogs;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
@@ -81,6 +82,7 @@ public class PartialDatePickerFragment extends DialogFragment {
      * Check the activity supports the interface
      */
     @Override
+    @CallSuper
     public void onAttach(@NonNull final Context context) {
         super.onAttach(context);
 
@@ -156,6 +158,7 @@ public class PartialDatePickerFragment extends DialogFragment {
     }
 
     @Override
+    @CallSuper
     public void onSaveInstanceState(@NonNull final Bundle state) {
         state.putInt(BKEY_TITLE, mTitleId);
         state.putInt(UniqueId.BKEY_DIALOG_ID, mDialogId);
@@ -174,6 +177,7 @@ public class PartialDatePickerFragment extends DialogFragment {
      * Make sure data is saved in onPause() because onSaveInstanceState will have lost the views
      */
     @Override
+    @CallSuper
     public void onPause() {
         super.onPause();
         PartialDatePicker d = (PartialDatePicker) getDialog();

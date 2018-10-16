@@ -5,7 +5,7 @@
     android:orientation="vertical">
 
     <TextView
-        android:id="@+id/loan_lbl"
+        android:id="@+id/lbl_loan"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
@@ -17,7 +17,7 @@
         style="@style/personalNameTextEntry"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_below="@id/loan_lbl"
+        android:layout_below="@id/lbl_loan"
         android:layout_toStartOf="@id/confirm"
         android:completionThreshold="2"
         android:hint="@string/name" />
@@ -27,7 +27,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
-        android:layout_below="@id/loan_lbl"
+        android:layout_below="@id/lbl_loan"
         android:text="@string/loan" />
 
 </RelativeLayout>

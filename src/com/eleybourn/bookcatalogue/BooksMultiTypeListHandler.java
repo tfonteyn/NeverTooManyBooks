@@ -40,6 +40,7 @@ import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 
+import com.eleybourn.bookcatalogue.adapters.MultiTypeListHandler;
 import com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds;
 import com.eleybourn.bookcatalogue.booklist.BooklistPreferencesActivity;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
@@ -71,6 +72,7 @@ import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.RTE;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
+import com.eleybourn.bookcatalogue.adapters.MultiTypeListCursorAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -311,12 +313,15 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                     } else {
                         addMenuItem(menu, R.id.MENU_BOOK_READ, R.string.set_as_read, R.drawable.btn_check_buttonless_on);
                     }
-                    addMenuItem(menu, R.id.MENU_BOOK_EDIT_LOANS, R.string.edit_book_friends, R.drawable.ic_people);
-                    addMenuItem(menu, R.id.MENU_BOOK_SEND_TO_GOODREADS, R.string.edit_book_send_to_gr,
+                    if (Fields.isVisible(UniqueId.KEY_LOAN_LOANED_TO)) {
+                        addMenuItem(menu, R.id.MENU_BOOK_EDIT_LOANS, R.string.edit_book_friends, R.drawable.ic_people);
+                    }
+                    addMenuItem(menu, R.id.MENU_BOOK_SEND_TO_GOODREADS, R.string.gr_send_to_goodreads,
                             BookCatalogueApp.getAttr(R.attr.ic_goodreads));
                     break;
                 }
                 case RowKinds.ROW_KIND_AUTHOR: {
+                    addMenuItem(menu, R.id.MENU_AUTHOR_DETAILS, R.string.author, R.drawable.ic_details);
                     addMenuItem(menu, R.id.MENU_AUTHOR_EDIT, R.string.menu_edit_author, R.drawable.ic_mode_edit);
                     break;
                 }
@@ -421,20 +426,20 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                 });
                 // Display an error, if any
                 if (res != 0) {
-                    StandardDialogs.showQuickNotice(activity, res);
+                    StandardDialogs.showBriefMessage(activity, res);
                 }
                 return true;
             }
             case R.id.MENU_BOOK_EDIT: {
-                EditBookActivity.startActivity(activity, rowView.getBookId(), EditBookActivity.TAB_EDIT);
+                EditBookActivity.startActivityForResult(activity, rowView.getBookId(), EditBookActivity.TAB_EDIT);
                 return true;
             }
             case R.id.MENU_BOOK_EDIT_NOTES: {
-                EditBookActivity.startActivity(activity, rowView.getBookId(), EditBookActivity.TAB_EDIT_NOTES);
+                EditBookActivity.startActivityForResult(activity, rowView.getBookId(), EditBookActivity.TAB_EDIT_NOTES);
                 return true;
             }
             case R.id.MENU_BOOK_EDIT_LOANS: {
-                EditBookActivity.startActivity(activity, rowView.getBookId(), EditBookActivity.TAB_EDIT_FRIENDS);
+                EditBookActivity.startActivityForResult(activity, rowView.getBookId(), EditBookActivity.TAB_EDIT_LOANS);
                 return true;
             }
             case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR: {
@@ -454,14 +459,17 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                 return true;
             }
             case R.id.MENU_BOOK_SEND_TO_GOODREADS: {
-                // Get a GoodreadsManager and make sure we are authorized.
-                // FIXME: This does network traffic on main thread and will ALWAYS die in Android 4.2+. Should mimic code in GoodreadsUtils.sendBooksToGoodreads(...)
+                /* Get a GoodreadsManager and make sure we are authorized.
+                 * FIXME: This does network traffic on main thread and will ALWAYS die in Android 4.2+.
+                 * Should mimic code in
+                 * {@link com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsUtils#sendBooksToGoodreads}
+                 */
                 GoodreadsManager grMgr = new GoodreadsManager();
                 if (!grMgr.hasValidCredentials()) {
                     try {
                         grMgr.requestAuthorization(activity);
                     } catch (NetworkException e) {
-                        StandardDialogs.showQuickNotice(activity, e.getLocalizedMessage());
+                        StandardDialogs.showBriefMessage(activity, e.getLocalizedMessage());
                     }
                 }
                 // get a QueueManager and queue the task.
@@ -473,7 +481,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
             case R.id.MENU_SERIES_EDIT: {
                 long id = rowView.getSeriesId();
                 if (id == -1) {
-                    StandardDialogs.showQuickNotice(activity, R.string.cannot_edit_system);
+                    StandardDialogs.showBriefMessage(activity, R.string.cannot_edit_system);
                     if (BuildConfig.DEBUG) {
                         Logger.debug("FIXME id==-1, ... how? why? R.string.cannot_edit_system)");
                     }
@@ -511,6 +519,10 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                 } else {
                     Logger.error("Series " + id + " not found in database?");
                 }
+                return true;
+            }
+            case R.id.MENU_AUTHOR_DETAILS: {
+                AuthorActivity.startActivity(activity, rowView.getAuthorId());
                 return true;
             }
             case R.id.MENU_AUTHOR_EDIT: {
@@ -784,8 +796,9 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                         return;
                     }
                 }
-                // Get a DB connection and find the book.
-                CatalogueDBAdapter db = taskContext.getDb();
+                // Get a DB connection and find the book, do not close the database!
+                CatalogueDBAdapter db = taskContext.getOpenDb();
+
                 try (BooksCursor c = db.fetchBookById(mBookId)) {
                     // If we have a book, use it. Otherwise we are done.
                     if (c.moveToFirst()) {
@@ -864,19 +877,19 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                 }
 
                 if ((mFlags & BooklistStyle.EXTRAS_BOOKSHELVES) != 0) {
-                    mHolder.shelves.setText(BookCatalogueApp.getResourceString(R.string.label_colon_value, mShelvesRes, mShelves));
+                    mHolder.shelves.setText(BookCatalogueApp.getResourceString(R.string.name_colon_value, mShelvesRes, mShelves));
                 }
                 if ((mFlags & BooklistStyle.EXTRAS_AUTHOR) != 0) {
                     mHolder.author.setText(mAuthor);
                 }
                 if ((mFlags & BooklistStyle.EXTRAS_LOCATION) != 0) {
-                    mHolder.location.setText(BookCatalogueApp.getResourceString(R.string.label_colon_value, mLocationRes, mLocation));
+                    mHolder.location.setText(BookCatalogueApp.getResourceString(R.string.name_colon_value, mLocationRes, mLocation));
                 }
                 if ((mFlags & BooklistStyle.EXTRAS_PUBLISHER) != 0) {
-                    mHolder.publisher.setText(BookCatalogueApp.getResourceString(R.string.label_colon_value, mPublisherRes, mPublisher));
+                    mHolder.publisher.setText(BookCatalogueApp.getResourceString(R.string.name_colon_value, mPublisherRes, mPublisher));
                 }
                 if ((mFlags & BooklistStyle.EXTRAS_FORMAT) != 0) {
-                    mHolder.format.setText(BookCatalogueApp.getResourceString(R.string.label_colon_value, mFormatRes, mFormat));
+                    mHolder.format.setText(BookCatalogueApp.getResourceString(R.string.name_colon_value, mFormatRes, mFormat));
                 }
             }
         }
@@ -976,7 +989,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
             float scale = style.isCondensed() ? BooklistStyle.SCALE : 1.0f;
 
             read = bookView.findViewById(R.id.read);
-            if (!FieldVisibilityActivity.isVisible(UniqueId.KEY_BOOK_READ)) {
+            if (!Fields.isVisible(UniqueId.KEY_BOOK_READ)) {
                 read.setVisibility(View.GONE);
             } //else {
             // use the title text size to SCALE the 'read' icon
@@ -1086,7 +1099,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
             }
 
             // Read
-            if (FieldVisibilityActivity.isVisible(UniqueId.KEY_BOOK_READ)) {
+            if (Fields.isVisible(UniqueId.KEY_BOOK_READ)) {
                 read.setChecked(rowView.isRead());
                 read.setOnClickListener(new View.OnClickListener() {
                     @Override

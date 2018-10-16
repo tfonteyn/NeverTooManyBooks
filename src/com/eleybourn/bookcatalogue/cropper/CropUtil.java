@@ -66,11 +66,11 @@ class CropUtil {
      * constraint. The functions prefers returning a sample size that generates a smaller bitmap,
      * unless minSideLength = IImage.UNCONSTRAINED.
      */
-    public static Bitmap transform(@NonNull Matrix scaler,
-                                   @NonNull final Bitmap source,
-                                   final int targetWidth,
-                                   final int targetHeight,
-                                   final boolean scaleUp) {
+    static Bitmap transform(@NonNull Matrix scaler,
+                            @NonNull final Bitmap source,
+                            final int targetWidth,
+                            final int targetHeight,
+                            final boolean scaleUp) {
         int deltaX = source.getWidth() - targetWidth;
         int deltaY = source.getHeight() - targetHeight;
         if (!scaleUp && (deltaX < 0 || deltaY < 0)) {
@@ -140,91 +140,17 @@ class CropUtil {
         return b2;
     }
 
-//	/**
-//	 * Creates a centered bitmap of the desired size. Recycles the input.
-//	 */
-//	public static Bitmap extractMiniThumb(Bitmap source, int width, int height, boolean recycle) {
-//		if (source == null) {
-//			return null;
-//		}
-//
-//		float SCALE;
-//		if (source.getWidth() < source.getHeight()) {
-//			SCALE = width / (float) source.getWidth();
-//		} else {
-//			SCALE = height / (float) source.getHeight();
-//		}
-//		Matrix matrix = new Matrix();
-//		matrix.setScale(SCALE, SCALE);
-//		Bitmap miniThumbnail = transform(matrix, source, width, height, false);
-//
-//		if (recycle && miniThumbnail != source) {
-//			source.recycle();
-//		}
-//		return miniThumbnail;
-//	}
-
-//	/**
-//	 * Create a video thumbnail for a video. May return null if the video is
-//	 * corrupt.
-//	 *
-//	 * @param filePath
-//	 */
-//	public static Bitmap createVideoThumbnail(String filePath) {
-//		Bitmap bitmap = null;
-//		/*
-//		 * MediaMetadataRetriever retriever = new MediaMetadataRetriever(); try
-//		 * { retriever.setMode(MediaMetadataRetriever.MODE_CAPTURE_FRAME_ONLY);
-//		 * retriever.setDataSource(filePath); bitmap = retriever.captureFrame();
-//		 * } catch (IllegalArgumentException ex) { // Assume this is a corrupt
-//		 * video file } catch (RuntimeException ex) { // Assume this is a
-//		 * corrupt video file. } finally { try { retriever.release(); } catch
-//		 * (RuntimeException ex) { // Ignore failures while cleaning up. } }
-//		 */
-//		return bitmap;
-//	}
-
-//	public static <T> int indexOf(T[] array, T s) {
-//		for (int i = 0; i < array.length; i++) {
-//			if (array[i].equals(s)) {
-//				return i;
-//			}
-//		}
-//		return -1;
-//	}
-
-    public static void startBackgroundJob(@NonNull final CropMonitoredActivity activity,
-                                          @Nullable final String title,
-                                          @NonNull final String message,
-                                          @NonNull final Runnable job,
-                                          @NonNull final Handler handler) {
+    static void startBackgroundJob(@NonNull final CropMonitoredActivity activity,
+                                   @SuppressWarnings("SameParameterValue") @Nullable final String title,
+                                   @NonNull final String message,
+                                   @NonNull final Runnable job,
+                                   @NonNull final Handler handler) {
         // Make the progress dialog not-cancelable, so that we can guarantee
         // the thread will be done before the activity getting destroyed.
         ProgressDialog dialog = ProgressDialog.show(activity,
                 title, message, true, false);
         new Thread(new BackgroundJob(activity, job, dialog, handler)).start();
     }
-
-//    /**
-//     * Make a bitmap from a given Uri.
-//     */
-//     private static ParcelFileDescriptor makeInputStream(Uri uri, ContentResolver cr) {
-//         try {
-//            return cr.openFileDescriptor(uri, "r");
-//         } catch (IOException ex) {
-//            return null;
-//         }
-//     }
-
-//	public static synchronized OnClickListener getNullOnClickListener() {
-//		if (sNullOnClickListener == null) {
-//			sNullOnClickListener = new OnClickListener() {
-//				public void onClick(View v) {
-//				}
-//			};
-//		}
-//		return sNullOnClickListener;
-//	}
 
     private static class BackgroundJob extends
             CropMonitoredActivity.LifeCycleAdapter implements Runnable {
@@ -237,7 +163,7 @@ class CropUtil {
         private final Runnable mJob;
         @NonNull
         private final Handler mHandler;
-        @Nullable
+        @NonNull
         private final Runnable mCleanupRunner = new Runnable() {
             public void run() {
                 mActivity.removeLifeCycleListener(BackgroundJob.this);
@@ -283,4 +209,80 @@ class CropUtil {
             mDialog.show();
         }
     }
+
+//	/**
+//	 * Creates a centered bitmap of the desired size. Recycles the input.
+//	 */
+//	public static Bitmap extractMiniThumb(Bitmap source, int width, int height, boolean recycle) {
+//		if (source == null) {
+//			return null;
+//		}
+//
+//		float SCALE;
+//		if (source.getWidth() < source.getHeight()) {
+//			SCALE = width / (float) source.getWidth();
+//		} else {
+//			SCALE = height / (float) source.getHeight();
+//		}
+//		Matrix matrix = new Matrix();
+//		matrix.setScale(SCALE, SCALE);
+//		Bitmap miniThumbnail = transform(matrix, source, width, height, false);
+//
+//		if (recycle && miniThumbnail != source) {
+//			source.recycle();
+//		}
+//		return miniThumbnail;
+//	}
+
+//	/**
+//	 * Create a video thumbnail for a video. May return null if the video is
+//	 * corrupt.
+//	 *
+//	 * @param filePath
+//	 */
+//    public static Bitmap createVideoThumbnail(String filePath) {
+//        Bitmap bitmap = null;
+//        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+//        try {
+//            retriever.setMode(MediaMetadataRetriever.MODE_CAPTURE_FRAME_ONLY);
+//            retriever.setDataSource(filePath);
+//            bitmap = retriever.captureFrame();
+//        } catch (RuntimeException ignore) {
+//            // Assume this is a corrupt video file.
+//        } finally {
+//            try {
+//                retriever.release();
+//            } catch (RuntimeException ignore) {
+//            }
+//            return bitmap;
+//        }
+
+//	public static <T> int indexOf(T[] array, T s) {
+//		for (int i = 0; i < array.length; i++) {
+//			if (array[i].equals(s)) {
+//				return i;
+//			}
+//		}
+//		return -1;
+//	}
+//    /**
+//     * Make a bitmap from a given Uri.
+//     */
+//     private static ParcelFileDescriptor makeInputStream(Uri uri, ContentResolver cr) {
+//         try {
+//            return cr.openFileDescriptor(uri, "r");
+//         } catch (IOException ex) {
+//            return null;
+//         }
+//     }
+
+//	public static synchronized OnClickListener getNullOnClickListener() {
+//		if (sNullOnClickListener == null) {
+//			sNullOnClickListener = new OnClickListener() {
+//				public void onClick(View v) {
+//				}
+//			};
+//		}
+//		return sNullOnClickListener;
+//	}
 }

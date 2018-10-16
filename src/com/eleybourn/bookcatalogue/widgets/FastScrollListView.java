@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue.widgets;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
@@ -102,6 +103,7 @@ public class FastScrollListView extends ListView {
      * Pass to scroller if defined, otherwise perform default actions.
      */
     @Override
+    @CallSuper
     public boolean onInterceptTouchEvent(@NonNull final MotionEvent ev) {
         return mScroller != null && mScroller.onInterceptTouchEvent(ev) || super.onInterceptTouchEvent(ev);
 
@@ -111,6 +113,7 @@ public class FastScrollListView extends ListView {
      * Pass to scroller if defined, otherwise perform default actions.
      */
     @Override
+    @CallSuper
     protected void onSizeChanged(final int width, final int height, final int oldWidth, final int oldHeight) {
         super.onSizeChanged(width, height, oldWidth, oldHeight);
         if (mScroller != null) {
@@ -122,6 +125,7 @@ public class FastScrollListView extends ListView {
      * Pass to scroller if defined, otherwise perform default actions.
      */
     @Override
+    @CallSuper
     public boolean onTouchEvent(@NonNull final MotionEvent ev) {
         return mScroller != null && mScroller.onTouchEvent(ev) || super.onTouchEvent(ev);
 
@@ -131,6 +135,7 @@ public class FastScrollListView extends ListView {
      * Send draw() to the scroller as well.
      */
     @Override
+    @CallSuper
     public void draw(@NonNull final Canvas canvas) {
         super.draw(canvas);
         if (mScroller != null) {

@@ -23,7 +23,7 @@ package com.eleybourn.bookcatalogue.tasks;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 
-import com.eleybourn.bookcatalogue.baseactivity.ActivityWithTasks;
+import com.eleybourn.bookcatalogue.baseactivity.BaseActivityWithTasks;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.messaging.MessageSwitch;
 
@@ -35,7 +35,7 @@ import com.eleybourn.bookcatalogue.messaging.MessageSwitch;
  * {@link TaskManager}
  * handles the management of multiple threads sharing a ProgressDialog
  *
- * {@link ActivityWithTasks}
+ * {@link BaseActivityWithTasks}
  * Uses a TaskManager (and communicates with it) to handle progress messages for threads.
  * Deals with orientation changes in cooperation with TaskManager.
  *
@@ -102,7 +102,7 @@ abstract public class ManagedTask extends Thread {
         //do nothing
     }
 
-    /** Called to do the main thread work. Can use doProgress() and showQuickNotice() to display messages. */
+    /** Called to do the main thread work. Can use doProgress() and showBriefMessage() to display messages. */
     abstract protected void onRun() throws InterruptedException;
 
     /**

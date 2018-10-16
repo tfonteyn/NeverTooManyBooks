@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue.searches.goodreads;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -33,7 +34,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueListActivity;
+import com.eleybourn.bookcatalogue.baseactivity.BaseListActivity;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
@@ -50,7 +51,7 @@ import java.util.List;
  *
  * @author Philip Warner
  */
-public class GoodreadsSearchResults extends BookCatalogueListActivity {
+public class GoodreadsSearchResults extends BaseListActivity {
 
     public static final String BKEY_SEARCH_CRITERIA = "criteria";
     private final SimpleTaskQueue mTaskQueue = new SimpleTaskQueue("gr-covers");
@@ -63,6 +64,7 @@ public class GoodreadsSearchResults extends BookCatalogueListActivity {
     }
 
     @Override
+    @CallSuper
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -76,7 +78,7 @@ public class GoodreadsSearchResults extends BookCatalogueListActivity {
         if (criteria != null && !criteria.isEmpty()) {
             doSearch(criteria);
         } else {
-            StandardDialogs.showQuickNotice(this, R.string.please_enter_search_criteria);
+            StandardDialogs.showBriefMessage(this, R.string.please_enter_search_criteria);
             finish();
         }
     }
@@ -95,14 +97,14 @@ public class GoodreadsSearchResults extends BookCatalogueListActivity {
             works = searcher.search(criteria.trim());
         } catch (Exception e) {
             Logger.error(e, "Failed when searching goodreads");
-            StandardDialogs.showQuickNotice(this, getString(R.string.error_while_searching) + " " + getString(R.string.if_the_problem_persists));
+            StandardDialogs.showBriefMessage(this, getString(R.string.error_while_searching) + " " + getString(R.string.if_the_problem_persists));
             finish();
             return;
         }
 
         // Finish if no results, otherwise display them
         if (works.size() == 0) {
-            StandardDialogs.showQuickNotice(this, R.string.no_matching_book_found);
+            StandardDialogs.showBriefMessage(this, R.string.no_matching_book_found);
             finish();
             return;
         }
@@ -122,11 +124,12 @@ public class GoodreadsSearchResults extends BookCatalogueListActivity {
         ListHolder holder = ViewTagger.getTag(view);
         // TODO: Implement edition lookup - requires access to work.editions API from GR
         Logger.debug("Not implemented: see " + holder.title + " by " + holder.author);
-        StandardDialogs.showQuickNotice(this, "Not implemented: see " + holder.title + " by " + holder.author);
+        StandardDialogs.showBriefMessage(this, "Not implemented: see " + holder.title + " by " + holder.author);
         //Intent i = new Intent(this, GoodreadsW)
     }
 
     @Override
+    @CallSuper
     public void onDestroy() {
         super.onDestroy();
         if (mDb != null) {

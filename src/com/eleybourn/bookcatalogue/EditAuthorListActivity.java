@@ -24,6 +24,7 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
@@ -39,10 +40,8 @@ import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
-
 /**
- * Activity to edit a list of authors provided in an ArrayList<Author> and
- * return an updated list.
+ * Activity to edit a list of authors provided in an ArrayList<Author> and return an updated list.
  *
  * @author Philip Warner
  */
@@ -67,6 +66,8 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
         }
     }
 
+    @Override
+    @CallSuper
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.setTitle(mBookTitle);
@@ -74,8 +75,7 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
         try {
             // Setup autocomplete for author name
             ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                    android.R.layout.simple_dropdown_item_1line,
-                    mDb.getAuthors());
+                    android.R.layout.simple_dropdown_item_1line,  mDb.getAuthors());
             ((AutoCompleteTextView) this.findViewById(R.id.author)).setAdapter(adapter);
 
             getWindow().setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
@@ -97,8 +97,8 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
             author.id = mDb.getAuthorIdByName(author.familyName, author.givenNames);
             for (Author s : mList) {
                 if (s.equals(author)) {
-                   // Snackbar.make(target, R.string.author_already_in_list, Snackbar.LENGTH_LONG).show();
-                    StandardDialogs.showQuickNotice(this, R.string.author_already_in_list);
+                    // Snackbar.make(target, R.string.author_already_in_list, Snackbar.LENGTH_LONG).show();
+                    StandardDialogs.showBriefMessage(this, R.string.author_already_in_list);
                     return;
                 }
             }
@@ -107,7 +107,7 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
             authorField.setText("");
         } else {
             //Snackbar.make(target, R.string.author_is_blank, Snackbar.LENGTH_LONG).show();
-            StandardDialogs.showQuickNotice(this, R.string.author_is_blank);
+            StandardDialogs.showBriefMessage(this, R.string.author_is_blank);
         }
     }
 
@@ -128,7 +128,7 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
                 EditText familyView = dialog.findViewById(R.id.family_name);
                 String newFamily = familyView.getText().toString().trim();
                 if (newFamily.isEmpty()) {
-                    StandardDialogs.showQuickNotice(EditAuthorListActivity.this, R.string.author_is_blank);
+                    StandardDialogs.showBriefMessage(EditAuthorListActivity.this, R.string.author_is_blank);
                     return;
                 }
 
@@ -163,7 +163,7 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
         long nRefs = mDb.countAuthorBooks(from) + mDb.countAuthorAnthologies(from);
         boolean fromHasOthers = nRefs > (mRowId == 0 ? 0 : 1);
 
-        // Case: author is the same, or is only used in this book
+        // author is the same, or is only used in this book
         if (to.id == from.id || !fromHasOthers) {
             // Just update with the most recent spelling and format
             from.copyFrom(to);
@@ -209,8 +209,8 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
 
     @Override
     protected boolean onSave(@NonNull final Intent intent) {
-        final AutoCompleteTextView textView = findViewById(R.id.author);
-        String str = textView.getText().toString().trim();
+        final AutoCompleteTextView view = findViewById(R.id.author);
+        String str = view.getText().toString().trim();
         if (str.isEmpty()) {
             return true;
         }
@@ -223,18 +223,18 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
 
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.yes),
                 new DialogInterface.OnClickListener() {
-            public void onClick(final DialogInterface dialog, final int which) {
-                textView.setText("");
-                findViewById(R.id.confirm).performClick();
-            }
-        });
+                    public void onClick(final DialogInterface dialog, final int which) {
+                        view.setText("");
+                        findViewById(R.id.confirm).performClick();
+                    }
+                });
 
         dialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.no),
                 new DialogInterface.OnClickListener() {
-            public void onClick(final DialogInterface dialog, final int which) {
-                //do nothing
-            }
-        });
+                    public void onClick(final DialogInterface dialog, final int which) {
+                        //do nothing
+                    }
+                });
 
         dialog.show();
         return false;

@@ -3,7 +3,7 @@ package com.eleybourn.bookcatalogue.scanner;
 import android.annotation.SuppressLint;
 import android.support.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.BCPreferences;
+import com.eleybourn.bookcatalogue.BookCatalogueApp;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -79,7 +79,7 @@ public class ScannerManager {
     @NonNull
     public static Scanner getScanner() {
         // Find out what the user prefers if any
-        int prefScanner = BCPreferences.getInt(PREF_PREFERRED_SCANNER, SCANNER_ZXING_COMPATIBLE);
+        int prefScanner = BookCatalogueApp.Prefs.getInt(PREF_PREFERRED_SCANNER, SCANNER_ZXING_COMPATIBLE);
 
         // See if preferred one is present, if so return a new instance
         ScannerFactory psf = myScannerFactories.get(prefScanner);

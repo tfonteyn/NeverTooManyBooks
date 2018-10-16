@@ -29,9 +29,6 @@
     <!-- TODO: make this user controlled ? -->
     <string name="series_number_prefixes" translatable="false">(#|number|num|num.|no|no.|nr|nr.|book|bk|bk.|volume|vol|vol.|tome|part|pt.|)</string>
 
-    <!-- Preference value for a specific language. First arg is name in it's own language, second arg is name in current locale -->
-    <string name="preferred_language_x" translatable="false">%1$s (%2$s)</string>
-
     <!-- ####################################################################################### -->
     <!-- very specific ... don't ask, don't look -->
     <string name="single_string" translatable="false">%1s</string>
@@ -40,11 +37,108 @@
     <!-- order formatters (mainly for RTL which we don't support yet) -->
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="a_comma_b">%1$s, %2$s</string>
-    <string name="label_colon_value">%1$s: %2$s</string>
+    <string name="name_colon_value">%1$s: %2$s</string>
+
+    <!-- Preference value for a specific language. First arg is name in it's own language, second arg is name in current locale -->
+    <string name="preferred_language_x">%1$s (%2$s)</string>
 
     <!-- ####################################################################################### -->
     <!-- translatable strings follow -->
     <!-- ####################################################################################### -->
+
+    <string name="crash_message_text">BookCatalogue has crashed unexpectedly. Please help us to make the application better by reporting this crash.</string>
+    <string name="crash_notif_ticker_text">BookCatalogue has crashed</string>
+    <string name="crash_notif_title">BookCatalogue Crash</string>
+    <string name="crash_notif_text">Please click here for details</string>
+    <string name="crash_dialog_title">BookCatalogue Crash</string>
+    <string name="crash_dialog_text">It looks like BookCatalogue has crashed. If possible describe anything you think may be relevant below and press "OK" to send us an email about the crash. You will see the email before it is sent.</string>
+    <string name="crash_dialog_comment_prompt">Your comments (or just leave blank):</string>
+    <string name="crash_dialog_ok_message">Thank you!</string>
+
+    <string name="vldt_unable_to_get_value">Unable to get value for \'%s\'</string>
+    <string name="vldt_integer_expected">Expected an integer value for \'%s\'</string>
+    <string name="vldt_real_expected">Expected a real number for \'%s\'</string>
+    <string name="vldt_date_expected">Expected a date for \'%s\'</string>
+    <string name="vldt_boolean_expected">Expected a boolean value (0,1,t,f,true,false) for \'%s\'</string>
+    <string name="vldt_non_blank_required">Non-empty value required for \'%s\'</string>
+    <string name="vldt_blank_required">Empty value required for \'%s\'</string>
+    <string name="vldt_failed">Validation failed for \'%s\'</string>
+    <string name="vldt_read_start_after_end">The date reading started is after the end date</string>
+
+    <string name="error_unexpected_error">An unexpected error has occurred, please send the details to support using the \'Help\' option from the main menu</string>
+    <string name="error_unknown">An unknown error occurred</string>
+    <string name="error_import_failed_is_location_correct">Import of data (from SDCard) failed. Is the file in the correct place?</string>
+    <string name="error_search_failed">Searching for the book failed. Please check your network settings.</string>
+    <string name="error_search_exception">Search failed while %1$s: %2$s</string>
+    <string name="error_backup_failed">Backup Failed</string>
+    <string name="error_file_must_contain_column">File must contain column named %s</string>
+    <string name="error_file_must_contain_any_column">File must contain a column with one of the following names: %s</string>
+    <string name="error_column_is_blank">Column %1$s is blank at row %2$s</string>
+    <string name="error_columns_are_blank">Columns %1$s are all blank at row %2$d</string>
+    <string name="error_anthology_automatic_population_failed">Automatic Population of Titles Failed</string>
+    <string name="error_export_failed">Export failed - could not write to SD card</string>
+    <string name="error_download_thumbnail_failed">Thumbnail Download Failed - Could not write to SDCard</string>
+    <string name="error_no_internet_connection">No Internet connection is available.</string>
+
+
+    <string name="lt_info">This application is enhanced by using LibraryThing as a source of information about book series, as well as a source of alternate covers. To use these features you need to register with LibraryThing (free) and request a LibraryThing developer key (also free).</string>
+    <string name="lt_register_text">Register with LibraryThing</string>
+    <string name="lt_dev_key_text">Request LibraryThing developer key</string>
+    <string name="lt_got_key">Once you have the developer key (or if you already have one), just enter it below and it will be used to get extra data.</string>
+    <string name="lt_developer_key">Developer Key</string>
+    <string name="lt_required_info">This feature requires a LibraryThing Developer Key. Do you want to see more information about LibraryThing?</string>
+    <string name="lt_uses_info">This feature benefits from having a LibraryThing Developer Key. Do you want to see more information about LibraryThing, or disable this message?\n\nLibraryThing information can be found in the LibraryThing tab of the Administration pages.</string>
+    <string name="lt_registration_title">LibraryThing Registration</string>
+    <string name="lt_reset_messages_info">From time to time this application can display optional messages regarding LibraryThing. Press the button below to reset any of these messages that have been disabled.</string>
+    <string name="lt_incorrect_key">Your LibraryThing Developer Key was incorrect, or we could not connect to the network to verify.</string>
+    <string name="lt_correct_key">Your LibraryThing Developer Key is valid.</string>
+
+
+    <string name="gr_auth_blurb_part1">goodreads is a web site whose stated mission is "to help people find and share books they love".
+    										They have an extensive database of books and reviews, and if you are a registered goodreads user,
+    										BookCatalogue can export your books, shelves and reviews to goodreads and import your books,
+    										shelves and reviews from goodreads. BookCatalogue is a stand-alone application and does not
+    										require goodreads, but if you are interested you can register at:</string>
+    <string name="gr_auth_blurb_part2">Once you are registered, or if you are already a goodreads user, you can authorize BookCatalogue
+    										to access your goodreads data by pressing the button below. It will take you to a web page
+    										where you will need to login to goodreads and authorize this application. We will never see
+    										your password, and you can disable access via the goodreads website. Due to the vagaries of
+    										the web, you may end up on a blank web page. Just click the back button to return here!</string>
+    <string name="gr_auth_blurb_part3">But remember&#8230;there is no need to do any of this: BookCatalogue works just fine without it!</string>
+    <string name="gr_access_error">There was a network problem while accessing goodreads. Please check if the goodreads web site it up, and if the problem persists please contact support</string>
+    <string name="gr_auth_access">Authorize Access</string>
+    <string name="gr_auth_access_already_auth">It looks like you have already authorized this application. All goodreads functions should be available already</string>
+    <string name="gr_auth_error">Goodreads authorization resulted in an error.</string>
+    <string name="gr_auth_check">Goodreads authorization check</string>
+    <string name="gr_auth_failed">Goodreads authorization failed</string>
+    <string name="gr_auth_successful">Goodreads authorization successful</string>
+    <string name="gr_import_all_from_goodreads">Import all from goodreads</string>
+    <string name="gr_action_cannot_blah_blah">This action can not be completed until this application is authorized via the goodreads web site. Once you have authorized this application, please retry. \n\nDo you want to authorize it now?</string>
+    <string name="gr_sync_with_goodreads">Synchronize with goodreads</string>
+
+    <string name="gr_send_book">Send books to goodreads</string>
+    <string name="gr_send_to_goodreads">Send to goodreads</string>
+    <string name="gr_send_book_to_goodreads">Send book %1$s to goodreads</string>
+    <string name="gr_send_all_books_results">%1$d books processed: %2$d sent successfully, %3$d without ISBN and %4$d with ISBN but not found in goodreads</string>
+    <string name="gr_send_books_to_goodreads_blurb">This will send your library to goodreads.
+    										\n\nYou can choose to send all of your books, or only the books you have updated
+    										since they were last copied to or from goodreads (including all books that have
+    										not been sent yet) or you can cancel the update.
+    										\n\nIf you have never sent any books then there is no
+    										difference between the first two options.</string>
+    <string name="gr_explain_goodreads_no_isbn">The selected book does not have an ISBN; it is not possible to automatically synchronize it with goodreads.
+    									The simplest solution is to:
+    									\n\n(1) delete the book from BookCatalogue
+    									\n\n(2) add the book in goodreads manually via their web interface
+    									\n\n(3) Synchronize with goodreads
+    									\n\nThis will result in the book being recreated in BookCatalogue and the two will remain linked from that point onwards.</string>
+    <string name="gr_explain_goodreads_no_match">The ISBN of the selected book could not be found on goodreads. There are two possible causes for this:
+    									either the data for the book is wrong (you should check the ISBN), or the book is not in goodreads.
+    									\n\nIf you make any changes to the data in BookCatalogue, just press the \'Retry\' button and check to see if the
+    									resulting background task succeeds.
+    									\n\nIf the data looks correct and the book is still not found, then a book with that ISBN needs to be added to goodreads manually
+										via their web site. Once that is done, you can retry sending the book.</string>
+
 
     <string name="menu_insert">Add Book</string>
     <string name="menu_delete">Delete Book</string>
@@ -72,22 +166,20 @@
     <string name="confirm_save_bs">Save Bookshelf</string>
     <string name="menu_delete_bs">Delete Bookshelf</string>
     <string name="delete_1st_bs">Cannot Delete the 1st Bookshelf</string>
-    <string name="bookshelf_label">Bookshelf: </string>
+    <string name="lbl_bookshelf">Bookshelf: </string>
     <string name="all_books">All Books</string>
     <string name="isbn_found">ISBN Scanned. Searching Internet.</string>
     <string name="title_isbn_search">ISBN Search</string>
     <string name="title_manage_bs">Manage Bookshelves</string>
     <string name="title_edit_bs">Edit Bookshelf</string>
-    <string name="search_label">Search for Books</string>
+    <string name="lbl_search">Search for Books</string>
     <string name="search_hint">Search Author or Title</string>
     <string name="book_not_found">The scanned book was not found. You can sometimes find the correct barcode on the inside front cover. Otherwise please enter the details manually.</string>
     <string name="series_num">#</string>
     <string name="import_data">Import Books</string>
     <string name="import_alert">Warning. Importing data may update existing book records with new information if the uuid column is not present and the id in the import file is the same as an existing id. This is usually fine if you changed a field in an exported file. If you created a new book record, or are importing someone else\'s books, ensure the uuid field is present or the id field is blank.</string>
-    <string name="import_failed_is_location_correct">ERROR: Import of data (from SDCard) failed. Is the file in the correct place?</string>
     <string name="search_title">Book Catalogue: Search Results</string>
     <string name="results_found">Results Found</string>
-    <string name="administration_label">Administration Functions</string>
     <string name="menu_administration">Admin</string>
     <string name="install_scan_title">Install Barcode Scanner</string>
     <string name="version_number">Version Number:</string>
@@ -96,27 +188,29 @@
     <string name="edit_book">Edit Book</string>
     <string name="edit_book_notes">My Comments</string>
     <string name="edit_book_friends">Loan Book</string>
-    <string name="unknown_error">An unknown error occurred</string>
     <string name="notes">Notes</string>
+
     <string name="loaned_to">This book has been loaned to:</string>
-    <string name="nobody">Nobody</string>
+    <string name="loaned_to_nobody">Nobody</string>
     <string name="loan_to">Loan book to:</string>
-    <string name="returned">Returned</string>
+    <string name="loan_returned">Returned</string>
     <string name="name">Name</string>
-    <string name="website_lbl">Web page:</string>
-    <string name="sourcecode_label">Source Code:</string>
-    <string name="contact_label">Contacts:</string>
-    <string name="donate_label">Donate</string>
-    <string name="about_label">About</string>
+
+    <string name="lbl_administration">Administration Functions</string>
+    <string name="lbl_website">Web page:</string>
+    <string name="lbl_sourcecode">Source Code:</string>
+    <string name="lbl_contacts">Contacts:</string>
+    <string name="lbl_donate">Donate</string>
+    <string name="lbl_about">About</string>
     <string name="list_price">List Price</string>
+
     <string name="update_fields">Automatically Update Fields</string>
     <string name="select_fields_to_update">Select Fields to Update</string>
     <string name="select_fields_to_update_help">Selected fields will be updated from the internet. Unselected fields will remain unchanged.</string>
     <string name="overwrite_thumbnail">This will update the selected fields as shown, but Thumbnails can optionally be downloaded for ALL books.\n\nDo you want to overwrite all existing thumbnails? Warning, this may take a long time. </string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
-    <string name="search_fail">Searching for the book failed. Please check your network settings.</string>
-    <string name="search_exception">Search failed while %1$s: %2$s</string>
+
     <string name="menu_delete_thumb">Delete Thumbnail</string>
     <string name="help">Help</string>
     <string name="menu_manage_fields">Manage Field Visibility</string>
@@ -126,7 +220,6 @@
     <string name="same_author">All stories in this anthology are written by the same author</string>
     <string name="menu_delete_anthology">Delete Title from Anthology</string>
     <string name="is_anthology">Is this book an Anthology?</string>
-    <string name="automatic_population_failed">Automatic Population of Titles Failed</string>
     <string name="anthology">Anthology</string>
     <string name="anthology_confirm">Please confirm that these anthology titles are (mostly) correct</string>
     <string name="anthology_save">Save</string>
@@ -157,21 +250,9 @@
     <string name="menu_search">Search Books</string>
     <string name="isbn_name_search_help">Adding books by ISBN is much more accurate than adding by author and title and is generally preferred. Please remember you can sometimes find the correct barcode on the inside front cover. \n\n</string>
     <string name="help_click_here">Please click here to access the online help pages</string>
-    <string name="vldt_unable_to_get_value">Unable to get value for \'%s\'</string>
-    <string name="vldt_integer_expected">Expected an integer value for \'%s\'</string>
-    <string name="vldt_real_expected">Expected a real number for \'%s\'</string>
-    <string name="vldt_date_expected">Expected a date for \'%s\'</string>
-    <string name="vldt_boolean_expected">Expected a boolean value (0,1,t,f,true,false) for \'%s\'</string>
-    <string name="vldt_non_blank_required">Non-empty value required for \'%s\'</string>
-    <string name="vldt_blank_required">Empty value required for \'%s\'</string>
-    <string name="vldt_failed">Validation failed for \'%s\'</string>
-    <string name="vldt_read_start_after_end">The date reading started is after the end date</string>
+
     <string name="backup_success">Backup Success</string>
-    <string name="backup_failed">Backup Failed</string>
-    <string name="file_must_contain_column">File must contain column named %s</string>
-    <string name="file_must_contain_any_column">File must contain a column with one of the following names: %s</string>
-    <string name="column_is_blank">Column %1$s is blank at row %2$s</string>
-    <string name="columns_are_blank">Columns %1$s are all blank at row %2$d</string>
+
     <string name="save">Save</string>
     <string name="add">Add</string>
     <string name="no_authors_yet">There are no authors for this Book. Please add some using the text area and button at the top of this screen.</string>
@@ -187,8 +268,7 @@
     <string name="author_is_blank">Author field is blank</string>
     <string name="series_already_in_list">Series is already in the list</string>
     <string name="series_is_blank">Series field is blank</string>
-    <string name="export_failed_sdcard">Export failed - could not write to SD card</string>
-    <string name="thumbnail_failed_sdcard">Thumbnail Download Failed - Could not write to SDCard</string>
+
     <string name="skip_title">Skip - %s</string>
     <string name="num_books_searched">%s Books Searched</string>
     <string name="cancelled_info">Cancelled - %s</string>
@@ -230,17 +310,10 @@
     <string name="usage_overwrite">Overwrites existing data</string>
     <string name="cancelling">Cancelling</string>
     <string name="starting_search">Starting Search</string>
-    <string name="lt_info">This application is enhanced by using LibraryThing as a source of information about book series, as well as a source of alternate covers. To use these features you need to register with LibraryThing (free) and request a LibraryThing developer key (also free).</string>
-    <string name="lt_register_text">Register with LibraryThing</string>
-    <string name="lt_dev_key_text">Request LibraryThing developer key</string>
-    <string name="lt_got_key">Once you have the developer key (or if you already have one), just enter it below and it will be used to get extra data.</string>
-    <string name="developer_key">Developer Key</string>
-    <string name="require_library_thing_info">This feature requires a LibraryThing Developer Key. Do you want to see more information about LibraryThing?</string>
-    <string name="uses_library_thing_info">This feature benefits from having a LibraryThing Developer Key. Do you want to see more information about LibraryThing, or disable this message?\n\nLibraryThing information can be found in the LibraryThing tab of the Administration pages.</string>
-    <string name="reg_library_thing_title">LibraryThing Registration</string>
+
+
     <string name="more_info">More Info.</string>
     <string name="disable_dialogue">Disable Message</string>
-    <string name="lt_reset_messages_info">From time to time this application can display optional messages regarding LibraryThing. Press the button below to reset any of these messages that have been disabled.</string>
     <string name="reset">Reset</string>
     <string name="send_info_text">Click on the button below to gather information about any recent crashes or other errors and send it to one of our developers. This will create a backup copy of your entire database as well as any log files. If you do not wish to send any of these files, delete it from the mail attachments before sending.</string>
     <string name="send_info">Send Information</string>
@@ -253,9 +326,7 @@
     <string name="debug_body">Please take the time to briefly describe the problem you are experiencing.</string>
     <string name="menu_duplicate">Duplicate Book</string>
     <string name="cannot_edit_system">You cannot edit the system values</string>
-    <string name="incorrect_key">Your LibraryThing Developer Key was incorrect, or we could not connect to the network to verify.</string>
-    <string name="correct_key">Your LibraryThing Developer Key is valid.</string>
-    <string name="no_connection">No Internet connection is available.</string>
+
     <string name="menu_share_this">Share</string>
     <string name="email_export">Would you like to send this export as an email somewhere?</string>
     <string name="menu_crop_thumb">Crop Thumbnail</string>
@@ -267,21 +338,8 @@
     <string name="my_books">My Books</string>
     <string name="loan_return_book">Loan, Return or Edit Book</string>
     <string name="admin_and_prefs">Admin and Preferences</string>
-    <string name="edit_book_send_to_gr">Send to goodreads</string>
-    <string name="goodreads_auth_blurb_part1">goodreads is a web site whose stated mission is "to help people find and share books they love".
-    										They have an extensive database of books and reviews, and if you are a registered goodreads user, 
-    										BookCatalogue can export your books, shelves and reviews to goodreads and import your books, 
-    										shelves and reviews from goodreads. BookCatalogue is a stand-alone application and does not 
-    										require goodreads, but if you are interested you can register at:</string>
-    <string name="goodreads_auth_blurb_part2">Once you are registered, or if you are already a goodreads user, you can authorize BookCatalogue 
-    										to access your goodreads data by pressing the button below. It will take you to a web page 
-    										where you will need to login to goodreads and authorize this application. We will never see 
-    										your password, and you can disable access via the goodreads website. Due to the vagaries of
-    										the web, you may end up on a blank web page. Just click the back button to return here!</string>
-    <string name="goodreads_auth_blurb_part3">But remember&#8230;there is no need to do any of this: BookCatalogue works just fine without it!</string>
-    <string name="authorize_access">Authorize Access</string>
-    <string name="authorize_access_already_auth">It looks like you have already authorized this application. All goodreads functions should be available already</string>
-    <string name="goodreads_access_error">There was a network problem while accessing goodreads. Please check if the goodreads web site it up, and if the problem persists please contact support</string>
+
+
     <string name="other_preferences">Other Preferences</string>
     <string name="user_interface">User Interface</string>
     <string name="background_tasks">Background Tasks</string>
@@ -293,7 +351,6 @@
     <string name="search_internet">Search Internet</string>
     <string name="show_results">Show Results</string>
     <string name="rebuild_fts">Rebuild FTS (alpha only!)</string>
-    <string name="send_books_to_goodreads">Send books to goodreads</string>
     <string name="legacy_task">Legacy Task</string>
     <string name="occurred_at">occurred at %1$s</string>
     <string name="unknown_uc">UNKNOWN</string>
@@ -302,28 +359,16 @@
     <string name="no_matching_book_found">No matching book found</string>
     <string name="no_isbn_stored_for_book">No ISBN stored for book</string>
     <string name="select_an_action">Select an action</string>
-    <string name="goodreads_auth_check">Goodreads authorization check</string>
-    <string name="goodreads_auth_failed">Goodreads authorization failed</string>
-    <string name="goodreads_auth_successful">Goodreads authorization successful</string>
+
+
     <string name="authorized">Authorized</string>
     <string name="not_authorized">Not Authorized</string>
-    <string name="goodreads_auth_error">Goodreads authorization resulted in an error.</string>
     <string name="if_the_problem_persists">If the problem persists, contact support via Help on the main menu.</string>
     <string name="book_no_longer_exists">The specified book no longer exists</string>
     <string name="please_enter_search_criteria">Please enter search criteria</string>
     <string name="error_while_searching">Error while searching.</string>
-    <string name="send_all_to_goodreads_result">%1$d books processed: %2$d sent successfully, %3$d without ISBN and %4$d with ISBN but not found in goodreads</string>
     <string name="x_of_y">%1$d of %2$d</string>
-    <string name="send_book_to_goodreads">Send book %1$s to goodreads</string>
     <string name="erase_cover_cache">Erase cover cache</string>
-    <string name="crash_message_text">BookCatalogue has crashed unexpectedly. Please help us to make the application better by reporting this crash.</string>
-    <string name="crash_notif_ticker_text">BookCatalogue has crashed</string>
-    <string name="crash_notif_title">BookCatalogue Crash</string>
-    <string name="crash_notif_text">Please click here for details</string>
-    <string name="crash_dialog_title">BookCatalogue Crash</string>
-    <string name="crash_dialog_text">It looks like BookCatalogue has crashed. If possible describe anything you think may be relevant below and press "OK" to send us an email about the crash. You will see the email before it is sent.</string>
-    <string name="crash_dialog_comment_prompt">Your comments (or just leave blank):</string>
-    <string name="crash_dialog_ok_message">Thank you!</string>
     <string name="booklist_read">Read</string>
     <string name="booklist_unread">Unread</string>
 
@@ -336,6 +381,7 @@
 
     <string name="show_thumbnails">Show Thumbnails</string>
     <string name="prefer_large_thumbnails">Prefer large thumbnails</string>
+
     <string name="sort_author_series">Author then Series</string>
     <string name="sort_series">Series</string>
     <string name="sort_title_first_letter">Title first letter</string>
@@ -345,6 +391,7 @@
     <string name="sort_publication_date">Publication date</string>
     <string name="sort_added_date">Added date</string>
     <string name="sort_author_year">Author and Year</string>
+
     <string name="empty_with_brackets">(empty)</string>
     <string name="booklist_preferences">Book List Preferences</string>
     <string name="extra_book_details">Extra Book Details</string>
@@ -426,7 +473,6 @@
     <string name="edit">Edit</string>
     <string name="groupings">Groupings</string>
     <string name="preferences">Preferences</string>
-    <string name="unexpected_error">An unexpected error has occurred, please send the details to support using the \'Help\' option from the main menu</string>
     <string name="delete_style">Delete style</string>
     <string name="edit_style">Edit style</string>
     <string name="clone_style">Clone style</string>
@@ -436,26 +482,18 @@
     <string name="user_defined">User-defined</string>
     <string name="builtin">Builtin</string>
     <string name="sort_unread">Unread (Author/Series)</string>
-    <string name="import_all_from_goodreads">Import all from goodreads</string>
     <string name="requested_task_is_already_queued">Requested task is already queued</string>
     <string name="export_task_is_already_queued">An export task is already queued and must compete before this task can run</string>
     <string name="import_task_is_already_queued">An import task is already queued and must compete before this task can run</string>
-    <string name="goodreads_action_cannot_blah_blah">This action can not be completed until this application is authorized via the goodreads web site. Once you have authorized this application, please retry. \n\nDo you want to authorize it now?</string>
+
     <string name="tell_me_more">Tell me more</string>
     <string name="retry_x_of_y_next_at_z">Retry %1$d of %2$d next at %3$s</string>
     <string name="completed">Completed</string>
     <string name="failed">Failed</string>
     <string name="queued">Queued</string>
     <string name="unknown">Unknown</string>
-    <string name="send_books_to_goodreads_blurb">This will send your library to goodreads.
-    										\n\nYou can choose to send all of your books, or only the books you have updated 
-    										since they were last copied to or from goodreads (including all books that have 
-    										not been sent yet) or you can cancel the update.
-    										\n\nIf you have never sent any books then there is no
-    										difference between the first two options.</string>
     <string name="send_all">Send all</string>
     <string name="send_updated">Send updated</string>
-    <string name="sync_with_goodreads">Synchronize with goodreads</string>
     <string name="cover_options_cc_ellipsis">Cover Options&#8230;</string>
     <string name="show_events_ellipsis">Show events&#8230;</string>
     <string name="hint_authors_book_may_appear_more_than_once">If shown for every author, a single book may appear more than once in a list. In such a case deleting one of those books will delete all instances from the list.</string>
@@ -468,18 +506,6 @@
     <string name="task_has_been_queued_in_background">Task has been queued in background</string>
     <string name="hint_startup_screen">This is the standard BookCatalogue startup screen. If you prefer, you can startup directly in \'My Books\'; the preferred startup screen can be changed in preferences.</string>
     <string name="upgrading_ellipsis">Upgrading&#8230;</string>
-    <string name="explain_goodreads_no_isbn">The selected book does not have an ISBN; it is not possible to automatically synchronize it with goodreads. 
-    									The simplest solution is to:
-    									\n\n(1) delete the book from BookCatalogue
-    									\n\n(2) add the book in goodreads manually via their web interface
-    									\n\n(3) Synchronize with goodreads
-    									\n\nThis will result in the book being recreated in BookCatalogue and the two will remain linked from that point onwards.</string>
-    <string name="explain_goodreads_no_match">The ISBN of the selected book could not be found on goodreads. There are two possible causes for this: 
-    									either the data for the book is wrong (you should check the ISBN), or the book is not in goodreads. 
-    									\n\nIf you make any changes to the data in BookCatalogue, just press the \'Retry\' button and check to see if the 
-    									resulting background task succeeds. 
-    									\n\nIf the data looks correct and the book is still not found, then a book with that ISBN needs to be added to goodreads manually
-										via their web site. Once that is done, you can retry sending the book.</string>
     <string name="read_amp_unread">Read &amp; Unread</string>
     <string name="loaned">Loaned</string>
     <string name="publication_year">Publication Year</string>
@@ -886,7 +912,6 @@ and you can edit the book via the options menu using the menu button or overflow
     </plurals>
 
 
-
     <!-- Short progress message -->
     <string name="searching_directory_ellipsis">Searching directory&#8230;</string>
 
@@ -920,7 +945,7 @@ and you can edit the book via the options menu using the menu button or overflow
     <string name="zxing_scanner">Zxing Scanner</string>
 
     <!-- Heading in 'about' dialog -->
-    <string name="special_thanks_label">Special Thanks</string>
+    <string name="lbl_special_thanks">Special Thanks</string>
 
     <!-- End: Added/Updated in 5.1.0 -->
 
@@ -1086,6 +1111,8 @@ and you can edit the book via the options menu using the menu button or overflow
     <string name="search_site_cover_order">Cover Search Order</string>
     <string name="search_with_text">Search: %1$s</string>
     <string name="searching_isfdb">Searching ISFDB</string>
+    <string name="search_configuration_error">Search configuration error. Please open the Admin page and check your Search Site settings</string>
+
 
     <string name="title_reorder">a|A|an|An|the|The</string>
     <string name="internet_update_fields">Update Fields</string>
@@ -1097,6 +1124,12 @@ and you can edit the book via the options menu using the menu button or overflow
     <string name="content">Content</string>
     <string name="populate_anthology_titles">Automatically Populate (ISFDB only)</string>
     <string name="first_publication">First Publication</string>
+
+    <string name="network_timeout">timeout, please try again</string>
+    <string name="preferred_brief_message_tech">Brief Messages use:</string>
+    <string name="bm_snackbar">Snackbar</string>
+    <string name="bm_toast">Toast</string>
+
 
     <!-- End: Added/Updated in  [Next Version]  -->
 

@@ -81,7 +81,7 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:id="@+id/isbn_label"
+                        android:id="@+id/lbl_isbn"
                         style="@style/bookDetailLabel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -184,7 +184,9 @@
                 tools:ignore="ContentDescription" />
         </LinearLayout>
 
-        <!-- don't set padding on the toc. The toc height is calculated as needed -->
+        <!-- don't set padding on the toc. The toc height is calculated as needed
+        It's always visible, but often empty
+        -->
         <ListView
             android:id="@+id/toc"
             android:layout_width="match_parent"

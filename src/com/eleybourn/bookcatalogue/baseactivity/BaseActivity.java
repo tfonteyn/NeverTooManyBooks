@@ -1,6 +1,8 @@
 package com.eleybourn.bookcatalogue.baseactivity;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
@@ -11,22 +13,31 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
+import com.eleybourn.bookcatalogue.About;
+import com.eleybourn.bookcatalogue.Donate;
+import com.eleybourn.bookcatalogue.AdministrationFunctions;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.EditBookshelfListActivity;
+import com.eleybourn.bookcatalogue.Help;
+import com.eleybourn.bookcatalogue.PreferencesActivity;
 import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.UniqueId;
+import com.eleybourn.bookcatalogue.booklist.BooklistPreferencesActivity;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.searches.SearchCatalogue;
 
 /**
  * Base class for all (most) Activity's
  *
  * @author pjw
  */
-abstract public class BookCatalogueActivity extends AppCompatActivity
+abstract public class BaseActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     /** The side/navigation panel */
+    @Nullable
     private DrawerLayout mDrawerLayout;
-    @SuppressWarnings("FieldCanBeLocal")
     @Nullable
     private NavigationView mNavigationView;
 
@@ -38,12 +49,22 @@ abstract public class BookCatalogueActivity extends AppCompatActivity
     }
 
     @Override
+    @CallSuper
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
 
         setTheme(BookCatalogueApp.getThemeResId());
         super.onCreate(savedInstanceState);
 
-        int layoutId = getLayoutId();
+        int layoutId = 0;
+
+        Bundle extras = this.getIntent().getExtras();
+        if (extras != null) {
+            layoutId = extras.getInt(UniqueId.BKEY_LAYOUT, 0);
+        }
+        if (layoutId == 0) {
+            layoutId = getLayoutId();
+        }
+
         if (layoutId != 0) {
             setContentView(layoutId);
         }
@@ -54,8 +75,7 @@ abstract public class BookCatalogueActivity extends AppCompatActivity
          */
         setDrawerLayout((DrawerLayout)findViewById(R.id.drawer_layout));
 
-        final NavigationView navView = findViewById(R.id.nav_view);
-        setNavigationView(navView);
+        setNavigationView((NavigationView)findViewById(R.id.nav_view));
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         if (toolbar != null) {
@@ -77,41 +97,75 @@ abstract public class BookCatalogueActivity extends AppCompatActivity
     }
 
     private void setNavigationView(@Nullable final NavigationView navigationView) {
-        this.mNavigationView = navigationView;
+        mNavigationView = navigationView;
         if (mNavigationView != null) {
-            navigationView.setNavigationItemSelectedListener(this);
+            mNavigationView.setNavigationItemSelectedListener(this);
+        }
+    }
+
+    @SuppressWarnings("unused")
+    @Nullable
+    public NavigationView getNavigationView() {
+        return mNavigationView;
+    }
+
+    public void closeNavigationDrawer() {
+        if (mDrawerLayout != null) {
+            mDrawerLayout.closeDrawers();
         }
     }
 
     @Override
-    public boolean onNavigationItemSelected(@NonNull final MenuItem item) {
+    @CallSuper
+    public boolean onNavigationItemSelected(@NonNull final MenuItem menuItem) {
+        closeNavigationDrawer();
+
+        switch (menuItem.getItemId()) {
+            case R.id.nav_search:
+                startActivity(new Intent(this, SearchCatalogue.class));
+                return true;
+            case R.id.nav_manage_bookshelves:
+                startActivity(new Intent(this, EditBookshelfListActivity.class));
+                break;
+            case R.id.nav_booklist_prefs:
+                startActivity(new Intent(this, BooklistPreferencesActivity.class));
+                return true;
+            case R.id.nav_other_prefs:
+                startActivity(new Intent(this, PreferencesActivity.class));
+                return true;
+            case R.id.nav_admin:
+                startActivity(new Intent(this, AdministrationFunctions.class));
+                return true;
+            case R.id.nav_about:
+                startActivity(new Intent(this, About.class));
+                return true;
+            case R.id.nav_help:
+                startActivity(new Intent(this, Help.class));
+                return true;
+            case R.id.nav_donate:
+                startActivity(new Intent(this, Donate.class));
+                break;
+        }
+
         return false;
     }
 
     /**
      * @param drawerLayout  your custom one
      */
-    private void setDrawerLayout(@NonNull final DrawerLayout drawerLayout) {
+    private void setDrawerLayout(@Nullable final DrawerLayout drawerLayout) {
         this.mDrawerLayout = drawerLayout;
     }
 
-    /**
-     *
-     * @return  the drawer layout in use
-     */
-    protected DrawerLayout getDrawerLayout() {
-        return mDrawerLayout;
-    }
-
     @Override
+    @CallSuper
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         int itemId = item.getItemId();
         switch (itemId) {
             // Default handler for home icon
             case android.R.id.home:
-                DrawerLayout drawerLayout = getDrawerLayout();
-                if (drawerLayout != null) {
-                    drawerLayout.openDrawer(GravityCompat.START);
+                if (mDrawerLayout != null) {
+                    mDrawerLayout.openDrawer(GravityCompat.START);
                     return true;
                 }
                 finish();
@@ -127,6 +181,7 @@ abstract public class BookCatalogueActivity extends AppCompatActivity
      * When resuming, check and reload activity
      */
     @Override
+    @CallSuper
     protected void onResume() {
         updateLocaleIfChanged();
         updateThemeIfChanged();

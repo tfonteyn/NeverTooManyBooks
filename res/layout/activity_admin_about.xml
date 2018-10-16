@@ -56,7 +56,7 @@
                 android:layout_height="wrap_content"
                 android:paddingEnd="@dimen/padding_border"
                 android:paddingStart="@dimen/padding_border"
-                android:text="@string/website_lbl"
+                android:text="@string/lbl_website"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <TextView
@@ -69,7 +69,7 @@
                 android:layout_height="wrap_content"
                 android:paddingEnd="@dimen/padding_border"
                 android:paddingStart="@dimen/padding_border"
-                android:text="@string/sourcecode_label"
+                android:text="@string/lbl_sourcecode"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <TextView
@@ -82,7 +82,7 @@
                 android:layout_height="wrap_content"
                 android:paddingEnd="@dimen/padding_border"
                 android:paddingStart="@dimen/padding_border"
-                android:text="@string/contact_label"
+                android:text="@string/lbl_contacts"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <TextView
@@ -100,7 +100,7 @@
                 android:layout_height="wrap_content"
                 android:paddingEnd="@dimen/padding_border"
                 android:paddingStart="@dimen/padding_border"
-                android:text="@string/special_thanks_label"
+                android:text="@string/lbl_special_thanks"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <TextView

@@ -3,6 +3,7 @@ package com.eleybourn.bookcatalogue.dialogs;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.CallSuper;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -64,6 +65,7 @@ public class ImportTypeSelectionDialogFragment extends DialogFragment {
      * Ensure activity supports event
      */
     @Override
+    @CallSuper
     public void onAttach(Context context) {
         super.onAttach(context);
 
@@ -94,7 +96,7 @@ public class ImportTypeSelectionDialogFragment extends DialogFragment {
         mFile = new File(Objects.requireNonNull(getArguments().getString(UniqueId.BKEY_FILE_SPEC)));
 
         try {
-            BackupReader reader = BackupManager.readBackup(mFile);
+            BackupReader reader = BackupManager.readFrom(mFile);
             BackupInfo info = reader.getInfo();
             reader.close();
             mArchiveHasValidDates = info.getAppVersionCode() >= 152;
@@ -123,7 +125,7 @@ public class ImportTypeSelectionDialogFragment extends DialogFragment {
 
     private void handleClick(@NonNull final View v) {
         if (!mArchiveHasValidDates && v.getId() == R.id.new_and_changed_books_row) {
-            StandardDialogs.showQuickNotice(getActivity(), R.string.old_archive_blurb);
+            StandardDialogs.showBriefMessage(getActivity(), R.string.old_archive_blurb);
             //Snackbar.make(v, R.string.old_archive_blurb, Snackbar.LENGTH_LONG).show();
             return;
         }

@@ -108,9 +108,9 @@ public class XmlFilter {
      * Internal implementation of method to add a filter to a passed tree and return the matching XmlFilter.
      * This is called recursively to process the filter list.
      *
-     * @param root      Root XmlFilter object.
-     * @param depth     Recursion depth
-     * @param iterator  Names of tags to add to tree, if not present.
+     * @param root     Root XmlFilter object.
+     * @param depth    Recursion depth
+     * @param iterator Names of tags to add to tree, if not present.
      *
      * @return The filter matching the final tag name passed.
      */
@@ -214,7 +214,7 @@ public class XmlFilter {
     @NonNull
     public XmlFilter setEndAction(@NonNull final XmlHandler endAction, @Nullable final Object userArg) {
         if (mEndAction != null) {
-            throw new RuntimeException("End Action already set");
+            throw new IllegalStateException("End Action already set");
         }
         mEndAction = endAction;
         mEndArg = userArg;
@@ -236,7 +236,7 @@ public class XmlFilter {
     @NonNull
     public XmlFilter setStartAction(@NonNull final XmlHandler startAction, @Nullable final Object userArg) {
         if (mStartAction != null) {
-            throw new RuntimeException("Start Action already set");
+            throw new IllegalStateException("Start Action already set");
         }
         mStartAction = startAction;
         mStartArg = userArg;
@@ -286,7 +286,9 @@ public class XmlFilter {
         public final String preText;
         public String body;
         public XmlFilter filter;
-        @Nullable
+
+        @SuppressWarnings("NullableProblems")
+        @NonNull
         public Object userArg;
 
         public ElementContext() {

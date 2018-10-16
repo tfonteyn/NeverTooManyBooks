@@ -24,7 +24,6 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.BCPreferences;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
@@ -89,14 +88,13 @@ public class UpgradeMessageManager {
         final StringBuilder message = new StringBuilder();
 
         // See if we have a saved version id. If not, it's either a new install, or  an older install.
-        long lastVersion = BCPreferences.getInt(PREF_LAST_MESSAGE, 0);
+        long lastVersion = BookCatalogueApp.Prefs.getInt(PREF_LAST_MESSAGE, 0);
         if (lastVersion == 0) {
             // It's either a new install, or an install using old database-based message system
 
             // Up until version 98, messages were handled via the CatalogueDBAdapter object,
             // so create one and see if there is a message.
-            CatalogueDBAdapter tmpDb = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
-            try {
+            try (CatalogueDBAdapter tmpDb = new CatalogueDBAdapter(BookCatalogueApp.getAppContext())) {
                 // On new installs, there is no upgrade message
                 if (tmpDb.isNewInstall()) {
                     mMessage = "";
@@ -109,8 +107,6 @@ public class UpgradeMessageManager {
                 if (!DatabaseHelper.getMessage().isEmpty()) {
                     message.append("<p>").append(DatabaseHelper.getMessage()).append("</p>");
                 }
-            } finally {
-                tmpDb.close();
             }
         }
 
@@ -133,7 +129,7 @@ public class UpgradeMessageManager {
             Context context = BookCatalogueApp.getAppContext();
             int currVersion = context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionCode;
 
-            BCPreferences.setInt(PREF_LAST_MESSAGE, currVersion);
+            BookCatalogueApp.Prefs.putInt(PREF_LAST_MESSAGE, currVersion);
         } catch (NameNotFoundException e) {
             Logger.error(e, "Failed to get package version code");
         }

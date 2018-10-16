@@ -49,6 +49,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Represents a specific style of book list (eg. authors/series).
@@ -90,10 +91,6 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
     public static final int EXTRAS_THUMBNAIL_LARGE = (1 << 6);
     /** Extra book data to show at lowest level */
     public static final int EXTRAS_FORMAT = (1 << 7);
-
-    /** Extra book data to show at lowest level */
-    public static final int EXTRAS_ALL = EXTRAS_BOOKSHELVES | EXTRAS_LOCATION | EXTRAS_PUBLISHER
-            | EXTRAS_AUTHOR | EXTRAS_THUMBNAIL | EXTRAS_THUMBNAIL_LARGE | EXTRAS_FORMAT;
 
     static final int FILTER_YES = 1;
     static final int FILTER_NO = 2;
@@ -267,15 +264,19 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
         return mXtraLoanedFilter.getInt();
     }
 
+    /* the set Filter methods are meant for the build-in Styles */
     public void setReadFilter(@NonNull final Integer v) {
         mXtraReadFilter.set(v);
     }
+    @SuppressWarnings("unused")
     public void setSignedFilter(@NonNull final Integer v) {
         mXtraSignedFilter.set(v);
     }
+    @SuppressWarnings("unused")
     public void setAnthologyFilter(@NonNull final Integer v) {
         mXtraAnthologyFilter.set(v);
     }
+    @SuppressWarnings("unused")
     public void setLoanedFilter(@NonNull final Integer v) {
         mXtraLoanedFilter.set(v);
     }
@@ -502,7 +503,7 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
 
         // Save the current groups
         @SuppressLint("UseSparseArrays")
-        HashMap<Integer, BooklistGroup> oldGroups = new HashMap<>();
+        Map<Integer, BooklistGroup> oldGroups = new HashMap<>();
         for (BooklistGroup g : this) {
             oldGroups.put(g.kind, g);
         }
@@ -577,13 +578,16 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
         return mGroups.size();
     }
 
+    @SuppressWarnings("SameParameterValue")
     void setCondensed(final boolean condensed) {
         mCondensed.set(condensed);
     }
+    @SuppressWarnings("SameParameterValue")
     void setShowAuthor(final boolean show) {
         mXtraShowAuthor.set(show);
     }
 
+    @SuppressWarnings("SameParameterValue")
     void setShowThumbnails(final boolean show) {
         mXtraShowThumbnails.set(show);
     }

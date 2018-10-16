@@ -1,13 +1,16 @@
 package com.eleybourn.bookcatalogue;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.ContextMenu;
@@ -50,46 +53,41 @@ import java.util.List;
  *
  * @author n.silin
  */
-public abstract class BookDetailsAbstractFragment extends BookAbstractFragment {
+public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFragment {
 
+    public static final String PREF_USE_EXTERNAL_IMAGE_CROPPER = "App.UseExternalImageCropper";
+    public static final String PREF_CROP_FRAME_WHOLE_IMAGE = "App.CropFrameWholeImage";
+    /** Degrees by which to rotate images automatically */
+    public static final String PREF_AUTOROTATE_CAMERA_IMAGES = "App.AutorotateCameraImages";
+    public static final int PREF_AUTOROTATE_CAMERA_IMAGES_DEFAULT = 90;
     /** Counter used to prevent images being reused accidentally */
     private static int mTempImageCounter = 0;
-
     protected ImageUtils.ThumbSize mThumbSize;
-
+    /** convenience pointer to the prefs */
+    private SharedPreferences mPrefs;
     @Nullable
     private CoverBrowser mCoverBrowser = null;
-
     /** Used to display a hint if user rotates a camera image */
     private boolean mGotCameraImage = false;
-
     /** the cover image */
     private ImageView mCoverView;
 
     @Override
+    @CallSuper
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
+        // create the common 'Fields'
         super.onActivityCreated(savedInstanceState);
 
-        // See how big the display is and use that to set bitmap sizes
-        setThumbSize(getActivity());
+        mPrefs = getActivity().getSharedPreferences(BookCatalogueApp.APP_SHARED_PREFERENCES, Context.MODE_PRIVATE);
 
-        // add all fields.
+        // add the rest of the fields.
         initFields();
-
-        // need this in other parts
-        mCoverView = getView().findViewById(R.id.image);
-
-        //Set zooming by default on clicking on image
-        mCoverView.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                ImageUtils.showZoomedThumb(getActivity(), getCoverFile(mEditManager.getBook().getBookId()));
-            }
-        });
+        // and the cover image
+        initCoverImageField();
     }
 
     @Override
+    @CallSuper
     public void onPause() {
         Tracker.enterOnPause(this);
         super.onPause();
@@ -102,12 +100,130 @@ public abstract class BookDetailsAbstractFragment extends BookAbstractFragment {
         Tracker.exitOnPause(this);
     }
 
+    /**
+     * Add all book fields with corresponding validators. Note this is NOT where we set values.
+     */
+    @CallSuper
+    protected void initFields() {
+        /* Title has some post-processing on the text, to move leading 'A', 'The' etc to the end.
+         * While we could do it in a formatter, it it not really a display-oriented function and
+         * is handled in pre-processing in the database layer since it also needs to be applied
+         * to imported record etc.
+         * Or in short: nothing special here.
+         */
+        mFields.add(R.id.title, UniqueId.KEY_TITLE, null);
+
+        mFields.add(R.id.author, "", UniqueId.KEY_AUTHOR_FORMATTED, null);
+
+        mFields.add(R.id.format, UniqueId.KEY_BOOK_FORMAT, null);
+        mFields.add(R.id.genre, UniqueId.KEY_BOOK_GENRE, null);
+        mFields.add(R.id.isbn, UniqueId.KEY_BOOK_ISBN, null);
+        mFields.add(R.id.language, UniqueId.KEY_BOOK_LANGUAGE, null);
+        mFields.add(R.id.list_price, UniqueId.KEY_BOOK_LIST_PRICE, null);
+        mFields.add(R.id.pages, UniqueId.KEY_BOOK_PAGES, null);
+        mFields.add(R.id.series, UniqueId.KEY_SERIES_NAME, null);
+        mFields.add(R.id.description, UniqueId.KEY_DESCRIPTION, null).setShowHtml(true);
+        mFields.add(R.id.bookshelf, UniqueId.BKEY_BOOKSHELF_TEXT, null).doNoFetch = true; // Output-only field
+
+        mFields.add(R.id.signed, UniqueId.KEY_BOOK_SIGNED, null);
+    }
+
     @Override
+    @CallSuper
+    protected void onLoadBookDetails(@NonNull final Book book, final boolean setAllDone) {
+        super.onLoadBookDetails(book, setAllDone);
+        populateFields(book);
+    }
+
+    abstract protected void populateFields(@NonNull final Book book);
+
+    // yes, these 2 are not actually used from the base class. Just for a reminder.
+    abstract protected void populateAuthorListField(@NonNull final Book book);
+
+    abstract protected void populateSeriesListField(@NonNull final Book book);
+
+    /**
+     * Gets all bookshelves for the book from database and populate corresponding field with them.
+     *
+     * @param field to populate with the shelves
+     * @param book  from which the shelves will be taken
+     *
+     * @return <tt>true</tt>if populated, false otherwise
+     */
+    protected boolean populateBookshelves(@NonNull final Field field, @NonNull final Book book) {
+        // Display the selected bookshelves
+        String bookshelfText = book.getString(Book.BOOKSHELF_TEXT);
+        field.setValue(bookshelfText);
+        return !bookshelfText.isEmpty();
+    }
+
+
+    //<editor-fold desc="Cover init and menu handling">
+
+    private void initCoverImageField() {
+        // See how big the display is and use that to set bitmap sizes
+        initThumbSize(getActivity());
+
+        mFields.add(R.id.image, "", UniqueId.KEY_BOOK_THUMBNAIL, null);
+        initCoverImageContextMenu(mFields.getField(R.id.image));
+        // need this in other parts, so cache it.
+        mCoverView = getView().findViewById(R.id.image);
+
+        //Allow zooming by clicking on image
+        mCoverView.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                ImageUtils.showZoomedThumb(getActivity(), getCoverFile(getBook().getBookId()));
+            }
+        });
+    }
+    private void initCoverImageContextMenu(@NonNull final Field coverField) {
+        coverField.getView().setOnCreateContextMenuListener(new OnCreateContextMenuListener() {
+            @Override
+            @CallSuper
+            public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+                menu.add(Menu.NONE, R.id.MENU_DELETE_THUMB, 0, R.string.menu_delete_thumb)
+                        .setIcon(R.drawable.ic_mode_edit);
+
+                SubMenu replaceThumbnailSubmenu = menu.addSubMenu(Menu.NONE, R.id.SUBMENU_REPLACE_THUMB, 2, R.string.menu_replace_thumb);
+                replaceThumbnailSubmenu.setIcon(R.drawable.ic_find_replace);
+
+                replaceThumbnailSubmenu.add(Menu.NONE, R.id.MENU_ADD_THUMB_FROM_CAMERA, 1, R.string.menu_add_thumb_photo)
+                        .setIcon(R.drawable.ic_add_a_photo);
+                replaceThumbnailSubmenu.add(Menu.NONE, R.id.MENU_ADD_THUMB_FROM_GALLERY, 2, R.string.menu_add_thumb_gallery)
+                        .setIcon(R.drawable.ic_image);
+                replaceThumbnailSubmenu.add(Menu.NONE, R.id.MENU_ADD_THUMB_ALT_EDITIONS, 3, R.string.menu_thumb_alt_editions)
+                        .setIcon(R.drawable.ic_find_replace);
+
+                SubMenu rotateThumbnailSubmenu = menu.addSubMenu(Menu.NONE, R.id.SUBMENU_ROTATE_THUMB, 3, R.string.menu_rotate_thumb);
+                rotateThumbnailSubmenu.setIcon(R.drawable.ic_rotate_right);
+
+                rotateThumbnailSubmenu.add(Menu.NONE, R.id.MENU_ROTATE_THUMB_CW, 1, R.string.menu_rotate_thumb_cw)
+                        .setIcon(R.drawable.ic_rotate_right);
+                rotateThumbnailSubmenu.add(Menu.NONE, R.id.MENU_ROTATE_THUMB_CCW, 2, R.string.menu_rotate_thumb_ccw)
+                        .setIcon(R.drawable.ic_rotate_left);
+                rotateThumbnailSubmenu.add(Menu.NONE, R.id.MENU_ROTATE_THUMB_180, 3, R.string.menu_rotate_thumb_180)
+                        .setIcon(R.drawable.ic_swap_vert);
+                menu.add(Menu.NONE, R.id.MENU_CROP_THUMB, 4, R.string.menu_crop_thumb)
+                        .setIcon(R.drawable.ic_crop);
+            }
+        });
+    }
+    public void initThumbSize(@NonNull final Activity activity) {
+        mThumbSize = ImageUtils.getThumbSizes(activity);
+    }
+
+    /**
+     * Handle menu items for manipulating the Cover Image (thumbnail)
+     */
+    @Override
+    @CallSuper
     public boolean onContextItemSelected(@NonNull final MenuItem item) {
         Tracker.handleEvent(this, "Context Menu Item " + item.getItemId(), Tracker.States.Enter);
 
         try {
-            File thumbFile = getCoverFile(mEditManager.getBook().getBookId());
+            File thumbFile = getCoverFile(getBook().getBookId());
 
             switch (item.getItemId()) {
                 case R.id.MENU_DELETE_THUMB:
@@ -161,32 +277,34 @@ public abstract class BookDetailsAbstractFragment extends BookAbstractFragment {
     }
 
     @Override
+    @CallSuper
     public void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent intent) {
         Tracker.enterOnActivityResult(this, requestCode, resultCode);
+        super.onActivityResult(requestCode,resultCode,intent);
+
         try {
-            super.onActivityResult(requestCode, resultCode, intent);
             switch (requestCode) {
                 case UniqueId.ACTIVITY_REQUEST_CODE_ADD_THUMB_FROM_CAMERA:
                     if (resultCode == Activity.RESULT_OK && intent != null && intent.getExtras() != null) {
                         addCoverFromCamera(requestCode, resultCode, intent);
                     }
-                    return;
+                    break;
 
                 case UniqueId.ACTIVITY_REQUEST_CODE_ADD_THUMB_FROM_GALLERY:
                     if (resultCode == Activity.RESULT_OK) {
                         addCoverFromGallery(intent);
                     }
-                    return;
+                    break;
 
                 case UniqueId.ACTIVITY_REQUEST_CODE_CROP_RESULT_INTERNAL:
                 case UniqueId.ACTIVITY_REQUEST_CODE_CROP_RESULT_EXTERNAL: {
                     if (resultCode == Activity.RESULT_OK) {
                         File cropped = this.getCroppedTempCoverFile();
                         if (cropped.exists()) {
-                            File thumbFile = getCoverFile(mEditManager.getBook().getBookId());
+                            File thumbFile = getCoverFile(getBook().getBookId());
                             StorageUtils.renameFile(cropped, thumbFile);
                             // Update the ImageView with the new image
-                            setCoverImage(mEditManager.getBook().getBookId());
+                            setCoverImage(getBook().getBookId());
                         } else {
                             Tracker.handleEvent(this, "onActivityResult(" + requestCode + "," + resultCode + ") - result OK, no image file", Tracker.States.Running);
                         }
@@ -194,115 +312,17 @@ public abstract class BookDetailsAbstractFragment extends BookAbstractFragment {
                         Tracker.handleEvent(this, "onActivityResult(" + requestCode + "," + resultCode + ") - bad result", Tracker.States.Running);
                         StorageUtils.deleteFile(this.getCroppedTempCoverFile());
                     }
-                    return;
+                    break;
                 }
-
-                default:
-                    Logger.error("unknown result code");
             }
         } finally {
             Tracker.exitOnActivityResult(this, requestCode, resultCode);
         }
     }
 
-    /**
-     * Add all book fields with corresponding validators. Note this is NOT where we set values.
-     */
-    protected void initFields() {
-        /* Title has some post-processing on the text, to move leading 'A', 'The' etc to the end.
-         * While we could do it in a formatter, it it not really a display-oriented function and
-         * is handled in pre-processing in the database layer since it also needs to be applied
-         * to imported record etc.
-         */
-        mFields.add(R.id.title, UniqueId.KEY_TITLE, null);
+    //</editor-fold>
 
-        mFields.add(R.id.author, "", UniqueId.KEY_AUTHOR_FORMATTED, null);
-        mFields.add(R.id.format, UniqueId.KEY_BOOK_FORMAT, null);
-        mFields.add(R.id.genre, UniqueId.KEY_BOOK_GENRE, null);
-        mFields.add(R.id.isbn, UniqueId.KEY_ISBN, null);
-        mFields.add(R.id.language, UniqueId.KEY_BOOK_LANGUAGE, null);
-        mFields.add(R.id.list_price, UniqueId.KEY_BOOK_LIST_PRICE, null);
-        mFields.add(R.id.pages, UniqueId.KEY_BOOK_PAGES, null);
-        mFields.add(R.id.series, UniqueId.KEY_SERIES_NAME, UniqueId.KEY_SERIES_NAME, null);
-        mFields.add(R.id.signed, UniqueId.KEY_BOOK_SIGNED, null);
-
-
-        /* Anthology needs an accessor, see {@link Book#initValidators()}*/
-        if (getView().findViewById(R.id.anthology) != null) {
-            mFields.add(R.id.anthology, Book.IS_ANTHOLOGY, null);
-        }
-
-        if (getView().findViewById(R.id.publisher) != null) {
-            mFields.add(R.id.publisher, UniqueId.KEY_BOOK_PUBLISHER, null);
-        }
-
-        if (getView().findViewById(R.id.date_published) != null) {
-            mFields.add(R.id.date_published, UniqueId.KEY_BOOK_DATE_PUBLISHED, UniqueId.KEY_BOOK_DATE_PUBLISHED,
-                    null, new Fields.DateFieldFormatter());
-        }
-        //TOMF it's a date but we only used the year, do we need DateFieldFormatter ?
-        mFields.add(R.id.first_publication, UniqueId.KEY_FIRST_PUBLICATION, null);
-
-        mFields.add(R.id.description, UniqueId.KEY_DESCRIPTION, null)
-                .setShowHtml(true);
-
-        mFields.add(R.id.bookshelf, UniqueId.BKEY_BOOKSHELF_TEXT, null)
-                .doNoFetch = true; // Output-only field
-
-        mFields.add(R.id.image, "", UniqueId.BKEY_THUMBNAIL, null);
-        mFields.getField(R.id.image).getView().setOnCreateContextMenuListener(
-                new OnCreateContextMenuListener() {
-                    @Override
-                    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
-                        menu.add(Menu.NONE, R.id.MENU_DELETE_THUMB, 0, R.string.menu_delete_thumb)
-                                .setIcon(R.drawable.ic_mode_edit);
-
-                        SubMenu replaceThumbnailSubmenu = menu.addSubMenu(Menu.NONE, R.id.SUBMENU_REPLACE_THUMB, 2, R.string.menu_replace_thumb);
-                        replaceThumbnailSubmenu.setIcon(R.drawable.ic_find_replace);
-
-                        replaceThumbnailSubmenu.add(Menu.NONE, R.id.MENU_ADD_THUMB_FROM_CAMERA, 1, R.string.menu_add_thumb_photo)
-                                .setIcon(R.drawable.ic_add_a_photo);
-                        replaceThumbnailSubmenu.add(Menu.NONE, R.id.MENU_ADD_THUMB_FROM_GALLERY, 2, R.string.menu_add_thumb_gallery)
-                                .setIcon(R.drawable.ic_image);
-                        replaceThumbnailSubmenu.add(Menu.NONE, R.id.MENU_ADD_THUMB_ALT_EDITIONS, 3, R.string.menu_thumb_alt_editions)
-                                .setIcon(R.drawable.ic_find_replace);
-
-                        SubMenu rotateThumbnailSubmenu = menu.addSubMenu(Menu.NONE, R.id.SUBMENU_ROTATE_THUMB, 3, R.string.menu_rotate_thumb);
-                        rotateThumbnailSubmenu.setIcon(R.drawable.ic_rotate_right);
-
-                        rotateThumbnailSubmenu.add(Menu.NONE, R.id.MENU_ROTATE_THUMB_CW, 1, R.string.menu_rotate_thumb_cw)
-                                .setIcon(R.drawable.ic_rotate_right);
-                        rotateThumbnailSubmenu.add(Menu.NONE, R.id.MENU_ROTATE_THUMB_CCW, 2, R.string.menu_rotate_thumb_ccw)
-                                .setIcon(R.drawable.ic_rotate_left);
-                        rotateThumbnailSubmenu.add(Menu.NONE, R.id.MENU_ROTATE_THUMB_180, 3, R.string.menu_rotate_thumb_180)
-                                .setIcon(R.drawable.ic_swap_vert);
-                        menu.add(Menu.NONE, R.id.MENU_CROP_THUMB, 4, R.string.menu_crop_thumb)
-                                .setIcon(R.drawable.ic_crop);
-                    }
-                });
-    }
-
-
-    abstract protected void populateFields(@NonNull final Book book);
-
-    abstract protected void populateAuthorListField(@NonNull final Book book);
-
-    abstract protected void populateSeriesListField(@NonNull final Book book);
-
-    /**
-     * Gets all bookshelves for the book from database and populate corresponding field with them.
-     *
-     * @param field to populate with the shelves
-     * @param book  from which the shelves will be taken
-     *
-     * @return <tt>true</tt>if populated, false otherwise
-     */
-    protected boolean populateBookshelves(@NonNull final Field field, @NonNull final Book book) {
-        // Display the selected bookshelves
-        String bookshelfText = book.getString(Book.BOOKSHELF_TEXT);
-        field.setValue(bookshelfText);
-        return !bookshelfText.isEmpty();
-    }
+    //<editor-fold desc="Cover manipulation Operations">
 
     /**
      * Rotate the thumbnail
@@ -314,7 +334,7 @@ public abstract class BookDetailsAbstractFragment extends BookAbstractFragment {
         int attempts = 2;
         while (true) {
             try {
-                File thumbFile = getCoverFile(mEditManager.getBook().getBookId());
+                File thumbFile = getCoverFile(getBook().getBookId());
 
                 Bitmap bitmap = ImageUtils.fetchFileIntoImageView(null, thumbFile,
                         mThumbSize.zoomed * 2, mThumbSize.zoomed * 2, true);
@@ -351,9 +371,9 @@ public abstract class BookDetailsAbstractFragment extends BookAbstractFragment {
         }
     }
 
-    //<editor-fold desc="Cover crop Operations">
     private void cropCoverImage(@NonNull final File thumbFile) {
-        if (BCPreferences.getUseExternalImageCropper()) {
+        boolean external = mPrefs.getBoolean(PREF_USE_EXTERNAL_IMAGE_CROPPER, false);
+        if (external) {
             cropCoverImageExternal(thumbFile);
         } else {
             cropCoverImageInternal(thumbFile);
@@ -363,22 +383,26 @@ public abstract class BookDetailsAbstractFragment extends BookAbstractFragment {
     /**
      * Get a temp file for cropping output
      */
+    @NonNull
     private File getCroppedTempCoverFile() {
         return StorageUtils.getTempCoverFile("cropped", "" + mTempImageCounter);
     }
 
     private void cropCoverImageInternal(@NonNull final File thumbFile) {
+        boolean cropFrameWholeImage = mPrefs.getBoolean(PREF_CROP_FRAME_WHOLE_IMAGE, false);
+
         Intent intent = new Intent(getActivity(), CropImageActivity.class);
-        // here you have to pass absolute path to your file
+        // here you have to pass the absolute path to your file
         intent.putExtra(CropIImage.BKEY_IMAGE_PATH, thumbFile.getAbsolutePath());
         intent.putExtra(CropIImage.BKEY_SCALE, true);
         intent.putExtra(CropIImage.BKEY_NO_FACE_DETECTION, true);
-        intent.putExtra(CropIImage.BKEY_WHOLE_IMAGE, BCPreferences.getCropFrameWholeImage());
+        intent.putExtra(CropIImage.BKEY_WHOLE_IMAGE, cropFrameWholeImage);
+
         // Get and set the output file spec, and make sure it does not already exist.
         File cropped = this.getCroppedTempCoverFile();
         StorageUtils.deleteFile(cropped);
-
         intent.putExtra(CropIImage.BKEY_OUTPUT, cropped.getAbsolutePath());
+
         startActivityForResult(intent, UniqueId.ACTIVITY_REQUEST_CODE_CROP_RESULT_INTERNAL);
     }
 
@@ -393,22 +417,20 @@ public abstract class BookDetailsAbstractFragment extends BookAbstractFragment {
 
             // this will open any image file
             intent.setDataAndType(Uri.fromFile(new File(thumbFile.getAbsolutePath())), "image/*");
-
             intent.putExtra(CropIImage.BKEY_CROP, true);
             intent.putExtra(CropIImage.BKEY_SCALE, true);
             intent.putExtra(CropIImage.BKEY_NO_FACE_DETECTION, true);
-
             // True to return a Bitmap, false to directly save the cropped image
             intent.putExtra(CropIImage.BKEY_RETURN_DATA, false);
+
             // Save output image in uri
             File cropped = this.getCroppedTempCoverFile();
             StorageUtils.deleteFile(cropped);
             intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(new File(cropped.getAbsolutePath())));
 
             List<ResolveInfo> list = getActivity().getPackageManager().queryIntentActivities(intent, 0);
-            int size = list.size();
-            if (size == 0) {
-                StandardDialogs.showQuickNotice(getActivity(), R.string.no_external_crop_app);
+            if (list.size() == 0) {
+                StandardDialogs.showBriefMessage(getActivity(), R.string.no_external_crop_app);
             } else {
                 startActivityForResult(intent, UniqueId.ACTIVITY_REQUEST_CODE_CROP_RESULT_EXTERNAL);
             }
@@ -450,7 +472,7 @@ public abstract class BookDetailsAbstractFragment extends BookAbstractFragment {
         Bitmap bitmap = (Bitmap) intent.getExtras().get(CropIImage.BKEY_DATA);
         if (bitmap != null && bitmap.getWidth() > 0 && bitmap.getHeight() > 0) {
             Matrix m = new Matrix();
-            m.postRotate(BCPreferences.getAutoRotateCameraImagesInDegrees());
+            m.postRotate(mPrefs.getInt(PREF_AUTOROTATE_CAMERA_IMAGES, PREF_AUTOROTATE_CAMERA_IMAGES_DEFAULT));
             bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), m, true);
 
             File cameraFile = StorageUtils.getTempCoverFile("camera", "" + mTempImageCounter);
@@ -488,22 +510,22 @@ public abstract class BookDetailsAbstractFragment extends BookAbstractFragment {
             // If no 'content' scheme, then use the content resolver.
             try {
                 InputStream in = getContext().getContentResolver().openInputStream(selectedImageUri);
-                imageOk = StorageUtils.saveInputStreamToFile(in, getCoverFile(mEditManager.getBook().getBookId()));
+                imageOk = StorageUtils.saveInputStreamToFile(in, getCoverFile(getBook().getBookId()));
             } catch (FileNotFoundException e) {
                 Logger.error(e, "Unable to copy content to file");
             }
             if (imageOk) {
                 // Update the ImageView with the new image
-                setCoverImage(mEditManager.getBook().getBookId());
+                setCoverImage(getBook().getBookId());
             } else {
                 String s = getString(R.string.could_not_copy_image) + ". " + getString(R.string.if_the_problem_persists);
-                StandardDialogs.showQuickNotice(this.getActivity(), s);
+                StandardDialogs.showBriefMessage(this.getActivity(), s);
             }
         } else {
             /* Deal with the case where the chooser returns a null intent. This seems to happen
              * when the filename is not properly understood by the choose (eg. an apostrophe in
              * the file name confuses ES File Explorer in the current version as of 23-Sep-2012. */
-            StandardDialogs.showQuickNotice(this.getActivity(), R.string.could_not_copy_image);
+            StandardDialogs.showBriefMessage(this.getActivity(), R.string.could_not_copy_image);
         }
     }
 
@@ -516,12 +538,12 @@ public abstract class BookDetailsAbstractFragment extends BookAbstractFragment {
                 public void onImageSelected(@NonNull final String fileSpec) {
                     if (mCoverBrowser != null) {
                         // Get the current file
-                        File bookFile = getCoverFile(mEditManager.getBook().getBookId());
+                        File bookFile = getCoverFile(getBook().getBookId());
                         File newFile = new File(fileSpec);
                         // Overwrite with new file
                         StorageUtils.renameFile(newFile, bookFile);
                         // Update the ImageView with the new image
-                        setCoverImage(mEditManager.getBook().getBookId());
+                        setCoverImage(getBook().getBookId());
                         mCoverBrowser.dismiss();
                         mCoverBrowser = null;
                     }
@@ -530,23 +552,20 @@ public abstract class BookDetailsAbstractFragment extends BookAbstractFragment {
             mCoverBrowser.showEditionCovers();
         } else {
             //Snackbar.make(isbnField.getView(), R.string.editions_require_isbn, Snackbar.LENGTH_LONG).show();
-            StandardDialogs.showQuickNotice(getActivity(), R.string.editions_require_isbn);
+            StandardDialogs.showBriefMessage(getActivity(), R.string.editions_require_isbn);
         }
     }
 
     //</editor-fold>
 
-    public void setThumbSize(@NonNull final Activity activity) {
-        mThumbSize = ImageUtils.getThumbSizes(activity);
-    }
-
+    //<editor-fold desc="Cover File operations">
 
     /**
      * Delete the provided thumbnail
      */
     private void deleteCoverFile() {
         try {
-            File thumbFile = getCoverFile(mEditManager.getBook().getBookId());
+            File thumbFile = getCoverFile(getBook().getBookId());
             StorageUtils.deleteFile(thumbFile);
         } catch (Exception e) {
             Logger.error(e);
@@ -558,10 +577,10 @@ public abstract class BookDetailsAbstractFragment extends BookAbstractFragment {
      * Ensure that the cached thumbnails for this book are deleted (if present)
      */
     private void invalidateCachedThumbnail() {
-        final long bookId = mEditManager.getBook().getBookId();
+        final long bookId = getBook().getBookId();
         if (bookId != 0) {
-            try {
-                CoversDbHelper.getInstance(getContext()).deleteBookCover(mDb.getBookUuid(bookId));
+            try (CoversDbHelper coversDbHelper = CoversDbHelper.getInstance(getContext())) {
+                coversDbHelper.deleteBookCover(mDb.getBookUuid(bookId));
             } catch (Exception e) {
                 Logger.error(e, "Error cleaning up cached cover images");
             }
@@ -580,6 +599,5 @@ public abstract class BookDetailsAbstractFragment extends BookAbstractFragment {
             return StorageUtils.getCoverFile(mDb.getBookUuid(bookId));
         }
     }
-
-
+    //</editor-fold>
 }

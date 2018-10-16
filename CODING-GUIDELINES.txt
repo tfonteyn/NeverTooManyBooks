@@ -28,6 +28,13 @@ Small notes in addition:
 
   No doubt some places do a trim which is not really needed, something for a rainy day.
 
+* checkable Buttons:
+    * CheckBox, RadioButton, Switch, ToggleButton extend CompoundButton, implements Checkable
+    * CheckedTextView extends TextView, implements Checkable
+
+    Use 'CompoundButton' and/or 'Checkable' when possible.
+    This leaves the layout flexible to choose a different type.
+
 
 * pedantic but I hope polite request:
   Single character variables names are best left to BASIC style from the 1980's

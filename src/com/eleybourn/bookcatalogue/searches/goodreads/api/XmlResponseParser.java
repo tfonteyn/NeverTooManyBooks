@@ -20,6 +20,7 @@
 
 package com.eleybourn.bookcatalogue.searches.goodreads.api;
 
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.searches.goodreads.api.XmlFilter.ElementContext;
@@ -61,6 +62,7 @@ public class XmlResponseParser extends DefaultHandler {
      * Gather inter-tag text
      */
     @Override
+    @CallSuper
     public void characters(@NonNull final char[] ch, final int start, final int length) throws SAXException {
         super.characters(ch, start, length);
         mBuilder.append(ch, start, length);
@@ -70,6 +72,7 @@ public class XmlResponseParser extends DefaultHandler {
      * Handle a new tag.
      */
     @Override
+    @CallSuper
     public void startElement(@NonNull final String uri,
                              @NonNull final String localName,
                              @NonNull final String name,
@@ -104,6 +107,7 @@ public class XmlResponseParser extends DefaultHandler {
      * Handle the end of the current tag
      */
     @Override
+    @CallSuper
     public void endElement(@NonNull final String uri, @NonNull final String localName, @NonNull final String name) throws SAXException {
         super.endElement(uri, localName, name);
 
@@ -111,7 +115,7 @@ public class XmlResponseParser extends DefaultHandler {
         ElementContext thisElement = mParents.remove(mParents.size() - 1);
         // Minor paranoia. Make sure name matches. Total waste of time, right?
         if (!localName.equals(thisElement.localName)) {
-            throw new RuntimeException("End element '" + localName + "' does not match start element '" + thisElement.localName + "'");
+            throw new IllegalStateException("End element '" + localName + "' does not match start element '" + thisElement.localName + "'");
         }
 
         // Save the text that appeared inside this tag (but not inside inner tags)

@@ -30,6 +30,7 @@ import com.eleybourn.bookcatalogue.searches.goodreads.api.XmlFilter;
 import com.eleybourn.bookcatalogue.searches.goodreads.api.XmlFilter.ElementContext;
 import com.eleybourn.bookcatalogue.searches.goodreads.api.XmlFilter.XmlHandler;
 import com.eleybourn.bookcatalogue.searches.goodreads.api.XmlResponseParser;
+import com.eleybourn.bookcatalogue.utils.RTE;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -69,7 +70,8 @@ public class BackupUtils {
     /**
      * Write preferences to an XML stream.
      */
-    public static void preferencesToXml(@NonNull final BufferedWriter out, @NonNull final SharedPreferences prefs) throws IOException {
+    public static void preferencesToXml(@NonNull final BufferedWriter out,
+                                        @NonNull final SharedPreferences prefs) throws IOException {
         final PreferencesAccessor a = new PreferencesAccessor(prefs);
         collectionToXml(out, a);
     }
@@ -77,7 +79,8 @@ public class BackupUtils {
     /**
      * Read preferences from an XML stream.
      */
-    public static void preferencesFromXml(@NonNull final BufferedReader in, @NonNull final SharedPreferences prefs) throws IOException {
+    public static void preferencesFromXml(@NonNull final BufferedReader in,
+                                          @NonNull final SharedPreferences prefs) throws IOException {
         final PreferencesAccessor a = new PreferencesAccessor(prefs);
         a.beginEdit();
         collectionFromXml(in, a);
@@ -87,7 +90,8 @@ public class BackupUtils {
     /**
      * Write Bundle to an XML stream.
      */
-    public static void bundleToXml(@NonNull final BufferedWriter out, @NonNull final Bundle bundle) throws IOException {
+    public static void bundleToXml(@NonNull final BufferedWriter out,
+                                   @NonNull final Bundle bundle) throws IOException {
         final BundleAccessor a = new BundleAccessor(bundle);
         collectionToXml(out, a);
     }
@@ -106,37 +110,40 @@ public class BackupUtils {
     /**
      * Internal routine to send the passed CollectionAccessor data to an XML file.
      */
-    private static void collectionToXml(@NonNull final BufferedWriter out, @NonNull final CollectionAccessor<String> col) throws IOException {
+    private static void collectionToXml(@NonNull final BufferedWriter out,
+                                        @NonNull final CollectionAccessor<String> col) throws IOException {
         out.append("<" + COLLECTION + ">\n");
         for (String key : col.keySet()) {
             final String type;
             final String value;
-            Object o = col.get(key);
-            if (o instanceof Integer) {
+            Object object = col.get(key);
+            if (object instanceof Integer) {
                 type = BackupUtils.TYPE_INTEGER;
-                value = o.toString();
-            } else if (o instanceof Long) {
+                value = object.toString();
+            } else if (object instanceof Long) {
                 type = BackupUtils.TYPE_LONG;
-                value = o.toString();
-            } else if (o instanceof Float) {
+                value = object.toString();
+            } else if (object instanceof Float) {
                 type = BackupUtils.TYPE_FLOAT;
-                value = o.toString();
-            } else if (o instanceof Double) {
+                value = object.toString();
+            } else if (object instanceof Double) {
                 type = BackupUtils.TYPE_DOUBLE;
-                value = o.toString();
-            } else if (o instanceof String) {
+                value = object.toString();
+            } else if (object instanceof String) {
                 type = BackupUtils.TYPE_STRING;
-                value = o.toString();
-            } else if (o instanceof Boolean) {
+                value = object.toString();
+            } else if (object instanceof Boolean) {
                 type = BackupUtils.TYPE_BOOLEAN;
-                value = o.toString();
-            } else if (o instanceof Serializable) {
+                value = object.toString();
+            } else if (object instanceof Serializable) {
                 type = BackupUtils.TYPE_SERIALIZABLE;
-                value = Base64.encodeObject((Serializable) o);
+                value = Base64.encodeObject((Serializable) object);
             } else {
-                throw new RuntimeException("Unable write data of type '" + o.getClass().getCanonicalName() + "' to XML");
+                throw new RTE.IllegalTypeException(object.getClass().getCanonicalName());
             }
-            out.append("<item name=\"").append(key).append("\" type=\"").append(type).append("\">").append(value).append("</item>\n");
+            out.append("<item name=\"").append(key).append("\" type=\"").append(type).append("\">")
+                    .append(value)
+                    .append("</item>\n");
         }
         out.append("</" + COLLECTION + ">\n");
     }
@@ -281,7 +288,6 @@ public class BackupUtils {
         @NonNull
         final SharedPreferences mPrefs;
         final Map<String, ?> mMap;
-        @Nullable
         Editor mEditor;
 
         PreferencesAccessor(@NonNull final SharedPreferences prefs) {
@@ -295,7 +301,7 @@ public class BackupUtils {
         }
 
         void endEdit() {
-            mEditor.commit();
+            mEditor.apply();
             mEditor = null;
         }
 
@@ -306,6 +312,7 @@ public class BackupUtils {
         }
 
         @Override
+        @Nullable
         public Object get(@NonNull final String key) {
             return mMap.get(key);
         }
@@ -330,7 +337,7 @@ public class BackupUtils {
                     mEditor.putBoolean(key, Boolean.parseBoolean(value));
                     break;
                 default:
-                    throw new RuntimeException("Unable write data of type '" + type + "' to preferences");
+                    throw new RTE.IllegalTypeException(type);
             }
         }
     }

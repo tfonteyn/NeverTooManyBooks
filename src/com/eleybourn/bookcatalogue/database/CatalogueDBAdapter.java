@@ -196,7 +196,7 @@ import static com.eleybourn.bookcatalogue.database.DatabaseHelper.COLLATION;
  *
  * ENHANCE: Use date_added to add 'Recent Acquisitions' virtual shelf; need to resolve how this may relate to date_purchased and 'I own this book'...
  */
-public class CatalogueDBAdapter {
+public class CatalogueDBAdapter implements AutoCloseable {
 
     /**
      * Options indicating the UPDATE_DATE field from the bundle should be trusted.
@@ -224,7 +224,7 @@ public class CatalogueDBAdapter {
 
     /** Static Factory object to create the custom cursor */
     @NonNull
-    private static final CursorFactory mBooksFactory = new CursorFactory() {
+    private static final CursorFactory mBooksCursorFactory = new CursorFactory() {
         @Override
         public Cursor newCursor(
                 final SQLiteDatabase db,
@@ -788,18 +788,16 @@ public class CatalogueDBAdapter {
         mGetBookAnthologyTitleHighestPositionByBookIdStmt.bindLong(1, bookId);
         return mGetBookAnthologyTitleHighestPositionByBookIdStmt.simpleQueryForLongOrZero();
     }
-    //endregion
 
-    //region Author
 
     /**
      * Return all the anthology titles and authors recorded for book
      *
-     * @param bookId id of book to retrieve
+     * @param bookId to retrieve
      *
      * @return Cursor containing all records, if any
      *
-     * V83
+     * @since 83
      */
     @NonNull
     public Cursor fetchAnthologyTitlesByBookId(final long bookId) {
@@ -827,7 +825,39 @@ public class CatalogueDBAdapter {
         }
         return mSyncedDb.rawQuery(sql, new String[]{Long.toString(bookId)});
     }
+    /**
+     * Return all the anthology titles and authors recorded for book
+     *
+     * @param authorId to retrieve
+     *
+     * @return Cursor containing all records, if any
+     *
+     * @since 83
+     */
+    @NonNull
+    public Cursor fetchAnthologyTitlesByAuthorId(final long authorId) {
+        String sql = mSql.get("fetchAnthologyTitlesByAuthorId");
+        if (sql == null) {
+            sql = "SELECT " +
+                    TBL_ANTHOLOGY.dotAs(DOM_ID) + "," +
+                    TBL_ANTHOLOGY.dotAs(DOM_TITLE) + "," +
+                    TBL_ANTHOLOGY.dotAs(DOM_FIRST_PUBLICATION) + "," +
 
+                    TBL_BOOK_ANTHOLOGY.dotAs(DOM_BOOK_ID) + "," +
+                    TBL_BOOK_ANTHOLOGY.dotAs(DOM_BOOK_ANTHOLOGY_POSITION) +
+
+                    " FROM " + TBL_ANTHOLOGY.ref() + TBL_ANTHOLOGY.join(TBL_BOOK_ANTHOLOGY) +
+
+                    " WHERE " + TBL_ANTHOLOGY.dot(DOM_AUTHOR_ID) + "=?" +
+
+                    " ORDER BY " + TBL_ANTHOLOGY.dot(DOM_TITLE);
+            mSql.put("fetchAnthologyTitlesByAuthorId", sql);
+        }
+        return mSyncedDb.rawQuery(sql, new String[]{Long.toString(authorId)});
+    }
+    //endregion
+
+    //region Author
     /**
      * Create a new author in the database
      *
@@ -1022,6 +1052,34 @@ public class CatalogueDBAdapter {
     }
 
     /**
+     * @param author to retrieve
+     *
+     * @return list of AnthologyTitle for this author
+     */
+    @NonNull
+    public ArrayList<AnthologyTitle> getAnthologyTitleListByAuthor(final Author author) {
+        ArrayList<AnthologyTitle> list = new ArrayList<>();
+        try (Cursor cursor = this.fetchAnthologyTitlesByAuthorId(author.id)) {
+            if (cursor.getCount() == 0) {
+                return list;
+            }
+
+            final int titleCol = cursor.getColumnIndex(DOM_TITLE.name);
+            final int pubDateCol = cursor.getColumnIndex(DOM_FIRST_PUBLICATION.name);
+
+            final int bookIdCol = cursor.getColumnIndex(DOM_BOOK_ID.name);
+            final int bookPositionCol = cursor.getColumnIndex(DOM_BOOK_ANTHOLOGY_POSITION.name);
+
+            while (cursor.moveToNext()) {
+                AnthologyTitle title = new AnthologyTitle(author, cursor.getString(titleCol), cursor.getString(pubDateCol));
+                title.setBookId(cursor.getLong(bookIdCol));
+                title.setPosition(cursor.getLong(bookPositionCol));
+                list.add(title);
+            }
+        }
+        return list;
+    }
+    /**
      * Return a Cursor over the list of all books in the database
      *
      * @return Cursor over all notes
@@ -1204,20 +1262,11 @@ public class CatalogueDBAdapter {
             ArrayList<AnthologyTitle> anthologyTitles = book.getContentList();
             if (anthologyTitles.size() > 0) {
                 // definitively an anthology, overrule whatever the KEY_ANTHOLOGY_BITMASK was.
-                book.putInt(UniqueId.KEY_ANTHOLOGY_BITMASK, DOM_ANTHOLOGY_SINGLE_AUTHOR);
-
-                // check if its all the same author or not
-                if (anthologyTitles.size() > 1) {
-                    boolean sameAuthor;
-                    Author author = anthologyTitles.get(0).getAuthor();
-                    for (AnthologyTitle t : anthologyTitles) { // yes, we check 0 twice.. oh well.
-                        sameAuthor = author.equals(t.getAuthor());
-                        if (!sameAuthor) {
-                            book.putInt(UniqueId.KEY_ANTHOLOGY_BITMASK, DOM_ANTHOLOGY_MULTIPLE_AUTHORS);
-                            break;
-                        }
-                    }
+                int type = DOM_ANTHOLOGY_SINGLE_AUTHOR;
+                if (AnthologyTitle.isSingleAuthor(anthologyTitles)) {
+                    type = type ^ DOM_ANTHOLOGY_MULTIPLE_AUTHORS;
                 }
+                book.putInt(UniqueId.KEY_ANTHOLOGY_BITMASK, type);
             }
         }
 
@@ -1229,7 +1278,7 @@ public class CatalogueDBAdapter {
                 UniqueId.KEY_BOOK_READ,
                 UniqueId.KEY_BOOK_SIGNED,
                 UniqueId.KEY_BOOK_DATE_ADDED,
-                UniqueId.KEY_GOODREADS_LAST_SYNC_DATE,
+                UniqueId.KEY_BOOK_GOODREADS_LAST_SYNC_DATE,
                 UniqueId.KEY_LAST_UPDATE_DATE}) {
             if (book.containsKey(name)) {
                 Object o = book.get(name);
@@ -1529,7 +1578,7 @@ public class CatalogueDBAdapter {
             insertOrUpdateBookAnthologyAndAnthologyTitles(bookId, book.getContentList(), false);
         }
 
-        if (book.containsKey(UniqueId.KEY_LOANED_TO) && !book.get(UniqueId.KEY_LOANED_TO).toString().isEmpty()) {
+        if (book.containsKey(UniqueId.KEY_LOAN_LOANED_TO) && !book.get(UniqueId.KEY_LOAN_LOANED_TO).toString().isEmpty()) {
             deleteLoan(bookId, false);
             insertLoan(book, false); // don't care about insert failures really
         }
@@ -1716,7 +1765,7 @@ public class CatalogueDBAdapter {
 
         // The list MAY contain duplicates (eg. from Internet lookups of multiple
         // sources), so we track them in a hash map
-        final HashMap<String, Boolean> idHash = new HashMap<>();
+        final Map<String, Boolean> idHash = new HashMap<>();
         int pos = 0;
         for (Series entry : series) {
             long seriesId = 0;
@@ -1765,12 +1814,12 @@ public class CatalogueDBAdapter {
 
         // remove all links between Book and AnthologyTitle's
         int rowsAffected = deleteAnthologyTitlesByBookId(bookId, false);
-        if (BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.TMP_ANTHOLOGY && BuildConfig.DEBUG) {
             Logger.info("deleteAnthologyTitlesByBookId: " + rowsAffected);
         }
         if (list.size() > 0) {
             for (AnthologyTitle anthologyTitle : list) {
-                if (BuildConfig.DEBUG) {
+                if (DEBUG_SWITCHES.TMP_ANTHOLOGY && BuildConfig.DEBUG) {
                     Logger.info("Adding AnthologyTitlesByBookId: " + anthologyTitle);
                 }
                 long authorId = getOrInsertAuthorId(anthologyTitle.getAuthor());
@@ -1778,7 +1827,7 @@ public class CatalogueDBAdapter {
                 long anthologyId = insertOrUpdateAnthologyTitle(authorId, anthologyTitle.getTitle(), anthologyTitle.getFirstPublication());
                 // create the book<->anthologyTitle link
                 long baId = insertOrUpdateBookAnthology(anthologyId, bookId, false);
-                if (BuildConfig.DEBUG) {
+                if (DEBUG_SWITCHES.TMP_ANTHOLOGY && BuildConfig.DEBUG) {
                     Logger.info("     authorId   : " + authorId);
                     Logger.info("     anthologyId: " + anthologyId);
                     Logger.info("     baId       : " + baId);
@@ -2038,7 +2087,7 @@ public class CatalogueDBAdapter {
      * @return list of AnthologyTitle for this book
      */
     @NonNull
-    public ArrayList<AnthologyTitle> getBookAnthologyTitleList(final long bookId) {
+    public ArrayList<AnthologyTitle> getAnthologyTitleListByBook(final long bookId) {
         ArrayList<AnthologyTitle> list = new ArrayList<>();
         try (Cursor cursor = this.fetchAnthologyTitlesByBookId(bookId)) {
             if (cursor.getCount() == 0) {
@@ -2048,8 +2097,11 @@ public class CatalogueDBAdapter {
             final int familyNameCol = cursor.getColumnIndex(DOM_AUTHOR_FAMILY_NAME.name);
             final int givenNameCol = cursor.getColumnIndex(DOM_AUTHOR_GIVEN_NAMES.name);
             final int authorIdCol = cursor.getColumnIndex(DOM_AUTHOR_ID.name);
+
             final int titleCol = cursor.getColumnIndex(DOM_TITLE.name);
             final int pubDateCol = cursor.getColumnIndex(DOM_FIRST_PUBLICATION.name);
+
+            final int positionCol = cursor.getColumnIndex(DOM_BOOK_ANTHOLOGY_POSITION.name);
 
             while (cursor.moveToNext()) {
                 Author author = new Author(
@@ -2058,6 +2110,7 @@ public class CatalogueDBAdapter {
                         cursor.getString(givenNameCol));
                 AnthologyTitle title = new AnthologyTitle(author, cursor.getString(titleCol), cursor.getString(pubDateCol));
                 title.setBookId(bookId);
+                title.setPosition(positionCol);
                 list.add(title);
             }
         }
@@ -2197,7 +2250,7 @@ public class CatalogueDBAdapter {
             // Get author, series, bookshelf and anthology title lists
             book.setAuthorList(getBookAuthorList(bookId));
             book.setSeriesList(getBookSeriesList(bookId));
-            book.setContentList(getBookAnthologyTitleList(bookId));
+            book.setContentList(getAnthologyTitleListByBook(bookId));
 
             book.setBookshelfList(getBookshelvesByBookIdAsStringList(bookId));
             return book;
@@ -3168,7 +3221,7 @@ public class CatalogueDBAdapter {
      */
     @NonNull
     private BooksCursor fetchBooks(@NonNull final String sql, @NonNull final String[] selectionArgs) {
-        return (BooksCursor) mSyncedDb.rawQueryWithFactory(mBooksFactory, sql, selectionArgs, "");
+        return (BooksCursor) mSyncedDb.rawQueryWithFactory(mBooksCursorFactory, sql, selectionArgs, "");
     }
 
     /**
@@ -3293,6 +3346,7 @@ public class CatalogueDBAdapter {
     /**
      * Generic function to close the database
      */
+    @Override
     public void close() {
 
         if (!mCloseWasCalled) {
@@ -3515,6 +3569,7 @@ public class CatalogueDBAdapter {
         try {
             long t0;
             if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
+                //noinspection UnusedAssignment
                 t0 = System.currentTimeMillis();
             }
 
@@ -3554,6 +3609,7 @@ public class CatalogueDBAdapter {
         try {
             long t0;
             if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
+                //noinspection UnusedAssignment
                 t0 = System.currentTimeMillis();
             }
 
@@ -3592,6 +3648,7 @@ public class CatalogueDBAdapter {
         try {
             long t0;
             if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
+                //noinspection UnusedAssignment
                 t0 = System.currentTimeMillis();
             }
             if (mDeleteFtsStmt == null) {
@@ -3619,6 +3676,7 @@ public class CatalogueDBAdapter {
 
         long t0;
         if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
+            //noinspection UnusedAssignment
             t0 = System.currentTimeMillis();
         }
         boolean gotError = false;

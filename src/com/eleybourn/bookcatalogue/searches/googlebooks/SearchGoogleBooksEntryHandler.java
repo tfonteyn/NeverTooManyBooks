@@ -21,6 +21,7 @@
 package com.eleybourn.bookcatalogue.searches.googlebooks;
 
 import android.os.Bundle;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.UniqueId;
@@ -131,6 +132,7 @@ class SearchGoogleBooksEntryHandler extends DefaultHandler {
     }
 
     @Override
+    @CallSuper
     public void characters(@NonNull final char[] ch, final int start, final int length) throws SAXException {
         super.characters(ch, start, length);
         builder.append(ch, start, length);
@@ -143,6 +145,7 @@ class SearchGoogleBooksEntryHandler extends DefaultHandler {
     }
 
     @Override
+    @CallSuper
     public void endElement(@NonNull final String uri,
                            @NonNull final String localName,
                            @NonNull final String name) throws SAXException {
@@ -157,8 +160,8 @@ class SearchGoogleBooksEntryHandler extends DefaultHandler {
                 String tmp = builder.toString();
                 if (tmp.indexOf("ISBN:") == 0) {
                     tmp = tmp.substring(5);
-                    if (!mValues.containsKey(UniqueId.KEY_ISBN) || tmp.length() > mValues.getString(UniqueId.KEY_ISBN).length()) {
-                        mValues.putString(UniqueId.KEY_ISBN, tmp);
+                    if (!mValues.containsKey(UniqueId.KEY_BOOK_ISBN) || tmp.length() > mValues.getString(UniqueId.KEY_BOOK_ISBN).length()) {
+                        mValues.putString(UniqueId.KEY_BOOK_ISBN, tmp);
                     }
                 }
                 break;
@@ -199,12 +202,14 @@ class SearchGoogleBooksEntryHandler extends DefaultHandler {
     }
 
     @Override
+    @CallSuper
     public void startDocument() throws SAXException {
         super.startDocument();
         builder = new StringBuilder();
     }
 
     @Override
+    @CallSuper
     public void startElement(@NonNull final String uri,
                              @NonNull final String localName,
                              @NonNull final String name,
@@ -215,7 +220,7 @@ class SearchGoogleBooksEntryHandler extends DefaultHandler {
                 String thumbnail = attributes.getValue("", "href");
                 String fileSpec = ImageUtils.saveThumbnailFromUrl(thumbnail, "_GB");
                 if (!fileSpec.isEmpty()) {
-                    ArrayUtils.addOrAppend(mValues, UniqueId.BKEY_THUMBNAIL_USCORE, fileSpec);
+                    ArrayUtils.addOrAppend(mValues, UniqueId.BKEY_THUMBNAIL_FILES_SPEC, fileSpec);
                 }
             }
         }

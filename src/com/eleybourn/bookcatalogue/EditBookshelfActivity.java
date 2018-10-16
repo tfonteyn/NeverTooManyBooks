@@ -21,13 +21,14 @@
 package com.eleybourn.bookcatalogue;
 
 import android.os.Bundle;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
+import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
@@ -36,7 +37,7 @@ import com.eleybourn.bookcatalogue.debug.Logger;
  *
  * TODO: overkill... make this a dialog
  */
-public class EditBookshelfActivity extends BookCatalogueActivity {
+public class EditBookshelfActivity extends BaseActivity {
 
     @Nullable
     private CatalogueDBAdapter mDb;
@@ -51,6 +52,7 @@ public class EditBookshelfActivity extends BookCatalogueActivity {
     }
 
     @Override
+    @CallSuper
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         try {
             super.onCreate(savedInstanceState);
@@ -103,6 +105,7 @@ public class EditBookshelfActivity extends BookCatalogueActivity {
     }
 
     @Override
+    @CallSuper
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         try {
@@ -112,6 +115,7 @@ public class EditBookshelfActivity extends BookCatalogueActivity {
     }
 
     @Override
+    @CallSuper
     protected void onResume() {
         super.onResume();
         populateFields();
@@ -130,6 +134,7 @@ public class EditBookshelfActivity extends BookCatalogueActivity {
     }
 
     @Override
+    @CallSuper
     protected void onDestroy() {
         if (mDb != null) {
             mDb.close();

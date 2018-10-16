@@ -70,7 +70,7 @@ public class Publisher implements Serializable {
      * - one or both of them is 'new' (e.g. id == 0) but their names are equal
      * - ids are equal
      *
-     * Compare is CASE SENSITIVE !
+     * Compare is CASE SENSITIVE ! This allows correcting case mistakes.
      */
     @Override
     public boolean equals(@Nullable final Object o) {

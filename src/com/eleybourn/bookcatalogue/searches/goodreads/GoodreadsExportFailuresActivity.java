@@ -24,6 +24,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.View;
@@ -45,7 +46,7 @@ import com.eleybourn.bookcatalogue.taskqueue.Listeners.EventActions;
 import com.eleybourn.bookcatalogue.taskqueue.Listeners.OnEventChangeListener;
 import com.eleybourn.bookcatalogue.taskqueue.QueueManager;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
-import com.eleybourn.bookcatalogue.widgets.BindableItemCursorAdapter;
+import com.eleybourn.bookcatalogue.adapters.BindableItemCursorAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -83,19 +84,20 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity {
      * Constructor. Tell superclass the resource for the list.
      */
     public GoodreadsExportFailuresActivity() {
-        super(com.eleybourn.bookcatalogue.R.layout.goodreads_event_list);
+        super(R.layout.goodreads_event_list);
     }
 
     /**
      * Utility routine to start this activity on behalf of the passed activity.
      */
-    public static void start(@NonNull final Activity from, final long taskId) {
+    public static void startActivityForResult(@NonNull final Activity from, final long taskId) {
         Intent intent = new Intent(from, GoodreadsExportFailuresActivity.class);
         intent.putExtra(GR_TASK_ID, taskId);
         from.startActivityForResult(intent, UniqueId.ACTIVITY_REQUEST_CODE_GOODREADS_EXPORT_FAILURES);
     }
 
     @Override
+    @CallSuper
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         // Get a DB adapter
         mDb = new CatalogueDBAdapter(this);
@@ -146,6 +148,7 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity {
      * Refresh data; some other activity may have changed relevant data (eg. a book)
      */
     @Override
+    @CallSuper
     protected void onResume() {
         super.onResume();
         refreshData();
@@ -189,15 +192,14 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity {
      * Capture calls to refreshData() so we can update the header.
      */
     @Override
+    @CallSuper
     protected void refreshData() {
         super.refreshData();
         updateHeader();
     }
 
-    /**
-     * Cleanup
-     */
     @Override
+    @CallSuper
     protected void onDestroy() {
         try {
             super.onDestroy();

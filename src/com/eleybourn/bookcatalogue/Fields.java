@@ -22,10 +22,10 @@ package com.eleybourn.bookcatalogue;
 
 import android.app.Activity;
 import android.content.ContentValues;
-import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.annotation.CallSuper;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -123,11 +123,12 @@ import java.util.Objects;
  */
 public class Fields extends ArrayList<Fields.Field> {
     public static final long serialVersionUID = 1L;
+    /** Prefix for all preferences */
+    private final static String PREFS_FIELD_VISIBILITY = "field_visibility_";
 
-    /** The activity and preferences related to this object. */
+    /** The activity related to this object. */
     @NonNull
     private final FieldsContext mContext;
-    private final SharedPreferences mPrefs;
 
     /** The last validator exception caught by this object */
     private final List<ValidatorException> mValidationExceptions = new ArrayList<>();
@@ -144,7 +145,6 @@ public class Fields extends ArrayList<Fields.Field> {
     Fields(@NonNull final Fragment fragment) {
         super();
         mContext = new FragmentContext(fragment);
-        mPrefs = fragment.getActivity().getSharedPreferences(BookCatalogueApp.APP_SHARED_PREFERENCES, android.content.Context.MODE_PRIVATE);
     }
 
     /**
@@ -156,7 +156,6 @@ public class Fields extends ArrayList<Fields.Field> {
     Fields(@NonNull final Activity activity) {
         super();
         mContext = new ActivityContext(activity);
-        mPrefs = activity.getSharedPreferences(BookCatalogueApp.APP_SHARED_PREFERENCES, android.content.Context.MODE_PRIVATE);
     }
 
     /**
@@ -176,7 +175,7 @@ public class Fields extends ArrayList<Fields.Field> {
      * is removed from the screen. In this case, there is no need to synchronize the values
      * since the view is gone.
      */
-    private static void debugNullView(final @NonNull FieldDataAccessor theThis, final @NonNull Field field) {
+    private static void debugNullView(final @NonNull FieldDataAccessor accessor, final @NonNull Field field) {
         String msg = "NULL View: col=" + field.column + ", id=" + field.id + ", group=" + field.group;
         Fields fields = field.getFields();
         if (fields == null) {
@@ -192,8 +191,16 @@ public class Fields extends ArrayList<Fields.Field> {
                 msg += ". Owner is " + ownerContext.getClass().getCanonicalName() + " (" + ownerContext + ")";
             }
         }
-        Tracker.handleEvent(theThis, msg, Tracker.States.Running);
+        Tracker.handleEvent(accessor, msg, Tracker.States.Running);
         throw new IllegalStateException("Unable to get associated View object");
+    }
+
+    public static boolean isVisible(@NonNull final String fieldName) {
+        return BookCatalogueApp.Prefs.getBoolean(PREFS_FIELD_VISIBILITY + fieldName, true);
+    }
+
+    public static void setVisibility(final String fieldName, final boolean isVisible) {
+        BookCatalogueApp.Prefs.putBoolean(PREFS_FIELD_VISIBILITY + fieldName, isVisible);
     }
 
     /**
@@ -220,18 +227,10 @@ public class Fields extends ArrayList<Fields.Field> {
     }
 
     /**
-     * Accessor for related Preferences
-     *
-     * @return SharedPreferences for this collection.
-     */
-    private SharedPreferences getPreferences() {
-        return mPrefs;
-    }
-
-    /**
      * Provides access to the underlying arrays get() method.
      */
     @SuppressWarnings("unused")
+    @CallSuper
     public Field getItem(final int index) {
         return super.get(index);
     }
@@ -246,7 +245,7 @@ public class Fields extends ArrayList<Fields.Field> {
      * @return The resulting Field.
      */
     @NonNull
-    public Field add(final int fieldId,
+    public Field add(@IdRes final int fieldId,
                      @NonNull final String sourceColumn,
                      @Nullable final FieldValidator fieldValidator) {
         return add(fieldId, sourceColumn, sourceColumn, fieldValidator, null);
@@ -263,7 +262,7 @@ public class Fields extends ArrayList<Fields.Field> {
      * @return The resulting Field.
      */
     @NonNull
-    public Field add(final int fieldId,
+    public Field add(@IdRes final int fieldId,
                      @NonNull final String sourceColumn,
                      @Nullable final FieldValidator fieldValidator,
                      @Nullable final FieldFormatter formatter) {
@@ -282,7 +281,7 @@ public class Fields extends ArrayList<Fields.Field> {
      */
     @NonNull
     @SuppressWarnings("UnusedReturnValue")
-    public Field add(final int fieldId,
+    public Field add(@IdRes final int fieldId,
                      @NonNull final String sourceColumn,
                      @NonNull final String visibilityGroup,
                      @Nullable final FieldValidator fieldValidator) {
@@ -301,7 +300,7 @@ public class Fields extends ArrayList<Fields.Field> {
      * @return The resulting Field.
      */
     @NonNull
-    public Field add(final int fieldId,
+    public Field add(@IdRes final int fieldId,
                      @NonNull final String sourceColumn,
                      @NonNull final String visibilityGroup,
                      @Nullable final FieldValidator fieldValidator,
@@ -317,13 +316,13 @@ public class Fields extends ArrayList<Fields.Field> {
      * @return Associated Field.
      */
     @NonNull
-    public Field getField(final int id) {
+    public Field getField(@IdRes final int fieldId) {
         for (Field f : this) {
-            if (f.id == id) {
+            if (f.id == fieldId) {
                 return f;
             }
         }
-        throw new IllegalArgumentException();
+        throw new IllegalArgumentException("fieldId=" + fieldId);
     }
 
     /**
@@ -332,7 +331,7 @@ public class Fields extends ArrayList<Fields.Field> {
      * @param fieldId Layout ID of View
      * @param adapter Adapter to use
      */
-    public void setAdapter(final int fieldId, @NonNull final ArrayAdapter<String> adapter) {
+    public void setAdapter(@IdRes final int fieldId, @NonNull final ArrayAdapter<String> adapter) {
         Field f = getField(fieldId);
         TextView tv = f.getView();
         if (tv instanceof AutoCompleteTextView) {
@@ -343,11 +342,11 @@ public class Fields extends ArrayList<Fields.Field> {
     /**
      * For a View that supports onClick() (all of them?), set the listener.
      *
-     * @param id       view ID
+     * @param fieldId  Layout ID of View
      * @param listener onClick() listener.
      */
-    void setListener(@IdRes final int id, @NonNull final View.OnClickListener listener) {
-        View view = Objects.requireNonNull(getField(id).getView());
+    void setListener(@IdRes final int fieldId, @NonNull final View.OnClickListener listener) {
+        View view = Objects.requireNonNull(getField(fieldId).getView());
         view.setOnClickListener(listener);
     }
 
@@ -434,9 +433,9 @@ public class Fields extends ArrayList<Fields.Field> {
      * Reset all field visibility based on user preferences
      */
     public void resetVisibility() {
-        FieldsContext c = this.getContext();
-        for (Field fe : this) {
-            fe.resetVisibility(c);
+        FieldsContext context = this.getContext();
+        for (Field field : this) {
+            field.resetVisibility(context);
         }
     }
 
@@ -464,9 +463,9 @@ public class Fields extends ArrayList<Fields.Field> {
         }
 
         // Finally run the local cross-validation
-        for (FieldCrossValidator v : mCrossValidators) {
+        for (FieldCrossValidator validator : mCrossValidators) {
             try {
-                v.validate(this, values);
+                validator.validate(this, values);
             } catch (ValidatorException e) {
                 mValidationExceptions.add(e);
                 isOk = false;
@@ -610,7 +609,10 @@ public class Fields extends ArrayList<Fields.Field> {
          *
          * @throws ValidatorException For any validation failure.
          */
-        void validate(@NonNull final Fields fields, @NonNull final Field field, @NonNull final Bundle values, final boolean crossValidating);
+        void validate(@NonNull final Fields fields,
+                      @NonNull final Field field,
+                      @NonNull final Bundle values,
+                      final boolean crossValidating);
     }
 
     /**
@@ -641,7 +643,7 @@ public class Fields extends ArrayList<Fields.Field> {
          * @return The formatted value
          */
         @NonNull
-        String format(@NonNull final Field f, @NonNull final String source);
+        String format(@NonNull final Field field, @NonNull final String source);
 
         /**
          * Extract a formatted string from the display version
@@ -651,7 +653,7 @@ public class Fields extends ArrayList<Fields.Field> {
          * @return The extracted value
          */
         @NonNull
-        String extract(@NonNull final Field f, @NonNull final String source);
+        String extract(@NonNull final Field field, @NonNull final String source);
     }
 
     /**
@@ -847,6 +849,8 @@ public class Fields extends ArrayList<Fields.Field> {
      * Checkable accessor. Attempt to convert data to/from a boolean.
      *
      * {@link Checkable} covers more then just a Checkbox
+     * * CheckBox, RadioButton, Switch, ToggleButton extend CompoundButton, implements Checkable
+     * * CheckedTextView extends TextView, implements Checkable
      *
      * @author Philip Warner
      */
@@ -1032,12 +1036,11 @@ public class Fields extends ArrayList<Fields.Field> {
      * @author Philip Warner
      */
     static public class DateFieldFormatter implements FieldFormatter {
-
         /**
          * Display as a human-friendly date
          */
         @NonNull
-        public String format(@NonNull final Field f, @NonNull final String source) {
+        public String format(@NonNull final Field field, @NonNull final String source) {
             try {
                 java.util.Date d = DateUtils.parseDate(source);
                 if (d != null) {
@@ -1052,7 +1055,7 @@ public class Fields extends ArrayList<Fields.Field> {
          * Extract as an SQL date.
          */
         @NonNull
-        public String extract(@NonNull final Field f, @NonNull final String source) {
+        public String extract(@NonNull final Field field, @NonNull final String source) {
             try {
                 java.util.Date d = DateUtils.parseDate(source);
                 if (d != null) {
@@ -1061,6 +1064,51 @@ public class Fields extends ArrayList<Fields.Field> {
             } catch (Exception ignore) {
             }
             return source;
+        }
+    }
+
+    /**
+     * Formatter for boolean fields. On failure just return the raw string or blank
+     *
+     * @author Philip Warner
+     */
+    static public class BinaryYesNoEmptyFormatter implements FieldFormatter {
+
+        private Resources mRes;
+
+        /**
+         * @param res resources so we can get 'yes'/'no'
+         */
+        public BinaryYesNoEmptyFormatter(@NonNull final Resources res) {
+            mRes = res;
+        }
+
+        /**
+         * Display as a human-friendly yes/no string
+         */
+        @NonNull
+        public String format(@NonNull final Field field, @Nullable final String source) {
+            if (source == null) {
+                return "";
+            }
+            try {
+                boolean val = Datum.toBoolean(source, false);
+                return mRes.getString(val ? R.string.yes : R.string.no);
+            } catch (IllegalArgumentException e) {
+                return source;
+            }
+        }
+
+        /**
+         * Extract as a boolean string
+         */
+        @NonNull
+        public String extract(@NonNull final Field field, @NonNull final String source) {
+            try {
+                return Datum.toBoolean(source, false) ? "1" : "0";
+            } catch (IllegalArgumentException e) {
+                return source;
+            }
         }
     }
 
@@ -1224,7 +1272,7 @@ public class Fields extends ArrayList<Fields.Field> {
                 } else {
                     throw new RTE.IllegalTypeException(view.getClass().getCanonicalName());
                 }
-                visible = fields.getPreferences().getBoolean(FieldVisibilityActivity.TAG + group, true);
+                visible = isVisible(group);
                 if (!visible) {
                     view.setVisibility(View.GONE);
                 }
@@ -1253,7 +1301,7 @@ public class Fields extends ArrayList<Fields.Field> {
             // Lookup the view
             final View view = context.findViewById(this.id);
             if (view != null) {
-                visible = BCPreferences.getBoolean(FieldVisibilityActivity.TAG + group, true);
+                visible = isVisible(group);
                 view.setVisibility(visible ? View.VISIBLE : View.GONE);
             }
         }
@@ -1274,7 +1322,6 @@ public class Fields extends ArrayList<Fields.Field> {
                             mAfterFieldChangeListener.afterFieldChange(Field.this, null);
                         }
                     }
-                    v.performClick();
                     return false;
                 }
             });

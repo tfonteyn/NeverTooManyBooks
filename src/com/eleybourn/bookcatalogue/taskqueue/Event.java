@@ -22,7 +22,7 @@ package com.eleybourn.bookcatalogue.taskqueue;
 
 import android.support.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.widgets.BindableItemCursorAdapter;
+import com.eleybourn.bookcatalogue.adapters.BindableItemCursorAdapter;
 
 import java.io.Serializable;
 

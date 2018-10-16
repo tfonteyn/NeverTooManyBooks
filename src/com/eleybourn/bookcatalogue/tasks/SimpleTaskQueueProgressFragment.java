@@ -27,6 +27,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
@@ -61,7 +62,7 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
     private final Handler mHandler = new Handler();
     /** List of messages to be sent to the underlying activity, but not yet sent */
     private final List<TaskMessage> mTaskMessages = new ArrayList<>();
-    /** List of messages queued; only used if activity not present when showQuickNotice() is called */
+    /** List of messages queued; only used if activity not present when showBriefMessage() is called */
     @Nullable
     private List<String> mMessages = null;
     /** Options indicating dialog was cancelled */
@@ -204,12 +205,12 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
     /**
      * Utility routine to display a message or queue it as appropriate.
      */
-    public void showQuickNotice(@NonNull final String message) {
+    public void showBriefMessage(@NonNull final String message) {
         // Can only display in main thread.
         if (Looper.getMainLooper().getThread() == Thread.currentThread()) {
             synchronized (this) {
                 if (this.getActivity() != null) {
-                    StandardDialogs.showQuickNotice(this.getActivity(), message);
+                    StandardDialogs.showBriefMessage(this.getActivity(), message);
                 } else {
                     // Assume the message was sent before the fragment was displayed; this
                     // list will be read in onAttach
@@ -224,7 +225,7 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    showQuickNotice(message);
+                    showBriefMessage(message);
                 }
             });
         }
@@ -248,6 +249,7 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
      * Ensure activity supports event
      */
     @Override
+    @CallSuper
     public void onAttach(@NonNull final Context context) {
         super.onAttach(context);
 
@@ -255,7 +257,7 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
             if (mMessages != null) {
                 for (String message : mMessages) {
                     if (message != null && !message.isEmpty()) {
-                        StandardDialogs.showQuickNotice(getActivity(), message);
+                        StandardDialogs.showBriefMessage(getActivity(), message);
                     }
                 }
                 mMessages.clear();
@@ -267,6 +269,7 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
     }
 
     @Override
+    @CallSuper
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // VERY IMPORTANT. We do not want this destroyed!
@@ -275,6 +278,7 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
     }
 
     @Override
+    @CallSuper
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
@@ -327,6 +331,7 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
     }
 
     @Override
+    @CallSuper
     public void onCancel(@NonNull final DialogInterface dialog) {
         super.onCancel(dialog);
         mWasCancelled = true;
@@ -334,6 +339,7 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
     }
 
     @Override
+    @CallSuper
     public void onResume() {
         super.onResume();
         // If task finished, dismiss.
@@ -459,6 +465,7 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
      * Still not fixed in September 2018
      */
     @Override
+    @CallSuper
     public void onDestroyView() {
         if (getDialog() != null && getRetainInstance()) {
             getDialog().setDismissMessage(null);
@@ -487,6 +494,7 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
      * Listener for OnAllTasksFinished messages
      */
     public interface OnAllTasksFinishedListener {
+        @SuppressWarnings("EmptyMethod")
         void onAllTasksFinished(@NonNull final SimpleTaskQueueProgressFragment fragment,
                                 final int taskId, final boolean success, final boolean cancelled);
     }
@@ -522,7 +530,7 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
         public void onFinish(@NonNull final SimpleTaskQueueProgressFragment fragment, @Nullable final Exception e) {
             if (e != null) {
                 Logger.error(e);
-                StandardDialogs.showQuickNotice(fragment.getActivity(), R.string.unexpected_error);
+                StandardDialogs.showBriefMessage(fragment.getActivity(), R.string.error_unexpected_error);
             }
         }
 

@@ -27,7 +27,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
@@ -179,7 +179,7 @@ public abstract class GenericTask extends RunnableTask {
         TextView retry_info;
         TextView error;
         TextView job_info;
-        CheckBox checkbox;
+        CompoundButton checkbox;
         Button retry;
     }
 }

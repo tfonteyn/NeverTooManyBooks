@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue.booklist;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -139,6 +140,7 @@ public class BooklistPreferencesActivity extends PreferencesBaseActivity {
      * Build the activity UI
      */
     @Override
+    @CallSuper
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         try {
             super.onCreate(savedInstanceState);
@@ -155,7 +157,7 @@ public class BooklistPreferencesActivity extends PreferencesBaseActivity {
      * Setup each component of the layout using the passed preferences
      */
     @Override
-    protected void setupViews(@NonNull final Properties globalProperties) {
+    protected void initViews(@NonNull final Properties globalProperties) {
         // Create a dummy style and add one group of each kind
         BooklistStyle style = new BooklistStyle("");
         for (int kind : BooklistGroup.getRowKinds()) {
@@ -183,6 +185,7 @@ public class BooklistPreferencesActivity extends PreferencesBaseActivity {
      * Trap the onPause, and if the Activity is finishing then set the result.
      */
     @Override
+    @CallSuper
     public void onPause() {
         super.onPause();
 

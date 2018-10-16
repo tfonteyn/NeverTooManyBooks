@@ -2,6 +2,7 @@ package com.eleybourn.bookcatalogue.searches;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -13,7 +14,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.widgets.SimpleListAdapter;
+import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,9 +44,10 @@ public class AdminSearchOrderFragment extends Fragment {
     }
 
     @Override
+    @CallSuper
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mAdapter = new SearchSiteListAdapter(this.getContext(), R.layout.row_edit_searchsite, mList);
+        mAdapter = new SearchSiteListAdapter(getContext(), R.layout.row_edit_searchsite, mList);
         mListView = getView().findViewById(android.R.id.list);
         mListView.setAdapter(mAdapter);
         isCreated = true;

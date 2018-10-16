@@ -26,6 +26,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.support.annotation.CallSuper;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -77,11 +78,12 @@ public class EditBookLoanedFragment extends BookAbstractFragment {
      * @param savedInstanceState The saved bundle (from pausing). Can be null.
      */
     @Override
+    @CallSuper
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         Tracker.enterOnCreate(this);
         try {
             super.onActivityCreated(savedInstanceState);
-            String friend = mDb.getLoanByBookId(mEditManager.getBook().getBookId());
+            String friend = mDb.getLoanByBookId(getBook().getBookId());
             if (friend == null) {
                 showLoanTo();
             } else {
@@ -139,13 +141,13 @@ public class EditBookLoanedFragment extends BookAbstractFragment {
     }
 
     private void saveLoan(@NonNull final String friend) {
-        Book book = mEditManager.getBook();
-        book.putString(UniqueId.KEY_LOANED_TO, friend);
+        Book book = getBook();
+        book.putString(UniqueId.KEY_LOAN_LOANED_TO, friend);
         mDb.insertLoan(book, true);
     }
 
     private void removeLoan() {
-        mDb.deleteLoan(mEditManager.getBook().getBookId(), true);
+        mDb.deleteLoan(getBook().getBookId(), true);
     }
 
     /**

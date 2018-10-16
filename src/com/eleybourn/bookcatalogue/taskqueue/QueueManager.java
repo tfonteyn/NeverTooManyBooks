@@ -313,7 +313,6 @@ public abstract class QueueManager {
                     Logger.info(this + ": is toasting: " + message);
                 }
                 // this is basically 'showing' on the UI thread of the Application.onCreate()
-                // TODO: replace with using the Notify stuff ?
                 Toast.makeText(this.getApplicationContext(), message, Toast.LENGTH_LONG).show();
             }
         } else {

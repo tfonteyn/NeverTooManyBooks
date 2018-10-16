@@ -4,10 +4,11 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.BCPreferences;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.StartupActivity;
 import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
@@ -236,9 +237,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static String mMessage = "";
 
     DatabaseHelper(@NonNull final Context context,
-                   @NonNull final SQLiteDatabase.CursorFactory mTrackedCursorFactory,
-                   @NonNull final DbSync.Synchronizer synchronizer) {
-        super(context, DATABASE_NAME, mTrackedCursorFactory, DATABASE_VERSION);
+                   @SuppressWarnings("SameParameterValue") @NonNull final SQLiteDatabase.CursorFactory trackedCursorFactory,
+                   @SuppressWarnings("SameParameterValue") @NonNull final DbSync.Synchronizer synchronizer) {
+        super(context, DATABASE_NAME, trackedCursorFactory, DATABASE_VERSION);
         mSynchronizer = synchronizer;
     }
 
@@ -282,7 +283,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * @param db The database to be created
      */
     @Override
+    @CallSuper
     public void onCreate(@NonNull SQLiteDatabase db) {
+        if (BuildConfig.DEBUG) {
+            Logger.info("Creating database: " + db.getPath());
+        }
         mDbWasCreated = true;
         db.execSQL(DATABASE_CREATE_AUTHORS);
         db.execSQL(DATABASE_CREATE_BOOKSHELF);
@@ -368,6 +373,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      */
     @Override
     public void onUpgrade(@NonNull final SQLiteDatabase db, final int oldVersion, final int newVersion) {
+        if (BuildConfig.DEBUG) {
+            Logger.info("Upgrading database: " + db.getPath());
+        }
         mDbWasCreated = false;
 
         int curVersion = oldVersion;
@@ -392,6 +400,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         mMessage += UpgradeDatabase.getMessage();
 
         if (curVersion < newVersion && curVersion == 82) {
+            //noinspection UnusedAssignment
             curVersion++;
             mMessage += "New in v83:\n\n";
             mMessage += "* Moved to base Android 5.0 bringing lots of new UI goodies.";
@@ -403,11 +412,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             mMessage += "* Books & Anthology titles now have a 'first published' year\n";
 
             // cleanup of obsolete preferences
-            BCPreferences.remove("StartupActivity.FAuthorSeriesFixupRequired");
-            BCPreferences.remove("start_in_my_books");
-            BCPreferences.remove("App.includeClassicView");
-            BCPreferences.remove("App.DisableBackgroundImage");
-            BCPreferences.remove("App.BooklistStyle");
+            BookCatalogueApp.Prefs.remove("StartupActivity.FAuthorSeriesFixupRequired");
+            BookCatalogueApp.Prefs.remove("start_in_my_books");
+            BookCatalogueApp.Prefs.remove("App.includeClassicView");
+            BookCatalogueApp.Prefs.remove("App.DisableBackgroundImage");
+            BookCatalogueApp.Prefs.remove("App.BooklistStyle");
 
 
             v83_moveCoversToDedicatedDirectory(syncedDb);

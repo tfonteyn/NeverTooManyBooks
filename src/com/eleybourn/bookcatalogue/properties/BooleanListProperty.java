@@ -20,10 +20,11 @@
 
 package com.eleybourn.bookcatalogue.properties;
 
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 
-import com.eleybourn.bookcatalogue.BCPreferences;
+import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.properties.Property.BooleanValue;
 import com.eleybourn.bookcatalogue.utils.RTE;
 
@@ -49,17 +50,18 @@ public class BooleanListProperty extends ListProperty<Boolean> implements Boolea
     protected Boolean getGlobalDefault() {
         Boolean value = getDefaultValue();
         Objects.requireNonNull(value);
-        return BCPreferences.getBoolean(getPreferenceKey(), value);
+        return BookCatalogueApp.Prefs.getBoolean(getPreferenceKey(), value);
     }
 
     @NonNull
     protected BooleanListProperty setGlobalDefault(final Boolean value) {
-        BCPreferences.setBoolean(getPreferenceKey(), value);
+        BookCatalogueApp.Prefs.putBoolean(getPreferenceKey(), value);
         return this;
     }
 
     @NonNull
     @Override
+    @CallSuper
     public BooleanListProperty setGlobal(final boolean isGlobal) {
         super.setGlobal(isGlobal);
         return this;
@@ -67,6 +69,7 @@ public class BooleanListProperty extends ListProperty<Boolean> implements Boolea
 
     @NonNull
     @Override
+    @CallSuper
     public BooleanListProperty setHint(final int hint) {
         super.setHint(hint);
         return this;
@@ -74,6 +77,7 @@ public class BooleanListProperty extends ListProperty<Boolean> implements Boolea
 
     @NonNull
     @Override
+    @CallSuper
     public BooleanListProperty setDefaultValue(final Boolean value) {
         super.setDefaultValue(value);
         return this;
@@ -81,6 +85,7 @@ public class BooleanListProperty extends ListProperty<Boolean> implements Boolea
 
     @NonNull
     @Override
+    @CallSuper
     public BooleanListProperty setWeight(final int weight) {
         super.setWeight(weight);
         return this;
@@ -88,6 +93,7 @@ public class BooleanListProperty extends ListProperty<Boolean> implements Boolea
 
     @NonNull
     @Override
+    @CallSuper
     public BooleanListProperty setPreferenceKey(@NonNull final String key) {
         super.setPreferenceKey(key);
         return this;
@@ -103,6 +109,7 @@ public class BooleanListProperty extends ListProperty<Boolean> implements Boolea
         return this;
     }
 
+    @CallSuper
     public boolean isTrue() {
         Boolean b = super.getResolvedValue();
         return (b != null ? b : false);

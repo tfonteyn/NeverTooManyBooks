@@ -3,6 +3,7 @@ package com.eleybourn.bookcatalogue.cropper;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
@@ -32,6 +33,7 @@ class CropImageView extends CropImageViewTouchBase {
     }
 
     @Override
+    @CallSuper
     protected void onLayout(final boolean changed,
                             final int left,
                             final int top,
@@ -50,6 +52,7 @@ class CropImageView extends CropImageViewTouchBase {
     }
 
     @Override
+    @CallSuper
     protected void zoomTo(final float scale, final float centerX, final float centerY) {
         super.zoomTo(scale, centerX, centerY);
         for (CropHighlightView hv : mHighlightViews) {
@@ -59,6 +62,7 @@ class CropImageView extends CropImageViewTouchBase {
     }
 
     @Override
+    @CallSuper
     protected void zoomIn() {
         super.zoomIn();
         for (CropHighlightView hv : mHighlightViews) {
@@ -68,6 +72,7 @@ class CropImageView extends CropImageViewTouchBase {
     }
 
     @Override
+    @CallSuper
     protected void zoomOut() {
         super.zoomOut();
         for (CropHighlightView hv : mHighlightViews) {
@@ -77,6 +82,7 @@ class CropImageView extends CropImageViewTouchBase {
     }
 
     @Override
+    @CallSuper
     protected void postTranslate(final float deltaX, final float deltaY) {
         super.postTranslate(deltaX, deltaY);
         for (int i = 0; i < mHighlightViews.size(); i++) {
@@ -237,6 +243,7 @@ class CropImageView extends CropImageViewTouchBase {
     }
 
     @Override
+    @CallSuper
     protected void onDraw(@NonNull final Canvas canvas) {
         try {
             super.onDraw(canvas);

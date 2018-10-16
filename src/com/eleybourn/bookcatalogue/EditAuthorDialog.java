@@ -49,6 +49,7 @@ public class EditAuthorDialog {
         dialog.setContentView(R.layout.dialog_edit_author);
         dialog.setTitle(R.string.edit_author_details);
 
+
         EditText familyView = dialog.findViewById(R.id.family_name);
         EditText givenView = dialog.findViewById(R.id.given_names);
         familyView.setText(author.familyName);
@@ -60,7 +61,7 @@ public class EditAuthorDialog {
                 EditText familyView = dialog.findViewById(R.id.family_name);
                 String newFamily = familyView.getText().toString().trim();
                 if (newFamily.isEmpty()) {
-                    StandardDialogs.showQuickNotice(mActivity, R.string.author_is_blank);
+                    StandardDialogs.showBriefMessage(mActivity, R.string.author_is_blank);
                     return;
                 }
 

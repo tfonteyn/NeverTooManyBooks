@@ -24,6 +24,7 @@ import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
@@ -35,7 +36,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
-import com.eleybourn.bookcatalogue.baseactivity.BookCatalogueActivity;
+import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.datamanager.DataEditor;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -47,11 +48,11 @@ import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.dialogs.TextFieldEditorFragment;
 import com.eleybourn.bookcatalogue.dialogs.TextFieldEditorFragment.OnTextFieldEditorListener;
 import com.eleybourn.bookcatalogue.entities.Book;
+import com.eleybourn.bookcatalogue.utils.RTE;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A tab host activity which holds the edit book tabs
@@ -62,7 +63,7 @@ import java.util.List;
  *
  * @author Evan Leybourn
  */
-public class EditBookActivity extends BookCatalogueActivity
+public class EditBookActivity extends BaseActivity
         implements BookAbstractFragment.BookEditManager,
         OnPartialDatePickerListener, OnTextFieldEditorListener, OnBookshelfCheckChangeListener {
 
@@ -72,7 +73,7 @@ public class EditBookActivity extends BookCatalogueActivity
     public static final String TAB = "tab";
     public static final int TAB_EDIT = 0;
     public static final int TAB_EDIT_NOTES = 1;
-    public static final int TAB_EDIT_FRIENDS = 2;
+    public static final int TAB_EDIT_LOANS = 2;
     public static final int TAB_EDIT_ANTHOLOGY = 3;
 
     /**
@@ -86,22 +87,12 @@ public class EditBookActivity extends BookCatalogueActivity
     };
     private final CatalogueDBAdapter mDb = new CatalogueDBAdapter(this);
     private boolean mIsDirtyFlg = false;
-    private long mRowId;
-    /** initialised in {@link #onCreate(Bundle)} */
-    @SuppressWarnings("NullableProblems")
-    @NonNull
+    private long mBookId;
     private Book mBook;
 
     private TabLayout mTabLayout;
     @Nullable
     private TabLayout.Tab mAnthologyTab;
-
-    /** Lists in database so far, we cache them for performance */
-    private List<String> mFormats;
-    private List<String> mGenres;
-    private List<String> mLanguages;
-    private List<String> mLocations;
-    private List<String> mPublishers;
 
     /**
      * Load with the provided book id. Also open to the provided tab.
@@ -109,9 +100,9 @@ public class EditBookActivity extends BookCatalogueActivity
      * @param id  The id of the book to edit
      * @param tab Which tab to open first
      */
-    public static void startActivity(@NonNull final Activity activity,
-                                     final long id,
-                                     final int tab) {
+    public static void startActivityForResult(@NonNull final Activity activity,
+                                              final long id,
+                                              final int tab) {
         Intent intent = new Intent(activity, EditBookActivity.class);
         intent.putExtra(UniqueId.KEY_ID, id);
         intent.putExtra(EditBookActivity.TAB, tab);
@@ -121,8 +112,8 @@ public class EditBookActivity extends BookCatalogueActivity
     /**
      * Load with a new book
      */
-    public static void startActivity(@NonNull final Activity activity,
-                                     @NonNull final Bundle bookData) {
+    public static void startActivityForResult(@NonNull final Activity activity,
+                                              @NonNull final Bundle bookData) {
         Intent intent = new Intent(activity, EditBookActivity.class);
         intent.putExtra(UniqueId.BKEY_BOOK_DATA, bookData);
         activity.startActivityForResult(intent, UniqueId.ACTIVITY_REQUEST_CODE_EDIT_BOOK);
@@ -134,6 +125,7 @@ public class EditBookActivity extends BookCatalogueActivity
     }
 
     @Override
+    @CallSuper
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         Tracker.enterOnCreate(this);
         super.onCreate(savedInstanceState);
@@ -141,15 +133,14 @@ public class EditBookActivity extends BookCatalogueActivity
 
         Bundle extras = getIntent().getExtras();
 
-        mRowId = getBookId(savedInstanceState, extras);
-        boolean isExistingBook = (mRowId > 0);
+        mBookId = getBookId(savedInstanceState, extras);
+        boolean isExistingBook = (mBookId > 0);
 
-        mBook = initBook(mRowId, savedInstanceState == null ? extras : savedInstanceState);
+        mBook = initBook(mBookId, savedInstanceState == null ? extras : savedInstanceState);
 
         mTabLayout = findViewById(R.id.tab_panel);
 
-        initTabListener();
-        initForEditing(extras, isExistingBook);
+        initTabs(extras, isExistingBook);
         initCancelConfirmButtons(isExistingBook);
 
         // Must come after all book data and list retrieved.
@@ -175,7 +166,7 @@ public class EditBookActivity extends BookCatalogueActivity
     /**
      * initial setup for editing
      */
-    private void initForEditing(@Nullable final Bundle extras, final boolean isExistingBook) {
+    private void initTabs(@Nullable final Bundle extras, final boolean isExistingBook) {
 
         ArrayList<TabLayout.Tab> mAllTabs = new ArrayList<>();
         mTabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
@@ -192,33 +183,71 @@ public class EditBookActivity extends BookCatalogueActivity
             mTabLayout.addTab(tab);
             mAllTabs.add(tab);
 
-            Integer isAnthology = mBook.getInt(Book.IS_ANTHOLOGY);
-            addAnthologyTab(isAnthology > 0);
+            addAnthologyTab(mBook.isAnthology());
 
-            // can't loan out a new book yet
-            if (isExistingBook) {
+            // can't loan out a new book yet (or user does not like loaning)
+            if (isExistingBook && Fields.isVisible(UniqueId.KEY_LOAN_LOANED_TO)) {
                 holder = new Holder();
-                holder.fragment = (Fragment) mTabClasses[TAB_EDIT_FRIENDS].newInstance();
+                holder.fragment = (Fragment) mTabClasses[TAB_EDIT_LOANS].newInstance();
                 tab = mTabLayout.newTab().setText(R.string.loan).setTag(holder);
                 mTabLayout.addTab(tab);
                 mAllTabs.add(tab);
             }
         } catch (@NonNull InstantiationException | IllegalAccessException e) {
-            throw new IllegalStateException("Creating BookDetailsActivity tabs failed?");
+            throw new IllegalStateException(e);
         }
 
         // any specific tab desired as 'selected' ?
+        int showTab = TAB_EDIT;
         if (extras != null && extras.containsKey(TAB)) {
-            int i = extras.getInt(TAB);
-            if (mAllTabs.size() > i) {
-                mAllTabs.get(i).select();
+            int tabWanted = extras.getInt(TAB);
+            switch (tabWanted) {
+                case TAB_EDIT:
+                case TAB_EDIT_NOTES:
+                    showTab = tabWanted;
+                    break;
+                case TAB_EDIT_LOANS:
+                    if (Fields.isVisible(UniqueId.KEY_LOAN_LOANED_TO)) {
+                        showTab = tabWanted;
+                    }
+                    break;
+                case TAB_EDIT_ANTHOLOGY:
+                    if (Fields.isVisible(UniqueId.KEY_ANTHOLOGY_BITMASK)) {
+                        showTab = tabWanted;
+                    }
+                    break;
+                default:
+                    throw new RTE.IllegalTypeException("unknown tab: " + tabWanted);
             }
-        } else {
-            mAllTabs.get(TAB_EDIT).select();
         }
 
-        mTabLayout.setVisibility(View.VISIBLE);
-        findViewById(R.id.buttonbar_cancel_save).setVisibility(View.VISIBLE);
+        TabLayout.Tab ourTab = mAllTabs.get(showTab);
+        ourTab.select();
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment,  ((Holder)ourTab.getTag()).fragment)
+                .commit();
+
+        // finally hook up our listener.
+        mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(@NonNull final TabLayout.Tab tab) {
+                Holder holder = (Holder) tab.getTag();
+                //noinspection ConstantConditions
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.fragment, holder.fragment)
+                        .commit();
+            }
+
+            @Override
+            public void onTabUnselected(@NonNull final TabLayout.Tab tab) {
+            }
+
+            @Override
+            public void onTabReselected(@NonNull final TabLayout.Tab tab) {
+            }
+        });
     }
 
     private void initCancelConfirmButtons(final boolean isExistingBook) {
@@ -279,7 +308,7 @@ public class EditBookActivity extends BookCatalogueActivity
     private void initActivityTitle() {
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
-            if (mRowId > 0) {
+            if (mBookId > 0) {
                 // editing an existing book
                 actionBar.setTitle(mBook.getString(UniqueId.KEY_TITLE));
                 actionBar.setSubtitle(mBook.getAuthorTextShort());
@@ -301,6 +330,7 @@ public class EditBookActivity extends BookCatalogueActivity
      * We don't use onBackPressed because it does not work with API level 4.
      */
     @Override
+    @CallSuper
     public boolean onKeyDown(final int keyCode, final KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             if (isDirty()) {
@@ -315,6 +345,7 @@ public class EditBookActivity extends BookCatalogueActivity
     }
 
     @Override
+    @CallSuper
     protected void onDestroy() {
         Tracker.enterOnDestroy(this);
         super.onDestroy();
@@ -323,13 +354,15 @@ public class EditBookActivity extends BookCatalogueActivity
     }
 
     @Override
+    @CallSuper
     protected void onSaveInstanceState(@NonNull final Bundle outState) {
         Tracker.enterOnSaveInstanceState(this);
-        super.onSaveInstanceState(outState);
 
-        outState.putLong(UniqueId.KEY_ID, mRowId);
+        super.onSaveInstanceState(outState);
+        outState.putLong(UniqueId.KEY_ID, mBookId);
         outState.putBundle(UniqueId.BKEY_BOOK_DATA, mBook.getRawData());
         outState.putInt(EditBookActivity.TAB, mTabLayout.getSelectedTabPosition());
+
         Tracker.exitOnSaveInstanceState(this);
     }
 
@@ -361,10 +394,13 @@ public class EditBookActivity extends BookCatalogueActivity
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
+    //<editor-fold desc="Callback handlers">
+
     /**
      * menu handler; handle the 'home' key, otherwise, pass on the event
      */
     @Override
+    @CallSuper
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
@@ -389,7 +425,7 @@ public class EditBookActivity extends BookCatalogueActivity
         if (frag instanceof OnPartialDatePickerListener) {
             ((OnPartialDatePickerListener) frag).onPartialDatePickerSet(dialogId, dialog, year, month, day);
         } else {
-            StandardDialogs.showQuickNotice(this, R.string.unexpected_error);
+            StandardDialogs.showBriefMessage(this, R.string.error_unexpected_error);
             Logger.error("Received date dialog result with no fragment to handle it");
         }
         // Make sure it's dismissed
@@ -408,7 +444,7 @@ public class EditBookActivity extends BookCatalogueActivity
         if (frag instanceof OnPartialDatePickerListener) {
             ((OnPartialDatePickerListener) frag).onPartialDatePickerCancel(dialogId, dialog);
         } else {
-            StandardDialogs.showQuickNotice(this, R.string.unexpected_error);
+            StandardDialogs.showBriefMessage(this, R.string.error_unexpected_error);
             Logger.error("Received date dialog cancellation with no fragment to handle it");
         }
         // Make sure it's dismissed
@@ -429,7 +465,7 @@ public class EditBookActivity extends BookCatalogueActivity
         if (frag instanceof OnTextFieldEditorListener) {
             ((OnTextFieldEditorListener) frag).onTextFieldEditorSave(dialogId, dialog, newText);
         } else {
-            StandardDialogs.showQuickNotice(this, R.string.unexpected_error);
+            StandardDialogs.showBriefMessage(this, R.string.error_unexpected_error);
             Logger.error("Received onTextFieldEditorSave result with no fragment to handle it");
         }
         // Make sure it's dismissed
@@ -448,7 +484,7 @@ public class EditBookActivity extends BookCatalogueActivity
         if (frag instanceof OnTextFieldEditorListener) {
             ((OnTextFieldEditorListener) frag).onTextFieldEditorCancel(dialogId, dialog);
         } else {
-            StandardDialogs.showQuickNotice(this, R.string.unexpected_error);
+            StandardDialogs.showBriefMessage(this, R.string.error_unexpected_error);
             Logger.error("Received onTextFieldEditorCancel result with no fragment to handle it");
         }
         // Make sure it's dismissed
@@ -468,10 +504,11 @@ public class EditBookActivity extends BookCatalogueActivity
         if (frag instanceof OnBookshelfCheckChangeListener) {
             ((OnBookshelfCheckChangeListener) frag).onBookshelfCheckChanged(textList, encodedList);
         } else {
-            StandardDialogs.showQuickNotice(this, R.string.unexpected_error);
+            StandardDialogs.showBriefMessage(this, R.string.error_unexpected_error);
             Logger.error("Received onBookshelfCheckChanged result with no fragment to handle it");
         }
     }
+    //</editor-fold>
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -497,11 +534,10 @@ public class EditBookActivity extends BookCatalogueActivity
         return mBook;
     }
 
-    @Override
-    public void setRowId(final long id) {
-        if (mRowId != id) {
-            mRowId = id;
-            mBook = initBook(id, null);
+    public void setBookId(final long bookId) {
+        if (mBookId != bookId) {
+            mBookId = bookId;
+            mBook = initBook(bookId, null);
             Fragment frag = getSupportFragmentManager().findFragmentById(R.id.fragment);
             if (frag instanceof DataEditor) {
                 ((DataEditor) frag).reloadData(mBook);
@@ -511,109 +547,6 @@ public class EditBookActivity extends BookCatalogueActivity
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
-
-    /**
-     * Load a publisher list; reloading this list every time a tab changes is
-     * slow. So we cache it.
-     *
-     * @return List of publishers
-     */
-    @Override
-    @NonNull
-    public List<String> getPublishers() {
-        if (mPublishers == null) {
-            mPublishers = mDb.getPublishers();
-        }
-        return mPublishers;
-    }
-
-    /**
-     * Load a genre list; reloading this list every time a tab changes is slow.
-     * So we cache it.
-     *
-     * @return List of genres
-     */
-    @Override
-    @NonNull
-    public List<String> getGenres() {
-        if (mGenres == null) {
-            mGenres = mDb.getGenres();
-        }
-        return mGenres;
-    }
-
-    /**
-     * Load a location list; reloading this list every time a tab changes is slow.
-     * So we cache it.
-     *
-     * @return List of locations
-     */
-    @Override
-    @NonNull
-    public List<String> getLocations() {
-        if (mLocations == null) {
-            mLocations = mDb.getLocations();
-        }
-        return mLocations;
-    }
-
-    /**
-     * Load a language list; reloading this list every time a tab changes is slow.
-     * So we cache it.
-     *
-     * @return List of languages
-     */
-    @Override
-    @NonNull
-    public List<String> getLanguages() {
-        if (mLanguages == null) {
-            mLanguages = mDb.getLanguages();
-        }
-        return mLanguages;
-    }
-
-    /**
-     * Load a format list; reloading this list every time a tab changes is slow.
-     * So we cache it.
-     *
-     * @return List of formats
-     */
-    @Override
-    @NonNull
-    public List<String> getFormats() {
-        if (mFormats == null) {
-            mFormats = mDb.getFormats();
-        }
-        return mFormats;
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-
-    private void initTabListener() {
-        mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(@NonNull final TabLayout.Tab tab) {
-                Holder holder = (Holder) tab.getTag();
-                //noinspection ConstantConditions
-                replaceFragment(holder.fragment);
-            }
-
-            @Override
-            public void onTabUnselected(@NonNull final TabLayout.Tab tab) {
-            }
-
-            @Override
-            public void onTabReselected(@NonNull final TabLayout.Tab tab) {
-            }
-        });
-    }
-
-    private void replaceFragment(@NonNull final Fragment fragment) {
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.fragment, fragment)
-                .commit();
-    }
 
     /**
      * add or remove the anthology tab
@@ -627,7 +560,8 @@ public class EditBookActivity extends BookCatalogueActivity
                     mAnthologyTab = mTabLayout.newTab()
                             .setText(R.string.anthology)
                             .setTag(holder);
-                } catch (@NonNull InstantiationException | IllegalAccessException ignore) {
+                } catch (@NonNull InstantiationException | IllegalAccessException e) {
+                    throw new IllegalStateException(e);
                 }
             }
             mTabLayout.addTab(mAnthologyTab);
@@ -646,20 +580,22 @@ public class EditBookActivity extends BookCatalogueActivity
      */
     private void validate() {
         if (!mBook.validate()) {
-            StandardDialogs.showQuickNotice(this, mBook.getValidationExceptionMessage(getResources()));
+            StandardDialogs.showBriefMessage(this, mBook.getValidationExceptionMessage(getResources()));
         }
     }
 
     /**
-     * This will save a book into the database, by either updating or created a
-     * book. Minor modifications will be made to the strings:
+     * This will save a book into the database, by either updating or created a book.
+     * Minor modifications will be made to the strings:
      * <ul>
-     * <li>strings will be .trim()'d
-     * <li>Titles will be reworded so 'a', 'the', 'an' will be moved to the end of the string (only for NEW books)
+     * <li>Titles will be reworded so 'a', 'the', 'an' will be moved to the end of the string
+     * (only for NEW books)
      * <li>Date published will be converted from a date to a string
      * <li>Thumbnails will also be saved to the correct location
-     * <li>It will check if the book already exists (isbn search) if you are creating a book; if so the user will be prompted to confirm.
+     * <li>It will check if the book already exists (isbn search) if you are creating a book;
+     * if so the user will be prompted to confirm.
      * </ul>
+     *
      * In all cases, once the book is added/created, or not, the appropriate method of the
      * passed nextStep parameter will be executed. Passing nextStep is necessary because
      * this method may return after displaying a dialogue.
@@ -677,17 +613,17 @@ public class EditBookActivity extends BookCatalogueActivity
 
         // However, there is some data that we really do require...
         if (mBook.getAuthorList().size() == 0) {
-            StandardDialogs.showQuickNotice(this, R.string.author_required);
+            StandardDialogs.showBriefMessage(this, R.string.author_required);
             return;
         }
         if (!mBook.containsKey(UniqueId.KEY_TITLE)
                 || mBook.getString(UniqueId.KEY_TITLE).isEmpty()) {
-            StandardDialogs.showQuickNotice(this, R.string.title_required);
+            StandardDialogs.showBriefMessage(this, R.string.title_required);
             return;
         }
 
-        if (mRowId == 0) {
-            String isbn = mBook.getString(UniqueId.KEY_ISBN);
+        if (mBookId == 0) {
+            String isbn = mBook.getString(UniqueId.KEY_BOOK_ISBN);
             /* Check if the book currently exists */
             if (!isbn.isEmpty() && ((mDb.getIdFromIsbn(isbn, true) > 0))) {
                 /*
@@ -729,17 +665,17 @@ public class EditBookActivity extends BookCatalogueActivity
      * Save the collected book details
      */
     private void updateOrInsert() {
-        if (mRowId == 0) {
+        if (mBookId == 0) {
             long id = mDb.insertBook(mBook);
 
             if (id > 0) {
-                setRowId(id);
+                setBookId(id);
                 File thumb = StorageUtils.getTempCoverFile();
-                File real = StorageUtils.getCoverFile(mDb.getBookUuid(mRowId));
+                File real = StorageUtils.getCoverFile(mDb.getBookUuid(mBookId));
                 StorageUtils.renameFile(thumb, real);
             }
         } else {
-            mDb.updateBook(mRowId, mBook, 0);
+            mDb.updateBook(mBookId, mBook, 0);
         }
     }
 

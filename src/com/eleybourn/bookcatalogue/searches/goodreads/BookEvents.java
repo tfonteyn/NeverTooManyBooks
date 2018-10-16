@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue.searches.goodreads;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -30,7 +31,6 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.TextView;
@@ -69,6 +69,9 @@ import java.util.List;
  * @author Philip Warner
  */
 class BookEvents {
+    private BookEvents() {
+    }
+
     /**
      * Method to retry sending a book to goodreads.
      */
@@ -230,7 +233,7 @@ class BookEvents {
             //		BookEventHolder holder = ViewTagger.getTagOrThrow(v, R.id.TAG_BOOK_EVENT_HOLDER);
             //		Intent i = new Intent(ctx, GoodreadsSearchCriteria.class);
             //		i.putExtra(GoodreadsSearchCriteria.EXTRA_BOOK_ID, holder.event.getBookId());
-            //		ctx.startActivity(i);
+            //		ctx.startActivityForResult(i);
             //	}}));
             // DELETE EVENT
             items.add(new ContextDialogItem(context.getString(R.string.delete_event), new Runnable() {
@@ -254,7 +257,7 @@ class BookEvents {
             TextView error;
             TextView date;
             Button retry;
-            CheckBox checkbox;
+            CompoundButton checkbox;
         }
 
     }
@@ -287,6 +290,7 @@ class BookEvents {
          * Override to allow modification of view.
          */
         @Override
+        @CallSuper
         public void bindView(@NonNull final View view,
                              @NonNull final Context context,
                              @NonNull final BindableItemCursor bindableCursor,
@@ -320,6 +324,7 @@ class BookEvents {
          * Override to allow a new context menu item.
          */
         @Override
+        @CallSuper
         public void addContextMenuItems(@NonNull final Context context,
                                         @NonNull final AdapterView<?> parent,
                                         @NonNull final View view,
@@ -365,7 +370,7 @@ class BookEvents {
 
         @Override
         public int getHint() {
-            return R.string.explain_goodreads_no_match;
+            return R.string.gr_explain_goodreads_no_match;
         }
 
     }
@@ -384,7 +389,7 @@ class BookEvents {
 
         @Override
         public int getHint() {
-            return R.string.explain_goodreads_no_isbn;
+            return R.string.gr_explain_goodreads_no_isbn;
         }
 
     }

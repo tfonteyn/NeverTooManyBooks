@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue.tasks;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.View;
@@ -44,7 +45,7 @@ import com.eleybourn.bookcatalogue.taskqueue.Task;
 import com.eleybourn.bookcatalogue.taskqueue.TasksCursor;
 import com.eleybourn.bookcatalogue.taskqueue.TasksCursor.TaskCursorSubtype;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
-import com.eleybourn.bookcatalogue.widgets.BindableItemCursorAdapter;
+import com.eleybourn.bookcatalogue.adapters.BindableItemCursorAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -76,6 +77,7 @@ public class TaskListActivity extends BindableItemListActivity {
     }
 
     @Override
+    @CallSuper
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         try {
             super.onCreate(savedInstanceState);
@@ -108,6 +110,7 @@ public class TaskListActivity extends BindableItemListActivity {
      * Refresh data; some other activity may have changed relevant data (eg. a book)
      */
     @Override
+    @CallSuper
     protected void onResume() {
         super.onResume();
         refreshData();
@@ -136,7 +139,7 @@ public class TaskListActivity extends BindableItemListActivity {
     }
 
     private void doShowTaskEvents(long taskId) {
-        GoodreadsExportFailuresActivity.start(this, taskId);
+        GoodreadsExportFailuresActivity.startActivityForResult(this, taskId);
     }
 
     /**
@@ -169,10 +172,8 @@ public class TaskListActivity extends BindableItemListActivity {
         return mCursor;
     }
 
-    /**
-     * Cleanup
-     */
     @Override
+    @CallSuper
     protected void onDestroy() {
         try {
             super.onDestroy();

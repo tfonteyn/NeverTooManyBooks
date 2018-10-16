@@ -20,16 +20,17 @@
 
 package com.eleybourn.bookcatalogue.properties;
 
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 
-import com.eleybourn.bookcatalogue.BCPreferences;
+import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.properties.Property.BooleanValue;
 import com.eleybourn.bookcatalogue.utils.RTE;
@@ -134,13 +135,13 @@ public class BooleanProperty extends ValuePropertyWithGlobalDefault<Boolean> imp
     @Override
     @NonNull
     protected Boolean getGlobalDefault() {
-        return BCPreferences.getBoolean(getPreferenceKey(), Objects.requireNonNull(getDefaultValue()));
+        return BookCatalogueApp.Prefs.getBoolean(getPreferenceKey(), Objects.requireNonNull(getDefaultValue()));
     }
 
     @Override
     @Nullable
     protected BooleanProperty setGlobalDefault(@Nullable final Boolean value) {
-        BCPreferences.setBoolean(getPreferenceKey(), Objects.requireNonNull(value));
+        BookCatalogueApp.Prefs.putBoolean(getPreferenceKey(), Objects.requireNonNull(value));
         return this;
     }
 
@@ -163,6 +164,7 @@ public class BooleanProperty extends ValuePropertyWithGlobalDefault<Boolean> imp
 
     @Override
     @NonNull
+    @CallSuper
     public BooleanProperty setGlobal(boolean isGlobal) {
         super.setGlobal(isGlobal);
         return this;
@@ -170,6 +172,7 @@ public class BooleanProperty extends ValuePropertyWithGlobalDefault<Boolean> imp
 
     @NonNull
     @Override
+    @CallSuper
     public BooleanProperty setDefaultValue(@Nullable final Boolean value) {
         super.setDefaultValue(Objects.requireNonNull(value));
         return this;
@@ -177,6 +180,7 @@ public class BooleanProperty extends ValuePropertyWithGlobalDefault<Boolean> imp
 
     @NonNull
     @Override
+    @CallSuper
     public BooleanProperty setGroup(@NonNull final PropertyGroup group) {
         super.setGroup(group);
         return this;
@@ -184,6 +188,7 @@ public class BooleanProperty extends ValuePropertyWithGlobalDefault<Boolean> imp
 
     @NonNull
     @Override
+    @CallSuper
     public BooleanProperty setWeight(int weight) {
         super.setWeight(weight);
         return this;
@@ -191,13 +196,14 @@ public class BooleanProperty extends ValuePropertyWithGlobalDefault<Boolean> imp
 
     @Override
     @NonNull
+    @CallSuper
     public BooleanProperty setPreferenceKey(@NonNull final String key) {
         super.setPreferenceKey(key);
         return this;
     }
 
     private static class Holder {
-        CheckBox cb;
+        CompoundButton cb;
         TextView name;
         TextView value;
         BooleanProperty property;

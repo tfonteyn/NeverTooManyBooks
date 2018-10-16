@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue.baseactivity;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
@@ -34,15 +35,15 @@ import android.widget.ListView;
 
 import com.eleybourn.bookcatalogue.dialogs.ContextDialogItem;
 import com.eleybourn.bookcatalogue.taskqueue.BindableItemCursor;
-import com.eleybourn.bookcatalogue.widgets.BindableItemCursorAdapter;
-import com.eleybourn.bookcatalogue.widgets.BindableItemCursorAdapter.BindableItemBinder;
+import com.eleybourn.bookcatalogue.adapters.BindableItemCursorAdapter;
+import com.eleybourn.bookcatalogue.adapters.BindableItemCursorAdapter.BindableItemBinder;
 
 import java.util.List;
 
 /**
  * @author pjw
  */
-abstract public class BindableItemListActivity extends BookCatalogueListActivity implements BindableItemBinder {
+abstract public class BindableItemListActivity extends BaseListActivity implements BindableItemBinder {
     /** The resource ID for the base view */
     private final int mBaseViewId;
     /** Cursor of book IDs */
@@ -78,6 +79,7 @@ abstract public class BindableItemListActivity extends BookCatalogueListActivity
     }
 
     @Override
+    @CallSuper
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -111,6 +113,7 @@ abstract public class BindableItemListActivity extends BookCatalogueListActivity
     }
 
     @Override
+    @CallSuper
     protected void onDestroy() {
         super.onDestroy();
         try {
@@ -126,6 +129,7 @@ abstract public class BindableItemListActivity extends BookCatalogueListActivity
     }
 
     @SuppressWarnings("SameReturnValue")
+    @CallSuper
     private boolean onListItemLongClick(@SuppressWarnings("unused") @NonNull final AdapterView<?> parent,
                                         @SuppressWarnings("unused") @NonNull final View v,
                                         @SuppressWarnings("unused") final int position,
@@ -139,7 +143,8 @@ abstract public class BindableItemListActivity extends BookCatalogueListActivity
      * @param title Title of Alert
      * @param items Items to display
      */
-    protected void showContextDialogue(@StringRes final int title, @NonNull final List<ContextDialogItem> items) {
+    protected void showContextDialogue(@SuppressWarnings("SameParameterValue") @StringRes final int title,
+                                       @NonNull final List<ContextDialogItem> items) {
         if (items.size() > 0) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this)
                     .setTitle(title)
