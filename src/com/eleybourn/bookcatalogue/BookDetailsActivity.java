@@ -294,13 +294,14 @@ public class BookDetailsActivity extends BaseActivity
     @CallSuper
     protected void onSaveInstanceState(@NonNull final Bundle outState) {
         Tracker.enterOnSaveInstanceState(this);
-        super.onSaveInstanceState(outState);
 
         outState.putLong(UniqueId.KEY_ID, mBookId);
         outState.putBundle(UniqueId.BKEY_BOOK_DATA, mBook.getRawData());
         if (mList != null) {
             outState.putInt(BKEY_FLATTENED_BOOKLIST_POSITION, (int) mList.getPosition());
         }
+
+        super.onSaveInstanceState(outState);
         Tracker.exitOnSaveInstanceState(this);
     }
 

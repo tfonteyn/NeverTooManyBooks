@@ -58,21 +58,27 @@ public class SearchAdmin extends BaseActivity {
             @Override
             public void onClick(final View v) {
 
+                AdminHostsFragment ahf;
+                AdminSearchOrderFragment asf;
+
+                //noinspection ConstantConditions
                 Holder holder = (Holder) mTabLayout.getTabAt(TAB_HOSTS).getTag();
                 //noinspection ConstantConditions
-                AdminHostsFragment ahf = ((AdminHostsFragment) holder.fragment);
+                ahf = (AdminHostsFragment) holder.fragment;
                 ahf.saveState();
 
+                //noinspection ConstantConditions
                 holder = (Holder) mTabLayout.getTabAt(TAB_SEARCH_ORDER).getTag();
                 //noinspection ConstantConditions
-                AdminSearchOrderFragment asf = ((AdminSearchOrderFragment) holder.fragment);
+                asf = (AdminSearchOrderFragment) holder.fragment;
                 ArrayList<SearchManager.SearchSite> list = asf.getList();
                 if (list != null) {
                     SearchManager.setSearchOrder(list);
                 }
+                //noinspection ConstantConditions
                 holder = (Holder) mTabLayout.getTabAt(TAB_SEARCH_COVER_ORDER).getTag();
                 //noinspection ConstantConditions
-                asf = ((AdminSearchOrderFragment) holder.fragment);
+                asf = (AdminSearchOrderFragment) holder.fragment;
                 list = asf.getList();
                 if (list != null) {
                     SearchManager.setCoverSearchOrder(list);
@@ -94,9 +100,10 @@ public class SearchAdmin extends BaseActivity {
         public void onTabSelected(@NonNull final TabLayout.Tab tab) {
             Holder holder = (Holder) tab.getTag();
             //noinspection ConstantConditions
+            Fragment frag = holder.fragment;
             getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.fragment, holder.fragment)
+                    .replace(R.id.fragment, frag)
                     .commit();
         }
 

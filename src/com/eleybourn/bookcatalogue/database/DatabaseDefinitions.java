@@ -206,6 +206,7 @@ public class DatabaseDefinitions {
     public static final DomainDefinition DOM_ROOT_KEY = new DomainDefinition("root_key", TableInfo.TYPE_TEXT);
     public static final DomainDefinition DOM_ROW_KIND = new DomainDefinition("kind", TableInfo.TYPE_INTEGER, NOT_NULL, "");
     public static final DomainDefinition DOM_MARK = new DomainDefinition("mark", "boolean", "default 0");
+
     public static final DomainDefinition DOM_LEVEL = new DomainDefinition("level", TableInfo.TYPE_INTEGER, NOT_NULL, "");
     public static final DomainDefinition DOM_EXPANDED = new DomainDefinition("expanded", TableInfo.TYPE_INT, "default 0");
     public static final DomainDefinition DOM_VISIBLE = new DomainDefinition("visible", TableInfo.TYPE_INT, "default 0");

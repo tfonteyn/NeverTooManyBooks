@@ -96,9 +96,7 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Bas
     /** The resource ID for the row view */
     private final int mRowViewId;
     /** the rows */
-    @Nullable
     protected ArrayList<T> mList = null;
-    @Nullable
     protected EditObjectListAdapter mAdapter;
     protected CatalogueDBAdapter mDb;
     @Nullable
@@ -357,9 +355,8 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Bas
     @Override
     @CallSuper
     protected void onSaveInstanceState(@NonNull final Bundle outState) {
-        super.onSaveInstanceState(outState);
-        // save list
         outState.putSerializable(mBKey, mList);
+        super.onSaveInstanceState(outState);
     }
 
     /**

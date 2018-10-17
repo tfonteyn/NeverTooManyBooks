@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.widget.ArrayAdapter;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseListActivity;
@@ -30,16 +31,23 @@ public class AuthorActivity extends BaseListActivity {
     }
 
     @Override
-    @CallSuper
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected int getLayoutId() {
+        return R.layout.activity_author;
+    }
 
+    @Override
+    @CallSuper
+    protected void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         Bundle extras = getIntent().getExtras();
         @SuppressWarnings("ConstantConditions")
         long authorId = extras.getLong(UniqueId.KEY_ID);
         mDb = new CatalogueDBAdapter(this);
 
         Author author = mDb.getAuthor(authorId);
+        //noinspection ConstantConditions
+        setTitle(author.getDisplayName());
+
         mList = mDb.getAnthologyTitleListByAuthor(author);
 
         ArrayAdapter<AnthologyTitle> adapter = new AnthologyTitleListAdapter(this, R.layout.row_anthology, mList);

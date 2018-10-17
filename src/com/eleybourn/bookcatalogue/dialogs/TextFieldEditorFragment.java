@@ -89,11 +89,12 @@ public class TextFieldEditorFragment extends DialogFragment {
     @NonNull
 	@Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-    	mDialogId = getArguments().getInt(UniqueId.BKEY_DIALOG_ID);
+		//noinspection ConstantConditions
+		mDialogId = getArguments().getInt(UniqueId.BKEY_DIALOG_ID);
         int title = getArguments().getInt(BKEY_TITLE);
         String text = getArguments().getString(BKEY_TEXT);
 
-        TextFieldEditor editor = new TextFieldEditor(getActivity());
+        TextFieldEditor editor = new TextFieldEditor(requireActivity());
         editor.setText(text);
         editor.setTitle(title);
         editor.setOnEditListener(mEditListener);
@@ -106,11 +107,11 @@ public class TextFieldEditorFragment extends DialogFragment {
 	private final TextFieldEditor.OnEditListener mEditListener = new TextFieldEditor.OnEditListener(){
 		@Override
 		public void onSaved(@NonNull final String newText) {
-			((OnTextFieldEditorListener)getActivity()).onTextFieldEditorSave(mDialogId, TextFieldEditorFragment.this, newText);
+			((OnTextFieldEditorListener)requireActivity()).onTextFieldEditorSave(mDialogId, TextFieldEditorFragment.this, newText);
 		}
 		@Override
 		public void onCancel() {
-			((OnTextFieldEditorListener)getActivity()).onTextFieldEditorCancel(mDialogId, TextFieldEditorFragment.this);
+			((OnTextFieldEditorListener)requireActivity()).onTextFieldEditorCancel(mDialogId, TextFieldEditorFragment.this);
 		}
 	};
 }

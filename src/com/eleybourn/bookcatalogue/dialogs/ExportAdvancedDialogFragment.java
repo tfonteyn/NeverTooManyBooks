@@ -112,11 +112,12 @@ public class ExportAdvancedDialogFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
+        //noinspection ConstantConditions
         mDialogId = getArguments().getInt(UniqueId.BKEY_DIALOG_ID);
         mFile = new File(Objects.requireNonNull(getArguments().getString(UniqueId.BKEY_FILE_SPEC)));
 
-        View v = getActivity().getLayoutInflater().inflate(R.layout.dialog_export_advanced_options, null);
-        AlertDialog dialog = new AlertDialog.Builder(getActivity())
+        View v = requireActivity().getLayoutInflater().inflate(R.layout.dialog_export_advanced_options, null);
+        AlertDialog dialog = new AlertDialog.Builder(requireActivity())
                 .setView(v)
                 .setTitle(R.string.advanced_options)
                 .setIcon(R.drawable.ic_help_outline)
@@ -189,7 +190,7 @@ public class ExportAdvancedDialogFragment extends DialogFragment {
                 settings.dateFrom = DateUtils.parseDate(v.toString());
             } catch (Exception e) {
                 //Snackbar.make(v, R.string.no_date, Snackbar.LENGTH_LONG).show();
-                StandardDialogs.showBriefMessage(getActivity(), R.string.no_date);
+                StandardDialogs.showBriefMessage(requireActivity(), R.string.no_date);
                 return null;
             }
         }

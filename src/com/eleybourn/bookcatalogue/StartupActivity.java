@@ -85,7 +85,6 @@ public class StartupActivity extends AppCompatActivity {
     private static boolean mIsReallyStartup = true;
     /** Options indicating Amazon hint could be shown */
     private static boolean mShowAmazonHint = false;
-    @Nullable
     private static WeakReference<StartupActivity> mStartupActivity = null;
     /** Handler to post run'ables to UI thread */
     private final Handler mHandler = new Handler();
@@ -284,7 +283,7 @@ public class StartupActivity extends AppCompatActivity {
         if (BuildConfig.DEBUG) {
             Logger.info("Task Completed: " + task.getClass().getCanonicalName());
         }
-        if (!mTaskQueue.hasActiveTasks()) {
+        if (!getQueue().hasActiveTasks()) {
             if (BuildConfig.DEBUG) {
                 Logger.info("Task Completed - all done");
             }
@@ -295,7 +294,7 @@ public class StartupActivity extends AppCompatActivity {
     /**
      * Get (or create) the task queue.
      */
-    @Nullable
+    @NonNull
     private SimpleTaskQueue getQueue() {
         if (mTaskQueue == null) {
             mTaskQueue = new SimpleTaskQueue("startup-tasks", 1);

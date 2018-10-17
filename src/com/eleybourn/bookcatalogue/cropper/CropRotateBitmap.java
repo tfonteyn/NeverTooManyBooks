@@ -22,7 +22,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 class CropRotateBitmap {
-    @Nullable
     private Bitmap mBitmap;
     private int mRotation;
 

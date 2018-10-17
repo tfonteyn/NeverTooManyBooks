@@ -86,6 +86,7 @@ public class MessageDialogFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
+        //noinspection ConstantConditions
         mDialogId = getArguments().getInt(UniqueId.BKEY_DIALOG_ID);
         int title = getArguments().getInt(TITLE_ID);
         String msg = getArguments().getString(MESSAGE);
@@ -93,7 +94,7 @@ public class MessageDialogFragment extends DialogFragment {
         int btnNeg = getArguments().getInt(BUTTON_NEGATIVE_TEXT_ID);
         int btnNeut = getArguments().getInt(BUTTON_NEUTRAL_TEXT_ID);
 
-        AlertDialog dialog = new AlertDialog.Builder(getActivity()).setMessage(msg)
+        AlertDialog dialog = new AlertDialog.Builder(requireActivity()).setMessage(msg)
                 .setTitle(title)
                 .setIcon(R.drawable.ic_info_outline)
                 .create();

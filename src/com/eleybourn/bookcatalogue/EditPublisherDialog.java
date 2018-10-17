@@ -49,13 +49,14 @@ public class EditPublisherDialog {
         dialog.setContentView(R.layout.dialog_edit_publisher);
         dialog.setTitle(R.string.edit_publisher_details);
 
-        EditText familyView = dialog.findViewById(R.id.name);
-        familyView.setText(publisher.name);
+        final EditText nameView = dialog.findViewById(R.id.name);
+        //noinspection ConstantConditions
+        nameView.setText(publisher.name);
 
+        //noinspection ConstantConditions
         dialog.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                EditText nameView = dialog.findViewById(R.id.name);
                 String newName = nameView.getText().toString().trim();
                 if (newName.isEmpty()) {
                     StandardDialogs.showBriefMessage(mActivity, R.string.name_can_not_be_blank);
@@ -67,6 +68,7 @@ public class EditPublisherDialog {
             }
         });
 
+        //noinspection ConstantConditions
         dialog.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

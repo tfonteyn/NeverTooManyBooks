@@ -60,6 +60,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class Utils {
 
@@ -256,7 +257,9 @@ public class Utils {
      * @param list List to clean up
      */
     public static <T extends ItemWithIdFixup> boolean pruneList(@NonNull final CatalogueDBAdapter db,
-                                                                @NonNull final List<T> list) {
+                                                                @Nullable final List<T> list) {
+        Objects.requireNonNull(list);
+
         Map<String, Boolean> names = new HashMap<>();
         @SuppressLint("UseSparseArrays")
         Map<Long, Boolean> ids = new HashMap<>();

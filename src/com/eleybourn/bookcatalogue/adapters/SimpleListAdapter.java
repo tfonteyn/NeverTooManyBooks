@@ -82,6 +82,7 @@ import java.util.Objects;
  * @author Philip Warner
  */
 public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
+    @LayoutRes
     private final int mRowViewId;
     @NonNull
     private final List<T> mItems;
@@ -252,13 +253,15 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
         if (convertView == null) {
             LayoutInflater vi = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             // If possible, ask the object for the view ID
+            @LayoutRes
+            int layout;
             if (item instanceof ViewProvider) {
-                //noinspection ConstantConditions
-                convertView = vi.inflate(((ViewProvider) item).getViewId(), null);
+                layout = ((ViewProvider) item).getViewId();
             } else {
-                //noinspection ConstantConditions
-                convertView = vi.inflate(mRowViewId, null);
+                layout = mRowViewId;
             }
+            //noinspection ConstantConditions
+            convertView = vi.inflate(layout, null);
         }
 
         // Save this views position

@@ -39,6 +39,7 @@ public class GoodreadsUtils {
         {
             View view = grDialog.findViewById(R.id.lbl_sync_with_goodreads);
             // Make line flash when clicked.
+            //noinspection ConstantConditions
             view.setBackgroundResource(android.R.drawable.list_selector_background);
             view.setOnClickListener(new OnClickListener() {
                 @Override
@@ -53,6 +54,7 @@ public class GoodreadsUtils {
         {
             View view = grDialog.findViewById(R.id.lbl_import_all_from_goodreads);
             // Make line flash when clicked.
+            //noinspection ConstantConditions
             view.setBackgroundResource(android.R.drawable.list_selector_background);
             view.setOnClickListener(new OnClickListener() {
                 @Override
@@ -67,6 +69,7 @@ public class GoodreadsUtils {
         {
             View view = grDialog.findViewById(R.id.lbl_send_books_to_goodreads);
             // Make line flash when clicked.
+            //noinspection ConstantConditions
             view.setBackgroundResource(android.R.drawable.list_selector_background);
             view.setOnClickListener(new OnClickListener() {
                 @Override
@@ -183,7 +186,7 @@ public class GoodreadsUtils {
 
                         @Override
                         public void run() {
-                            StandardDialogs.goodreadsAuthAlert(fragment.getActivity());
+                            StandardDialogs.goodreadsAuthAlert(fragment.requireActivity());
                         }
                     });
                 } else {

@@ -43,6 +43,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Abstract class for creating activities containing book details.
@@ -78,7 +79,7 @@ public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFra
         // create the common 'Fields'
         super.onActivityCreated(savedInstanceState);
 
-        mPrefs = getActivity().getSharedPreferences(BookCatalogueApp.APP_SHARED_PREFERENCES, Context.MODE_PRIVATE);
+        mPrefs = requireActivity().getSharedPreferences(BookCatalogueApp.APP_SHARED_PREFERENCES, Context.MODE_PRIVATE);
 
         // add the rest of the fields.
         initFields();
@@ -162,11 +163,12 @@ public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFra
 
     private void initCoverImageField() {
         // See how big the display is and use that to set bitmap sizes
-        initThumbSize(getActivity());
+        initThumbSize(requireActivity());
 
         mFields.add(R.id.image, "", UniqueId.KEY_BOOK_THUMBNAIL, null);
         initCoverImageContextMenu(mFields.getField(R.id.image));
         // need this in other parts, so cache it.
+        //noinspection ConstantConditions
         mCoverView = getView().findViewById(R.id.image);
 
         //Allow zooming by clicking on image
@@ -174,7 +176,7 @@ public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFra
 
             @Override
             public void onClick(View v) {
-                ImageUtils.showZoomedThumb(getActivity(), getCoverFile(getBook().getBookId()));
+                ImageUtils.showZoomedThumb(requireActivity(), getCoverFile(getBook().getBookId()));
             }
         });
     }
@@ -234,7 +236,7 @@ public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFra
                 case R.id.SUBMENU_ROTATE_THUMB:
                     // Just a submenu; skip, but display a hint if user is rotating a camera image
                     if (mGotCameraImage) {
-                        HintManager.displayHint(getActivity(), R.string.hint_autorotate_camera_images, null);
+                        HintManager.displayHint(requireActivity(), R.string.hint_autorotate_camera_images, null);
                         mGotCameraImage = false;
                     }
                     return true;
@@ -285,7 +287,7 @@ public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFra
         try {
             switch (requestCode) {
                 case UniqueId.ACTIVITY_REQUEST_CODE_ADD_THUMB_FROM_CAMERA:
-                    if (resultCode == Activity.RESULT_OK && intent != null && intent.getExtras() != null) {
+                    if (resultCode == Activity.RESULT_OK) {
                         addCoverFromCamera(requestCode, resultCode, intent);
                     }
                     break;
@@ -391,7 +393,7 @@ public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFra
     private void cropCoverImageInternal(@NonNull final File thumbFile) {
         boolean cropFrameWholeImage = mPrefs.getBoolean(PREF_CROP_FRAME_WHOLE_IMAGE, false);
 
-        Intent intent = new Intent(getActivity(), CropImageActivity.class);
+        Intent intent = new Intent(requireActivity(), CropImageActivity.class);
         // here you have to pass the absolute path to your file
         intent.putExtra(CropIImage.BKEY_IMAGE_PATH, thumbFile.getAbsolutePath());
         intent.putExtra(CropIImage.BKEY_SCALE, true);
@@ -428,9 +430,9 @@ public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFra
             StorageUtils.deleteFile(cropped);
             intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(new File(cropped.getAbsolutePath())));
 
-            List<ResolveInfo> list = getActivity().getPackageManager().queryIntentActivities(intent, 0);
+            List<ResolveInfo> list = requireActivity().getPackageManager().queryIntentActivities(intent, 0);
             if (list.size() == 0) {
-                StandardDialogs.showBriefMessage(getActivity(), R.string.no_external_crop_app);
+                StandardDialogs.showBriefMessage(requireActivity(), R.string.no_external_crop_app);
             } else {
                 startActivityForResult(intent, UniqueId.ACTIVITY_REQUEST_CODE_CROP_RESULT_EXTERNAL);
             }
@@ -468,7 +470,9 @@ public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFra
         startActivityForResult(pIntent, UniqueId.ACTIVITY_REQUEST_CODE_ADD_THUMB_FROM_CAMERA);
     }
 
-    private void addCoverFromCamera(final int requestCode, final int resultCode, @NonNull final Intent intent) {
+    private void addCoverFromCamera(final int requestCode, final int resultCode, @Nullable final Intent intent) {
+
+        //noinspection ConstantConditions
         Bitmap bitmap = (Bitmap) intent.getExtras().get(CropIImage.BKEY_DATA);
         if (bitmap != null && bitmap.getWidth() > 0 && bitmap.getHeight() > 0) {
             Matrix m = new Matrix();
@@ -503,13 +507,15 @@ public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFra
     }
 
     private void addCoverFromGallery(@Nullable final Intent intent) {
+        Objects.requireNonNull(intent);
+
         Uri selectedImageUri = intent.getData();
 
         if (selectedImageUri != null) {
             boolean imageOk = false;
             // If no 'content' scheme, then use the content resolver.
             try {
-                InputStream in = getContext().getContentResolver().openInputStream(selectedImageUri);
+                InputStream in = requireContext().getContentResolver().openInputStream(selectedImageUri);
                 imageOk = StorageUtils.saveInputStreamToFile(in, getCoverFile(getBook().getBookId()));
             } catch (FileNotFoundException e) {
                 Logger.error(e, "Unable to copy content to file");
@@ -519,13 +525,13 @@ public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFra
                 setCoverImage(getBook().getBookId());
             } else {
                 String s = getString(R.string.could_not_copy_image) + ". " + getString(R.string.if_the_problem_persists);
-                StandardDialogs.showBriefMessage(this.getActivity(), s);
+                StandardDialogs.showBriefMessage(requireActivity(), s);
             }
         } else {
             /* Deal with the case where the chooser returns a null intent. This seems to happen
              * when the filename is not properly understood by the choose (eg. an apostrophe in
              * the file name confuses ES File Explorer in the current version as of 23-Sep-2012. */
-            StandardDialogs.showBriefMessage(this.getActivity(), R.string.could_not_copy_image);
+            StandardDialogs.showBriefMessage(requireActivity(), R.string.could_not_copy_image);
         }
     }
 
@@ -533,7 +539,7 @@ public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFra
         Field isbnField = mFields.getField(R.id.isbn);
         String isbn = isbnField.getValue().toString();
         if (IsbnUtils.isValid(isbn)) {
-            mCoverBrowser = new CoverBrowser(getActivity(), isbn, new OnImageSelectedListener() {
+            mCoverBrowser = new CoverBrowser(requireActivity(), isbn, new OnImageSelectedListener() {
                 @Override
                 public void onImageSelected(@NonNull final String fileSpec) {
                     if (mCoverBrowser != null) {
@@ -552,7 +558,7 @@ public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFra
             mCoverBrowser.showEditionCovers();
         } else {
             //Snackbar.make(isbnField.getView(), R.string.editions_require_isbn, Snackbar.LENGTH_LONG).show();
-            StandardDialogs.showBriefMessage(getActivity(), R.string.editions_require_isbn);
+            StandardDialogs.showBriefMessage(requireActivity(), R.string.editions_require_isbn);
         }
     }
 
@@ -579,7 +585,7 @@ public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFra
     private void invalidateCachedThumbnail() {
         final long bookId = getBook().getBookId();
         if (bookId != 0) {
-            try (CoversDbHelper coversDbHelper = CoversDbHelper.getInstance(getContext())) {
+            try (CoversDbHelper coversDbHelper = CoversDbHelper.getInstance(requireContext())) {
                 coversDbHelper.deleteBookCover(mDb.getBookUuid(bookId));
             } catch (Exception e) {
                 Logger.error(e, "Error cleaning up cached cover images");

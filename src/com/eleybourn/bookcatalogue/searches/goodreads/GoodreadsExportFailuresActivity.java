@@ -62,9 +62,7 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity {
     /** Key to store optional task ID when activity is started */
     private static final String GR_TASK_ID = "GoodreadsExportFailuresActivity.TaskId";
     /** DB connection */
-    @Nullable
     private CatalogueDBAdapter mDb = null;
-    @Nullable
     private BindableItemCursor mCursor;
 
     /**
@@ -243,7 +241,7 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity {
     /**
      * Get the EventsCursor relevant to this Activity
      */
-    @Nullable
+    @NonNull
     @Override
     protected BindableItemCursor getBindableItemCursor(@Nullable final Bundle savedInstanceState) {
         if (mTaskId == 0) {

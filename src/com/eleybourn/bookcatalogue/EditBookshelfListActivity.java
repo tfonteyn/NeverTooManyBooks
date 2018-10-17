@@ -136,7 +136,7 @@ public class EditBookshelfListActivity extends BaseListActivity
 
     @Override
     @CallSuper
-    protected void onActivityResult(final int requestCode, final int resultCode, final Intent intent) {
+    protected void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
         populateList();
     }

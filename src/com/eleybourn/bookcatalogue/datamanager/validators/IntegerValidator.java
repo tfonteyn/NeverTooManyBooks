@@ -55,6 +55,7 @@ public class IntegerValidator extends DefaultFieldValidator {
             if (o instanceof Integer) {
                 value = (Integer) o;
             } else {
+                //noinspection ConstantConditions
                 value = Integer.parseInt(o.toString());
             }
             data.putInt(datum, value);

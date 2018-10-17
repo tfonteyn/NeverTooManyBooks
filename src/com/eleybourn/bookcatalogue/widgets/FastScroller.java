@@ -62,6 +62,7 @@ package com.eleybourn.bookcatalogue.widgets;
  */
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
@@ -111,10 +112,10 @@ public class FastScroller {
     @NonNull
     private final AbsListView mList;
     private final Handler mHandler = new Handler();
-    @Nullable
-    private Drawable mThumbDrawable;
-    @Nullable
-    private Drawable mOverlayDrawable;
+    @NonNull
+    private final Drawable mThumbDrawable;
+    @NonNull
+    private final Drawable mOverlayDrawable;
     private int mThumbH;
     private int mThumbW;
     private int mThumbY;
@@ -155,6 +156,12 @@ public class FastScroller {
             overlaySize = 3 * mLargeTextScaledSize;
         }
         mOverlaySize = overlaySize;
+
+        // Get both the scrollbar states drawables
+        final Resources res = context.getResources();
+        mOverlayDrawable = res.getDrawable(R.drawable.bc_fastscroller_overlay_background);
+        mThumbDrawable = res.getDrawable(R.drawable.scrollbar_handle_accelerated_anim2);
+
         init(context);
     }
 
@@ -196,21 +203,13 @@ public class FastScroller {
         mThumbDrawable.setAlpha(ScrollFade.ALPHA_MAX);
     }
 
-    private void useThumbDrawable(@NonNull final Drawable drawable) {
-        mThumbDrawable = drawable;
+    private void init(@NonNull final Context context) {
+
         // Can't use the view width yet, because it has probably not been set up so we just
         // use the native width. It will be set later when we come to actually draw it.
         mThumbW = mThumbDrawable.getIntrinsicWidth();
         mThumbH = mThumbDrawable.getIntrinsicHeight();
         mChangedBounds = true;
-    }
-
-    private void init(@NonNull final Context context) {
-        // Get both the scrollbar states drawables
-        final Resources res = context.getResources();
-        useThumbDrawable(res.getDrawable(R.drawable.scrollbar_handle_accelerated_anim2));
-
-        mOverlayDrawable = res.getDrawable(R.drawable.bc_fastscroller_overlay_background);
 
         mScrollCompleted = true;
 
@@ -222,10 +221,14 @@ public class FastScroller {
         mPaint.setAntiAlias(true);
         mPaint.setTextAlign(Paint.Align.CENTER);
         mPaint.setTextSize(mOverlaySize / 3);
-        TypedArray ta = context.getTheme().obtainStyledAttributes(new int[]{android.R.attr.textColorPrimary});
-        @SuppressWarnings("ConstantConditions") int textColorNormal = ta.getColorStateList(ta.getIndex(0)).getDefaultColor();
-        mPaint.setColor(textColorNormal);
         mPaint.setStyle(Paint.Style.FILL_AND_STROKE);
+
+        TypedArray ta = context.getTheme().obtainStyledAttributes(new int[]{android.R.attr.textColorPrimary});
+        ColorStateList csl = ta.getColorStateList(ta.getIndex(0));
+        // is there ever a null situation ?
+        if (csl != null) {
+            mPaint.setColor(csl.getDefaultColor());
+        }
 
         mState = STATE_NONE;
 
@@ -238,11 +241,9 @@ public class FastScroller {
 
     void stop() {
         setState(STATE_NONE);
-        // No need for these any more.
-        mOverlayDrawable = null;
-        mThumbDrawable = null;
     }
 
+    @SuppressWarnings("WeakerAccess")
     public void draw(@NonNull final Canvas canvas) {
         if (mState == STATE_NONE) {
             return;
@@ -340,19 +341,15 @@ public class FastScroller {
     }
 
     void onSizeChanged(final int w, final int h) {
-        if (mThumbDrawable != null) {
-            mThumbDrawable.setBounds(w - mThumbW, 0, w, mThumbH);
-        }
+        mThumbDrawable.setBounds(w - mThumbW, 0, w, mThumbH);
         final RectF pos = mOverlayPos;
         // Now, Make it 75% of total available space
         pos.left = (w / 8);
         pos.right = pos.left + w * 3 / 4;
         pos.top = h / 10; // 10% from top
         pos.bottom = pos.top + mOverlaySize;
-        if (mOverlayDrawable != null) {
             mOverlayDrawable.setBounds((int) pos.left, (int) pos.top,
                     (int) pos.right, (int) pos.bottom);
-        }
     }
 
     void onScroll(final int firstVisibleItem, final int visibleItemCount, final int totalItemCount) {
@@ -434,7 +431,7 @@ public class FastScroller {
         if (mSectionIndexerV2 != null) {
             mSectionTextV2 = mSectionIndexerV2.getSectionTextForPosition(index);
         } else {
-            if (sections != null && sections.length > 1) {
+            if ((sections != null && sections.length > 1) && (mSectionIndexerV1 != null)) {
                 sectionIndex = mSectionIndexerV1.getSectionForPosition(index);
                 if (sectionIndex >= 0 && sectionIndex < sections.length) {
                     mSectionTextV1 = sections[sectionIndex].toString();

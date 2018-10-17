@@ -125,12 +125,14 @@ public class HintManager {
         }
 
         // Handle the 'OK' click
+        //noinspection ConstantConditions
         dialog.findViewById(R.id.confirm).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
                 // Disable hint if checkbox checked
                 final Checkable cb = dialog.findViewById(R.id.hide_hint_checkbox);
+                //noinspection ConstantConditions
                 if (cb.isChecked()) {
                     hint.setVisibility(false);
                 }

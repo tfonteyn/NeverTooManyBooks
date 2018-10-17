@@ -306,7 +306,7 @@ public abstract class QueueManager {
     /**
      * Make a toast message for the caller. Queue in UI thread if necessary.
      */
-    private void doToast(@NonNull final String message) {
+    private void doToast(@Nullable final String message) {
         if (Thread.currentThread() == mUIThread.get()) {
             synchronized (this) {
                 if (BuildConfig.DEBUG) {

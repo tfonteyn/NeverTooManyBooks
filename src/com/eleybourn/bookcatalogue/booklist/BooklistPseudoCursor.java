@@ -88,7 +88,6 @@ public class BooklistPseudoCursor extends AbstractCursor implements BooklistSupp
     @Nullable
     private BooklistRowView mRowView = null;
     /** The cursor to use for the last onMove() event */
-    @Nullable
     private BooklistCursor mActiveCursor = null;
     /** Current MRU ring buffer position */
     private int mMruListPos = 0;

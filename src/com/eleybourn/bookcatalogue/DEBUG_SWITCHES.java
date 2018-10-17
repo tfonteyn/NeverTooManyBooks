@@ -3,9 +3,8 @@ package com.eleybourn.bookcatalogue;
 /**
  * Global location where you can switch individual DEBUG options of/off
  *
- * Note: when set to true, the global BuildConfig.DEBUG should still suppress them
- *
- * So use something like this:
+ * When set to true, the global BuildConfig.DEBUG should still suppress them
+ * Use something like this:
  *
  *    if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
  *          Logger.info("some debug info);

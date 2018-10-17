@@ -49,6 +49,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -419,7 +420,9 @@ public class StorageUtils {
      *
      * @return <tt>true</tt>if successful
      */
-    public static boolean saveInputStreamToFile(@NonNull final InputStream in, @NonNull final File out) {
+    public static boolean saveInputStreamToFile(@Nullable final InputStream in, @NonNull final File out) {
+        Objects.requireNonNull(in);
+
         File temp = null;
         try {
             // Get a temp file to avoid overwriting output unless copy works

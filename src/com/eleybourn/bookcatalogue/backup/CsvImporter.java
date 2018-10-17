@@ -252,15 +252,13 @@ public class CsvImporter implements Importer {
 
     /**
      * @return new or updated bookId
-     *
-     * @throws Exception on failure
      */
     private long importBook(long bookId,
                             final boolean hasNumericId,
                             @NonNull final String uuidVal,
                             final boolean hasUuid,
                             @NonNull final Book book,
-                            final boolean updateOnlyIfNewer) throws Exception {
+                            final boolean updateOnlyIfNewer) {
         if (!hasUuid && !hasNumericId) {
             // Always import empty IDs...even if they are duplicates.
             long id = mDb.insertBookWithId(0, book);

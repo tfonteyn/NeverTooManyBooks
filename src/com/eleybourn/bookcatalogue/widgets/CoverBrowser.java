@@ -86,13 +86,10 @@ public class CoverBrowser {
     @NonNull
     private final android.util.DisplayMetrics mMetric;
     /** Task queue for images */
-    @Nullable
     private SimpleTaskQueue mImageFetcher = null;
     /** List of all editions for the given ISBN */
-    @Nullable
     private List<String> mEditions;
     /** Object to ensure files are cleaned up. */
-    @Nullable
     private FileManager mFileManager;
     /** Indicates a 'shutdown()' has been requested */
     private boolean mShutdown = false;
@@ -628,7 +625,7 @@ public class CoverBrowser {
         /**
          * Clean up all files.
          */
-        public void purge() {
+        void purge() {
             try {
                 for (String k : mFiles.keySet()) {
                     String fileSpec = mFiles.getString(k);

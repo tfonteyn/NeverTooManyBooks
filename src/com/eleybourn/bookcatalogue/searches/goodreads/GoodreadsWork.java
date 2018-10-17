@@ -53,7 +53,6 @@ public class GoodreadsWork {
 	@Nullable
     private byte[] imageBytes = null;
 	private GetImageTask mTask;
-	@Nullable
     private WeakReference<ImageView> mImageView = null;
 
 	public GoodreadsWork() {

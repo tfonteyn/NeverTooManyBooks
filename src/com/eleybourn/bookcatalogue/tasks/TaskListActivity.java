@@ -65,7 +65,6 @@ public class TaskListActivity extends BindableItemListActivity {
             TaskListActivity.this.refreshData();
         }
     };
-    @Nullable
     private CatalogueDBAdapter mDb = null;
     private TasksCursor mCursor;
 
@@ -166,6 +165,7 @@ public class TaskListActivity extends BindableItemListActivity {
     /**
      * Get a cursor returning the tasks we are interested in (in this case all tasks)
      */
+    @NonNull
     @Override
     protected BindableItemCursor getBindableItemCursor(@Nullable final Bundle savedInstanceState) {
         mCursor = QueueManager.getQueueManager().getTasks(TaskCursorSubtype.all);

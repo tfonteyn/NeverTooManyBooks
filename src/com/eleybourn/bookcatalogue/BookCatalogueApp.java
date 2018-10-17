@@ -68,7 +68,8 @@ import java.util.Set;
  * @author Philip Warner
  */
 @ReportsCrashes(
-        mailTo = "philip.warner@rhyme.com.au,eleybourn@gmail.com",
+        //mailTo = "philip.warner@rhyme.com.au,eleybourn@gmail.com",
+        mailTo = "",
         mode = ReportingInteractionMode.DIALOG,
         customReportContent = {
                 ReportField.USER_COMMENT,
@@ -137,7 +138,6 @@ public class BookCatalogueApp extends Application {
     /** Never store a context in a static, use the instance instead */
     private static BookCatalogueApp mInstance;
     /** Used to sent notifications regarding tasks */
-    @Nullable
     private static NotificationManager mNotifier;
     private static BCQueueManager mQueueManager = null;
     /** List of supported locales */
@@ -401,7 +401,6 @@ public class BookCatalogueApp extends Application {
                 .setContentIntent(PendingIntent.getActivity(mInstance.getApplicationContext(), 0, intent, 0))
                 .build();
 
-        //noinspection ConstantConditions
         mNotifier.notify(R.id.NOTIFICATION, notification);
     }
 

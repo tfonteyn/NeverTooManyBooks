@@ -29,8 +29,8 @@ import java.util.Objects;
 /**
  * Layout clickable items:
  *
- *      R.id.all_books_row
- *      R.id.new_and_changed_books_row
+ * R.id.all_books_row
+ * R.id.new_and_changed_books_row
  */
 public class ImportTypeSelectionDialogFragment extends DialogFragment {
     private int mDialogId;
@@ -92,6 +92,7 @@ public class ImportTypeSelectionDialogFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
+        //noinspection ConstantConditions
         mDialogId = getArguments().getInt(UniqueId.BKEY_DIALOG_ID);
         mFile = new File(Objects.requireNonNull(getArguments().getString(UniqueId.BKEY_FILE_SPEC)));
 
@@ -105,7 +106,7 @@ public class ImportTypeSelectionDialogFragment extends DialogFragment {
             mArchiveHasValidDates = false;
         }
 
-        View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_import_type_selection, null);
+        View view = requireActivity().getLayoutInflater().inflate(R.layout.dialog_import_type_selection, null);
         setOnClickListener(view, R.id.all_books_row);
         if (mArchiveHasValidDates) {
             setOnClickListener(view, R.id.new_and_changed_books_row);
@@ -114,7 +115,7 @@ public class ImportTypeSelectionDialogFragment extends DialogFragment {
             blurb.setText(R.string.old_archive_blurb);
         }
 
-        AlertDialog dialog = new AlertDialog.Builder(getActivity())
+        AlertDialog dialog = new AlertDialog.Builder(requireActivity())
                 .setView(view)
                 .setTitle(R.string.import_from_archive)
                 .setIcon(R.drawable.ic_help_outline)
@@ -125,19 +126,17 @@ public class ImportTypeSelectionDialogFragment extends DialogFragment {
 
     private void handleClick(@NonNull final View v) {
         if (!mArchiveHasValidDates && v.getId() == R.id.new_and_changed_books_row) {
-            StandardDialogs.showBriefMessage(getActivity(), R.string.old_archive_blurb);
+            StandardDialogs.showBriefMessage(requireActivity(), R.string.old_archive_blurb);
             //Snackbar.make(v, R.string.old_archive_blurb, Snackbar.LENGTH_LONG).show();
             return;
         }
 
         try {
-            OnImportTypeSelectionDialogResultListener a = (OnImportTypeSelectionDialogResultListener) getActivity();
-            if (a != null) {
-                ImportTypeSelectionDialogFragment.ImportSettings settings = new ImportTypeSelectionDialogFragment.ImportSettings();
-                settings.file = mFile;
-                settings.options = Importer.IMPORT_ALL;
-                a.onImportTypeSelectionDialogResult(mDialogId, this, settings);
-            }
+            OnImportTypeSelectionDialogResultListener a = (OnImportTypeSelectionDialogResultListener) requireActivity();
+            ImportTypeSelectionDialogFragment.ImportSettings settings = new ImportTypeSelectionDialogFragment.ImportSettings();
+            settings.file = mFile;
+            settings.options = Importer.IMPORT_ALL;
+            a.onImportTypeSelectionDialogResult(mDialogId, this, settings);
         } catch (Exception e) {
             Logger.error(e);
         }

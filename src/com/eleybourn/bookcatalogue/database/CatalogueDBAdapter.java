@@ -689,7 +689,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
      * @throws DBExceptions.UpdateException if the update failed
      */
     private long insertOrUpdateBookAnthology(final long anthologyId, final long bookId,
-                                              final boolean dirtyBookIfNecessary)
+                                             final boolean dirtyBookIfNecessary)
             throws DBExceptions.UpdateException {
 
         ContentValues cv = new ContentValues();
@@ -825,6 +825,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
         }
         return mSyncedDb.rawQuery(sql, new String[]{Long.toString(bookId)});
     }
+
     /**
      * Return all the anthology titles and authors recorded for book
      *
@@ -858,6 +859,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
     //endregion
 
     //region Author
+
     /**
      * Create a new author in the database
      *
@@ -1079,6 +1081,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
         }
         return list;
     }
+
     /**
      * Return a Cursor over the list of all books in the database
      *
@@ -1578,7 +1581,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
             insertOrUpdateBookAnthologyAndAnthologyTitles(bookId, book.getContentList(), false);
         }
 
-        if (book.containsKey(UniqueId.KEY_LOAN_LOANED_TO) && !book.get(UniqueId.KEY_LOAN_LOANED_TO).toString().isEmpty()) {
+        if (book.containsKey(UniqueId.KEY_LOAN_LOANED_TO) && !book.getString(UniqueId.KEY_LOAN_LOANED_TO).isEmpty()) {
             deleteLoan(bookId, false);
             insertLoan(book, false); // don't care about insert failures really
         }
@@ -3160,22 +3163,19 @@ public class CatalogueDBAdapter implements AutoCloseable {
             if (columnInfo != null) {
                 // Never update PK.
                 if (!columnInfo.isPrimaryKey) {
-
-                    Object entry = book.get(key);
-
                     // Try to set the appropriate value, but if that fails, just use TEXT...
+                    Object entry = book.get(key);
                     try {
                         switch (columnInfo.typeClass) {
-
-                            case TableInfo.CLASS_REAL: {
+                            case Real: {
                                 if (entry instanceof Float) {
                                     cv.put(columnInfo.name, (Float) entry);
-                                } else {
+                                } else if (entry != null) {
                                     cv.put(columnInfo.name, Float.parseFloat(entry.toString()));
                                 }
                                 break;
                             }
-                            case TableInfo.CLASS_INTEGER: {
+                            case Integer: {
                                 if (entry instanceof Boolean) {
                                     if ((Boolean) entry) {
                                         cv.put(columnInfo.name, 1);
@@ -3184,24 +3184,22 @@ public class CatalogueDBAdapter implements AutoCloseable {
                                     }
                                 } else if (entry instanceof Integer) {
                                     cv.put(columnInfo.name, (Integer) entry);
-                                } else {
+                                } else if (entry != null) {
                                     cv.put(columnInfo.name, Integer.parseInt(entry.toString()));
                                 }
                                 break;
                             }
-                            case TableInfo.CLASS_TEXT: {
+                            case Text: {
                                 if (entry instanceof String) {
                                     cv.put(columnInfo.name, ((String) entry));
-                                } else {
+                                } else if (entry != null) {
                                     cv.put(columnInfo.name, entry.toString());
                                 }
                                 break;
                             }
                         }
                     } catch (Exception e) {
-                        if (entry != null) {
-                            cv.put(columnInfo.name, entry.toString());
-                        }
+                        cv.put(columnInfo.name, entry.toString());
                     }
                 }
             }

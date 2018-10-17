@@ -68,7 +68,6 @@ public class BackupChooser extends FileChooser implements
     private static final String ARCHIVE_PREFIX = "BookCatalogue-";
 
     /** The backup file that will be created (if saving) */
-    @Nullable
     private File mBackupFile;
 
     @CallSuper
@@ -124,10 +123,10 @@ public class BackupChooser extends FileChooser implements
     @Override
     @CallSuper
     public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
         if (mBackupFile != null) {
             outState.putString(BKEY_FILENAME, mBackupFile.getAbsolutePath());
         }
+        super.onSaveInstanceState(outState);
     }
 
     /**
@@ -174,9 +173,10 @@ public class BackupChooser extends FileChooser implements
                     return;
                 }
                 // Show a helpful message
-                @SuppressWarnings("ConstantConditions")
-                String msg = getString(R.string.archive_complete_details, mBackupFile.getParent(),
-                        mBackupFile.getName(), Utils.formatFileSize(mBackupFile.length()));
+                String msg = getString(R.string.archive_complete_details,
+                        mBackupFile.getParent(),
+                        mBackupFile.getName(),
+                        Utils.formatFileSize(mBackupFile.length()));
                 MessageDialogFragment frag = MessageDialogFragment.newInstance(TASK_ID_SAVE,
                         R.string.backup_to_archive, msg);
                 frag.show(getSupportFragmentManager(), null);

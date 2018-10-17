@@ -50,22 +50,22 @@ public class EditAuthorDialog {
         dialog.setTitle(R.string.edit_author_details);
 
 
-        EditText familyView = dialog.findViewById(R.id.family_name);
-        EditText givenView = dialog.findViewById(R.id.given_names);
+        final EditText familyView = dialog.findViewById(R.id.family_name);
+        final EditText givenView = dialog.findViewById(R.id.given_names);
+        //noinspection ConstantConditions
         familyView.setText(author.familyName);
+        //noinspection ConstantConditions
         givenView.setText(author.givenNames);
 
+        //noinspection ConstantConditions
         dialog.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                EditText familyView = dialog.findViewById(R.id.family_name);
                 String newFamily = familyView.getText().toString().trim();
                 if (newFamily.isEmpty()) {
                     StandardDialogs.showBriefMessage(mActivity, R.string.author_is_blank);
                     return;
                 }
-
-                EditText givenView = dialog.findViewById(R.id.given_names);
                 String newGiven = givenView.getText().toString().trim();
 
                 Author newAuthor = new Author(newFamily, newGiven);
@@ -74,6 +74,7 @@ public class EditAuthorDialog {
             }
         });
 
+        //noinspection ConstantConditions
         dialog.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

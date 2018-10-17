@@ -53,14 +53,12 @@ public class XmlFilter {
     @Nullable
     private XmlHandler mStartAction = null;
     /** Optional parameter put in context before action is called */
-    @Nullable
     private Object mStartArg = null;
 
     /** Action to perform, if any, when the associated tag is finished */
     @Nullable
     private XmlHandler mEndAction = null;
     /** Optional parameter put in context before action is called */
-    @Nullable
     private Object mEndArg = null;
 
     /**
@@ -80,10 +78,10 @@ public class XmlFilter {
      *
      * @return The filter matching the final tag name passed.
      */
-    @Nullable
-    public static XmlFilter buildFilter(@NonNull final XmlFilter root, final String... filters) {
+    @NonNull
+    public static XmlFilter buildFilter(@NonNull final XmlFilter root, @NonNull final String... filters) {
         if (filters.length <= 0) {
-            return null;
+           throw new IllegalArgumentException("no filters");
         }
         return buildFilter(root, 0, Arrays.asList(filters).iterator());
     }
@@ -96,10 +94,10 @@ public class XmlFilter {
      *
      * @return The filter matching the final tag name passed.
      */
-    @Nullable
+    @NonNull
     static XmlFilter buildFilter(@NonNull final XmlFilter root, @NonNull final List<String> filters) {
         if (filters.size() <= 0) {
-            return null;
+            throw new IllegalArgumentException("no filters");
         }
         return buildFilter(root, 0, filters.iterator());
     }
@@ -262,10 +260,10 @@ public class XmlFilter {
         void process(@NonNull final ElementContext context);
     }
 
-    /** Interface definition for filter handlers */
-    public interface XmlHandlerExt<T> {
-        void process(@NonNull final ElementContext context, @NonNull final T arg);
-    }
+//    /** Interface definition for filter handlers */
+//    public interface XmlHandlerExt<T> {
+//        void process(@NonNull final ElementContext context, @NonNull final T arg);
+//    }
 
     /**
      * Class used to define the context of a specific tag. The 'body' element will only be
@@ -274,21 +272,13 @@ public class XmlFilter {
      * @author Philip Warner
      */
     public static class ElementContext {
-        @Nullable
         public final String uri;
-        @Nullable
         public final String localName;
-        @Nullable
         public final String name;
-        @Nullable
         public final Attributes attributes;
-        @Nullable
         public final String preText;
         public String body;
         public XmlFilter filter;
-
-        @SuppressWarnings("NullableProblems")
-        @NonNull
         public Object userArg;
 
         public ElementContext() {
@@ -299,11 +289,11 @@ public class XmlFilter {
             this.preText = null;
         }
 
-        public ElementContext(@Nullable final String uri,
-                              @Nullable final String localName,
-                              @Nullable final String name,
-                              @Nullable final Attributes attributes,
-                              @Nullable final String preText) {
+        public ElementContext(@NonNull final String uri,
+                              @NonNull final String localName,
+                              @NonNull final String name,
+                              @NonNull final Attributes attributes,
+                              @NonNull final String preText) {
             this.uri = uri;
             this.localName = localName;
             this.name = name;

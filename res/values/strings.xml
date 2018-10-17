@@ -3,9 +3,13 @@
     <!-- ####################################################################################### -->
     <!-- Creators etc -->
 
-    <string name="contact1" translatable="false">eleybourn@gmail.com</string>
-    <string name="contact2" translatable="false">philip.warner@rhyme.com.au</string>
-    <string name="debug_email" translatable="false">eleybourn@gmail.com;grunthos@rhyme.com.au</string>
+    <!--<string name="contact1" translatable="false">eleybourn@gmail.com</string>-->
+    <!--<string name="contact2" translatable="false">philip.warner@rhyme.com.au</string>-->
+    <!--<string name="debug_email" translatable="false">eleybourn@gmail.com;grunthos@rhyme.com.au</string>-->
+
+    <string name="contact1" translatable="false">name1@email</string>
+    <string name="contact2" translatable="false">name2@email</string>
+    <string name="debug_email" translatable="false">name3@email</string>
 
     <string name="website" translatable="false">https://wiki.github.com/eleybourn/Book-Catalogue/</string>
     <string name="sourcecode" translatable="false">https://github.com/eleybourn/Book-Catalogue</string>

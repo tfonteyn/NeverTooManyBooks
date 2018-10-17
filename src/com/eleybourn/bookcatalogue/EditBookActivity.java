@@ -223,20 +223,22 @@ public class EditBookActivity extends BaseActivity
 
         TabLayout.Tab ourTab = mAllTabs.get(showTab);
         ourTab.select();
+        //noinspection ConstantConditions
+        Fragment frag = ((Holder)ourTab.getTag()).fragment;
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.fragment,  ((Holder)ourTab.getTag()).fragment)
+                .replace(R.id.fragment, frag)
                 .commit();
 
         // finally hook up our listener.
         mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(@NonNull final TabLayout.Tab tab) {
-                Holder holder = (Holder) tab.getTag();
                 //noinspection ConstantConditions
+                Fragment frag = ((Holder)tab.getTag()).fragment;
                 getSupportFragmentManager()
                         .beginTransaction()
-                        .replace(R.id.fragment, holder.fragment)
+                        .replace(R.id.fragment, frag)
                         .commit();
             }
 
@@ -358,11 +360,11 @@ public class EditBookActivity extends BaseActivity
     protected void onSaveInstanceState(@NonNull final Bundle outState) {
         Tracker.enterOnSaveInstanceState(this);
 
-        super.onSaveInstanceState(outState);
         outState.putLong(UniqueId.KEY_ID, mBookId);
         outState.putBundle(UniqueId.BKEY_BOOK_DATA, mBook.getRawData());
         outState.putInt(EditBookActivity.TAB, mTabLayout.getSelectedTabPosition());
 
+        super.onSaveInstanceState(outState);
         Tracker.exitOnSaveInstanceState(this);
     }
 

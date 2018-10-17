@@ -47,10 +47,8 @@ abstract public class BindableItemListActivity extends BaseListActivity implemen
     /** The resource ID for the base view */
     private final int mBaseViewId;
     /** Cursor of book IDs */
-    @Nullable
     private BindableItemCursor mBindableItems;
     /** Adapter for list */
-    @Nullable
     private BindableItemCursorAdapter mListAdapter;
 
     /**
@@ -63,14 +61,14 @@ abstract public class BindableItemListActivity extends BaseListActivity implemen
     }
 
     /**
-     * Subclass MUST implement to return the cursor that will be used to select TaskNotes to display. This
-     * is called from onCreate().
+     * Subclass MUST implement to return the cursor that will be used to select TaskNotes to
+     * display. This is called from onCreate().
      *
      * @param savedInstanceState state info passed to onCreate()
      *
      * @return TaskNotesCursor to use
      */
-    @Nullable
+    @NonNull
     protected abstract BindableItemCursor getBindableItemCursor(@Nullable final Bundle savedInstanceState);
 
     @Override

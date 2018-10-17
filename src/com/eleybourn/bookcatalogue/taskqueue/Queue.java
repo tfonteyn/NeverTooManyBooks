@@ -49,7 +49,6 @@ public class Queue extends Thread {
     private DBAdapter mDb;
 
     /** Currently running task */
-    @Nullable
     private WeakReference<Task> mTask = null;
 
     /** Options to indicate process is terminating */
@@ -180,7 +179,7 @@ public class Queue extends Thread {
      * @param result  true on success, false on failure
      * @param requeue true if requeue needed
      */
-    private void handleResult(Task task, boolean result, boolean requeue) {
+    private void handleResult(@NonNull final Task task, final boolean result, final boolean requeue) {
         TaskActions message;
         synchronized (mManager) {
             if (task.isAborting()) {
@@ -193,7 +192,12 @@ public class Queue extends Thread {
                 mDb.setTaskRequeue(task);
                 message = TaskActions.waiting;
             } else {
-                mDb.setTaskFail(task, "Unhandled exception while running task: " + task.getException().getLocalizedMessage());
+                Exception e =  task.getException();
+                String msg = null;
+                if (e != null) {
+                   msg = e.getLocalizedMessage();
+                }
+                mDb.setTaskFail(task, "Unhandled exception while running task: " + msg);
                 message = TaskActions.completed;
             }
             mTask.clear();

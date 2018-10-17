@@ -16,8 +16,6 @@
 
 package com.eleybourn.bookcatalogue.taskqueue;
 
-import android.support.annotation.CallSuper;
-
 import java.util.concurrent.ExecutionException;
 
 /**

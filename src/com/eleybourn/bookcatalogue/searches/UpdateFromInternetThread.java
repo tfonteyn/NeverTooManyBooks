@@ -24,7 +24,6 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
@@ -74,7 +73,6 @@ public class UpdateFromInternetThread extends ManagedTask {
 
     // Data related to current row being processed
     /** Original row data */
-    @Nullable
     private Bundle mOriginalBookData = null;
     /** current book ID */
     private long mCurrentBookId = 0;
@@ -84,7 +82,6 @@ public class UpdateFromInternetThread extends ManagedTask {
     /** The (subset) of fields relevant to the current book */
     private FieldUsages mCurrentBookFieldUsages;
     /** DB connection */
-    @Nullable
     private CatalogueDBAdapter mDb;
     /** where clause to use in cursor, none by default */
     @NonNull

@@ -107,6 +107,7 @@ public class BookshelfDialogFragment extends DialogFragment {
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         outState.putString(BKEY_LIST, mCurrList);
         outState.putString(BKEY_TEXT, mCurrText);
+        super.onSaveInstanceState(outState);
     }
 
     /**
@@ -154,31 +155,28 @@ public class BookshelfDialogFragment extends DialogFragment {
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        // Grab the args
-        final Bundle ags = getArguments();
-
-        //long bookId = ags.getLong(BKEY_ROW_ID);
+        //long bookId = getArguments().getLong(BKEY_ROW_ID);
 
         // Retrieve dynamic values
         if (savedInstanceState != null && savedInstanceState.containsKey(BKEY_TEXT)) {
             mCurrText = savedInstanceState.getString(BKEY_TEXT);
         } else {
-            mCurrText = ags.getString(BKEY_TEXT);
+            //noinspection ConstantConditions
+            mCurrText = getArguments().getString(BKEY_TEXT);
         }
 
         if (savedInstanceState != null && savedInstanceState.containsKey(BKEY_LIST)) {
             mCurrList = savedInstanceState.getString(BKEY_LIST);
         } else {
-            mCurrList = ags.getString(BKEY_LIST);
+            mCurrList = getArguments().getString(BKEY_LIST);
         }
 
         // Setup the dialog
         getDialog().setTitle(R.string.select_bookshelves);
 
-        final View rootView = getView();
-
         // Handle the OK button
-        Button button = rootView.findViewById(R.id.bookshelf_dialog_button);
+        //noinspection ConstantConditions
+        Button button = getView().findViewById(R.id.bookshelf_dialog_button);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -187,16 +185,17 @@ public class BookshelfDialogFragment extends DialogFragment {
         });
 
         // Get the root view for the list of checkboxes
-        LinearLayout cbRoot = rootView.findViewById(R.id.bookshelf_dialog_root);
+        LinearLayout cbRoot = getView().findViewById(R.id.bookshelf_dialog_root);
 
         final String shelves = Bookshelf.SEPARATOR + mCurrList + Bookshelf.SEPARATOR;
 
         // Loop through all bookshelves and build the checkbox list
-        CatalogueDBAdapter db = new CatalogueDBAdapter(getContext());
+        CatalogueDBAdapter db = new CatalogueDBAdapter(requireContext());
         db.open();
         List<Bookshelf> allBookshelves = db.getBookshelves();
         db.close();
 
+        //noinspection ConstantConditions
         final List<String> currentShelves = ArrayUtils.decodeList(Bookshelf.SEPARATOR, mCurrList);
 
         for (Bookshelf bookshelf : allBookshelves) {
@@ -245,7 +244,7 @@ public class BookshelfDialogFragment extends DialogFragment {
                         mCurrList = newList.toString();
                         mCurrText = newText.toString();
                     }
-                    ((OnBookshelfCheckChangeListener) getActivity()).onBookshelfCheckChanged(mCurrText, mCurrList);
+                    ((OnBookshelfCheckChangeListener) requireActivity()).onBookshelfCheckChanged(mCurrText, mCurrList);
                 }
             });
 

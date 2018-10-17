@@ -45,7 +45,6 @@ public class GetImageTask implements SimpleTask {
      * Byte data of image. NOT a Bitmap because we fetch several and store them in the related
      * GoodreadsWork object and Bitmap objects are much larger than JPG objects.
      */
-    @Nullable
     private byte[] mBytes = null;
 
     /**

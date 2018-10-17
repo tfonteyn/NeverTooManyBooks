@@ -35,7 +35,6 @@ import android.text.method.DigitsKeyListener;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.Button;
 import android.widget.Checkable;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
@@ -58,6 +57,7 @@ import com.eleybourn.bookcatalogue.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -99,12 +99,10 @@ public class BookISBNSearchActivity extends BaseActivityWithTasks {
     private EditText mIsbnText;
     private EditText mTitleText;
     private AutoCompleteTextView mAuthorText;
-    @Nullable
     private ArrayAdapter<String> mAuthorAdapter = null;
     private CatalogueDBAdapter mDb;
     private String mAuthor;
     private String mTitle;
-    @Nullable
     private String mIsbn;
     private int mMode;
 
@@ -114,7 +112,6 @@ public class BookISBNSearchActivity extends BaseActivityWithTasks {
      */
     private boolean mDisplayingAlert = false;
     /** Object to manage preferred (or found) scanner */
-    @Nullable
     private Scanner mScanner = null;
     /** The last Intent returned as a result of creating a book. */
     @Nullable
@@ -162,6 +159,7 @@ public class BookISBNSearchActivity extends BaseActivityWithTasks {
 
             // Must do this before super.onCreate as getLayoutId() needs them
             Bundle extras = getIntent().getExtras();
+            //noinspection ConstantConditions
             mIsbn = extras.getString(UniqueId.KEY_BOOK_ISBN);
             mBy = extras.getString(BKEY_BY);
 
@@ -453,19 +451,17 @@ public class BookISBNSearchActivity extends BaseActivityWithTasks {
     }
 
     private void onCreateByName() {
-        this.setTitle(R.string.search_hint);
-        this.initAuthorList();
+        setTitle(R.string.search_hint);
+        initAuthorList();
 
         mTitleText = findViewById(R.id.title);
 
-        Button mConfirmButton = findViewById(R.id.search);
-        mConfirmButton.setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.search).setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 String author = mAuthorText.getText().toString().trim();
                 String title = mTitleText.getText().toString().trim();
 
-                ArrayAdapter<String> adapter = mAuthorAdapter;
-                if (adapter.getPosition(author) < 0) {
+                if (mAuthorAdapter.getPosition(author) < 0) {
                     // Based on code from filipeximenes we also need to update the adapter here in
                     // case no author or book is added, but we still want to see 'recent' entries.
                     if (!author.isEmpty()) {
@@ -481,7 +477,7 @@ public class BookISBNSearchActivity extends BaseActivityWithTasks {
                             // Keep a list of names as typed to use when we recreate list
                             mAuthorNames.add(author);
                             // Add to adapter, in case search produces no results
-                            adapter.add(author);
+                            mAuthorAdapter.add(author);
                         }
                     }
                 }
@@ -735,12 +731,15 @@ public class BookISBNSearchActivity extends BaseActivityWithTasks {
     @Override
     @CallSuper
     protected void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent intent) {
+
+
         super.onActivityResult(requestCode,resultCode,intent);
         switch (requestCode) {
             case UniqueId.ACTIVITY_REQUEST_CODE_ADD_BOOK_SCAN: {
                 mScannerStarted = false;
                 try {
                     if (resultCode == RESULT_OK) {
+                        Objects.requireNonNull(intent);
                         String isbn = mScanner.getBarcode(intent);
                         mIsbnText.setText(isbn);
                         go(isbn, "", "");
@@ -832,32 +831,32 @@ public class BookISBNSearchActivity extends BaseActivityWithTasks {
 
     @Override
     @CallSuper
-    protected void onSaveInstanceState(@NonNull Bundle instanceState) {
-        super.onSaveInstanceState(instanceState);
-
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
         // Saving intent data is a kludge due to an apparent Android bug in some
         // handsets. Search for "BUG NOTE 1" in this source file for a discussion
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             if (extras.containsKey(UniqueId.KEY_BOOK_ISBN)) {
-                instanceState.putString(UniqueId.KEY_BOOK_ISBN, extras.getString(UniqueId.KEY_BOOK_ISBN));
+                outState.putString(UniqueId.KEY_BOOK_ISBN, extras.getString(UniqueId.KEY_BOOK_ISBN));
             }
             if (extras.containsKey(BKEY_BY)) {
-                instanceState.putString(BKEY_BY, extras.getString(BKEY_BY));
+                outState.putString(BKEY_BY, extras.getString(BKEY_BY));
             }
         }
 
         // standard stuff we need
         if (mSearchManagerId != 0) {
-            instanceState.putLong(SEARCH_MANAGER_ID, mSearchManagerId);
+            outState.putLong(SEARCH_MANAGER_ID, mSearchManagerId);
         }
-        instanceState.putParcelable(LAST_BOOK_INTENT, mLastBookIntent);
-        instanceState.putBoolean(SCANNER_STARTED, mScannerStarted);
+        outState.putParcelable(LAST_BOOK_INTENT, mLastBookIntent);
+        outState.putBoolean(SCANNER_STARTED, mScannerStarted);
 
         // Save the current search details as this may be called as a result of a rotate during an alert dialog.
         // note: these don't actually are getting read ? TODO: make 100% sure, then delete
-        instanceState.putString(UniqueId.KEY_AUTHOR_NAME, mAuthor);
-        instanceState.putString(UniqueId.KEY_BOOK_ISBN, mIsbn);
-        instanceState.putString(UniqueId.KEY_TITLE, mTitle);
+        outState.putString(UniqueId.KEY_AUTHOR_NAME, mAuthor);
+        outState.putString(UniqueId.KEY_BOOK_ISBN, mIsbn);
+        outState.putString(UniqueId.KEY_TITLE, mTitle);
+
+        super.onSaveInstanceState(outState);
     }
 }

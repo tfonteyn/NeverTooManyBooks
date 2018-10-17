@@ -139,6 +139,7 @@ public class BackupUtils {
                 type = BackupUtils.TYPE_SERIALIZABLE;
                 value = Base64.encodeObject((Serializable) object);
             } else {
+                //noinspection ConstantConditions
                 throw new RTE.IllegalTypeException(object.getClass().getCanonicalName());
             }
             out.append("<item name=\"").append(key).append("\" type=\"").append(type).append("\">")

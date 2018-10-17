@@ -276,7 +276,7 @@ public class PreferencesActivity extends PreferencesBaseActivity {
         String lang;
         for (ListProperty.ItemEntry<String> item : mLocalesListItems) {
             String loc = item.getValue();
-            if (loc.isEmpty()) {
+            if (loc == null || loc.isEmpty()) {
                 name = getString(R.string.system_locale);
                 lang = BookCatalogueApp.getSystemLocal().getDisplayLanguage();
             } else {

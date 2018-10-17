@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_AUTHOR;
@@ -276,7 +277,9 @@ public class BooklistStyles extends ArrayList<BooklistStyle> {
     /**
      * Save the preferred style menu list.
      */
-    static void saveMenuOrder(@NonNull final List<BooklistStyle> list) {
+    static void saveMenuOrder(@Nullable final List<BooklistStyle> list) {
+        Objects.requireNonNull(list);
+
         StringBuilder items = new StringBuilder();
         for (BooklistStyle style : list) {
             if (style.isPreferred()) {

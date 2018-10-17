@@ -75,11 +75,13 @@ abstract class AbstractBase {
                 throw e;
             } catch (IOException e) {
                 if (BuildConfig.DEBUG) {
-                    Logger.info("charset      : " + response.charset());
-                    Logger.info("contentType  : " + response.contentType());
-                    Logger.info("statusCode   : " + response.statusCode());
-                    Logger.info("statusMessage: " + response.statusMessage());
-                    Logger.info("contentType  : " + response.contentType());
+                    if (response != null) {
+                        Logger.info("charset      : " + response.charset());
+                        Logger.info("contentType  : " + response.contentType());
+                        Logger.info("statusCode   : " + response.statusCode());
+                        Logger.info("statusMessage: " + response.statusMessage());
+                        Logger.info("contentType  : " + response.contentType());
+                    }
                 }
                 Logger.error(e, mPath);
                 return false;

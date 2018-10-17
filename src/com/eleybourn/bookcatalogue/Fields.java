@@ -51,7 +51,6 @@ import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.datamanager.Datum;
 import com.eleybourn.bookcatalogue.datamanager.validators.ValidatorException;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.RTE;
 
@@ -59,7 +58,6 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * This is the class that manages data and views for an Activity; access to the data that
@@ -159,7 +157,10 @@ public class Fields extends ArrayList<Fields.Field> {
     }
 
     /**
-     * This should NEVER happen, but it does. So we need more info about why & when.
+     * This should NEVER happen, but it does. See Issue 505. So we need more info about why & when.
+     *
+     * // Allow for the (apparent) possibility that the view may have been removed due
+     * // to a tab change or similar. See Issue 505.
      *
      * Every field MUST have an associated View object, but sometimes it is not found.
      * When not found, the app crashes.
@@ -175,7 +176,7 @@ public class Fields extends ArrayList<Fields.Field> {
      * is removed from the screen. In this case, there is no need to synchronize the values
      * since the view is gone.
      */
-    private static void debugNullView(final @NonNull FieldDataAccessor accessor, final @NonNull Field field) {
+    private static void debugNullView(@NonNull final Field field) {
         String msg = "NULL View: col=" + field.column + ", id=" + field.id + ", group=" + field.group;
         Fields fields = field.getFields();
         if (fields == null) {
@@ -191,10 +192,10 @@ public class Fields extends ArrayList<Fields.Field> {
                 msg += ". Owner is " + ownerContext.getClass().getCanonicalName() + " (" + ownerContext + ")";
             }
         }
-        Tracker.handleEvent(accessor, msg, Tracker.States.Running);
-        throw new IllegalStateException("Unable to get associated View object");
+        throw new IllegalStateException("Unable to get associated View object\n" + msg);
     }
 
+    @SuppressWarnings("WeakerAccess")
     public static boolean isVisible(@NonNull final String fieldName) {
         return BookCatalogueApp.Prefs.getBoolean(PREFS_FIELD_VISIBILITY + fieldName, true);
     }
@@ -208,7 +209,7 @@ public class Fields extends ArrayList<Fields.Field> {
      *
      * @return original listener
      */
-    @SuppressWarnings("UnusedReturnValue")
+    @SuppressWarnings({"UnusedReturnValue", "WeakerAccess"})
     @Nullable
     public AfterFieldChangeListener setAfterFieldChangeListener(@Nullable final AfterFieldChangeListener listener) {
         AfterFieldChangeListener old = mAfterFieldChangeListener;
@@ -315,6 +316,7 @@ public class Fields extends ArrayList<Fields.Field> {
      *
      * @return Associated Field.
      */
+    @SuppressWarnings("WeakerAccess")
     @NonNull
     public Field getField(@IdRes final int fieldId) {
         for (Field f : this) {
@@ -332,10 +334,10 @@ public class Fields extends ArrayList<Fields.Field> {
      * @param adapter Adapter to use
      */
     public void setAdapter(@IdRes final int fieldId, @NonNull final ArrayAdapter<String> adapter) {
-        Field f = getField(fieldId);
-        TextView tv = f.getView();
-        if (tv instanceof AutoCompleteTextView) {
-            ((AutoCompleteTextView) tv).setAdapter(adapter);
+        Field field = getField(fieldId);
+        TextView textView = field.getView();
+        if (textView instanceof AutoCompleteTextView) {
+            ((AutoCompleteTextView) textView).setAdapter(adapter);
         }
     }
 
@@ -346,8 +348,7 @@ public class Fields extends ArrayList<Fields.Field> {
      * @param listener onClick() listener.
      */
     void setListener(@IdRes final int fieldId, @NonNull final View.OnClickListener listener) {
-        View view = Objects.requireNonNull(getField(fieldId).getView());
-        view.setOnClickListener(listener);
+        getField(fieldId).getView().setOnClickListener(listener);
     }
 
     /**
@@ -388,7 +389,7 @@ public class Fields extends ArrayList<Fields.Field> {
      *
      * @param data Cursor to load Field objects from.
      */
-    public void getAllInto(@NonNull final DataManager data) {
+    void getAllInto(@NonNull final DataManager data) {
         for (Field field : this) {
             if (!field.column.isEmpty()) {
                 field.getValue(data);
@@ -432,8 +433,9 @@ public class Fields extends ArrayList<Fields.Field> {
     /**
      * Reset all field visibility based on user preferences
      */
+    @SuppressWarnings("WeakerAccess")
     public void resetVisibility() {
-        FieldsContext context = this.getContext();
+        FieldsContext context = getContext();
         for (Field field : this) {
             field.resetVisibility(context);
         }
@@ -505,6 +507,7 @@ public class Fields extends ArrayList<Fields.Field> {
      *
      * @param v An instance of FieldCrossValidator to append
      */
+    @SuppressWarnings("WeakerAccess")
     public void addCrossValidator(@NonNull final FieldCrossValidator v) {
         mCrossValidators.add(v);
     }
@@ -640,10 +643,10 @@ public class Fields extends ArrayList<Fields.Field> {
          *
          * @param source Input value
          *
-         * @return The formatted value
+         * @return The formatted value. If the source as null, should return "" (and log an error)
          */
         @NonNull
-        String format(@NonNull final Field field, @NonNull final String source);
+        String format(@NonNull final Field field, @Nullable final String source);
 
         /**
          * Extract a formatted string from the display version
@@ -733,19 +736,13 @@ public class Fields extends ArrayList<Fields.Field> {
         public void set(@NonNull final Field field, @NonNull final String value) {
             mRawValue = value;
             TextView view = field.getView();
-            // Allow for the (apparent) possibility that the view may have been removed due
-            // to a tab change or similar. See Issue 505.
-            if (view == null) {
-                debugNullView(this, field);
+            if (mFormatHtml) {
+                view.setText(Html.fromHtml(field.format(value)));
+                view.setFocusable(true);
+                view.setTextIsSelectable(true);
+                view.setAutoLinkMask(Linkify.ALL);
             } else {
-                if (mFormatHtml) {
-                    view.setText(Html.fromHtml(field.format(value)));
-                    view.setFocusable(true);
-                    view.setTextIsSelectable(true);
-                    view.setAutoLinkMask(Linkify.ALL);
-                } else {
-                    view.setText(field.format(value));
-                }
+                view.setText(field.format(value));
             }
         }
 
@@ -766,6 +763,7 @@ public class Fields extends ArrayList<Fields.Field> {
         /**
          * Set the TextViewAccessor to support HTML.
          */
+        @SuppressWarnings("WeakerAccess")
         public void setShowHtml(final boolean showHtml) {
             mFormatHtml = showHtml;
         }
@@ -802,22 +800,13 @@ public class Fields extends ArrayList<Fields.Field> {
             }
             try {
                 TextView view = field.getView();
-                // Allow for the (apparent) possibility that the view may have been removed due
-                // to a tab change or similar. See Issue 505.
-                if (view == null) {
-                    debugNullView(this, field);
-                }
+                String newVal = field.format(value);
+                String oldVal = view.getText().toString().trim();
 
-                // If the view is still present, make sure it is accurate.
-                if (view != null) {
-                    String newVal = field.format(value);
-                    String oldVal = view.getText().toString().trim();
-
-                    if (newVal.equals(oldVal)) {
-                        return;
-                    }
-                    view.setText(newVal);
+                if (newVal.equals(oldVal)) {
+                    return;
                 }
+                view.setText(newVal);
             } finally {
                 mIsSetting = false;
             }
@@ -905,7 +894,7 @@ public class Fields extends ArrayList<Fields.Field> {
             if (field.formatter != null) {
                 return field.formatter.extract(field, (cb.isChecked() ? "1" : "0"));
             } else {
-                return ((Checkable) field.getView()).isChecked() ? 1 : 0;
+                return cb.isChecked() ? 1 : 0;
             }
         }
     }
@@ -989,9 +978,6 @@ public class Fields extends ArrayList<Fields.Field> {
 
         public void set(@NonNull final Field field, @Nullable final String value) {
             Spinner spinner = field.getView();
-            if (spinner == null) {
-                return;
-            }
             String s = field.format(value);
             for (int i = 0; i < spinner.getCount(); i++) {
                 if (spinner.getItemAtPosition(i).equals(s)) {
@@ -1017,16 +1003,13 @@ public class Fields extends ArrayList<Fields.Field> {
         @NonNull
         private String getValue(@NonNull final Field field) {
             Spinner spinner = field.getView();
-            if (spinner == null) {
-                return "";
+            Object selItem = spinner.getSelectedItem();
+            if (selItem != null) {
+                return selItem.toString().trim();
             } else {
-                Object selItem = spinner.getSelectedItem();
-                if (selItem != null) {
-                    return selItem.toString().trim();
-                } else {
-                    return "";
-                }
+                return "";
             }
+
         }
     }
 
@@ -1040,7 +1023,11 @@ public class Fields extends ArrayList<Fields.Field> {
          * Display as a human-friendly date
          */
         @NonNull
-        public String format(@NonNull final Field field, @NonNull final String source) {
+        public String format(@NonNull final Field field, @Nullable final String source) {
+            if (source == null) {
+                Logger.error("source was null");
+                return "";
+            }
             try {
                 java.util.Date d = DateUtils.parseDate(source);
                 if (d != null) {
@@ -1079,6 +1066,7 @@ public class Fields extends ArrayList<Fields.Field> {
         /**
          * @param res resources so we can get 'yes'/'no'
          */
+        @SuppressWarnings("WeakerAccess")
         public BinaryYesNoEmptyFormatter(@NonNull final Resources res) {
             mRes = res;
         }
@@ -1089,6 +1077,7 @@ public class Fields extends ArrayList<Fields.Field> {
         @NonNull
         public String format(@NonNull final Field field, @Nullable final String source) {
             if (source == null) {
+                Logger.error("source was null");
                 return "";
             }
             try {
@@ -1116,8 +1105,8 @@ public class Fields extends ArrayList<Fields.Field> {
         @NonNull
         private final WeakReference<Activity> mActivity;
 
-        ActivityContext(@NonNull final Activity a) {
-            mActivity = new WeakReference<>(a);
+        ActivityContext(@NonNull final Activity activity) {
+            mActivity = new WeakReference<>(activity);
         }
 
         @Override
@@ -1135,8 +1124,8 @@ public class Fields extends ArrayList<Fields.Field> {
         @NonNull
         private final WeakReference<Fragment> mFragment;
 
-        FragmentContext(@NonNull final Fragment f) {
-            mFragment = new WeakReference<>(f);
+        FragmentContext(@NonNull final Fragment fragment) {
+            mFragment = new WeakReference<>(fragment);
         }
 
         @Override
@@ -1190,15 +1179,15 @@ public class Fields extends ArrayList<Fields.Field> {
         /** Has the field been set to invisible **/
         public boolean visible;
         /**
-         * Options indicating that even though field has a column name, it should NOT be fetched from a
-         * Cursor. This is usually done for synthetic fields needed when saving the data
+         * Option indicating that even though field has a column name, it should NOT be fetched
+         * from a Cursor. This is usually done for synthetic fields needed when saving the data
          */
+        @SuppressWarnings("WeakerAccess")
         public boolean doNoFetch = false;
+
         /** FieldFormatter to use (can be null) */
-        @Nullable
         FieldFormatter formatter;
         /** Accessor to use (automatically defined) */
-        @Nullable
         private FieldDataAccessor mAccessor;
 
         /** Optional field-specific tag object */
@@ -1283,6 +1272,7 @@ public class Fields extends ArrayList<Fields.Field> {
          * If a text field, set the TextViewAccessor to support HTML.
          * Call this before loading the field.
          */
+        @SuppressWarnings({"WeakerAccess", "UnusedReturnValue"})
         @NonNull
         public Field setShowHtml(final boolean showHtml) {
             if (mAccessor instanceof TextViewAccessor) {
@@ -1340,19 +1330,23 @@ public class Fields extends ArrayList<Fields.Field> {
         /**
          * Get the view associated with this Field, if available.
          *
-         * @return Resulting View, or null.
+         * @return Resulting View
+         *
+         * @throws NullPointerException if view is not found, which should never happen
+         *
+         * @see #debugNullView
          */
         @SuppressWarnings("unchecked")
-        @Nullable
+        @NonNull
         <T extends View> T getView() {
             Fields fields = mFields.get();
-            if (fields == null) {
-                if (BuildConfig.DEBUG) {
-                    Logger.debug("Fields (a weak reference) is NULL");
-                }
-                return null;
+
+            T view = (T) fields.getContext().findViewById(this.id);
+            if (view == null) {
+                debugNullView(this);
+                throw new NullPointerException("view is NULL");
             }
-            return (T) fields.getContext().findViewById(this.id);
+            return view;
         }
 
         /**
@@ -1414,10 +1408,13 @@ public class Fields extends ArrayList<Fields.Field> {
          *
          * @param s String to format
          *
-         * @return Formatted value
+         * @return The formatted value. If the source as null, should return "" (and log an error)
          */
         @NonNull
-        public String format(@NonNull final String s) {
+        public String format(@Nullable final String s) {
+            if (s == null) {
+                return "";
+            }
             if (formatter == null) {
                 return s;
             }
@@ -1428,6 +1425,7 @@ public class Fields extends ArrayList<Fields.Field> {
          * Utility function to call the formatters extract() method if present,
          * or just return the raw value.
          */
+        @SuppressWarnings("WeakerAccess")
         public String extract(@NonNull final String s) {
             if (formatter == null) {
                 return s;

@@ -44,6 +44,7 @@ import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Search goodreads for a book and display the list of results.
@@ -122,6 +123,8 @@ public class GoodreadsSearchResults extends BaseListActivity {
      */
     private void doItemClick(@NonNull final View view) {
         ListHolder holder = ViewTagger.getTag(view);
+        Objects.requireNonNull(holder);
+
         // TODO: Implement edition lookup - requires access to work.editions API from GR
         Logger.debug("Not implemented: see " + holder.title + " by " + holder.author);
         StandardDialogs.showBriefMessage(this, "Not implemented: see " + holder.title + " by " + holder.author);

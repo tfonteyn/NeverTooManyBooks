@@ -53,14 +53,15 @@ public class EditSeriesDialog {
         dialog.setContentView(R.layout.dialog_edit_series);
         dialog.setTitle(R.string.edit_series);
 
-        AutoCompleteTextView seriesView = dialog.findViewById(R.id.series);
+        final AutoCompleteTextView seriesView = dialog.findViewById(R.id.series);
+        //noinspection ConstantConditions
         seriesView.setText(series.name);
         seriesView.setAdapter(mSeriesAdapter);
 
+        //noinspection ConstantConditions
         dialog.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AutoCompleteTextView seriesView = dialog.findViewById(R.id.series);
                 String newName = seriesView.getText().toString().trim();
                 if (newName.isEmpty()) {
                     StandardDialogs.showBriefMessage(mContext, R.string.series_is_blank);
@@ -70,7 +71,8 @@ public class EditSeriesDialog {
                 dialog.dismiss();
             }
         });
-        
+
+        //noinspection ConstantConditions
         dialog.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

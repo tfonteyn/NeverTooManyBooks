@@ -349,7 +349,9 @@ class ImportAllTask extends GenericTask {
      * while other data is processed (eg. dates) and other are combined (authors & series).
      */
     @NonNull
-    private Book buildBundle(@NonNull final CatalogueDBAdapter db, @Nullable final BookRowView bookRowView, @NonNull final Bundle review) {
+    private Book buildBundle(@NonNull final CatalogueDBAdapter db,
+                             @Nullable final BookRowView bookRowView,
+                             @NonNull final Bundle review) {
         Book book = new Book();
 
         addStringIfNonBlank(review, ListReviewsFieldNames.DB_TITLE, book, ListReviewsFieldNames.DB_TITLE);

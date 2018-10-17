@@ -107,8 +107,7 @@ public class EditBookAnthologyFragment extends BookAbstractFragment implements H
         // Author AutoCompleteTextView
         //noinspection ConstantConditions
         mAuthorText = getView().findViewById(R.id.add_author);
-        //noinspection ConstantConditions
-        ArrayAdapter<String> author_adapter = new ArrayAdapter<>(getActivity(),
+        ArrayAdapter<String> author_adapter = new ArrayAdapter<>(requireActivity(),
                 android.R.layout.simple_dropdown_item_1line, mDb.getAuthors());
         mAuthorText.setAdapter(author_adapter);
 
@@ -149,6 +148,7 @@ public class EditBookAnthologyFragment extends BookAbstractFragment implements H
                     adapter.add(anthologyTitle);
                 } else {
                     AnthologyTitle anthologyTitle = adapter.getItem(mEditPosition);
+                    //noinspection ConstantConditions
                     anthologyTitle.setAuthor(new Author(author));
                     anthologyTitle.setTitle(title);
                     anthologyTitle.setFirstPublication(pubDate);
@@ -183,7 +183,7 @@ public class EditBookAnthologyFragment extends BookAbstractFragment implements H
         mList = getBook().getContentList();
 
         // Now create a simple cursor adapter and set it to display
-        ArrayAdapter<AnthologyTitle> adapter = new AnthologyTitleListAdapterForEditing(getActivity(),
+        ArrayAdapter<AnthologyTitle> adapter = new AnthologyTitleListAdapterForEditing(requireActivity(),
                 R.layout.row_edit_anthology, mList);
         mListView.setAdapter(adapter);
 
@@ -265,7 +265,7 @@ public class EditBookAnthologyFragment extends BookAbstractFragment implements H
             }
         }
 
-        AlertDialog dialog = new AlertDialog.Builder(getActivity())
+        AlertDialog dialog = new AlertDialog.Builder(requireActivity())
                 .setTitle(results.isEmpty() ? R.string.error_anthology_automatic_population_failed : R.string.anthology_confirm)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .setMessage(msg)
@@ -326,7 +326,7 @@ public class EditBookAnthologyFragment extends BookAbstractFragment implements H
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         switch (item.getItemId()) {
             case MENU_POPULATE_ISFDB:
-                StandardDialogs.showBriefMessage(getActivity(), R.string.connecting_to_web_site);
+                StandardDialogs.showBriefMessage(requireActivity(), R.string.connecting_to_web_site);
                 ISFDBManager.searchEditions(mIsbn, this);
                 return true;
         }

@@ -39,7 +39,6 @@ import com.eleybourn.bookcatalogue.debug.Logger;
  */
 public class EditBookshelfActivity extends BaseActivity {
 
-    @Nullable
     private CatalogueDBAdapter mDb;
 
     private EditText mBookshelfText;
@@ -107,11 +106,8 @@ public class EditBookshelfActivity extends BaseActivity {
     @Override
     @CallSuper
     protected void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putLong(UniqueId.KEY_ID, mRowId);
         super.onSaveInstanceState(outState);
-        try {
-            outState.putLong(UniqueId.KEY_ID, mRowId);
-        } catch (Exception ignore) {
-        }
     }
 
     @Override

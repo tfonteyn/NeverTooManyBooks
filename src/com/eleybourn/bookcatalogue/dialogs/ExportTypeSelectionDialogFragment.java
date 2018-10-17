@@ -15,7 +15,6 @@ import android.view.View.OnClickListener;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.backup.Exporter;
-import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.RTE;
 
 import java.io.File;
@@ -25,8 +24,8 @@ import java.util.Objects;
 /**
  * Layout clickable items:
  *
- *      R.id.all_books_row
- *      R.id.advanced_options_row
+ * R.id.all_books_row
+ * R.id.advanced_options_row
  */
 public class ExportTypeSelectionDialogFragment extends DialogFragment {
     private int mDialogId;
@@ -87,11 +86,12 @@ public class ExportTypeSelectionDialogFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
+        //noinspection ConstantConditions
         mDialogId = getArguments().getInt(UniqueId.BKEY_DIALOG_ID);
         mFile = new File(Objects.requireNonNull(getArguments().getString(UniqueId.BKEY_FILE_SPEC)));
 
-        View v = getActivity().getLayoutInflater().inflate(R.layout.dialog_export_type_selection, null);
-        AlertDialog dialog = new AlertDialog.Builder(getActivity())
+        View v = requireActivity().getLayoutInflater().inflate(R.layout.dialog_export_type_selection, null);
+        AlertDialog dialog = new AlertDialog.Builder(requireActivity())
                 .setView(v)
                 .setTitle(R.string.backup_to_archive)
                 .setIcon(R.drawable.ic_help_outline)
@@ -105,21 +105,15 @@ public class ExportTypeSelectionDialogFragment extends DialogFragment {
     }
 
     private void handleClick(@NonNull final View v) {
-        try {
-            if (v.getId() == R.id.advanced_options_row) {
-                ExportAdvancedDialogFragment frag = ExportAdvancedDialogFragment.newInstance(1, mFile);
-                frag.show(getActivity().getSupportFragmentManager(), null);
-            } else {
-                OnExportTypeSelectionDialogResultListener a = (OnExportTypeSelectionDialogResultListener) getActivity();
-                if (a != null) {
-                    ExportSettings settings = new ExportSettings();
-                    settings.file = mFile;
-                    settings.options = Exporter.EXPORT_ALL;
-                    a.onExportTypeSelectionDialogResult(mDialogId, this, settings);
-                }
-            }
-        } catch (Exception e) {
-            Logger.error(e);
+        if (v.getId() == R.id.advanced_options_row) {
+            ExportAdvancedDialogFragment frag = ExportAdvancedDialogFragment.newInstance(1, mFile);
+            frag.show(requireActivity().getSupportFragmentManager(), null);
+        } else {
+            OnExportTypeSelectionDialogResultListener activity = (OnExportTypeSelectionDialogResultListener) requireActivity();
+            ExportSettings settings = new ExportSettings();
+            settings.file = mFile;
+            settings.options = Exporter.EXPORT_ALL;
+            activity.onExportTypeSelectionDialogResult(mDialogId, this, settings);
         }
         dismiss();
     }

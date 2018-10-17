@@ -102,6 +102,9 @@ public class SqlStatementManager implements AutoCloseable {
         return list;
     }
 
+    /**
+     * Exceptions are caught and fully ignored.
+     */
     @Override
     public void close() {
         synchronized (mStatements) {

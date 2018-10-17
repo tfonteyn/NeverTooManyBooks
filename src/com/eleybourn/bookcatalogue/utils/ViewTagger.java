@@ -168,6 +168,7 @@ public class ViewTagger {
      * @param value Object to store at specified tag
      */
     public static void setTag(@NonNull final View view, @Nullable final Object value) {
+        //noinspection ConstantConditions
         getTagger(view, true).set(value);
     }
 
@@ -179,6 +180,7 @@ public class ViewTagger {
      * @param value Object to store at specified tag
      */
     public static void setTag(@NonNull final View view, @IdRes final int key, @Nullable final Object value) {
+        //noinspection ConstantConditions
         getTagger(view, true).set(key, value);
     }
 

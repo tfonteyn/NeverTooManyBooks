@@ -47,7 +47,8 @@ public class SearchSuggestionProvider extends SearchRecentSuggestionsProvider {
             return null;
         }
         if (mDb == null) {
-            mDb = new CatalogueDBAdapter(getContext());
+            //noinspection ConstantConditions
+            mDb = new CatalogueDBAdapter(this.getContext());
             mDb.open();
         }
         return mDb.fetchSearchSuggestions(selectionArgs[0]);

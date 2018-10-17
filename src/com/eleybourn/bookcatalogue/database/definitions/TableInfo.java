@@ -18,21 +18,17 @@ import java.util.Map;
  */
 public class TableInfo implements Iterable<TableInfo.ColumnInfo> {
 
-    public static final int CLASS_INTEGER = 1;
-    public static final int CLASS_TEXT = 2;
-    public static final int CLASS_REAL = 3;
+    public enum TypeClass {Integer, Text, Real}
 
-    public static final String TYPE_INT = "int";
-    public static final String TYPE_INTEGER = "integer";
-
-    public static final String TYPE_TEXT = "text";
-    public static final String TYPE_CHAR = "char";
-    public static final String TYPE_BLOB = "blob";
     public static final String TYPE_BOOLEAN = "boolean";
+    public static final String TYPE_BLOB = "blob";
+    public static final String TYPE_CHAR = "char";
     public static final String TYPE_DATE = "date";
     public static final String TYPE_DATETIME = "datetime";
     public static final String TYPE_FLOAT = "float";
-
+    public static final String TYPE_INT = "int";
+    public static final String TYPE_INTEGER = "integer";
+    public static final String TYPE_TEXT = "text";
 
     @NonNull
     private final Map<String, ColumnInfo> mColumns;
@@ -89,23 +85,23 @@ public class TableInfo implements Iterable<TableInfo.ColumnInfo> {
                 switch (tName) {
                     case TYPE_INT:
                     case TYPE_INTEGER:
-                        col.typeClass = CLASS_INTEGER;
+                        col.typeClass = TypeClass.Integer;
                         break;
                     case TYPE_TEXT:
                     case TYPE_CHAR:
-                        col.typeClass = CLASS_TEXT;
+                        col.typeClass = TypeClass.Text;
                         break;
                     case TYPE_FLOAT:
                     case "real":
                     case "double":
-                        col.typeClass = CLASS_REAL;
+                        col.typeClass = TypeClass.Real;
                         break;
                     case TYPE_DATE:
                     case "datetime":
-                        col.typeClass = CLASS_TEXT;
+                        col.typeClass = TypeClass.Text;
                         break;
                     case TYPE_BOOLEAN:
-                        col.typeClass = CLASS_INTEGER;
+                        col.typeClass = TypeClass.Integer;
                         break;
                     default:
                         throw new RTE.IllegalTypeException(tName);
@@ -135,6 +131,6 @@ public class TableInfo implements Iterable<TableInfo.ColumnInfo> {
         public boolean allowNull;
         public boolean isPrimaryKey;
         public String defaultValue;
-        public int typeClass;
+        public TypeClass typeClass;
     }
 }

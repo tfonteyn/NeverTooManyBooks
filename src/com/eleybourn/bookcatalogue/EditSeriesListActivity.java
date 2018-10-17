@@ -123,24 +123,25 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
         dialog.setContentView(R.layout.dialog_edit_book_series);
         dialog.setTitle(R.string.edit_book_series);
 
-        AutoCompleteTextView seriesNameField = dialog.findViewById(R.id.series);
+        final AutoCompleteTextView seriesNameField = dialog.findViewById(R.id.series);
+        //noinspection ConstantConditions
         seriesNameField.setText(series.name);
         seriesNameField.setAdapter(mSeriesAdapter);
 
-        EditText seriesNumberField = dialog.findViewById(R.id.series_num);
+        final EditText seriesNumberField = dialog.findViewById(R.id.series_num);
+        //noinspection ConstantConditions
         seriesNumberField.setText(series.number);
 
+        //noinspection ConstantConditions
         dialog.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AutoCompleteTextView seriesNameField = dialog.findViewById(R.id.series);
                 String newName = seriesNameField.getText().toString().trim();
                 if (newName.isEmpty()) {
                     StandardDialogs.showBriefMessage(EditSeriesListActivity.this, R.string.series_is_blank);
                     return;
                 }
 
-                EditText seriesNumberField = dialog.findViewById(R.id.series_num);
                 Series newSeries = new Series(newName, seriesNumberField.getText().toString().trim());
                 confirmEdit(series, newSeries);
 
@@ -148,6 +149,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
             }
         });
 
+        //noinspection ConstantConditions
         dialog.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

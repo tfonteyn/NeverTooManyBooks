@@ -80,9 +80,8 @@ public class TouchListView extends ListView {
 
     private final Rect mTempRect = new Rect();
     private final int mTouchSlop;
-    @Nullable
     private ImageView mDragView;
-    @Nullable
+    /** use {@link #getWindowManager()} to access */
     private WindowManager mWindowManager;
     private WindowManager.LayoutParams mWindowParams;
     /** which item is being dragged */
@@ -488,6 +487,14 @@ public class TouchListView extends ListView {
         return super.onTouchEvent(ev);
     }
 
+    @NonNull
+    private WindowManager getWindowManager() {
+        if (mWindowManager == null) {
+            mWindowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
+        }
+        //noinspection ConstantConditions
+        return mWindowManager;
+    }
     private void startDragging(@NonNull final Bitmap bm, final int x, final int y) {
         stopDragging();
 
@@ -510,9 +517,7 @@ public class TouchListView extends ListView {
         v.setImageBitmap(bm);
         mDragBitmap = bm;
 
-        mWindowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
-        //noinspection ConstantConditions
-        mWindowManager.addView(v, mWindowParams);
+        getWindowManager().addView(v, mWindowParams);
         mDragView = v;
     }
 
@@ -537,9 +542,7 @@ public class TouchListView extends ListView {
 
     private void stopDragging() {
         if (mDragView != null) {
-            WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
-            //noinspection ConstantConditions
-            wm.removeView(mDragView);
+            getWindowManager().removeView(mDragView);
             mDragView.setImageDrawable(null);
             mDragView = null;
         }

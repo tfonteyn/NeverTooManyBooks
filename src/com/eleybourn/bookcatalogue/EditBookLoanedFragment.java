@@ -134,9 +134,10 @@ public class EditBookLoanedFragment extends BookAbstractFragment {
 
     @NonNull
     private ScrollView loadFragmentIntoScrollView(@LayoutRes final int resId) {
+        //noinspection ConstantConditions
         ScrollView sv = getView().findViewById(R.id.root);
         sv.removeAllViews();
-        getActivity().getLayoutInflater().inflate(resId, sv);
+        requireActivity().getLayoutInflater().inflate(resId, sv);
         return sv;
     }
 
@@ -154,12 +155,12 @@ public class EditBookLoanedFragment extends BookAbstractFragment {
      * Auto complete list comes from your Contacts
      */
     private void setAdapter() {
-        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_CONTACTS}, UniqueId.ACTIVITY_REQUEST_CODE_PERMISSIONS_REQUEST);
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.READ_CONTACTS}, UniqueId.ACTIVITY_REQUEST_CODE_PERMISSIONS_REQUEST);
             return;
         }
         ArrayList<String> contacts = getFriends();
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_dropdown_item_1line, contacts);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(requireActivity(), android.R.layout.simple_dropdown_item_1line, contacts);
         ((AutoCompleteTextView) mWho).setAdapter(adapter);
     }
 
@@ -172,7 +173,7 @@ public class EditBookLoanedFragment extends BookAbstractFragment {
     @NonNull
     private ArrayList<String> getFriends() throws SecurityException{
         ArrayList<String> list = new ArrayList<>();
-        ContentResolver cr = getActivity().getContentResolver();
+        ContentResolver cr = requireActivity().getContentResolver();
         try (Cursor contactsCursor = cr.query(ContactsContract.Contacts.CONTENT_URI, PROJECTION, null, null, null)) {
             if (contactsCursor != null) {
                 while (contactsCursor.moveToNext()) {

@@ -257,7 +257,7 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
             if (mMessages != null) {
                 for (String message : mMessages) {
                     if (message != null && !message.isEmpty()) {
-                        StandardDialogs.showBriefMessage(getActivity(), message);
+                        StandardDialogs.showBriefMessage(requireActivity(), message);
                     }
                 }
                 mMessages.clear();
@@ -274,6 +274,7 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
         super.onCreate(savedInstanceState);
         // VERY IMPORTANT. We do not want this destroyed!
         setRetainInstance(true);
+        //noinspection ConstantConditions
         mTaskId = getArguments().getInt(BKEY_TASK_ID);
     }
 
@@ -305,9 +306,10 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
         dialog.setCancelable(true);
         dialog.setCanceledOnTouchOutside(false);
 
+        //noinspection ConstantConditions
         int msg = getArguments().getInt(BKEY_TITLE);
         if (msg != 0) {
-            dialog.setMessage(getActivity().getString(msg));
+            dialog.setMessage(requireActivity().getString(msg));
         }
         final boolean isIndeterminate = getArguments().getBoolean(BKEY_IS_INDETERMINATE);
         dialog.setIndeterminate(isIndeterminate);
@@ -530,7 +532,7 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
         public void onFinish(@NonNull final SimpleTaskQueueProgressFragment fragment, @Nullable final Exception e) {
             if (e != null) {
                 Logger.error(e);
-                StandardDialogs.showBriefMessage(fragment.getActivity(), R.string.error_unexpected_error);
+                StandardDialogs.showBriefMessage(fragment.requireActivity(), R.string.error_unexpected_error);
             }
         }
 

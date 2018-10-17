@@ -92,13 +92,11 @@ public class CropImageActivity extends CropMonitoredActivity {
 
     CropHighlightView mCrop;
     private CropImageView mImageView;
-    @Nullable
     private Bitmap mBitmap;
 
     /** Whether we are wait the user to pick a face. */
     boolean mWaitingToPickFace;
     /** runnable that does the actual face detection */
-    @Nullable
     private final Runnable mRunFaceDetection = new Runnable() {
         final FaceDetector.Face[] mFaces = new FaceDetector.Face[3];
         float mScale = 1F;
@@ -427,6 +425,7 @@ public class CropImageActivity extends CropMonitoredActivity {
         {
             Canvas canvas = new Canvas(croppedImage);
             Rect dstRect = new Rect(0, 0, width, height);
+            //noinspection ConstantConditions
             canvas.drawBitmap(mBitmap, cropRect, dstRect, null);
         }
 

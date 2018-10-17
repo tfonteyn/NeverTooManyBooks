@@ -4,15 +4,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatActivity;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 
 /**
  * This is a placeholder class to deal with the surprising number of old shortcuts that
  * have not been updated from version 3.x.
- * 
- * The old 'BookCatalogue' activity is now called 'BookCatalogueClassic.
- * 
+ *
  * This activity just forwards to the StartupActivity.
  * 
  * In retrospect, this should have been done in the first place, but since we now
@@ -20,14 +19,13 @@ import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
  * 
  * @author Philip Warner
  */
-public class BookCatalogue extends BaseActivity {
+public class BookCatalogue extends AppCompatActivity {
 
 	@CallSuper
 	@Override
 	public void onCreate(@Nullable final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		Intent i = new Intent(this, StartupActivity.class);
-		startActivity(i);
+		startActivity(new Intent(this, StartupActivity.class));
 		finish();
 	}
 }

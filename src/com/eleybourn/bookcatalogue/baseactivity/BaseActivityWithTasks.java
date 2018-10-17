@@ -103,7 +103,7 @@ abstract public class BaseActivityWithTasks extends BaseActivity {
     /**
      * Object to handle all TaskManager events
      */
-    @Nullable
+    @NonNull
     private final TaskManagerListener mTaskListener = new TaskManagerListener() {
         @Override
         public void onTaskEnded(@NonNull final TaskManager manager, @NonNull final ManagedTask task) {
@@ -165,13 +165,13 @@ abstract public class BaseActivityWithTasks extends BaseActivity {
     /**
      * Utility routine to get the task manager for this activity
      */
-    @Nullable
+    @NonNull
     protected TaskManager getTaskManager() {
         if (mTaskManager == null) {
             if (mTaskManagerId != 0) {
-                TaskManagerController c = TaskManager.getMessageSwitch().getController(mTaskManagerId);
-                if (c != null) {
-                    mTaskManager = c.getManager();
+                TaskManagerController controller = TaskManager.getMessageSwitch().getController(mTaskManagerId);
+                if (controller != null) {
+                    mTaskManager = controller.getManager();
                 } else {
                     Logger.error("Have ID("+mTaskManagerId+"), but can not find controller getting TaskManager");
                 }
@@ -196,12 +196,9 @@ abstract public class BaseActivityWithTasks extends BaseActivity {
         // Stop listening
         if (mTaskManagerId != 0) {
             TaskManager.getMessageSwitch().removeListener(mTaskManagerId, mTaskListener);
-            // If it's finishing, the remove all tasks and cleanup
+            // If it's finishing, remove all tasks and cleanup
             if (isFinishing()) {
-                TaskManager tm = getTaskManager();
-                if (tm != null) {
-                    tm.close();
-                }
+                getTaskManager().close();
             }
         }
         closeProgressDialog();
@@ -211,12 +208,10 @@ abstract public class BaseActivityWithTasks extends BaseActivity {
     @CallSuper
     protected void onResume() {
         super.onResume();
-
         // If we are finishing, we don't care about active tasks.
         if (!this.isFinishing()) {
             // Restore mTaskManager if present
             getTaskManager();
-
             // Listen
             TaskManager.getMessageSwitch().addListener(mTaskManagerId, mTaskListener, true);
         }
@@ -256,7 +251,7 @@ abstract public class BaseActivityWithTasks extends BaseActivity {
         mProgressDialog.setProgress(mProgressCount);
 
         // Set message; if we are cancelling we override the message
-        if (mTaskManager.isCancelling()) {
+        if (mTaskManager != null && mTaskManager.isCancelling()) {
             mProgressDialog.setMessage(getString(R.string.cancelling));
         } else {
             mProgressDialog.setMessage(mProgressMessage);
@@ -305,10 +300,9 @@ abstract public class BaseActivityWithTasks extends BaseActivity {
     @Override
     @CallSuper
     protected void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-
         if (mTaskManagerId != 0) {
             outState.putLong(BaseActivityWithTasks.BKEY_TASK_MANAGER_ID, mTaskManagerId);
         }
+        super.onSaveInstanceState(outState);
     }
 }

@@ -22,9 +22,7 @@ import java.util.List;
 public class AdminSearchOrderFragment extends Fragment {
 
     private ListView mListView;
-    @Nullable
     private ArrayList<SearchManager.SearchSite> mList;
-    @Nullable
     private SearchSiteListAdapter mAdapter;
 
     private boolean isCreated;
@@ -47,7 +45,8 @@ public class AdminSearchOrderFragment extends Fragment {
     @CallSuper
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mAdapter = new SearchSiteListAdapter(getContext(), R.layout.row_edit_searchsite, mList);
+        mAdapter = new SearchSiteListAdapter(requireContext(), R.layout.row_edit_searchsite, mList);
+        //noinspection ConstantConditions
         mListView = getView().findViewById(android.R.id.list);
         mListView.setAdapter(mAdapter);
         isCreated = true;

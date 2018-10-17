@@ -109,8 +109,8 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
         super.onActivityCreated(savedInstanceState);
 
         // Handle the 'up' item; go to the next directory up
-        final View root = getView();
-        root.findViewById(R.id.up).setOnClickListener(new OnClickListener() {
+        //noinspection ConstantConditions
+        getView().findViewById(R.id.up).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 handleUp();
@@ -119,18 +119,21 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
 
         // If it's new, just build from scratch, otherwise, get the saved directory and list
         if (savedInstanceState == null) {
-            mRootPath = new File(Objects.requireNonNull(getArguments().getString(BKEY_ROOT_PATH)));
+
+            //noinspection ConstantConditions
+            mRootPath = new File(getArguments().getString(BKEY_ROOT_PATH));
 
             String fileName = getArguments().getString(BKEY_FILE_NAME);
-            EditText filenameField = root.findViewById(R.id.file_name);
+            EditText filenameField = getView().findViewById(R.id.file_name);
             filenameField.setText(fileName);
-            TextView pathField = root.findViewById(R.id.path);
+            TextView pathField = getView().findViewById(R.id.path);
             pathField.setText(mRootPath.getAbsolutePath());
             tellActivityPathChanged();
         } else {
             mRootPath = new File(Objects.requireNonNull(savedInstanceState.getString(BKEY_ROOT_PATH)));
 
             ArrayList<FileDetails> list = savedInstanceState.getParcelableArrayList(BKEY_LIST);
+            Objects.requireNonNull(list);
             this.onGotFileList(mRootPath, list);
         }
     }
@@ -139,7 +142,7 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
      * Convenience method to tell our activity the path has changed.
      */
     private void tellActivityPathChanged() {
-        ((PathChangedListener) getActivity()).onPathChanged(mRootPath);
+        ((PathChangedListener) requireActivity()).onPathChanged(mRootPath);
     }
 
     /**
@@ -149,7 +152,7 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
         String parent = mRootPath.getParent();
         if (parent == null) {
             //Snackbar.make(this.getView(), R.string.no_parent_directory_found, Snackbar.LENGTH_LONG).show();
-            StandardDialogs.showBriefMessage(getActivity(), R.string.no_parent_directory_found);
+            StandardDialogs.showBriefMessage(requireActivity(), R.string.no_parent_directory_found);
             return;
         }
         mRootPath = new File(parent);
@@ -162,10 +165,10 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
      */
     @Override
     @CallSuper
-    public void onSaveInstanceState(@Nullable final Bundle state) {
-        super.onSaveInstanceState(state);
-        state.putString(BKEY_ROOT_PATH, mRootPath.getAbsolutePath());
-        state.putParcelableArrayList(BKEY_LIST, mList);
+    public void onSaveInstanceState(@NonNull final Bundle outState) {
+        outState.putString(BKEY_ROOT_PATH, mRootPath.getAbsolutePath());
+        outState.putParcelableArrayList(BKEY_LIST, mList);
+        super.onSaveInstanceState(outState);
     }
 
     /**
@@ -175,6 +178,7 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
      */
     @NonNull
     public File getSelectedFile() {
+        //noinspection ConstantConditions
         EditText et = getView().findViewById(R.id.file_name);
         return new File(mRootPath.getAbsolutePath() + File.separator + et.getText());
     }
@@ -186,14 +190,16 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
      * @param list List of FileDetails
      */
     @Override
-    public void onGotFileList(@NonNull final File root, @Nullable final ArrayList<FileDetails> list) {
+    public void onGotFileList(@NonNull final File root, @NonNull final ArrayList<FileDetails> list) {
         mRootPath = root;
-        ((TextView) getView().findViewById(R.id.path)).setText(mRootPath.getAbsolutePath());
+        //noinspection ConstantConditions
+        TextView textView = getView().findViewById(R.id.path);
+        textView.setText(mRootPath.getAbsolutePath());
 
         // Setup and display the list
         mList = list;
         // We pass no view ID since each item can provide the view id
-        DirectoryAdapter adapter = new DirectoryAdapter(getActivity(), mList);
+        DirectoryAdapter adapter = new DirectoryAdapter(requireActivity(), mList);
         ListView lv = getView().findViewById(android.R.id.list);
         lv.setAdapter(adapter);
     }
@@ -230,7 +236,7 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
 
         @Override
         protected void onSetupView(@NonNull final View convertView, @NonNull final FileDetails item) {
-            item.onSetupView(convertView, getActivity());
+            item.onSetupView(convertView, requireActivity());
         }
 
         @Override
@@ -240,6 +246,7 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
                     mRootPath = item.getFile();
                     tellActivityPathChanged();
                 } else {
+                    //noinspection ConstantConditions
                     EditText et = FileChooserFragment.this.getView().findViewById(R.id.file_name);
                     et.setText(item.getFile().getName());
                 }

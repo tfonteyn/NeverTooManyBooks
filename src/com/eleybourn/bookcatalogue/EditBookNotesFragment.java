@@ -89,6 +89,7 @@ public class EditBookNotesFragment extends BookAbstractFragment implements OnPar
             initFields();
 
             try {
+                //noinspection ConstantConditions
                 ViewUtils.fixFocusSettings(getView());
             } catch (Exception e) {
                 // Log, but ignore. This is a non-critical feature that prevents crashes when the
@@ -112,21 +113,22 @@ public class EditBookNotesFragment extends BookAbstractFragment implements OnPar
 
         /* location  TODO: unify with {@link EditBookFieldsFragment#setupMenuMoreButton} */
         mFields.add(R.id.location, UniqueId.KEY_BOOK_LOCATION, null);
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(),
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(requireActivity(),
                 android.R.layout.simple_dropdown_item_1line, getLocations());
         mFields.setAdapter(R.id.location, adapter);
 
         final Field locationField = mFields.getField(R.id.location);
         // Get the list to use in the AutoComplete stuff
         AutoCompleteTextView textView = locationField.getView();
-        textView.setAdapter(new ArrayAdapter<>(getActivity(),
+        textView.setAdapter(new ArrayAdapter<>(requireActivity(),
                 android.R.layout.simple_dropdown_item_1line, getLocations()));
         // Get the drop-down button for the list and setup dialog
-        getView().findViewById(R.id.location_button)
-                .setOnClickListener(new View.OnClickListener() {
+        //noinspection ConstantConditions
+        getView().findViewById(R.id.location_button).setOnClickListener(
+                new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        StandardDialogs.selectStringDialog(getActivity().getLayoutInflater(),
+                        StandardDialogs.selectStringDialog(requireActivity().getLayoutInflater(),
                                 getString(R.string.location),
                                 getLocations(), locationField.getValue().toString(),
                                 new StandardDialogs.SimpleDialogOnClickListener() {
@@ -155,7 +157,7 @@ public class EditBookNotesFragment extends BookAbstractFragment implements OnPar
                     // use the default date
                 }
 
-                frag.show(getFragmentManager(), null);
+                frag.show(requireFragmentManager(), null);
             }
         });
 
@@ -170,7 +172,7 @@ public class EditBookNotesFragment extends BookAbstractFragment implements OnPar
                 } catch (Exception ignore) {
                     // use the default date
                 }
-                frag.show(getFragmentManager(), null);
+                frag.show(requireFragmentManager(), null);
             }
         });
 

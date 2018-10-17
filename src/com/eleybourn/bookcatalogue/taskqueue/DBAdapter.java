@@ -84,7 +84,6 @@ class DBAdapter {
             return new EventsCursor(masterQuery, editTable, query);
         }
     };
-    @Nullable
     private SQLiteStatement mCheckTaskExistsStmt = null;
 
     /**
@@ -387,8 +386,11 @@ class DBAdapter {
         ContentValues cv = new ContentValues();
         cv.put(DOM_FAILURE_REASON, message);
         cv.put(DOM_STATUS_CODE, "F");
-        cv.put(DOM_EXCEPTION, SerializationUtils.serializeObject(task.getException()));
         cv.put(DOM_TASK, SerializationUtils.serializeObject(task));
+        Exception e = task.getException();
+        if (e != null) {
+            cv.put(DOM_EXCEPTION, SerializationUtils.serializeObject(e));
+        }
 
         getDb().update(TBL_TASK, cv, DOM_ID + "=?",  new String[]{Long.toString(task.getId())});
     }

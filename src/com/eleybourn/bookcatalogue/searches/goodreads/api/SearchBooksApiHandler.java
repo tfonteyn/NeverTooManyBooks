@@ -241,7 +241,6 @@ public class SearchBooksApiHandler extends ApiHandler {
     /**
      * At the END of a "work" tag, we add it to list and reset the pointer.
      */
-    @Nullable
     private final XmlHandler mHandleWorkEnd = new XmlHandler() {
         @Override
         public void process(@NonNull ElementContext context) {
@@ -319,6 +318,11 @@ public class SearchBooksApiHandler extends ApiHandler {
             mCurrentWork.smallImageUrl = context.body;
         }
     };
+
+    /**
+     * Constructor
+     *
+     */
     public SearchBooksApiHandler(@NonNull GoodreadsManager manager) {
         super(manager);
         // Build the XML filters needed to get the data we're interested in.
@@ -370,7 +374,6 @@ public class SearchBooksApiHandler extends ApiHandler {
     /**
      * Setup filters to process the XML parts we care about.
      */
-    @SuppressWarnings("ConstantConditions")
     private void buildFilters() {
 		/*
 		   Stuff we care about

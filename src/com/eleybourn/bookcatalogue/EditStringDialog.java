@@ -52,11 +52,13 @@ abstract class EditStringDialog {
         dialog.setTitle(title);
 
         final EditText nameView = dialog.findViewById(R.id.name);
+        //noinspection ConstantConditions
         nameView.setText(s);
         if (nameView instanceof AutoCompleteTextView) {
             ((AutoCompleteTextView) nameView).setAdapter(mAdapter);
         }
 
+        //noinspection ConstantConditions
         dialog.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -70,6 +72,7 @@ abstract class EditStringDialog {
             }
         });
 
+        //noinspection ConstantConditions
         dialog.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -31,7 +31,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.CursorAdapter;
 
-import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.ContextDialogItem;
 import com.eleybourn.bookcatalogue.taskqueue.BindableItemCursor;
 
@@ -42,22 +41,22 @@ import java.util.Map;
 public class BindableItemCursorAdapter extends CursorAdapter {
 
     /** A local Inflater for convenience */
-    @Nullable
+    @NonNull
     private final LayoutInflater mInflater;
     @NonNull
     private final Context mContext;
     @NonNull
     private final BindableItemBinder mBinder;
     /** hash of class names and values used to dynamically allocate layout numbers */
-    private final Map<String, Integer> m_itemTypeLookups = new Hashtable<>();
+    private final Map<String, Integer> mItemTypeLookups = new Hashtable<>();
     /** The position passed to the last call of getItemViewType() */
-    private int m_lastItemViewTypePos = -1;
+    private int mLastItemViewTypePos = -1;
     /** The item type returned by the last call of getItemViewType() */
-    private int m_lastItemViewType = -1;
+    private int mLastItemViewType = -1;
     /** The Event used in the last call of getItemViewType() */
-    @Nullable
-    private BindableItem m_lastItemViewTypeEvent = null;
-    private int m_itemTypeCount = 0;
+    private BindableItem mLastItemViewTypeEvent = null;
+    private int mItemTypeCount = 0;
+
     /**
      * Constructor; calls superclass and allocates an Inflater for later use.
      *
@@ -68,6 +67,7 @@ public class BindableItemCursorAdapter extends CursorAdapter {
                                      @NonNull final Context context,
                                      @NonNull final Cursor cursor) {
         super(context, cursor);
+        //noinspection ConstantConditions
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         // This is saved in the parent class, but inaccessible for some reason. Google sources say
         // it's protected, but apparently not. So we keep a copy too.
@@ -97,9 +97,9 @@ public class BindableItemCursorAdapter extends CursorAdapter {
     public void notifyDataSetChanged() {
         super.notifyDataSetChanged();
         // Clear cached stuff
-        m_lastItemViewTypePos = -1;
-        m_lastItemViewType = -1;
-        m_lastItemViewTypeEvent = null;
+        mLastItemViewTypePos = -1;
+        mLastItemViewType = -1;
+        mLastItemViewTypeEvent = null;
     }
 
     /**
@@ -114,8 +114,8 @@ public class BindableItemCursorAdapter extends CursorAdapter {
     @Override
     public int getItemViewType(final int position) {
         // If it's the same as the last call, just return.
-        if (position == m_lastItemViewTypePos) {
-            return m_lastItemViewType;
+        if (position == mLastItemViewTypePos) {
+            return mLastItemViewType;
         }
 
         // Get the Event object
@@ -126,12 +126,12 @@ public class BindableItemCursorAdapter extends CursorAdapter {
         // Use the class name to generate a layout number
         String s = bindable.getClass().toString();
         int resType;
-        if (m_itemTypeLookups.containsKey(s)) {
-            resType = m_itemTypeLookups.get(s);
+        if (mItemTypeLookups.containsKey(s)) {
+            resType = mItemTypeLookups.get(s);
         } else {
-            m_itemTypeCount++;
-            m_itemTypeLookups.put(s, m_itemTypeCount);
-            resType = m_itemTypeCount;
+            mItemTypeCount++;
+            mItemTypeLookups.put(s, mItemTypeCount);
+            resType = mItemTypeCount;
         }
 
         //
@@ -141,9 +141,9 @@ public class BindableItemCursorAdapter extends CursorAdapter {
         //
         // NOTE: if this assumption fails, the code still works. It just runs slower.
         //
-        m_lastItemViewTypePos = position;
-        m_lastItemViewType = resType;
-        m_lastItemViewTypeEvent = bindable;
+        mLastItemViewTypePos = position;
+        mLastItemViewType = resType;
+        mLastItemViewTypeEvent = bindable;
 
         // And return
         return resType;
@@ -163,20 +163,17 @@ public class BindableItemCursorAdapter extends CursorAdapter {
     public View getView(final int position, @Nullable View convertView, @NonNull final ViewGroup parent) {
         BindableItemCursor cursor = (BindableItemCursor) this.getCursor();
         cursor.moveToPosition(position);
+
         BindableItem bindable;
         // Optimization to avoid unnecessary de-serializations.
-        if (m_lastItemViewTypePos == position) {
-            bindable = m_lastItemViewTypeEvent;
+        if (mLastItemViewTypePos == position) {
+            bindable = mLastItemViewTypeEvent;
         } else {
             bindable = cursor.getBindableItem();
         }
 
         if (convertView == null) {
-            try {
-                convertView = bindable.newListItemView(mInflater, mContext, cursor, parent);
-            } catch (Exception e) {
-                Logger.error(e);
-            }
+            convertView = bindable.newListItemView(mInflater, mContext, cursor, parent);
         }
 
         // Bind it, and we are done!
@@ -200,9 +197,9 @@ public class BindableItemCursorAdapter extends CursorAdapter {
          * Called to bind a specific event to a View in the list. It is passed to the subclass so that any
          * application-specific context can be added, or it can just be passed off to the Event object itself.
          *
-         * @param context       Context of request
-         * @param convertView   View to populate
-         * @param cursor        Cursor, positions at the relevant row
+         * @param context     Context of request
+         * @param convertView View to populate
+         * @param cursor      Cursor, positions at the relevant row
          */
         void bindViewToItem(@NonNull final Context context,
                             @NonNull final View convertView,

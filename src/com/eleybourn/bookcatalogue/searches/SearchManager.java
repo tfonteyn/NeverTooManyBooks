@@ -158,7 +158,6 @@ public class SearchManager implements TaskManagerListener {
     /** Flags applicable to *current* search */
     private int mSearchFlags;
     /** Accumulated book data */
-    @Nullable
     private Bundle mBookData = null;
     /** Options indicating searches will be non-concurrent title/author found via ASIN */
     private boolean mSearchingAsin = false;
@@ -167,13 +166,10 @@ public class SearchManager implements TaskManagerListener {
     /** Options indicating a task was cancelled. */
     private boolean mCancelledFlg = false;
     /** Original author for search */
-    @Nullable
     private String mAuthor;
     /** Original title for search */
-    @Nullable
     private String mTitle;
     /** Original ISBN for search */
-    @Nullable
     private String mIsbn;
     /** Indicates original ISBN is really present and valid */
     private boolean mHasValidIsbn;

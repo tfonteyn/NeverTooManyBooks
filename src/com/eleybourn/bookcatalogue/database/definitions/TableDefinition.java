@@ -542,14 +542,12 @@ public class TableDefinition implements AutoCloseable, Cloneable {
      */
     @NonNull
     public String getInsert(@NonNull final DomainDefinition... domains) {
-        StringBuilder s = new StringBuilder("Insert INTO ");
+        StringBuilder s = new StringBuilder("INSERT INTO ");
         s.append(mName);
-        s.append(" (\n");
-
-        s.append("	");
+        s.append(" (");
         s.append(domains[0]);
         for (int i = 1; i < domains.length; i++) {
-            s.append(",\n	");
+            s.append(",");
             s.append(domains[i]);
         }
         s.append(")");

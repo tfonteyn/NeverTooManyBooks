@@ -341,7 +341,7 @@ public class ArrayUtils<T> {
                                    @Nullable final String key,
                                    @NonNull final String value) {
         String s = encodeListItem(value);
-        if (!bundle.containsKey(key) || bundle.getString(key).isEmpty()) {
+        if (!bundle.containsKey(key) || bundle.getString(key, "").isEmpty()) {
             bundle.putString(key, s);
         } else {
             String curr = bundle.getString(key);
@@ -359,7 +359,7 @@ public class ArrayUtils<T> {
     public static void addIfNotPresent(@NonNull final Bundle bundle,
                                        @Nullable final String key,
                                        @NonNull final String value) {
-        if (!bundle.containsKey(key) || bundle.getString(key).isEmpty()) {
+        if (!bundle.containsKey(key) || bundle.getString(key, "").isEmpty()) {
             bundle.putString(key, value.trim());
         }
     }

@@ -55,6 +55,7 @@ import com.eleybourn.bookcatalogue.utils.RTE;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Based class for all fragments that appear in {@link EditBookActivity}
@@ -178,24 +179,21 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
                 return false;
 
             case R.id.MENU_SHARE:
-                //noinspection ConstantConditions
-                BookUtils.shareBook(getActivity(), mDb, currRow);
+                BookUtils.shareBook(requireActivity(), mDb, currRow);
                 return true;
 
             case R.id.MENU_BOOK_DELETE:
-                //noinspection ConstantConditions
-                BookUtils.deleteBook(getActivity(), mDb, currRow,
+                BookUtils.deleteBook(requireActivity(), mDb, currRow,
                         new Runnable() {
                             @Override
                             public void run() {
-                                getActivity().finish();
+                                requireActivity().finish();
                             }
                         });
                 return true;
 
             case R.id.MENU_BOOK_DUPLICATE:
-                //noinspection ConstantConditions
-                BookUtils.duplicateBook(getActivity(), mDb, currRow);
+                BookUtils.duplicateBook(requireActivity(), mDb, currRow);
                 return true;
 
             case R.id.MENU_BOOK_UPDATE_FROM_INTERNET:
@@ -203,26 +201,24 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
                 return true;
 
             case R.id.MENU_BOOK_EDIT:
-                //noinspection ConstantConditions
-                EditBookActivity.startActivityForResult(getActivity(), currRow, EditBookActivity.TAB_EDIT);
+                EditBookActivity.startActivityForResult(requireActivity(), currRow, EditBookActivity.TAB_EDIT);
                 return true;
 
             case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR: {
                 String author = getAuthorFromBook();
-                //noinspection ConstantConditions
-                AmazonUtils.openSearchPage(getActivity(), author, null);
+                AmazonUtils.openSearchPage(requireActivity(), author, null);
                 return true;
             }
             case R.id.MENU_AMAZON_BOOKS_IN_SERIES: {
                 String series = getSeriesFromBook();
-                AmazonUtils.openSearchPage(getActivity(), null, series);
+                AmazonUtils.openSearchPage(requireActivity(), null, series);
                 return true;
             }
 
             case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES: {
                 String author = getAuthorFromBook();
                 String series = getSeriesFromBook();
-                AmazonUtils.openSearchPage(getActivity(), author, series);
+                AmazonUtils.openSearchPage(requireActivity(), author, series);
                 return true;
             }
         }
@@ -266,10 +262,10 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
 
     private void updateFromInternet() {
         Book book = getBook();
-        Intent intent = new Intent(getActivity(), UpdateFromInternetActivity.class);
+        Intent intent = new Intent(requireActivity(), UpdateFromInternetActivity.class);
         intent.putExtra(UniqueId.KEY_ID, book.getBookId());
-        intent.putExtra(UniqueId.KEY_TITLE, book.get(UniqueId.KEY_TITLE).toString());
-        intent.putExtra(UniqueId.KEY_AUTHOR_FORMATTED, book.get(UniqueId.KEY_AUTHOR_FORMATTED).toString());
+        intent.putExtra(UniqueId.KEY_TITLE, book.getString(UniqueId.KEY_TITLE));
+        intent.putExtra(UniqueId.KEY_AUTHOR_FORMATTED, book.getString(UniqueId.KEY_AUTHOR_FORMATTED));
         startActivityForResult(intent, UniqueId.ACTIVITY_REQUEST_CODE_UPDATE_FROM_INTERNET);
     }
 
@@ -279,7 +275,9 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
         super.onActivityResult(requestCode,resultCode,intent);
 
         if (requestCode == UniqueId.ACTIVITY_REQUEST_CODE_UPDATE_FROM_INTERNET) {
-            if (resultCode == Activity.RESULT_OK && intent != null) {
+            if (resultCode == Activity.RESULT_OK) {
+                Objects.requireNonNull(intent);
+
                 String result = intent.getStringExtra("result");
                 //TODO: implement this in UpdateFromInternetActivity, then enable menu handling
             }
@@ -393,6 +391,7 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
     protected void showHideField(final boolean hideIfEmpty,
                                  @IdRes final int fieldId,
                                  @NonNull @IdRes final int... relatedFields) {
+        //noinspection ConstantConditions
         final View view = getView().findViewById(fieldId);
         if (view != null) {
             int visibility = view.getVisibility();

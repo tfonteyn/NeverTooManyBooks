@@ -65,12 +65,9 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
     private static final String SERIES_REGEX_2 = "(.*?)(,|\\s)\\s*" + SERIES_REGEX_SUFFIX;
 
     /** Pattern used to recognize series numbers embedded in names */
-    @Nullable
     private static Pattern mSeriesPat = null;
     /** Pattern used to remove extraneous text from series positions */
-    @Nullable
     private static Pattern mSeriesPosCleanupPat = null;
-    @Nullable
     private static Pattern mSeriesIntegerPat = null;
 
     @SuppressWarnings({"FieldCanBeLocal"})
@@ -200,7 +197,9 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
      * bill <-- delete
      * bill(1)
      */
-    public static boolean pruneSeriesList(@NonNull final List<Series> list) {
+    public static boolean pruneSeriesList(@Nullable final List<Series> list) {
+        Objects.requireNonNull(list);
+
         List<Series> toDelete = new ArrayList<>();
         Map<String, Series> index = new HashMap<>();
 

@@ -76,6 +76,7 @@ import com.eleybourn.bookcatalogue.adapters.MultiTypeListCursorAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ADDED_DAY;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ADDED_MONTH;
@@ -252,7 +253,10 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
     @Nullable
     private String getAuthorFromRow(@NonNull final CatalogueDBAdapter db, @NonNull final BooklistRowView rowView) {
         if (rowView.hasAuthorId() && rowView.getAuthorId() > 0) {
-            return db.getAuthor(rowView.getAuthorId()).getDisplayName();
+            Author author = db.getAuthor(rowView.getAuthorId());
+            //noinspection ConstantConditions
+            return author.getDisplayName();
+
         } else if (rowView.getRowKind() == RowKinds.ROW_KIND_BOOK) {
             List<Author> authors = db.getBookAuthorList(rowView.getBookId());
             if (authors.size() > 0) {
@@ -487,6 +491,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                     }
                 } else {
                     Series s = db.getSeries(id);
+                    Objects.requireNonNull(s);
                     EditSeriesDialog d = new EditSeriesDialog(activity, db, new Runnable() {
                         @Override
                         public void run() {
@@ -527,6 +532,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
             }
             case R.id.MENU_AUTHOR_EDIT: {
                 Author s = db.getAuthor(rowView.getAuthorId());
+                Objects.requireNonNull(s);
                 EditAuthorDialog d = new EditAuthorDialog(activity, db, new Runnable() {
                     @Override
                     public void run() {

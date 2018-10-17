@@ -53,10 +53,10 @@ public class BookDetailsFragment extends BookAbstractFragmentWithCoverImage {
         super.onActivityCreated(savedInstanceState);
 
         // override parent as our Activity determines the 'right' dividing coefficient
-        initThumbSize(getActivity());
+        initThumbSize(requireActivity());
 
         if (savedInstanceState == null) {
-            HintManager.displayHint(getActivity(), R.string.hint_view_only_help, null);
+            HintManager.displayHint(requireActivity(), R.string.hint_view_only_help, null);
         }
     }
 
@@ -129,6 +129,7 @@ public class BookDetailsFragment extends BookAbstractFragmentWithCoverImage {
             }
             mFields.getField(R.id.author).setValue(builder.toString());
         }
+        //noinspection ConstantConditions
         getView().findViewById(R.id.author).setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
@@ -149,9 +150,9 @@ public class BookDetailsFragment extends BookAbstractFragmentWithCoverImage {
             }
 
             mFields.getField(R.id.series)
-                    //.setShowHtml(true) /* so <br/> works */
                     .setValue(builder.toString());
         }
+        //noinspection ConstantConditions
         getView().findViewById(R.id.lbl_series).setVisibility(visible ? View.VISIBLE : View.GONE);
         getView().findViewById(R.id.series).setVisibility(visible ? View.VISIBLE : View.GONE);
     }
@@ -164,6 +165,7 @@ public class BookDetailsFragment extends BookAbstractFragmentWithCoverImage {
         Field bookshelves = mFields.getField(R.id.bookshelf);
         boolean visible = bookshelves.visible && super.populateBookshelves(bookshelves, book);
 
+        //noinspection ConstantConditions
         getView().findViewById(R.id.lbl_bookshelves).setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
@@ -172,6 +174,7 @@ public class BookDetailsFragment extends BookAbstractFragmentWithCoverImage {
      */
     private void showTOC(@NonNull final Book book) {
         ArrayList<AnthologyTitle> list = book.getContentList();
+        //noinspection ConstantConditions
         final ListView contentSection = getView().findViewById(R.id.toc);
 
         // only show if: used + it's an ant + the ant has titles
@@ -180,7 +183,7 @@ public class BookDetailsFragment extends BookAbstractFragmentWithCoverImage {
                 && !list.isEmpty());
 
         if (visible) {
-            ArrayAdapter<AnthologyTitle> adapter = new AnthologyTitleListAdapter(getActivity(),
+            ArrayAdapter<AnthologyTitle> adapter = new AnthologyTitleListAdapter(requireActivity(),
                     R.layout.row_anthology_with_author, list);
             contentSection.setAdapter(adapter);
 
@@ -267,6 +270,7 @@ public class BookDetailsFragment extends BookAbstractFragmentWithCoverImage {
      */
     private void showLoanedInfo(final long bookId) {
         String personLoanedTo = mDb.getLoanByBookId(bookId);
+        //noinspection ConstantConditions
         TextView textView = getView().findViewById(R.id.who);
         boolean visible = Fields.isVisible(UniqueId.KEY_LOAN_LOANED_TO) && personLoanedTo != null;
         if (visible) {
@@ -281,6 +285,7 @@ public class BookDetailsFragment extends BookAbstractFragmentWithCoverImage {
      * @param book the book
      */
     private void showReadStatus(@NonNull final Book book) {
+        //noinspection ConstantConditions
         final CheckedTextView readField = getView().findViewById(R.id.read);
         boolean visible = Fields.isVisible(UniqueId.KEY_BOOK_READ);
         if (visible) {

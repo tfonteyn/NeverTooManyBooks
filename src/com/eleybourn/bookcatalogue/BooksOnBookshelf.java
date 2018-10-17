@@ -108,7 +108,6 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
     /** Task queue to get book lists in background */
     private final SimpleTaskQueue mTaskQueue = new SimpleTaskQueue("BoB-List", 1);
     /** Currently selected list style */
-    @Nullable
     private BooklistStyle mCurrentStyle = null;
     /** Currently selected bookshelf */
     @Nullable
@@ -134,12 +133,10 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
     /** Database connection */
     private CatalogueDBAdapter mDb;
     /** Handler to manage all Views on the list */
-    @Nullable
     private BooksMultiTypeListHandler mListHandler;
     /** Current displayed list cursor */
     private BooklistPseudoCursor mList;
     /** Multi-type adapter to manage list connection to cursor */
-    @Nullable
     private MultiTypeListCursorAdapter mAdapter;
     /** Preferred booklist state in next rebuild */
     private int mRebuildState;
@@ -148,9 +145,7 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
     /** Total number of unique books in current list */
     private int mUniqueBooks = 0;
 
-    @Nullable
     private Spinner mBookshelfSpinner;
-    @Nullable
     private ArrayAdapter<String> mBookshelfAdapter;
     private MenuHandler mMenuHandler;
 
@@ -308,7 +303,6 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         mList.moveToPosition(info.position);
 
-        //noinspection ConstantConditions
         return mListHandler.onContextItemSelected(mDb, info.targetView, mList.getRowView(), this, item.getItemId())
                 || super.onContextItemSelected(item);
     }
@@ -1146,7 +1140,6 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
         /** Indicates whole table structure needs rebuild, vs. just do a reselect of underlying data */
         private final boolean mIsFullRebuild;
         /** Resulting Cursor */
-        @Nullable
         BooklistPseudoCursor mTempList = null;
         /** used to determine new cursor position */
         @Nullable

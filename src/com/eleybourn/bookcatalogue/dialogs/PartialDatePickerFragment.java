@@ -60,12 +60,12 @@ public class PartialDatePickerFragment extends DialogFragment {
      */
     private final PartialDatePicker.OnDateSetListener mDialogListener = new PartialDatePicker.OnDateSetListener() {
         public void onDateSet(@NonNull final PartialDatePicker dialog, final Integer year, final Integer month, final Integer day) {
-            ((OnPartialDatePickerListener) getActivity()).onPartialDatePickerSet(mDialogId, PartialDatePickerFragment.this, year, month, day);
+            ((OnPartialDatePickerListener) requireActivity()).onPartialDatePickerSet(mDialogId, PartialDatePickerFragment.this, year, month, day);
         }
 
         @Override
         public void onCancel(@NonNull final PartialDatePicker dialog) {
-            ((OnPartialDatePickerListener) getActivity()).onPartialDatePickerCancel(mDialogId, PartialDatePickerFragment.this);
+            ((OnPartialDatePickerListener) requireActivity()).onPartialDatePickerCancel(mDialogId, PartialDatePickerFragment.this);
         }
     };
 
@@ -114,7 +114,7 @@ public class PartialDatePickerFragment extends DialogFragment {
         }
 
         // Create the dialog and listen (locally) for its events
-        PartialDatePicker editor = new PartialDatePicker(getActivity());
+        PartialDatePicker editor = new PartialDatePicker(requireActivity());
         editor.setDate(mYear, mMonth, mDay);
         editor.setOnDateSetListener(mDialogListener);
         if (mTitleId != 0) {
@@ -159,18 +159,19 @@ public class PartialDatePickerFragment extends DialogFragment {
 
     @Override
     @CallSuper
-    public void onSaveInstanceState(@NonNull final Bundle state) {
-        state.putInt(BKEY_TITLE, mTitleId);
-        state.putInt(UniqueId.BKEY_DIALOG_ID, mDialogId);
+    public void onSaveInstanceState(@NonNull final Bundle outState) {
+        outState.putInt(BKEY_TITLE, mTitleId);
+        outState.putInt(UniqueId.BKEY_DIALOG_ID, mDialogId);
         if (mYear != null) {
-            state.putInt(BKEY_YEAR, mYear);
+            outState.putInt(BKEY_YEAR, mYear);
         }
         if (mMonth != null) {
-            state.putInt(BKEY_MONTH, mMonth);
+            outState.putInt(BKEY_MONTH, mMonth);
         }
         if (mDay != null) {
-            state.putInt(BKEY_DAY, mDay);
+            outState.putInt(BKEY_DAY, mDay);
         }
+        super.onSaveInstanceState(outState);
     }
 
     /**

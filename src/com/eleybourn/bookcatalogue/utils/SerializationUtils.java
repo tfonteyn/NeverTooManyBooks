@@ -43,7 +43,7 @@ public class SerializationUtils {
      * Utility routine to convert a Serializable object to a byte array.
      *
      * Note: original code caught exceptions and returned 'null'. No longer doing this as
-     * any exception means something is wrong in the code and should be flagged as such.
+     * any exception means something is wrong and should be flagged as such.
      *
      * @param o Object to convert
      *

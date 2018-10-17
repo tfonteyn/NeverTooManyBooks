@@ -45,16 +45,13 @@ public class ThumbnailCacheWriterTask implements SimpleTask {
      * the database will force serialization of the updates.
      */
     private static final SimpleTaskQueue mQueue = new SimpleTaskQueue("cache-writer", 1);
-    @NonNull
     private final Context mContext;
     /** Indicates if Bitmap can be recycled when no longer needed */
     private final boolean mCanRecycle;
 
     /** Cache ID of this object */
-    @Nullable
     private String mCacheId;
     /** Bitmap to store */
-    @Nullable
     private Bitmap mBitmap;
 
     /**

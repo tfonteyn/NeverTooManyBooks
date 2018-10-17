@@ -369,7 +369,8 @@ public class SimpleXmlFilter {
     public static class BuilderContext implements DataStoreProvider {
         @NonNull
         public final DataStoreProvider parent;
-
+        @Nullable
+        private final XmlFilter mFilter;
         String collectField;
         @Nullable
         List<AttrFilter> attrs = null;
@@ -377,8 +378,6 @@ public class SimpleXmlFilter {
         XmlListener listener = null;
         @Nullable
         XmlHandler finishHandler = null;
-        @Nullable
-        private final XmlFilter mFilter;
         @Nullable
         private Bundle mLocalBundle = null;
         @Nullable
@@ -395,10 +394,8 @@ public class SimpleXmlFilter {
                        @NonNull final List<String> tags) {
             this.parent = parent;
             mFilter = XmlFilter.buildFilter(root, tags);
-            if (mFilter != null) {
-                mFilter.setStartAction(mHandleStart, this);
-                mFilter.setEndAction(mHandleFinish, this);
-            }
+            mFilter.setStartAction(mHandleStart, this);
+            mFilter.setEndAction(mHandleFinish, this);
         }
 
         public void addArrayItem(@NonNull final Bundle bundle) {

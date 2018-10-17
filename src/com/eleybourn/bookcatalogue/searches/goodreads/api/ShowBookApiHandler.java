@@ -230,13 +230,13 @@ public abstract class ShowBookApiHandler extends ApiHandler {
      */
     private final XmlHandler mHandleSeriesStart = new XmlHandler() {
         @Override
-        public void process(@NonNull ElementContext context) {
+        public void process(@NonNull final ElementContext context) {
             //mCurrSeries = new Series();
         }
     };
     private final XmlHandler mHandleSeriesId = new XmlHandler() {
         @Override
-        public void process(@NonNull ElementContext context) {
+        public void process(@NonNull final ElementContext context) {
 			/*
 			try {
 				mCurrSeriesId = Integer.parseInt(context.body.trim());
@@ -247,13 +247,13 @@ public abstract class ShowBookApiHandler extends ApiHandler {
     };
     private final XmlHandler mHandleAuthorStart = new XmlHandler() {
         @Override
-        public void process(@NonNull ElementContext context) {
+        public void process(@NonNull final ElementContext context) {
             //mCurrAuthor = new Author();
         }
     };
     private final XmlHandler mHandleAuthorId = new XmlHandler() {
         @Override
-        public void process(@NonNull ElementContext context) {
+        public void process(@NonNull final ElementContext context) {
 			/*
 			try {
 				mCurrAuthorId = Long.parseLong(context.body.trim());
@@ -266,23 +266,33 @@ public abstract class ShowBookApiHandler extends ApiHandler {
     /** Transient global data for current work in search results. */
     private Bundle mBookData;
 
+    /** Local storage for series book appears in */
+    @Nullable
+    private ArrayList<Series> mSeries = null;
+
+    /** Local storage for author names */
+    @Nullable
+    private ArrayList<Author> mAuthors = null;
+
+    /** Local storage for shelf names */
+    @Nullable
+    private ArrayList<String> mShelves = null;
+
     // Current author being processed
     //private long mCurrAuthorId = 0;
 
-    @Nullable
     private final XmlHandler mHandleText = new XmlHandler() {
 
         @Override
-        public void process(@NonNull ElementContext context) {
+        public void process(@NonNull final ElementContext context) {
             final String name = (String) context.userArg;
             mBookData.putString(name, context.body.trim());
         }
     };
-    @Nullable
     private final XmlHandler mHandleLong = new XmlHandler() {
 
         @Override
-        public void process(@NonNull ElementContext context) {
+        public void process(@NonNull final ElementContext context) {
             final String name = (String) context.userArg;
             try {
                 long l = Long.parseLong(context.body.trim());
@@ -294,11 +304,10 @@ public abstract class ShowBookApiHandler extends ApiHandler {
     };
     // Current series being processed
     //private int mCurrSeriesId = 0;
-    @Nullable
     private final XmlHandler mHandleFloat = new XmlHandler() {
 
         @Override
-        public void process(@NonNull ElementContext context) {
+        public void process(@NonNull final ElementContext context) {
             final String name = (String) context.userArg;
             try {
                 double d = Double.parseDouble(context.body.trim());
@@ -308,11 +317,10 @@ public abstract class ShowBookApiHandler extends ApiHandler {
             }
         }
     };
-    @Nullable
     private final XmlHandler mHandleBoolean = new XmlHandler() {
 
         @Override
-        public void process(@NonNull ElementContext context) {
+        public void process(@NonNull final ElementContext context) {
             final String name = (String) context.userArg;
             try {
                 String s = context.body.trim();
@@ -336,24 +344,14 @@ public abstract class ShowBookApiHandler extends ApiHandler {
             }
         }
     };
-    /** Local storage for series book appears in */
-    @Nullable
-    private ArrayList<Series> mSeries = null;
 
-    /** Local storage for author names */
-    @Nullable
-    private ArrayList<Author> mAuthors = null;
-
-    /** Local storage for shelf names */
-    @Nullable
-    private ArrayList<String> mShelves = null;
 
     /**
      * Create a new shelves collection when the "shelves" tag is encountered.
      */
     private final XmlHandler mHandleShelvesStart = new XmlHandler() {
         @Override
-        public void process(@NonNull ElementContext context) {
+        public void process(@NonNull final ElementContext context) {
             mShelves = new ArrayList<>();
         }
     };
@@ -362,24 +360,19 @@ public abstract class ShowBookApiHandler extends ApiHandler {
      */
     private final XmlHandler mHandleShelf = new XmlHandler() {
         @Override
-        public void process(@NonNull ElementContext context) {
+        public void process(@NonNull final ElementContext context) {
             if (context.attributes != null) {
-                //try {
-                    String name = context.attributes.getValue("name");
-                    mShelves.add(name);
-//                } catch (Exception e) {
-//                    Logger.error(e);
-//                }
+                String name = context.attributes.getValue("name");
+                mShelves.add(name);
             }
         }
     };
     /** Current author being processed */
     @Nullable
     private String mCurrAuthorName = null;
-    @Nullable
     private final XmlHandler mHandleAuthorEnd = new XmlHandler() {
         @Override
-        public void process(@NonNull ElementContext context) {
+        public void process(@NonNull final ElementContext context) {
             if (mCurrAuthorName != null && !mCurrAuthorName.isEmpty()) {
                 if (mAuthors == null) {
                     mAuthors = new ArrayList<>();
@@ -391,7 +384,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
     };
     private final XmlHandler mHandleAuthorName = new XmlHandler() {
         @Override
-        public void process(@NonNull ElementContext context) {
+        public void process(@NonNull final ElementContext context) {
             mCurrAuthorName = context.body.trim();
         }
     };
@@ -400,17 +393,16 @@ public abstract class ShowBookApiHandler extends ApiHandler {
     private String mCurrSeriesName = null;
     private final XmlHandler mHandleSeriesName = new XmlHandler() {
         @Override
-        public void process(@NonNull ElementContext context) {
+        public void process(@NonNull final ElementContext context) {
             mCurrSeriesName = context.body.trim();
         }
     };
     /** Current series being processed */
     @Nullable
     private Integer mCurrSeriesPosition = null;
-    @Nullable
     private final XmlHandler mHandleSeriesEnd = new XmlHandler() {
         @Override
-        public void process(@NonNull ElementContext context) {
+        public void process(@NonNull final ElementContext context) {
             if (mCurrSeriesName != null && !mCurrSeriesName.isEmpty()) {
                 if (mSeries == null) {
                     mSeries = new ArrayList<>();
@@ -427,7 +419,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
     };
     private final XmlHandler mHandleSeriesPosition = new XmlHandler() {
         @Override
-        public void process(@NonNull ElementContext context) {
+        public void process(@NonNull final ElementContext context) {
             try {
                 mCurrSeriesPosition = Integer.parseInt(context.body.trim());
             } catch (Exception ignore) {
@@ -575,7 +567,6 @@ public abstract class ShowBookApiHandler extends ApiHandler {
     /**
      * Setup filters to process the XML parts we care about.
      */
-    @SuppressWarnings("ConstantConditions")
     private void buildFilters() {
 		/*
 		   Stuff we care about

@@ -100,6 +100,7 @@ public class EditBookFieldsFragment extends BookAbstractFragmentWithCoverImage
                 getEditBookManager().setDirty(false);
             }
 
+            //noinspection ConstantConditions
             final CompoundButton cb = getView().findViewById(R.id.anthology);
             cb.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View view) {
@@ -112,7 +113,7 @@ public class EditBookFieldsFragment extends BookAbstractFragmentWithCoverImage
                 public void onClick(final View v) {
                     Object object = mFields.getField(R.id.description).getValue();
                     TextFieldEditorFragment.newInstance(R.id.description, R.string.description, object.toString())
-                            .show(getFragmentManager(), null);
+                            .show(requireFragmentManager(), null);
                 }
             });
 
@@ -122,7 +123,7 @@ public class EditBookFieldsFragment extends BookAbstractFragmentWithCoverImage
                             .setTitle(R.string.date_published)
                             .setDate(mFields.getField(R.id.date_published).getValue())
                             .setDialogId(R.id.date_published) /* Set to the destination field ID */
-                            .show(getFragmentManager(), null);
+                            .show(requireFragmentManager(), null);
                 }
             });
 
@@ -132,7 +133,7 @@ public class EditBookFieldsFragment extends BookAbstractFragmentWithCoverImage
                             .setTitle(R.string.first_publication)
                             .setDate(mFields.getField(R.id.first_publication).getValue())
                             .setDialogId(R.id.first_publication) /* Set to the destination field ID */
-                            .show(getFragmentManager(), null);
+                            .show(requireFragmentManager(), null);
                 }
             });
 
@@ -142,14 +143,14 @@ public class EditBookFieldsFragment extends BookAbstractFragmentWithCoverImage
                             getBook().getBookId(),
                             getBook().getString(Book.BOOKSHELF_TEXT),
                             getBook().getBookshelfList())
-                            .show(getFragmentManager(), TAG_BOOKSHELVES_DIALOG);
+                            .show(requireFragmentManager(), TAG_BOOKSHELVES_DIALOG);
                 }
             });
 
             mFields.setListener(R.id.author, new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(getActivity(), EditAuthorListActivity.class);
+                    Intent intent = new Intent(requireActivity(), EditAuthorListActivity.class);
                     intent.putExtra(UniqueId.BKEY_AUTHOR_ARRAY, getBook().getAuthorList());
                     intent.putExtra(UniqueId.KEY_ID, getBook().getBookId());
                     intent.putExtra(UniqueId.KEY_TITLE, mFields.getField(R.id.title).getValue().toString());
@@ -160,7 +161,7 @@ public class EditBookFieldsFragment extends BookAbstractFragmentWithCoverImage
             mFields.setListener(R.id.series, new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(getActivity(), EditSeriesListActivity.class);
+                    Intent intent = new Intent(requireActivity(), EditSeriesListActivity.class);
                     intent.putExtra(UniqueId.BKEY_SERIES_ARRAY, getBook().getSeriesList());
                     intent.putExtra(UniqueId.KEY_ID, getBook().getBookId());
                     intent.putExtra(UniqueId.KEY_TITLE, mFields.getField(R.id.title).getValue().toString());
@@ -204,21 +205,22 @@ public class EditBookFieldsFragment extends BookAbstractFragmentWithCoverImage
         final Field field = mFields.getField(resId);
         // only bother when visible
         if (field.visible) {
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(),
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(requireActivity(),
                     android.R.layout.simple_dropdown_item_1line, list);
             mFields.setAdapter(resId, adapter);
 
             // Get the list to use in the AutoComplete stuff
             AutoCompleteTextView textView = field.getView();
-            textView.setAdapter(new ArrayAdapter<>(getActivity(),
+            textView.setAdapter(new ArrayAdapter<>(requireActivity(),
                     android.R.layout.simple_dropdown_item_1line, list));
 
             // Get the drop-down button for the list and setup dialog
+            //noinspection ConstantConditions
             View button = getView().findViewById(buttonResId);
             button.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    StandardDialogs.selectStringDialog(getActivity().getLayoutInflater(),
+                    StandardDialogs.selectStringDialog(requireActivity().getLayoutInflater(),
                             getString(dialogTitleResId),
                             list, field.getValue().toString(),
                             new SimpleDialogOnClickListener() {
@@ -239,7 +241,7 @@ public class EditBookFieldsFragment extends BookAbstractFragmentWithCoverImage
 
         // new book ? populate from Extras
         if (book.getBookId() <= 0) {
-            Bundle extras = getActivity().getIntent().getExtras();
+            Bundle extras = requireActivity().getIntent().getExtras();
             if (extras != null) {
                 // From the ISBN Search (add)
                 Bundle values = extras.getParcelable(UniqueId.BKEY_BOOK_DATA);
@@ -447,6 +449,7 @@ public class EditBookFieldsFragment extends BookAbstractFragmentWithCoverImage
      * Show the context menu for the cover thumbnail
      */
     public void showCoverContextMenu() {
+        //noinspection ConstantConditions
         View view = getView().findViewById(R.id.image);
         view.showContextMenu();
     }
