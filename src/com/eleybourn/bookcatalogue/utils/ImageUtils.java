@@ -362,6 +362,7 @@ public class ImageUtils {
                 final ImageView cover = new ImageView(activity);
                 fetchFileIntoImageView(cover, thumbFile, thumbSizes.zoomed, thumbSizes.zoomed, true);
                 cover.setAdjustViewBounds(true);
+                cover.setBackgroundResource(R.drawable.border);
                 cover.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {

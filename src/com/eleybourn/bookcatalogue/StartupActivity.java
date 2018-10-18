@@ -342,7 +342,7 @@ public class StartupActivity extends AppCompatActivity {
         int opened = BookCatalogueApp.Prefs.getInt(PREFS_STATE_OPENED, BACKUP_PROMPT_WAIT);
         int startCount = BookCatalogueApp.Prefs.getInt(PREF_START_COUNT, 0) + 1;
 
-        final SharedPreferences.Editor ed = getSharedPreferences(BookCatalogueApp.APP_SHARED_PREFERENCES, MODE_PRIVATE).edit();
+        final SharedPreferences.Editor ed = BookCatalogueApp.getSharedPreferences().edit();
         if (opened == 0) {
             ed.putInt(PREFS_STATE_OPENED, BACKUP_PROMPT_WAIT);
         } else {

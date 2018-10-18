@@ -1,6 +1,8 @@
 package com.eleybourn.bookcatalogue.baseactivity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
@@ -271,6 +273,11 @@ abstract public class BaseActivity extends AppCompatActivity
             id = extras.getLong(UniqueId.KEY_ID);
         }
         return id;
+    }
+
+    /** saving on some typing */
+    protected SharedPreferences getPrefs() {
+        return getSharedPreferences(BookCatalogueApp.APP_SHARED_PREFERENCES, Context.MODE_PRIVATE);
     }
 
     /**

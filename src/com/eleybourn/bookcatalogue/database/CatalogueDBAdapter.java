@@ -136,7 +136,6 @@ import static com.eleybourn.bookcatalogue.database.DatabaseHelper.COLLATION;
 
 /**
  * TODO New anthology stuff:
- * - test first pub of book
  * - test an upgrade from 82 to 83
  *
  * next big step:
@@ -149,7 +148,11 @@ import static com.eleybourn.bookcatalogue.database.DatabaseHelper.COLLATION;
  *
  * TODO other things
  * long term:
- * - instead of string encoding of lists, use JSON ?
+ * - finish FTS searching {@link com.eleybourn.bookcatalogue.searches.SearchCatalogue}
+ * and {@link #searchFts(String, String, String)}
+ * - what is android 'local' search ????
+ *
+ * - instead of string encoding of lists, use JSON ? or at the very least ArrayList<String>
  * pro: easier / (sort of) foolproof / FLEXIBLE!
  * con: fools / fields will be bigger due to json labels
  * => or... do a specific JSON Exporter / Importer as an alternative to the Csv model (con: not easy to get 'others' to provide import files)

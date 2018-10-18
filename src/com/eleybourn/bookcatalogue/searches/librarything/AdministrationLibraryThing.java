@@ -80,9 +80,8 @@ public class AdministrationLibraryThing extends BaseActivity {
             }
         });
 
-        SharedPreferences prefs = getSharedPreferences(BookCatalogueApp.APP_SHARED_PREFERENCES, Context.MODE_PRIVATE);
         EditText devKeyView = findViewById(R.id.dev_key);
-        devKeyView.setText(prefs.getString(LibraryThingManager.PREFS_LT_DEV_KEY, ""));
+        devKeyView.setText(getPrefs().getString(LibraryThingManager.PREFS_LT_DEV_KEY, ""));
 
         /* Save Button */
         findViewById(R.id.confirm).setOnClickListener(new OnClickListener() {
@@ -90,8 +89,7 @@ public class AdministrationLibraryThing extends BaseActivity {
             public void onClick(View v) {
                 EditText devKeyView = findViewById(R.id.dev_key);
                 String devKey = devKeyView.getText().toString().trim();
-                SharedPreferences prefs = getSharedPreferences(BookCatalogueApp.APP_SHARED_PREFERENCES, Context.MODE_PRIVATE);
-                SharedPreferences.Editor ed = prefs.edit();
+                SharedPreferences.Editor ed = getPrefs().edit();
                 ed.putString(LibraryThingManager.PREFS_LT_DEV_KEY, devKey);
                 ed.apply();
 
@@ -104,7 +102,7 @@ public class AdministrationLibraryThing extends BaseActivity {
                         public void run(@NonNull final SimpleTaskQueueProgressFragment fragment, @NonNull final SimpleTaskContext taskContext) {
                             //TEST Library Thing
                             Bundle tmp = new Bundle();
-                            LibraryThingManager ltm = new LibraryThingManager(AdministrationLibraryThing.this);
+                            LibraryThingManager ltm = new LibraryThingManager();
                             File tmpFile = ltm.getCoverImage("0451451783", tmp, LibraryThingManager.ImageSizes.SMALL);
                             if (tmpFile != null) {
                                 tmpFile.deleteOnExit();
@@ -137,7 +135,7 @@ public class AdministrationLibraryThing extends BaseActivity {
         findViewById(R.id.reset_messages).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                SharedPreferences prefs = getSharedPreferences(BookCatalogueApp.APP_SHARED_PREFERENCES, android.content.Context.MODE_PRIVATE);
+                SharedPreferences prefs = getPrefs();
                 SharedPreferences.Editor ed = prefs.edit();
                 for (String key : prefs.getAll().keySet()) {
                     if (key.toLowerCase().startsWith(LibraryThingManager.PREFS_LT_HIDE_ALERT.toLowerCase()))

@@ -100,11 +100,8 @@ public class LibraryThingManager {
     public static String ID = "id";
     @NonNull
     private static Long mLastRequestTime = 0L;
-    /** App context (for prefs) */
-    private final Context mAppContext;
 
-    public LibraryThingManager(@NonNull final Context context) {
-        mAppContext = context.getApplicationContext();
+    public LibraryThingManager() {
     }
 
     @NonNull
@@ -180,7 +177,7 @@ public class LibraryThingManager {
     }
 
     public static void showLtAlertIfNecessary(@NonNull final Context context, final boolean always, @NonNull final String suffix) {
-        LibraryThingManager ltm = new LibraryThingManager(context);
+        LibraryThingManager ltm = new LibraryThingManager();
         if (!ltm.isAvailable()) {
             StandardDialogs.needLibraryThingAlert(context, always, suffix);
         }
@@ -590,7 +587,7 @@ public class LibraryThingManager {
      */
     @NonNull
     private String getDevKey() {
-        SharedPreferences prefs = mAppContext.getSharedPreferences(BookCatalogueApp.APP_SHARED_PREFERENCES, android.content.Context.MODE_PRIVATE);
+        SharedPreferences prefs = BookCatalogueApp.getSharedPreferences();
         String key = prefs.getString(PREFS_LT_DEV_KEY, "");
         return key.replaceAll("[\\r\\t\\n\\s]*", "");
     }

@@ -176,9 +176,9 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
             mDb.open();
 
             // Restore bookshelf and position
-            mCurrentBookshelf = BookCatalogueApp.Prefs.getString(PREF_BOOKSHELF, mCurrentBookshelf);
-            mTopRow = BookCatalogueApp.Prefs.getInt(PREF_TOP_ROW, 0);
-            mTopRowTop = BookCatalogueApp.Prefs.getInt(PREF_TOP_ROW_TOP, 0);
+            mCurrentBookshelf = getPrefs().getString(PREF_BOOKSHELF, mCurrentBookshelf);
+            mTopRow = getPrefs().getInt(PREF_TOP_ROW, 0);
+            mTopRowTop = getPrefs().getInt(PREF_TOP_ROW_TOP, 0);
 
             // Restore view style
             refreshStyle();
@@ -712,7 +712,7 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
             return;
         }
 
-        final SharedPreferences.Editor ed = getSharedPreferences(BookCatalogueApp.APP_SHARED_PREFERENCES, MODE_PRIVATE).edit();
+        final SharedPreferences.Editor ed = getPrefs().edit();
 
         // Save position in list
         if (mListHasBeenLoaded) {
@@ -770,8 +770,7 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
                 int kind = mList.getRowView().getRowKind();
                 if (kind == RowKinds.ROW_KIND_BOOK) {
                     long bookId = mList.getRowView().getBookId();
-                    boolean readOnly = getSharedPreferences(BookCatalogueApp.APP_SHARED_PREFERENCES, Context.MODE_PRIVATE)
-                            .getBoolean(PREF_OPEN_BOOK_READ_ONLY, true);
+                    boolean readOnly = getPrefs().getBoolean(PREF_OPEN_BOOK_READ_ONLY, true);
 
                     if (readOnly) {
                         String listTable = mList.getBuilder().createFlattenedBooklist().getTable().getName();
@@ -867,7 +866,7 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
                     mCurrentStyle = getBookshelfStyle();
 
                     // save the new bookshelf/style into the preferences for next app start
-                    SharedPreferences.Editor ed = getSharedPreferences(BookCatalogueApp.APP_SHARED_PREFERENCES, MODE_PRIVATE).edit();
+                    SharedPreferences.Editor ed = getPrefs().edit();
                     ed.putString(PREF_BOOKSHELF, mCurrentBookshelf);
                     ed.putString(PREF_LIST_STYLE_FOR_BOOKSHELF + mCurrentBookshelf, mCurrentStyle.getCanonicalName());
                     ed.apply();

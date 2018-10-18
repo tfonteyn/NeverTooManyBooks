@@ -152,10 +152,10 @@ public class BooklistStylePropertiesActivity extends BaseActivity {
      * Start editing the groups.
      */
     private void startGroupsActivity() {
-        Intent intent = new Intent(this, BooklistStyleGroupsListActivity.class);
-        intent.putExtra(BooklistStyleGroupsListActivity.REQUEST_KEY_STYLE, mStyle);
-        intent.putExtra(BooklistStyleGroupsListActivity.REQUEST_KEY_SAVE_TO_DATABASE, false);
-        startActivityForResult(intent, BooklistStyleGroupsListActivity.REQUEST_CODE);
+        Intent intent = new Intent(this, BooklistStyleGroupsActivity.class);
+        intent.putExtra(BooklistStyleGroupsActivity.REQUEST_KEY_STYLE, mStyle);
+        intent.putExtra(BooklistStyleGroupsActivity.REQUEST_KEY_SAVE_TO_DATABASE, false);
+        startActivityForResult(intent, BooklistStyleGroupsActivity.REQUEST_CODE);
     }
 
     @Override
@@ -164,12 +164,12 @@ public class BooklistStylePropertiesActivity extends BaseActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         switch (requestCode) {
-            case BooklistStyleGroupsListActivity.REQUEST_CODE: {
-                if (resultCode == Activity.RESULT_OK && data != null && data.hasExtra(BooklistStyleGroupsListActivity.REQUEST_KEY_STYLE)) {
+            case BooklistStyleGroupsActivity.REQUEST_CODE: {
+                if (resultCode == Activity.RESULT_OK && data != null && data.hasExtra(BooklistStyleGroupsActivity.REQUEST_KEY_STYLE)) {
                     // When groups have been edited, copy them to this style.
                     BooklistStyle editedStyle = null;
                     try {
-                        editedStyle = (BooklistStyle) data.getSerializableExtra(BooklistStyleGroupsListActivity.REQUEST_KEY_STYLE);
+                        editedStyle = (BooklistStyle) data.getSerializableExtra(BooklistStyleGroupsActivity.REQUEST_KEY_STYLE);
                     } catch (Exception e) {
                         Logger.error(e);
                     }

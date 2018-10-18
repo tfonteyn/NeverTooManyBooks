@@ -405,7 +405,7 @@ public class GoodreadsManager {
         }
 
         // Save the token; this object may well be destroyed before the web page has returned.
-        final SharedPreferences.Editor ed = context.getSharedPreferences(BookCatalogueApp.APP_SHARED_PREFERENCES, Context.MODE_PRIVATE).edit();
+        final SharedPreferences.Editor ed = BookCatalogueApp.getSharedPreferences().edit();
         ed.putString(REQUEST_TOKEN, mConsumer.getToken());
         ed.putString(REQUEST_SECRET, mConsumer.getTokenSecret());
         ed.apply();
@@ -447,7 +447,7 @@ public class GoodreadsManager {
         mAccessToken = mConsumer.getToken();
         mAccessSecret = mConsumer.getTokenSecret();
 
-        final SharedPreferences.Editor ed = context.getSharedPreferences(BookCatalogueApp.APP_SHARED_PREFERENCES, Context.MODE_PRIVATE).edit();
+        final SharedPreferences.Editor ed = BookCatalogueApp.getSharedPreferences().edit();
         ed.putString(ACCESS_TOKEN, mAccessToken);
         ed.putString(ACCESS_SECRET, mAccessSecret);
         ed.apply();

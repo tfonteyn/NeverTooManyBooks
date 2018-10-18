@@ -152,7 +152,7 @@ public class CoverBrowser {
      */
     public void showEditionCovers() {
 
-        LibraryThingManager mLibraryThing = new LibraryThingManager(mActivity);
+        LibraryThingManager mLibraryThing = new LibraryThingManager();
         if (!mLibraryThing.isAvailable()) {
             StandardDialogs.needLibraryThingAlert(mActivity, true, "cover_browser");
             return;
@@ -507,7 +507,7 @@ public class CoverBrowser {
      * @author Philip Warner
      */
     private class FileManager {
-        final LibraryThingManager mLibraryThing = new LibraryThingManager(mActivity);
+        final LibraryThingManager mLibraryThing = new LibraryThingManager();
         private final Bundle mFiles = new Bundle();
 
         private boolean isGood(@NonNull final File file) {

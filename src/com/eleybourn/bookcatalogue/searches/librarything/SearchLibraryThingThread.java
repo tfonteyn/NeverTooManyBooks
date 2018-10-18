@@ -37,7 +37,7 @@ public class SearchLibraryThingThread extends SearchThread {
         if (IsbnUtils.isValid(mIsbn)) {
             @StringRes final int R_ID_SEARCHING = R.string.searching_library_thing;
             doProgress(getString(R_ID_SEARCHING), 0);
-            LibraryThingManager ltm = new LibraryThingManager(BookCatalogueApp.getAppContext());
+            LibraryThingManager ltm = new LibraryThingManager();
             // do we have a dev kev ?
             if (ltm.isAvailable()) {
                 try {

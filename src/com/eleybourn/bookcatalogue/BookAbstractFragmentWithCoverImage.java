@@ -79,7 +79,7 @@ public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFra
         // create the common 'Fields'
         super.onActivityCreated(savedInstanceState);
 
-        mPrefs = requireActivity().getSharedPreferences(BookCatalogueApp.APP_SHARED_PREFERENCES, Context.MODE_PRIVATE);
+        mPrefs = BookCatalogueApp.getSharedPreferences();
 
         // add the rest of the fields.
         initFields();

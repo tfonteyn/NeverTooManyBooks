@@ -33,7 +33,7 @@ import android.widget.TextView;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
-import com.eleybourn.bookcatalogue.booklist.BooklistStyleGroupsListActivity.GroupWrapper;
+import com.eleybourn.bookcatalogue.booklist.BooklistStyleGroupsActivity.GroupWrapper;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.properties.Properties;
@@ -47,7 +47,7 @@ import java.util.ArrayList;
  *
  * @author Philip Warner
  */
-public class BooklistStyleGroupsListActivity extends EditObjectListActivity<GroupWrapper> {
+public class BooklistStyleGroupsActivity extends EditObjectListActivity<GroupWrapper> {
 
     public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_BOOKLIST_STYLE_GROUPS;
 
@@ -65,7 +65,7 @@ public class BooklistStyleGroupsListActivity extends EditObjectListActivity<Grou
     /**
      * Constructor
      */
-    public BooklistStyleGroupsListActivity() {
+    public BooklistStyleGroupsActivity() {
         super(BKEY_GROUPS, R.layout.booklist_style_edit_group_list, R.layout.booklist_style_edit_row);
     }
 

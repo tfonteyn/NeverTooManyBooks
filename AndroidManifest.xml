@@ -122,7 +122,7 @@
         <activity
             android:name=".booklist.BooklistStylePropertiesActivity"
             android:windowSoftInputMode="stateHidden" />
-        <activity android:name=".booklist.BooklistStyleGroupsListActivity" />
+        <activity android:name=".booklist.BooklistStyleGroupsActivity" />
 
         <!-- AdministrationFunctions:Data Import/Export -->
         <activity android:name=".filechooser.BackupChooser" />

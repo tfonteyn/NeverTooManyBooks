@@ -139,7 +139,7 @@ public class StandardDialogs {
                                              final boolean required,
                                              @NonNull final String prefSuffix) {
 
-        final SharedPreferences prefs = context.getSharedPreferences(BookCatalogueApp.APP_SHARED_PREFERENCES, Context.MODE_PRIVATE);
+        final SharedPreferences prefs = BookCatalogueApp.getSharedPreferences();
 
         boolean showAlert;
         @StringRes
