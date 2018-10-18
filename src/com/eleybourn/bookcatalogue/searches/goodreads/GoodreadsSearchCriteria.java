@@ -31,6 +31,7 @@ import android.view.View.OnClickListener;
 import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
@@ -47,7 +48,9 @@ import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
  * @author Philip Warner
  */
 public class GoodreadsSearchCriteria extends BaseActivity {
-    private static final String EXTRA_BOOK_ID = "bookId";
+
+    public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_GOODREADS_SEARCH_CRITERIA;
+    public static final String REQUEST_EXTRA_BOOK_ID = "bookId";
 
     private CatalogueDBAdapter mDb;
     private long mBookId = 0;
@@ -69,8 +72,8 @@ public class GoodreadsSearchCriteria extends BaseActivity {
         Bundle extras = this.getIntent().getExtras();
 
         // Look for a book ID
-        if (extras != null && extras.containsKey(EXTRA_BOOK_ID)) {
-            mBookId = extras.getLong(EXTRA_BOOK_ID);
+        if (extras != null && extras.containsKey(REQUEST_EXTRA_BOOK_ID)) {
+            mBookId = extras.getLong(REQUEST_EXTRA_BOOK_ID);
         }
 
         // If we have a book, fill in criteria AND try a search

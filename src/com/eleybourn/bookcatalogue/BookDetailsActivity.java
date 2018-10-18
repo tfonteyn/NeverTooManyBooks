@@ -29,7 +29,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.view.GestureDetector;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
@@ -45,8 +44,10 @@ import com.eleybourn.bookcatalogue.entities.Book;
 public class BookDetailsActivity extends BaseActivity
         implements BookAbstractFragment.BookEditManager {
 
-    private static final String BKEY_FLATTENED_BOOKLIST_POSITION = "FlattenedBooklistPosition";
-    private static final String BKEY_FLATTENED_BOOKLIST = "FlattenedBooklist";
+    public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_VIEW_BOOK;
+
+    public static final String REQUEST_KEY_FLATTENED_BOOKLIST_POSITION = "FlattenedBooklistPosition";
+    public static final String REQUEST_KEY_FLATTENED_BOOKLIST = "FlattenedBooklist";
 
     private final CatalogueDBAdapter mDb = new CatalogueDBAdapter(this);
     @Nullable
@@ -56,27 +57,6 @@ public class BookDetailsActivity extends BaseActivity
 
     private long mBookId;
     private Book mBook;
-
-    /**
-     * Convenience method to start this Activity.
-     *
-     * @param activity  from which we start
-     * @param id        of the book to view
-     * @param listTable (Optional) name of the temp table containing a list of book IDs.
-     * @param position  (Optional) position in underlying book list.
-     */
-    public static void startActivityForResult(@NonNull final Activity activity,
-                                              final long id,
-                                              @Nullable final String listTable,
-                                              @Nullable final Integer position) {
-        Intent intent = new Intent(activity, BookDetailsActivity.class);
-        intent.putExtra(UniqueId.KEY_ID, id);
-        intent.putExtra(BKEY_FLATTENED_BOOKLIST, listTable);
-        if (position != null) {
-            intent.putExtra(BKEY_FLATTENED_BOOKLIST_POSITION, position);
-        }
-        activity.startActivityForResult(intent, UniqueId.ACTIVITY_REQUEST_CODE_VIEW_BOOK);
-    }
 
     @Override
     protected int getLayoutId() {
@@ -131,7 +111,7 @@ public class BookDetailsActivity extends BaseActivity
      *
      * 1. If a valid rowId exists it will populate the fields from the database
      *
-     * 2. If fields have been passed from another activity (e.g. {@link BookISBNSearchActivity}) it
+     * 2. If fields have been passed from another activity (e.g. {@link BookSearchActivity}) it
      * will populate the fields from the bundle
      *
      * 3. It will leave the fields blank for new books.
@@ -159,7 +139,7 @@ public class BookDetailsActivity extends BaseActivity
     private void initBooklist(@Nullable final Bundle extras,
                               @Nullable final Bundle savedInstanceState) {
         if (extras != null) {
-            String list = extras.getString(BKEY_FLATTENED_BOOKLIST);
+            String list = extras.getString(REQUEST_KEY_FLATTENED_BOOKLIST);
             if (list != null && !list.isEmpty()) {
                 mList = new FlattenedBooklist(mDb, list);
                 // Check to see it really exists. The underlying table disappeared once in testing
@@ -167,10 +147,10 @@ public class BookDetailsActivity extends BaseActivity
                 // the database or if the activity pauses with 'isFinishing()' returning true.
                 if (mList.exists()) {
                     int pos;
-                    if (savedInstanceState != null && savedInstanceState.containsKey(BKEY_FLATTENED_BOOKLIST_POSITION)) {
-                        pos = savedInstanceState.getInt(BKEY_FLATTENED_BOOKLIST_POSITION);
-                    } else if (extras.containsKey(BKEY_FLATTENED_BOOKLIST_POSITION)) {
-                        pos = extras.getInt(BKEY_FLATTENED_BOOKLIST_POSITION);
+                    if (savedInstanceState != null && savedInstanceState.containsKey(REQUEST_KEY_FLATTENED_BOOKLIST_POSITION)) {
+                        pos = savedInstanceState.getInt(REQUEST_KEY_FLATTENED_BOOKLIST_POSITION);
+                    } else if (extras.containsKey(REQUEST_KEY_FLATTENED_BOOKLIST_POSITION)) {
+                        pos = extras.getInt(REQUEST_KEY_FLATTENED_BOOKLIST_POSITION);
                     } else {
                         pos = 0;
                     }
@@ -298,34 +278,25 @@ public class BookDetailsActivity extends BaseActivity
         outState.putLong(UniqueId.KEY_ID, mBookId);
         outState.putBundle(UniqueId.BKEY_BOOK_DATA, mBook.getRawData());
         if (mList != null) {
-            outState.putInt(BKEY_FLATTENED_BOOKLIST_POSITION, (int) mList.getPosition());
+            outState.putInt(REQUEST_KEY_FLATTENED_BOOKLIST_POSITION, (int) mList.getPosition());
         }
 
         super.onSaveInstanceState(outState);
         Tracker.exitOnSaveInstanceState(this);
     }
 
-    private void doFinish() {
-        Intent intent = new Intent();
-        intent.putExtra(UniqueId.KEY_ID, mBook.getBookId());
-        setResult(Activity.RESULT_OK, intent);
-        finish();
-    }
 
     /**
-     * menu handler; handle the 'home' key, otherwise, pass on the event
+     * When the user clicks 'back/up', prepare our result.
      */
     @Override
     @CallSuper
-    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                doFinish();
-                return true;
+    public void onBackPressed() {
+        Intent intent = new Intent();
+        intent.putExtra(UniqueId.KEY_ID, mBook.getBookId());
+        setResult(Activity.RESULT_OK, intent);
 
-            default:
-                return super.onOptionsItemSelected(item);
-        }
+        super.onBackPressed();
     }
 
     /**

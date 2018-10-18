@@ -47,6 +47,8 @@ import com.eleybourn.bookcatalogue.utils.Utils;
  */
 public class EditAuthorListActivity extends EditObjectListActivity<Author> {
 
+    public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_EDIT_AUTHORS;
+
     /**
      * Constructor; pass the superclass the main and row based layouts to use.
      */

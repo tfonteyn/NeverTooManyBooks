@@ -49,6 +49,8 @@ import static com.eleybourn.bookcatalogue.BookAbstractFragmentWithCoverImage.PRE
  */
 public class PreferencesActivity extends PreferencesBaseActivity {
 
+    public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_PREFERENCES;
+
     /** Camera image rotation property values */
     private static final ItemEntries<Integer> mRotationListItems = new ItemEntries<Integer>()
             .add(null, R.string.use_default_setting)

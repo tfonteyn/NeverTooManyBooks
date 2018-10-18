@@ -24,7 +24,7 @@ public class Pic2ShopScanner implements Scanner {
     /**
      * When a barcode is read, pic2shop returns Activity.RESULT_OK in onActivityResult()
      * of the activity which requested the scan using startActivityForResult().
-     * The read barcode can be retrieved with intent.getStringExtra(BARCODE).
+     * The barcode can be retrieved with intent.getStringExtra("BARCODE").
      *
      * If the user exits pic2shop by pressing Back before a barcode is read, the
      * result code will be Activity.RESULT_CANCELED in onActivityResult().
@@ -78,6 +78,7 @@ public class Pic2ShopScanner implements Scanner {
      * Extract the barcode from the result
      */
     @Override
+    @NonNull
     public String getBarcode(@NonNull final Intent intent) {
         String barcode = intent.getStringExtra(BARCODE);
         // only for Pro:
@@ -97,13 +98,16 @@ public class Pic2ShopScanner implements Scanner {
     /**
      * just for reference: https://en.wikipedia.org/wiki/Barcode#Types_of_barcodes
      * The Pro package does not implement all those.
-     * BARCODE_TYPES below was taken from the example code at github.
+     * The example code at github lists:
+     * String[] ALL_BARCODE_TYPES = {"EAN13","EAN8","UPCE","ITF","CODE39","CODE128","CODABAR","QR"};
+     *
+     * of which only {"EAN13","UPCE"} are useful for ou purposes
      */
     public interface Pro {
         String PACKAGE = "com.visionsmarts.pic2shoppro";
         String ACTION = PACKAGE + ".SCAN";
         // request Intent
-       //String[] ALL_BARCODE_TYPES = {"EAN13","EAN8","UPCE","ITF","CODE39","CODE128","CODABAR","QR"};
+
        String[] BARCODE_TYPES = {"EAN13","UPCE"};
        String FORMATS = "formats";
         // response Intent
@@ -121,7 +125,7 @@ public class Pic2ShopScanner implements Scanner {
 //    private static void launchMarketToInstallApp(@NonNull final Context context, @NonNull final String packageName) {
 //        try {
 //            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + packageName));
-//            context.startActivityForResult(intent);
+//            context.startActivity(intent);
 //        } catch (ActivityNotFoundException e) {
 //            Logger.error(e, "Google Play not installed.");
 //        }

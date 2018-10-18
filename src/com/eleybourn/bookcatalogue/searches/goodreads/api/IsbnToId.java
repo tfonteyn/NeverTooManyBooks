@@ -49,7 +49,7 @@ public class IsbnToId extends ApiHandler {
 	}
 
 	/*
-	 * Get the Goodreads book ID given an ISBN. Response contains the ID without any markup.
+	 * Get the Goodreads book ID given an ISBN. Response contains the ID  as is.
 	 *	URL: http://www.goodreads.com/book/isbn_to_id    (sample url)
 	 *	HTTP method: GET
 	 *	Parameters:

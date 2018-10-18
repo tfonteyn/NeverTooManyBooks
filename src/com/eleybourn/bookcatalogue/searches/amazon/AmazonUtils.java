@@ -126,17 +126,17 @@ public class AmazonUtils {
                                       @Nullable final String series) {
         try {
             openLink(activity, author, series);
-        } catch (Exception ae) {
+        } catch (Exception e) {
             // An Amazon error should not crash the app
-            Logger.error(ae, "Unable to call the Amazon API");
+            Logger.error(e, "Unable to call the Amazon API");
             StandardDialogs.showBriefMessage(activity, R.string.error_unexpected_error);
-            // This code works, but Amazon have a nasty tendency to cancel Associate IDs...
-            //String baseUrl = "http://www.amazon.com/gp/search?index=books&tag=philipwarneri-20&tracking_id=philipwarner-20";
-            //String extra = buildSearchArgs(author, series);
-            //if (extra != null && !extra.isEmpty()) {
-            //	Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(baseUrl + extra));
-            //	context.startActivityForResult(intent);
-            //}
+            /* This code works, but Amazon have a nasty tendency to cancel Associate IDs... */
+//            String baseUrl = "http://www.amazon.com/gp/search?index=books&tag=philipwarneri-20&tracking_id=philipwarner-20";
+//            String extra = buildSearchArgs(author, series);
+//            if (extra != null && !extra.isEmpty()) {
+//            	Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(baseUrl + extra));
+//                activity.startActivity(intent);
+//            }
         }
     }
 }

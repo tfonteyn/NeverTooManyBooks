@@ -23,7 +23,6 @@ package com.eleybourn.bookcatalogue.searches;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
@@ -381,6 +380,10 @@ public class SearchManager implements TaskManagerListener {
         if (mRunningTasks.size() > 0) {
             throw new IllegalStateException("Attempting to start new search while previous search running");
         }
+        if (author.isEmpty() && title.isEmpty() && isbn.isEmpty()) {
+            throw new IllegalArgumentException(
+                    "Must specify at least one criteria non-empty: isbn=" + isbn + ", author=" + author + ", title=" + title);
+        }
 
         // Save the flags
         mSearchFlags = searchFlags;
@@ -510,7 +513,6 @@ public class SearchManager implements TaskManagerListener {
      * {@link UniqueId#BKEY_AUTHOR_DETAILS} -> {@link UniqueId#BKEY_AUTHOR_ARRAY}
      * {@link UniqueId#BKEY_SERIES_DETAILS} -> {@link UniqueId#BKEY_SERIES_DETAILS}
      * {@link UniqueId#BKEY_ANTHOLOGY_DETAILS} -> {@link UniqueId#BKEY_ANTHOLOGY_DETAILS}
-     *
      */
     private void sendResults() {
         /* This list will be the actual order of the result we apply, based on the

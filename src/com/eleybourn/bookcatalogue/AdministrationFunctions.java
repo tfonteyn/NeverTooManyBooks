@@ -64,8 +64,8 @@ import java.util.List;
  * @author Evan Leybourn
  */
 public class AdministrationFunctions extends BaseActivityWithTasks {
-    private static final int ACTIVITY_BOOKSHELF = 1;
-    private static final int ACTIVITY_FIELD_VISIBILITY = 2;
+
+    public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_ADMIN;
 
     private static final String DO_AUTO = "do_auto";
     private static final String DO_AUTO_EXPORT = "export";
@@ -77,9 +77,9 @@ public class AdministrationFunctions extends BaseActivityWithTasks {
      * Start the archiving activity
      */
     public static void exportToArchive(@NonNull Activity a) {
-        Intent i = new Intent(a, BackupChooser.class);
-        i.putExtra(BackupChooser.BKEY_MODE, BackupChooser.BVAL_MODE_SAVE_AS);
-        a.startActivity(i);
+        Intent intent = new Intent(a, BackupChooser.class);
+        intent.putExtra(BackupChooser.BKEY_MODE, BackupChooser.BVAL_MODE_SAVE_AS);
+        a.startActivity(intent);
     }
 
     @Override
@@ -263,8 +263,8 @@ public class AdministrationFunctions extends BaseActivityWithTasks {
             v.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent i = new Intent(AdministrationFunctions.this, GoodreadsRegister.class);
-                    startActivity(i);
+                    Intent intent = new Intent(AdministrationFunctions.this, GoodreadsRegister.class);
+                    startActivity(intent);
                 }
             });
         }
@@ -277,8 +277,8 @@ public class AdministrationFunctions extends BaseActivityWithTasks {
             v.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent i = new Intent(AdministrationFunctions.this, AdministrationLibraryThing.class);
-                    startActivity(i);
+                    Intent intent = new Intent(AdministrationFunctions.this, AdministrationLibraryThing.class);
+                    startActivity(intent);
                 }
             });
         }
@@ -291,8 +291,8 @@ public class AdministrationFunctions extends BaseActivityWithTasks {
             v.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent i = new Intent(AdministrationFunctions.this, SearchAdmin.class);
-                    startActivity(i);
+                    Intent intent = new Intent(AdministrationFunctions.this, SearchAdmin.class);
+                    startActivity(intent);
                 }
             });
         }
@@ -379,19 +379,37 @@ public class AdministrationFunctions extends BaseActivityWithTasks {
     }
 
     /**
+     * Dispatch incoming result to the correct fragment.
+     */
+    @Override
+    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case FieldVisibilityActivity.REQUEST_CODE:
+            case BooklistStylesListActivity.REQUEST_CODE:
+                if (resultCode == Activity.RESULT_OK) {
+                    //TOMF anything to do ?
+                }
+                break;
+        }
+    }
+
+    /**
      * Load the Manage Field Visibility Activity
      */
     private void manageFields() {
-        Intent i = new Intent(this, FieldVisibilityActivity.class);
-        startActivityForResult(i, ACTIVITY_FIELD_VISIBILITY);
+        Intent intent = new Intent(this, FieldVisibilityActivity.class);
+        startActivityForResult(intent, FieldVisibilityActivity.REQUEST_CODE);
     }
 
     /**
      * Load the Edit Book List Styles Activity
      */
     private void manageBooklistStyles() {
-        BooklistStylesListActivity.startActivityForResult(this);
+        Intent intent = new Intent(this, BooklistStylesListActivity.class);
+        startActivityForResult(intent, BooklistStylesListActivity.REQUEST_CODE);
     }
+
 
     /**
      * Start the restore activity
@@ -451,16 +469,16 @@ public class AdministrationFunctions extends BaseActivityWithTasks {
      * There is a current limitation that restricts the search to only books with an ISBN
      */
     private void updateFieldsFromInternet() {
-        Intent i = new Intent(this, UpdateFromInternetActivity.class);
-        startActivity(i);
+        Intent intent = new Intent(this, UpdateFromInternetActivity.class);
+        startActivity(intent);
     }
 
     /**
      * Start the activity that shows the basic details of background tasks.
      */
     private void showBackgroundTasks() {
-        Intent i = new Intent(this, TaskListActivity.class);
-        startActivity(i);
+        Intent intent = new Intent(this, TaskListActivity.class);
+        startActivity(intent);
     }
 
     @Override
@@ -509,7 +527,7 @@ public class AdministrationFunctions extends BaseActivityWithTasks {
                         try {
                             uris.add(Uri.fromFile(StorageUtils.getFile(CsvExporter.EXPORT_FILE_NAME)));
                             emailIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
-                            startActivity(Intent.createChooser(emailIntent, "Send mail..."));
+                            startActivity(Intent.createChooser(emailIntent, getString(R.string.send_mail)));
                         } catch (NullPointerException e) {
                             Logger.error(e);
                             StandardDialogs.showBriefMessage(AdministrationFunctions.this, R.string.error_export_failed);

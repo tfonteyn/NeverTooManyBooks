@@ -20,7 +20,6 @@
 
 package com.eleybourn.bookcatalogue.searches.goodreads;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -59,8 +58,11 @@ import java.util.List;
  * @author Philip Warner
  */
 public class GoodreadsExportFailuresActivity extends BindableItemListActivity {
+
+    public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_GOODREADS_EXPORT_FAILURES;
+
     /** Key to store optional task ID when activity is started */
-    private static final String GR_TASK_ID = "GoodreadsExportFailuresActivity.TaskId";
+    public static final String REQUEST_KEY_TASK_ID = "GoodreadsExportFailuresActivity.TaskId";
     /** DB connection */
     private CatalogueDBAdapter mDb = null;
     private BindableItemCursor mCursor;
@@ -68,7 +70,7 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity {
     /**
      * Listener to handle Event add/change/delete.
      */
-    private final OnEventChangeListener m_OnEventChangeListener = new OnEventChangeListener() {
+    private final OnEventChangeListener mOnEventChangeListener = new OnEventChangeListener() {
         @Override
         public void onEventChange(Event event, EventActions action) {
             GoodreadsExportFailuresActivity.this.refreshData();
@@ -85,15 +87,6 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity {
         super(R.layout.goodreads_event_list);
     }
 
-    /**
-     * Utility routine to start this activity on behalf of the passed activity.
-     */
-    public static void startActivityForResult(@NonNull final Activity from, final long taskId) {
-        Intent intent = new Intent(from, GoodreadsExportFailuresActivity.class);
-        intent.putExtra(GR_TASK_ID, taskId);
-        from.startActivityForResult(intent, UniqueId.ACTIVITY_REQUEST_CODE_GOODREADS_EXPORT_FAILURES);
-    }
-
     @Override
     @CallSuper
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -102,8 +95,8 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity {
         mDb.open();
 
         Intent intent = getIntent();
-        if (intent != null && intent.hasExtra(GR_TASK_ID)) {
-            mTaskId = intent.getLongExtra(GR_TASK_ID, 0);
+        if (intent != null && intent.hasExtra(REQUEST_KEY_TASK_ID)) {
+            mTaskId = intent.getLongExtra(REQUEST_KEY_TASK_ID, 0);
         } else {
             mTaskId = 0;
         }
@@ -112,7 +105,7 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity {
         super.onCreate(savedInstanceState);
 
         //When any Event is added/changed/deleted, update the list. Lazy, yes.
-        BookCatalogueApp.getQueueManager().registerEventListener(m_OnEventChangeListener);
+        BookCatalogueApp.getQueueManager().registerEventListener(mOnEventChangeListener);
         // Update the header.
         updateHeader();
 
@@ -214,7 +207,7 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity {
             }
         } catch (Exception ignore) {}
         try {
-            BookCatalogueApp.getQueueManager().unregisterEventListener(m_OnEventChangeListener);
+            BookCatalogueApp.getQueueManager().unregisterEventListener(mOnEventChangeListener);
         } catch (Exception ignore) {}
     }
 

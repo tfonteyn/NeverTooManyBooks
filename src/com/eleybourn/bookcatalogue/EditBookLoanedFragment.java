@@ -156,7 +156,7 @@ public class EditBookLoanedFragment extends BookAbstractFragment {
      */
     private void setAdapter() {
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.READ_CONTACTS}, UniqueId.ACTIVITY_REQUEST_CODE_PERMISSIONS_REQUEST);
+            ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.READ_CONTACTS}, UniqueId.ACTIVITY_REQUEST_CODE_ANDROID_PERMISSIONS_REQUEST);
             return;
         }
         ArrayList<String> contacts = getFriends();
@@ -208,7 +208,7 @@ public class EditBookLoanedFragment extends BookAbstractFragment {
     public void onRequestPermissionsResult(final int requestCode, @NonNull final String permissions[], @NonNull final int[] grantResults) {
         //ENHANCE: when/if we request more permissions, then the permissions[] and grantResults[] must be checked in parallel
         switch (requestCode) {
-            case UniqueId.ACTIVITY_REQUEST_CODE_PERMISSIONS_REQUEST: {
+            case UniqueId.ACTIVITY_REQUEST_CODE_ANDROID_PERMISSIONS_REQUEST: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     setAdapter();
                 }

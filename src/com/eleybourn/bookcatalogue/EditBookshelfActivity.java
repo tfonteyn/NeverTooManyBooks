@@ -39,6 +39,9 @@ import com.eleybourn.bookcatalogue.debug.Logger;
  */
 public class EditBookshelfActivity extends BaseActivity {
 
+    public static final int REQUEST_CODE_CREATE = UniqueId.ACTIVITY_REQUEST_CODE_BOOKSHELF_CREATE;
+    public static final int REQUEST_CODE_EDIT = UniqueId.ACTIVITY_REQUEST_CODE_BOOKSHELF_EDIT;
+
     private CatalogueDBAdapter mDb;
 
     private EditText mBookshelfText;
@@ -81,7 +84,7 @@ public class EditBookshelfActivity extends BaseActivity {
 
             findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
                 public void onClick(View view) {
-                    setResult(RESULT_OK);
+                    setResult(RESULT_CANCELED);
                     finish();
                 }
             });
@@ -101,6 +104,16 @@ public class EditBookshelfActivity extends BaseActivity {
         } else {
             mConfirmButton.setText(R.string.add);
         }
+    }
+
+    /**
+     * Take care of popping the fragment back stack or finishing the activity
+     * as appropriate.
+     */
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        setResult(RESULT_CANCELED);
     }
 
     @Override

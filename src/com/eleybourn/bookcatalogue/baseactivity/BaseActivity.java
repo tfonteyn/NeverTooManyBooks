@@ -14,6 +14,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import com.eleybourn.bookcatalogue.About;
+import com.eleybourn.bookcatalogue.BooksOnBookshelf;
 import com.eleybourn.bookcatalogue.Donate;
 import com.eleybourn.bookcatalogue.AdministrationFunctions;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
@@ -30,6 +31,16 @@ import com.eleybourn.bookcatalogue.searches.SearchCatalogue;
 /**
  * Base class for all (most) Activity's
  *
+ * ENHANCE: handle the home/up button better
+ * right now, the only activity with a DrawerLayout == {@link BooksOnBookshelf}
+ * -> click 'home' and {@link #onOptionsItemSelected} will open the drawer.
+ *
+ * Activities started with 'startActivityForResult' override {@link #onOptionsItemSelected}
+ * and handle the 'home' button to provide their results.
+ *
+ * Lastly, all other activities are handled here with a plain 'finish'
+ * in {@link #onOptionsItemSelected}
+ *
  * @author pjw
  */
 abstract public class BaseActivity extends AppCompatActivity
@@ -43,6 +54,17 @@ abstract public class BaseActivity extends AppCompatActivity
 
     /** when a locale or theme is changed, a restart of the activity is needed */
     private boolean mReloadOnResume = false;
+
+    /** universal flag used to indicate something was changed */
+    private boolean mIsDirty;
+
+    protected boolean isDirty() {
+        return mIsDirty;
+    }
+
+    protected void setDirty(final boolean isDirty) {
+        this.mIsDirty = isDirty;
+    }
 
     protected int getLayoutId(){
         return 0;
@@ -86,11 +108,14 @@ abstract public class BaseActivity extends AppCompatActivity
         ActionBar bar = getSupportActionBar();
         if (bar != null) {
 
-            bar.setHomeButtonEnabled(true);
+            // default on all activities is to show the "up" (back) button
             bar.setDisplayHomeAsUpEnabled(true);
 
+            //bar.setDisplayShowHomeEnabled(true);
+
+            // but if we are at the top activity
             if (isTaskRoot()) {
-                bar.setDisplayShowHomeEnabled(true);
+                // then we want the hamburger menu.
                 bar.setHomeAsUpIndicator(R.drawable.ic_menu);
             }
         }
@@ -120,34 +145,62 @@ abstract public class BaseActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(@NonNull final MenuItem menuItem) {
         closeNavigationDrawer();
 
+        Intent intent;
         switch (menuItem.getItemId()) {
             case R.id.nav_search:
-                startActivity(new Intent(this, SearchCatalogue.class));
+                intent = new Intent(this, SearchCatalogue.class);
+                startActivity(intent);
                 return true;
             case R.id.nav_manage_bookshelves:
-                startActivity(new Intent(this, EditBookshelfListActivity.class));
+                intent =new Intent(this, EditBookshelfListActivity.class);
+                startActivityForResult(intent, EditBookshelfListActivity.REQUEST_CODE);
                 break;
             case R.id.nav_booklist_prefs:
-                startActivity(new Intent(this, BooklistPreferencesActivity.class));
+                intent = new Intent(this, BooklistPreferencesActivity.class);
+                startActivity(intent);
                 return true;
             case R.id.nav_other_prefs:
-                startActivity(new Intent(this, PreferencesActivity.class));
+                intent = new Intent(this, PreferencesActivity.class);
+                startActivityForResult(intent, PreferencesActivity.REQUEST_CODE);
                 return true;
             case R.id.nav_admin:
-                startActivity(new Intent(this, AdministrationFunctions.class));
+                intent =new Intent(this, AdministrationFunctions.class);
+                startActivityForResult(intent, AdministrationFunctions.REQUEST_CODE);
                 return true;
             case R.id.nav_about:
-                startActivity(new Intent(this, About.class));
+                intent =new Intent(this, About.class);
+                startActivity(intent);
                 return true;
             case R.id.nav_help:
-                startActivity(new Intent(this, Help.class));
+                intent =new Intent(this, Help.class);
+                startActivity(intent);
                 return true;
             case R.id.nav_donate:
-                startActivity(new Intent(this, Donate.class));
+                intent =new Intent(this, Donate.class);
+                startActivity(intent);
                 break;
         }
 
         return false;
+    }
+
+    /**
+     * Dispatch incoming result to the correct fragment.
+     */
+    @Override
+    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+           case AdministrationFunctions.REQUEST_CODE:
+           case PreferencesActivity.REQUEST_CODE:
+           case EditBookshelfListActivity.REQUEST_CODE:
+                if (resultCode == RESULT_OK) {
+                    // code is here for reference only
+                    // for now, nothing to do as these are handled on a higher level
+                }
+                break;
+
+        }
     }
 
     /**
@@ -168,13 +221,13 @@ abstract public class BaseActivity extends AppCompatActivity
                     mDrawerLayout.openDrawer(GravityCompat.START);
                     return true;
                 }
+
+                // for all activities that were opened with startActivity()
+                // where 'home' is treated as 'up', simply finish TOMF
                 finish();
                 return true;
-
-            default:
-                return super.onOptionsItemSelected(item);
         }
-
+        return super.onOptionsItemSelected(item);
     }
 
     /**

@@ -120,7 +120,7 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LAST_
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LEVEL;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LOANED_TO;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LOANED_TO_SORT;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_MARK;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SELECTED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PRIMARY_SERIES_COUNT;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PUBLICATION_MONTH;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PUBLICATION_YEAR;
@@ -502,32 +502,20 @@ public class BooklistBuilder implements AutoCloseable {
                 " End";
     }
 
-    // used so we can break up the big 'build' method
-    private class StyleInfo {
-        // Will be set to appropriate Group if a Series group exists in style
-        BooklistSeriesGroup seriesGroup = null;
-        // Will be set to appropriate Group if an Author group exists in style
-        BooklistAuthorGroup authorGroup = null;
-        // Will be set to TRUE if a LOANED group exists in style
-        boolean hasGroupLOANED = false;
-        // Will be set to TRUE if a BOOKSHELF group exists in style
-        boolean hasGroupBOOKSHELF = false;
-    }
-
     /**
      * Clear and the build the temporary list of books based on the passed criteria.
      *
-     * @param preferredState State to display: expanded, collapsed or remembered
-     * @param markId         TODO: ID of book to 'mark'. DEPRECATED?
-     * @param bookshelf      Search criteria: limit to shelf
-     * @param authorWhere    Search criteria: additional conditions that apply to authors table
-     * @param bookWhere      Search criteria: additional conditions that apply to book table
-     * @param loaned_to      Search criteria: only books loaned to named person
-     * @param seriesName     Search criteria: only books in named series
-     * @param searchText     Search criteria: book details must in some way contain the passed text
+     * @param preferredState           State to display: expanded, collapsed or remembered
+     * @param previouslySelectedBookId ID of book to remember, so we can scroll back to it
+     * @param bookshelf                Search criteria: limit to shelf
+     * @param authorWhere              Search criteria: additional conditions that apply to authors table
+     * @param bookWhere                Search criteria: additional conditions that apply to book table
+     * @param loaned_to                Search criteria: only books loaned to named person
+     * @param seriesName               Search criteria: only books in named series
+     * @param searchText               Search criteria: book details must in some way contain the passed text
      */
     public void build(final int preferredState,
-                      final long markId,
+                      final long previouslySelectedBookId,
                       @Nullable final String bookshelf,
                       @NonNull final String authorWhere,
                       @NonNull final String bookWhere,
@@ -618,9 +606,9 @@ public class BooklistBuilder implements AutoCloseable {
             // We want the UUID for the book so we can get thumbnails
             summary.addDomain(DOM_BOOK_UUID, TBL_BOOKS.dot(DOM_BOOK_UUID), SummaryBuilder.FLAG_NONE);
 
-            // If we have a book ID to mark, then add the MARK field, and setup the expression.
-            if (markId != 0) {
-                summary.addDomain(DOM_MARK, TBL_BOOKS.dot(DOM_ID) + "=" + markId, SummaryBuilder.FLAG_NONE);
+            // If we have a book ID to remember, then add the DOM_SELECTED field, and setup the expression.
+            if (previouslySelectedBookId != 0) {
+                summary.addDomain(DOM_SELECTED, TBL_BOOKS.dot(DOM_ID) + "=" + previouslySelectedBookId, SummaryBuilder.FLAG_NONE);
             }
 
             if (styleInfo.seriesGroup != null) {
@@ -1052,8 +1040,8 @@ public class BooklistBuilder implements AutoCloseable {
 
                 mSummary = summary;
 
-                //if (markId > 0)
-                //	ensureBookVisible(markId);
+                //if (previouslySelectedBookId > 0)
+                //	ensureBookVisible(previouslySelectedBookId);
 
                 // Get the final result
                 //return getList();
@@ -1074,10 +1062,10 @@ public class BooklistBuilder implements AutoCloseable {
     /**
      * Build each kind group.
      *
-     *  ****************************************************************************************
-     *  IMPORTANT NOTE: for each kind, the FIRST SORTED AND GROUPED domain should be the one
-     *  				that will be displayed and that level in the UI.
-     *  ****************************************************************************************
+     * ****************************************************************************************
+     * IMPORTANT NOTE: for each kind, the FIRST SORTED AND GROUPED domain should be the one
+     * that will be displayed and that level in the UI.
+     * ****************************************************************************************
      */
     private void build_processEachGroupInTheStyle(@NonNull final SummaryBuilder /* in/out */ summary,
                                                   @NonNull final StyleInfo /* in/ou */ styleInfo,
@@ -1423,7 +1411,6 @@ public class BooklistBuilder implements AutoCloseable {
 
         return join.toString();
     }
-
 
     @NonNull
     private String build_whereClause(@NonNull final String bookWhere,
@@ -1906,7 +1893,6 @@ public class BooklistBuilder implements AutoCloseable {
         }
     }
 
-
     /**
      * Save the specified node state.
      */
@@ -2173,8 +2159,8 @@ public class BooklistBuilder implements AutoCloseable {
     }
 
     /**
-     * For EXPAND: Mark all rows as visible/expanded
-     * For COLLAPSE: Mark all non-root rows as invisible/unexpanded and mark all root nodes as visible/unexpanded.
+     * For EXPAND: Set all rows as visible/expanded
+     * For COLLAPSE: Set all non-root rows as invisible/unexpanded and mark all root nodes as visible/unexpanded.
      */
     public void expandAll(final boolean expand) {
         @SuppressWarnings("UnusedAssignment")
@@ -2227,7 +2213,7 @@ public class BooklistBuilder implements AutoCloseable {
         if (next < 0) {
             next = Long.MAX_VALUE;
         }
-        // Mark intervening nodes as visible/invisible
+        // Set intervening nodes as visible/invisible
         mShowStmt.bindLong(1, isExpanded); // visible
         mShowStmt.bindLong(2, isExpanded); // expanded
         mShowStmt.bindLong(3, rowId);
@@ -2236,7 +2222,7 @@ public class BooklistBuilder implements AutoCloseable {
 
         mShowStmt.execute();
 
-        // Mark this node as expanded.
+        // Set this node as expanded.
         mExpandStmt.bindLong(1, isExpanded);
         mExpandStmt.bindLong(2, rowId);
         mExpandStmt.execute();
@@ -2358,6 +2344,18 @@ public class BooklistBuilder implements AutoCloseable {
             listPosition = listPos;
             visible = (vis == 1);
         }
+    }
+
+    // used so we can break up the big 'build' method
+    private class StyleInfo {
+        // Will be set to appropriate Group if a Series group exists in style
+        BooklistSeriesGroup seriesGroup = null;
+        // Will be set to appropriate Group if an Author group exists in style
+        BooklistAuthorGroup authorGroup = null;
+        // Will be set to TRUE if a LOANED group exists in style
+        boolean hasGroupLOANED = false;
+        // Will be set to TRUE if a BOOKSHELF group exists in style
+        boolean hasGroupBOOKSHELF = false;
     }
 
     /**
@@ -2584,8 +2582,6 @@ public class BooklistBuilder implements AutoCloseable {
 //	/**
 //	 * Clear and the build the temporary list of books based on the passed criteria.
 //	 * 
-//	 * @param primarySeriesOnly		Only fetch books primary series
-//	 * @param showSeries			If false, will not cross with series at al
 //	 * @param bookshelf				Search criteria: limit to shelf
 //	 * @param authorWhere			Search criteria: additional conditions that apply to authors table
 //	 * @param bookWhere				Search criteria: additional conditions that apply to book table
@@ -2594,7 +2590,8 @@ public class BooklistBuilder implements AutoCloseable {
 //	 * @param searchText			Search criteria: book details must in some way contain the passed text
 //	 * 
 //	 */
-//	public BooklistCursor build(long markId, String bookshelf, String authorWhere, String bookWhere, String loaned_to, String seriesName, String searchText) {
+//	public BooklistCursor build(long previouslySelectedBookId, String bookshelf, String authorWhere, String bookWhere,
+//                              String loaned_to, String seriesName, String searchText) {
 //		long t0 = System.currentTimeMillis();
 //		SummaryBuilder summary = new SummaryBuilder();
 //		// Add the minimum required domains
@@ -2704,8 +2701,8 @@ public class BooklistBuilder implements AutoCloseable {
 //		}
 //		long t0b = System.currentTimeMillis();
 //
-//		if (markId != 0) {
-//			summary.addDomain(DOM_MARK, TBL_BOOKS.dot(DOM_ID) + " = " + markId, SummaryBuilder.FLAG_NONE);
+//		if (previouslySelectedBookId != 0) {
+//			summary.addDomain(DOM_SELECTED, TBL_BOOKS.dot(DOM_ID) + " = " + previouslySelectedBookId, SummaryBuilder.FLAG_NONE);
 //		}
 //
 //		// Ensure any caller-specified extras (eg. title) are added at the end.

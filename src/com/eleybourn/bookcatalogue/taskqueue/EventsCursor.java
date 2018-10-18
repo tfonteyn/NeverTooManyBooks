@@ -115,7 +115,7 @@ public class EventsCursor extends SQLiteCursor implements BindableItemCursor {
     /**
      * Fake attribute to handle multi-select ListViews. if we ever do them.
      *
-     * @return Options indicating if current row has been marked as 'selected'.
+     * @return Options indicating if current row has been 'selected'.
      */
     public boolean getIsSelected() {
         return getIsSelected(getId());

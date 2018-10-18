@@ -154,7 +154,7 @@ public class EditBookFieldsFragment extends BookAbstractFragmentWithCoverImage
                     intent.putExtra(UniqueId.BKEY_AUTHOR_ARRAY, getBook().getAuthorList());
                     intent.putExtra(UniqueId.KEY_ID, getBook().getBookId());
                     intent.putExtra(UniqueId.KEY_TITLE, mFields.getField(R.id.title).getValue().toString());
-                    startActivityForResult(intent, UniqueId.ACTIVITY_REQUEST_CODE_EDIT_AUTHORS);
+                    startActivityForResult(intent, EditAuthorListActivity.REQUEST_CODE);
                 }
             });
 
@@ -165,7 +165,7 @@ public class EditBookFieldsFragment extends BookAbstractFragmentWithCoverImage
                     intent.putExtra(UniqueId.BKEY_SERIES_ARRAY, getBook().getSeriesList());
                     intent.putExtra(UniqueId.KEY_ID, getBook().getBookId());
                     intent.putExtra(UniqueId.KEY_TITLE, mFields.getField(R.id.title).getValue().toString());
-                    startActivityForResult(intent, UniqueId.ACTIVITY_REQUEST_CODE_EDIT_SERIES);
+                    startActivityForResult(intent, EditSeriesListActivity.REQUEST_CODE);
                 }
             });
 
@@ -407,17 +407,17 @@ public class EditBookFieldsFragment extends BookAbstractFragmentWithCoverImage
 
     @Override
     @CallSuper
-    public void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent intent) {
+    public void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent data) {
         Tracker.enterOnActivityResult(this, requestCode, resultCode);
-        super.onActivityResult(requestCode,resultCode,intent);
+        super.onActivityResult(requestCode,resultCode, data);
 
         try {
             Book book = getBook();
             // reminder: no, AnthologyTitle is not handled here, has its own Tab
             switch (requestCode) {
-                case UniqueId.ACTIVITY_REQUEST_CODE_EDIT_AUTHORS: {
-                    if (resultCode == Activity.RESULT_OK && intent != null && intent.hasExtra(UniqueId.BKEY_AUTHOR_ARRAY)) {
-                        book.setAuthorList(ArrayUtils.getAuthorFromIntentExtras(intent));
+                case EditAuthorListActivity.REQUEST_CODE: {
+                    if (resultCode == Activity.RESULT_OK && data != null && data.hasExtra(UniqueId.BKEY_AUTHOR_ARRAY)) {
+                        book.setAuthorList(ArrayUtils.getAuthorFromIntentExtras(data));
                         getEditBookManager().setDirty(true);
                     } else {
                         // Even though the dialog was terminated, some authors MAY have been updated/added.
@@ -431,9 +431,9 @@ public class EditBookFieldsFragment extends BookAbstractFragmentWithCoverImage
                     getEditBookManager().setDirty(wasDirty);
                     break;
                 }
-                case UniqueId.ACTIVITY_REQUEST_CODE_EDIT_SERIES: {
-                    if (resultCode == Activity.RESULT_OK && intent != null && intent.hasExtra(UniqueId.BKEY_SERIES_ARRAY)) {
-                        book.setSeriesList(ArrayUtils.getSeriesFromIntentExtras(intent));
+                case EditSeriesListActivity.REQUEST_CODE: {
+                    if (resultCode == Activity.RESULT_OK && data != null && data.hasExtra(UniqueId.BKEY_SERIES_ARRAY)) {
+                        book.setSeriesList(ArrayUtils.getSeriesFromIntentExtras(data));
                         populateSeriesListField(book);
                         getEditBookManager().setDirty(true);
                     }

@@ -31,8 +31,6 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
-import android.view.KeyEvent;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
@@ -67,10 +65,13 @@ public class EditBookActivity extends BaseActivity
         implements BookAbstractFragment.BookEditManager,
         OnPartialDatePickerListener, OnTextFieldEditorListener, OnBookshelfCheckChangeListener {
 
+    public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_EDIT_BOOK;
+    public static final int REQUEST_CODE_ADD_BOOK_MANUALLY = UniqueId.ACTIVITY_REQUEST_CODE_ADD_BOOK_MANUALLY;
+
     /**
      * Tabs in order, see {@link #mTabClasses}
      */
-    public static final String TAB = "tab";
+    public static final String REQUEST_KEY_TAB = "tab";
     public static final int TAB_EDIT = 0;
     public static final int TAB_EDIT_NOTES = 1;
     public static final int TAB_EDIT_LOANS = 2;
@@ -105,8 +106,8 @@ public class EditBookActivity extends BaseActivity
                                               final int tab) {
         Intent intent = new Intent(activity, EditBookActivity.class);
         intent.putExtra(UniqueId.KEY_ID, id);
-        intent.putExtra(EditBookActivity.TAB, tab);
-        activity.startActivityForResult(intent, UniqueId.ACTIVITY_REQUEST_CODE_EDIT_BOOK);
+        intent.putExtra(EditBookActivity.REQUEST_KEY_TAB, tab);
+        activity.startActivityForResult(intent, EditBookActivity.REQUEST_CODE);
     }
 
     /**
@@ -116,7 +117,7 @@ public class EditBookActivity extends BaseActivity
                                               @NonNull final Bundle bookData) {
         Intent intent = new Intent(activity, EditBookActivity.class);
         intent.putExtra(UniqueId.BKEY_BOOK_DATA, bookData);
-        activity.startActivityForResult(intent, UniqueId.ACTIVITY_REQUEST_CODE_EDIT_BOOK);
+        activity.startActivityForResult(intent, EditBookActivity.REQUEST_CODE);
     }
 
     @Override
@@ -199,8 +200,8 @@ public class EditBookActivity extends BaseActivity
 
         // any specific tab desired as 'selected' ?
         int showTab = TAB_EDIT;
-        if (extras != null && extras.containsKey(TAB)) {
-            int tabWanted = extras.getInt(TAB);
+        if (extras != null && extras.containsKey(REQUEST_KEY_TAB)) {
+            int tabWanted = extras.getInt(REQUEST_KEY_TAB);
             switch (tabWanted) {
                 case TAB_EDIT:
                 case TAB_EDIT_NOTES:
@@ -224,7 +225,7 @@ public class EditBookActivity extends BaseActivity
         TabLayout.Tab ourTab = mAllTabs.get(showTab);
         ourTab.select();
         //noinspection ConstantConditions
-        Fragment frag = ((Holder)ourTab.getTag()).fragment;
+        Fragment frag = ((Holder) ourTab.getTag()).fragment;
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.fragment, frag)
@@ -235,7 +236,7 @@ public class EditBookActivity extends BaseActivity
             @Override
             public void onTabSelected(@NonNull final TabLayout.Tab tab) {
                 //noinspection ConstantConditions
-                Fragment frag = ((Holder)tab.getTag()).fragment;
+                Fragment frag = ((Holder) tab.getTag()).fragment;
                 getSupportFragmentManager()
                         .beginTransaction()
                         .replace(R.id.fragment, frag)
@@ -288,7 +289,7 @@ public class EditBookActivity extends BaseActivity
      *
      * 1. If a valid rowId exists it will populate the fields from the database
      *
-     * 2. If fields have been passed from another activity (e.g. {@link BookISBNSearchActivity}) it
+     * 2. If fields have been passed from another activity (e.g. {@link BookSearchActivity}) it
      * will populate the fields from the bundle
      *
      * 3. It will leave the fields blank for new books.
@@ -325,27 +326,6 @@ public class EditBookActivity extends BaseActivity
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    /**
-     * If 'back' is pressed, and the user has made changes, ask them if they
-     * really want to lose the changes.
-     *
-     * We don't use onBackPressed because it does not work with API level 4.
-     */
-    @Override
-    @CallSuper
-    public boolean onKeyDown(final int keyCode, final KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if (isDirty()) {
-                StandardDialogs.showConfirmUnsavedEditsDialog(this, null);
-            } else {
-                doFinish();
-            }
-            return true;
-        } else {
-            return super.onKeyDown(keyCode, event);
-        }
-    }
-
     @Override
     @CallSuper
     protected void onDestroy() {
@@ -362,16 +342,23 @@ public class EditBookActivity extends BaseActivity
 
         outState.putLong(UniqueId.KEY_ID, mBookId);
         outState.putBundle(UniqueId.BKEY_BOOK_DATA, mBook.getRawData());
-        outState.putInt(EditBookActivity.TAB, mTabLayout.getSelectedTabPosition());
+        outState.putInt(EditBookActivity.REQUEST_KEY_TAB, mTabLayout.getSelectedTabPosition());
 
         super.onSaveInstanceState(outState);
         Tracker.exitOnSaveInstanceState(this);
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    //<editor-fold desc="Callback handlers">
+
     /**
-     * Check if edits need saving, and finish the activity if not
+     * When the user clicks 'back/up', prepare our result.
      */
-    private void doFinish() {
+    @Override
+    @CallSuper
+    public void onBackPressed() {
+        // Check if edits need saving, and finish the activity if not
         if (isDirty()) {
             StandardDialogs.showConfirmUnsavedEditsDialog(this, new Runnable() {
                 @Override
@@ -382,6 +369,8 @@ public class EditBookActivity extends BaseActivity
         } else {
             finishAndSendIntent();
         }
+
+        super.onBackPressed();
     }
 
     /**
@@ -392,26 +381,6 @@ public class EditBookActivity extends BaseActivity
         intent.putExtra(UniqueId.KEY_ID, mBook.getBookId());
         setResult(Activity.RESULT_OK, intent);
         finish();
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-
-    //<editor-fold desc="Callback handlers">
-
-    /**
-     * menu handler; handle the 'home' key, otherwise, pass on the event
-     */
-    @Override
-    @CallSuper
-    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                doFinish();
-                return true;
-
-            default:
-                return super.onOptionsItemSelected(item);
-        }
     }
 
     /**
@@ -523,7 +492,7 @@ public class EditBookActivity extends BaseActivity
     }
 
     /**
-     * Mark the data as dirty (or not)
+     * set the data as dirty (or not)
      */
     @Override
     public void setDirty(final boolean dirty) {

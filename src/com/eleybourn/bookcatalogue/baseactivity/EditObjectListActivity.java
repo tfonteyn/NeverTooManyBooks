@@ -114,6 +114,7 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Bas
                 finish();
         }
     };
+
     /**
      * Handle 'Add'
      */
@@ -233,7 +234,7 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Bas
      * @return <tt>true</tt>if activity should exit, false to abort exit.
      */
     @SuppressWarnings("SameReturnValue")
-    private boolean onCancel() {
+    protected boolean onCancel() {
         return true;
     }
 
@@ -356,6 +357,7 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Bas
     @CallSuper
     protected void onSaveInstanceState(@NonNull final Bundle outState) {
         outState.putSerializable(mBKey, mList);
+
         super.onSaveInstanceState(outState);
     }
 

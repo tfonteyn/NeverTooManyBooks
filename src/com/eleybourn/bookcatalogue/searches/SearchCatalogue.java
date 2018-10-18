@@ -262,7 +262,7 @@ public class SearchCatalogue extends BaseActivity {
     }
 
     /**
-     * When activity resumes, mark search as dirty
+     * When activity resumes, set search as dirty
      */
     @Override
     @CallSuper

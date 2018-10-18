@@ -103,7 +103,7 @@ public class StandardDialogs {
     /**
      * Show a dialog asking if unsaved edits should be ignored. Finish activity if so.
      */
-    public static void showConfirmUnsavedEditsDialog(@NonNull final Activity activity, @Nullable final Runnable r) {
+    public static void showConfirmUnsavedEditsDialog(@NonNull final Activity activity, @Nullable final Runnable onConfirm) {
         AlertDialog dialog = new AlertDialog.Builder(activity)
                 .setTitle(R.string.details_have_changed)
                 .setMessage(R.string.you_have_unsaved_changes)
@@ -116,8 +116,8 @@ public class StandardDialogs {
                     @Override
                     public void onClick(@NonNull final DialogInterface dialog, final int which) {
                         dialog.dismiss();
-                        if (r != null) {
-                            r.run();
+                        if (onConfirm != null) {
+                            onConfirm.run();
                         } else {
                             activity.finish();
                         }
@@ -136,18 +136,21 @@ public class StandardDialogs {
     }
 
     public static void needLibraryThingAlert(@NonNull final Context context,
-                                             final boolean ltRequired,
+                                             final boolean required,
                                              @NonNull final String prefSuffix) {
+
+        final SharedPreferences prefs = context.getSharedPreferences(BookCatalogueApp.APP_SHARED_PREFERENCES, Context.MODE_PRIVATE);
+
         boolean showAlert;
+        @StringRes
         int msgId;
         final String prefName = LibraryThingManager.PREFS_LT_HIDE_ALERT + "_" + prefSuffix;
-        if (!ltRequired) {
-            msgId = R.string.lt_uses_info;
-            SharedPreferences prefs = context.getSharedPreferences(BookCatalogueApp.APP_SHARED_PREFERENCES, android.content.Context.MODE_PRIVATE);
-            showAlert = !prefs.getBoolean(prefName, false);
-        } else {
+        if (required) {
             msgId = R.string.lt_required_info;
             showAlert = true;
+        } else {
+            msgId = R.string.lt_uses_info;
+            showAlert = !prefs.getBoolean(prefName, false);
         }
 
         if (!showAlert)
@@ -167,11 +170,10 @@ public class StandardDialogs {
                     }
                 });
 
-        if (!ltRequired) {
+        if (!required) {
             dialog.setButton(DialogInterface.BUTTON_NEUTRAL, context.getString(R.string.disable_dialogue),
                     new DialogInterface.OnClickListener() {
                         public void onClick(@NonNull final DialogInterface dialog, final int which) {
-                            SharedPreferences prefs = context.getSharedPreferences(BookCatalogueApp.APP_SHARED_PREFERENCES, Context.MODE_PRIVATE);
                             SharedPreferences.Editor ed = prefs.edit();
                             ed.putBoolean(prefName, true);
                             ed.apply();
@@ -230,6 +232,7 @@ public class StandardDialogs {
 
         List<Author> authorList = db.getBookAuthorList(id);
 
+        // get the book title
         String title;
         try (Cursor cursor = db.fetchBookById(id)) {
             if (!cursor.moveToFirst()) {
@@ -280,7 +283,6 @@ public class StandardDialogs {
 
         dialog.show();
         return 0;
-
     }
 
     /**
@@ -288,7 +290,6 @@ public class StandardDialogs {
      * gives the options: 'request now', 'more info' or 'cancel'.
      */
     public static void goodreadsAuthAlert(@NonNull final FragmentActivity context) {
-        // Get the title
         final AlertDialog dialog = new AlertDialog.Builder(context)
                 .setTitle(R.string.gr_auth_access)
                 .setMessage(R.string.gr_action_cannot_blah_blah)
@@ -439,6 +440,7 @@ public class StandardDialogs {
      * Interface for item that displays in a custom dialog list
      */
     public interface SimpleDialogItem {
+        @NonNull
         View getView(@NonNull final LayoutInflater inflater);
 
         @Nullable
@@ -468,6 +470,7 @@ public class StandardDialogs {
             return mFile;
         }
 
+        @Override
         @Nullable
         public RadioButton getSelector(final View v) {
             return null;
@@ -476,23 +479,25 @@ public class StandardDialogs {
         /**
          * Get a View to display the file
          */
+        @Override
+        @NonNull
         public View getView(@NonNull final LayoutInflater inflater) {
             // Create the view
-            View v = inflater.inflate(R.layout.dialog_file_list_item, null);
+            View view = inflater.inflate(R.layout.dialog_file_list_item, null);
             // Set the file name
-            TextView name = v.findViewById(R.id.name);
+            TextView name = view.findViewById(R.id.name);
             name.setText(mFile.getName());
             // Set the path
-            TextView location = v.findViewById(R.id.path);
+            TextView location = view.findViewById(R.id.path);
             location.setText(mFile.getParent());
             // Set the size
-            TextView size = v.findViewById(R.id.size);
+            TextView size = view.findViewById(R.id.size);
             size.setText(Utils.formatFileSize(mFile.length()));
             // Set the last modified date
-            TextView update = v.findViewById(R.id.updated);
+            TextView update = view.findViewById(R.id.updated);
             update.setText(DateUtils.toPrettyDateTime(new Date(mFile.lastModified())));
             // Return it
-            return v;
+            return view;
         }
     }
 
@@ -510,6 +515,7 @@ public class StandardDialogs {
         /**
          * Get a View to display the object -> toString() and put into RadioButton.text
          */
+        @Override
         @NonNull
         public View getView(@NonNull final LayoutInflater inflater) {
             @SuppressLint("InflateParams") // root==null as it's a dialog
@@ -549,7 +555,6 @@ public class StandardDialogs {
 
         @Override
         @NonNull
-        @CallSuper
         public View getView(@NonNull final LayoutInflater inflater) {
             View view = super.getView(inflater);
             TextView name = view.findViewById(R.id.name);

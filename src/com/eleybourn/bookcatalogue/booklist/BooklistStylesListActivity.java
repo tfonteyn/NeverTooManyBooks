@@ -20,7 +20,6 @@
 
 package com.eleybourn.bookcatalogue.booklist;
 
-import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -51,6 +50,9 @@ import java.util.ArrayList;
  * @author Philip Warner
  */
 public class BooklistStylesListActivity extends EditObjectListActivity<BooklistStyle> {
+
+    public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_BOOKLIST_STYLES;
+
     /** The row being edited. Set when an individual style is edited */
     private int mEditedRow;
 
@@ -59,11 +61,6 @@ public class BooklistStylesListActivity extends EditObjectListActivity<BooklistS
      */
     public BooklistStylesListActivity() {
         super(null, R.layout.booklist_styles_edit_list, R.layout.booklist_styles_edit_row);
-    }
-
-    public static void startActivityForResult(@NonNull final Activity from) {
-        Intent intent = new Intent(from, BooklistStylesListActivity.class);
-        from.startActivityForResult(intent, UniqueId.ACTIVITY_REQUEST_CODE_BOOKLIST_STYLES);
     }
 
     @Override
@@ -207,8 +204,8 @@ public class BooklistStylesListActivity extends EditObjectListActivity<BooklistS
         }
 
         Intent intent = new Intent(this, BooklistStylePropertiesActivity.class);
-        intent.putExtra(BooklistStylePropertiesActivity.BKEY_STYLE, style);
-        startActivityForResult(intent, UniqueId.ACTIVITY_REQUEST_CODE_BOOKLIST_STYLE);
+        intent.putExtra(BooklistStylePropertiesActivity.REQUEST_KEY_STYLE, style);
+        startActivityForResult(intent, BooklistStylePropertiesActivity.REQUEST_CODE);
     }
 
     @Override
@@ -218,12 +215,14 @@ public class BooklistStylesListActivity extends EditObjectListActivity<BooklistS
 
     @Override
     @CallSuper
-    protected void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent intent) {
-        super.onActivityResult(requestCode,resultCode,intent);
+    protected void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent data) {
+        super.onActivityResult(requestCode,resultCode,data);
 
         switch (requestCode) {
-            case UniqueId.ACTIVITY_REQUEST_CODE_BOOKLIST_STYLE:
-                handleStyleResult(intent);
+            case BooklistStylePropertiesActivity.REQUEST_CODE:
+                if (resultCode == RESULT_OK && data != null) {
+                    handleStyleResult(data);
+                }
                 break;
         }
     }
@@ -233,19 +232,14 @@ public class BooklistStylesListActivity extends EditObjectListActivity<BooklistS
      *
      * @param data Data passed to onActivityResult
      */
-    private void handleStyleResult(@Nullable final Intent data) {
-        // Make sure we have a style. If not, the user must have cancelled.
-        if (data == null || !data.hasExtra(BooklistStylePropertiesActivity.BKEY_STYLE)) {
-            return;
-        }
-
+    private void handleStyleResult(@NonNull final Intent data) {
         try {
-            BooklistStyle result = (BooklistStyle) data.getSerializableExtra(BooklistStylePropertiesActivity.BKEY_STYLE);
+            BooklistStyle result = (BooklistStyle) data.getSerializableExtra(BooklistStylePropertiesActivity.REQUEST_KEY_STYLE);
             if (result == null) {
                 // Style was deleted. Refresh.
                 setList(getList());
             } else if (mEditedRow < 0) {
-                // Was added. So put at top and mark as preferred
+                // Was added. So put at top and set as preferred
                 result.setPreferred(true);
                 mList.add(0, result);
                 BooklistStyles.saveMenuOrder(mList);

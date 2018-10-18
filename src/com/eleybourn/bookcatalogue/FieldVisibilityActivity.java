@@ -54,6 +54,8 @@ import java.util.List;
  */
 public class FieldVisibilityActivity extends BaseActivity {
 
+    public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_FIELD_VISIBILITY;
+
     private static final List<FieldInfo> mFields = new ArrayList<>();
 
     static {
@@ -93,6 +95,8 @@ public class FieldVisibilityActivity extends BaseActivity {
         //NEWKIND: when adding fields that can be invisible, add them here
     }
 
+    private boolean mIsDirty = false;
+
     @Override
     protected int getLayoutId() {
         return R.layout.activity_admin_field_visibility;
@@ -131,6 +135,7 @@ public class FieldVisibilityActivity extends BaseActivity {
                     @Override
                     public void onClick(View v) {
                         Fields.setVisibility(fieldName, !Fields.isVisible(fieldName));
+                        mIsDirty = true;
                     }
                 });
             }
@@ -143,6 +148,16 @@ public class FieldVisibilityActivity extends BaseActivity {
 
             parent.addView(layout);
         }
+    }
+
+    /**
+     * Take care of popping the fragment back stack or finishing the activity
+     * as appropriate.
+     */
+    @Override
+    public void onBackPressed() {
+        setResult(mIsDirty ? RESULT_OK : RESULT_CANCELED);
+        super.onBackPressed();
     }
 
     private static class FieldInfo {

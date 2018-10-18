@@ -82,11 +82,11 @@ public class MenuHandler {
         subMenu.setIcon(R.drawable.ic_add);
         subMenu.getItem().setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
         {
-            subMenu.add(Menu.NONE, R.id.MENU_BOOK_ADD_BARCODE, mSort++, R.string.scan_barcode_isbn)
+            subMenu.add(Menu.NONE, R.id.MENU_BOOK_ADD_BY_SCAN, mSort++, R.string.scan_barcode_isbn)
                     .setIcon(R.drawable.ic_add_a_photo);
-            subMenu.add(Menu.NONE, R.id.MENU_BOOK_ADD_ISBN, mSort++, R.string.enter_isbn)
+            subMenu.add(Menu.NONE, R.id.MENU_BOOK_ADD_BY_SEARCH_ISBN, mSort++, R.string.enter_isbn)
                     .setIcon(R.drawable.ic_zoom_in);
-            subMenu.add(Menu.NONE, R.id.MENU_BOOK_ADD_BY_SEARCH, mSort++, R.string.search_internet)
+            subMenu.add(Menu.NONE, R.id.MENU_BOOK_ADD_BY_SEARCH_TEXT, mSort++, R.string.search_internet)
                     .setIcon(R.drawable.ic_zoom_in);
             subMenu.add(Menu.NONE, R.id.MENU_BOOK_ADD_MANUALLY, mSort++, R.string.add_manually)
                     .setIcon(R.drawable.ic_add);
@@ -103,19 +103,19 @@ public class MenuHandler {
      */
     public boolean onOptionsItemSelected(@NonNull final Activity activity, @NonNull final MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.MENU_BOOK_ADD_BARCODE:
-                createBookScan(activity);
+            case R.id.MENU_BOOK_ADD_BY_SCAN:
+                addBookByScanning(activity);
                 return true;
-            case R.id.MENU_BOOK_ADD_ISBN:
-                createBookISBN(activity, BookISBNSearchActivity.BY_ISBN);
+            case R.id.MENU_BOOK_ADD_BY_SEARCH_ISBN:
+                addBookBySearchISBN(activity);
                 return true;
-            case R.id.MENU_BOOK_ADD_BY_SEARCH:
-                createBookISBN(activity, BookISBNSearchActivity.BY_NAME);
+            case R.id.MENU_BOOK_ADD_BY_SEARCH_TEXT:
+                addBookBySearchText(activity);
                 return true;
             case R.id.MENU_BOOK_ADD_MANUALLY:
-                createBook(activity);
+                addBookManually(activity);
                 return true;
-            // not used for now, calls activity.onSearchRequested(); but not implemented (yet?)
+            // ENHANCE: not used for now, calls activity.onSearchRequested(); but not implemented (yet?)
             case R.id.MENU_SEARCH:
                 activity.onSearchRequested();
                 return true;
@@ -123,29 +123,26 @@ public class MenuHandler {
         return false;
     }
 
-    /**
-     * Load the Search by ISBN Activity to begin scanning.
-     */
-    private void createBookScan(@NonNull final Activity activity) {
-        Intent intent = new Intent(activity, BookISBNSearchActivity.class);
-        intent.putExtra(BookISBNSearchActivity.BKEY_BY, BookISBNSearchActivity.BY_SCAN);
-        activity.startActivityForResult(intent, UniqueId.ACTIVITY_REQUEST_CODE_ADD_BOOK_SCAN);
+    private void addBookByScanning(@NonNull final Activity activity) {
+        Intent intent = new Intent(activity, BookSearchActivity.class);
+        intent.putExtra(BookSearchActivity.REQUEST_KEY_BY, BookSearchActivity.BY_SCAN);
+        activity.startActivityForResult(intent, BookSearchActivity.REQUEST_CODE_SEARCH_BY_SCAN);
     }
 
-    /**
-     * Load the Search by ISBN Activity
-     */
-    private void createBookISBN(@NonNull final Activity activity, @NonNull final String by) {
-        Intent intent = new Intent(activity, BookISBNSearchActivity.class);
-        intent.putExtra(BookISBNSearchActivity.BKEY_BY, by);
-        activity.startActivityForResult(intent, UniqueId.ACTIVITY_REQUEST_CODE_ADD_BOOK_ISBN);
+    private void addBookBySearchISBN(@NonNull final Activity activity) {
+        Intent intent = new Intent(activity, BookSearchActivity.class);
+        intent.putExtra(BookSearchActivity.REQUEST_KEY_BY, BookSearchActivity.BY_ISBN);
+        activity.startActivityForResult(intent, BookSearchActivity.REQUEST_CODE_SEARCH_BY_ISBN);
     }
 
-    /**
-     * Load the {@link EditBookActivity}
-     */
-    private void createBook(@NonNull final Activity activity) {
+    private void addBookBySearchText(@NonNull final Activity activity) {
+        Intent intent = new Intent(activity, BookSearchActivity.class);
+        intent.putExtra(BookSearchActivity.REQUEST_KEY_BY, BookSearchActivity.BY_TEXT);
+        activity.startActivityForResult(intent, BookSearchActivity.REQUEST_CODE_SEARCH_BY_TEXT);
+    }
+
+    private void addBookManually(@NonNull final Activity activity) {
         Intent intent = new Intent(activity, EditBookActivity.class);
-        activity.startActivityForResult(intent, UniqueId.ACTIVITY_REQUEST_CODE_ADD_BOOK_MANUALLY);
+        activity.startActivityForResult(intent, EditBookActivity.REQUEST_CODE_ADD_BOOK_MANUALLY);
     }
 }

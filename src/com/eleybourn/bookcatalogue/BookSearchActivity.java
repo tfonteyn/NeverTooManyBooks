@@ -33,6 +33,7 @@ import android.support.v7.app.AlertDialog;
 import android.text.InputType;
 import android.text.method.DigitsKeyListener;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Checkable;
@@ -72,29 +73,33 @@ import java.util.Set;
  * For books, the ASIN is the same as the ISBN number, but for all other products a new ASIN
  * is created when the item is uploaded to their catalogue.
  */
-public class BookISBNSearchActivity extends BaseActivityWithTasks {
-    public static final String BKEY_BY = "by";
+public class BookSearchActivity extends BaseActivityWithTasks {
+
+    public static final int REQUEST_CODE_SEARCH_BY_TEXT = UniqueId.ACTIVITY_REQUEST_CODE_ADD_BOOK_BY_SEARCH_TEXT;
+    public static final int REQUEST_CODE_SEARCH_BY_ISBN = UniqueId.ACTIVITY_REQUEST_CODE_ADD_BOOK_BY_SEARCH_ISBN;
+    public static final int REQUEST_CODE_SEARCH_BY_SCAN = UniqueId.ACTIVITY_REQUEST_CODE_ADD_BOOK_BY_SCAN;
+
+    public static final String REQUEST_KEY_BY = "by";
     public static final String BY_ISBN = "isbn";
-    public static final String BY_NAME = "name";
+    public static final String BY_TEXT = "text";
     public static final String BY_SCAN = "scan";
 
     private static final String SEARCH_MANAGER_ID = "SearchManagerId";
-    private static final String SCANNER_STARTED = "mScannerStarted";
+    private static final String SCANNER_STARTED = "ScannerStarted";
     private static final String LAST_BOOK_INTENT = "LastBookIntent";
 
     /**
      * Mode this activity is in:
-     * MANUAL = data entry
-     * SCAN = data from scanner.
-     * For SCAN, it loops repeatedly starting the scanner.
+     * Manual = data entry
+     * Scan = data from scanner.
+     * For Scan, it loops repeatedly starting the scanner.
      */
-    private static final int MODE_MANUAL = 1;
-    private static final int MODE_SCAN = 2;
-
+    private enum Mode {Manual, Scan}
 
     /** A list of author names we have already searched for in this session */
     private final ArrayList<String> mAuthorNames = new ArrayList<>();
 
+    private Mode mMode;
     private boolean mScannerStarted = false;
     private EditText mIsbnText;
     private EditText mTitleText;
@@ -104,7 +109,6 @@ public class BookISBNSearchActivity extends BaseActivityWithTasks {
     private String mAuthor;
     private String mTitle;
     private String mIsbn;
-    private int mMode;
 
     /**
      * Options to indicate the Activity should not 'finish()' because an alert is being displayed.
@@ -121,7 +125,7 @@ public class BookISBNSearchActivity extends BaseActivityWithTasks {
     private final SearchManager.SearchListener mSearchHandler = new SearchManager.SearchListener() {
         @Override
         public boolean onSearchFinished(@NonNull final Bundle bookData, final boolean cancelled) {
-            return BookISBNSearchActivity.this.onSearchFinished(bookData, cancelled);
+            return BookSearchActivity.this.onSearchFinished(bookData, cancelled);
         }
     };
 
@@ -136,7 +140,7 @@ public class BookISBNSearchActivity extends BaseActivityWithTasks {
             switch (mBy) {
                 case BY_ISBN:
                     return R.layout.booksearch_by_isbn;
-                case BY_NAME:
+                case BY_TEXT:
                     return R.layout.booksearch_by_name;
                 case BY_SCAN:
                     return R.layout.booksearch_by_scan;
@@ -161,7 +165,7 @@ public class BookISBNSearchActivity extends BaseActivityWithTasks {
             Bundle extras = getIntent().getExtras();
             //noinspection ConstantConditions
             mIsbn = extras.getString(UniqueId.KEY_BOOK_ISBN);
-            mBy = extras.getString(BKEY_BY);
+            mBy = extras.getString(REQUEST_KEY_BY);
 
             super.onCreate(savedInstanceState);
             this.setTitle(R.string.title_isbn_search);
@@ -183,25 +187,25 @@ public class BookISBNSearchActivity extends BaseActivityWithTasks {
              *
              * There is a bizarre bug that seems to only affect some users in which this activity
              * is called AFTER the user has finished and the passed Intent has neither a ISBN nor a
-             * "BKEY_BY" in the Extras. Following all the code that starts this activity suggests that
+             * "REQUEST_KEY_BY" in the Extras. Following all the code that starts this activity suggests that
              * the activity is ALWAYS started with the intent data. The problems always occur AFTER
              * adding a book, which confirms that the activity has been started correctly.
              *
              * In order to avoid this problem, we just check for nulls and finish().
              * THIS IS NOT A FIX it is a MESSY WORK-AROUND.
              *
-             * TODO: Find out why BookISBNSearchActivity gets restarted with no data
+             * TODO: Find out why BookSearchActivity gets restarted with no data
              *
              * So...we save the extras in savedInstanceState, and look for it when missing
              */
             if (mIsbn == null && (mBy == null || mBy.isEmpty())) {
-                Logger.error("Empty args for BookISBNSearchActivity");
+                Logger.error("Empty args for BookSearchActivity");
                 if (savedInstanceState != null) {
                     if (mIsbn == null && savedInstanceState.containsKey(UniqueId.KEY_BOOK_ISBN)) {
                         mIsbn = savedInstanceState.getString(UniqueId.KEY_BOOK_ISBN);
                     }
-                    if (savedInstanceState.containsKey(BKEY_BY)) {
-                        mBy = savedInstanceState.getString(BKEY_BY);
+                    if (savedInstanceState.containsKey(REQUEST_KEY_BY)) {
+                        mBy = savedInstanceState.getString(REQUEST_KEY_BY);
                     }
                 }
                 // If they are still null, we can't proceed.
@@ -212,13 +216,13 @@ public class BookISBNSearchActivity extends BaseActivityWithTasks {
             }
 
             // Default to MANUAL
-            mMode = MODE_MANUAL;
+            mMode = Mode.Manual;
 
             if (mIsbn != null) {
                 onCreateWithISBN();
             } else if (BY_ISBN.equals(mBy)) {
                 onCreateByISBN();
-            } else if (BY_NAME.equals(mBy)) {
+            } else if (BY_TEXT.equals(mBy)) {
                 onCreateByName();
             } else if (BY_SCAN.equals(mBy)) {
                 onCreateByScan(savedInstanceState);
@@ -232,7 +236,6 @@ public class BookISBNSearchActivity extends BaseActivityWithTasks {
      * ISBN has been passed by another component
      */
     private void onCreateWithISBN() {
-
         mIsbnText = findViewById(R.id.isbn);
         mIsbnText.setText(mIsbn);
         go(mIsbn, "", "");
@@ -280,11 +283,11 @@ public class BookISBNSearchActivity extends BaseActivityWithTasks {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    getWindow().setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+                    getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
                     mIsbnText.setKeyListener(DigitsKeyListener.getInstance("1234567890qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"));
                     mIsbnText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
                 } else {
-                    getWindow().setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+                    getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
                     mIsbnText.setKeyListener(DigitsKeyListener.getInstance("0123456789xX"));
                     mIsbnText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
 
@@ -355,7 +358,7 @@ public class BookISBNSearchActivity extends BaseActivityWithTasks {
     }
 
     private void onCreateByScan(@Nullable final Bundle savedInstanceState) {
-        mMode = MODE_SCAN;
+        mMode = Mode.Scan;
         mIsbnText = findViewById(R.id.isbn);
 
         /*
@@ -374,7 +377,7 @@ public class BookISBNSearchActivity extends BaseActivityWithTasks {
                 }
             }
         } catch (SecurityException e) {
-            AlertDialog dialog = new AlertDialog.Builder(BookISBNSearchActivity.this)
+            AlertDialog dialog = new AlertDialog.Builder(BookSearchActivity.this)
                     .setMessage(R.string.bad_scanner)
                     .setTitle(R.string.install_scan_title)
                     .setIconAttribute(android.R.attr.alertDialogIcon)
@@ -398,6 +401,7 @@ public class BookISBNSearchActivity extends BaseActivityWithTasks {
                             finish();
                         }
                     });
+
             // Prevent the activity result from closing this activity.
             mDisplayingAlert = true;
             dialog.show();
@@ -406,7 +410,7 @@ public class BookISBNSearchActivity extends BaseActivityWithTasks {
             // -> yes, it threw another ActivityNotFoundException if Cancel is used
             // so now enclosed in another try.
             try {
-                AlertDialog dialog = new AlertDialog.Builder(BookISBNSearchActivity.this)
+                AlertDialog dialog = new AlertDialog.Builder(BookSearchActivity.this)
                         .setMessage(R.string.install_scan)
                         .setTitle(R.string.install_scan_title)
                         .setIconAttribute(android.R.attr.alertDialogIcon)
@@ -549,7 +553,7 @@ public class BookISBNSearchActivity extends BaseActivityWithTasks {
      */
     private void go(@NonNull final String isbn, @NonNull final String author, @NonNull final String title) {
         if (BuildConfig.DEBUG) {
-            Logger.info("BookISBNSearchActivity.go: isbn=" + isbn + ", author=" + author + ", title=" + title);
+            Logger.info("BookSearchActivity.go: isbn=" + isbn + ", author=" + author + ", title=" + title);
         }
 
         if (isbn.isEmpty() && author.isEmpty() && title.isEmpty()) {
@@ -576,7 +580,7 @@ public class BookISBNSearchActivity extends BaseActivityWithTasks {
                         msg = R.string.x_is_not_a_valid_isbn;
                     }
                     StandardDialogs.showBriefMessage(this, getString(msg, mIsbn));
-                    if (mMode == MODE_SCAN) {
+                    if (mMode == Mode.Scan) {
                         // Optionally beep if scan failed.
                         SoundManager.beepLow();
                         // reset the now-discarded details
@@ -587,7 +591,7 @@ public class BookISBNSearchActivity extends BaseActivityWithTasks {
                     }
                     return;
                 } else {
-                    if (mMode == MODE_SCAN) {
+                    if (mMode == Mode.Scan) {
                         // Optionally beep if scan was valid.
                         SoundManager.beepHigh();
                     }
@@ -610,7 +614,7 @@ public class BookISBNSearchActivity extends BaseActivityWithTasks {
                         dialog.setButton(AlertDialog.BUTTON_NEUTRAL, getString(R.string.edit_book),
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(final DialogInterface dialog, final int which) {
-                                        EditBookActivity.startActivityForResult(BookISBNSearchActivity.this,
+                                        EditBookActivity.startActivityForResult(BookSearchActivity.this,
                                                 existingId, EditBookActivity.TAB_EDIT);
                                     }
                                 });
@@ -618,7 +622,7 @@ public class BookISBNSearchActivity extends BaseActivityWithTasks {
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(final DialogInterface dialog, final int which) {
                                         //do nothing
-                                        if (mMode == MODE_SCAN) {
+                                        if (mMode == Mode.Scan) {
                                             // reset the now-discarded details
                                             mIsbn = "";
                                             mAuthor = "";
@@ -666,7 +670,7 @@ public class BookISBNSearchActivity extends BaseActivityWithTasks {
                 finish();
             }
         } else {
-            if (mMode == MODE_SCAN) {
+            if (mMode == Mode.Scan) {
                 startScannerActivity();
             }
         }
@@ -677,7 +681,7 @@ public class BookISBNSearchActivity extends BaseActivityWithTasks {
         Tracker.handleEvent(this, "onSearchFinished" + mSearchManagerId, Tracker.States.Running);
         try {
             if (cancelled) {
-                if (mMode == MODE_SCAN) {
+                if (mMode == Mode.Scan) {
                     startScannerActivity();
                 }
             } else {
@@ -730,23 +734,20 @@ public class BookISBNSearchActivity extends BaseActivityWithTasks {
 
     @Override
     @CallSuper
-    protected void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent intent) {
-
-
-        super.onActivityResult(requestCode,resultCode,intent);
+    protected void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent data) {
+        super.onActivityResult(requestCode,resultCode,data);
         switch (requestCode) {
-            case UniqueId.ACTIVITY_REQUEST_CODE_ADD_BOOK_SCAN: {
+            case BookSearchActivity.REQUEST_CODE_SEARCH_BY_SCAN: {
                 mScannerStarted = false;
                 try {
                     if (resultCode == RESULT_OK) {
-                        Objects.requireNonNull(intent);
-                        String isbn = mScanner.getBarcode(intent);
+                        Objects.requireNonNull(data);
+                        String isbn = mScanner.getBarcode(data);
                         mIsbnText.setText(isbn);
                         go(isbn, "", "");
                     } else {
                         // Scanner Cancelled/failed. Exit if no dialog present.
-                        this.setResult(mLastBookIntent != null ? RESULT_OK : RESULT_CANCELED, mLastBookIntent);
-
+                        setResult(mLastBookIntent != null ? RESULT_OK : RESULT_CANCELED, mLastBookIntent);
                         if (!mDisplayingAlert) {
                             finish();
                         }
@@ -757,16 +758,17 @@ public class BookISBNSearchActivity extends BaseActivityWithTasks {
                 }
                 break;
             }
-            case UniqueId.ACTIVITY_REQUEST_CODE_EDIT_BOOK: {
-                if (intent != null) {
-                    mLastBookIntent = intent;
+            case EditBookActivity.REQUEST_CODE: {
+                if (data != null) {
+                    mLastBookIntent = data;
                 }
-                if (mMode == MODE_SCAN) {
+                if (mMode == Mode.Scan) {
                     // Created a book; save the intent and restart scanner if necessary.
                     startScannerActivity();
                 } else {
-                    // If the 'Back' button is pressed on a normal activity, set the default result to cancelled by setting it here.
-                    this.setResult(RESULT_CANCELED, mLastBookIntent);
+                    // If the 'Back' button is pressed on a normal activity,
+                    // set the default result to cancelled by setting it here.
+                    setResult(RESULT_CANCELED, mLastBookIntent);
                 }
                 break;
             }
@@ -809,7 +811,7 @@ public class BookISBNSearchActivity extends BaseActivityWithTasks {
         }
         if (!mScannerStarted) {
             mScannerStarted = true;
-            mScanner.startActivityForResult(this, UniqueId.ACTIVITY_REQUEST_CODE_ADD_BOOK_SCAN);
+            mScanner.startActivityForResult(this, BookSearchActivity.REQUEST_CODE_SEARCH_BY_SCAN);
         }
     }
 
@@ -839,8 +841,8 @@ public class BookISBNSearchActivity extends BaseActivityWithTasks {
             if (extras.containsKey(UniqueId.KEY_BOOK_ISBN)) {
                 outState.putString(UniqueId.KEY_BOOK_ISBN, extras.getString(UniqueId.KEY_BOOK_ISBN));
             }
-            if (extras.containsKey(BKEY_BY)) {
-                outState.putString(BKEY_BY, extras.getString(BKEY_BY));
+            if (extras.containsKey(REQUEST_KEY_BY)) {
+                outState.putString(REQUEST_KEY_BY, extras.getString(REQUEST_KEY_BY));
             }
         }
 

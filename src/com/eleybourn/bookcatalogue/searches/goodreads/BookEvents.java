@@ -218,23 +218,25 @@ class BookEvents {
                         GrSendBookEvent event = ViewTagger.getTagOrThrow(view, R.id.TAG_EVENT);
                             Intent intent = new Intent(context, EditBookActivity.class);
                             intent.putExtra(UniqueId.KEY_ID, event.getBookId());
-                            intent.putExtra(EditBookActivity.TAB, EditBookActivity.TAB_EDIT);
+                            intent.putExtra(EditBookActivity.REQUEST_KEY_TAB, EditBookActivity.TAB_EDIT);
                             context.startActivity(intent);
                     } catch (Exception ignore) {
                         // not a book event?
                     }
                 }
             }));
-            // TODO Reinstate goodreads search when goodreads work.editions API is available
+
+            // ENHANCE Reinstate goodreads search when goodreads work.editions API is available
             //// SEARCH GOODREADS
-            //items.add(new ContextDialogItem(ctx.getString(R.string.visit_goodreads), new Runnable() {
-            //	@Override
-            //	public void run() {
-            //		BookEventHolder holder = ViewTagger.getTagOrThrow(v, R.id.TAG_BOOK_EVENT_HOLDER);
-            //		Intent i = new Intent(ctx, GoodreadsSearchCriteria.class);
-            //		i.putExtra(GoodreadsSearchCriteria.EXTRA_BOOK_ID, holder.event.getBookId());
-            //		ctx.startActivityForResult(i);
-            //	}}));
+//            items.add(new ContextDialogItem(context.getString(R.string.gr_search_goodreads), new Runnable() {
+//            	@Override
+//            	public void run() {
+//            		BookEventHolder holder = ViewTagger.getTagOrThrow(view, R.id.TAG_BOOK_EVENT_HOLDER);
+//            		Intent intent = new Intent(context, GoodreadsSearchCriteria.class);
+//            		intent.putExtra(GoodreadsSearchCriteria.REQUEST_EXTRA_BOOK_ID, holder.event.getBookId());
+//            		context.startActivity(intent);
+//            	}}));
+
             // DELETE EVENT
             items.add(new ContextDialogItem(context.getString(R.string.delete_event), new Runnable() {
                 @Override

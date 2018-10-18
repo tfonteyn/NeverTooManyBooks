@@ -164,13 +164,16 @@
 
         <!-- Add Book; this activity then sub divides Add by scan,isbn,internet, or add manually -->
         <activity
-            android:name=".BookISBNSearchActivity"
+            android:name=".BookSearchActivity"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
 
         <!-- Edit a book + the related author/series -->
         <activity android:name=".EditBookActivity" />
         <activity android:name=".EditAuthorListActivity" />
         <activity android:name=".EditSeriesListActivity" />
+
+        <!-- view an Author and all of his stories (AnthologyTitles -->
+        <activity android:name=".AuthorActivity" />
 
         <!-- cropping an image, either from the cover of a book, or direct from a new scan -->
         <activity android:name=".cropper.CropImageActivity" />
@@ -253,7 +256,6 @@
                 <category android:name="android.intent.category.BROWSABLE" />
             </intent-filter>
         </activity>
-        <activity android:name=".AuthorActivity"></activity>
     </application>
 
 </manifest>

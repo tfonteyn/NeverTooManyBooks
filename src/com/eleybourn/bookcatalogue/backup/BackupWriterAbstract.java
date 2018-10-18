@@ -174,7 +174,7 @@ public abstract class BackupWriterAbstract implements BackupWriter {
             }
         };
 
-        // Get a temp file and mark for delete
+        // Get a temp file and set for delete
         final File temp = File.createTempFile("bookcat", ".tmp");
         temp.deleteOnExit();
         FileOutputStream output = null;

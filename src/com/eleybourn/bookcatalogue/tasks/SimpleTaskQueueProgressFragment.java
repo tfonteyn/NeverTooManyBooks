@@ -234,8 +234,8 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
     /**
      * Post a runnable to the UI thread
      */
-    public void post(@NonNull final Runnable r) {
-        mHandler.post(r);
+    public void post(@NonNull final Runnable runnable) {
+        mHandler.post(runnable);
     }
 
     /**

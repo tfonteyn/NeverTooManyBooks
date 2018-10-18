@@ -31,6 +31,7 @@ import android.widget.CheckedTextView;
 import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyleGroupsListActivity.GroupWrapper;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -47,10 +48,13 @@ import java.util.ArrayList;
  * @author Philip Warner
  */
 public class BooklistStyleGroupsListActivity extends EditObjectListActivity<GroupWrapper> {
+
+    public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_BOOKLIST_STYLE_GROUPS;
+
     private static final String TAG = "StyleEditor";
     /** Preferences setup */
-    public static final String BKEY_STYLE = TAG + ".Style";
-    public static final String BKEY_SAVE_TO_DATABASE = TAG + ".SaveToDb";
+    public static final String REQUEST_KEY_STYLE = TAG + ".Style";
+    public static final String REQUEST_KEY_SAVE_TO_DATABASE = TAG + ".SaveToDb";
     private static final String BKEY_GROUPS = TAG + ".Groups";
 
     /** Copy of the style we are editing */
@@ -71,10 +75,10 @@ public class BooklistStyleGroupsListActivity extends EditObjectListActivity<Grou
         try {
             // Get the intent and get the style and other settings
             Intent intent = this.getIntent();
-            mStyle = (BooklistStyle) intent.getSerializableExtra(BKEY_STYLE);
+            mStyle = (BooklistStyle) intent.getSerializableExtra(REQUEST_KEY_STYLE);
 
-            if (intent.hasExtra(BKEY_SAVE_TO_DATABASE)) {
-                mSaveToDb = intent.getBooleanExtra(BKEY_SAVE_TO_DATABASE, true);
+            if (intent.hasExtra(REQUEST_KEY_SAVE_TO_DATABASE)) {
+                mSaveToDb = intent.getBooleanExtra(REQUEST_KEY_SAVE_TO_DATABASE, true);
             }
 
             /* Indicated this activity was called without an existing style */
@@ -170,7 +174,7 @@ public class BooklistStyleGroupsListActivity extends EditObjectListActivity<Grou
         mStyle.setProperties(props);
 
         // Store in resulting Intent
-        intent.putExtra(BKEY_STYLE, mStyle);
+        intent.putExtra(REQUEST_KEY_STYLE, mStyle);
 
         // Save to DB if necessary
         if (mSaveToDb) {

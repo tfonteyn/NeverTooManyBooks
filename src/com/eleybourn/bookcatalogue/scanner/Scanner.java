@@ -17,5 +17,6 @@ public interface Scanner {
     void startActivityForResult(@NonNull final Activity activity, final int requestCode);
 
     /** Get the barcode from the resulting intent */
+    @NonNull
     String getBarcode(@NonNull final Intent intent);
 }

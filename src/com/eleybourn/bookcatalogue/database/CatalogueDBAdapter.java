@@ -187,7 +187,7 @@ import static com.eleybourn.bookcatalogue.database.DatabaseHelper.COLLATION;
  * Use the UpgradeMessageManager class.
  * This change separated messages from DB changes (most releases do not involve DB upgrades).
  *
- * FIXME: Very few methods can throw an SQLiteDoneException. They have been marked as such.
+ * FIXME: Very few methods can throw an SQLiteDoneException.
  * The caller is either already catching them, or believes they will never happen.
  *
  * FIXME: Methods return -1 for failing to insert. Not all caller check.
@@ -1660,7 +1660,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
      * Set all books referencing a given author as dirty.
      */
     private void setBooksDirtyByAuthor(final long authorId) {
-        // Mark all related books based on anthology author as dirty
+        // set all related books based on anthology author as dirty
         if (mSetBooksDirtyByAuthorStmt == null) {
             mSetBooksDirtyByAuthorStmt = mStatements.add("mSetBooksDirtyByAuthorStmt",
                     "UPDATE " + TBL_BOOKS.ref() + " SET " + DOM_LAST_UPDATE_DATE + "=current_timestamp" +
@@ -1673,7 +1673,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
         mSetBooksDirtyByAuthorStmt.execute();
 
 
-        // Mark all related books based on series as dirty
+        // set all related books based on series as dirty
         if (mSetBooksDirtyByAuthorStmt2 == null) {
             mSetBooksDirtyByAuthorStmt2 = mStatements.add("mSetBooksDirtyByAuthorStmt2",
                     "UPDATE " + TBL_BOOKS + " SET " + DOM_LAST_UPDATE_DATE + " = current_timestamp" +

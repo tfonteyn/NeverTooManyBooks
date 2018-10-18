@@ -21,6 +21,7 @@
 package com.eleybourn.bookcatalogue.tasks;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
@@ -138,7 +139,9 @@ public class TaskListActivity extends BindableItemListActivity {
     }
 
     private void doShowTaskEvents(long taskId) {
-        GoodreadsExportFailuresActivity.startActivityForResult(this, taskId);
+        Intent intent = new Intent(this, GoodreadsExportFailuresActivity.class);
+        intent.putExtra(GoodreadsExportFailuresActivity.REQUEST_KEY_TASK_ID, taskId);
+        startActivityForResult(intent, GoodreadsExportFailuresActivity.REQUEST_CODE);
     }
 
     /**

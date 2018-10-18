@@ -37,7 +37,7 @@ public interface CropIImage {
      */
     String BKEY_OUTPUT_X = "outputX";
     String BKEY_OUTPUT_Y = "outputY";
-    String BKEY_SCALE = "scale";
+    String REQUEST_KEY_SCALE = "scale";
     String BKEY_SCALE_UP_IF_NEEDED = "scaleUpIfNeeded";
     String BKEY_ASPECT_X = "aspectX";
     String BKEY_ASPECT_Y = "aspectY";
@@ -54,11 +54,10 @@ public interface CropIImage {
     Not sure on docs yet. Might be BC itself, but at least some are used by external cropper code.
      */
     String BKEY_CIRCLE_CROP = "circleCrop";
-    String BKEY_IMAGE_PATH = "image-path";
-    String BKEY_OUTPUT = "output";
-    String BKEY_WHOLE_IMAGE = "whole-image";
-    String BKEY_NO_FACE_DETECTION = "noFaceDetection";
-    String BKEY_CROP = "crop";
+    String REQUEST_KEY_IMAGE_ABSOLUTE_PATH = "image-path";
+    String REQUEST_KEY_OUTPUT_ABSOLUTE_PATH = "output";
+    String REQUEST_KEY_WHOLE_IMAGE = "whole-image";
+    String REQUEST_KEY_NO_FACE_DETECTION = "noFaceDetection";
 
     boolean ROTATE_AS_NEEDED = true;
     boolean NO_ROTATE = false;

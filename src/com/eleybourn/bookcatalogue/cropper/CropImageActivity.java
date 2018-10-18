@@ -41,6 +41,7 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
@@ -59,6 +60,9 @@ import java.util.concurrent.CountDownLatch;
  * The activity can crop specific region of interest from an image.
  */
 public class CropImageActivity extends CropMonitoredActivity {
+
+    public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_CROP_IMAGE;
+
     // private static final String TAG = "CropImage";
 
     private static final int NO_STORAGE_ERROR = -1;
@@ -298,12 +302,12 @@ public class CropImageActivity extends CropMonitoredActivity {
                 mOptionAspectY = 1;
             }
 
-            String imagePath = extras.getString(CropIImage.BKEY_IMAGE_PATH);
+            String imagePath = extras.getString(CropIImage.REQUEST_KEY_IMAGE_ABSOLUTE_PATH);
             Objects.requireNonNull(imagePath, "imagePath was null");
             mBitmap = getBitmap(imagePath);
 
             // Use the "output" parameter if present, otherwise overwrite existing file
-            String imgUri = extras.getString(CropIImage.BKEY_OUTPUT);
+            String imgUri = extras.getString(CropIImage.REQUEST_KEY_OUTPUT_ABSOLUTE_PATH);
             if (imgUri == null) {
                 imgUri = imagePath;
             }
@@ -313,10 +317,10 @@ public class CropImageActivity extends CropMonitoredActivity {
             mOptionAspectY = extras.getInt(CropIImage.BKEY_ASPECT_Y);
             mOptionOutputX = extras.getInt(CropIImage.BKEY_OUTPUT_X);
             mOptionOutputY = extras.getInt(CropIImage.BKEY_OUTPUT_Y);
-            mOptionScale = extras.getBoolean(CropIImage.BKEY_SCALE, true);
+            mOptionScale = extras.getBoolean(CropIImage.REQUEST_KEY_SCALE, true);
             mOptionScaleUp = extras.getBoolean(CropIImage.BKEY_SCALE_UP_IF_NEEDED, true);
-            mOptionCropWholeImage = extras.getBoolean(CropIImage.BKEY_WHOLE_IMAGE, false);
-            mOptionNoFaceDetection = extras.getBoolean(CropIImage.BKEY_NO_FACE_DETECTION, true);
+            mOptionCropWholeImage = extras.getBoolean(CropIImage.REQUEST_KEY_WHOLE_IMAGE, false);
+            mOptionNoFaceDetection = extras.getBoolean(CropIImage.REQUEST_KEY_NO_FACE_DETECTION, true);
         }
 
         if (mBitmap == null) {

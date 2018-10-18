@@ -20,6 +20,7 @@
 
 package com.eleybourn.bookcatalogue;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
@@ -47,10 +48,9 @@ import java.util.ArrayList;
  *
  * ENHANCE: refit with  extends EditObjectListActivity<Bookshelf>
  */
-public class EditBookshelfListActivity extends BaseListActivity
-{
-    private static final int ACTIVITY_CREATE = 0;
-    private static final int ACTIVITY_EDIT = 1;
+public class EditBookshelfListActivity extends BaseListActivity {
+
+    public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_EDIT_BOOKSHELF_LIST;
 
     private CatalogueDBAdapter mDb;
     private ArrayList<Bookshelf> mList;
@@ -75,28 +75,6 @@ public class EditBookshelfListActivity extends BaseListActivity
         mList = mDb.getBookshelves();
         ArrayAdapter<Bookshelf> adapter = new ArrayAdapter<>(this, R.layout.row_bookshelf, R.id.row_bookshelf, mList);
         setListAdapter(adapter);
-    }
-
-    @Override
-    @CallSuper
-    public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
-        super.onCreateOptionsMenu(menu);
-        menu.add(Menu.NONE, R.id.MENU_INSERT, 0, R.string.menu_insert_bs)
-                .setIcon(R.drawable.ic_add)
-                .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-        return true;
-    }
-
-    @Override
-    @CallSuper
-    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.MENU_INSERT:
-                Intent intent = new Intent(this, EditBookshelfActivity.class);
-                startActivityForResult(intent, ACTIVITY_CREATE);
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -127,18 +105,60 @@ public class EditBookshelfListActivity extends BaseListActivity
     }
 
     @Override
-    protected void onListItemClick(@NonNull final ListView listView, @NonNull final View view, final int position, final long id) {
-        Bookshelf bookshelf = mList.get(position);
-        Intent intent = new Intent(this, EditBookshelfActivity.class);
-        intent.putExtra(UniqueId.KEY_ID, bookshelf.id);
-        startActivityForResult(intent, ACTIVITY_EDIT);
+    @CallSuper
+    public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        menu.add(Menu.NONE, R.id.MENU_INSERT, 0, R.string.menu_insert_bs)
+                .setIcon(R.drawable.ic_add)
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+        return true;
     }
 
     @Override
     @CallSuper
-    protected void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent intent) {
-        super.onActivityResult(requestCode, resultCode, intent);
+    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.MENU_INSERT:
+                Intent intent = new Intent(this, EditBookshelfActivity.class);
+                startActivityForResult(intent, EditBookshelfActivity.REQUEST_CODE_CREATE);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onListItemClick(@NonNull final ListView listView, @NonNull final View view, final int position, final long id) {
+        Bookshelf bookshelf = mList.get(position);
+        Intent intent = new Intent(this, EditBookshelfActivity.class);
+        intent.putExtra(UniqueId.KEY_ID, bookshelf.id);
+        startActivityForResult(intent, EditBookshelfActivity.REQUEST_CODE_EDIT);
+    }
+
+    @Override
+    @CallSuper
+    protected void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case EditBookshelfActivity.REQUEST_CODE_EDIT:
+            case EditBookshelfActivity.REQUEST_CODE_CREATE:
+                if (resultCode == Activity.RESULT_OK) {
+                   setDirty(true);
+                }
+                break;
+        }
         populateList();
+    }
+
+    /**
+     * Take care of popping the fragment back stack or finishing the activity
+     * as appropriate.
+     */
+    @Override
+    public void onBackPressed() {
+        if (isDirty()) {
+            setResult(RESULT_OK);
+        }
+        super.onBackPressed();
     }
 
     @Override

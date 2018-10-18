@@ -21,6 +21,7 @@
 package com.eleybourn.bookcatalogue;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
@@ -121,8 +122,8 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
     /** ProgressDialog used to display "Getting books...". Needed here so we can dismiss it on close. */
     @Nullable
     private ProgressDialog mListDialog = null;
-    /** A book ID used for keeping/updating current list position, eg. when a book is edited. */
-    private long mMarkBookId = 0;
+    /** A book ID used for keeping/updating current list position, eg. when a book is viewed/edited. */
+    private long mPreviouslySelectedBookId = 0;
     /** Text to use in search query */
     @Nullable
     private String mSearchText = "";
@@ -204,7 +205,7 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
             // Handle item click events
 
             // Debug; makes list structures vary across calls to ensure code is correct...
-            mMarkBookId = -1;
+            mPreviouslySelectedBookId = -1;
 
             initBookshelfSpinner();
             populateBookShelfSpinner();
@@ -333,7 +334,6 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
     @Override
     @CallSuper
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        if (mMenuHandler != null && !mMenuHandler.onOptionsItemSelected(this, item)) {
             switch (item.getItemId()) {
 
                 case R.id.MENU_SORT:
@@ -368,6 +368,12 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
                     return true;
                 }
             }
+
+        if (mMenuHandler != null) {
+            boolean handled = mMenuHandler.onOptionsItemSelected(this, item);
+            if (handled) {
+                return true;
+            }
         }
 
         return super.onOptionsItemSelected(item);
@@ -379,67 +385,80 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
      */
     @Override
     @CallSuper
-    protected void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent intent) {
+    protected void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent data) {
         Tracker.enterOnActivityResult(this, requestCode, resultCode);
-        super.onActivityResult(requestCode,resultCode,intent);
+        super.onActivityResult(requestCode,resultCode,data);
 
-        mMarkBookId = 0;
+        mPreviouslySelectedBookId = 0;
 
         switch (requestCode) {
-            case UniqueId.ACTIVITY_REQUEST_CODE_ADD_BOOK_BARCODE:
-                try {
-                    if (intent != null && intent.hasExtra(UniqueId.KEY_ID)) {
-                        long newId = intent.getLongExtra(UniqueId.KEY_ID, 0);
-                        if (newId != 0) {
-                            mMarkBookId = newId;
+            case BookSearchActivity.REQUEST_CODE_SEARCH_BY_SCAN:
+                if (resultCode == Activity.RESULT_OK) {
+                    try {
+                        if (data != null && data.hasExtra(UniqueId.KEY_ID)) {
+                            long newId = data.getLongExtra(UniqueId.KEY_ID, 0);
+                            if (newId != 0) {
+                                mPreviouslySelectedBookId = newId;
+                            }
                         }
+                        // Always rebuild, even after a cancelled edit because the series may have had global edits
+                        // ENHANCE: Allow detection of global changes to avoid unnecessary rebuilds
+                        this.initBookList(false);
+                    } catch (NullPointerException e) {
+                        // This is not a scan result, but a normal return
                     }
-                    // Always rebuild, even after a cancelled edit because the series may have had global edits
-                    // ENHANCE: Allow detection of global changes to avoid unnecessary rebuilds
-                    this.initBookList(false);
-                } catch (NullPointerException e) {
-                    // This is not a scan result, but a normal return
-                    //fillData();
                 }
                 break;
-            case UniqueId.ACTIVITY_REQUEST_CODE_ADD_BOOK_ISBN:
-            case UniqueId.ACTIVITY_REQUEST_CODE_ADD_BOOK_MANUALLY:
-            case UniqueId.ACTIVITY_REQUEST_CODE_VIEW_BOOK:
-            case UniqueId.ACTIVITY_REQUEST_CODE_EDIT_BOOK:
-                try {
-                    if (intent != null && intent.hasExtra(UniqueId.KEY_ID)) {
-                        long id = intent.getLongExtra(UniqueId.KEY_ID, 0);
-                        if (id != 0) {
-                            mMarkBookId = id;
+
+            case BookSearchActivity.REQUEST_CODE_SEARCH_BY_ISBN:
+            case BookSearchActivity.REQUEST_CODE_SEARCH_BY_TEXT:
+            case EditBookActivity.REQUEST_CODE_ADD_BOOK_MANUALLY:
+
+            case EditBookActivity.REQUEST_CODE:
+            case BookDetailsActivity.REQUEST_CODE:
+                if (resultCode == Activity.RESULT_OK) {
+                    try {
+                        if (data != null && data.hasExtra(UniqueId.KEY_ID)) {
+                            long bookId = data.getLongExtra(UniqueId.KEY_ID, 0);
+                            if (bookId != 0) {
+                                mPreviouslySelectedBookId = bookId;
+                            }
                         }
+                        // Always rebuild, even after a cancelled edit because there might have been global edits
+                        // ENHANCE: Allow detection of global changes to avoid unnecessary rebuilds
+                        this.initBookList(false);
+                    } catch (Exception e) {
+                        Logger.error(e);
                     }
-                    // Always rebuild, even after a cancelled edit because the series may have had global edits
-                    // ENHANCE: Allow detection of global changes to avoid unnecessary rebuilds
-                    this.initBookList(false);
-                } catch (Exception e) {
-                    Logger.error(e);
                 }
                 break;
-            // not in use
-            case UniqueId.ACTIVITY_REQUEST_CODE_BOOKLIST_STYLE_PROPERTIES:
-                try {
-                    if (intent != null && intent.hasExtra(BooklistStylePropertiesActivity.BKEY_STYLE)) {
-                        BooklistStyle style = (BooklistStyle) intent.getSerializableExtra(BooklistStylePropertiesActivity.BKEY_STYLE);
-                        if (style != null) {
-                            mCurrentStyle = style;
+
+            case BooklistStylePropertiesActivity.REQUEST_CODE:
+                if (resultCode == Activity.RESULT_OK) {
+                    try {
+                        if (data != null && data.hasExtra(BooklistStylePropertiesActivity.REQUEST_KEY_STYLE)) {
+                            BooklistStyle style = (BooklistStyle) data.getSerializableExtra(BooklistStylePropertiesActivity.REQUEST_KEY_STYLE);
+                            if (style != null) {
+                                mCurrentStyle = style;
+                            }
                         }
+                    } catch (Exception e) {
+                        Logger.error(e);
                     }
-                } catch (Exception e) {
-                    Logger.error(e);
+                    this.savePosition();
+                    this.initBookList(true);
                 }
-                this.savePosition();
-                this.initBookList(true);
                 break;
-            case UniqueId.ACTIVITY_REQUEST_CODE_BOOKLIST_STYLES:
-                // Refresh the style because prefs may have changed
-                refreshStyle();
-                this.savePosition();
-                this.initBookList(true);
+
+            case BooklistStylesListActivity.REQUEST_CODE:
+            case AdministrationFunctions.REQUEST_CODE:
+            case PreferencesActivity.REQUEST_CODE:
+                if (resultCode == Activity.RESULT_OK) {
+                    // Refresh the style because prefs may have changed TOMF: setResult cancel!
+                    refreshStyle();
+                    this.savePosition();
+                    this.initBookList(true);
+                }
                 break;
         }
         Tracker.exitOnActivityResult(this, requestCode, resultCode);
@@ -754,9 +773,15 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
                     long bookId = mList.getRowView().getBookId();
                     boolean readOnly = getSharedPreferences(BookCatalogueApp.APP_SHARED_PREFERENCES, Context.MODE_PRIVATE)
                             .getBoolean(PREF_OPEN_BOOK_READ_ONLY, true);
+
                     if (readOnly) {
                         String listTable = mList.getBuilder().createFlattenedBooklist().getTable().getName();
-                        BookDetailsActivity.startActivityForResult(BooksOnBookshelf.this, bookId, listTable, position);
+                        Intent intent = new Intent(BooksOnBookshelf.this, BookDetailsActivity.class);
+                        intent.putExtra(UniqueId.KEY_ID, bookId);
+                        intent.putExtra(BookDetailsActivity.REQUEST_KEY_FLATTENED_BOOKLIST, listTable);
+                        intent.putExtra(BookDetailsActivity.REQUEST_KEY_FLATTENED_BOOKLIST_POSITION, position);
+                        startActivityForResult(intent, BookDetailsActivity.REQUEST_CODE);
+
                     } else {
                         EditBookActivity.startActivityForResult(BooksOnBookshelf.this, bookId, EditBookActivity.TAB_EDIT);
                     }
@@ -934,7 +959,7 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
                     DatabaseDefinitions.TBL_BOOKS.dot(DatabaseDefinitions.DOM_BOOK_READ), false);
 
             // Build based on our current criteria and return
-            builder.build(mRebuildState, mMarkBookId, mCurrentBookshelf, "", "", "", "", mSearchText);
+            builder.build(mRebuildState, mPreviouslySelectedBookId, mCurrentBookshelf, "", "", "", "", mSearchText);
 
             // After first build, always preserve this object state
             mRebuildState = BooklistPreferencesActivity.BOOK_LIST_STATE_PRESERVED;
@@ -1048,7 +1073,8 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
-                BooklistStylesListActivity.startActivityForResult(BooksOnBookshelf.this);
+                Intent intent = new Intent(BooksOnBookshelf.this, BooklistStylesListActivity.class);
+                startActivityForResult(intent, BooklistStylesListActivity.REQUEST_CODE);
             }
         });
     }
@@ -1175,9 +1201,9 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
                     t1 = System.currentTimeMillis();
                 }
                 // Try to sync the previously selected book ID
-                if (mMarkBookId != 0) {
+                if (mPreviouslySelectedBookId != 0) {
                     // get all positions of the book
-                    mTargetRows = bookListBuilder.getBookAbsolutePositions(mMarkBookId);
+                    mTargetRows = bookListBuilder.getBookAbsolutePositions(mPreviouslySelectedBookId);
 
                     if (mTargetRows != null && mTargetRows.size() > 0) {
                         // First, get the ones that are currently visible...
@@ -1229,7 +1255,7 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
                 mTempList = bookListBuilder.getList();
 
                 // Clear it so it won't be reused.
-                mMarkBookId = 0;
+                mPreviouslySelectedBookId = 0;
 
                 long t3;
                 if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {

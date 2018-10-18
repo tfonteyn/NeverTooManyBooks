@@ -50,6 +50,8 @@ import com.eleybourn.bookcatalogue.utils.ViewTagger;
  */
 public class UpdateFromInternetActivity extends BaseActivityWithTasks {
 
+    public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_UPDATE_FROM_INTERNET;
+
     private final FieldUsages mFieldUsages = new FieldUsages();
     private long mUpdateSenderId = 0;
     private final ManagedTask.TaskListener mThumbnailsHandler = new ManagedTask.TaskListener() {

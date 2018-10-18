@@ -59,7 +59,8 @@ public class Help extends BaseActivity {
             findViewById(R.id.help_instructions).setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.help_page)));
+                    Intent intent = new Intent(Intent.ACTION_VIEW,
+                            Uri.parse(getString(R.string.help_page)));
                     startActivity(intent);
                 }
             });
@@ -67,7 +68,8 @@ public class Help extends BaseActivity {
             findViewById(R.id.help_page).setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.help_page)));
+                    Intent intent = new Intent(Intent.ACTION_VIEW,
+                            Uri.parse(getString(R.string.help_page)));
                     startActivity(intent);
                 }
             });

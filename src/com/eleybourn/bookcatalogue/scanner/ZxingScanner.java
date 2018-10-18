@@ -75,6 +75,7 @@ public class ZxingScanner implements Scanner {
     /**
      * Extract the barcode from the result
      */
+    @NonNull
     @Override
     public String getBarcode(@NonNull final Intent intent) {
         return intent.getStringExtra(Scanner.SCAN_RESULT);

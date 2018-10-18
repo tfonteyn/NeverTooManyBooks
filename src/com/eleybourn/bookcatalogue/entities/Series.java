@@ -219,7 +219,7 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
                     // See if the one in 'index' also has a num
                     Series orig = index.get(lcName);
                     if (orig.number == null || orig.number.trim().isEmpty()) {
-                        // Replace with this one, and mark orig for delete
+                        // Replace with this one, and add original to the delete list
                         index.put(lcName, s);
                         toDelete.add(orig);
                     } else {

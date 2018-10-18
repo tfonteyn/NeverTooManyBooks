@@ -20,6 +20,7 @@
 
 package com.eleybourn.bookcatalogue.booklist;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
@@ -50,9 +51,12 @@ import com.eleybourn.bookcatalogue.utils.ViewTagger;
  * @author Philip Warner
  */
 public class BooklistStylePropertiesActivity extends BaseActivity {
+
+    public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_BOOKLIST_STYLE_PROPERTIES;
+
     private static final String TAG = "BooklistStyleProperties";
     /** Parameter used to pass data to this activity */
-    public static final String BKEY_STYLE = TAG + ".Style";
+    public static final String REQUEST_KEY_STYLE = TAG + ".Style";
     /** Parameter used to pass data to this activity */
     private static final String BKEY_SAVE_TO_DATABASE = TAG + ".SaveToDb";
 
@@ -92,7 +96,7 @@ public class BooklistStylePropertiesActivity extends BaseActivity {
 
         // Get the intent and get the style and other details
         Intent intent = this.getIntent();
-        mStyle = (BooklistStyle) intent.getSerializableExtra(BKEY_STYLE);
+        mStyle = (BooklistStyle) intent.getSerializableExtra(REQUEST_KEY_STYLE);
 
         if (intent.hasExtra(BKEY_SAVE_TO_DATABASE)) {
             mSaveToDb = intent.getBooleanExtra(BKEY_SAVE_TO_DATABASE, true);
@@ -135,10 +139,10 @@ public class BooklistStylePropertiesActivity extends BaseActivity {
      * Start editing the groups.
      */
     private void startGroupsActivity() {
-        Intent i = new Intent(this, BooklistStyleGroupsListActivity.class);
-        i.putExtra(BooklistStyleGroupsListActivity.BKEY_STYLE, mStyle);
-        i.putExtra(BooklistStyleGroupsListActivity.BKEY_SAVE_TO_DATABASE, false);
-        startActivityForResult(i, UniqueId.ACTIVITY_REQUEST_CODE_BOOKLIST_STYLE_GROUPS);
+        Intent intent = new Intent(this, BooklistStyleGroupsListActivity.class);
+        intent.putExtra(BooklistStyleGroupsListActivity.REQUEST_KEY_STYLE, mStyle);
+        intent.putExtra(BooklistStyleGroupsListActivity.REQUEST_KEY_SAVE_TO_DATABASE, false);
+        startActivityForResult(intent, BooklistStyleGroupsListActivity.REQUEST_CODE);
     }
 
     /**
@@ -156,7 +160,7 @@ public class BooklistStylePropertiesActivity extends BaseActivity {
             getDb().insertOrUpdateBooklistStyle(mStyle);
         }
         Intent intent = new Intent();
-        intent.putExtra(BKEY_STYLE, mStyle);
+        intent.putExtra(REQUEST_KEY_STYLE, mStyle);
         setResult(RESULT_OK, intent);
         finish();
 
@@ -164,16 +168,16 @@ public class BooklistStylePropertiesActivity extends BaseActivity {
 
     @Override
     @CallSuper
-    protected void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent intent) {
-        super.onActivityResult(requestCode,resultCode,intent);
+    protected void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
         switch (requestCode) {
-            case UniqueId.ACTIVITY_REQUEST_CODE_BOOKLIST_STYLE_GROUPS: {
-                // When groups have been edited, copy them to this style.
-                if (intent != null && intent.hasExtra(BooklistStyleGroupsListActivity.BKEY_STYLE)) {
+            case BooklistStyleGroupsListActivity.REQUEST_CODE: {
+                if (resultCode == Activity.RESULT_OK && data != null && data.hasExtra(BooklistStyleGroupsListActivity.REQUEST_KEY_STYLE)) {
+                    // When groups have been edited, copy them to this style.
                     BooklistStyle editedStyle = null;
                     try {
-                        editedStyle = (BooklistStyle) intent.getSerializableExtra(BooklistStyleGroupsListActivity.BKEY_STYLE);
+                        editedStyle = (BooklistStyle) data.getSerializableExtra(BooklistStyleGroupsListActivity.REQUEST_KEY_STYLE);
                     } catch (Exception e) {
                         Logger.error(e);
                     }

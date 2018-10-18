@@ -101,7 +101,7 @@ public class BookUtils {
 
         Intent intent = new Intent(activity, EditBookActivity.class);
         intent.putExtra(UniqueId.BKEY_BOOK_DATA, bookData);
-        activity.startActivityForResult(intent, UniqueId.ACTIVITY_REQUEST_CODE_ADD_BOOK_MANUALLY);
+        activity.startActivityForResult(intent, EditBookActivity.REQUEST_CODE_ADD_BOOK_MANUALLY);
     }
 
     /**

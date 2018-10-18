@@ -1,5 +1,7 @@
 package com.eleybourn.bookcatalogue;
 
+import android.app.Activity;
+
 import com.eleybourn.bookcatalogue.backup.CsvImporter;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.entities.Book;
@@ -45,32 +47,47 @@ public class UniqueId {
 
     // can't move these to res/values/ids.xml, as they need to be 16 bit values
     // BEGIN Codes used for startActivityForResult / onActivityResult
-    public static final int ACTIVITY_REQUEST_CODE_EDIT_BOOK = 101;
-    public static final int ACTIVITY_REQUEST_CODE_EDIT_AUTHORS = 102;
-    public static final int ACTIVITY_REQUEST_CODE_EDIT_SERIES = 103;
 
-    public static final int ACTIVITY_REQUEST_CODE_VIEW_BOOK = 104;
-    public static final int ACTIVITY_REQUEST_CODE_UPDATE_FROM_INTERNET = 105;
+    // this first set should not be used directly, but via the REQUEST_CODE of the actual Activity.
+    public static final int ACTIVITY_REQUEST_CODE_EDIT_BOOK = 101; // ok
+    public static final int ACTIVITY_REQUEST_CODE_EDIT_AUTHORS = 102; // ok
+    public static final int ACTIVITY_REQUEST_CODE_EDIT_SERIES = 103; // ok
+    public static final int ACTIVITY_REQUEST_CODE_VIEW_BOOK = 104; // ok
 
-    public static final int ACTIVITY_REQUEST_CODE_ADD_THUMB_FROM_CAMERA = 201;
-    public static final int ACTIVITY_REQUEST_CODE_ADD_THUMB_FROM_GALLERY = 202;
+    public static final int ACTIVITY_REQUEST_CODE_UPDATE_FROM_INTERNET = 201; // ok
+    public static final int ACTIVITY_REQUEST_CODE_GOODREADS_EXPORT_FAILURES = 202; // ok
+    public static final int ACTIVITY_REQUEST_CODE_GOODREADS_SEARCH_CRITERIA = 203; // ok
 
-    public static final int ACTIVITY_REQUEST_CODE_ADD_BOOK_MANUALLY = 301;
-    public static final int ACTIVITY_REQUEST_CODE_ADD_BOOK_SCAN = 302;
-    public static final int ACTIVITY_REQUEST_CODE_ADD_BOOK_ISBN = 303;
-    public static final int ACTIVITY_REQUEST_CODE_ADD_BOOK_BARCODE = 304;
+    public static final int ACTIVITY_REQUEST_CODE_ADD_BOOK_BY_SCAN = 301; // ok
+    public static final int ACTIVITY_REQUEST_CODE_ADD_BOOK_BY_SEARCH_ISBN = 302; // ok
+    public static final int ACTIVITY_REQUEST_CODE_ADD_BOOK_BY_SEARCH_TEXT = 303; // ok
+    public static final int ACTIVITY_REQUEST_CODE_ADD_BOOK_MANUALLY = 304; // ok
 
-    public static final int ACTIVITY_REQUEST_CODE_CROP_RESULT_EXTERNAL = 401;
-    public static final int ACTIVITY_REQUEST_CODE_CROP_RESULT_INTERNAL = 402;
+    public static final int ACTIVITY_REQUEST_CODE_CROP_IMAGE = 401; // ok
 
-    public static final int ACTIVITY_REQUEST_CODE_BOOKLIST_STYLES = 501;
-    public static final int ACTIVITY_REQUEST_CODE_BOOKLIST_STYLE = 502;
-    public static final int ACTIVITY_REQUEST_CODE_BOOKLIST_STYLE_PROPERTIES = 503;
-    public static final int ACTIVITY_REQUEST_CODE_BOOKLIST_STYLE_GROUPS = 504;
+    public static final int ACTIVITY_REQUEST_CODE_BOOKLIST_STYLES = 501; // ok
+    public static final int ACTIVITY_REQUEST_CODE_BOOKLIST_STYLE_PROPERTIES = 502; // ok
+    public static final int ACTIVITY_REQUEST_CODE_BOOKLIST_STYLE_GROUPS = 503; // ok
 
-    public static final int ACTIVITY_REQUEST_CODE_GOODREADS_EXPORT_FAILURES = 601;
+    public static final int ACTIVITY_REQUEST_CODE_ADMIN = 601; // ok
+    public static final int ACTIVITY_REQUEST_CODE_PREFERENCES = 602; // ok
+    public static final int ACTIVITY_REQUEST_CODE_FIELD_VISIBILITY = 603; // ok
 
-    public static final int ACTIVITY_REQUEST_CODE_PERMISSIONS_REQUEST = 701;
+    public static final int ACTIVITY_REQUEST_CODE_EDIT_BOOKSHELF_LIST = 701; // ok
+    public static final int ACTIVITY_REQUEST_CODE_BOOKSHELF_CREATE = 702; // ok
+    public static final int ACTIVITY_REQUEST_CODE_BOOKSHELF_EDIT = 703; // ok
+
+
+    // Build-in system
+    public static final int ACTIVITY_REQUEST_CODE_ANDROID_PERMISSIONS_REQUEST = 1000;
+    public static final int ACTIVITY_REQUEST_CODE_ANDROID_IMAGE_CAPTURE = 1001;
+    public static final int ACTIVITY_REQUEST_CODE_ANDROID_ACTION_GET_CONTENT = 1002;
+    // External app
+    public static final int ACTIVITY_REQUEST_CODE_EXTERNAL_CROP_IMAGE =1003;
+
+
+    /** implies RESULT_OK with modified data as opposed to simply RESULT_OK */
+    public static final int ACTIVITY_RESULT_OK_MODIFIED = Activity.RESULT_FIRST_USER;
 
     // END Codes used for startActivityForResult / onActivityResult
 
@@ -160,4 +177,5 @@ public class UniqueId {
     public static final String KEY_SERIES_NUM = DOM_BOOK_SERIES_NUM.name;
 
     public static final String KEY_LOAN_LOANED_TO = DOM_LOANED_TO.name;
+
 }

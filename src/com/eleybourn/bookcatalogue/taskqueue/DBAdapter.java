@@ -264,7 +264,7 @@ class DBAdapter {
     }
 
     /**
-     * Mark the related task record as successfully completed.
+     * Set the related task record as successfully completed.
      *
      * NOTE: this code must not assume the task exists. IT MAY HAVE BEEN DELETED BY THE QUEUE MANAGER.
      *
@@ -280,7 +280,7 @@ class DBAdapter {
                 // Delete successful tasks with no events
                 db.delete(TBL_TASK, DOM_ID + " =?" , new String[]{Long.toString(task.getId())});
             } else {
-                // Just mark is as successful
+                // Just set is as successful
                 sql = "UPDATE " + TBL_TASK + " SET " + DOM_STATUS_CODE + "= 'S' WHERE " + DOM_ID + "=" + task.getId();
                 db.execSQL(sql);
             }
@@ -373,7 +373,7 @@ class DBAdapter {
     }
 
     /**
-     * Save and mark the task as failed.
+     * Save and set the task as failed.
      *
      * NOTE: this code must not assume the task exists. IT MAY HAVE BEEN DELETED BY THE QUEUE MANAGER.
      *

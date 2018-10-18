@@ -169,7 +169,8 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
     @Override
     @CallSuper
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        final long currRow = getBook().getBookId();
+        final long bookId = getBook().getBookId();
+
         switch (item.getItemId()) {
             case R.id.SUBMENU_REPLACE_THUMB:
                 if (this instanceof EditBookFieldsFragment) {
@@ -179,11 +180,11 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
                 return false;
 
             case R.id.MENU_SHARE:
-                BookUtils.shareBook(requireActivity(), mDb, currRow);
+                BookUtils.shareBook(requireActivity(), mDb, bookId);
                 return true;
 
             case R.id.MENU_BOOK_DELETE:
-                BookUtils.deleteBook(requireActivity(), mDb, currRow,
+                BookUtils.deleteBook(requireActivity(), mDb, bookId,
                         new Runnable() {
                             @Override
                             public void run() {
@@ -193,7 +194,7 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
                 return true;
 
             case R.id.MENU_BOOK_DUPLICATE:
-                BookUtils.duplicateBook(requireActivity(), mDb, currRow);
+                BookUtils.duplicateBook(requireActivity(), mDb, bookId);
                 return true;
 
             case R.id.MENU_BOOK_UPDATE_FROM_INTERNET:
@@ -201,7 +202,7 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
                 return true;
 
             case R.id.MENU_BOOK_EDIT:
-                EditBookActivity.startActivityForResult(requireActivity(), currRow, EditBookActivity.TAB_EDIT);
+                EditBookActivity.startActivityForResult(requireActivity(), bookId, EditBookActivity.TAB_EDIT);
                 return true;
 
             case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR: {
@@ -222,7 +223,7 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
                 return true;
             }
         }
-        return false;
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -266,19 +267,18 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
         intent.putExtra(UniqueId.KEY_ID, book.getBookId());
         intent.putExtra(UniqueId.KEY_TITLE, book.getString(UniqueId.KEY_TITLE));
         intent.putExtra(UniqueId.KEY_AUTHOR_FORMATTED, book.getString(UniqueId.KEY_AUTHOR_FORMATTED));
-        startActivityForResult(intent, UniqueId.ACTIVITY_REQUEST_CODE_UPDATE_FROM_INTERNET);
+        startActivityForResult(intent, UpdateFromInternetActivity.REQUEST_CODE);
     }
 
     @Override
     @CallSuper
-    public void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent intent) {
-        super.onActivityResult(requestCode,resultCode,intent);
+    public void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent data) {
+        super.onActivityResult(requestCode,resultCode,data);
 
-        if (requestCode == UniqueId.ACTIVITY_REQUEST_CODE_UPDATE_FROM_INTERNET) {
-            if (resultCode == Activity.RESULT_OK) {
-                Objects.requireNonNull(intent);
+        if (requestCode == UpdateFromInternetActivity.REQUEST_CODE) {
+            if (resultCode == Activity.RESULT_OK && data != null) {
 
-                String result = intent.getStringExtra("result");
+                String result = data.getStringExtra("result");
                 //TODO: implement this in UpdateFromInternetActivity, then enable menu handling
             }
         }

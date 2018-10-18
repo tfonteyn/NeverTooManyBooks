@@ -77,48 +77,47 @@ public class About extends BaseActivity {
             Logger.error(e);
         }
 
-        TextView website = findViewById(R.id.website);
-        website.setOnClickListener(new OnClickListener() {
+        findViewById(R.id.website).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.website)));
                 startActivity(intent);
             }
         });
-        TextView sourcecode = findViewById(R.id.sourcecode);
-        sourcecode.setOnClickListener(new OnClickListener() {
+
+        findViewById(R.id.sourcecode).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.sourcecode)));
                 startActivity(intent);
             }
         });
-        TextView contact1 = findViewById(R.id.contact1);
-        contact1.setOnClickListener(new OnClickListener() {
+
+        findViewById(R.id.contact1).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 sendContactEmail(R.string.contact1);
             }
         });
-        TextView contact2 = findViewById(R.id.contact2);
-        contact2.setOnClickListener(new OnClickListener() {
+
+        findViewById(R.id.contact2).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 sendContactEmail(R.string.contact2);
             }
         });
 
-        {
-            TextView tv = findViewById(R.id.amazon_links_info);
-            // Setup the linked HTML
-            String text = getString(R.string.hint_amazon_links_blurb,
-                    getString(R.string.amazon_books_by_author),
-                    getString(R.string.amazon_books_in_series),
-                    getString(R.string.amazon_books_by_author_in_series),
-                    getString(R.string.app_name));
-            tv.setText(Utils.linkifyHtml(text, Linkify.ALL));
-            tv.setMovementMethod(LinkMovementMethod.getInstance());
-        }
+
+        TextView amazon = findViewById(R.id.amazon_links_info);
+        // Setup the linked HTML
+        String text = getString(R.string.hint_amazon_links_blurb,
+                getString(R.string.amazon_books_by_author),
+                getString(R.string.amazon_books_in_series),
+                getString(R.string.amazon_books_by_author_in_series),
+                getString(R.string.app_name));
+        amazon.setText(Utils.linkifyHtml(text, Linkify.ALL));
+        amazon.setMovementMethod(LinkMovementMethod.getInstance());
+
     }
 
     private void sendContactEmail(@StringRes final int stringId) {
@@ -128,7 +127,7 @@ public class About extends BaseActivity {
             msg.putExtra(Intent.EXTRA_EMAIL, new String[]{getString(stringId)});
             String subject = "[" + getString(R.string.app_name) + "] ";
             msg.putExtra(Intent.EXTRA_SUBJECT, subject);
-            About.this.startActivity(Intent.createChooser(msg, "Send email..."));
+            About.this.startActivity(Intent.createChooser(msg, getString(R.string.send_mail)));
         } catch (ActivityNotFoundException e) {
             Logger.error(e);
         }

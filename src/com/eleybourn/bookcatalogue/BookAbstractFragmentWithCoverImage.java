@@ -180,6 +180,7 @@ public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFra
             }
         });
     }
+
     private void initCoverImageContextMenu(@NonNull final Field coverField) {
         coverField.getView().setOnCreateContextMenuListener(new OnCreateContextMenuListener() {
             @Override
@@ -212,6 +213,7 @@ public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFra
             }
         });
     }
+
     public void initThumbSize(@NonNull final Activity activity) {
         mThumbSize = ImageUtils.getThumbSizes(activity);
     }
@@ -280,26 +282,26 @@ public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFra
 
     @Override
     @CallSuper
-    public void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent intent) {
+    public void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent data) {
         Tracker.enterOnActivityResult(this, requestCode, resultCode);
-        super.onActivityResult(requestCode,resultCode,intent);
+        super.onActivityResult(requestCode, resultCode, data);
 
         try {
             switch (requestCode) {
-                case UniqueId.ACTIVITY_REQUEST_CODE_ADD_THUMB_FROM_CAMERA:
+                case UniqueId.ACTIVITY_REQUEST_CODE_ANDROID_IMAGE_CAPTURE:
                     if (resultCode == Activity.RESULT_OK) {
-                        addCoverFromCamera(requestCode, resultCode, intent);
+                        addCoverFromCamera(requestCode, resultCode, data);
                     }
                     break;
 
-                case UniqueId.ACTIVITY_REQUEST_CODE_ADD_THUMB_FROM_GALLERY:
+                case UniqueId.ACTIVITY_REQUEST_CODE_ANDROID_ACTION_GET_CONTENT:
                     if (resultCode == Activity.RESULT_OK) {
-                        addCoverFromGallery(intent);
+                        addCoverFromGallery(data);
                     }
                     break;
 
-                case UniqueId.ACTIVITY_REQUEST_CODE_CROP_RESULT_INTERNAL:
-                case UniqueId.ACTIVITY_REQUEST_CODE_CROP_RESULT_EXTERNAL: {
+                case CropImageActivity.REQUEST_CODE:
+                case UniqueId.ACTIVITY_REQUEST_CODE_EXTERNAL_CROP_IMAGE: {
                     if (resultCode == Activity.RESULT_OK) {
                         File cropped = this.getCroppedTempCoverFile();
                         if (cropped.exists()) {
@@ -394,18 +396,17 @@ public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFra
         boolean cropFrameWholeImage = mPrefs.getBoolean(PREF_CROP_FRAME_WHOLE_IMAGE, false);
 
         Intent intent = new Intent(requireActivity(), CropImageActivity.class);
-        // here you have to pass the absolute path to your file
-        intent.putExtra(CropIImage.BKEY_IMAGE_PATH, thumbFile.getAbsolutePath());
-        intent.putExtra(CropIImage.BKEY_SCALE, true);
-        intent.putExtra(CropIImage.BKEY_NO_FACE_DETECTION, true);
-        intent.putExtra(CropIImage.BKEY_WHOLE_IMAGE, cropFrameWholeImage);
+        intent.putExtra(CropIImage.REQUEST_KEY_IMAGE_ABSOLUTE_PATH, thumbFile.getAbsolutePath());
+        intent.putExtra(CropIImage.REQUEST_KEY_SCALE, true);
+        intent.putExtra(CropIImage.REQUEST_KEY_NO_FACE_DETECTION, true);
+        intent.putExtra(CropIImage.REQUEST_KEY_WHOLE_IMAGE, cropFrameWholeImage);
 
         // Get and set the output file spec, and make sure it does not already exist.
         File cropped = this.getCroppedTempCoverFile();
         StorageUtils.deleteFile(cropped);
-        intent.putExtra(CropIImage.BKEY_OUTPUT, cropped.getAbsolutePath());
+        intent.putExtra(CropIImage.REQUEST_KEY_OUTPUT_ABSOLUTE_PATH, cropped.getAbsolutePath());
 
-        startActivityForResult(intent, UniqueId.ACTIVITY_REQUEST_CODE_CROP_RESULT_INTERNAL);
+        startActivityForResult(intent, CropImageActivity.REQUEST_CODE);
     }
 
     /**
@@ -414,16 +415,18 @@ public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFra
     private void cropCoverImageExternal(@NonNull final File thumbFile) {
         Tracker.handleEvent(this, "cropCoverImageExternal", Tracker.States.Enter);
         try {
+
             // this is actually not an official interface; theoretically this might not be there 'tomorrow'
+            // all extras are hardcoded strings on purpose
             Intent intent = new Intent("com.android.camera.action.CROP");
 
             // this will open any image file
             intent.setDataAndType(Uri.fromFile(new File(thumbFile.getAbsolutePath())), "image/*");
-            intent.putExtra(CropIImage.BKEY_CROP, true);
-            intent.putExtra(CropIImage.BKEY_SCALE, true);
-            intent.putExtra(CropIImage.BKEY_NO_FACE_DETECTION, true);
+            intent.putExtra("crop", true);
+            intent.putExtra("scale", true);
+            intent.putExtra("noFaceDetection", true);
             // True to return a Bitmap, false to directly save the cropped image
-            intent.putExtra(CropIImage.BKEY_RETURN_DATA, false);
+            intent.putExtra("return-data", false);
 
             // Save output image in uri
             File cropped = this.getCroppedTempCoverFile();
@@ -434,7 +437,7 @@ public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFra
             if (list.size() == 0) {
                 StandardDialogs.showBriefMessage(requireActivity(), R.string.no_external_crop_app);
             } else {
-                startActivityForResult(intent, UniqueId.ACTIVITY_REQUEST_CODE_CROP_RESULT_EXTERNAL);
+                startActivityForResult(intent, UniqueId.ACTIVITY_REQUEST_CODE_EXTERNAL_CROP_IMAGE);
             }
         } finally {
             Tracker.handleEvent(this, "cropCoverImageExternal", Tracker.States.Exit);
@@ -457,17 +460,17 @@ public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFra
         mTempImageCounter++;
         StorageUtils.cleanupTempDirectory();
         // Get a photo
-        Intent pIntent = new Intent("android.media.action.IMAGE_CAPTURE");
-                    /*
-				        We don't do this because we have no reliable way to rotate a large image
-				        without producing memory exhaustion; Android does not include a file-based
-				        image rotation.
+        Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+        /*
+            We don't do this because we have no reliable way to rotate a large image
+            without producing memory exhaustion; Android does not include a file-based
+            image rotation.
 
-				        File f = this.getCameraTempCoverFile();
-	                    StorageUtils.deleteFile(f);
-				        pIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
-                    */
-        startActivityForResult(pIntent, UniqueId.ACTIVITY_REQUEST_CODE_ADD_THUMB_FROM_CAMERA);
+            File f = this.getCameraTempCoverFile();
+            StorageUtils.deleteFile(f);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
+        */
+        startActivityForResult(intent, UniqueId.ACTIVITY_REQUEST_CODE_ANDROID_IMAGE_CAPTURE);
     }
 
     private void addCoverFromCamera(final int requestCode, final int resultCode, @Nullable final Intent intent) {
@@ -499,11 +502,11 @@ public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFra
     }
 
     private void getCoverFromGallery() {
-        Intent gIntent = new Intent();
-        gIntent.setType("image/*");
-        gIntent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(Intent.createChooser(gIntent, getString(R.string.select_picture)),
-                UniqueId.ACTIVITY_REQUEST_CODE_ADD_THUMB_FROM_GALLERY);
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, getString(R.string.select_picture)),
+                UniqueId.ACTIVITY_REQUEST_CODE_ANDROID_ACTION_GET_CONTENT);
     }
 
     private void addCoverFromGallery(@Nullable final Intent intent) {

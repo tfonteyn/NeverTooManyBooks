@@ -47,6 +47,8 @@ import com.eleybourn.bookcatalogue.utils.Utils;
  */
 public class EditSeriesListActivity extends EditObjectListActivity<Series> {
 
+    public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_EDIT_SERIES;
+
     private ArrayAdapter<String> mSeriesAdapter;
 
     /**

@@ -149,7 +149,7 @@ public class StartupActivity extends AppCompatActivity {
 
     private void initStorage() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, UniqueId.ACTIVITY_REQUEST_CODE_PERMISSIONS_REQUEST);
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, UniqueId.ACTIVITY_REQUEST_CODE_ANDROID_PERMISSIONS_REQUEST);
             return;
         }
         StorageUtils.initSharedDirectories();
@@ -435,7 +435,7 @@ public class StartupActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(final int requestCode, @NonNull final String permissions[], @NonNull final int[] grantResults) {
         //ENHANCE: when/if we request more permissions, then the permissions[] and grantResults[] must be checked in parallel
         switch (requestCode) {
-            case UniqueId.ACTIVITY_REQUEST_CODE_PERMISSIONS_REQUEST: {
+            case UniqueId.ACTIVITY_REQUEST_CODE_ANDROID_PERMISSIONS_REQUEST: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     initStorage();
                 } else {

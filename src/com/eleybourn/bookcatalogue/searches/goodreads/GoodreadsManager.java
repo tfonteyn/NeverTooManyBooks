@@ -358,7 +358,7 @@ public class GoodreadsManager {
             mUserId = authUserApi.getUserId();
 
         } catch (Exception e) {
-            // Something went wrong. Clear the access token, mark credentials as bad, and if we used
+            // Something went wrong. Clear the access token, set credentials as bad, and if we used
             // cached values, retry by getting them from prefs.
             mHasValidCredentials = false;
             mAccessToken = null;
