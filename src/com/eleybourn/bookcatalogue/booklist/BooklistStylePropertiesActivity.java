@@ -84,7 +84,20 @@ public class BooklistStylePropertiesActivity extends BaseActivity {
         findViewById(R.id.confirm).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                handleSave();
+                try {
+                    mProperties.validate();
+                } catch (ValidationException e) {
+                    StandardDialogs.showBriefMessage(BooklistStylePropertiesActivity.this, e.getLocalizedMessage());
+                    return;
+                }
+
+                if (mSaveToDb) {
+                    getDb().insertOrUpdateBooklistStyle(mStyle);
+                }
+                Intent intent = new Intent();
+                intent.putExtra(REQUEST_KEY_STYLE, mStyle);
+                setResult(RESULT_OK, intent);
+                finish();
             }
         });
         findViewById(R.id.cancel).setOnClickListener(new OnClickListener() {
@@ -143,27 +156,6 @@ public class BooklistStylePropertiesActivity extends BaseActivity {
         intent.putExtra(BooklistStyleGroupsListActivity.REQUEST_KEY_STYLE, mStyle);
         intent.putExtra(BooklistStyleGroupsListActivity.REQUEST_KEY_SAVE_TO_DATABASE, false);
         startActivityForResult(intent, BooklistStyleGroupsListActivity.REQUEST_CODE);
-    }
-
-    /**
-     * Called when 'save' button is clicked.
-     */
-    private void handleSave() {
-        try {
-            mProperties.validate();
-        } catch (ValidationException e) {
-            StandardDialogs.showBriefMessage(this, e.getLocalizedMessage());
-            return;
-        }
-
-        if (mSaveToDb) {
-            getDb().insertOrUpdateBooklistStyle(mStyle);
-        }
-        Intent intent = new Intent();
-        intent.putExtra(REQUEST_KEY_STYLE, mStyle);
-        setResult(RESULT_OK, intent);
-        finish();
-
     }
 
     @Override

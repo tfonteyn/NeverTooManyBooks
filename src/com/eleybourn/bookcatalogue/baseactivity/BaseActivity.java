@@ -14,18 +14,19 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import com.eleybourn.bookcatalogue.About;
-import com.eleybourn.bookcatalogue.BooksOnBookshelf;
-import com.eleybourn.bookcatalogue.Donate;
 import com.eleybourn.bookcatalogue.AdministrationFunctions;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.BooksOnBookshelf;
 import com.eleybourn.bookcatalogue.BuildConfig;
-import com.eleybourn.bookcatalogue.EditBookshelfListActivity;
+import com.eleybourn.bookcatalogue.Donate;
+import com.eleybourn.bookcatalogue.EditBookshelvesActivity;
 import com.eleybourn.bookcatalogue.Help;
 import com.eleybourn.bookcatalogue.PreferencesActivity;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.booklist.BooklistPreferencesActivity;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.searches.SearchCatalogue;
 
 /**
@@ -44,7 +45,7 @@ import com.eleybourn.bookcatalogue.searches.SearchCatalogue;
  * @author pjw
  */
 abstract public class BaseActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, CanBeDirty {
 
     /** The side/navigation panel */
     @Nullable
@@ -58,15 +59,15 @@ abstract public class BaseActivity extends AppCompatActivity
     /** universal flag used to indicate something was changed */
     private boolean mIsDirty;
 
-    protected boolean isDirty() {
+    public boolean isDirty() {
         return mIsDirty;
     }
 
-    protected void setDirty(final boolean isDirty) {
+    public void setDirty(final boolean isDirty) {
         this.mIsDirty = isDirty;
     }
 
-    protected int getLayoutId(){
+    protected int getLayoutId() {
         return 0;
     }
 
@@ -95,9 +96,9 @@ abstract public class BaseActivity extends AppCompatActivity
          Using a {@link NavigationView} and matching {@link Toolbar}
          see https://developer.android.com/training/implementing-navigation/nav-drawer
          */
-        setDrawerLayout((DrawerLayout)findViewById(R.id.drawer_layout));
+        setDrawerLayout((DrawerLayout) findViewById(R.id.drawer_layout));
 
-        setNavigationView((NavigationView)findViewById(R.id.nav_view));
+        setNavigationView((NavigationView) findViewById(R.id.nav_view));
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         if (toolbar != null) {
@@ -121,17 +122,17 @@ abstract public class BaseActivity extends AppCompatActivity
         }
     }
 
+    @SuppressWarnings("unused")
+    @Nullable
+    public NavigationView getNavigationView() {
+        return mNavigationView;
+    }
+
     private void setNavigationView(@Nullable final NavigationView navigationView) {
         mNavigationView = navigationView;
         if (mNavigationView != null) {
             mNavigationView.setNavigationItemSelectedListener(this);
         }
-    }
-
-    @SuppressWarnings("unused")
-    @Nullable
-    public NavigationView getNavigationView() {
-        return mNavigationView;
     }
 
     public void closeNavigationDrawer() {
@@ -149,34 +150,34 @@ abstract public class BaseActivity extends AppCompatActivity
         switch (menuItem.getItemId()) {
             case R.id.nav_search:
                 intent = new Intent(this, SearchCatalogue.class);
-                startActivity(intent);
+                startActivityForResult(intent, SearchCatalogue.REQUEST_CODE);
                 return true;
             case R.id.nav_manage_bookshelves:
-                intent =new Intent(this, EditBookshelfListActivity.class);
-                startActivityForResult(intent, EditBookshelfListActivity.REQUEST_CODE);
+                intent = new Intent(this, EditBookshelvesActivity.class);
+                startActivityForResult(intent, EditBookshelvesActivity.REQUEST_CODE);
                 break;
             case R.id.nav_booklist_prefs:
                 intent = new Intent(this, BooklistPreferencesActivity.class);
-                startActivity(intent);
+                startActivityForResult(intent, BooklistPreferencesActivity.REQUEST_CODE);
                 return true;
             case R.id.nav_other_prefs:
                 intent = new Intent(this, PreferencesActivity.class);
                 startActivityForResult(intent, PreferencesActivity.REQUEST_CODE);
                 return true;
             case R.id.nav_admin:
-                intent =new Intent(this, AdministrationFunctions.class);
+                intent = new Intent(this, AdministrationFunctions.class);
                 startActivityForResult(intent, AdministrationFunctions.REQUEST_CODE);
                 return true;
             case R.id.nav_about:
-                intent =new Intent(this, About.class);
+                intent = new Intent(this, About.class);
                 startActivity(intent);
                 return true;
             case R.id.nav_help:
-                intent =new Intent(this, Help.class);
+                intent = new Intent(this, Help.class);
                 startActivity(intent);
                 return true;
             case R.id.nav_donate:
-                intent =new Intent(this, Donate.class);
+                intent = new Intent(this, Donate.class);
                 startActivity(intent);
                 break;
         }
@@ -185,31 +186,20 @@ abstract public class BaseActivity extends AppCompatActivity
     }
 
     /**
-     * Dispatch incoming result to the correct fragment.
-     */
-    @Override
-    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode) {
-           case AdministrationFunctions.REQUEST_CODE:
-           case PreferencesActivity.REQUEST_CODE:
-           case EditBookshelfListActivity.REQUEST_CODE:
-                if (resultCode == RESULT_OK) {
-                    // code is here for reference only
-                    // for now, nothing to do as these are handled on a higher level
-                }
-                break;
-
-        }
-    }
-
-    /**
-     * @param drawerLayout  your custom one
+     * @param drawerLayout your custom one
      */
     private void setDrawerLayout(@Nullable final DrawerLayout drawerLayout) {
         this.mDrawerLayout = drawerLayout;
     }
 
+    /**
+     * This will be called when a menu item is selected. A large switch
+     * statement to call the appropriate functions (or other activities)
+     *
+     * @param item The item selected
+     *
+     * @return <tt>true</tt> if handled
+     */
     @Override
     @CallSuper
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
@@ -222,12 +212,65 @@ abstract public class BaseActivity extends AppCompatActivity
                     return true;
                 }
 
+                if (BuildConfig.DEBUG) {
+                    Logger.info("BaseActivity.onOptionsItemSelected with android.R.id.home");
+                }
                 // for all activities that were opened with startActivity()
-                // where 'home' is treated as 'up', simply finish TOMF
-                finish();
+                // where 'home' is treated as 'up', pretend/mimic
+                onBackPressed();
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * When the user clicks 'back/up', prepare our result.
+     */
+    @Override
+    @CallSuper
+    public void onBackPressed() {
+        if (BuildConfig.DEBUG) {
+            Logger.info("BaseActivity.onBackPressed with dirty=" + isDirty());
+        }
+        // Check if edits need saving, and finish the activity if not
+        if (isDirty()) {
+            StandardDialogs.showConfirmUnsavedEditsDialog(this,
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            setResultAndFinish();
+                        }
+                    });
+        } else {
+            setResultAndFinish();
+        }
+    }
+
+    /**
+     * override if you want more/different results.
+     */
+    protected void setResultAndFinish() {
+        if (BuildConfig.DEBUG) {
+            Logger.info("BaseActivity.setResultAndFinish with dirty=" + isDirty());
+        }
+        if (isDirty()) {
+            setResult(RESULT_OK);
+        }
+        finish();
+    }
+
+    /**
+     * get the {@link UniqueId#KEY_ID} either from the savedInstanceState or the extras.
+     */
+    protected long getId(final @Nullable Bundle savedInstanceState, final @Nullable Bundle extras) {
+        long id = 0;
+        if (savedInstanceState != null) {
+            id = savedInstanceState.getLong(UniqueId.KEY_ID);
+        }
+        if ((id == 0) && (extras != null)) {
+            id = extras.getLong(UniqueId.KEY_ID);
+        }
+        return id;
     }
 
     /**
@@ -242,6 +285,7 @@ abstract public class BaseActivity extends AppCompatActivity
 
         super.onResume();
     }
+
 
     /**
      * Reload this activity if locale has changed.

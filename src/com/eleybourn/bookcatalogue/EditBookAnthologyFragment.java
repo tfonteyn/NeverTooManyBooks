@@ -163,7 +163,7 @@ public class EditBookAnthologyFragment extends BookAbstractFragment implements H
                 mTitleText.setText("");
                 mAuthorText.setText("");
                 //populateContentList();
-                getEditBookManager().setDirty(true);
+                setDirty(true);
             }
         });
 
@@ -214,6 +214,7 @@ public class EditBookAnthologyFragment extends BookAbstractFragment implements H
     private <T extends ArrayAdapter<AnthologyTitle>> T getListAdapter() {
         return (T) getListView().getAdapter();
     }
+
     /**
      * we got one or more editions from ISFDB
      */
@@ -318,8 +319,12 @@ public class EditBookAnthologyFragment extends BookAbstractFragment implements H
     }
 
     /**
-     * This will be called when a menu item is selected. A large switch statement to
-     * call the appropriate functions (or other activities)
+     * This will be called when a menu item is selected. A large switch
+     * statement to call the appropriate functions (or other activities)
+     *
+     * @param item The item selected
+     *
+     * @return <tt>true</tt> if handled
      */
     @Override
     @CallSuper
@@ -348,7 +353,7 @@ public class EditBookAnthologyFragment extends BookAbstractFragment implements H
                 AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
                 ArrayAdapter<AnthologyTitle> adapter = getListAdapter();
                 adapter.remove(adapter.getItem((int) info.id));
-                getEditBookManager().setDirty(true);
+                setDirty(true);
                 return true;
         }
         return super.onContextItemSelected(item);
@@ -400,7 +405,7 @@ public class EditBookAnthologyFragment extends BookAbstractFragment implements H
 
         @Override
         protected void onListChanged() {
-            getEditBookManager().setDirty(true);
+            setDirty(true);
         }
     }
 }

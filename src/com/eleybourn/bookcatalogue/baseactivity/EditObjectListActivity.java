@@ -111,6 +111,7 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Bas
         @Override
         public void onClick(View v) {
             if (onCancel())
+                setResult(RESULT_CANCELED);
                 finish();
         }
     };

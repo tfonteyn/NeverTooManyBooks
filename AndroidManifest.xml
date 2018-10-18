@@ -109,7 +109,7 @@
 
 
         <!-- Manage Bookshelves -->
-        <activity android:name=".EditBookshelfListActivity" />
+        <activity android:name=".EditBookshelvesActivity" />
         <activity
             android:name=".EditBookshelfActivity"
             android:windowSoftInputMode="adjustResize" />
@@ -118,7 +118,7 @@
         <activity android:name=".FieldVisibilityActivity" />
 
         <!-- Edit book list styles -->
-        <activity android:name=".booklist.BooklistStylesListActivity" />
+        <activity android:name=".booklist.BooklistStylesActivity" />
         <activity
             android:name=".booklist.BooklistStylePropertiesActivity"
             android:windowSoftInputMode="stateHidden" />

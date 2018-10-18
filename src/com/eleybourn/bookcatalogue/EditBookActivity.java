@@ -35,6 +35,7 @@ import android.view.View;
 import android.widget.Button;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
+import com.eleybourn.bookcatalogue.baseactivity.HasBook;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.datamanager.DataEditor;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -62,11 +63,10 @@ import java.util.ArrayList;
  * @author Evan Leybourn
  */
 public class EditBookActivity extends BaseActivity
-        implements BookAbstractFragment.BookEditManager,
+        implements HasBook, BookAbstractFragment.HasAnthologyTab,
         OnPartialDatePickerListener, OnTextFieldEditorListener, OnBookshelfCheckChangeListener {
 
     public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_EDIT_BOOK;
-    public static final int REQUEST_CODE_ADD_BOOK_MANUALLY = UniqueId.ACTIVITY_REQUEST_CODE_ADD_BOOK_MANUALLY;
 
     /**
      * Tabs in order, see {@link #mTabClasses}
@@ -87,7 +87,6 @@ public class EditBookActivity extends BaseActivity
             EditBookAnthologyFragment.class
     };
     private final CatalogueDBAdapter mDb = new CatalogueDBAdapter(this);
-    private boolean mIsDirtyFlg = false;
     private long mBookId;
     private Book mBook;
 
@@ -112,6 +111,8 @@ public class EditBookActivity extends BaseActivity
 
     /**
      * Load with a new book
+     *
+     * @param bookData with the usual book information
      */
     public static void startActivityForResult(@NonNull final Activity activity,
                                               @NonNull final Bundle bookData) {
@@ -130,17 +131,16 @@ public class EditBookActivity extends BaseActivity
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         Tracker.enterOnCreate(this);
         super.onCreate(savedInstanceState);
-        mDb.open();
 
+        mDb.open();
         Bundle extras = getIntent().getExtras();
 
-        mBookId = getBookId(savedInstanceState, extras);
-        boolean isExistingBook = (mBookId > 0);
-
-        mBook = initBook(mBookId, savedInstanceState == null ? extras : savedInstanceState);
+        mBookId = getId(savedInstanceState, extras);
+        mBook = getBook(mBookId, savedInstanceState == null ? extras : savedInstanceState);
 
         mTabLayout = findViewById(R.id.tab_panel);
 
+        boolean isExistingBook = (mBookId > 0);
         initTabs(extras, isExistingBook);
         initCancelConfirmButtons(isExistingBook);
 
@@ -148,20 +148,6 @@ public class EditBookActivity extends BaseActivity
         initActivityTitle();
 
         Tracker.exitOnCreate(this);
-    }
-
-    /**
-     * get the book id either from the savedInstanceState or the extras.
-     */
-    private long getBookId(final @Nullable Bundle savedInstanceState, final @Nullable Bundle extras) {
-        long bookId = 0;
-        if (savedInstanceState != null) {
-            bookId = savedInstanceState.getLong(UniqueId.KEY_ID);
-        }
-        if ((bookId == 0) && (extras != null)) {
-            bookId = extras.getLong(UniqueId.KEY_ID);
-        }
-        return bookId;
     }
 
     /**
@@ -269,10 +255,10 @@ public class EditBookActivity extends BaseActivity
 
         findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                // Cleanup because we may have made global changes TODO: detect this if actually needed
+                // Cleanup because we may have made global changes
                 mDb.purgeAuthors();
                 mDb.purgeSeries();
-                // We're done.
+                // remember: POTENTIAL global changes so NOT using RESULT_CANCELLED! TODO: detect this if actually needed
                 setResult(Activity.RESULT_OK);
 
                 if (isDirty()) {
@@ -295,13 +281,13 @@ public class EditBookActivity extends BaseActivity
      * 3. It will leave the fields blank for new books.
      */
     @NonNull
-    private Book initBook(final long bookId, @Nullable final Bundle bestBundle) {
-        if (bestBundle != null && bestBundle.containsKey(UniqueId.BKEY_BOOK_DATA)) {
+    private Book getBook(final long bookId, @Nullable final Bundle bundle) {
+        if (bundle != null && bundle.containsKey(UniqueId.BKEY_BOOK_DATA)) {
             // If we have saved book data, use it
-            return new Book(bookId, bestBundle.getBundle(UniqueId.BKEY_BOOK_DATA));
+            return new Book(bookId, bundle.getBundle(UniqueId.BKEY_BOOK_DATA));
         } else {
             // Just load based on rowId
-            return new Book(bookId);
+            return new Book(bookId, null);
         }
     }
 
@@ -353,30 +339,14 @@ public class EditBookActivity extends BaseActivity
     //<editor-fold desc="Callback handlers">
 
     /**
-     * When the user clicks 'back/up', prepare our result.
-     */
-    @Override
-    @CallSuper
-    public void onBackPressed() {
-        // Check if edits need saving, and finish the activity if not
-        if (isDirty()) {
-            StandardDialogs.showConfirmUnsavedEditsDialog(this, new Runnable() {
-                @Override
-                public void run() {
-                    finishAndSendIntent();
-                }
-            });
-        } else {
-            finishAndSendIntent();
-        }
-
-        super.onBackPressed();
-    }
-
-    /**
      * Actually finish this activity making sure an intent is returned.
      */
-    private void finishAndSendIntent() {
+    @Override
+    protected void setResultAndFinish() {
+        if (BuildConfig.DEBUG) {
+            Logger.info("EditBookActivity.setResultAndFinish with dirty=" + isDirty());
+        }
+
         Intent intent = new Intent();
         intent.putExtra(UniqueId.KEY_ID, mBook.getBookId());
         setResult(Activity.RESULT_OK, intent);
@@ -481,24 +451,6 @@ public class EditBookActivity extends BaseActivity
     }
     //</editor-fold>
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-
-    /**
-     * Get the current status of the data in this activity
-     */
-    @Override
-    public boolean isDirty() {
-        return mIsDirtyFlg;
-    }
-
-    /**
-     * set the data as dirty (or not)
-     */
-    @Override
-    public void setDirty(final boolean dirty) {
-        mIsDirtyFlg = dirty;
-    }
-
     @NonNull
     @Override
     public Book getBook() {
@@ -508,16 +460,12 @@ public class EditBookActivity extends BaseActivity
     public void setBookId(final long bookId) {
         if (mBookId != bookId) {
             mBookId = bookId;
-            mBook = initBook(bookId, null);
-            Fragment frag = getSupportFragmentManager().findFragmentById(R.id.fragment);
-            if (frag instanceof DataEditor) {
-                ((DataEditor) frag).reloadData(mBook);
-            }
+            mBook = new Book(bookId);
+            DataEditor frag = (DataEditor)getSupportFragmentManager().findFragmentById(R.id.fragment);
+            frag.reloadData(mBook);
             initActivityTitle();
         }
     }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * add or remove the anthology tab
@@ -663,16 +611,14 @@ public class EditBookActivity extends BaseActivity
         Fragment fragment;
     }
 
+    //TODO: nice idea, but underused.
     private class DoConfirmAction implements PostSaveAction {
 
         DoConfirmAction() {
         }
 
         public void success() {
-            Intent intent = new Intent();
-            intent.putExtra(UniqueId.KEY_ID, mBook.getBookId());
-            setResult(Activity.RESULT_OK, intent);
-            finish();
+            setResultAndFinish();
         }
 
         public void failure() {

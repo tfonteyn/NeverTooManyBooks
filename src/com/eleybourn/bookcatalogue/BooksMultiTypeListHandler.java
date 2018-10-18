@@ -21,6 +21,7 @@
 package com.eleybourn.bookcatalogue;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.support.annotation.DrawableRes;
@@ -527,7 +528,9 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                 return true;
             }
             case R.id.MENU_AUTHOR_DETAILS: {
-                AuthorActivity.startActivity(activity, rowView.getAuthorId());
+                Intent intent = new Intent(activity, AuthorActivity.class);
+                intent.putExtra(UniqueId.KEY_ID, rowView.getAuthorId());
+                activity.startActivity(intent);
                 return true;
             }
             case R.id.MENU_AUTHOR_EDIT: {

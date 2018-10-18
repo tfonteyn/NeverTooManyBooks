@@ -26,15 +26,14 @@ import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
+import com.eleybourn.bookcatalogue.baseactivity.HasBook;
 import com.eleybourn.bookcatalogue.booklist.FlattenedBooklist;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
-import com.eleybourn.bookcatalogue.datamanager.DataEditor;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.entities.Book;
 
@@ -42,7 +41,7 @@ import com.eleybourn.bookcatalogue.entities.Book;
  * @author Evan Leybourn
  */
 public class BookDetailsActivity extends BaseActivity
-        implements BookAbstractFragment.BookEditManager {
+        implements HasBook {
 
     public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_VIEW_BOOK;
 
@@ -72,8 +71,8 @@ public class BookDetailsActivity extends BaseActivity
 
         Bundle extras = getIntent().getExtras();
 
-        mBookId = getBookId(savedInstanceState, extras);
-        mBook = initBook(mBookId, savedInstanceState == null ? extras : savedInstanceState);
+        mBookId = getId(savedInstanceState, extras);
+        mBook = getBook(mBookId, savedInstanceState == null ? extras : savedInstanceState);
 
         BookDetailsFragment details = new BookDetailsFragment();
         details.setArguments(extras);
@@ -91,47 +90,24 @@ public class BookDetailsActivity extends BaseActivity
         Tracker.exitOnCreate(this);
     }
 
-    /**
-     * get the book id either from the savedInstanceState or the extras.
-     */
-    private long getBookId(final @Nullable Bundle savedInstanceState, final @Nullable Bundle extras) {
-        long bookId = 0;
-        if (savedInstanceState != null) {
-            bookId = savedInstanceState.getLong(UniqueId.KEY_ID);
-        }
-        if ((bookId == 0) && (extras != null)) {
-            bookId = extras.getLong(UniqueId.KEY_ID);
-        }
-        return bookId;
+    @NonNull
+    @Override
+    public Book getBook() {
+        return mBook;
     }
 
 
-    /**
-     * This function will populate the forms elements in three different ways
-     *
-     * 1. If a valid rowId exists it will populate the fields from the database
-     *
-     * 2. If fields have been passed from another activity (e.g. {@link BookSearchActivity}) it
-     * will populate the fields from the bundle
-     *
-     * 3. It will leave the fields blank for new books.
-     */
     @NonNull
-    private Book initBook(final long bookId, @Nullable final Bundle bestBundle) {
-        if (bestBundle != null && bestBundle.containsKey(UniqueId.BKEY_BOOK_DATA)) {
+    private Book getBook(final long bookId, @Nullable final Bundle bundle) {
+        if (bundle != null && bundle.containsKey(UniqueId.BKEY_BOOK_DATA)) {
             // If we have saved book data, use it
-            return new Book(bookId, bestBundle.getBundle(UniqueId.BKEY_BOOK_DATA));
+            return new Book(bookId, bundle.getBundle(UniqueId.BKEY_BOOK_DATA));
         } else {
             // Just load based on rowId
             return new Book(bookId);
         }
     }
 
-    @NonNull
-    @Override
-    public Book getBook() {
-        return mBook;
-    }
 
     /**
      * If we are passed a flat book list, get it and validate it
@@ -197,15 +173,16 @@ public class BookDetailsActivity extends BaseActivity
                     } else {
                         moved = mList.moveNext();
                     }
+
                     if (moved) {
-                        long id = mList.getBookId();
-                        if (mBookId != id) {
-                            mBookId = id;
-                            mBook = initBook(id, null);
-                            Fragment frag = getSupportFragmentManager().findFragmentById(R.id.fragment);
-                            if (frag instanceof DataEditor) {
-                                ((DataEditor) frag).reloadData(mBook);
-                            }
+                        long bookId = mList.getBookId();
+                        if (mBookId != bookId) {
+                            mBookId = bookId;
+                            mBook = new Book(bookId);
+//                            Fragment frag = getSupportFragmentManager().findFragmentById(R.id.fragment);
+//                            if (frag instanceof DataEditor) {
+//                                ((DataEditor) frag).reloadData(mBook);
+//                            }
                             initActivityTitle();
                         }
                     }
@@ -257,16 +234,26 @@ public class BookDetailsActivity extends BaseActivity
      * This is an ESSENTIAL step; for some reason, in Android 2.1 if these statements are not
      * cleaned up, then the underlying SQLiteDatabase gets double-dereference'd, resulting in
      * the database being closed by the deeply dodgy auto-close code in Android.
+     *
+     * Also make sure to set our result when really finishing
      */
     @Override
     @CallSuper
     public void onPause() {
         if (mList != null) {
             mList.close();
-            if (this.isFinishing()) {
+            if (isFinishing()) {
                 mList.deleteData();
             }
         }
+
+        // make sure to set our result when really finishing
+        if (isFinishing()) {
+            Intent intent = new Intent();
+            intent.putExtra(UniqueId.KEY_ID, mBook.getBookId());
+            setResult(Activity.RESULT_OK, intent);
+        }
+
         super.onPause();
     }
 
@@ -283,49 +270,5 @@ public class BookDetailsActivity extends BaseActivity
 
         super.onSaveInstanceState(outState);
         Tracker.exitOnSaveInstanceState(this);
-    }
-
-
-    /**
-     * When the user clicks 'back/up', prepare our result.
-     */
-    @Override
-    @CallSuper
-    public void onBackPressed() {
-        Intent intent = new Intent();
-        intent.putExtra(UniqueId.KEY_ID, mBook.getBookId());
-        setResult(Activity.RESULT_OK, intent);
-
-        super.onBackPressed();
-    }
-
-    /**
-     * Not used, has to be implemented
-     * @see BookAbstractFragment.BookEditManager
-     */
-    @Override
-    public void addAnthologyTab(final boolean showAnthology) {
-    }
-    /**
-     * Not used, has to be implemented
-     * @see BookAbstractFragment.BookEditManager
-     */
-    private boolean mDirty;
-
-    /**
-     * Not used, has to be implemented
-     * @see BookAbstractFragment.BookEditManager
-     */
-    @Override
-    public boolean isDirty() {
-        return mDirty;
-    }
-    /**
-     * Not used, has to be implemented
-     * @see BookAbstractFragment.BookEditManager
-     */
-    @Override
-    public void setDirty(final boolean isDirty) {
-        mDirty = isDirty;
     }
 }

@@ -41,6 +41,8 @@ import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.Fields.AfterFieldChangeListener;
 import com.eleybourn.bookcatalogue.Fields.Field;
+import com.eleybourn.bookcatalogue.baseactivity.CanBeDirty;
+import com.eleybourn.bookcatalogue.baseactivity.HasBook;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.datamanager.DataEditor;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
@@ -55,7 +57,6 @@ import com.eleybourn.bookcatalogue.utils.RTE;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * Based class for all fragments that appear in {@link EditBookActivity}
@@ -67,19 +68,26 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
     protected Fields mFields;
     /** Database instance */
     protected CatalogueDBAdapter mDb;
-    /** A link to the Activity which implements {@link BookEditManager}  */
-    private BookEditManager mEditBookManager = null;
 
-    /**
-     * FIXME: this is a kludge... ever since pulling edit/show book apart. Needs redoing
-     */
-    @NonNull
-    public BookEditManager getEditBookManager() {
-        return mEditBookManager;
+    /*  the casting is a kludge... ever since pulling edit/show book apart. Needs redoing */
+    /** A link to the Activity */
+    private Context mContext;
+
+    protected boolean isDirty() {
+        return ((CanBeDirty) mContext).isDirty();
+    }
+
+    protected void setDirty(final boolean isDirty) {
+        ((CanBeDirty) mContext).setDirty(isDirty);
+    }
+
+    /** should obviously only be called when the caller implemented HasAnthologyTab. Crashes if not */
+    public void addAnthologyTab(final boolean show) {
+        ((HasAnthologyTab) mContext).addAnthologyTab(show);
     }
 
     protected Book getBook() {
-        return getEditBookManager().getBook();
+        return ((HasBook) mContext).getBook();
     }
 
     @Override
@@ -93,12 +101,12 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
     @CallSuper
     public void onAttach(@NonNull final Context context) {
         super.onAttach(context);
-
-        // both Show and Edit activities have this one, so MUST have or coding issues.
-        if (!(context instanceof BookEditManager)) {
-            throw new RTE.MustImplementException(context, BookEditManager.class);
+        // FIXME: bad kludge but hey-ho.... caller must have these!
+        if (!(context instanceof HasBook) || !(context instanceof CanBeDirty)) {
+            throw new RTE.MustImplementException(context, HasBook.class.getCanonicalName() + ", " + CanBeDirty.class.getCanonicalName());
         }
-        mEditBookManager = (BookEditManager) context;
+
+        mContext = context;
 
         mDb = new CatalogueDBAdapter(context);
         mDb.open();
@@ -165,6 +173,10 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
     /**
      * This will be called when a menu item is selected. A large switch
      * statement to call the appropriate functions (or other activities)
+     *
+     * @param item The item selected
+     *
+     * @return <tt>true</tt> if handled
      */
     @Override
     @CallSuper
@@ -241,15 +253,15 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
 
         // Load the data while preserving the isDirty() status
         mFields.setAfterFieldChangeListener(null);
-        final boolean wasDirty = mEditBookManager.isDirty();
+        final boolean wasDirty = isDirty();
         onLoadBookDetails(getBook(), false);
-        mEditBookManager.setDirty(wasDirty);
+        setDirty(wasDirty);
 
         // Set the listener to monitor edits
         mFields.setAfterFieldChangeListener(new AfterFieldChangeListener() {
             @Override
             public void afterFieldChange(@NonNull Field field, @Nullable final String newValue) {
-                mEditBookManager.setDirty(true);
+                setDirty(true);
             }
         });
     }
@@ -273,13 +285,13 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
     @Override
     @CallSuper
     public void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent data) {
-        super.onActivityResult(requestCode,resultCode,data);
+        super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == UpdateFromInternetActivity.REQUEST_CODE) {
             if (resultCode == Activity.RESULT_OK && data != null) {
 
                 String result = data.getStringExtra("result");
-                //TODO: implement this in UpdateFromInternetActivity, then enable menu handling
+                //TOMF: implement this in UpdateFromInternetActivity, then enable menu handling
             }
         }
     }
@@ -314,9 +326,9 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
      */
     @Override
     public final void reloadData(@NonNull final DataManager dataManager) {
-        final boolean wasDirty = mEditBookManager.isDirty();
+        final boolean wasDirty = isDirty();
         onLoadBookDetails(getBook(), false);
-        mEditBookManager.setDirty(wasDirty);
+        setDirty(wasDirty);
     }
 
     /**
@@ -418,22 +430,8 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
         }
     }
 
-
-    /**
-     * Interface that any containing activity must implement.
-     *
-     * @author pjw
-     */
-    public interface BookEditManager {
-
-        @NonNull
-        Book getBook();
-
+    protected interface HasAnthologyTab {
         void addAnthologyTab(final boolean showAnthology);
-
-        boolean isDirty();
-
-        void setDirty(final boolean isDirty);
     }
 
     static class ViewUtils {

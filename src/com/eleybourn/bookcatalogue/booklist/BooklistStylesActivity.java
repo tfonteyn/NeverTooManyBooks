@@ -49,7 +49,7 @@ import java.util.ArrayList;
  *
  * @author Philip Warner
  */
-public class BooklistStylesListActivity extends EditObjectListActivity<BooklistStyle> {
+public class BooklistStylesActivity extends EditObjectListActivity<BooklistStyle> {
 
     public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_BOOKLIST_STYLES;
 
@@ -59,7 +59,7 @@ public class BooklistStylesListActivity extends EditObjectListActivity<BooklistS
     /**
      * Constructor
      */
-    public BooklistStylesListActivity() {
+    public BooklistStylesActivity() {
         super(null, R.layout.booklist_styles_edit_list, R.layout.booklist_styles_edit_row);
     }
 
@@ -220,7 +220,8 @@ public class BooklistStylesListActivity extends EditObjectListActivity<BooklistS
 
         switch (requestCode) {
             case BooklistStylePropertiesActivity.REQUEST_CODE:
-                if (resultCode == RESULT_OK && data != null) {
+                if (resultCode == RESULT_OK) {
+                    //noinspection ConstantConditions
                     handleStyleResult(data);
                 }
                 break;

@@ -83,7 +83,7 @@ public class EditBookNotesFragment extends BookAbstractFragment implements OnPar
             super.onActivityCreated(savedInstanceState);
 
             if (savedInstanceState != null) {
-                getEditBookManager().setDirty(false);
+                setDirty(false);
             }
 
             initFields();
@@ -195,7 +195,7 @@ public class EditBookNotesFragment extends BookAbstractFragment implements OnPar
         mFields.setAfterFieldChangeListener(new AfterFieldChangeListener() {
             @Override
             public void afterFieldChange(@NonNull final Field field, @Nullable final String newValue) {
-                getEditBookManager().setDirty(true);
+                setDirty(true);
             }
         });
     }

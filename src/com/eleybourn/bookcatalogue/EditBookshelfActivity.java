@@ -35,7 +35,7 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 /**
  * Activity where we can edit a Bookshelf (its name)
  *
- * TODO: overkill... make this a dialog
+ * TODO: huge overkill... make this a dialog
  */
 public class EditBookshelfActivity extends BaseActivity {
 
@@ -63,15 +63,7 @@ public class EditBookshelfActivity extends BaseActivity {
             mDb = new CatalogueDBAdapter(this);
             mDb.open();
 
-            mRowId = 0;
-            if (savedInstanceState != null) {
-                mRowId = savedInstanceState.getLong(UniqueId.KEY_ID);
-            }
-
-            Bundle extras = getIntent().getExtras();
-            if ((mRowId == 0) && (extras != null)) {
-                    mRowId = extras.getLong(UniqueId.KEY_ID);
-            }
+            mRowId = getId(savedInstanceState, getIntent().getExtras());
 
             mConfirmButton = findViewById(R.id.confirm);
             mConfirmButton.setOnClickListener(new View.OnClickListener() {
@@ -104,16 +96,6 @@ public class EditBookshelfActivity extends BaseActivity {
         } else {
             mConfirmButton.setText(R.string.add);
         }
-    }
-
-    /**
-     * Take care of popping the fragment back stack or finishing the activity
-     * as appropriate.
-     */
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        setResult(RESULT_CANCELED);
     }
 
     @Override

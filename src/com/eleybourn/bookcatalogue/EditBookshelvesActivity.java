@@ -20,7 +20,6 @@
 
 package com.eleybourn.bookcatalogue;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
@@ -48,7 +47,7 @@ import java.util.ArrayList;
  *
  * ENHANCE: refit with  extends EditObjectListActivity<Bookshelf>
  */
-public class EditBookshelfListActivity extends BaseListActivity {
+public class EditBookshelvesActivity extends BaseListActivity {
 
     public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_EDIT_BOOKSHELF_LIST;
 
@@ -114,6 +113,14 @@ public class EditBookshelfListActivity extends BaseListActivity {
         return true;
     }
 
+    /**
+     * This will be called when a menu item is selected. A large switch
+     * statement to call the appropriate functions (or other activities)
+     *
+     * @param item The item selected
+     *
+     * @return <tt>true</tt> if handled
+     */
     @Override
     @CallSuper
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
@@ -141,24 +148,11 @@ public class EditBookshelfListActivity extends BaseListActivity {
         switch (requestCode) {
             case EditBookshelfActivity.REQUEST_CODE_EDIT:
             case EditBookshelfActivity.REQUEST_CODE_CREATE:
-                if (resultCode == Activity.RESULT_OK) {
-                   setDirty(true);
-                }
+                // pass up
+                setResult(resultCode);
                 break;
         }
         populateList();
-    }
-
-    /**
-     * Take care of popping the fragment back stack or finishing the activity
-     * as appropriate.
-     */
-    @Override
-    public void onBackPressed() {
-        if (isDirty()) {
-            setResult(RESULT_OK);
-        }
-        super.onBackPressed();
     }
 
     @Override

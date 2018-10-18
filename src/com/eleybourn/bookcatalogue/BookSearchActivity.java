@@ -75,9 +75,8 @@ import java.util.Set;
  */
 public class BookSearchActivity extends BaseActivityWithTasks {
 
-    public static final int REQUEST_CODE_SEARCH_BY_TEXT = UniqueId.ACTIVITY_REQUEST_CODE_ADD_BOOK_BY_SEARCH_TEXT;
-    public static final int REQUEST_CODE_SEARCH_BY_ISBN = UniqueId.ACTIVITY_REQUEST_CODE_ADD_BOOK_BY_SEARCH_ISBN;
-    public static final int REQUEST_CODE_SEARCH_BY_SCAN = UniqueId.ACTIVITY_REQUEST_CODE_ADD_BOOK_BY_SCAN;
+    public static final int REQUEST_CODE_SEARCH = UniqueId.ACTIVITY_REQUEST_CODE_ADD_BOOK_BY_SEARCH;
+    public static final int REQUEST_CODE_SCAN = UniqueId.ACTIVITY_REQUEST_CODE_ADD_BOOK_BY_SCAN;
 
     public static final String REQUEST_KEY_BY = "by";
     public static final String BY_ISBN = "isbn";
@@ -737,7 +736,7 @@ public class BookSearchActivity extends BaseActivityWithTasks {
     protected void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent data) {
         super.onActivityResult(requestCode,resultCode,data);
         switch (requestCode) {
-            case BookSearchActivity.REQUEST_CODE_SEARCH_BY_SCAN: {
+            case BookSearchActivity.REQUEST_CODE_SCAN: {
                 mScannerStarted = false;
                 try {
                     if (resultCode == RESULT_OK) {
@@ -746,8 +745,9 @@ public class BookSearchActivity extends BaseActivityWithTasks {
                         mIsbnText.setText(isbn);
                         go(isbn, "", "");
                     } else {
-                        // Scanner Cancelled/failed. Exit if no dialog present.
+                        // Scanner Cancelled/failed. pass that up
                         setResult(mLastBookIntent != null ? RESULT_OK : RESULT_CANCELED, mLastBookIntent);
+                        // and exit if no dialog present.
                         if (!mDisplayingAlert) {
                             finish();
                         }
@@ -811,7 +811,7 @@ public class BookSearchActivity extends BaseActivityWithTasks {
         }
         if (!mScannerStarted) {
             mScannerStarted = true;
-            mScanner.startActivityForResult(this, BookSearchActivity.REQUEST_CODE_SEARCH_BY_SCAN);
+            mScanner.startActivityForResult(this, BookSearchActivity.REQUEST_CODE_SCAN);
         }
     }
 

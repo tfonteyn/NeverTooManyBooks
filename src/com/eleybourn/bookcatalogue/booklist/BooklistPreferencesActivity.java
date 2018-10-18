@@ -27,6 +27,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.baseactivity.PreferencesBaseActivity;
 import com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -48,6 +49,8 @@ import java.util.Objects;
  */
 public class BooklistPreferencesActivity extends PreferencesBaseActivity {
 
+    public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_BOOKLIST_PREFERENCES;
+
     // ID values for state preservation property
     public static final int BOOK_LIST_ALWAYS_EXPANDED = 1;
     public static final int BOOK_LIST_ALWAYS_COLLAPSED = 2;
@@ -59,8 +62,6 @@ public class BooklistPreferencesActivity extends PreferencesBaseActivity {
     private static final String PREF_BACKGROUND_THUMBNAILS = TAG + ".BackgroundThumbnails";
     /** Show flat backgrounds in Book lists */
     private static final String PREF_CACHE_THUMBNAILS = TAG + ".CacheThumbnails";
-    /** Key added to resulting Intent */
-    private static final String PREF_CHANGED = TAG + ".PrefChanged";
     /** Always expand/collapse/preserve book list state */
     private static final String PREF_BOOK_LIST_STATE = TAG + ".BooklistState";
 
@@ -189,14 +190,11 @@ public class BooklistPreferencesActivity extends PreferencesBaseActivity {
     public void onPause() {
         super.onPause();
 
+        // as we don't really have an easy way to detect changes, nor use a 'confirm' anywhere,
+        // just set RESULT_OK here basically assuming that the user must have made a change
         if (isFinishing()) {
-            Intent i = new Intent();
-            i.putExtra(PREF_CHANGED, true);
-            if (getParent() == null) {
-                setResult(RESULT_OK, i);
-            } else {
-                getParent().setResult(RESULT_OK, i);
-            }
+            Intent intent = new Intent();
+            setResult(RESULT_OK, intent);
         }
     }
 }

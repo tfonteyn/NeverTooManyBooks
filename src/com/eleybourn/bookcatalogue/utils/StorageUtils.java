@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue.utils;
 import android.Manifest;
 import android.os.Environment;
 import android.os.StatFs;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresPermission;
@@ -78,7 +79,7 @@ public class StorageUtils {
     /** serious errors are written to this file */
     private static final String ERROR_LOG_FILE = "error.log";
     /** written to root external storage as 'writable' test + prevent 'detection' by apps who want to 'do things' with media */
-    private static final String NOMEDIA_FILE_PATH = EXTERNAL_FILE_PATH + File.separator + ".nomedia";
+    private static final String NOMEDIA_FILE_PATH = EXTERNAL_FILE_PATH + File.separator + MediaStore.MEDIA_IGNORE_FILENAME;
 
 
     private static final String[] mPurgeableFilePrefixes = new String[]{

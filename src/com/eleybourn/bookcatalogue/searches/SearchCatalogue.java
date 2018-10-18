@@ -38,6 +38,7 @@ import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -55,6 +56,16 @@ import java.util.TimerTask;
  * @author Philip Warner
  */
 public class SearchCatalogue extends BaseActivity {
+
+    public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_SEARCH;
+
+    private EditText mAuthorText;
+    private EditText mTitleText;
+    private EditText mCriteriaText;
+
+    private Button mShowResultsBtn;
+    private Button mFtsRebuildBtn;
+
     /** Handle inter-thread messages */
     private final Handler mSCHandler = new Handler();
     private CatalogueDBAdapter mDb;
@@ -65,7 +76,6 @@ public class SearchCatalogue extends BaseActivity {
     private final OnClickListener mShowResultsListener = new OnClickListener() {
         @Override
         public void onClick(View v) {
-            doSearch();
             //FIXME: close search, load 'found' list in main screen, or ask Philip Warner :)
             mBooksFound.setText("Oopsie... still to implement");
         }
@@ -129,25 +139,26 @@ public class SearchCatalogue extends BaseActivity {
         mDb.open();
 
         View root = this.findViewById(R.id.root);
+        mBooksFound = this.findViewById(R.id.books_found);
 
-        EditText author = this.findViewById(R.id.author);
-        EditText title = this.findViewById(R.id.title);
-        EditText criteria = this.findViewById(R.id.criteria);
+        mAuthorText = this.findViewById(R.id.author);
+        mTitleText = this.findViewById(R.id.title);
+        mCriteriaText = this.findViewById(R.id.criteria);
 
-        Button showResults = this.findViewById(R.id.search);
-        Button ftsRebuild = this.findViewById(R.id.rebuild);
+        mShowResultsBtn = this.findViewById(R.id.search);
+        mFtsRebuildBtn = this.findViewById(R.id.rebuild);
 
         // If the user touches anything, it's not idle
         root.setOnTouchListener(mOnTouchListener);
 
         // If the user changes any text, it's not idle
-        author.addTextChangedListener(mTextWatcher);
-        title.addTextChangedListener(mTextWatcher);
-        criteria.addTextChangedListener(mTextWatcher);
+        mAuthorText.addTextChangedListener(mTextWatcher);
+        mTitleText.addTextChangedListener(mTextWatcher);
+        mCriteriaText.addTextChangedListener(mTextWatcher);
 
         // Handle button presses
-        showResults.setOnClickListener(mShowResultsListener);
-        ftsRebuild.setOnClickListener(mFtsRebuildListener);
+        mShowResultsBtn.setOnClickListener(mShowResultsListener);
+        mFtsRebuildBtn.setOnClickListener(mFtsRebuildListener);
 
         // Note: Timer will be started in OnResume().
     }
@@ -189,9 +200,9 @@ public class SearchCatalogue extends BaseActivity {
      */
     private void doSearch() {
         // Get search criteria
-        String author = ((EditText) this.findViewById(R.id.author)).getText().toString().trim();
-        String title = ((EditText) this.findViewById(R.id.title)).getText().toString().trim();
-        String criteria = ((EditText) this.findViewById(R.id.criteria)).getText().toString().trim();
+        String author = mAuthorText.getText().toString().trim();
+        String title = mTitleText.getText().toString().trim();
+        String criteria = mCriteriaText.getText().toString().trim();
 
         // Save time to log how long query takes.
         long t0 = System.currentTimeMillis();
@@ -203,9 +214,9 @@ public class SearchCatalogue extends BaseActivity {
 
         // Get the cursor
         String tmpMsg = null;
-        try (Cursor c = mDb.searchFts(author, title, criteria)) {
-            if (c != null) {
-                int count = c.getCount();
+        try (Cursor cursor = mDb.searchFts(author, title, criteria)) {
+            if (cursor != null) {
+                int count = cursor.getCount();
                 t0 = System.currentTimeMillis() - t0;
                 tmpMsg = "(" + count + " books found in " + t0 + "ms)";
             } else if (BuildConfig.DEBUG) {
@@ -222,7 +233,6 @@ public class SearchCatalogue extends BaseActivity {
         mSCHandler.post(new Runnable() {
             @Override
             public void run() {
-                mBooksFound = SearchCatalogue.this.findViewById(R.id.books_found);
                 mBooksFound.setText(message);
             }
         });
@@ -242,9 +252,8 @@ public class SearchCatalogue extends BaseActivity {
             mIdleStart = System.currentTimeMillis();
             // If the search is dirty, make sure idle timer is running and update UI
             if (mSearchDirty) {
-                TextView booksFound = SearchCatalogue.this.findViewById(R.id.books_found);
                 if (BuildConfig.DEBUG) {
-                    booksFound.setText("(waiting for idle)");
+                    mBooksFound.setText("(waiting for idle)");
                 }
                 startIdleTimer(); // (if not started)
             }

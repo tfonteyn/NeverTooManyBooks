@@ -209,7 +209,7 @@ abstract public class BaseActivityWithTasks extends BaseActivity {
     protected void onResume() {
         super.onResume();
         // If we are finishing, we don't care about active tasks.
-        if (!this.isFinishing()) {
+        if (!isFinishing()) {
             // Restore mTaskManager if present
             getTaskManager();
             // Listen

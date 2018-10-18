@@ -284,9 +284,9 @@ public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFra
     @CallSuper
     public void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent data) {
         Tracker.enterOnActivityResult(this, requestCode, resultCode);
-        super.onActivityResult(requestCode, resultCode, data);
-
         try {
+            super.onActivityResult(requestCode, resultCode, data);
+
             switch (requestCode) {
                 case UniqueId.ACTIVITY_REQUEST_CODE_ANDROID_IMAGE_CAPTURE:
                     if (resultCode == Activity.RESULT_OK) {

@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.view.Menu;
@@ -61,7 +62,7 @@ public class MenuHandler {
      *
      * @return The new item
      */
-    public MenuItem addItem(@NonNull final Menu menu, final int id, @StringRes final int resId, final int icon) {
+    public MenuItem addItem(@NonNull final Menu menu, final int id, @StringRes final int resId, @DrawableRes final int icon) {
         MenuItem item = menu.add(Menu.NONE, id, mSort++, resId);
         if (icon != 0) {
             item.setIcon(icon);
@@ -107,17 +108,13 @@ public class MenuHandler {
                 addBookByScanning(activity);
                 return true;
             case R.id.MENU_BOOK_ADD_BY_SEARCH_ISBN:
-                addBookBySearchISBN(activity);
+                addBookBySearch(activity, BookSearchActivity.BY_ISBN);
                 return true;
             case R.id.MENU_BOOK_ADD_BY_SEARCH_TEXT:
-                addBookBySearchText(activity);
+                addBookBySearch(activity, BookSearchActivity.BY_TEXT);
                 return true;
             case R.id.MENU_BOOK_ADD_MANUALLY:
                 addBookManually(activity);
-                return true;
-            // ENHANCE: not used for now, calls activity.onSearchRequested(); but not implemented (yet?)
-            case R.id.MENU_SEARCH:
-                activity.onSearchRequested();
                 return true;
         }
         return false;
@@ -126,23 +123,17 @@ public class MenuHandler {
     private void addBookByScanning(@NonNull final Activity activity) {
         Intent intent = new Intent(activity, BookSearchActivity.class);
         intent.putExtra(BookSearchActivity.REQUEST_KEY_BY, BookSearchActivity.BY_SCAN);
-        activity.startActivityForResult(intent, BookSearchActivity.REQUEST_CODE_SEARCH_BY_SCAN);
+        activity.startActivityForResult(intent, BookSearchActivity.REQUEST_CODE_SCAN);
     }
 
-    private void addBookBySearchISBN(@NonNull final Activity activity) {
+    private void addBookBySearch(@NonNull final Activity activity, @NonNull final String by) {
         Intent intent = new Intent(activity, BookSearchActivity.class);
-        intent.putExtra(BookSearchActivity.REQUEST_KEY_BY, BookSearchActivity.BY_ISBN);
-        activity.startActivityForResult(intent, BookSearchActivity.REQUEST_CODE_SEARCH_BY_ISBN);
-    }
-
-    private void addBookBySearchText(@NonNull final Activity activity) {
-        Intent intent = new Intent(activity, BookSearchActivity.class);
-        intent.putExtra(BookSearchActivity.REQUEST_KEY_BY, BookSearchActivity.BY_TEXT);
-        activity.startActivityForResult(intent, BookSearchActivity.REQUEST_CODE_SEARCH_BY_TEXT);
+        intent.putExtra(BookSearchActivity.REQUEST_KEY_BY, by);
+        activity.startActivityForResult(intent, BookSearchActivity.REQUEST_CODE_SEARCH);
     }
 
     private void addBookManually(@NonNull final Activity activity) {
         Intent intent = new Intent(activity, EditBookActivity.class);
-        activity.startActivityForResult(intent, EditBookActivity.REQUEST_CODE_ADD_BOOK_MANUALLY);
+        activity.startActivityForResult(intent, EditBookActivity.REQUEST_CODE);
     }
 }

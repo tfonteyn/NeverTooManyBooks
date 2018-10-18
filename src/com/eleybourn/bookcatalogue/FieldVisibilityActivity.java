@@ -95,8 +95,6 @@ public class FieldVisibilityActivity extends BaseActivity {
         //NEWKIND: when adding fields that can be invisible, add them here
     }
 
-    private boolean mIsDirty = false;
-
     @Override
     protected int getLayoutId() {
         return R.layout.activity_admin_field_visibility;
@@ -135,7 +133,8 @@ public class FieldVisibilityActivity extends BaseActivity {
                     @Override
                     public void onClick(View v) {
                         Fields.setVisibility(fieldName, !Fields.isVisible(fieldName));
-                        mIsDirty = true;
+                        // flag up we have (at least one) modifications
+                        setDirty(true);
                     }
                 });
             }
@@ -148,16 +147,6 @@ public class FieldVisibilityActivity extends BaseActivity {
 
             parent.addView(layout);
         }
-    }
-
-    /**
-     * Take care of popping the fragment back stack or finishing the activity
-     * as appropriate.
-     */
-    @Override
-    public void onBackPressed() {
-        setResult(mIsDirty ? RESULT_OK : RESULT_CANCELED);
-        super.onBackPressed();
     }
 
     private static class FieldInfo {

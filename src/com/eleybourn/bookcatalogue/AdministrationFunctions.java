@@ -37,7 +37,7 @@ import com.eleybourn.bookcatalogue.backup.CsvExporter;
 import com.eleybourn.bookcatalogue.backup.ExportThread;
 import com.eleybourn.bookcatalogue.backup.ImportThread;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivityWithTasks;
-import com.eleybourn.bookcatalogue.booklist.BooklistStylesListActivity;
+import com.eleybourn.bookcatalogue.booklist.BooklistStylesActivity;
 import com.eleybourn.bookcatalogue.database.CoversDbHelper;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
@@ -378,18 +378,14 @@ public class AdministrationFunctions extends BaseActivityWithTasks {
         dialog.show();
     }
 
-    /**
-     * Dispatch incoming result to the correct fragment.
-     */
     @Override
-    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+    protected void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case FieldVisibilityActivity.REQUEST_CODE:
-            case BooklistStylesListActivity.REQUEST_CODE:
-                if (resultCode == Activity.RESULT_OK) {
-                    //TOMF anything to do ?
-                }
+            case BooklistStylesActivity.REQUEST_CODE:
+                // pass up
+                setResult(resultCode);
                 break;
         }
     }
@@ -406,8 +402,8 @@ public class AdministrationFunctions extends BaseActivityWithTasks {
      * Load the Edit Book List Styles Activity
      */
     private void manageBooklistStyles() {
-        Intent intent = new Intent(this, BooklistStylesListActivity.class);
-        startActivityForResult(intent, BooklistStylesListActivity.REQUEST_CODE);
+        Intent intent = new Intent(this, BooklistStylesActivity.class);
+        startActivityForResult(intent, BooklistStylesActivity.REQUEST_CODE);
     }
 
 

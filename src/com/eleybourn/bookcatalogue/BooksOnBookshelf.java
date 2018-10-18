@@ -65,7 +65,7 @@ import com.eleybourn.bookcatalogue.booklist.BooklistPseudoCursor;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.booklist.BooklistStylePropertiesActivity;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
-import com.eleybourn.bookcatalogue.booklist.BooklistStylesListActivity;
+import com.eleybourn.bookcatalogue.booklist.BooklistStylesActivity;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.database.cursors.TrackedCursor;
@@ -328,46 +328,50 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
     }
 
     /**
-     * This will be called when a menu item is selected. A large switch statement to
-     * call the appropriate functions (or other activities)
+     * This will be called when a menu item is selected. A large switch
+     * statement to call the appropriate functions (or other activities)
+     *
+     * @param item The item selected
+     *
+     * @return <tt>true</tt> if handled
      */
     @Override
     @CallSuper
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-            switch (item.getItemId()) {
+        switch (item.getItemId()) {
 
-                case R.id.MENU_SORT:
-                    HintManager.displayHint(this, R.string.hint_booklist_style_menu, new Runnable() {
-                        @Override
-                        public void run() {
-                            doSortMenu(false);
-                        }
-                    });
-                    return true;
+            case R.id.MENU_SORT:
+                HintManager.displayHint(this, R.string.hint_booklist_style_menu, new Runnable() {
+                    @Override
+                    public void run() {
+                        doSortMenu(false);
+                    }
+                });
+                return true;
 
-                case R.id.MENU_EXPAND: {
-                    // It is possible that the list will be empty, if so, ignore
-                    if (getListView().getChildCount() != 0) {
-                        int oldAbsPos = mListHandler.getAbsolutePosition(getListView().getChildAt(0));
-                        savePosition();
-                        mList.getBuilder().expandAll(true);
-                        mTopRow = mList.getBuilder().getPosition(oldAbsPos);
-                        displayList(mList.getBuilder().getList(), null);
-                    }
-                    return true;
+            case R.id.MENU_EXPAND: {
+                // It is possible that the list will be empty, if so, ignore
+                if (getListView().getChildCount() != 0) {
+                    int oldAbsPos = mListHandler.getAbsolutePosition(getListView().getChildAt(0));
+                    savePosition();
+                    mList.getBuilder().expandAll(true);
+                    mTopRow = mList.getBuilder().getPosition(oldAbsPos);
+                    displayList(mList.getBuilder().getList(), null);
                 }
-                case R.id.MENU_COLLAPSE: {
-                    // It is possible that the list will be empty, if so, ignore
-                    if (getListView().getChildCount() != 0) {
-                        int oldAbsPos = mListHandler.getAbsolutePosition(getListView().getChildAt(0));
-                        savePosition();
-                        mList.getBuilder().expandAll(false);
-                        mTopRow = mList.getBuilder().getPosition(oldAbsPos);
-                        displayList(mList.getBuilder().getList(), null);
-                    }
-                    return true;
-                }
+                return true;
             }
+            case R.id.MENU_COLLAPSE: {
+                // It is possible that the list will be empty, if so, ignore
+                if (getListView().getChildCount() != 0) {
+                    int oldAbsPos = mListHandler.getAbsolutePosition(getListView().getChildAt(0));
+                    savePosition();
+                    mList.getBuilder().expandAll(false);
+                    mTopRow = mList.getBuilder().getPosition(oldAbsPos);
+                    displayList(mList.getBuilder().getList(), null);
+                }
+                return true;
+            }
+        }
 
         if (mMenuHandler != null) {
             boolean handled = mMenuHandler.onOptionsItemSelected(this, item);
@@ -387,43 +391,18 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
     @CallSuper
     protected void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent data) {
         Tracker.enterOnActivityResult(this, requestCode, resultCode);
-        super.onActivityResult(requestCode,resultCode,data);
+        super.onActivityResult(requestCode, resultCode, data);
 
         mPreviouslySelectedBookId = 0;
 
         switch (requestCode) {
-            case BookSearchActivity.REQUEST_CODE_SEARCH_BY_SCAN:
-                if (resultCode == Activity.RESULT_OK) {
-                    try {
-                        if (data != null && data.hasExtra(UniqueId.KEY_ID)) {
-                            long newId = data.getLongExtra(UniqueId.KEY_ID, 0);
-                            if (newId != 0) {
-                                mPreviouslySelectedBookId = newId;
-                            }
-                        }
-                        // Always rebuild, even after a cancelled edit because the series may have had global edits
-                        // ENHANCE: Allow detection of global changes to avoid unnecessary rebuilds
-                        this.initBookList(false);
-                    } catch (NullPointerException e) {
-                        // This is not a scan result, but a normal return
-                    }
-                }
-                break;
-
-            case BookSearchActivity.REQUEST_CODE_SEARCH_BY_ISBN:
-            case BookSearchActivity.REQUEST_CODE_SEARCH_BY_TEXT:
-            case EditBookActivity.REQUEST_CODE_ADD_BOOK_MANUALLY:
-
+            case BookSearchActivity.REQUEST_CODE_SCAN:
+            case BookSearchActivity.REQUEST_CODE_SEARCH:
             case EditBookActivity.REQUEST_CODE:
             case BookDetailsActivity.REQUEST_CODE:
                 if (resultCode == Activity.RESULT_OK) {
                     try {
-                        if (data != null && data.hasExtra(UniqueId.KEY_ID)) {
-                            long bookId = data.getLongExtra(UniqueId.KEY_ID, 0);
-                            if (bookId != 0) {
-                                mPreviouslySelectedBookId = bookId;
-                            }
-                        }
+                        setPreviouslySelectedBookId(data);
                         // Always rebuild, even after a cancelled edit because there might have been global edits
                         // ENHANCE: Allow detection of global changes to avoid unnecessary rebuilds
                         this.initBookList(false);
@@ -450,11 +429,22 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
                 }
                 break;
 
-            case BooklistStylesListActivity.REQUEST_CODE:
-            case AdministrationFunctions.REQUEST_CODE:
             case PreferencesActivity.REQUEST_CODE:
-                if (resultCode == Activity.RESULT_OK) {
-                    // Refresh the style because prefs may have changed TOMF: setResult cancel!
+                // no action needed for now
+                break;
+
+            case EditBookshelvesActivity.REQUEST_CODE:
+                if (resultCode == RESULT_OK) {
+                    // bookshelves modified
+                    //TODO: what to do ?
+                }
+                break;
+
+            case BooklistPreferencesActivity.REQUEST_CODE:
+            case BooklistStylesActivity.REQUEST_CODE:
+            case AdministrationFunctions.REQUEST_CODE:
+                // modified?
+                if (resultCode == RESULT_OK) {
                     refreshStyle();
                     this.savePosition();
                     this.initBookList(true);
@@ -462,6 +452,15 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
                 break;
         }
         Tracker.exitOnActivityResult(this, requestCode, resultCode);
+    }
+
+    private void setPreviouslySelectedBookId(final @Nullable Intent data) {
+        if (data != null && data.hasExtra(UniqueId.KEY_ID)) {
+            long newId = data.getLongExtra(UniqueId.KEY_ID, 0);
+            if (newId != 0) {
+                mPreviouslySelectedBookId = newId;
+            }
+        }
     }
 
     /**
@@ -1073,8 +1072,8 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
-                Intent intent = new Intent(BooksOnBookshelf.this, BooklistStylesListActivity.class);
-                startActivityForResult(intent, BooklistStylesListActivity.REQUEST_CODE);
+                Intent intent = new Intent(BooksOnBookshelf.this, BooklistStylesActivity.class);
+                startActivityForResult(intent, BooklistStylesActivity.REQUEST_CODE);
             }
         });
     }

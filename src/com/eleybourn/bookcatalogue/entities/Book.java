@@ -190,17 +190,37 @@ public class Book extends DataManager {
         return this;
     }
 
+
+
+    /**
+     * Utility routine to get an author list from a data manager
+     *
+     * @return List of authors
+     */
+    @NonNull
+    public ArrayList<Author> getAuthorList() {
+        ArrayList<Author> list = super.getSerializable(UniqueId.BKEY_AUTHOR_ARRAY);
+        return list != null ? list : new ArrayList<Author>();
+    }
+
+    /**
+     * Special Accessor
+     */
+    public void setAuthorList(@NonNull final ArrayList<Author> list) {
+        super.putSerializable(UniqueId.BKEY_AUTHOR_ARRAY, list);
+    }
+
     /**
      * Special Accessor.
      *
      * Build a formatted string for author list.
      */
-    @Nullable
+    @NonNull
     public String getAuthorTextShort() {
         String newText;
         List<Author> list = getAuthorList();
         if (list.size() == 0) {
-            return null;
+            return "";
         } else {
             newText = list.get(0).getDisplayName();
             if (list.size() > 1) {
@@ -211,64 +231,43 @@ public class Book extends DataManager {
     }
 
     /**
-     * Utility routine to get an author list from a data manager
-     *
-     * @return List of authors
-     */
-    @NonNull
-    @CallSuper
-    public ArrayList<Author> getAuthorList() {
-        ArrayList<Author> list = super.getSerializable(UniqueId.BKEY_AUTHOR_ARRAY);
-        return list != null ? list : new ArrayList<Author>();
-    }
-
-    /**
-     * Special Accessor
-     */
-    @CallSuper
-    public void setAuthorList(@NonNull final ArrayList<Author> list) {
-        super.putSerializable(UniqueId.BKEY_AUTHOR_ARRAY, list);
-    }
-
-    /**
      * Utility routine to get an series list from a data manager
      *
      * @return List of series
      */
     @NonNull
-    @CallSuper
     public ArrayList<Series> getSeriesList() {
         ArrayList<Series> list = super.getSerializable(UniqueId.BKEY_SERIES_ARRAY);
         return list != null ? list : new ArrayList<Series>();
     }
 
-
-//    /**
-//     * Special Accessor.
-//     *
-//     * Build a formatted string for series list.
-//     */
-//    public String getSeriesTextShort() {
-//        String newText;
-//        ArrayList<Series> list = getSeriesList();
-//        if (list.size() == 0) {
-//            newText = null;
-//        } else {
-//            newText = list.get(0).getDisplayName();
-//            if (list.size() > 1) {
-//                newText += " " + BookCatalogueApp.getResourceString(R.string.and_others);
-//            }
-//        }
-//        return newText;
-//    }
-
     /**
      * Special Accessor
      */
-    @CallSuper
     public void setSeriesList(@NonNull final ArrayList<Series> list) {
         super.putSerializable(UniqueId.BKEY_SERIES_ARRAY, list);
     }
+    /**
+     * Special Accessor.
+     *
+     * Build a formatted string for series list.
+     */
+    @NonNull
+    public String getSeriesTextShort() {
+        String newText;
+        ArrayList<Series> list = getSeriesList();
+        if (list.size() == 0) {
+            return "";
+        } else {
+            newText = list.get(0).getDisplayName();
+            if (list.size() > 1) {
+                newText += " " + BookCatalogueApp.getResourceString(R.string.and_others);
+            }
+            return newText;
+        }
+    }
+
+
 
     /**
      * Utility routine to get a Content (an AnthologyTitle list) from a data manager

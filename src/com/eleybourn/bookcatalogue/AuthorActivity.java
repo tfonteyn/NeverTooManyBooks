@@ -23,13 +23,6 @@ public class AuthorActivity extends BaseListActivity {
     private CatalogueDBAdapter mDb;
     private ArrayList<AnthologyTitle> mList;
 
-    public static void startActivity(@NonNull final Activity activity,
-                                     final long authorId) {
-        Intent intent = new Intent(activity, AuthorActivity.class);
-        intent.putExtra(UniqueId.KEY_ID, authorId);
-        activity.startActivity(intent);
-    }
-
     @Override
     protected int getLayoutId() {
         return R.layout.activity_author;

@@ -1086,6 +1086,8 @@ and you can edit the book via the options menu using the menu button or overflow
     <string name="send_mail">Send mail…</string>
     <string name="no_external_crop_app">Can not find image crop app</string>
     <string name="no_style_found">Could not find appropriate style</string>
+    <string name="saving_image">Saving image</string>
+
 
     <!-- filters -->
     <string name="select_based_on_signed_status">Select based on \'Signed\' status</string>

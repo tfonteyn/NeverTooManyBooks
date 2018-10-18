@@ -97,14 +97,14 @@ public class EditBookFieldsFragment extends BookAbstractFragmentWithCoverImage
             super.onActivityCreated(savedInstanceState);
 
             if (savedInstanceState != null) {
-                getEditBookManager().setDirty(false);
+                setDirty(false);
             }
 
             //noinspection ConstantConditions
             final CompoundButton cb = getView().findViewById(R.id.anthology);
             cb.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View view) {
-                    getEditBookManager().addAnthologyTab(cb.isChecked());
+                    addAnthologyTab(cb.isChecked());
                 }
             });
 
@@ -184,7 +184,7 @@ public class EditBookFieldsFragment extends BookAbstractFragmentWithCoverImage
                 Logger.error(e);
             }
 
-            getEditBookManager().setDirty(false);
+            setDirty(false);
 
         } catch (@NonNull IndexOutOfBoundsException | SQLException e) {
             Logger.error(e);
@@ -301,12 +301,12 @@ public class EditBookFieldsFragment extends BookAbstractFragmentWithCoverImage
     protected void populateAuthorListField(@NonNull final Book book) {
         ArrayList<Author> list = book.getAuthorList();
         if (list.size() != 0 && Utils.pruneList(mDb, list)) {
-            getEditBookManager().setDirty(true);
+            setDirty(true);
             book.setAuthorList(list);
         }
 
         String newText = book.getAuthorTextShort();
-        if (newText == null || newText.isEmpty()) {
+        if (newText.isEmpty()) {
             newText = getString(R.string.set_authors);
         }
         mFields.getField(R.id.author).setValue(newText);
@@ -314,20 +314,15 @@ public class EditBookFieldsFragment extends BookAbstractFragmentWithCoverImage
 
     @Override
     protected void populateSeriesListField(@NonNull final Book book) {
-        String newText;
         ArrayList<Series> list = book.getSeriesList();
-        if (list.size() == 0) {
+        if (list.size() != 0 && Utils.pruneList(mDb, list)) {
+            setDirty(true);
+            book.setSeriesList(list);
+        }
+
+        String newText = book.getSeriesTextShort();
+        if (newText.isEmpty()) {
             newText = getString(R.string.set_series);
-        } else {
-            boolean trimmed = Series.pruneSeriesList(list);
-            trimmed |= Utils.pruneList(mDb, list);
-            if (trimmed) {
-                book.setSeriesList(list);
-            }
-            newText = list.get(0).getDisplayName();
-            if (list.size() > 1) {
-                newText += " " + getString(R.string.and_others);
-            }
         }
         mFields.getField(R.id.series).setValue(newText);
     }
@@ -409,16 +404,16 @@ public class EditBookFieldsFragment extends BookAbstractFragmentWithCoverImage
     @CallSuper
     public void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent data) {
         Tracker.enterOnActivityResult(this, requestCode, resultCode);
-        super.onActivityResult(requestCode,resultCode, data);
-
         try {
+            super.onActivityResult(requestCode,resultCode, data);
+
             Book book = getBook();
-            // reminder: no, AnthologyTitle is not handled here, has its own Tab
             switch (requestCode) {
                 case EditAuthorListActivity.REQUEST_CODE: {
-                    if (resultCode == Activity.RESULT_OK && data != null && data.hasExtra(UniqueId.BKEY_AUTHOR_ARRAY)) {
+                    //noinspection ConstantConditions
+                    if (resultCode == Activity.RESULT_OK && data.hasExtra(UniqueId.BKEY_AUTHOR_ARRAY)) {
                         book.setAuthorList(ArrayUtils.getAuthorFromIntentExtras(data));
-                        getEditBookManager().setDirty(true);
+                        setDirty(true);
                     } else {
                         // Even though the dialog was terminated, some authors MAY have been updated/added.
                         book.refreshAuthorList(mDb);
@@ -426,16 +421,17 @@ public class EditBookFieldsFragment extends BookAbstractFragmentWithCoverImage
                     // We do the fix here because the user may have edited or merged authors; this will
                     // have already been applied to the database so no update is necessary, but we do need
                     // to update the data we display.
-                    boolean wasDirty = getEditBookManager().isDirty();
+                    boolean wasDirty = isDirty();
                     populateAuthorListField(book);
-                    getEditBookManager().setDirty(wasDirty);
+                    setDirty(wasDirty);
                     break;
                 }
                 case EditSeriesListActivity.REQUEST_CODE: {
-                    if (resultCode == Activity.RESULT_OK && data != null && data.hasExtra(UniqueId.BKEY_SERIES_ARRAY)) {
+                    //noinspection ConstantConditions
+                    if (resultCode == Activity.RESULT_OK && data.hasExtra(UniqueId.BKEY_SERIES_ARRAY)) {
                         book.setSeriesList(ArrayUtils.getSeriesFromIntentExtras(data));
                         populateSeriesListField(book);
-                        getEditBookManager().setDirty(true);
+                        setDirty(true);
                     }
                     break;
                 }

@@ -59,19 +59,19 @@ public class UniqueId {
     public static final int ACTIVITY_REQUEST_CODE_GOODREADS_SEARCH_CRITERIA = 203; // ok
 
     public static final int ACTIVITY_REQUEST_CODE_ADD_BOOK_BY_SCAN = 301; // ok
-    public static final int ACTIVITY_REQUEST_CODE_ADD_BOOK_BY_SEARCH_ISBN = 302; // ok
-    public static final int ACTIVITY_REQUEST_CODE_ADD_BOOK_BY_SEARCH_TEXT = 303; // ok
-    public static final int ACTIVITY_REQUEST_CODE_ADD_BOOK_MANUALLY = 304; // ok
+    public static final int ACTIVITY_REQUEST_CODE_ADD_BOOK_BY_SEARCH = 302; // ok
 
     public static final int ACTIVITY_REQUEST_CODE_CROP_IMAGE = 401; // ok
 
     public static final int ACTIVITY_REQUEST_CODE_BOOKLIST_STYLES = 501; // ok
     public static final int ACTIVITY_REQUEST_CODE_BOOKLIST_STYLE_PROPERTIES = 502; // ok
     public static final int ACTIVITY_REQUEST_CODE_BOOKLIST_STYLE_GROUPS = 503; // ok
+    public static final int ACTIVITY_REQUEST_CODE_BOOKLIST_PREFERENCES = 504;
 
     public static final int ACTIVITY_REQUEST_CODE_ADMIN = 601; // ok
     public static final int ACTIVITY_REQUEST_CODE_PREFERENCES = 602; // ok
     public static final int ACTIVITY_REQUEST_CODE_FIELD_VISIBILITY = 603; // ok
+    public static final int ACTIVITY_REQUEST_CODE_SEARCH = 604; // ok
 
     public static final int ACTIVITY_REQUEST_CODE_EDIT_BOOKSHELF_LIST = 701; // ok
     public static final int ACTIVITY_REQUEST_CODE_BOOKSHELF_CREATE = 702; // ok
@@ -87,7 +87,7 @@ public class UniqueId {
 
 
     /** implies RESULT_OK with modified data as opposed to simply RESULT_OK */
-    public static final int ACTIVITY_RESULT_OK_MODIFIED = Activity.RESULT_FIRST_USER;
+    public static final int ACTIVITY_RESULT_MODIFIED = Activity.RESULT_FIRST_USER;
 
     // END Codes used for startActivityForResult / onActivityResult
 

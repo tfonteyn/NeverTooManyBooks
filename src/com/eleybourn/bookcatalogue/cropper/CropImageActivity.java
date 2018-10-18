@@ -33,6 +33,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -70,7 +71,6 @@ public class CropImageActivity extends CropMonitoredActivity {
     /** used to calculate free space on storage */
     private static final long ESTIMATED_PICTURE_SIZE = 400000L;
 
-    public static final String ACTION_INLINE_DATA = "inline-data";
     private final Bitmap.CompressFormat COMPRESS_FORMAT = Bitmap.CompressFormat.JPEG; // only used with mOptionSaveUri
 
     /** These are various options can be specified in the intent. */
@@ -303,7 +303,7 @@ public class CropImageActivity extends CropMonitoredActivity {
             }
 
             String imagePath = extras.getString(CropIImage.REQUEST_KEY_IMAGE_ABSOLUTE_PATH);
-            Objects.requireNonNull(imagePath, "imagePath was null");
+            //noinspection ConstantConditions
             mBitmap = getBitmap(imagePath);
 
             // Use the "output" parameter if present, otherwise overwrite existing file
@@ -495,11 +495,13 @@ public class CropImageActivity extends CropMonitoredActivity {
 
             Bundle extras = new Bundle();
             extras.putParcelable(CropIImage.BKEY_DATA, croppedImage);
-            setResult(RESULT_OK, (new Intent()).setAction(ACTION_INLINE_DATA).putExtras(extras));
+            Intent intent = new Intent("inline-data");
+            intent.putExtras(extras);
+            setResult(RESULT_OK, intent);
             finish();
         } else {
             final Bitmap bitmap = croppedImage;
-            CropUtil.startBackgroundJob(this, null, "Saving image",
+            CropUtil.startBackgroundJob(this, null, getString(R.string.saving_image),
                     new Runnable() {
                         public void run() {
                             saveOutput(bitmap);
@@ -516,11 +518,13 @@ public class CropImageActivity extends CropMonitoredActivity {
                 }
             } catch (IOException e) {
                 // TODO: report error to caller
-                Logger.error(e, "Error while saving image");
+                Logger.error(e);
             }
 
             Bundle extras = new Bundle();
-            setResult(RESULT_OK, new Intent(mOptionSaveUri.toString()).putExtras(extras));
+            Intent intent = new Intent(mOptionSaveUri.toString());
+            intent.putExtras(extras);
+            setResult(RESULT_OK, intent);
         }
 
         croppedImage.recycle();
