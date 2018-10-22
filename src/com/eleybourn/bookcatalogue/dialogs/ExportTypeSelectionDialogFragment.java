@@ -98,14 +98,14 @@ public class ExportTypeSelectionDialogFragment extends DialogFragment {
                 .create();
         dialog.setCanceledOnTouchOutside(false);
 
-        setOnClickListener(v, R.id.all_books_row);
-        setOnClickListener(v, R.id.advanced_options_row);
+        setOnClickListener(v, R.id.row_all_books);
+        setOnClickListener(v, R.id.row_advanced_options);
 
         return dialog;
     }
 
     private void handleClick(@NonNull final View v) {
-        if (v.getId() == R.id.advanced_options_row) {
+        if (v.getId() == R.id.row_advanced_options) {
             ExportAdvancedDialogFragment frag = ExportAdvancedDialogFragment.newInstance(1, mFile);
             frag.show(requireActivity().getSupportFragmentManager(), null);
         } else {

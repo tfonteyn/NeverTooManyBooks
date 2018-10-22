@@ -257,7 +257,7 @@ public class UpgradeDatabase {
      * This routine renames all files, if they exist.
      */
     private static void v72_renameIdFilesToHash(@NonNull final DbSync.SynchronizedDb db) {
-        try (Cursor c = db.rawQuery("SELECT " + DOM_ID + "," + DOM_BOOK_UUID + " FROM " + TBL_BOOKS + " ORDER BY " + DOM_ID)) {
+        try (Cursor c = db.rawQuery("SELECT " + DOM_ID + "," + DOM_BOOK_UUID + " FROM " + TBL_BOOKS + " ORDER BY " + DOM_ID, new String[]{})) {
             while (c.moveToNext()) {
                 final long id = c.getLong(0);
                 final String hash = c.getString(1);
@@ -278,13 +278,13 @@ public class UpgradeDatabase {
             throw new DBExceptions.TransactionException();
         }
 
-        DbSync.Synchronizer.SyncLock syncLock = syncDb.beginTransaction(true);
+        DbSync.Synchronizer.SyncLock txLock = syncDb.beginTransaction(true);
         try {
             v74_fixupPositionedBookItems(syncDb, TBL_BOOK_AUTHOR.getName(), DOM_AUTHOR_POSITION.name);
             v74_fixupPositionedBookItems(syncDb, TBL_BOOK_SERIES.getName(), DOM_BOOK_SERIES_POSITION.name);
             syncDb.setTransactionSuccessful();
         } finally {
-            syncDb.endTransaction(syncLock);
+            syncDb.endTransaction(txLock);
         }
 
     }
@@ -300,42 +300,39 @@ public class UpgradeDatabase {
                 " FROM " + TBL_BOOKS.ref() + " JOIN " + tableName + " o ON o." + DOM_BOOK_ID + "=" + TBL_BOOKS.dot(DOM_ID) +
                 " GROUP BY " + TBL_BOOKS.dot(DOM_ID);
 
-        DbSync.Synchronizer.SyncLock syncLock = null;
+        DbSync.Synchronizer.SyncLock txLock = null;
         if (!db.inTransaction()) {
-            syncLock = db.beginTransaction(true);
+            txLock = db.beginTransaction(true);
         }
-        DbSync.SynchronizedStatement moveStmt = null;
-        try (Cursor c = db.rawQuery(sql)) {
-            // Get the column indexes we need
-            final int bookCol = c.getColumnIndexOrThrow(DOM_ID.name);
-            final int posCol = c.getColumnIndexOrThrow("pos");
-            // Loop through all instances of the old author appearing
-            while (c.moveToNext()) {
-                // Get the details
-                long pos = c.getLong(posCol);
-                if (pos > 1) {
-                    if (moveStmt == null) {
-                        // Statement to move records up by a given offset
-                        sql = "UPDATE " + tableName + " SET " + positionField + "=1 WHERE " + DOM_BOOK_ID + "=? AND " + positionField + "=?";
-                        moveStmt = db.compileStatement(sql);
-                    }
+        // Statement to move records up by a given offset
+        String updateSql = "UPDATE " + tableName + " SET " + positionField + "=1 WHERE " + DOM_BOOK_ID + "=? AND " + positionField + "=?";
 
-                    long book = c.getLong(bookCol);
+        try (Cursor cursor = db.rawQuery(sql, new String[]{});
+             DbSync.SynchronizedStatement moveStmt = db.compileStatement(updateSql)) {
+            // Get the column indexes we need
+            final int bookCol = cursor.getColumnIndexOrThrow(DOM_ID.name);
+            final int posCol = cursor.getColumnIndexOrThrow("pos");
+
+
+
+            // Loop through all instances of the old author appearing
+            while (cursor.moveToNext()) {
+                // Get the details
+                long pos = cursor.getLong(posCol);
+                if (pos > 1) {
+                    long book = cursor.getLong(bookCol);
                     // Move subsequent records up by one
                     moveStmt.bindLong(1, book);
                     moveStmt.bindLong(2, pos);
-                    moveStmt.execute();
+                    moveStmt.executeUpdateDelete();
                 }
             }
-            if (syncLock != null) {
+            if (txLock != null) {
                 db.setTransactionSuccessful();
             }
         } finally {
-            if (syncLock != null) {
-                db.endTransaction(syncLock);
-            }
-            if (moveStmt != null) {
-                moveStmt.close();
+            if (txLock != null) {
+                db.endTransaction(txLock);
             }
         }
     }

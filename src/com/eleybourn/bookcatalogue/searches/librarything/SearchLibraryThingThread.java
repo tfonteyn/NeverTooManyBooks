@@ -3,7 +3,6 @@ package com.eleybourn.bookcatalogue.searches.librarything;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.searches.SearchManager;
@@ -30,10 +29,12 @@ public class SearchLibraryThingThread extends SearchThread {
                                     @NonNull final String isbn,
                                     final boolean fetchThumbnail) {
         super(manager, author, title, isbn, fetchThumbnail);
+        setName("SearchLibraryThingThread isbn=" + isbn);
+
     }
 
     @Override
-    protected void onRun() {
+    protected void runTask() {
         if (IsbnUtils.isValid(mIsbn)) {
             @StringRes final int R_ID_SEARCHING = R.string.searching_library_thing;
             doProgress(getString(R_ID_SEARCHING), 0);

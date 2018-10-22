@@ -96,7 +96,7 @@ public class BooklistStylePropertiesActivity extends BaseActivity {
                 }
                 Intent intent = new Intent();
                 intent.putExtra(REQUEST_KEY_STYLE, mStyle);
-                setResult(RESULT_OK, intent);
+                setResult(Activity.RESULT_OK, intent);
                 finish();
             }
         });

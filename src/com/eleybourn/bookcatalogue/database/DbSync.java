@@ -208,9 +208,9 @@ public class DbSync {
             } finally {
                 if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
                     if (mLock.isHeldByCurrentThread()) {
-                        Logger.info(ourThread.getName() + " waited " + (System.currentTimeMillis() - t0) + "ms for EXCLUSIVE access");
+                        Logger.info(this,ourThread.getName() + " waited " + (System.currentTimeMillis() - t0) + "ms for EXCLUSIVE access");
                     } else {
-                        Logger.info(ourThread.getName() + " waited " + (System.currentTimeMillis() - t0) + "ms AND FAILED TO GET EXCLUSIVE access");
+                        Logger.info(this,ourThread.getName() + " waited " + (System.currentTimeMillis() - t0) + "ms AND FAILED TO GET EXCLUSIVE access");
                     }
                 }
             }
@@ -313,10 +313,10 @@ public class DbSync {
         SynchronizedDb(@NonNull final SQLiteDatabase db, @NonNull final Synchronizer sync) {
             mSqlDb = db;
             mSync = sync;
-            if (BuildConfig.DEBUG) {
-                Logger.debug("Reminder: Use of this method is not recommended. It is better to use\n" +
+            if (/* always print debug */ BuildConfig.DEBUG) {
+                Logger.info(this, "\n\nReminder: Use of this method is not recommended. It is better to use\n" +
                         "\t\t  the methods that take a {@link SQLiteOpenHelper} object since opening the database may block\n" +
-                        "\t\t  another thread, or vice versa.");
+                        "\t\t  another thread, or vice versa.\n\n");
             }
         }
 
@@ -352,7 +352,7 @@ public class DbSync {
                     f.setAccessible(true);
                     int refs = (Integer) f.get(db);
                     if (msg != null) {
-                        Logger.info("DBRefs (" + msg + "): " + refs);
+                        Logger.info(SynchronizedDb.class,"DBRefs (" + msg + "): " + refs);
                         //if (refs < 100) {
                         //	Logger.info("DBRefs (" + msg + "): " + refs + " <-- TOO LOW (< 100)!");
                         //} else if (refs < 1001) {
@@ -423,28 +423,20 @@ public class DbSync {
          * Locking-aware wrapper for underlying database method.
          */
         @NonNull
-        SynchronizedCursor rawQuery(@NonNull final String sql) {
-            return rawQuery(sql, new String[]{});
-        }
-
-        /**
-         * Locking-aware wrapper for underlying database method.
-         */
-        @NonNull
         SynchronizedCursor rawQueryWithFactory(@NonNull final SynchronizedCursorFactory factory,
                                                @NonNull final String sql,
                                                @Nullable final String[] selectionArgs,
                                                @SuppressWarnings("SameParameterValue") @NonNull final String editTable) {
-            SyncLock syncLock = null;
+            SyncLock txLock = null;
             if (mTxLock == null) {
-                syncLock = mSync.getSharedLock();
+                txLock = mSync.getSharedLock();
             }
 
             try {
                 return (SynchronizedCursor) mSqlDb.rawQueryWithFactory(factory, sql, selectionArgs, editTable);
             } finally {
-                if (syncLock != null) {
-                    syncLock.unlock();
+                if (txLock != null) {
+                    txLock.unlock();
                 }
             }
         }
@@ -483,16 +475,16 @@ public class DbSync {
                             @Nullable final String groupBy,
                             @Nullable final String having,
                             @Nullable final String orderBy) {
-            SyncLock syncLock = null;
+            SyncLock txLock = null;
             if (mTxLock == null) {
-                syncLock = mSync.getSharedLock();
+                txLock = mSync.getSharedLock();
             }
 
             try {
                 return mSqlDb.query(table, columns, selection, selectionArgs, groupBy, having, orderBy);
             } finally {
-                if (syncLock != null) {
-                    syncLock.unlock();
+                if (txLock != null) {
+                    txLock.unlock();
                 }
             }
         }
@@ -505,13 +497,13 @@ public class DbSync {
         long insert(@NonNull final String table,
                     @SuppressWarnings("SameParameterValue") @Nullable final String nullColumnHack,
                     @NonNull final ContentValues cv) {
-            SyncLock syncLock = null;
+            SyncLock txLock = null;
             if (mTxLock != null) {
                 if (mTxLock.getType() != LockTypes.exclusive) {
                     throw new DBExceptions.TransactionException(ERROR_UPDATE_INSIDE_SHARED_TX);
                 }
             } else {
-                syncLock = mSync.getExclusiveLock();
+                txLock = mSync.getExclusiveLock();
             }
 
             // reminder: insert does not throw exceptions for the actual insert.
@@ -519,8 +511,8 @@ public class DbSync {
             try {
                 return mSqlDb.insert(table, nullColumnHack, cv);
             } finally {
-                if (syncLock != null) {
-                    syncLock.unlock();
+                if (txLock != null) {
+                    txLock.unlock();
                 }
             }
         }
@@ -534,13 +526,13 @@ public class DbSync {
                           @NonNull final ContentValues cv,
                           @NonNull final String whereClause,
                           @Nullable final String[] whereArgs) {
-            SyncLock syncLock = null;
+            SyncLock txLock = null;
             if (mTxLock != null) {
                 if (mTxLock.getType() != LockTypes.exclusive) {
                     throw new DBExceptions.TransactionException(ERROR_UPDATE_INSIDE_SHARED_TX);
                 }
             } else {
-                syncLock = mSync.getExclusiveLock();
+                txLock = mSync.getExclusiveLock();
             }
 
             // reminder: update does not throw exceptions for the actual update.
@@ -548,8 +540,8 @@ public class DbSync {
             try {
                 return mSqlDb.update(table, cv, whereClause, whereArgs);
             } finally {
-                if (syncLock != null) {
-                    syncLock.unlock();
+                if (txLock != null) {
+                    txLock.unlock();
                 }
             }
         }
@@ -564,13 +556,13 @@ public class DbSync {
         public int delete(@NonNull final String table,
                           @Nullable final String whereClause,
                           @Nullable final String[] whereArgs) {
-            SyncLock syncLock = null;
+            SyncLock txLock = null;
             if (mTxLock != null) {
                 if (mTxLock.getType() != LockTypes.exclusive) {
                     throw new DBExceptions.TransactionException(ERROR_UPDATE_INSIDE_SHARED_TX);
                 }
             } else {
-                syncLock = mSync.getExclusiveLock();
+                txLock = mSync.getExclusiveLock();
             }
 
             // reminder: delete does not throw exceptions for the actual delete.
@@ -578,29 +570,40 @@ public class DbSync {
             try {
                 return mSqlDb.delete(table, whereClause, whereArgs);
             } finally {
-                if (syncLock != null) {
-                    syncLock.unlock();
+                if (txLock != null) {
+                    txLock.unlock();
                 }
             }
         }
 
         /**
          * Wrapper for underlying database method. It is recommended that custom cursors subclass SynchronizedCursor.
+         *
+         * Runs the provided SQL and returns a cursor over the result set.
+         *
+         * @param cursorFactory the cursor factory to use, or null for the default factory
+         * @param sql the SQL query. The SQL string must not be ; terminated
+         * @param selectionArgs You may include ?s in where clause in the query,
+         *     which will be replaced by the values from selectionArgs. The
+         *     values will be bound as Strings.
+         * @param editTable the name of the first table, which is editable
+         * @return A {@link Cursor} object, which is positioned before the first entry. Note that
+         * {@link Cursor}s are not synchronized, see the documentation for more details.
          */
         @NonNull
         public Cursor rawQueryWithFactory(@NonNull final SQLiteDatabase.CursorFactory cursorFactory,
                                           @NonNull final String sql,
                                           @NonNull final String[] selectionArgs,
                                           @NonNull final String editTable) {
-            SyncLock syncLock = null;
+            SyncLock txLock = null;
             if (mTxLock == null) {
-                syncLock = mSync.getSharedLock();
+                txLock = mSync.getSharedLock();
             }
             try {
                 return mSqlDb.rawQueryWithFactory(cursorFactory, sql, selectionArgs, editTable);
             } finally {
-                if (syncLock != null) {
-                    syncLock.unlock();
+                if (txLock != null) {
+                    txLock.unlock();
                 }
             }
         }
@@ -610,20 +613,20 @@ public class DbSync {
          */
         @NonNull
         public SynchronizedStatement compileStatement(@NonNull final String sql) {
-            SyncLock syncLock = null;
+            SyncLock txLock = null;
             if (mTxLock != null) {
                 if (mTxLock.getType() != LockTypes.exclusive) {
                     throw new DBExceptions.TransactionException("Compile inside shared TX");
                 }
             } else {
-                syncLock = mSync.getExclusiveLock();
+                txLock = mSync.getExclusiveLock();
             }
 
             try {
                 return new SynchronizedStatement(this, sql);
             } finally {
-                if (syncLock != null) {
-                    syncLock.unlock();
+                if (txLock != null) {
+                    txLock.unlock();
                 }
             }
         }
@@ -663,11 +666,11 @@ public class DbSync {
          */
         @NonNull
         public SyncLock beginTransaction(final boolean isUpdate) {
-            SyncLock syncLock;
+            SyncLock txLock;
             if (isUpdate) {
-                syncLock = mSync.getExclusiveLock();
+                txLock = mSync.getExclusiveLock();
             } else {
-                syncLock = mSync.getSharedLock();
+                txLock = mSync.getSharedLock();
             }
             // We have the lock, but if the real beginTransaction() throws an exception, we need to release the lock
             try {
@@ -683,23 +686,23 @@ public class DbSync {
 
                 mSqlDb.beginTransaction();
             } catch (Exception e) {
-                syncLock.unlock();
+                txLock.unlock();
                 throw new DBExceptions.TransactionException("Unable to start database transaction: " + e.getLocalizedMessage(), e);
             }
-            mTxLock = syncLock;
-            return syncLock;
+            mTxLock = txLock;
+            return txLock;
         }
 
         /**
          * Locking-aware wrapper for underlying database method.
          *
-         * @param syncLock Lock returned from BeginTransaction().
+         * @param txLock Lock returned from BeginTransaction().
          */
-        public void endTransaction(@NonNull final SyncLock syncLock) {
+        public void endTransaction(@NonNull final SyncLock txLock) {
             if (mTxLock == null) {
                 throw new DBExceptions.TransactionException("Ending a transaction when none is started");
             }
-            if (!mTxLock.equals(syncLock)) {
+            if (!mTxLock.equals(txLock)) {
                 throw new DBExceptions.TransactionException("Ending a transaction with wrong transaction lock");
             }
 
@@ -709,7 +712,7 @@ public class DbSync {
                 // Clear mTxLock before unlocking so another thread does not
                 // see the old lock when it gets the lock
                 mTxLock = null;
-                syncLock.unlock();
+                txLock.unlock();
             }
         }
 
@@ -795,7 +798,7 @@ public class DbSync {
             mStatement = db.getUnderlyingDatabaseIfYouAreSureWhatYouAreDoing().compileStatement(sql);
 
             if (DEBUG_SWITCHES.SQL && BuildConfig.DEBUG) {
-                Logger.info("SynchronizedStatement(new): " + sql + "\n\n");
+                Logger.info(this,sql + "\n\n");
             }
         }
 
@@ -819,7 +822,7 @@ public class DbSync {
          */
         public void bindString(final int index, @Nullable final String value) {
             if (value == null) {
-                if (BuildConfig.DEBUG) {
+                if (/* always print debug */ BuildConfig.DEBUG) {
                     Logger.debug("binding NULL");
                 }
                 mStatement.bindNull(index);
@@ -961,7 +964,7 @@ public class DbSync {
             try {
                 return mStatement.simpleQueryForString();
             } catch (SQLiteDoneException e) {
-                if (BuildConfig.DEBUG) {
+                if (/* always print debug */ BuildConfig.DEBUG) {
                     Logger.error(e, "simpleQueryForStringOrNull got NULL");
                 }
                 return null;
@@ -979,22 +982,36 @@ public class DbSync {
          * @throws android.database.SQLException If the SQL string is invalid for some reason
          */
         public void execute() throws SQLException {
-            SyncLock syncLock;
+            SyncLock txLock;
             if (mIsReadOnly) {
-                syncLock = mSync.getSharedLock();
+                txLock = mSync.getSharedLock();
             } else {
-                syncLock = mSync.getExclusiveLock();
+                txLock = mSync.getExclusiveLock();
             }
             try {
-                if (DEBUG_SWITCHES.DB_SYNC && BuildConfig.DEBUG) {
-                    Logger.info("SynchronizedStatement execute: " + mStatement);
-                }
                 mStatement.execute();
             } finally {
-                syncLock.unlock();
+                txLock.unlock();
             }
         }
 
+        /**
+         * Wrapper that uses a lock before calling underlying method on SQLiteStatement.
+         *
+         * Execute this SQL statement, if the the number of rows affected by execution of this SQL
+         * statement is of any importance to the caller - for example, UPDATE / DELETE SQL statements.
+         *
+         * @return the number of rows affected by this SQL statement execution.
+         * @throws android.database.SQLException If the SQL string is invalid for some reason
+         */
+        public int executeUpdateDelete() {
+            SyncLock exclusiveLock = mSync.getExclusiveLock();
+            try {
+                return mStatement.executeUpdateDelete();
+            } finally {
+                exclusiveLock.unlock();
+            }
+        }
         /**
          * Wrapper that uses a lock before calling underlying method on SQLiteStatement.
          *
@@ -1016,7 +1033,7 @@ public class DbSync {
 
         public void finalize() {
             if (!mIsClosed && DEBUG_SWITCHES.DB_SYNC && BuildConfig.DEBUG) {
-                Logger.info("DbSync.SynchronizedStatement: Finalizing non-closed statement (potential error/normal)");
+                Logger.info(this,"Finalizing non-closed statement (potential error/normal)");
                 if (DEBUG_SWITCHES.SQL) {
                     Logger.debug(mSql);
                 }

@@ -29,6 +29,7 @@ import android.support.annotation.Nullable;
 import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.taskqueue.Listeners.EventActions;
 import com.eleybourn.bookcatalogue.taskqueue.Listeners.OnEventChangeListener;
@@ -309,8 +310,8 @@ public abstract class QueueManager {
     private void doToast(@Nullable final String message) {
         if (Thread.currentThread() == mUIThread.get()) {
             synchronized (this) {
-                if (BuildConfig.DEBUG) {
-                    Logger.info(this + ": is toasting: " + message);
+                if (DEBUG_SWITCHES.MESSAGING && BuildConfig.DEBUG) {
+                    Logger.info(this,"toasting: " + message);
                 }
                 // this is basically 'showing' on the UI thread of the Application.onCreate()
                 Toast.makeText(this.getApplicationContext(), message, Toast.LENGTH_LONG).show();

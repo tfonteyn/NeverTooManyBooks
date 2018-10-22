@@ -239,12 +239,8 @@ public class Utils {
      */
     public static boolean isNonBlankString(@NonNull final Bundle bundle,
                                            @NonNull final String key) {
-        if (bundle.containsKey(key)) {
-            String s = bundle.getString(key);
-            return (s != null && !s.trim().isEmpty());
-        } else {
-            return false;
-        }
+        String s = bundle.getString(key);
+        return (s != null && !s.trim().isEmpty());
     }
 
     /**

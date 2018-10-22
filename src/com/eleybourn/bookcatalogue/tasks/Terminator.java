@@ -113,7 +113,7 @@ public class Terminator {
 
         @Override
         public void run(@NonNull final SimpleTaskContext taskContext) {
-            Logger.info("Terminator: Nice night for a walk.");
+            Logger.info(this,"Terminator: Nice night for a walk.");
             do {
                 Event event;
                 long delay;
@@ -162,7 +162,7 @@ public class Terminator {
 
         @Override
         public void onFinish(@Nullable Exception e) {
-            Logger.info("Terminator: I'll be back.");
+            Logger.info(this,"Terminator: I'll be back.");
             if (e != null) {
                 Logger.error(e);
             }

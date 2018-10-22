@@ -122,9 +122,12 @@ import org.xml.sax.helpers.DefaultHandler;
  *
  */
 class SearchGoogleBooksHandler extends DefaultHandler {
-    private static final String ID = "id";
-    private static final String TOTAL_RESULTS = "totalResults";
-    private static final String ENTRY = "entry";
+
+    /** Words in XML */
+    private static final String XML_ID = "id";
+    private static final String XML_TOTAL_RESULTS = "totalResults";
+    private static final String XML_ENTRY = "entry";
+
     private StringBuilder builder;
     @NonNull
     private String id = "";
@@ -164,15 +167,15 @@ class SearchGoogleBooksHandler extends DefaultHandler {
                            @NonNull final String localName,
                            @NonNull final String name) throws SAXException {
         super.endElement(uri, localName, name);
-        if (localName.equalsIgnoreCase(TOTAL_RESULTS)) {
+        if (localName.equalsIgnoreCase(XML_TOTAL_RESULTS)) {
             count = Integer.parseInt(builder.toString());
         }
-        if (localName.equalsIgnoreCase(ENTRY)) {
+        if (localName.equalsIgnoreCase(XML_ENTRY)) {
             entry = false;
             done = true;
         }
         if (entry && id.isEmpty()) {
-            if (localName.equalsIgnoreCase(ID)) {
+            if (localName.equalsIgnoreCase(XML_ID)) {
                 id = builder.toString();
             }
         }
@@ -193,7 +196,7 @@ class SearchGoogleBooksHandler extends DefaultHandler {
                              @NonNull final String name,
                              @NonNull final Attributes attributes) throws SAXException {
         super.startElement(uri, localName, name, attributes);
-        if (!done && localName.equalsIgnoreCase(ENTRY)) {
+        if (!done && localName.equalsIgnoreCase(XML_ENTRY)) {
             entry = true;
         }
     }

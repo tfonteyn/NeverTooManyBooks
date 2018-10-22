@@ -1,7 +1,5 @@
 package com.eleybourn.bookcatalogue;
 
-import android.app.Activity;
-
 import com.eleybourn.bookcatalogue.backup.CsvImporter;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.entities.Book;
@@ -85,10 +83,6 @@ public class UniqueId {
     // External app
     public static final int ACTIVITY_REQUEST_CODE_EXTERNAL_CROP_IMAGE =1003;
 
-
-    /** implies RESULT_OK with modified data as opposed to simply RESULT_OK */
-    public static final int ACTIVITY_RESULT_MODIFIED = Activity.RESULT_FIRST_USER;
-
     // END Codes used for startActivityForResult / onActivityResult
 
 
@@ -99,6 +93,8 @@ public class UniqueId {
     /** used to pass a Bundle with book data around; e.g. before becoming an actual {@link Book} */
     public static final String BKEY_BOOK_DATA = "bookData";
 
+    /** bundle key to pass an {@link java.util.ArrayList<Integer>} around. */
+     public static final String BKEY_BOOK_ID_LIST = "bookIdList";
 
     /* Bundle keys for serialised ArrayList<Entity> */
     public static final String BKEY_AUTHOR_ARRAY = "author_array";
@@ -114,9 +110,10 @@ public class UniqueId {
     public static final String BKEY_ANTHOLOGY_DETAILS = "anthology_titles";
 
     /* BKEY_* and BVAL_* which are used in more then one class should be moved here */
-    public static final String BKEY_NO_COVER = "nocover";
+    public static final String BKEY_NO_COVER = "noCover";
     public static final String BKEY_DIALOG_ID = "dialogId";
     public static final String BKEY_FILE_SPEC = "fileSpec";
+    public static final String BKEY_SEARCH_TEXT = "searchText";
 
     /** If a search site indicates in any form it's an eBook, we store it as KEY_BOOK_FORMAT with "eBook" */
     public static final String BVAL_FORMAT_EBOOK = "eBook";

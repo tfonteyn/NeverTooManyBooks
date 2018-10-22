@@ -20,7 +20,8 @@ import java.text.DateFormat;
 import java.util.Date;
 
 /**
- * Implementation of FileDetails that record data about backup files in a background thread.
+ * Implementation of {@link FileDetails} (implements {@link Parcelable} that record data
+ * about backup files in a background thread.
  *
  * @author pjw
  */
@@ -29,7 +30,7 @@ public class BackupFileDetails implements FileDetails {
     // must also be modified.
 
     /**
-     * PARCELABLE INTERFACE.
+     * {@link Parcelable} INTERFACE.
      *
      * Need a CREATOR
      */
@@ -42,6 +43,11 @@ public class BackupFileDetails implements FileDetails {
             return new BackupFileDetails[size];
         }
     };
+
+    /** @see #isArchive(File) */
+    public static final String ARCHIVE_EXTENSION = ".bcbk";
+    public static final String ARCHIVE_PREFIX = "BookCatalogue-";
+
     /** File for this item */
     @NonNull
     private final File mFile;
@@ -57,7 +63,7 @@ public class BackupFileDetails implements FileDetails {
     }
 
     /**
-     * PARCELABLE INTERFACE.
+     * {@link Parcelable} INTERFACE.
      *
      * Constructor, using a Parcel as source.
      */
@@ -69,6 +75,10 @@ public class BackupFileDetails implements FileDetails {
         } else {
             mInfo = null;
         }
+    }
+
+    public static boolean isArchive(File f) {
+        return  f.getName().toLowerCase().endsWith(ARCHIVE_EXTENSION);
     }
 
     /**
@@ -138,9 +148,9 @@ public class BackupFileDetails implements FileDetails {
     }
 
     /**
-     * PARCELABLE INTERFACE.
+     * {@link Parcelable} INTERFACE.
      *
-     * Default to 0. Not really used.
+     * Bitmask, default to 0. Not really used.
      */
     @Override
     public int describeContents() {
@@ -148,7 +158,7 @@ public class BackupFileDetails implements FileDetails {
     }
 
     /**
-     * PARCELABLE INTERFACE.
+     * {@link Parcelable} INTERFACE.
      *
      * Save all fields that must be persisted.
      */

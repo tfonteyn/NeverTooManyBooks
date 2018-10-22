@@ -15,6 +15,8 @@ public class Bookshelf implements Serializable, Utils.ItemWithIdFixup {
     /** how to concat bookshelf names */
     public static final Character SEPARATOR = ',';
 
+    /** the virtual 'All Books' */
+    public static final int ALL_BOOKS = 0;
     /** the 'first' bookshelf created at install time. We allow renaming it, but not deleting. */
     public static final int DEFAULT_ID = 1;
 
@@ -61,6 +63,7 @@ public class Bookshelf implements Serializable, Utils.ItemWithIdFixup {
      * Two bookshelves are equal if:
      * - it's the same Object duh..
      * - one or both of them is 'new' (e.g. id == 0) but their names are equal
+     *   FIXME: but what about 'all books' ? that's id==0 as well.
      * - ids are equal
      *
      * Compare is CASE SENSITIVE ! This allows correcting case mistakes.

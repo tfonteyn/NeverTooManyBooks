@@ -31,6 +31,7 @@ import android.support.annotation.Nullable;
 import android.view.KeyEvent;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
@@ -113,10 +114,11 @@ abstract public class BaseActivityWithTasks extends BaseActivity {
 
         @Override
         public void onProgress(final int count, final int max, @NonNull final String message) {
-            if (BuildConfig.DEBUG) {
-                String dbgMsg = count + "/" + max + ", '" + message.replace("\n", "\\n") + "'";
+            if (DEBUG_SWITCHES.MESSAGING && BuildConfig.DEBUG) {
+                @SuppressWarnings("UnusedAssignment")
+                String dbgMsg = "onProgress: " + count + "/" + max + ", '" + message.replace("\n", "\\n") + "'";
                 Tracker.handleEvent(BaseActivityWithTasks.this, "SearchProgress " + dbgMsg, States.Running);
-                Logger.info("PRG: " + dbgMsg);
+                Logger.info(BaseActivityWithTasks.this, dbgMsg);
             }
 
             // Save the details
@@ -124,11 +126,24 @@ abstract public class BaseActivityWithTasks extends BaseActivity {
             mProgressMax = max;
             mProgressMessage = message.trim();
 
+            // original code used &&
+            //       if ((mProgressMessage.isEmpty()) && mProgressMax == mProgressCount) {
+            //
+            // but when updating a single book, I found timing issues where a 'real' message could
+            // arrive with progress 1/1. And the dialog does not close.. and all is blocked.
+            // so, now using ||. Last progress msg might be lost though. Important or not ?
+
             // If empty, close any dialog
-            if ((mProgressMessage.isEmpty()) && mProgressMax == mProgressCount) {
+            if ((mProgressMessage.isEmpty()) || mProgressMax == mProgressCount) {
+                if (DEBUG_SWITCHES.MESSAGING && BuildConfig.DEBUG) {
+                    Logger.info(BaseActivityWithTasks.this, "closeProgressDialog");
+                }
                 closeProgressDialog();
             } else {
-                updateProgress();
+                if (DEBUG_SWITCHES.MESSAGING && BuildConfig.DEBUG) {
+                    Logger.info(BaseActivityWithTasks.this, "initProgressDialog");
+                }
+                initProgressDialog();
             }
         }
 
@@ -223,12 +238,10 @@ abstract public class BaseActivityWithTasks extends BaseActivity {
     protected void onTaskEnded(@NonNull final ManagedTask task) {
     }
 
-
-
     /**
      * Setup the ProgressDialog according to our needs
      */
-    private void updateProgress() {
+    private void initProgressDialog() {
         boolean wantInDeterminate = (mProgressMax == 0);
 
         // if currently shown, but no longer suitable type due to a change of mProgressMax, dismiss it.
@@ -290,7 +303,7 @@ abstract public class BaseActivityWithTasks extends BaseActivity {
         }
 
         if (mProgressDialog != null && mProgressDialog.isShowing()) {
-            updateProgress();
+            initProgressDialog();
         }
     }
 

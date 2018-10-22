@@ -14,7 +14,7 @@ import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
  *
  * Unified {@link BookRowView} and {@link BooklistRowView}
  *
- * This base class should ONLY have accessors for fields present in the 'books' table
+ * This base class should ONLY have accessors for fields actually present in the 'books' table
  * Others should be done via extended classes of this base one.
  */
 public class BookRowViewBase {

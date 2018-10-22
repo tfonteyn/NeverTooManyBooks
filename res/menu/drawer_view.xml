@@ -1,53 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <group
-        android:id="@+id/g1"
-        android:checkableBehavior="none">
-        <item
-            android:id="@+id/nav_search"
-            android:icon="@drawable/ic_search"
-            android:title="@string/search" />
-    </group>
-    <group
-        android:id="@+id/g2"
-        android:checkableBehavior="none">
-        <item
-            android:id="@+id/nav_manage_bookshelves"
-            android:icon="@drawable/ic_library_books"
-            android:title="@string/menu_bookshelf" />
+    <item
+        android:id="@+id/nav_search"
+        android:icon="@drawable/ic_search"
+        android:title="@string/search" />
 
-        <item
-            android:id="@+id/nav_booklist_prefs"
-            android:icon="@drawable/ic_settings"
-            android:title="@string/booklist_preferences" />
+    <item
+        android:id="@+id/nav_manage_bookshelves"
+        android:icon="@drawable/ic_library_books"
+        android:title="@string/menu_bookshelf" />
 
-        <item
-            android:id="@+id/nav_other_prefs"
-            android:icon="@drawable/ic_settings"
-            android:title="@string/preferences" />
+    <item
+        android:id="@+id/nav_booklist_prefs"
+        android:icon="@drawable/ic_settings"
+        android:title="@string/booklist_preferences" />
 
-        <item
-            android:id="@+id/nav_admin"
-            android:icon="@drawable/ic_build"
-            android:title="@string/menu_administration" />
-    </group>
-    <group
-        android:id="@+id/g3"
-        android:checkableBehavior="none">
+    <item
+        android:id="@+id/nav_other_prefs"
+        android:icon="@drawable/ic_settings"
+        android:title="@string/preferences" />
 
-        <item
-            android:id="@+id/nav_donate"
-            android:icon="@drawable/ic_attach_money"
-            android:title="@string/lbl_donate" />
+    <item
+        android:id="@+id/nav_admin"
+        android:icon="@drawable/ic_build"
+        android:title="@string/menu_administration" />
 
-        <item
-            android:id="@+id/nav_help"
-            android:icon="@drawable/ic_help_outline"
-            android:title="@string/help" />
+    <item
+        android:id="@+id/nav_help"
+        android:icon="@drawable/ic_help_outline"
+        android:menuCategory="secondary"
+        android:orderInCategory="1"
+        android:title="@string/help" />
 
-        <item
-            android:id="@+id/nav_about"
-            android:icon="@drawable/ic_info_outline"
-            android:title="@string/lbl_about" />
-    </group>
+    <item
+        android:id="@+id/nav_donate"
+        android:icon="@drawable/ic_attach_money"
+        android:menuCategory="secondary"
+        android:orderInCategory="2"
+        android:title="@string/lbl_donate" />
+
+    <item
+        android:id="@+id/nav_about"
+        android:icon="@drawable/ic_info_outline"
+        android:menuCategory="secondary"
+        android:orderInCategory="3"
+        android:title="@string/lbl_about" />
+
 </menu>

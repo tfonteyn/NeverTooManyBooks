@@ -140,7 +140,7 @@
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:layout_alignBottom="@id/publisher"
-                app:srcCompat="@drawable/ic_expand_more"
+                app:srcCompat="@drawable/ic_arrow_drop_down"
                 tools:ignore="ContentDescription" />
         </RelativeLayout>
 
@@ -269,7 +269,7 @@
                 android:id="@+id/format_button"
                 style="@style/dropDownMenuButton"
                 android:layout_alignBottom="@id/format"
-                app:srcCompat="@drawable/ic_expand_more"
+                app:srcCompat="@drawable/ic_arrow_drop_down"
                 tools:ignore="ContentDescription" />
         </RelativeLayout>
 
@@ -297,7 +297,7 @@
                 android:id="@+id/genre_button"
                 style="@style/dropDownMenuButton"
                 android:layout_alignBottom="@id/genre"
-                app:srcCompat="@drawable/ic_expand_more"
+                app:srcCompat="@drawable/ic_arrow_drop_down"
                 tools:ignore="ContentDescription" />
         </RelativeLayout>
 
@@ -312,10 +312,9 @@
                 android:labelFor="@id/language"
                 android:text="@string/language" />
 
-            <!-- FIXME: style should be "@style/languageTextEntry" but that made the new button not work ?-->
             <AutoCompleteTextView
                 android:id="@+id/language"
-                style="@style/editorFieldText"
+                style="@style/languageTextEntry"
                 android:layout_below="@id/lbl_language"
                 android:layout_centerVertical="true"
                 android:layout_toStartOf="@id/language_button"
@@ -326,7 +325,7 @@
                 android:id="@+id/language_button"
                 style="@style/dropDownMenuButton"
                 android:layout_alignBottom="@id/language"
-                app:srcCompat="@drawable/ic_expand_more"
+                app:srcCompat="@drawable/ic_arrow_drop_down"
                 tools:ignore="ContentDescription" />
         </RelativeLayout>
 

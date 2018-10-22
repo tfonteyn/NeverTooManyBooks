@@ -139,7 +139,8 @@ class SearchGoogleBooksEntryHandler extends DefaultHandler {
     }
 
     private void addIfNotPresent(@NonNull final String key) {
-        if (!mValues.containsKey(key) || mValues.getString(key).isEmpty()) {
+        String test = mValues.getString(key);
+        if (test == null || test.isEmpty()) {
             mValues.putString(key, builder.toString());
         }
     }

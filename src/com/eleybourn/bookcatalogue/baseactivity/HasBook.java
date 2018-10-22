@@ -7,4 +7,6 @@ import com.eleybourn.bookcatalogue.entities.Book;
 public interface HasBook {
     @NonNull
     Book getBook();
+
+    void setBookId(final long bookId);
 }

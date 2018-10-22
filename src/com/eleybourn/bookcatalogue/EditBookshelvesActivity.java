@@ -149,7 +149,7 @@ public class EditBookshelvesActivity extends BaseListActivity {
             case EditBookshelfActivity.REQUEST_CODE_EDIT:
             case EditBookshelfActivity.REQUEST_CODE_CREATE:
                 // pass up
-                setResult(resultCode);
+                setResult(resultCode, data);
                 break;
         }
         populateList();

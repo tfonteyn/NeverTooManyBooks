@@ -1137,14 +1137,14 @@ public class Fields extends ArrayList<Fields.Field> {
         @Nullable
         public View findViewById(@IdRes final int id) {
             if (mFragment.get() == null) {
-                if (BuildConfig.DEBUG) {
+                if (/* always show debug */ BuildConfig.DEBUG) {
                     Logger.debug("Fragment is NULL");
                 }
                 return null;
             }
             final View view = mFragment.get().getView();
             if (view == null) {
-                if (BuildConfig.DEBUG) {
+                if (/* always show debug */ BuildConfig.DEBUG) {
                     Logger.debug("View is NULL");
                 }
                 return null;

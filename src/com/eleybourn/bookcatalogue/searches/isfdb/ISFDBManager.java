@@ -15,7 +15,6 @@ import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.Objects;
 
 public class ISFDBManager {
 
@@ -44,9 +43,9 @@ public class ISFDBManager {
         Bundle bookData = new Bundle();
         try {
             search(isbn, "", "", bookData, true);
-            if (bookData.containsKey(UniqueId.BKEY_THUMBNAIL_FILES_SPEC)
-                    && bookData.getString(UniqueId.BKEY_THUMBNAIL_FILES_SPEC) != null) {
-                File incomingFile = new File(Objects.requireNonNull(bookData.getString(UniqueId.BKEY_THUMBNAIL_FILES_SPEC)));
+            String fileSpec = bookData.getString(UniqueId.BKEY_THUMBNAIL_FILES_SPEC);
+            if (fileSpec != null) {
+                File incomingFile = new File(fileSpec);
                 File newName = new File(incomingFile.getAbsolutePath() + "_" + isbn);
                 StorageUtils.renameFile(incomingFile, newName);
                 return newName;

@@ -31,6 +31,7 @@ import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.widgets.FastScroller;
@@ -49,12 +50,6 @@ public class MultiTypeListCursorAdapter extends CursorAdapter implements FastScr
     private final LayoutInflater mInflater;
     @NonNull
     private final MultiTypeListHandler mHandler;
-    /**
-     * TODO: the intention is to set a click listener on the cover image... but see fixme below first!
-     */
-    @NonNull
-    @SuppressWarnings("FieldCanBeLocal")
-    private final Activity mActivity;
 
     //FIXME: https://www.androiddesignpatterns.com/2012/07/loaders-and-loadermanager-background.html
 
@@ -64,7 +59,6 @@ public class MultiTypeListCursorAdapter extends CursorAdapter implements FastScr
         super(activity, cursor);
         //noinspection ConstantConditions
         mInflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        mActivity = activity;
         mHandler = handler;
     }
 
@@ -138,10 +132,10 @@ public class MultiTypeListCursorAdapter extends CursorAdapter implements FastScr
         final String[] section = mHandler.getSectionText(cursor);
         cursor.moveToPosition(savedPos);
 
-        if (BuildConfig.DEBUG) {
-            Logger.info("MultiTypeListCursorAdapter.getSectionTextForPosition");
+        if (DEBUG_SWITCHES.BOOKLIST_BUILDER && BuildConfig.DEBUG) {
+            Logger.info(this, " MultiTypeListCursorAdapter.getSectionTextForPosition");
             for (String s : section) {
-                Logger.info("Section: " + s);
+                Logger.info(this, " Section: " + s);
             }
         }
         Tracker.exitFunction(this, "getSectionTextForPosition");

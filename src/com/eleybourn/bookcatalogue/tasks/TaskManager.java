@@ -100,7 +100,6 @@ public class TaskManager implements AutoCloseable {
         public void onTaskFinished(@NonNull ManagedTask t) {
             TaskManager.this.onTaskFinished(t);
         }
-
     };
 
     /**
@@ -127,7 +126,7 @@ public class TaskManager implements AutoCloseable {
     /**
      * Add a task to this object. Ignores duplicates if already present.
      *
-     * @param task Task to add
+     * @param task to add
      */
     public void addTask(@NonNull final ManagedTask task) {
         if (mIsClosing) {
@@ -152,7 +151,8 @@ public class TaskManager implements AutoCloseable {
     }
 
     /**
-     * Called when the onTaskFinished message is received by the listener object.
+     * Called when the {@link ManagedTask.TaskListener#onTaskFinished} message is received
+     * by the listener object.
      */
     private void onTaskFinished(@NonNull final ManagedTask task) {
         boolean doClose;
@@ -194,7 +194,7 @@ public class TaskManager implements AutoCloseable {
     }
 
     /**
-     * Update the base progress message. Used (generally) by the BaseActivityWithTasks to
+     * Update the base progress message. Used (generally) by {@link BaseActivityWithTasks} to
      * display some text above the task info. Set to null to ensure ProgressDialog will
      * be removed.
      */
@@ -287,7 +287,7 @@ public class TaskManager implements AutoCloseable {
      *
      * @param message Message to send
      */
-    public void showQuickNotice(@NonNull final String message) {
+    public void showBriefMessage(@NonNull final String message) {
         mMessageSwitch.send(mMessageSenderId, new OnShowQuickNotice(message));
     }
 
@@ -339,7 +339,7 @@ public class TaskManager implements AutoCloseable {
     @Override
     public void close() {
         if (DEBUG_SWITCHES.TASK_MANAGER && BuildConfig.DEBUG) {
-            Logger.info("DBG: Task Manager close requested");
+            Logger.info(this,"Task Manager close requested");
         }
 
         mIsClosing = true;
@@ -388,6 +388,9 @@ public class TaskManager implements AutoCloseable {
             listener.onTaskEnded(mManager, mTask);
             return false;
         }
+        public String toString() {
+            return "\nOnTaskEndedMessage task: " + mTask;
+        }
     }
 
     public static class OnProgressMessage implements Message<TaskManagerListener> {
@@ -407,6 +410,10 @@ public class TaskManager implements AutoCloseable {
             listener.onProgress(mCount, mMax, mMessage);
             return false;
         }
+
+        public String toString() {
+            return "\nOnProgressMessage: " + mMessage;
+        }
     }
 
     public static class OnShowQuickNotice implements Message<TaskManagerListener> {
@@ -422,6 +429,9 @@ public class TaskManager implements AutoCloseable {
             listener.onShowQuickNotice(mMessage);
             return false;
         }
+        public String toString() {
+            return "\nOnShowQuickNotice: " + mMessage;
+        }
     }
 
     public static class OnFinishedMessage implements Message<TaskManagerListener> {
@@ -429,6 +439,9 @@ public class TaskManager implements AutoCloseable {
         public boolean deliver(@NonNull final TaskManagerListener listener) {
             listener.onFinished();
             return false;
+        }
+        public String toString() {
+            return "\nOnFinishedMessage";
         }
     }
 

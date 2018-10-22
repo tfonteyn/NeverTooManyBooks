@@ -21,10 +21,12 @@ public class SearchGoogleBooksThread extends SearchThread {
                                    @NonNull final String isbn,
                                    final boolean fetchThumbnail) {
         super(manager, author, title, isbn, fetchThumbnail);
+        setName("SearchGoogleBooksThread isbn=" + isbn);
+
     }
 
     @Override
-    protected void onRun() {
+    protected void runTask() {
         @StringRes
         final int R_ID_SEARCHING = R.string.searching_google_books;
         doProgress(getString(R_ID_SEARCHING), 0);

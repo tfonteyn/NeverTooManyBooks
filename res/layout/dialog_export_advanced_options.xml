@@ -12,7 +12,7 @@
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <RelativeLayout
-        android:id="@+id/all_books_row"
+        android:id="@+id/row_all_books"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -51,7 +51,7 @@
     </RelativeLayout>
 
     <RelativeLayout
-        android:id="@+id/covers_row"
+        android:id="@+id/row_covers"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -90,7 +90,7 @@
     </RelativeLayout>
 
     <RelativeLayout
-        android:id="@+id/preferences_row"
+        android:id="@+id/row_preferences"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"

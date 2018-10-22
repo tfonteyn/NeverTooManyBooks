@@ -48,6 +48,7 @@ import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.booklist.BooklistSupportProvider;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.DBExceptions;
+import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
 import com.eleybourn.bookcatalogue.database.cursors.BooklistRowView;
 import com.eleybourn.bookcatalogue.database.cursors.BooksCursor;
 import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
@@ -84,7 +85,6 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ADDED
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ADDED_YEAR;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FORMATTED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKSHELF;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_PUBLISHED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_FORMAT;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_GENRE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LANGUAGE;
@@ -425,7 +425,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                         // Let the activity know
                         if (activity instanceof BooklistChangeListener) {
                             final BooklistChangeListener listener = (BooklistChangeListener) activity;
-                            listener.onBooklistChange(BooklistChangeListener.FLAG_AUTHOR | BooklistChangeListener.FLAG_SERIES);
+                            listener.onBooklistChange(rowView.getStyle().getExtraFieldsStatus(), BooklistChangeListener.FLAG_AUTHOR | BooklistChangeListener.FLAG_SERIES);
                         }
                     }
                 });
@@ -500,7 +500,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                             // Let the Activity know
                             if (activity instanceof BooklistChangeListener) {
                                 final BooklistChangeListener listener = (BooklistChangeListener) activity;
-                                listener.onBooklistChange(BooklistChangeListener.FLAG_SERIES);
+                                listener.onBooklistChange(rowView.getStyle().getExtraFieldsStatus(),BooklistChangeListener.FLAG_SERIES);
                             }
                         }
                     });
@@ -518,7 +518,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                             // Let the Activity know
                             if (activity instanceof BooklistChangeListener) {
                                 final BooklistChangeListener listener = (BooklistChangeListener) activity;
-                                listener.onBooklistChange(BooklistChangeListener.FLAG_SERIES);
+                                listener.onBooklistChange(rowView.getStyle().getExtraFieldsStatus(),BooklistChangeListener.FLAG_SERIES);
                             }
                         }
                     });
@@ -543,7 +543,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                         // Let the Activity know
                         if (activity instanceof BooklistChangeListener) {
                             final BooklistChangeListener listener = (BooklistChangeListener) activity;
-                            listener.onBooklistChange(BooklistChangeListener.FLAG_AUTHOR);
+                            listener.onBooklistChange(rowView.getStyle().getExtraFieldsStatus(),BooklistChangeListener.FLAG_AUTHOR);
                         }
                     }
                 });
@@ -558,7 +558,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                         // Let the Activity know
                         if (activity instanceof BooklistChangeListener) {
                             final BooklistChangeListener listener = (BooklistChangeListener) activity;
-                            listener.onBooklistChange(BooklistChangeListener.FLAG_PUBLISHER);
+                            listener.onBooklistChange(rowView.getStyle().getExtraFieldsStatus(),BooklistChangeListener.FLAG_PUBLISHER);
                         }
                     }
                 });
@@ -573,7 +573,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                         // Let the Activity know
                         if (activity instanceof BooklistChangeListener) {
                             final BooklistChangeListener listener = (BooklistChangeListener) activity;
-                            listener.onBooklistChange(BooklistChangeListener.FLAG_LANGUAGE);
+                            listener.onBooklistChange(rowView.getStyle().getExtraFieldsStatus(),BooklistChangeListener.FLAG_LANGUAGE);
                         }
                     }
                 });
@@ -588,7 +588,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                         // Let the Activity know
                         if (activity instanceof BooklistChangeListener) {
                             final BooklistChangeListener listener = (BooklistChangeListener) activity;
-                            listener.onBooklistChange(BooklistChangeListener.FLAG_LOCATION);
+                            listener.onBooklistChange(rowView.getStyle().getExtraFieldsStatus(),BooklistChangeListener.FLAG_LOCATION);
                         }
                     }
                 });
@@ -603,7 +603,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                         // Let the Activity know
                         if (activity instanceof BooklistChangeListener) {
                             final BooklistChangeListener listener = (BooklistChangeListener) activity;
-                            listener.onBooklistChange(BooklistChangeListener.FLAG_GENRE);
+                            listener.onBooklistChange(rowView.getStyle().getExtraFieldsStatus(),BooklistChangeListener.FLAG_GENRE);
                         }
                     }
                 });
@@ -618,7 +618,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                         // Let the Activity know
                         if (activity instanceof BooklistChangeListener) {
                             final BooklistChangeListener listener = (BooklistChangeListener) activity;
-                            listener.onBooklistChange(BooklistChangeListener.FLAG_FORMAT);
+                            listener.onBooklistChange(rowView.getStyle().getExtraFieldsStatus(),BooklistChangeListener.FLAG_FORMAT);
                         }
                     }
                 });
@@ -719,7 +719,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
         int FLAG_LOCATION = (1 << 5);
         int FLAG_GENRE = (1 << 6);
 
-        void onBooklistChange(int flags);
+        void onBooklistChange(final int allExtras, final int flags);
     }
 
     /**
@@ -755,22 +755,12 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
         private final int mFlags;
         /** Resulting location data */
         String mLocation;
-        /** Location column number */
-        int mLocationCol = -2;
         /** Resulting publisher data */
         String mPublisher;
-        /** Publisher column number */
-        int mPublisherCol = -2;
-        /** Date Published column number */
-        int mDatePublishedCol = -2;
         /** Resulting Format data */
         String mFormat;
-        /** Format column number */
-        int mFormatCol = -2;
         /** Resulting author data */
         String mAuthor;
-        /** Author column number */
-        int mAuthorCol = -2;
         /** Resulting shelves data */
         String mShelves;
         /** Options indicating we want finished() to be called */
@@ -808,34 +798,22 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                 // Get a DB connection and find the book, do not close the database!
                 CatalogueDBAdapter db = taskContext.getOpenDb();
 
-                try (BooksCursor c = db.fetchBookById(mBookId)) {
+                try (BooksCursor cursor = db.fetchBookById(mBookId)) {
                     // If we have a book, use it. Otherwise we are done.
-                    if (c.moveToFirst()) {
+                    if (cursor.moveToFirst()) {
+                        BookRowView rowView = cursor.getRowView();
 
                         if ((mFlags & BooklistStyle.EXTRAS_AUTHOR) != 0) {
-                            if (mAuthorCol < 0) {
-                                mAuthorCol = c.getColumnIndex(DOM_AUTHOR_FORMATTED.name);
-                            }
-                            mAuthor = c.getString(mAuthorCol);
+                            mAuthor = rowView.getPrimaryAuthorNameFormatted();
                         }
 
                         if ((mFlags & BooklistStyle.EXTRAS_LOCATION) != 0) {
-                            if (mLocationCol < 0) {
-                                mLocationCol = c.getColumnIndex(DOM_BOOK_LOCATION.name);
-                            }
-                            mLocation = c.getString(mLocationCol);
+                            mLocation = rowView.getLocation();
                         }
 
                         if ((mFlags & BooklistStyle.EXTRAS_PUBLISHER) != 0) {
-                            if (mPublisherCol < 0) {
-                                mPublisherCol = c.getColumnIndex(DOM_BOOK_PUBLISHER.name);
-                            }
-                            String tmpPublisher = c.getString(mPublisherCol);
-
-                            if (mDatePublishedCol < 0) {
-                                mDatePublishedCol = c.getColumnIndex(DOM_BOOK_DATE_PUBLISHED.name);
-                            }
-                            String tmpPubDate = c.getString(mDatePublishedCol);
+                            String tmpPublisher = rowView.getPublisherName();
+                            String tmpPubDate = rowView.getDatePublished();
 
                             if (tmpPubDate != null && tmpPubDate.length() >= 4) {
                                 mPublisher = BookCatalogueApp.getResourceString(R.string.a_bracket_b_bracket, tmpPublisher, tmpPubDate);
@@ -845,25 +823,11 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                         }
 
                         if ((mFlags & BooklistStyle.EXTRAS_FORMAT) != 0) {
-                            if (mFormatCol < 0) {
-                                mFormatCol = c.getColumnIndex(DOM_BOOK_FORMAT.name);
-                            }
-                            mFormat = c.getString(mFormatCol);
+                            mFormat = rowView.getFormat();
                         }
+
                         if ((mFlags & BooklistStyle.EXTRAS_BOOKSHELVES) != 0) {
-                            // Now build a list of all bookshelves the book is on.
-                            StringBuilder shelves = new StringBuilder();
-                            try (Cursor sc = db.fetchAllBookBookshelvesForGoodreads(mBookId)) {
-                                if (sc.moveToFirst()) {
-                                    do {
-                                        if (shelves.length() > 0) {
-                                            shelves.append(", ");
-                                        }
-                                        shelves.append(sc.getString(0));
-                                    } while (sc.moveToNext());
-                                }
-                            }
-                            mShelves = shelves.toString();
+                            mShelves = db.getBookshelvesByBookIdAsStringList(mBookId);
                         }
                     } else {
                         // No data, no need for UI thread call.
@@ -1016,7 +980,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                 seriesNumLong.setVisibility(View.GONE);
             }
 
-            final int extras = style.getExtras();
+            final int extras = style.getExtraFieldsStatus();
 
             cover = bookView.findViewById(R.id.cover);
             if ((extras & BooklistStyle.EXTRAS_THUMBNAIL) != 0) {
@@ -1078,7 +1042,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
         @Override
         public void set(@NonNull final BooklistRowView rowView, @NonNull final View v, final int level) {
 
-            final int extras = rowView.getStyle().getExtras();
+            final int extraFields = rowView.getStyle().getExtraFieldsStatus();
 
             // Title
             title.setText(rowView.getTitle());
@@ -1120,7 +1084,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
             }
 
             // Thumbnail
-            if ((extras & BooklistStyle.EXTRAS_THUMBNAIL) != 0) {
+            if ((extraFields & BooklistStyle.EXTRAS_THUMBNAIL) != 0) {
                 ImageUtils.fetchBookCoverIntoImageView(cover,
                         rowView.getBookUuid(), rowView.getMaxThumbnailWidth(), rowView.getMaxThumbnailHeight(),
                         true,
@@ -1137,7 +1101,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
             }
 
             // Build the flags indicating which extras to get.
-            int flags = extras & GetBookExtrasTask.BKEY_HANDLED;
+            int flags = extraFields & GetBookExtrasTask.BKEY_HANDLED;
 
             // If there are extras to get, run the background task.
             if (flags != 0) {

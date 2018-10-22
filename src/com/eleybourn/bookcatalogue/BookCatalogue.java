@@ -6,8 +6,6 @@ import android.support.annotation.CallSuper;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
-import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
-
 /**
  * This is a placeholder class to deal with the surprising number of old shortcuts that
  * have not been updated from version 3.x.

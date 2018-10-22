@@ -62,7 +62,7 @@ public class TaskListActivity extends BindableItemListActivity {
      */
     private final OnTaskChangeListener m_OnTaskChangeListener = new OnTaskChangeListener() {
         @Override
-        public void onTaskChange(Task task, TaskActions action) {
+        public void onTaskChange(@Nullable final Task task, @NonNull final TaskActions action) {
             TaskListActivity.this.refreshData();
         }
     };

@@ -136,7 +136,7 @@ public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
         mAuthor = new Author(list.get(1));
         String title = list.get(0);
 
-        //FIXME: fine for now, but should be made foolproof for full dates (DateUtils) instead of just the 4 digit year
+        //TOMF FIXME: fine for now, but should be made foolproof for full dates (via DateUtils) instead of just the 4 digit year
         Matcher matcher = AnthologyTitle.YEAR_FROM_STRING.matcher(title);
         if (matcher.find()) {
             mFirstPublicationDate = matcher.group(1);
@@ -258,6 +258,7 @@ public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
         return Objects.hash(id, mAuthor, mTitle);
     }
 
+    //ENHANCE use enum for ANTHOLOGY_BITMASK
     public enum Type {
         no, singleAuthor, multipleAuthors;
 

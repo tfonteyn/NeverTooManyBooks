@@ -47,7 +47,7 @@ public class TouchListViewWithDropListener<T> extends TouchListView implements T
         final int first2 = getFirstVisiblePosition();
 
         if (BuildConfig.DEBUG) {
-            Logger.info(from + " -> " + to + ", first " + firstPos + "(" + first2 + ")");
+            Logger.info(this,from + " -> " + to + ", first " + firstPos + "(" + first2 + ")");
         }
         final int newFirst = (to > from && from < firstPos) ? (firstPos - 1) : firstPos;
 
@@ -57,7 +57,7 @@ public class TouchListViewWithDropListener<T> extends TouchListView implements T
             @Override
             public void run() {
                 if (BuildConfig.DEBUG) {
-                    Logger.info("Positioning to " + newFirst + "+{" + offset + "}");
+                    Logger.info(this,"Positioning to " + newFirst + "+{" + offset + "}");
                 }
                 requestFocusFromTouch();
                 setSelectionFromTop(newFirst, offset);

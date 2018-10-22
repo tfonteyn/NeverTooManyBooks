@@ -35,6 +35,13 @@ Small notes in addition:
     Use 'CompoundButton' and/or 'Checkable' when possible.
     This leaves the layout flexible to choose a different type.
 
+* Instead of simply letting NullPointersException happen (and/or using a lint 'suppress'), check it explicitly:
+                    // there *has* to be 'data'
+                    Objects.requireNonNull(data);
+   Main reason is a reminder to the developer that if it was null it's *their* fault.
+   But, nothing wrong with this:
+       if (resultCode == Activity.RESULT_OK && data != null && data.hasExtra(UniqueId.BKEY_AUTHOR_ARRAY)) {
+
 
 * pedantic but I hope polite request:
   Single character variables names are best left to BASIC style from the 1980's

@@ -153,24 +153,24 @@ public class Book extends DataManager {
      */
     public void reload() {
         // If ID = 0, no details in DB
-        if (mBookId == 0)
+        if (mBookId == 0) {
             return;
+        }
 
         // Connect to DB and get cursor for book details
         CatalogueDBAdapter db = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
         db.open();
         try (BooksCursor book = db.fetchBookById(mBookId)) {
-            // Put all cursor fields in collection
-            putAll(book);
+            if (book.moveToFirst()) {
+                // Put all cursor fields in collection
+                putAll(book);
 
-            setBookshelfList(db.getBookshelvesByBookIdAsStringList(mBookId));
+                setBookshelfList(db.getBookshelvesByBookIdAsStringList(mBookId));
 
-            setAuthorList(db.getBookAuthorList(mBookId));
-            setSeriesList(db.getBookSeriesList(mBookId));
-            setContentList(db.getAnthologyTitleListByBook(mBookId));
-
-        } catch (Exception e) {
-            Logger.error(e);
+                setAuthorList(db.getBookAuthorList(mBookId));
+                setSeriesList(db.getBookSeriesList(mBookId));
+                setContentList(db.getAnthologyTitleListByBook(mBookId));
+            }
         } finally {
             db.close();
         }
@@ -184,7 +184,7 @@ public class Book extends DataManager {
     @CallSuper
     public DataManager putSerializable(@NonNull final String key, @NonNull final Serializable value) {
         if (BuildConfig.DEBUG) {
-            Logger.info("Book.putSerializable, key=" + key + " , type=" + value.getClass().getCanonicalName());
+            Logger.info(this, " putSerializable, key=" + key + " , type=" + value.getClass().getCanonicalName());
         }
         super.putSerializable(key, value);
         return this;
@@ -406,8 +406,9 @@ public class Book extends DataManager {
             @NonNull
             private String getBookshelfDisplayText() {
                 final List<String> list = ArrayUtils.decodeList(Bookshelf.SEPARATOR, getString(BOOKSHELF_LIST));
-                if (list.size() == 0)
+                if (list.size() == 0) {
                     return "";
+                }
 
                 final StringBuilder text = new StringBuilder(list.get(0));
                 for (int i = 1; i < list.size(); i++) {

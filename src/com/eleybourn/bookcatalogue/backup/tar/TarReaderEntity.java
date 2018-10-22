@@ -57,8 +57,8 @@ public class TarReaderEntity extends ReaderEntityAbstract {
         mReader = reader;
         mEntry = entry;
         mType = type;
-        if (DEBUG_SWITCHES.BACKUP_READER && BuildConfig.DEBUG) {
-            Logger.info("new TarReaderEntity: type=" + type + ", name=" + entry.getName());
+        if (DEBUG_SWITCHES.BACKUP && BuildConfig.DEBUG) {
+            Logger.info(this, " constructor: type=" + type + ", name=" + entry.getName());
         }
     }
 

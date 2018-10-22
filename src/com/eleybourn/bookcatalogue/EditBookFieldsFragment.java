@@ -410,25 +410,23 @@ public class EditBookFieldsFragment extends BookAbstractFragmentWithCoverImage
             Book book = getBook();
             switch (requestCode) {
                 case EditAuthorListActivity.REQUEST_CODE: {
-                    //noinspection ConstantConditions
-                    if (resultCode == Activity.RESULT_OK && data.hasExtra(UniqueId.BKEY_AUTHOR_ARRAY)) {
+                    if (resultCode == Activity.RESULT_OK && data != null && data.hasExtra(UniqueId.BKEY_AUTHOR_ARRAY)) {
                         book.setAuthorList(ArrayUtils.getAuthorFromIntentExtras(data));
                         setDirty(true);
                     } else {
                         // Even though the dialog was terminated, some authors MAY have been updated/added.
                         book.refreshAuthorList(mDb);
                     }
-                    // We do the fix here because the user may have edited or merged authors; this will
-                    // have already been applied to the database so no update is necessary, but we do need
-                    // to update the data we display.
+                    // We do the fix here because the user may have edited or merged authors;
+                    // this will have already been applied to the database so no update is
+                    // necessary, but we do need to update the data we display.
                     boolean wasDirty = isDirty();
                     populateAuthorListField(book);
                     setDirty(wasDirty);
                     break;
                 }
                 case EditSeriesListActivity.REQUEST_CODE: {
-                    //noinspection ConstantConditions
-                    if (resultCode == Activity.RESULT_OK && data.hasExtra(UniqueId.BKEY_SERIES_ARRAY)) {
+                    if (resultCode == Activity.RESULT_OK && data != null && data.hasExtra(UniqueId.BKEY_SERIES_ARRAY)) {
                         book.setSeriesList(ArrayUtils.getSeriesFromIntentExtras(data));
                         populateSeriesListField(book);
                         setDirty(true);

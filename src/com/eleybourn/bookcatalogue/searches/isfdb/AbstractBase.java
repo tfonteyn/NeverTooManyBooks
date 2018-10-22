@@ -76,11 +76,11 @@ abstract class AbstractBase {
             } catch (IOException e) {
                 if (BuildConfig.DEBUG) {
                     if (response != null) {
-                        Logger.info("charset      : " + response.charset());
-                        Logger.info("contentType  : " + response.contentType());
-                        Logger.info("statusCode   : " + response.statusCode());
-                        Logger.info("statusMessage: " + response.statusMessage());
-                        Logger.info("contentType  : " + response.contentType());
+                        Logger.info(this,"charset      : " + response.charset());
+                        Logger.info(this,"contentType  : " + response.contentType());
+                        Logger.info(this,"statusCode   : " + response.statusCode());
+                        Logger.info(this,"statusMessage: " + response.statusMessage());
+                        Logger.info(this,"contentType  : " + response.contentType());
                     }
                 }
                 Logger.error(e, mPath);
@@ -90,7 +90,7 @@ abstract class AbstractBase {
                 // is this what they mean ? Mr. Internet mentions a lot of response.body().close; but that seems to be newer versions.
                 if (mDoc == null && response != null) {
                     try {
-                        Logger.info("Trying to close the body of " + mPath);
+                        Logger.info(this,"Trying to close the body of " + mPath);
                         BufferedInputStream s = response.bodyStream();
                         if (s != null) {
                             s.close();

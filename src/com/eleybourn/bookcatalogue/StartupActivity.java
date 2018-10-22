@@ -160,7 +160,7 @@ public class StartupActivity extends AppCompatActivity {
     private void startNextStage() {
         // onCreate being stage 0
         mStartupStage++;
-        Logger.info("Starting stage " + mStartupStage);
+        Logger.info(this,"Starting stage " + mStartupStage);
 
         switch (mStartupStage) {
             case 1: {
@@ -199,7 +199,7 @@ public class StartupActivity extends AppCompatActivity {
 
     private void startTasks() {
         if (!isTaskRoot()) {
-            Logger.info("Startup isTaskRoot() = FALSE");
+            Logger.debug("Startup isTaskRoot() = FALSE");
         }
 
         mUiThread = Thread.currentThread();
@@ -280,12 +280,12 @@ public class StartupActivity extends AppCompatActivity {
      * be queued in onCreate().
      */
     private void taskCompleted(@NonNull SimpleTask task) {
-        if (BuildConfig.DEBUG) {
-            Logger.info("Task Completed: " + task.getClass().getCanonicalName());
+        if (DEBUG_SWITCHES.STARTUP && BuildConfig.DEBUG) {
+            Logger.info(task, "Task Completed");
         }
         if (!getQueue().hasActiveTasks()) {
-            if (BuildConfig.DEBUG) {
-                Logger.info("Task Completed - all done");
+            if (DEBUG_SWITCHES.STARTUP && BuildConfig.DEBUG) {
+                Logger.info(this, "Task Completed - all done");
             }
             startNextStage();
         }
@@ -342,7 +342,7 @@ public class StartupActivity extends AppCompatActivity {
         int opened = BookCatalogueApp.Prefs.getInt(PREFS_STATE_OPENED, BACKUP_PROMPT_WAIT);
         int startCount = BookCatalogueApp.Prefs.getInt(PREF_START_COUNT, 0) + 1;
 
-        final SharedPreferences.Editor ed = BookCatalogueApp.getSharedPreferences().edit();
+        final SharedPreferences.Editor ed = BookCatalogueApp.Prefs.edit();
         if (opened == 0) {
             ed.putInt(PREFS_STATE_OPENED, BACKUP_PROMPT_WAIT);
         } else {

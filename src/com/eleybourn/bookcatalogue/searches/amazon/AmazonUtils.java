@@ -76,9 +76,8 @@ public class AmazonUtils {
         String extra = "";
         // http://www.amazon.com/gp/search?index=books&field-author=steven+a.+mckay&field-keywords=the+forest+lord
         if (author != null && !author.isEmpty()) {
-            //FIXME: the replaceAll call in fact discards the result....
-            //FIXME: you need to:   s = s.replaceAll  to have them take effect
-            //FIXME: not fixing this until the code/reason of the non-used replace is understood.
+            //FIXME: the replaceAll call discards the result! Use: s = s.replaceAll  to have it take effect
+            // not fixing this until the code/reason of the non-used replace and working ok, is understood.
             author.replaceAll("\\.,+", " ");
             author.replaceAll(" *", "+");
             try {

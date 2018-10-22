@@ -52,10 +52,12 @@ public class SearchGoodreadsThread extends SearchThread {
                                  @NonNull final String isbn,
                                  final boolean fetchThumbnail) {
         super(manager, author, title, isbn, fetchThumbnail);
+        setName("SearchGoodreadsThread isbn=" + isbn);
+
     }
 
     @Override
-    protected void onRun() {
+    protected void runTask() {
         @StringRes final int R_ID_SEARCHING = R.string.searching_goodreads;
 
         doProgress(getString(R_ID_SEARCHING), 0);

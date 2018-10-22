@@ -72,7 +72,7 @@ abstract public class SearchThread extends ManagedTask {
     public abstract int getSearchId();
 
     @Override
-    protected void onThreadFinish() {
+    protected void onTaskFinish() {
         doProgress(getString(R.string.done), 0);
     }
 
@@ -112,7 +112,7 @@ abstract public class SearchThread extends ManagedTask {
             s = e2.getClass().getCanonicalName();
         }
         String msg = String.format(getString(R.string.error_search_exception), getString(id), s);
-        showQuickNotice(msg);
+        showBriefMessage(msg);
     }
 
     /**
@@ -120,7 +120,7 @@ abstract public class SearchThread extends ManagedTask {
      */
     protected void showError(@StringRes final int id, @StringRes final int error) {
         String msg = String.format(getString(R.string.error_search_exception), getString(id), error);
-        showQuickNotice(msg);
+        showBriefMessage(msg);
     }
 
     /**

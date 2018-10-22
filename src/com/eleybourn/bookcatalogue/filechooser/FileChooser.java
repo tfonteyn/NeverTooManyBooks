@@ -69,6 +69,7 @@ public abstract class FileChooser extends BaseActivity implements
     /**
      * Create the fragment we display
      */
+    @NonNull
     protected abstract FileChooserFragment getChooserFragment();
 
     @Override
@@ -189,6 +190,7 @@ public abstract class FileChooser extends BaseActivity implements
     /**
      * Get an object for building an list of files in background.
      */
+    @NonNull
     protected abstract FileLister getFileLister(@NonNull final File root);
 
     /**

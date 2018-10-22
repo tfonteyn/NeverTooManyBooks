@@ -59,13 +59,11 @@ public class BackupChooser extends FileChooser implements
     private final static String BKEY_FILENAME = "BackupFileSpec";
 
     /** saving or opening */
-    private static final int TASK_ID_SAVE = 1;
-    private static final int TASK_ID_OPEN = 2;
+    private static final int IS_ERROR = 0;
+    private static final int IS_SAVE = 1;
+    private static final int IS_OPEN = 2;
 
     private static final int DIALOG_OPEN_IMPORT_TYPE = 1;
-
-    private static final String ARCHIVE_EXTENSION = ".bcbk";
-    private static final String ARCHIVE_PREFIX = "BookCatalogue-";
 
     /** The backup file that will be created (if saving) */
     private File mBackupFile;
@@ -88,10 +86,11 @@ public class BackupChooser extends FileChooser implements
     /**
      * Setup the default file name: blank for 'open', date-based for save
      */
+    @NonNull
     private String getDefaultFileName() {
         if (isSaveDialog()) {
             final String sqlDate = DateUtils.toLocalSqlDateOnly(new Date());
-            return ARCHIVE_PREFIX + sqlDate.replace(" ", "-").replace(":", "") + ARCHIVE_EXTENSION;
+            return BackupFileDetails.ARCHIVE_PREFIX + sqlDate.replace(" ", "-").replace(":", "") + BackupFileDetails.ARCHIVE_EXTENSION;
         } else {
             return "";
         }
@@ -105,7 +104,7 @@ public class BackupChooser extends FileChooser implements
     protected FileChooserFragment getChooserFragment() {
         String lastBackupFile = BookCatalogueApp.Prefs.getString(PREF_LAST_BACKUP_FILE, StorageUtils.getSharedStorage().getAbsolutePath());
         //noinspection ConstantConditions
-        return FileChooserFragment.newInstance(lastBackupFile, getDefaultFileName());
+        return FileChooserFragment.newInstance(new File(lastBackupFile), getDefaultFileName());
     }
 
     /**
@@ -156,13 +155,13 @@ public class BackupChooser extends FileChooser implements
 
         // Is it a task we care about?
         switch (taskId) {
-            case TASK_ID_SAVE: {
+            case IS_SAVE: {
                 if (!success) {
                     String msg = getString(R.string.error_backup_failed)
                             + " " + getString(R.string.please_check_sd_writable)
                             + "\n\n" + getString(R.string.if_the_problem_persists);
 
-                    MessageDialogFragment frag = MessageDialogFragment.newInstance(0,
+                    MessageDialogFragment frag = MessageDialogFragment.newInstance(IS_ERROR,
                             R.string.backup_to_archive, msg);
                     frag.show(getSupportFragmentManager(), null);
                     // Just return; user may want to try again
@@ -177,19 +176,19 @@ public class BackupChooser extends FileChooser implements
                         mBackupFile.getParent(),
                         mBackupFile.getName(),
                         Utils.formatFileSize(mBackupFile.length()));
-                MessageDialogFragment frag = MessageDialogFragment.newInstance(TASK_ID_SAVE,
+                MessageDialogFragment frag = MessageDialogFragment.newInstance(IS_SAVE,
                         R.string.backup_to_archive, msg);
                 frag.show(getSupportFragmentManager(), null);
                 break;
             }
 
-            case TASK_ID_OPEN: {
+            case IS_OPEN: {
                 if (!success) {
                     String msg = getString(R.string.import_failed)
                             + " " + getString(R.string.please_check_sd_readable)
                             + "\n\n" + getString(R.string.if_the_problem_persists);
 
-                    MessageDialogFragment frag = MessageDialogFragment.newInstance(0,
+                    MessageDialogFragment frag = MessageDialogFragment.newInstance(IS_ERROR,
                             R.string.import_from_archive, msg);
                     frag.show(getSupportFragmentManager(), null);
                     // Just return; user may want to try again
@@ -200,7 +199,7 @@ public class BackupChooser extends FileChooser implements
                     return;
                 }
 
-                MessageDialogFragment frag = MessageDialogFragment.newInstance(TASK_ID_OPEN,
+                MessageDialogFragment frag = MessageDialogFragment.newInstance(IS_OPEN,
                         R.string.import_from_archive,
                         BookCatalogueApp.getResourceString(R.string.import_complete));
                 frag.show(getSupportFragmentManager(), null);
@@ -220,9 +219,11 @@ public class BackupChooser extends FileChooser implements
     @Override
     public void onMessageDialogResult(final int dialogId, final int button) {
         switch (dialogId) {
-            case TASK_ID_OPEN:
-            case TASK_ID_SAVE:
+            case IS_OPEN:
+            case IS_SAVE:
                 finish();
+                break;
+            case IS_ERROR:
                 break;
         }
     }
@@ -233,10 +234,10 @@ public class BackupChooser extends FileChooser implements
                                                   @NonNull final ImportTypeSelectionDialogFragment.ImportSettings settings) {
         switch (settings.options) {
             case Importer.IMPORT_ALL:
-                BackupManager.restore(this, settings.file, TASK_ID_OPEN, Importer.IMPORT_ALL);
+                BackupManager.restore(this, settings.file, IS_OPEN, Importer.IMPORT_ALL);
                 break;
             case Importer.IMPORT_NEW_OR_UPDATED:
-                BackupManager.restore(this, settings.file, TASK_ID_OPEN, Importer.IMPORT_NEW_OR_UPDATED);
+                BackupManager.restore(this, settings.file, IS_OPEN, Importer.IMPORT_NEW_OR_UPDATED);
                 break;
         }
     }
@@ -247,7 +248,7 @@ public class BackupChooser extends FileChooser implements
                                                   @NonNull final ExportTypeSelectionDialogFragment.ExportSettings settings) {
         switch (settings.options) {
             case Exporter.EXPORT_ALL:
-                mBackupFile = BackupManager.backup(this, settings.file, TASK_ID_SAVE, Exporter.EXPORT_ALL, null);
+                mBackupFile = BackupManager.backup(this, settings.file, IS_SAVE, Exporter.EXPORT_ALL, null);
                 break;
             case Exporter.EXPORT_NOTHING:
                 return;
@@ -260,7 +261,7 @@ public class BackupChooser extends FileChooser implements
                         settings.dateFrom = null;
                     }
                 }
-                mBackupFile = BackupManager.backup(this, settings.file, TASK_ID_SAVE, settings.options, settings.dateFrom);
+                mBackupFile = BackupManager.backup(this, settings.file, IS_SAVE, settings.options, settings.dateFrom);
                 break;
         }
     }

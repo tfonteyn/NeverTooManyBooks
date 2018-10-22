@@ -468,7 +468,7 @@ public class ISFDBBook extends AbstractBase {
                         }
                     }
                     if (BuildConfig.DEBUG) {
-                        Logger.info("year from li: " + (System.currentTimeMillis() - tm0));
+                        Logger.info(this,"year from li: " + (System.currentTimeMillis() - tm0));
                     }
                 }
             }
@@ -476,12 +476,12 @@ public class ISFDBBook extends AbstractBase {
             // unlikely, but if so, then grab first book author
             if (author == null) {
                 author = ArrayUtils.getAuthorUtils().decodeList(bookData.getString(UniqueId.BKEY_AUTHOR_DETAILS),false).get(0);
-                Logger.info("ISFDB search for content found no author for li=" + li);
+                Logger.info(this,"ISFDB search for content found no author for li=" + li);
             }
             // very unlikely
             if (title == null) {
                 title = "";
-                Logger.info("ISFDB search for content found no title for li=" + li);
+                Logger.info(this,"ISFDB search for content found no title for li=" + li);
             }
 
             // scan for first occurrence of "&#x2022; (1234)"

@@ -1,0 +1,34 @@
+TOMF ENHANCE New anthology stuff:
+ * next big step:
+ * - allow 1 title in multiple books
+ * AnthologyTitle needs splitting
+ * - anthology titles can be in series... ouch....
+ *
+ * to think about:
+ * - when to delete entries in ANTHOLOGY ? when last book is gone or keep them, for adding to new books / wish list
+ * - consider a purge based on book for orphan AnthologyTitle (a purge based on Author is already done)
+
+TOMF FIXME database stuff
+ * FIXME: Very few database methods throw an SQLiteDoneException.
+ * The caller is either already catching them, or believes they will never happen.
+ *
+ * FIXME: database insert methods which return -1 for failing to insert. Not all callers check.
+ * FIXME: catch UpdateException (or not?)
+ * FIXME: catch NotFoundException (or not?)
+ * bind variables versus string concat
+
+TOMF ENHANCE database using 'Upper()' when sorting (performance?). Replace by an extra table column with the value pre-upper'd? Uppercase Index ?
+  * pro: sorting faster
+  * con: more space
+
+TOMF ENHANCE finish FTS searching {@link com.eleybourn.bookcatalogue.searches.SearchCatalogue}
+ * and {@link #searchFts(String, String, String)}
+ * - what is android 'local' search ? ->research
+
+TOMF ENHANCE instead of string encoding of lists, use JSON ? or at the very least ArrayList<String> Bookshelves in particular!
+ * pro: easier / (sort of) foolproof / FLEXIBLE!
+ * con: fools / fields will be bigger due to json labels
+ * => or... do a specific JSON Exporter / Importer as an alternative to the Csv model (con: not easy to get 'others' to provide import files)
+
+
+

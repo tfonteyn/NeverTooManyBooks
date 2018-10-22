@@ -25,6 +25,7 @@ import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
@@ -172,28 +173,28 @@ import org.xml.sax.helpers.DefaultHandler;
 public class SearchAmazonHandler extends DefaultHandler {
 
     /* The XML element names */
-    //private static String ID = "id";
-    //private static final String TOTAL_RESULTS = "TotalResults";
-    private static final String ENTRY = "Item";
-    private static final String AUTHOR = "Author";
-    private static final String TITLE = "Title";
-    private static final String E_ISBN = "EISBN";
-    private static final String EAN = "EAN";
-    private static final String ISBN_OLD = "EAN";
-    private static final String DATE_PUBLISHED = "PublicationDate";
-    private static final String PUBLISHER = "Publisher";
-    private static final String PAGES = "NumberOfPages";
-    private static final String THUMBNAIL = "URL";
-    private static final String SMALL_IMAGE = "SmallImage";
-    private static final String MEDIUM_IMAGE = "MediumImage";
-    private static final String LARGE_IMAGE = "LargeImage";
-    private static final String DESCRIPTION = "Content";
-    private static final String BINDING = "Binding";
-    private static final String LANGUAGE = "Language";
-    private static final String NAME = "Name";
-    private static final String LIST_PRICE = "ListPrice";
-    private static final String CURRENCY_CODE = "CurrencyCode";
-    private static final String AMOUNT = "Amount";
+    //private static String XML_ID = "id";
+    //private static final String XML_TOTAL_RESULTS = "TotalResults";
+    private static final String XML_ENTRY = "Item";
+    private static final String XML_AUTHOR = "Author";
+    private static final String XML_TITLE = "Title";
+    private static final String XML_E_ISBN = "EISBN";
+    private static final String XML_EAN = "EAN";
+    private static final String XML_ISBN_OLD = "EAN";
+    private static final String XML_DATE_PUBLISHED = "PublicationDate";
+    private static final String XML_PUBLISHER = "Publisher";
+    private static final String XML_PAGES = "NumberOfPages";
+    private static final String XML_THUMBNAIL = "URL";
+    private static final String XML_SMALL_IMAGE = "SmallImage";
+    private static final String XML_MEDIUM_IMAGE = "MediumImage";
+    private static final String XML_LARGE_IMAGE = "LargeImage";
+    private static final String XML_DESCRIPTION = "Content";
+    private static final String XML_BINDING = "Binding";
+    private static final String XML_LANGUAGE = "Language";
+    private static final String XML_NAME = "Name";
+    private static final String XML_LIST_PRICE = "ListPrice";
+    private static final String XML_CURRENCY_CODE = "CurrencyCode";
+    private static final String XML_AMOUNT = "Amount";
 
     private static boolean mFetchThumbnail;
 
@@ -233,7 +234,8 @@ public class SearchAmazonHandler extends DefaultHandler {
      * @param key Key for data to add
      */
     private void addIfNotPresent(@NonNull final String key) {
-        if (!mBookData.containsKey(key) || mBookData.getString(key).isEmpty()) {
+        String test = mBookData.getString(key);
+        if (test == null || test.isEmpty()) {
             mBookData.putString(key, mBuilder.toString());
         }
     }
@@ -245,7 +247,8 @@ public class SearchAmazonHandler extends DefaultHandler {
      */
     private void addIfNotPresent(@SuppressWarnings("SameParameterValue") @NonNull final String key,
                                  @NonNull final String value) {
-        if (!mBookData.containsKey(key) || mBookData.getString(key).isEmpty()) {
+        String test = mBookData.getString(key);
+        if (test == null || test.isEmpty()) {
             mBookData.putString(key, value);
         }
     }
@@ -258,9 +261,8 @@ public class SearchAmazonHandler extends DefaultHandler {
      */
     private void addIfNotPresentOrEqual(@SuppressWarnings("SameParameterValue") @NonNull final String key,
                                         @SuppressWarnings("SameParameterValue") @NonNull final String value) {
-        if (!mBookData.containsKey(key)
-                || mBookData.getString(key).isEmpty()
-                || value.equals(mBookData.getString(key))) {
+        String test = mBookData.getString(key);
+        if (test == null || test.isEmpty() || value.equals(test)) {
             mBookData.putString(key, mBuilder.toString());
         }
     }
@@ -290,17 +292,17 @@ public class SearchAmazonHandler extends DefaultHandler {
     public void endElement(final String uri, @NonNull final String localName, final String name) throws SAXException {
         super.endElement(uri, localName, name);
         try {
-            if (localName.equalsIgnoreCase(THUMBNAIL)) {
+            if (localName.equalsIgnoreCase(XML_THUMBNAIL)) {
                 if (image) {
                     mThumbnailUrl = mBuilder.toString();
                     image = false;
                 }
-            } else if (localName.equalsIgnoreCase(ENTRY)) {
+            } else if (localName.equalsIgnoreCase(XML_ENTRY)) {
                 done = true;
                 entry = false;
-            } else if (localName.equalsIgnoreCase(LANGUAGE)) {
+            } else if (localName.equalsIgnoreCase(XML_LANGUAGE)) {
                 mInLanguage = false;
-            } else if (localName.equalsIgnoreCase(LIST_PRICE)) {
+            } else if (localName.equalsIgnoreCase(XML_LIST_PRICE)) {
                 if ("usd".equalsIgnoreCase(mCurrencyCode) && !mCurrencyAmount.isEmpty()) {
                     try {
                         Float price = Float.parseFloat(mCurrencyAmount) / 100;
@@ -312,42 +314,38 @@ public class SearchAmazonHandler extends DefaultHandler {
                 mCurrencyAmount = "";
                 mInListPrice = false;
             } else if (entry) {
-                if (localName.equalsIgnoreCase(AUTHOR)) {
+                if (localName.equalsIgnoreCase(XML_AUTHOR)) {
                     ArrayUtils.addOrAppend(mBookData, UniqueId.BKEY_AUTHOR_DETAILS, mBuilder.toString());
-                } else if (localName.equalsIgnoreCase(TITLE)) {
+                } else if (localName.equalsIgnoreCase(XML_TITLE)) {
                     addIfNotPresent(UniqueId.KEY_TITLE);
-                } else if (localName.equalsIgnoreCase(EAN) || localName.equalsIgnoreCase(E_ISBN)) {
+                } else if (localName.equalsIgnoreCase(XML_EAN)
+                        || localName.equalsIgnoreCase(XML_E_ISBN)
+                        || localName.equalsIgnoreCase(XML_ISBN_OLD)) {
                     String tmp = mBuilder.toString();
-                    if (!mBookData.containsKey(UniqueId.KEY_BOOK_ISBN)
-                            || mBookData.getString(UniqueId.KEY_BOOK_ISBN).length() < tmp.length()) {
+                    String test = mBookData.getString(UniqueId.KEY_BOOK_ISBN);
+                    if (test == null || test.length() < tmp.length()) {
                         mBookData.putString(UniqueId.KEY_BOOK_ISBN, tmp);
                     }
-                } else if (localName.equalsIgnoreCase(ISBN_OLD)) {
-                    String tmp = mBuilder.toString();
-                    if (!mBookData.containsKey(UniqueId.KEY_BOOK_ISBN)
-                            || mBookData.getString(UniqueId.KEY_BOOK_ISBN).length() < tmp.length()) {
-                        mBookData.putString(UniqueId.KEY_BOOK_ISBN, tmp);
-                    }
-                } else if (localName.equalsIgnoreCase(PUBLISHER)) {
+                } else if (localName.equalsIgnoreCase(XML_PUBLISHER)) {
                     addIfNotPresent(UniqueId.KEY_BOOK_PUBLISHER);
-                } else if (localName.equalsIgnoreCase(DATE_PUBLISHED)) {
+                } else if (localName.equalsIgnoreCase(XML_DATE_PUBLISHED)) {
                     addIfNotPresent(UniqueId.KEY_BOOK_DATE_PUBLISHED);
-                } else if (localName.equalsIgnoreCase(PAGES)) {
+                } else if (localName.equalsIgnoreCase(XML_PAGES)) {
                     addIfNotPresentOrEqual(UniqueId.KEY_BOOK_PAGES, "0");
-                } else if (localName.equalsIgnoreCase(DESCRIPTION)) {
+                } else if (localName.equalsIgnoreCase(XML_DESCRIPTION)) {
                     addIfNotPresent(UniqueId.KEY_DESCRIPTION);
-                } else if (localName.equalsIgnoreCase(BINDING)) {
+                } else if (localName.equalsIgnoreCase(XML_BINDING)) {
                     addIfNotPresent(UniqueId.KEY_BOOK_FORMAT);
-                } else if (mInLanguage && localName.equalsIgnoreCase(NAME)) {
+                } else if (mInLanguage && localName.equalsIgnoreCase(XML_NAME)) {
                     addIfNotPresent(UniqueId.KEY_BOOK_LANGUAGE);
-                } else if (mInListPrice && localName.equalsIgnoreCase(AMOUNT)) {
+                } else if (mInListPrice && localName.equalsIgnoreCase(XML_AMOUNT)) {
                     mCurrencyAmount = mBuilder.toString();
-                } else if (mInListPrice && localName.equalsIgnoreCase(CURRENCY_CODE)) {
+                } else if (mInListPrice && localName.equalsIgnoreCase(XML_CURRENCY_CODE)) {
                     mCurrencyCode = mBuilder.toString();
                 } else {
-                    if (BuildConfig.DEBUG) {
+                    if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
                         // see what we are missing.
-                        Logger.info(localName + "->'" + mBuilder + "'");
+                        Logger.info(this,localName + "->'" + mBuilder + "'");
                     }
                 }
             } //else if (localName.equalsIgnoreCase(TOTAL_RESULTS)){
@@ -383,29 +381,28 @@ public class SearchAmazonHandler extends DefaultHandler {
     @CallSuper
     public void startElement(final String uri, @NonNull final String localName, final String name, final Attributes attributes) throws SAXException {
         super.startElement(uri, localName, name, attributes);
-        if (!done && localName.equalsIgnoreCase(ENTRY)) {
+        if (!done && localName.equalsIgnoreCase(XML_ENTRY)) {
             entry = true;
-        } else if (localName.equalsIgnoreCase(SMALL_IMAGE)) {
+        } else if (localName.equalsIgnoreCase(XML_SMALL_IMAGE)) {
             if (mThumbnailSize < 1) {
                 image = true;
                 mThumbnailSize = 1;
             }
-        } else if (localName.equalsIgnoreCase(MEDIUM_IMAGE)) {
+        } else if (localName.equalsIgnoreCase(XML_MEDIUM_IMAGE)) {
             if (mThumbnailSize < 2) {
                 image = true;
                 mThumbnailSize = 2;
             }
-        } else if (localName.equalsIgnoreCase(LARGE_IMAGE)) {
+        } else if (localName.equalsIgnoreCase(XML_LARGE_IMAGE)) {
             if (mThumbnailSize < 3) {
                 image = true;
                 mThumbnailSize = 3;
             }
-        } else if (localName.equalsIgnoreCase(LANGUAGE)) {
+        } else if (localName.equalsIgnoreCase(XML_LANGUAGE)) {
             mInLanguage = true;
-        } else if (localName.equalsIgnoreCase(LIST_PRICE)) {
+        } else if (localName.equalsIgnoreCase(XML_LIST_PRICE)) {
             mInListPrice = true;
         }
-
     }
 }
  

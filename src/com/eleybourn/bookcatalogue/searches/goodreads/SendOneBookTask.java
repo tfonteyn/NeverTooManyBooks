@@ -101,7 +101,7 @@ public class SendOneBookTask extends GenericTask {
         CatalogueDBAdapter db = new CatalogueDBAdapter(ctx);
         db.open();
 
-        try (BooksCursor books = db.getBookForGoodreadsCursor(mBookId)) {
+        try (BooksCursor books = db.fetchBookForGoodreadsCursor(mBookId)) {
             final BookRowView bookRowView = books.getRowView();
             while (books.moveToNext()) {
                 // Try to export one book

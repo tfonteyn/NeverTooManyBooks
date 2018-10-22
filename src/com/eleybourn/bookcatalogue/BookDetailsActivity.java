@@ -34,14 +34,14 @@ import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.baseactivity.HasBook;
 import com.eleybourn.bookcatalogue.booklist.FlattenedBooklist;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.datamanager.DataEditor;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.entities.Book;
 
 /**
  * @author Evan Leybourn
  */
-public class BookDetailsActivity extends BaseActivity
-        implements HasBook {
+public class BookDetailsActivity extends BaseActivity implements HasBook {
 
     public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_VIEW_BOOK;
 
@@ -90,12 +90,24 @@ public class BookDetailsActivity extends BaseActivity
         Tracker.exitOnCreate(this);
     }
 
+    //<editor-fold desc="HasBook interface">
     @NonNull
     @Override
     public Book getBook() {
         return mBook;
     }
 
+    @Override
+    public void setBookId(final long bookId) {
+        if (mBookId != bookId) {
+            mBookId = bookId;
+            mBook = new Book(bookId);
+            DataEditor frag = (DataEditor)getSupportFragmentManager().findFragmentById(R.id.fragment);
+            frag.loadDataFrom(mBook);
+            initActivityTitle();
+        }
+    }
+    //</editor-fold>
 
     @NonNull
     private Book getBook(final long bookId, @Nullable final Bundle bundle) {
@@ -103,11 +115,10 @@ public class BookDetailsActivity extends BaseActivity
             // If we have saved book data, use it
             return new Book(bookId, bundle.getBundle(UniqueId.BKEY_BOOK_DATA));
         } else {
-            // Just load based on rowId
+            // Just load from the database
             return new Book(bookId);
         }
     }
-
 
     /**
      * If we are passed a flat book list, get it and validate it
@@ -181,7 +192,7 @@ public class BookDetailsActivity extends BaseActivity
                             mBook = new Book(bookId);
 //                            Fragment frag = getSupportFragmentManager().findFragmentById(R.id.fragment);
 //                            if (frag instanceof DataEditor) {
-//                                ((DataEditor) frag).reloadData(mBook);
+//                                ((DataEditor) frag).loadDataFrom(mBook);
 //                            }
                             initActivityTitle();
                         }

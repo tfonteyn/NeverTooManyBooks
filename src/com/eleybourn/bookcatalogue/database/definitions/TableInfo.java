@@ -18,7 +18,31 @@ import java.util.Map;
  */
 public class TableInfo implements Iterable<TableInfo.ColumnInfo> {
 
-    public enum TypeClass {Integer, Text, Real}
+    public enum ColumnTypeClass {
+        Integer, Text, Real;
+
+        public static ColumnTypeClass newInstance(@NonNull final String columnType) {
+            switch (columnType.toLowerCase()) {
+                case TYPE_INT:
+                case TYPE_INTEGER:
+                    return ColumnTypeClass.Integer;
+                case TYPE_TEXT:
+                case TYPE_CHAR:
+                    return ColumnTypeClass.Text;
+                case TYPE_FLOAT:
+                case "real":
+                case "double":
+                    return ColumnTypeClass.Real;
+                case TYPE_DATE:
+                case "datetime":
+                    return ColumnTypeClass.Text;
+                case TYPE_BOOLEAN:
+                    return ColumnTypeClass.Integer;
+                default:
+                    throw new RTE.IllegalTypeException(columnType);
+            }
+        }
+    }
 
     public static final String TYPE_BOOLEAN = "boolean";
     public static final String TYPE_BLOB = "blob";
@@ -70,7 +94,7 @@ public class TableInfo implements Iterable<TableInfo.ColumnInfo> {
 
         try (Cursor colCsr = mSyncedDb.rawQuery(sql, new String[]{})) {
             if (!colCsr.moveToFirst()) {
-                throw new RuntimeException("Unable to get column details");
+                throw new IllegalStateException("Unable to get column details");
             }
 
             while (true) {
@@ -81,31 +105,8 @@ public class TableInfo implements Iterable<TableInfo.ColumnInfo> {
                 col.allowNull = colCsr.getInt(3) == 0;
                 col.defaultValue = colCsr.getString(4);
                 col.isPrimaryKey = colCsr.getInt(5) == 1;
-                String tName = col.typeName.toLowerCase();
-                switch (tName) {
-                    case TYPE_INT:
-                    case TYPE_INTEGER:
-                        col.typeClass = TypeClass.Integer;
-                        break;
-                    case TYPE_TEXT:
-                    case TYPE_CHAR:
-                        col.typeClass = TypeClass.Text;
-                        break;
-                    case TYPE_FLOAT:
-                    case "real":
-                    case "double":
-                        col.typeClass = TypeClass.Real;
-                        break;
-                    case TYPE_DATE:
-                    case "datetime":
-                        col.typeClass = TypeClass.Text;
-                        break;
-                    case TYPE_BOOLEAN:
-                        col.typeClass = TypeClass.Integer;
-                        break;
-                    default:
-                        throw new RTE.IllegalTypeException(tName);
-                }
+
+                col.columnTypeClass = ColumnTypeClass.newInstance(col.typeName);
 
                 allColumns.put(col.name.toLowerCase(), col);
                 if (colCsr.isLast()) {
@@ -131,6 +132,6 @@ public class TableInfo implements Iterable<TableInfo.ColumnInfo> {
         public boolean allowNull;
         public boolean isPrimaryKey;
         public String defaultValue;
-        public TypeClass typeClass;
+        public ColumnTypeClass columnTypeClass;
     }
 }

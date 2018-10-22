@@ -44,6 +44,7 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
@@ -247,12 +248,12 @@ public class EditBookAnthologyFragment extends BookAbstractFragment implements H
                 }
             }
             getBook().setSeriesList(inBook);
-            //Logger.info("onGotISFDBBook: series=" + series);
+            //Logger.info(this, " onGotISFDBBook: series=" + series);
         }
 
         String bookFirstPublication = bookData.getString(UniqueId.KEY_FIRST_PUBLICATION);
         if (bookFirstPublication != null) {
-            //Logger.info("onGotISFDBBook: first pub=" + bookFirstPublication);
+            //Logger.info(this, " onGotISFDBBook: first pub=" + bookFirstPublication);
             if (getBook().getString(UniqueId.KEY_FIRST_PUBLICATION).isEmpty()) {
                 getBook().putString(UniqueId.KEY_FIRST_PUBLICATION, bookFirstPublication);
             }
@@ -260,16 +261,26 @@ public class EditBookAnthologyFragment extends BookAbstractFragment implements H
 
         StringBuilder msg = new StringBuilder();
         if (!results.isEmpty()) {
-            //FIXME: this is usually to much to display as a Message in the dialog
+            msg.append(getString(R.string.anthology_confirm)).append("\n\n");
             for (AnthologyTitle t : results) {
                 msg.append(t.getTitle()).append(", ");
             }
+        } else {
+            msg.append(getString(R.string.error_anthology_automatic_population_failed));
         }
 
+        TextView content = new TextView(this.getContext());
+        content.setText(msg);
+        // Not ideal but works
+        content.setTextSize(14);
+        //ENHANCE API 23 ?
+        //content.setTextAppearance(android.R.style.TextAppearance_Small);
+        //ENHANCE API 26 ?
+        //content.setAutoSizeTextTypeWithDefaults(TextView.AUTO_SIZE_TEXT_TYPE_UNIFORM);
+
         AlertDialog dialog = new AlertDialog.Builder(requireActivity())
-                .setTitle(results.isEmpty() ? R.string.error_anthology_automatic_population_failed : R.string.anthology_confirm)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
-                .setMessage(msg)
+                .setView(content)
                 .create();
 
         if (!results.isEmpty()) {
@@ -394,6 +405,9 @@ public class EditBookAnthologyFragment extends BookAbstractFragment implements H
             super(context, rowViewId, items);
         }
 
+        /**
+         * copies the selected entry into the edit fields + sets the confirm button to reflect a save (versus add)
+         */
         @Override
         protected void onRowClick(@NonNull final View v, @NonNull final AnthologyTitle item, final int position) {
             mPubDateText.setText(item.getFirstPublication());

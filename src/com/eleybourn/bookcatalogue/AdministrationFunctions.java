@@ -104,8 +104,7 @@ public class AdministrationFunctions extends BaseActivityWithTasks {
                             mExportOnStartup = true;
                             break;
                         default:
-                            Logger.error("Unsupported DO_AUTO option: " + val);
-                            break;
+                            throw new IllegalArgumentException("Unsupported DO_AUTO option: " + val);
                     }
                 }
             }
@@ -385,7 +384,7 @@ public class AdministrationFunctions extends BaseActivityWithTasks {
             case FieldVisibilityActivity.REQUEST_CODE:
             case BooklistStylesActivity.REQUEST_CODE:
                 // pass up
-                setResult(resultCode);
+                setResult(resultCode, data);
                 break;
         }
     }

@@ -50,10 +50,9 @@ import java.util.List;
  * @author pjw
  */
 public class SimpleTaskQueueProgressFragment extends DialogFragment {
-    private static final String BKEY_TITLE = "title";
-    private static final String BKEY_IS_INDETERMINATE = "isIndeterminate";
+    private static final String BKEY_DIALOG_MESSAGE = "title";
+    private static final String BKEY_DIALOG_IS_INDETERMINATE = "isIndeterminate";
     private static final String BKEY_TASK_ID = "taskId";
-
 
     /** The underlying task queue */
     @NonNull
@@ -144,9 +143,9 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
     private static SimpleTaskQueueProgressFragment newInstance(final int title, final boolean isIndeterminate, final int taskId) {
         SimpleTaskQueueProgressFragment frag = new SimpleTaskQueueProgressFragment();
         Bundle args = new Bundle();
-        args.putInt(BKEY_TITLE, title);
+        args.putInt(BKEY_DIALOG_MESSAGE, title);
         args.putInt(BKEY_TASK_ID, taskId);
-        args.putBoolean(BKEY_IS_INDETERMINATE, isIndeterminate);
+        args.putBoolean(BKEY_DIALOG_IS_INDETERMINATE, isIndeterminate);
         frag.setArguments(args);
         return frag;
     }
@@ -180,8 +179,8 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
      * If we have an Activity, deliver the current queue.
      */
     private void deliverMessages() {
-        Activity a = getActivity();
-        if (a != null) {
+        Activity activity = getActivity();
+        if (activity != null) {
             List<TaskMessage> toDeliver = new ArrayList<>();
             int count;
             do {
@@ -190,9 +189,9 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
                     mTaskMessages.clear();
                 }
                 count = toDeliver.size();
-                for (TaskMessage m : toDeliver) {
+                for (TaskMessage message : toDeliver) {
                     try {
-                        m.deliver(a);
+                        message.deliver(activity);
                     } catch (Exception e) {
                         Logger.error(e);
                     }
@@ -209,8 +208,9 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
         // Can only display in main thread.
         if (Looper.getMainLooper().getThread() == Thread.currentThread()) {
             synchronized (this) {
-                if (this.getActivity() != null) {
-                    StandardDialogs.showBriefMessage(this.getActivity(), message);
+                Activity activity = getActivity();
+                if (activity != null) {
+                    StandardDialogs.showBriefMessage(activity, message);
                 } else {
                     // Assume the message was sent before the fragment was displayed; this
                     // list will be read in onAttach
@@ -272,8 +272,11 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
     @CallSuper
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // Control whether a fragment instance is retained across Activity
+        // re-creation (such as from a configuration change).
         // VERY IMPORTANT. We do not want this destroyed!
         setRetainInstance(true);
+
         //noinspection ConstantConditions
         mTaskId = getArguments().getInt(BKEY_TASK_ID);
     }
@@ -289,7 +292,7 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
         // If no tasks left, exit
         if (!mQueue.hasActiveTasks()) {
             if (DEBUG_SWITCHES.SQPFragment && BuildConfig.DEBUG) {
-                Logger.info("STQPF: Tasks finished while activity absent, closing");
+                Logger.info(this,"Tasks finished while activity absent, closing");
             }
             dismiss();
         }
@@ -307,11 +310,11 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
         dialog.setCanceledOnTouchOutside(false);
 
         //noinspection ConstantConditions
-        int msg = getArguments().getInt(BKEY_TITLE);
+        int msg = getArguments().getInt(BKEY_DIALOG_MESSAGE);
         if (msg != 0) {
             dialog.setMessage(requireActivity().getString(msg));
         }
-        final boolean isIndeterminate = getArguments().getBoolean(BKEY_IS_INDETERMINATE);
+        final boolean isIndeterminate = getArguments().getBoolean(BKEY_DIALOG_IS_INDETERMINATE);
         dialog.setIndeterminate(isIndeterminate);
         if (isIndeterminate) {
             dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -363,7 +366,7 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
      */
     private void requestUpdateProgress() {
         if (DEBUG_SWITCHES.SQPFragment && BuildConfig.DEBUG) {
-            Logger.info("STQPF: " + mMessage + " (" + mProgress + "/" + mMax + ")");
+            Logger.info(this,mMessage + " (" + mProgress + "/" + mMax + ")");
         }
         if (Thread.currentThread() == mHandler.getLooper().getThread()) {
             updateProgress();
@@ -460,7 +463,7 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
     }
 
     /**
-     * FIXME Work-around for bug in compatibility library:
+     * ENHANCE Work-around for bug in compatibility library:
      *
      * http://code.google.com/p/android/issues/detail?id=17423
      *

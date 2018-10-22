@@ -26,6 +26,7 @@ import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
@@ -116,8 +117,8 @@ public abstract class BackupWriterAbstract implements BackupWriter {
             }
         }
 
-        if (BuildConfig.DEBUG) {
-            Logger.info("Closed writer");
+        if (DEBUG_SWITCHES.BACKUP && BuildConfig.DEBUG) {
+            Logger.info(this, " Closed writer");
         }
     }
 
@@ -146,8 +147,7 @@ public abstract class BackupWriterAbstract implements BackupWriter {
                                final int backupFlags,
                                @Nullable final Date since,
                                final int numCovers) throws IOException {
-        // This is an estimate only; we actually don't know how many covers
-        // there are in the backup.
+        // This is an estimate only; we actually don't know how many covers there are in the backup.
         listener.setMax((mDb.countBooks() * 2 + 1));
 
         final Exporter.ExportListener exportListener = new Exporter.ExportListener() {
@@ -253,7 +253,7 @@ public abstract class BackupWriterAbstract implements BackupWriter {
             }
         }
         if (!dryRun) {
-            Logger.info("Wrote " + ok + " Images, " + missing + " missing, and " + skipped + " skipped");
+            Logger.info(this, " Wrote " + ok + " Images, " + missing + " missing, and " + skipped + " skipped");
         }
 
         return ok;

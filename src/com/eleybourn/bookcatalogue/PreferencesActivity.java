@@ -26,7 +26,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.baseactivity.PreferencesBaseActivity;
-import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;
 import com.eleybourn.bookcatalogue.properties.BooleanProperty;
 import com.eleybourn.bookcatalogue.properties.IntegerListProperty;
 import com.eleybourn.bookcatalogue.properties.ListProperty;
@@ -68,14 +67,6 @@ public class PreferencesActivity extends PreferencesBaseActivity {
     private static final ItemEntries<String> mLocalesListItems = getLocalesListItems();
     /** List of supported themes */
     private static final ItemEntries<Integer> mAppThemeItems = getThemeListItems();
-
-    /** Booklist Compatibility mode property values */
-    private static final ItemEntries<Integer> mListGenerationOptionsListItems = new ItemEntries<Integer>()
-            .add(null, R.string.use_default_setting)
-            .add(BooklistBuilder.BOOKLIST_GENERATE_OLD_STYLE, R.string.force_compatibility_mode)
-            .add(BooklistBuilder.BOOKLIST_GENERATE_FLAT_TRIGGER, R.string.force_enhanced_compatibility_mode)
-            .add(BooklistBuilder.BOOKLIST_GENERATE_NESTED_TRIGGER, R.string.force_fully_featured)
-            .add(BooklistBuilder.BOOKLIST_GENERATE_AUTOMATIC, R.string.automatically_use_recommended_option);
 
     /** Preferred Scanner property values */
     private static final ItemEntries<Integer> mScannerListItems = new ItemEntries<Integer>()
@@ -169,17 +160,6 @@ public class PreferencesActivity extends PreferencesBaseActivity {
                     PropertyGroup.GRP_THUMBNAILS, R.string.use_external_image_cropper)
                     .setDefaultValue(false)
                     .setPreferenceKey(BookAbstractFragmentWithCoverImage.PREF_USE_EXTERNAL_IMAGE_CROPPER)
-                    .setGlobal(true))
-
-            /* *****************************************************************************
-             * GRP_ADVANCED_OPTIONS:
-             ******************************************************************************/
-
-            // Book list compatibility mode setting
-            .add(new IntegerListProperty(mListGenerationOptionsListItems, BooklistBuilder.PREF_BOOKLIST_GENERATION_MODE,
-                    PropertyGroup.GRP_ADVANCED_OPTIONS, R.string.booklist_generation)
-                    .setDefaultValue(BooklistBuilder.BOOKLIST_GENERATE_AUTOMATIC)
-                    .setPreferenceKey(BooklistBuilder.PREF_BOOKLIST_GENERATION_MODE)
                     .setGlobal(true));
 
     /**

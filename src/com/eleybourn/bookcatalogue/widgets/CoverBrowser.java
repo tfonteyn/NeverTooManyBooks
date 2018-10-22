@@ -257,7 +257,7 @@ public class CoverBrowser {
     }
 
     /**
-     * //FIXME: use RecyclerView ? to research....
+     * //ENHANCE: use RecyclerView ? to research....
      *
      * ImageAdapter for gallery. Queues image requests.
      *

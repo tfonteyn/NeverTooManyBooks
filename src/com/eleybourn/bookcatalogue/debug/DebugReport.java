@@ -162,7 +162,7 @@ public class DebugReport {
 
         message.append("Details:\n\n").append(activity.getString(R.string.debug_body).toUpperCase()).append("\n\n");
 
-        Logger.info(message.toString());
+        Logger.info(DebugReport.class, message.toString());
 
         emailIntent.putExtra(Intent.EXTRA_TEXT, message.toString());
         //has to be an ArrayList

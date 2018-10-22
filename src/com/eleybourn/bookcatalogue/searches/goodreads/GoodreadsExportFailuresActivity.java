@@ -72,7 +72,7 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity {
      */
     private final OnEventChangeListener mOnEventChangeListener = new OnEventChangeListener() {
         @Override
-        public void onEventChange(Event event, EventActions action) {
+        public void onEventChange(@Nullable Event event, @NonNull EventActions action) {
             GoodreadsExportFailuresActivity.this.refreshData();
         }
     };

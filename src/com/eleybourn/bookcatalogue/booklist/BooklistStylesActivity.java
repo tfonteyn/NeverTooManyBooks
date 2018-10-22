@@ -20,6 +20,7 @@
 
 package com.eleybourn.bookcatalogue.booklist;
 
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -43,6 +44,7 @@ import com.eleybourn.bookcatalogue.utils.RTE;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 /**
  * Activity to edit the list of styles and enable/disable their presence in the styles menu.
@@ -220,8 +222,9 @@ public class BooklistStylesActivity extends EditObjectListActivity<BooklistStyle
 
         switch (requestCode) {
             case BooklistStylePropertiesActivity.REQUEST_CODE:
-                if (resultCode == RESULT_OK) {
-                    //noinspection ConstantConditions
+                if (resultCode == Activity.RESULT_OK) {
+                    // there *has* to be 'data'
+                    Objects.requireNonNull(data);
                     handleStyleResult(data);
                 }
                 break;

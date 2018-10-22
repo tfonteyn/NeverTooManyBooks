@@ -81,7 +81,7 @@ public class BooklistRowView extends BookRowViewBase {
         super(cursor);
         mBuilder = builder;
 
-        final int extras = mBuilder.getStyle().getExtras();
+        final int extras = mBuilder.getStyle().getExtraFieldsStatus();
 
         // Get thumbnail size
         int maxSize = computeThumbnailSize(extras);

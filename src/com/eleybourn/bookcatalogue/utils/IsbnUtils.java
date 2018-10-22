@@ -199,7 +199,7 @@ public class IsbnUtils {
                     return;
                 }
             } catch (NumberFormatException e) {
-                if (BuildConfig.DEBUG) {
+                if (/* always show debug */ BuildConfig.DEBUG) {
                     Logger.error(e);
                 }
             }
@@ -212,7 +212,7 @@ public class IsbnUtils {
                     return;
                 }
             } catch (NumberFormatException e) {
-                if (BuildConfig.DEBUG) {
+                if (/* always show debug */ BuildConfig.DEBUG) {
                     Logger.error(e);
                 }
             }

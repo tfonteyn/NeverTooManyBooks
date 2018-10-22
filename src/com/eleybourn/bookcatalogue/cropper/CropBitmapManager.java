@@ -134,9 +134,20 @@ class CropBitmapManager {
         notifyAll();
     }
 
-    // private static final String TAG = "BitmapManager";
     private enum State {
-        CANCEL, ALLOW
+        CANCEL, ALLOW;
+
+        @NonNull
+        @Override
+        public String toString() {
+            switch (this) {
+                case CANCEL:
+                    return "Cancel";
+                default:
+                case ALLOW:
+                    return "Allow";
+            }
+        }
     }
 
     private static class ThreadStatus {
@@ -148,20 +159,7 @@ class CropBitmapManager {
         @NonNull
         @Override
         public String toString() {
-            String s;
-            switch (mState) {
-                case CANCEL:
-                    s = "Cancel";
-                    break;
-                case ALLOW:
-                    s = "Allow";
-                    break;
-                default:
-                    s = "?";
-                    break;
-            }
-            s = "thread state = " + s + ", options = " + mOptions;
-            return s;
+            return "thread state = " + mState + ", options = " + mOptions;
         }
     }
 

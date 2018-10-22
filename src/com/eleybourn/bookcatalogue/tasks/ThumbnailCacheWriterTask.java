@@ -23,7 +23,6 @@ package com.eleybourn.bookcatalogue.tasks;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.database.CoversDbHelper;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTask;

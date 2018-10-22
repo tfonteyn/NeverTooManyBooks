@@ -57,6 +57,7 @@ import com.eleybourn.bookcatalogue.utils.RTE;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Based class for all fragments that appear in {@link EditBookActivity}
@@ -90,10 +91,15 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
         return ((HasBook) mContext).getBook();
     }
 
+    protected void setBookId(final long bookId) {
+        ((HasBook) mContext).setBookId(bookId);
+    }
+
     @Override
     @CallSuper
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // make sure onCreateOptionsMenu is called
         this.setHasOptionsMenu(true);
     }
 
@@ -120,24 +126,33 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
     }
 
     /**
-     * Define the common menu options; each subclass can add more as necessary
+     * Initialize the contents of the Fragment host's standard options menu.  You
+     * should place your menu items in to <var>menu</var>.  For this method
+     * to be called, you must have first called {@link #setHasOptionsMenu}.  See
+     * {@link Activity#onCreateOptionsMenu(Menu) Activity.onCreateOptionsMenu}
+     * for more information.
+     *
+     * @param menu The options menu in which you place your items.
+     *
+     * @see #setHasOptionsMenu
+     * @see #onPrepareOptionsMenu
+     * @see #onOptionsItemSelected
      */
     @Override
     @CallSuper
     public void onCreateOptionsMenu(@NonNull final Menu menu, @NonNull final MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         //menu.clear();
-        final long currRow = getBook().getBookId();
-        if (currRow != 0) {
+        final long bookId = getBook().getBookId();
+        if (bookId != 0) {
             menu.add(Menu.NONE, R.id.MENU_BOOK_DELETE, 0, R.string.menu_delete)
                     .setIcon(R.drawable.ic_mode_edit);
 
             menu.add(Menu.NONE, R.id.MENU_BOOK_DUPLICATE, 0, R.string.menu_duplicate)
                     .setIcon(R.drawable.ic_content_copy);
 
-//TODO: enable when done
-//            menu.add(Menu.NONE, R.id.MENU_BOOK_UPDATE_FROM_INTERNET, 0, R.string.internet_update_fields)
-//                    .setIcon(R.drawable.ic_search);
+            menu.add(Menu.NONE, R.id.MENU_BOOK_UPDATE_FROM_INTERNET, 0, R.string.internet_update_fields)
+                    .setIcon(R.drawable.ic_search);
 
             /* TODO: Consider allowing Tweets (or other sharing methods) to work on un-added books.
              *
@@ -168,7 +183,29 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
             menu.add(Menu.NONE, R.id.MENU_AMAZON_BOOKS_IN_SERIES, 0, R.string.amazon_books_in_series)
                     .setIcon(R.drawable.ic_search);
         }
+
+        menu.add(0, R.id.MENU_SEARCH, 0, R.string.menu_search)
+                .setIcon(android.R.drawable.ic_menu_search);
     }
+
+//    /**
+//     * Prepare the Fragment host's standard options menu to be displayed.  This is
+//     * called right before the menu is shown, every time it is shown.  You can
+//     * use this method to efficiently enable/disable items or otherwise
+//     * dynamically modify the contents.  See
+//     * {@link Activity#onPrepareOptionsMenu(Menu) Activity.onPrepareOptionsMenu}
+//     * for more information.
+//     *
+//     * @param menu The options menu as last shown or first initialized by
+//     *             onCreateOptionsMenu().
+//     *
+//     * @see #setHasOptionsMenu
+//     * @see #onCreateOptionsMenu
+//     */
+//    @Override
+//    public void onPrepareOptionsMenu(final Menu menu) {
+//        super.onPrepareOptionsMenu(menu);
+//    }
 
     /**
      * This will be called when a menu item is selected. A large switch
@@ -210,30 +247,29 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
                 return true;
 
             case R.id.MENU_BOOK_UPDATE_FROM_INTERNET:
-                updateFromInternet();
+                updateFromInternet(getBook());
                 return true;
 
             case R.id.MENU_BOOK_EDIT:
                 EditBookActivity.startActivityForResult(requireActivity(), bookId, EditBookActivity.TAB_EDIT);
                 return true;
 
-            case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR: {
-                String author = getAuthorFromBook();
-                AmazonUtils.openSearchPage(requireActivity(), author, null);
+            case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR:
+                AmazonUtils.openSearchPage(requireActivity(), getAuthorFromBook(), null);
                 return true;
-            }
-            case R.id.MENU_AMAZON_BOOKS_IN_SERIES: {
-                String series = getSeriesFromBook();
-                AmazonUtils.openSearchPage(requireActivity(), null, series);
-                return true;
-            }
 
-            case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES: {
-                String author = getAuthorFromBook();
-                String series = getSeriesFromBook();
-                AmazonUtils.openSearchPage(requireActivity(), author, series);
+            case R.id.MENU_AMAZON_BOOKS_IN_SERIES:
+                AmazonUtils.openSearchPage(requireActivity(), null, getSeriesFromBook());
                 return true;
-            }
+
+            case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES:
+                AmazonUtils.openSearchPage(requireActivity(), getAuthorFromBook(), getSeriesFromBook());
+                return true;
+
+            // standard search call
+            case R.id.MENU_SEARCH:
+                requireActivity().onSearchRequested();
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -273,10 +309,11 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
         mDb.close();
     }
 
-    private void updateFromInternet() {
-        Book book = getBook();
+    private void updateFromInternet(@NonNull final Book book) {
         Intent intent = new Intent(requireActivity(), UpdateFromInternetActivity.class);
+        // bookId to update
         intent.putExtra(UniqueId.KEY_ID, book.getBookId());
+        // just as info, to display on the screen
         intent.putExtra(UniqueId.KEY_TITLE, book.getString(UniqueId.KEY_TITLE));
         intent.putExtra(UniqueId.KEY_AUTHOR_FORMATTED, book.getString(UniqueId.KEY_AUTHOR_FORMATTED));
         startActivityForResult(intent, UpdateFromInternetActivity.REQUEST_CODE);
@@ -287,11 +324,15 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
     public void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == UpdateFromInternetActivity.REQUEST_CODE) {
-            if (resultCode == Activity.RESULT_OK && data != null) {
-
-                String result = data.getStringExtra("result");
-                //TOMF: implement this in UpdateFromInternetActivity, then enable menu handling
+        switch (requestCode) {
+            case UpdateFromInternetActivity.REQUEST_CODE: {
+                if (resultCode == Activity.RESULT_OK) {
+                    Objects.requireNonNull(data);
+                    long bookId = data.getLongExtra(UniqueId.KEY_ID, 0);
+                    if (bookId != 0) {
+                        setBookId(bookId);
+                    }
+                }
             }
         }
     }
@@ -309,7 +350,8 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
     }
 
     /**
-     * Called to load data from the Book object when needed.
+     * Default implementation of code to load the Book object
+     * Override as needed, calling super as the first step
      *
      * @param book       to load from
      * @param setAllDone Options indicating setAll() has already been called on the mFields object
@@ -322,27 +364,30 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
     }
 
     /**
-     * This is 'final' because we want inheritors to implement onLoadBookDetails()
+     * This is 'final' because we want inheritors to implement {@link #onLoadBookDetails}
      */
     @Override
-    public final void reloadData(@NonNull final DataManager dataManager) {
+    public final <T extends DataManager> void loadDataFrom(@NonNull final T dataManager) {
         final boolean wasDirty = isDirty();
-        onLoadBookDetails(getBook(), false);
+        onLoadBookDetails((Book)dataManager, false);
         setDirty(wasDirty);
     }
 
     /**
      * Default implementation of code to save existing data to the Book object
+     * Override as needed, calling super as the first step
      */
     @CallSuper
     protected void onSaveBookDetails(@NonNull final Book book) {
         mFields.getAllInto(book);
     }
 
+    /**
+     * This is 'final' because we want inheritors to implement {@link #onSaveBookDetails}
+     */
     @Override
-    @CallSuper
-    public void saveAllEdits(@NonNull final DataManager dataManager) {
-        mFields.getAllInto(getBook());
+    public final <T extends DataManager> void saveDataTo(@NonNull final T dataManager) {
+        onSaveBookDetails((Book)dataManager);
     }
 
     /**
@@ -613,7 +658,7 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
                 s = s.substring(0, Math.min(s.length(), 20));
                 sb.append(s);
             } else {
-                Logger.info(sb.toString());
+                Logger.info(BookAbstractFragment.class, sb.toString());
             }
             if (view instanceof ViewGroup) {
                 ViewGroup g = (ViewGroup) view;

@@ -17,62 +17,66 @@ import java.util.Comparator;
 
 /**
  * Partially implements a FragmentTask to build a list of files in the background.
- * 
+ *
  * @author pjw
  */
 public abstract class FileLister implements FragmentTask {
-	private ArrayList<FileDetails> mDirs;
-	private final File mRoot;
+    @NonNull
+    private final File mRoot;
+    private final FileDetailsComparator mComparator = new FileDetailsComparator();
 
-	/**
-	 * Interface for the creating activity to allow the resulting list to be returned.
-	 * 
-	 * @author pjw
-	 */
-	public interface FileListerListener {
-		void onGotFileList(@NonNull final File root, @NonNull final ArrayList<FileDetails> list);
-	}
+    private ArrayList<FileDetails> mDirs;
 
-	/**
-	 * Constructor
-	 */
-	FileLister(File root) {
-		mRoot = root;
-	}
+    /**
+     * Constructor
+     */
+    FileLister(@NonNull final File root) {
+        mRoot = root;
+    }
 
-	/** Return a FileFilter appropriate to the types of files being listed */
-	protected abstract FileFilter getFilter();
-	/** Turn an array of Files into an ArrayList of FileDetails. */
-	protected abstract ArrayList<FileDetails> processList(@Nullable final File[] files);
+    /** Return a FileFilter appropriate to the types of files being listed */
+    @NonNull
+    protected abstract FileFilter getFilter();
 
-	@Override
-	public void run(@NonNull final SimpleTaskQueueProgressFragment fragment, @NonNull final SimpleTaskContext taskContext) {
-		// Get a file list
-		File[] files = mRoot.listFiles(getFilter());
-		// Filter/fill-in using the subclass
-		mDirs = processList(files);
-		// Sort it
-		Collections.sort(mDirs, mComparator);
-	}
+    /** Turn an array of Files into an ArrayList of FileDetails. */
+    @NonNull
+    protected abstract ArrayList<FileDetails> processList(@Nullable final File[] files);
 
-	@Override
-	public void onFinish(@NonNull final SimpleTaskQueueProgressFragment fragment, @Nullable final Exception exception) {
-		// Display it in UI thread.
-		Activity activity = fragment.getActivity();
-		if (activity instanceof FileListerListener) {
-			((FileListerListener)activity).onGotFileList(mRoot, mDirs);
-		}
-	}
+    @Override
+    public void run(@NonNull final SimpleTaskQueueProgressFragment fragment, @NonNull final SimpleTaskContext taskContext) {
+        // Get a file list
+        File[] files = mRoot.listFiles(getFilter());
+        // Filter/fill-in using the subclass
+        mDirs = processList(files);
+        // Sort it
+        Collections.sort(mDirs, mComparator);
+    }
 
-	/**
-	 * Perform case-insensitive sorting using default locale.
-	 */
-	private static class FileDetailsComparator implements Comparator<FileDetails> {
-		public int compare(@NonNull final FileDetails f1, @NonNull final FileDetails f2) {
-			return f1.getFile().getName().toUpperCase().compareTo(f2.getFile().getName().toUpperCase());
-		}
-	}
+    @Override
+    public void onFinish(@NonNull final SimpleTaskQueueProgressFragment fragment, @Nullable final Exception exception) {
+        // Display it in UI thread.
+        Activity listenerActivity = fragment.getActivity();
+        if (listenerActivity instanceof FileListerListener) {
+            ((FileListerListener) listenerActivity).onGotFileList(mRoot, mDirs);
+        }
+    }
 
-	private final FileDetailsComparator mComparator = new FileDetailsComparator();
+    /**
+     * Interface for the creating activity to allow the resulting list to be returned.
+     *
+     * @author pjw
+     */
+    public interface FileListerListener {
+        void onGotFileList(@NonNull final File root, @NonNull final ArrayList<FileDetails> list);
+    }
+
+    /**
+     * Perform case-insensitive sorting using default locale.
+     */
+    private static class FileDetailsComparator implements Comparator<FileDetails> {
+        public int compare(@NonNull final FileDetails f1, @NonNull final FileDetails f2) {
+            return f1.getFile().getName().toUpperCase().compareTo(f2.getFile().getName().toUpperCase());
+        }
+    }
 
 }

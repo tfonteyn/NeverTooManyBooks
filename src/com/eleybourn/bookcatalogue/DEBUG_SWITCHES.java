@@ -18,30 +18,54 @@ public final class DEBUG_SWITCHES {
 
     public static final boolean TMP_ANTHOLOGY = true;
 
-    /** enable timers for performance measurements */
-    public static final boolean TIMERS = false;
-
-    public static final boolean DB_ADAPTER = false;
-
-    public static final boolean DB_SYNC = false;
-    public static final boolean SQL = false;
-    public static final boolean DB_SYNC_QUERY_FOR_LONG = false;
-
-    public static final boolean TRACKED_CURSOR = false;
-
-    public static final boolean LIBRARY_THING = false;
-
     public static final boolean BOOKLIST_BUILDER = true;
 
     public static final boolean BOOKS_ON_BOOKSHELF = true;
 
+    /** enable timers for performance measurements */
+    public static final boolean TIMERS = false;
+
+    /** dump the sql string to the log */
+    public static final boolean SQL = true;
+
+    /** {@link com.eleybourn.bookcatalogue.database.CatalogueDBAdapter} */
+    public static final boolean DB_ADAPTER = false;
+
+    /** {@link com.eleybourn.bookcatalogue.database.DbSync} */
+    public static final boolean DB_SYNC = false;
+    /** {@link com.eleybourn.bookcatalogue.database.DbSync} */
+    public static final boolean DB_SYNC_QUERY_FOR_LONG = false;
+
+    /** {@link com.eleybourn.bookcatalogue.database.cursors.TrackedCursor} */
+    public static final boolean TRACKED_CURSOR = false;
+
+    /** {@link com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager} */
+    public static final boolean LIBRARY_THING_MANAGER = false;
+
+    /** {@link com.eleybourn.bookcatalogue.searches.goodreads} */
+    public static final boolean GOODREADS = false;
+
+    /** {@link com.eleybourn.bookcatalogue.utils.ImageUtils} */
     public static final boolean IMAGE_UTILS = false;
 
+    /** {@link com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressFragment} */
     public static final boolean SQPFragment = false;
 
+    /** {@link com.eleybourn.bookcatalogue.utils.StorageUtils} */
     public static final boolean STORAGE_UTILS = false;
 
+    /** {@link com.eleybourn.bookcatalogue.tasks.TaskManager} */
     public static final boolean TASK_MANAGER = false;
 
-    public static final boolean BACKUP_READER = false;
+    /** {@link com.eleybourn.bookcatalogue.searches.SearchManager} and related */
+    public static final boolean SEARCH_INTERNET = false;
+
+    /** all things related to sending messages around */
+    public static final boolean MESSAGING = false;
+
+    /** reading/writing a backup file */
+    public static final boolean BACKUP = false;
+
+    /** all things that can happen during startup only */
+    public static final boolean STARTUP = false;
 }

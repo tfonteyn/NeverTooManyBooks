@@ -12,7 +12,6 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.regex.Pattern;
 
 /**
  * Object to provide a FileLister specific to archive files.
@@ -20,15 +19,14 @@ import java.util.regex.Pattern;
  * @author pjw
  */
 public class BackupLister extends FileLister {
-    /** Pattern to match an archive file spec */
-    private static final Pattern mBackupFilePattern = Pattern.compile(".bcbk$", Pattern.CASE_INSENSITIVE);
+
     /**
      * Construct a file filter to select only directories and backup files.
      */
     private final FileFilter mFilter = new FileFilter() {
         @Override
         public boolean accept(File f) {
-            return (f.isDirectory() && f.canWrite()) || (f.isFile() && mBackupFilePattern.matcher(f.getName()).find());
+            return (f.isDirectory() && f.canWrite()) || (f.isFile() && BackupFileDetails.isArchive(f));
         }
     };
 
@@ -56,17 +54,17 @@ public class BackupLister extends FileLister {
         if (files == null) {
             return dirs;
         }
-        for (File entry : files) {
-            BackupFileDetails fd = new BackupFileDetails(entry);
+        for (File file : files) {
+            BackupFileDetails fd = new BackupFileDetails(file);
             dirs.add(fd);
-            if (entry.getName().toUpperCase().endsWith(".BCBK")) {
+            if (BackupFileDetails.isArchive(file)) {
                 BackupReader reader = null;
                 try {
-                    reader = BackupManager.readFrom(entry);
+                    reader = BackupManager.readFrom(file);
                     fd.setInfo(reader.getInfo());
-                    reader.close();
                 } catch (IOException e) {
                     Logger.error(e);
+                } finally {
                     if (reader != null)
                         try {
                             reader.close();
@@ -74,9 +72,7 @@ public class BackupLister extends FileLister {
                         }
                 }
             }
-
         }
         return dirs;
     }
-
 }

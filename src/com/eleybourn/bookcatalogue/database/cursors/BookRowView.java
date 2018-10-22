@@ -38,6 +38,7 @@ import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 public class BookRowView extends BookRowViewBase {
 
     private int mPrimaryAuthorCol = -2;
+    private int mPrimaryAuthorGivenFirstCol = -2;
     private int mPrimarySeriesCol = -2;
     private int mLoanedToCol = -2;
 
@@ -47,12 +48,22 @@ public class BookRowView extends BookRowViewBase {
 
     public final String getPrimaryAuthorNameFormatted() {
         if (mPrimaryAuthorCol < 0) {
-            mPrimaryAuthorCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_AUTHOR_FORMATTED_GIVEN_FIRST.name);
+            mPrimaryAuthorCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_AUTHOR_FORMATTED.name);
             if (mPrimaryAuthorCol < 0) {
-                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_AUTHOR_FORMATTED_GIVEN_FIRST.name);
+                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_AUTHOR_FORMATTED.name);
             }
         }
         return mCursor.getString(mPrimaryAuthorCol);
+    }
+
+    public final String getPrimaryAuthorNameFormattedGivenFirst() {
+        if (mPrimaryAuthorGivenFirstCol < 0) {
+            mPrimaryAuthorGivenFirstCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_AUTHOR_FORMATTED_GIVEN_FIRST.name);
+            if (mPrimaryAuthorGivenFirstCol < 0) {
+                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_AUTHOR_FORMATTED_GIVEN_FIRST.name);
+            }
+        }
+        return mCursor.getString(mPrimaryAuthorGivenFirstCol);
     }
 
     public final String getPrimarySeriesFormatted() {

@@ -1,5 +1,6 @@
 package com.eleybourn.bookcatalogue.baseactivity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -29,7 +30,6 @@ import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.booklist.BooklistPreferencesActivity;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
-import com.eleybourn.bookcatalogue.searches.SearchCatalogue;
 
 /**
  * Base class for all (most) Activity's
@@ -151,8 +151,7 @@ abstract public class BaseActivity extends AppCompatActivity
         Intent intent;
         switch (menuItem.getItemId()) {
             case R.id.nav_search:
-                intent = new Intent(this, SearchCatalogue.class);
-                startActivityForResult(intent, SearchCatalogue.REQUEST_CODE);
+                onSearchRequested();
                 return true;
             case R.id.nav_manage_bookshelves:
                 intent = new Intent(this, EditBookshelvesActivity.class);
@@ -215,11 +214,17 @@ abstract public class BaseActivity extends AppCompatActivity
                 }
 
                 if (BuildConfig.DEBUG) {
-                    Logger.info("BaseActivity.onOptionsItemSelected with android.R.id.home");
+                    Logger.info(this, " BaseActivity.onOptionsItemSelected with android.R.id.home");
                 }
                 // for all activities that were opened with startActivity()
                 // where 'home' is treated as 'up', pretend/mimic
                 onBackPressed();
+                return true;
+
+            // standard search call
+            case R.id.MENU_SEARCH:
+                Logger.debug("Just a check if we ever get here");
+                onSearchRequested();
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -232,7 +237,7 @@ abstract public class BaseActivity extends AppCompatActivity
     @CallSuper
     public void onBackPressed() {
         if (BuildConfig.DEBUG) {
-            Logger.info("BaseActivity.onBackPressed with dirty=" + isDirty());
+            Logger.info(this, " BaseActivity.onBackPressed with dirty=" + isDirty());
         }
         // Check if edits need saving, and finish the activity if not
         if (isDirty()) {
@@ -253,10 +258,10 @@ abstract public class BaseActivity extends AppCompatActivity
      */
     protected void setResultAndFinish() {
         if (BuildConfig.DEBUG) {
-            Logger.info("BaseActivity.setResultAndFinish with dirty=" + isDirty());
+            Logger.info(this, " BaseActivity.setResultAndFinish with dirty=" + isDirty());
         }
         if (isDirty()) {
-            setResult(RESULT_OK);
+            setResult(Activity.RESULT_OK);
         }
         finish();
     }
@@ -318,8 +323,8 @@ abstract public class BaseActivity extends AppCompatActivity
      */
     protected void restartActivityIfNeeded() {
         if (mReloadOnResume) {
-            if (BuildConfig.DEBUG) {
-                Logger.info("Restarting " + this.getClass().getCanonicalName());
+            if (/* always show debug */ BuildConfig.DEBUG) {
+                Logger.info(this, "Restarting");
             }
             finish();
             startActivity(getIntent());

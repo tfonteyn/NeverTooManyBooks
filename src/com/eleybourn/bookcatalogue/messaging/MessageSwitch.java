@@ -24,6 +24,8 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
 import java.lang.ref.WeakReference;
@@ -42,12 +44,13 @@ import java.util.concurrent.LinkedBlockingQueue;
  *
  * Usage:
  *
- * A sender (typically a background task, thread or thread manager) registers itself and is assigned
- * a unique ID. The creator of the sender uses the ID as the key to later retrieval.
+ * A sender (typically a background task, thread or thread manager) registers itself and is
+ * assigned a unique ID. The creator of the sender uses the ID as the key for later retrieval.
  *
  * The listener must have access to the unique ID and use that to register themselves.
  *
- * The listener should call addListener, removeListener, reply or getController as necessary.
+ * The listener should call {@link #addListener}, {@link #removeListener}
+ * or {@link #getController} as necessary.
  *
  * ENHANCE: Allow fixed sender IDs to ensure uniqueness and/or allow multiple senders for specific IDs
  *
@@ -74,7 +77,7 @@ public class MessageSwitch<T, U> {
     /** Register a new sender and it's controller object; return the unique ID for this sender */
     @NonNull
     public Long createSender(@NonNull final U controller) {
-        MessageSenderImpl s = new MessageSenderImpl(controller);
+        MessageSender<U> s = new MessageSenderImpl(controller);
         mSenders.put(s.getId(), s);
         return s.getId();
     }
@@ -86,7 +89,7 @@ public class MessageSwitch<T, U> {
      * @param listener    Listener object
      * @param deliverLast If true, send the last message (if any) to this listener
      */
-    public void addListener(@NonNull final Long senderId, @NonNull final  T listener, final boolean deliverLast) {
+    public void addListener(@NonNull final Long senderId, @NonNull final T listener, final boolean deliverLast) {
         // Add the listener to the queue, creating queue if necessary
         MessageListeners queue;
         synchronized (mListeners) {
@@ -99,17 +102,23 @@ public class MessageSwitch<T, U> {
         }
         // Try to deliver last message if requested
         if (deliverLast) {
-            final MessageRoutingSlip r = queue.getLastMessage();
+            final MessageRoutingSlip routingSlip = queue.getLastMessage();
             // If there was a message then send to the passed listener
-            if (r != null) {
+            if (routingSlip != null) {
                 // Do it on the UI thread.
                 if (mHandler.getLooper().getThread() == Thread.currentThread()) {
-                    r.message.deliver(listener);
+                    if (DEBUG_SWITCHES.MESSAGING && BuildConfig.DEBUG) {
+                        Logger.info(this,"delivering to listener: " + listener + ", message: " + routingSlip.message.toString());
+                    }
+                    routingSlip.message.deliver(listener);
                 } else {
                     mHandler.post(new Runnable() {
                         @Override
                         public void run() {
-                            r.message.deliver(listener);
+                            if (DEBUG_SWITCHES.MESSAGING && BuildConfig.DEBUG) {
+                                Logger.info(this,"delivering to listener: " + listener + ", message: " + routingSlip.message.toString());
+                            }
+                            routingSlip.message.deliver(listener);
                         }
                     });
                 }
@@ -133,6 +142,9 @@ public class MessageSwitch<T, U> {
      * @param message  Message to send
      */
     public void send(@NonNull final Long senderId, @NonNull final Message<T> message) {
+        if (DEBUG_SWITCHES.MESSAGING && BuildConfig.DEBUG) {
+            Logger.info(this,"sending to " + senderId + " message: " + message);
+        }
         // Create a routing slip
         RoutingSlip m = new MessageRoutingSlip(senderId, message);
         // Add to queue
@@ -142,19 +154,6 @@ public class MessageSwitch<T, U> {
         // Process queue
         startProcessingMessages();
     }
-
-//	/**
-//	 * Send a 'reply'
-//	 * @param senderId
-//	 * @param reply
-//	 */
-//	public void reply(@NonNull final Long senderId, @NonNull final Message<U> reply) {
-//		RoutingSlip m = new ReplyRoutingSlip(senderId, reply);
-//		synchronized(mMessageQueue) {
-//			mMessageQueue.add(m);
-//		}
-//		startProcessingMessages();
-//	}
 
     /**
      * Get the controller object associated with a sender ID
@@ -219,8 +218,9 @@ public class MessageSwitch<T, U> {
          *
          * @param listener Listener to who message must be delivered
          *
-         * @return <tt>true</tt>if message should not be delivered to any other listeners or stored for delivery as 'last message'
-         * should only return true if the message has been handled and would break the app if delivered more than once.
+         * @return <tt>true</tt>if message should not be delivered to any other listeners or
+         * stored for delivery as 'last message' should only return true if the message has
+         * been handled and would break the app if delivered more than once.
          */
         boolean deliver(@NonNull final T listener);
     }
@@ -242,24 +242,6 @@ public class MessageSwitch<T, U> {
         @NonNull
         U getController();
     }
-
-//	private class ReplyRoutingSlip implements RoutingSlip {
-//		Long destination;
-//		Message<U> message;
-//		public ReplyRoutingSlip(@NonNull final Long destination, @NonNull final Message<U> message) {
-//			this.destination = destination;
-//			this.message = message;
-//		}
-//		@Override
-//		public void deliver() {
-//			synchronized(mSenders) {
-//				MessageSender<U> sender = mSenders.get(this.destination);
-//				if (sender != null) {
-//					message.deliver(sender.getReplyHandler());
-//				}
-//			}
-//		}
-//	}
 
     /** Interface implemented by all routing slips objects */
     private interface RoutingSlip {
@@ -366,8 +348,11 @@ public class MessageSwitch<T, U> {
         /** Deliver message to all members of queue of sender */
         @Override
         public void deliver() {
+            if (DEBUG_SWITCHES.MESSAGING && BuildConfig.DEBUG) {
+                Logger.info(this,"enter deliver()");
+            }
             // Iterator for iterating queue
-            Iterator<T> i = null;
+            Iterator<T> queueIterator = null;
 
             MessageListeners queue;
             // Get the queue and find the iterator
@@ -376,16 +361,19 @@ public class MessageSwitch<T, U> {
                 queue = mListeners.get(destination);
                 if (queue != null) {
                     queue.setLastMessage(this);
-                    i = queue.iterator();
+                    queueIterator = queue.iterator();
                 }
             }
             // If we have an iterator, send the message to each listener
-            if (i != null) {
+            if (queueIterator != null) {
                 boolean handled = false;
-                while (i.hasNext()) {
-                    T l = i.next();
+                while (queueIterator.hasNext()) {
+                    T listener = queueIterator.next();
                     try {
-                        if (message.deliver(l)) {
+                        if (DEBUG_SWITCHES.MESSAGING && BuildConfig.DEBUG) {
+                            Logger.info(this,"delivering to listener: " + listener + ", message: " + message.toString());
+                        }
+                        if (message.deliver(listener)) {
                             handled = true;
                             break;
                         }

@@ -160,7 +160,7 @@ public class CoversDbHelper implements AutoCloseable {
         synchronized (this) {
             mNumberOfInstances++;
             if (BuildConfig.DEBUG) {
-                Logger.info("CovDBA instances created: " + mNumberOfInstances);
+                Logger.info(this,"instances created: " + mNumberOfInstances);
             }
         }
     }
@@ -181,6 +181,7 @@ public class CoversDbHelper implements AutoCloseable {
      * Speculating... maybe cut this short and simply use the ApplicationContext ?
      *
      * SQLiteOpenHelper uses the context to:   mContext.getDatabasePath(mName);
+     *
      * Mr. Internet says:
      * https://android.googlesource.com/platform/frameworks/base/+/master/core/java/android/content/Context.java#1521
      * * Open a new private SQLiteDatabase associated with this Context's
@@ -209,7 +210,7 @@ public class CoversDbHelper implements AutoCloseable {
         synchronized (this) {
             mNumberOfInstances--;
             if (BuildConfig.DEBUG) {
-                Logger.info("CovDBA instances left: " + mNumberOfInstances);
+                Logger.info(this,"instances left: " + mNumberOfInstances);
             }
 
             if (mNumberOfInstances == 0) {
@@ -441,9 +442,7 @@ public class CoversDbHelper implements AutoCloseable {
         @Override
         @CallSuper
         public void onCreate(@NonNull final SQLiteDatabase db) {
-            if (BuildConfig.DEBUG) {
-                Logger.info("Creating database: " + db.getPath());
-            }
+            Logger.info(this,"Creating database: " + db.getPath());
             TableDefinition.createTables(new SynchronizedDb(db, mSynchronizer), TABLES);
         }
 
@@ -453,9 +452,7 @@ public class CoversDbHelper implements AutoCloseable {
         @Override
         @CallSuper
         public void onUpgrade(@NonNull final SQLiteDatabase db, final int oldVersion, final int newVersion) {
-            if (BuildConfig.DEBUG) {
-                Logger.info("Upgrading database: " + db.getPath());
-            }
+            Logger.info(this,"Upgrading database: " + db.getPath());
             throw new IllegalStateException("Upgrades not handled yet!");
         }
     }

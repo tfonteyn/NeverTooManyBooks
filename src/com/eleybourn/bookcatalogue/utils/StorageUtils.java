@@ -402,7 +402,7 @@ public class StorageUtils {
         }
 
         if (DEBUG_SWITCHES.STORAGE_UTILS && BuildConfig.DEBUG) {
-            Logger.info(debugInfo.toString());
+            Logger.info(StorageUtils.class, debugInfo.toString());
         }
 
         // Sort descending based on modified date

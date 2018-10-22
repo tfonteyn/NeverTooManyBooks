@@ -76,7 +76,6 @@ public class BookDetailsFragment extends BookAbstractFragmentWithCoverImage {
         mFields.add(R.id.read_start, UniqueId.KEY_BOOK_READ_START, null, new Fields.DateFieldFormatter());
         mFields.add(R.id.read_end, UniqueId.KEY_BOOK_READ_END, null, new Fields.DateFieldFormatter());
 
-        // Make sure the label is hidden when the field is TOMF more labels ?
         mFields.add(R.id.lbl_isbn, "", UniqueId.KEY_BOOK_ISBN, null);
         mFields.add(R.id.lbl_publishing, "", UniqueId.KEY_BOOK_PUBLISHER, null);
 
@@ -200,7 +199,7 @@ public class BookDetailsFragment extends BookAbstractFragmentWithCoverImage {
                         }
                     });
         }
-        getView().findViewById(R.id.toc_row).setVisibility(visible ? View.VISIBLE : View.GONE);
+        getView().findViewById(R.id.row_toc).setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
     /**

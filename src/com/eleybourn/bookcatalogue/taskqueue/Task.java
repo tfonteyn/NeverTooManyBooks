@@ -44,6 +44,7 @@ public abstract class Task implements Serializable, BindableItemCursorAdapter.Bi
 
     private static final long serialVersionUID = -1735892871810069L;
     private final int mRetryLimit = 17;
+    @NonNull
     private final String mDescription;
     private TaskState mState;
     private long mId;
@@ -52,7 +53,11 @@ public abstract class Task implements Serializable, BindableItemCursorAdapter.Bi
     private Exception mException = null;
     private int mRetryDelay = 0;
     private boolean mAbortTask = false;
-    Task(String description) {
+
+    /**
+     * Constructor
+     */
+    Task(@NonNull final String description) {
         mState = TaskState.created;
         mDescription = description;
     }
@@ -128,7 +133,7 @@ public abstract class Task implements Serializable, BindableItemCursorAdapter.Bi
         return mException;
     }
 
-    public void setException(final Exception e) {
+    public void setException(@Nullable final Exception e) {
         mException = e;
     }
 

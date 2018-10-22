@@ -525,7 +525,7 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
     /**
      * Accessor.
      */
-    public int getExtras() {
+    public int getExtraFieldsStatus() {
         int extras = 0;
 
         if (mXtraShowThumbnails.isTrue())

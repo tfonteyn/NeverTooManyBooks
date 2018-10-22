@@ -258,7 +258,7 @@ public class EditBookActivity extends BaseActivity
                 // Cleanup because we may have made global changes
                 mDb.purgeAuthors();
                 mDb.purgeSeries();
-                // remember: POTENTIAL global changes so NOT using RESULT_CANCELLED! TODO: detect this if actually needed
+                // remember: POTENTIAL global changes so NOT using Activity.RESULT_CANCELLED! TODO: detect this if actually needed
                 setResult(Activity.RESULT_OK);
 
                 if (isDirty()) {
@@ -344,7 +344,7 @@ public class EditBookActivity extends BaseActivity
     @Override
     protected void setResultAndFinish() {
         if (BuildConfig.DEBUG) {
-            Logger.info("EditBookActivity.setResultAndFinish with dirty=" + isDirty());
+            Logger.info(this, " setResultAndFinish with dirty=" + isDirty());
         }
 
         Intent intent = new Intent();
@@ -457,12 +457,13 @@ public class EditBookActivity extends BaseActivity
         return mBook;
     }
 
+    @Override
     public void setBookId(final long bookId) {
         if (mBookId != bookId) {
             mBookId = bookId;
             mBook = new Book(bookId);
             DataEditor frag = (DataEditor)getSupportFragmentManager().findFragmentById(R.id.fragment);
-            frag.reloadData(mBook);
+            frag.loadDataFrom(mBook);
             initActivityTitle();
         }
     }
@@ -505,15 +506,9 @@ public class EditBookActivity extends BaseActivity
 
     /**
      * This will save a book into the database, by either updating or created a book.
-     * Minor modifications will be made to the strings:
-     * <ul>
-     * <li>Titles will be reworded so 'a', 'the', 'an' will be moved to the end of the string
-     * (only for NEW books)
-     * <li>Date published will be converted from a date to a string
-     * <li>Thumbnails will also be saved to the correct location
-     * <li>It will check if the book already exists (isbn search) if you are creating a book;
+     *
+     * It will check if the book already exists (isbn search) if you are creating a book;
      * if so the user will be prompted to confirm.
-     * </ul>
      *
      * In all cases, once the book is added/created, or not, the appropriate method of the
      * passed nextStep parameter will be executed. Passing nextStep is necessary because
@@ -524,7 +519,7 @@ public class EditBookActivity extends BaseActivity
     private void saveState(@NonNull final PostSaveAction nextStep) {
         Fragment frag = getSupportFragmentManager().findFragmentById(R.id.fragment);
         if (frag instanceof DataEditor) {
-            ((DataEditor) frag).saveAllEdits(mBook);
+            ((DataEditor) frag).saveDataTo(mBook);
         }
 
         // Ignore validation failures; we still validate to get the current values.
@@ -535,8 +530,7 @@ public class EditBookActivity extends BaseActivity
             StandardDialogs.showBriefMessage(this, R.string.author_required);
             return;
         }
-        if (!mBook.containsKey(UniqueId.KEY_TITLE)
-                || mBook.getString(UniqueId.KEY_TITLE).isEmpty()) {
+        if (!mBook.containsKey(UniqueId.KEY_TITLE) || mBook.getString(UniqueId.KEY_TITLE).isEmpty()) {
             StandardDialogs.showBriefMessage(this, R.string.title_required);
             return;
         }

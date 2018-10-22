@@ -23,9 +23,9 @@ public class ExportThread extends ManagedTask {
         @Override
         public void onProgress(@NonNull final String message, final int position) {
             if (position > 0) {
-                mManager.doProgress(ExportThread.this, message, position);
+                mTaskManager.doProgress(ExportThread.this, message, position);
             } else {
-                mManager.doProgress(message);
+                mTaskManager.doProgress(message);
             }
         }
 
@@ -36,7 +36,7 @@ public class ExportThread extends ManagedTask {
 
         @Override
         public void setMax(final int max) {
-            mManager.setMax(ExportThread.this, max);
+            mTaskManager.setMax(ExportThread.this, max);
         }
 
     };
@@ -46,11 +46,12 @@ public class ExportThread extends ManagedTask {
 
     public ExportThread(@NonNull final TaskManager manager) {
         super(manager);
+        setName("ExportThread");
         mExporter = new CsvExporter();
     }
 
     @Override
-    protected void onRun() {
+    protected void runTask() {
         try {
             File tmpFile = StorageUtils.getFile(CsvExporter.EXPORT_TEMP_FILE_NAME);
             final FileOutputStream out = new FileOutputStream(tmpFile);
@@ -63,7 +64,7 @@ public class ExportThread extends ManagedTask {
             renameFiles(tmpFile);
         } catch (IOException e) {
             Logger.error(e);
-            mManager.showQuickNotice(getString(R.string.error_export_failed));
+            mTaskManager.showBriefMessage(getString(R.string.error_export_failed));
         }
     }
 

@@ -138,19 +138,19 @@ public class ExportAdvancedDialogFragment extends DialogFragment {
             }
         });
 
-        setRelatedView(v, R.id.books_check, R.id.all_books_row);
-        setRelatedView(v, R.id.covers_check, R.id.covers_row);
+        setRelatedView(v, R.id.books_check, R.id.row_all_books);
+        setRelatedView(v, R.id.covers_check, R.id.row_covers);
 
         return dialog;
     }
 
     private void handleClick(@SuppressWarnings("unused") @NonNull final View view) {
         try {
-            OnExportTypeSelectionDialogResultListener a = (OnExportTypeSelectionDialogResultListener) getActivity();
-            if (a != null) {
+            OnExportTypeSelectionDialogResultListener listenerActivity = (OnExportTypeSelectionDialogResultListener) getActivity();
+            if (listenerActivity != null) {
                 ExportSettings settings = createSettings();
                 if (settings != null) {
-                    a.onExportTypeSelectionDialogResult(mDialogId, this, settings);
+                    listenerActivity.onExportTypeSelectionDialogResult(mDialogId, this, settings);
                     dismiss();
                 }
             } else {

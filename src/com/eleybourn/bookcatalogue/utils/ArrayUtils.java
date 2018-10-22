@@ -46,11 +46,10 @@ public class ArrayUtils<T> {
 
     private Factory<T> mFactory;
 
-    @SuppressWarnings("unused")
-    private ArrayUtils() {
+    public ArrayUtils() {
     }
 
-    private ArrayUtils(@NonNull final Factory<T> factory) {
+    public ArrayUtils(@NonNull final Factory<T> factory) {
         mFactory = factory;
     }
 
@@ -412,7 +411,7 @@ public class ArrayUtils<T> {
      */
     @SuppressWarnings("SameParameterValue")
     @NonNull
-    private String encodeList(final char delim, @NonNull final List<T> list) {
+    public String encodeList(final char delim, @NonNull final List<T> list) {
         StringBuilder ns = new StringBuilder();
         Iterator<T> si = list.iterator();
         if (si.hasNext()) {
@@ -503,7 +502,7 @@ public class ArrayUtils<T> {
         return list;
     }
 
-    interface Factory<T> {
+    public interface Factory<T> {
         @NonNull
         T get(@NonNull final String source);
     }

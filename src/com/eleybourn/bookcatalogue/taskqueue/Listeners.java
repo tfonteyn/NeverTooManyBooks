@@ -1,7 +1,7 @@
 /*
  * @copyright 2012 Philip Warner
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * TaskQueue is free software: you can redistribute it and/or modify
@@ -20,15 +20,27 @@
 
 package com.eleybourn.bookcatalogue.taskqueue;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 public class Listeners {
 
-	public enum EventActions { created, deleted, updated }
-	public enum TaskActions { created, deleted, updated, completed, running, waiting }
+    public enum EventActions {created, deleted, updated}
 
-	public interface OnEventChangeListener {
-		void onEventChange(Event event, EventActions action);
-	}
-	public interface OnTaskChangeListener {
-		void onTaskChange(Task task, TaskActions action);
-	}
+    public enum TaskActions {created, deleted, updated, completed, running, waiting}
+
+    public interface OnEventChangeListener {
+        /**
+         *
+         * @param event can be null if action is 'deleted'
+         */
+        void onEventChange(@Nullable final Event event, @NonNull final EventActions action);
+    }
+
+    public interface OnTaskChangeListener {
+        /**
+         * @param task can be null if action is 'deleted'
+         */
+        void onTaskChange(@Nullable final Task task, @NonNull final TaskActions action);
+    }
 }

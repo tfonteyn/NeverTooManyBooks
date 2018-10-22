@@ -20,6 +20,7 @@
 
 package com.eleybourn.bookcatalogue.baseactivity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -111,7 +112,7 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Bas
         @Override
         public void onClick(View v) {
             if (onCancel())
-                setResult(RESULT_CANCELED);
+                setResult(Activity.RESULT_CANCELED);
                 finish();
         }
     };
@@ -135,7 +136,7 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Bas
             Intent intent = new Intent();
             intent.putExtra(mBKey, mList);
             if (onSave(intent)) {
-                setResult(RESULT_OK, intent);
+                setResult(Activity.RESULT_OK, intent);
                 finish();
             }
         }

@@ -20,6 +20,7 @@
 
 package com.eleybourn.bookcatalogue;
 
+import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -126,6 +127,9 @@ public class BookSearchActivity extends BaseActivityWithTasks {
         public boolean onSearchFinished(@NonNull final Bundle bookData, final boolean cancelled) {
             return BookSearchActivity.this.onSearchFinished(bookData, cancelled);
         }
+        public String toString() {
+            return "created by " + BookSearchActivity.this.getClass().getCanonicalName();
+        }
     };
 
     private String mBy;
@@ -139,8 +143,10 @@ public class BookSearchActivity extends BaseActivityWithTasks {
             switch (mBy) {
                 case BY_ISBN:
                     return R.layout.booksearch_by_isbn;
+
                 case BY_TEXT:
                     return R.layout.booksearch_by_name;
+
                 case BY_SCAN:
                     return R.layout.booksearch_by_scan;
             }
@@ -551,8 +557,8 @@ public class BookSearchActivity extends BaseActivityWithTasks {
      * Either the isbn or the author/title needs to be specified.
      */
     private void go(@NonNull final String isbn, @NonNull final String author, @NonNull final String title) {
-        if (BuildConfig.DEBUG) {
-            Logger.info("BookSearchActivity.go: isbn=" + isbn + ", author=" + author + ", title=" + title);
+        if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
+            Logger.info(this," go: isbn=" + isbn + ", author=" + author + ", title=" + title);
         }
 
         if (isbn.isEmpty() && author.isEmpty() && title.isEmpty()) {
@@ -594,7 +600,7 @@ public class BookSearchActivity extends BaseActivityWithTasks {
                         // Optionally beep if scan was valid.
                         SoundManager.beepHigh();
                     }
-                    // See if ISBN exists in catalogue TODO: we check again when user clicks 'save book' .. maybe remove the check here ?
+                    // See if ISBN exists in catalogue
                     final long existingId = mDb.getIdFromIsbn(mIsbn, true);
                     if (existingId > 0) {
                         // Verify - this can be a dangerous operation
@@ -736,17 +742,18 @@ public class BookSearchActivity extends BaseActivityWithTasks {
     protected void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent data) {
         super.onActivityResult(requestCode,resultCode,data);
         switch (requestCode) {
-            case BookSearchActivity.REQUEST_CODE_SCAN: {
+            case BookSearchActivity.REQUEST_CODE_SCAN:
                 mScannerStarted = false;
                 try {
-                    if (resultCode == RESULT_OK) {
+                    if (resultCode == Activity.RESULT_OK) {
+                        // there *has* to be 'data'
                         Objects.requireNonNull(data);
                         String isbn = mScanner.getBarcode(data);
                         mIsbnText.setText(isbn);
                         go(isbn, "", "");
                     } else {
                         // Scanner Cancelled/failed. pass that up
-                        setResult(mLastBookIntent != null ? RESULT_OK : RESULT_CANCELED, mLastBookIntent);
+                        setResult(mLastBookIntent != null ? Activity.RESULT_OK : Activity.RESULT_CANCELED, mLastBookIntent);
                         // and exit if no dialog present.
                         if (!mDisplayingAlert) {
                             finish();
@@ -757,8 +764,8 @@ public class BookSearchActivity extends BaseActivityWithTasks {
                     finish();
                 }
                 break;
-            }
-            case EditBookActivity.REQUEST_CODE: {
+
+            case EditBookActivity.REQUEST_CODE:
                 if (data != null) {
                     mLastBookIntent = data;
                 }
@@ -767,11 +774,10 @@ public class BookSearchActivity extends BaseActivityWithTasks {
                     startScannerActivity();
                 } else {
                     // If the 'Back' button is pressed on a normal activity,
-                    // set the default result to cancelled by setting it here.
-                    setResult(RESULT_CANCELED, mLastBookIntent);
+                    // set the default result to cancelled by passing it up
+                    setResult(Activity.RESULT_CANCELED, mLastBookIntent);
                 }
                 break;
-            }
         }
 
         // No matter what the activity was, rebuild the author list in case a new author was added.

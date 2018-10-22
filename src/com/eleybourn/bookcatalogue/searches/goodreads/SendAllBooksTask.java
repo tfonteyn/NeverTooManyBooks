@@ -114,7 +114,7 @@ public class SendAllBooksTask extends GenericTask {
 
         db.open();
 
-        try (BooksCursor books = db.getAllBooksForGoodreadsCursor(mLastId, mUpdatesOnly)) {
+        try (BooksCursor books = db.fetchBooksForGoodreadsCursor(mLastId, mUpdatesOnly)) {
             final BookRowView bookRowView = books.getRowView();
             mTotalBooks = books.getCount() + mCount;
 

@@ -132,8 +132,11 @@ public class BookCatalogueApp extends Application {
             R.style.AppTheme_Dialog_Alert,
             R.style.AppTheme_Dialog_Alert_Light
     };
+
     /** Set of OnLocaleChangedListeners */
     private static final Set<WeakReference<OnLocaleChangedListener>> mOnLocaleChangedListeners = new HashSet<>();
+
+
     private static int mLastTheme;
     /** Never store a context in a static, use the instance instead */
     private static BookCatalogueApp mInstance;
@@ -174,9 +177,11 @@ public class BookCatalogueApp extends Application {
                             applyPreferredLocaleIfNecessary(getBaseContext().getResources());
                             notifyLocaleChanged();
                             break;
+
                         case PREF_APP_THEME:
                             //TODO: implement global theme change ?
                             break;
+
                         default:
                             break;
                     }
@@ -482,7 +487,7 @@ public class BookCatalogueApp extends Application {
      */
     @SuppressWarnings("unused")
     public static void dumpPreferences() {
-        if (BuildConfig.DEBUG) {
+        if (/* always show debug */ BuildConfig.DEBUG) {
             StringBuilder sb = new StringBuilder("\n\nSharedPreferences: ");
             Map<String, ?> map = getSharedPreferences().getAll();
             List<String> keyList = new ArrayList<>(map.keySet());
@@ -494,7 +499,7 @@ public class BookCatalogueApp extends Application {
                 sb.append("\n").append(key).append("=").append(value);
             }
             sb.append("\n\n");
-            Logger.info(sb.toString());
+            Logger.info(BookCatalogueApp.class, sb.toString());
         }
     }
 

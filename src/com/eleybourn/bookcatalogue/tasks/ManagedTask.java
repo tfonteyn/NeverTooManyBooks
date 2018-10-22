@@ -46,14 +46,15 @@ import com.eleybourn.bookcatalogue.messaging.MessageSwitch;
  */
 abstract public class ManagedTask extends Thread {
 
-    private static final TaskSwitch mMessageSwitch = new TaskSwitch();
+    private static final TaskMessageSwitch mMessageSwitch = new TaskMessageSwitch();
     /** The manager who we will use for progress etc, and who we will inform about our state. */
     @NonNull
-    protected final TaskManager mManager;
+    protected final TaskManager mTaskManager;
+    /** */
     private final long mMessageSenderId;
-    /** Options indicating the main onRun method has completed. Set in call do doFinish() in the UI thread. */
+    /** Options indicating the main runTask method has completed. Set in thread run */
     private boolean mFinished = false;
-    /** Indicates the user has requested a cancel. Up to subclass to decide what to do. Set by TaskManager. */
+    /** Indicates the user has requested a cancel. Up to subclass to decide what to do. */
     private boolean mCancelFlg = false;
 
     /**
@@ -78,32 +79,27 @@ abstract public class ManagedTask extends Thread {
 
         mMessageSenderId = mMessageSwitch.createSender(controller);
         // Save the stuff for later
-        mManager = manager;
+        mTaskManager = manager;
         // Add to my manager
-        mManager.addTask(this);
+        mTaskManager.addTask(this);
     }
 
     @NonNull
-    public static TaskSwitch getMessageSwitch() {
+    public static TaskMessageSwitch getMessageSwitch() {
         return mMessageSwitch;
     }
 
     /**
-     * Called when the task has finished, but *only* if the TaskManager has a context (ie. is
-     * attached to an Activity). If the task manager is *not* attached to an activity, then onFinish()
-     * will be called in the reconnect() call.
-     *
-     * The subclass must return 'true' if it was able to execute all required code in any required
-     * TaskHandler. It does not matter if that code failed or succeeded, only that the TaskHandler
-     * was executed (if necessary). TaskHandler objects will be cleared by the disconnect() call
-     * and reset by the reconnect() call.
+     * Called when the task has finished, override if needed.
      */
-    protected void onThreadFinish() {
+    protected void onTaskFinish() {
         //do nothing
     }
 
-    /** Called to do the main thread work. Can use doProgress() and showBriefMessage() to display messages. */
-    abstract protected void onRun() throws InterruptedException;
+    /** Called to do the main thread work.
+     * Can use {@link #doProgress} and {@link #showBriefMessage} to display messages.
+     */
+    abstract protected void runTask() throws InterruptedException;
 
     /**
      * Utility routine to ask the TaskManager to get a String from a resource ID.
@@ -114,7 +110,7 @@ abstract public class ManagedTask extends Thread {
      */
     @NonNull
     protected String getString(@StringRes final int id) {
-        return mManager.getContext().getString(id);
+        return mTaskManager.getContext().getString(id);
     }
 
     /**
@@ -124,7 +120,7 @@ abstract public class ManagedTask extends Thread {
      * @param count   Counter. 0 if Max not set.
      */
     public void doProgress(@NonNull final String message, final int count) {
-        mManager.doProgress(this, message, count);
+        mTaskManager.doProgress(this, message, count);
     }
 
     /**
@@ -132,8 +128,8 @@ abstract public class ManagedTask extends Thread {
      *
      * @param message Message to display
      */
-    protected void showQuickNotice(@NonNull final String message) {
-        mManager.showQuickNotice(message);
+    protected void showBriefMessage(@NonNull final String message) {
+        mTaskManager.showBriefMessage(message);
     }
 
 
@@ -148,7 +144,7 @@ abstract public class ManagedTask extends Thread {
     @Override
     public void run() {
         try {
-            onRun();
+            runTask();
         } catch (InterruptedException e) {
             mCancelFlg = true;
         } catch (Exception e) {
@@ -157,7 +153,7 @@ abstract public class ManagedTask extends Thread {
 
         mFinished = true;
         // Let the implementation know it is finished
-        onThreadFinish();
+        onTaskFinish();
 
         // Queue the 'onTaskFinished' message; this should also inform the TaskManager
         mMessageSwitch.send(mMessageSenderId, new MessageSwitch.Message<TaskListener>() {
@@ -165,6 +161,10 @@ abstract public class ManagedTask extends Thread {
                     public boolean deliver(@NonNull final TaskListener listener) {
                         listener.onTaskFinished(ManagedTask.this);
                         return false;
+                    }
+
+                    public String toString() {
+                        return "Queue the 'onTaskFinished' message for sender id: " + mMessageSenderId;
                     }
                 }
         );
@@ -209,6 +209,7 @@ abstract public class ManagedTask extends Thread {
      * Controller interface for this object
      */
     public interface TaskController {
+        @SuppressWarnings("unused")
         void requestAbort();
 
         @NonNull
@@ -220,9 +221,9 @@ abstract public class ManagedTask extends Thread {
      *
      * This object handles all underlying OnTaskEndedListener messages for every instance of this class.
      *
-     * note to self: YES "public" is a MUST
+     * note to self: YES "public" is a MUST, lint is to eager
      */
     @SuppressWarnings("WeakerAccess")
-    public static class TaskSwitch extends MessageSwitch<TaskListener, TaskController> {
+    public static class TaskMessageSwitch extends MessageSwitch<TaskListener, TaskController> {
     }
 }

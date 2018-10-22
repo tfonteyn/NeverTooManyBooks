@@ -20,6 +20,7 @@
 
 package com.eleybourn.bookcatalogue.booklist;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
@@ -52,9 +53,18 @@ public class BooklistPreferencesActivity extends PreferencesBaseActivity {
     public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_BOOKLIST_PREFERENCES;
 
     // ID values for state preservation property
-    public static final int BOOK_LIST_ALWAYS_EXPANDED = 1;
+    public static final int BOOK_LIST_ALWAYS_EXPANDED = 1; // default
     public static final int BOOK_LIST_ALWAYS_COLLAPSED = 2;
     public static final int BOOK_LIST_STATE_PRESERVED = 3;
+
+    /** BookList Compatibility mode property values */
+    public static final int BOOKLIST_GENERATE_OLD_STYLE = 1;
+    public static final int BOOKLIST_GENERATE_FLAT_TRIGGER = 2;
+    public static final int BOOKLIST_GENERATE_NESTED_TRIGGER = 3;
+    public static final int BOOKLIST_GENERATE_AUTOMATIC = 4; // default
+
+    /** Force list construction to compatible mode (compatible with Android 1.6) (name kept for backwards compatibility) */
+    public static final String PREF_BOOKLIST_GENERATION_MODE = "App.BooklistGenerationMode";
 
     /** Prefix for all preferences */
     private static final String TAG = "BookList.Global";
@@ -65,7 +75,6 @@ public class BooklistPreferencesActivity extends PreferencesBaseActivity {
     /** Always expand/collapse/preserve book list state */
     private static final String PREF_BOOK_LIST_STATE = TAG + ".BooklistState";
 
-
     /** Booklist state preservation property */
     private static final ItemEntries<Integer> mBooklistStateListItems = new ItemEntries<>();
     private static final IntegerListProperty mBooklistStateProperty =
@@ -73,6 +82,14 @@ public class BooklistPreferencesActivity extends PreferencesBaseActivity {
                     PropertyGroup.GRP_GENERAL, R.string.book_list_state)
                     .setPreferenceKey(PREF_BOOK_LIST_STATE)
                     .setDefaultValue(BOOK_LIST_ALWAYS_EXPANDED)
+                    .setGlobal(true);
+    /** Booklist Compatibility mode property values */
+    private static final ItemEntries<Integer> mBooklistCompatibilityModeListItems = new ItemEntries<>();
+    private static final IntegerListProperty mBooklistCompatibilityModeProperty =
+            new IntegerListProperty(mBooklistCompatibilityModeListItems, PREF_BOOKLIST_GENERATION_MODE,
+                    PropertyGroup.GRP_ADVANCED_OPTIONS, R.string.booklist_generation)
+                    .setDefaultValue(BOOKLIST_GENERATE_AUTOMATIC)
+                    .setPreferenceKey(PREF_BOOKLIST_GENERATION_MODE)
                     .setGlobal(true);
     /** Enable Thumbnail Cache property definition */
     private static final ItemEntries<Boolean> mCacheThumbnailsListItems = new ItemEntries<>();
@@ -94,18 +111,24 @@ public class BooklistPreferencesActivity extends PreferencesBaseActivity {
                     .setWeight(100);
 
     static {
-        mBooklistStateListItems.add(null, R.string.use_default_setting);
-        mBooklistStateListItems.add(BOOK_LIST_ALWAYS_EXPANDED, R.string.always_start_booklists_expanded);
-        mBooklistStateListItems.add(BOOK_LIST_ALWAYS_COLLAPSED, R.string.always_start_booklists_collapsed);
-        mBooklistStateListItems.add(BOOK_LIST_STATE_PRESERVED, R.string.remember_booklists_state);
+        mBooklistStateListItems.add(null, R.string.use_default_setting)
+                .add(BOOK_LIST_ALWAYS_EXPANDED, R.string.always_start_booklists_expanded)
+                .add(BOOK_LIST_ALWAYS_COLLAPSED, R.string.always_start_booklists_collapsed)
+                .add(BOOK_LIST_STATE_PRESERVED, R.string.remember_booklists_state);
 
-        mCacheThumbnailsListItems.add(null, R.string.use_default_setting);
-        mCacheThumbnailsListItems.add(false, R.string.resize_each_time);
-        mCacheThumbnailsListItems.add(true, R.string.cache_resized_thumbnails_for_later_use);
+        mBooklistCompatibilityModeListItems.add(null, R.string.use_default_setting)
+                .add(BOOKLIST_GENERATE_OLD_STYLE, R.string.force_compatibility_mode)
+                .add(BOOKLIST_GENERATE_FLAT_TRIGGER, R.string.force_enhanced_compatibility_mode)
+                .add(BOOKLIST_GENERATE_NESTED_TRIGGER, R.string.force_fully_featured)
+                .add(BOOKLIST_GENERATE_AUTOMATIC, R.string.automatically_use_recommended_option);
 
-        mBackgroundThumbnailsListItems.add(null, R.string.use_default_setting);
-        mBackgroundThumbnailsListItems.add(false, R.string.generate_immediately);
-        mBackgroundThumbnailsListItems.add(true, R.string.use_background_thread);
+        mCacheThumbnailsListItems.add(null, R.string.use_default_setting)
+                .add(false, R.string.resize_each_time)
+                .add(true, R.string.cache_resized_thumbnails_for_later_use);
+
+        mBackgroundThumbnailsListItems.add(null, R.string.use_default_setting)
+                .add(false, R.string.generate_immediately)
+                .add(true, R.string.use_background_thread);
     }
 
     /**
@@ -118,7 +141,18 @@ public class BooklistPreferencesActivity extends PreferencesBaseActivity {
             Objects.requireNonNull(value);
         }
         return value;
+    }
 
+    /**
+     * Get the current preferred compatibility mode for the list
+     */
+    public static int getCompatibilityMode() {
+        Integer value = mBooklistCompatibilityModeProperty.get();
+        if (value == null) {
+            value = mBooklistCompatibilityModeProperty.getDefaultValue();
+            Objects.requireNonNull(value);
+        }
+        return value;
     }
 
     public static boolean isThumbnailCacheEnabled() {
@@ -176,10 +210,11 @@ public class BooklistPreferencesActivity extends PreferencesBaseActivity {
                 }
             }
         }
-        // Add the locally constructed properties
+        // Add the locally constructed global properties
         globalProperties.add(mBooklistStateProperty);
         globalProperties.add(mCacheThumbnailsProperty);
         globalProperties.add(mBackgroundThumbnailsProperty);
+        globalProperties.add(mBooklistCompatibilityModeProperty);
     }
 
     /**
@@ -191,10 +226,10 @@ public class BooklistPreferencesActivity extends PreferencesBaseActivity {
         super.onPause();
 
         // as we don't really have an easy way to detect changes, nor use a 'confirm' anywhere,
-        // just set RESULT_OK here basically assuming that the user must have made a change
+        // just set Activity.RESULT_OK here basically assuming that the user must have made a change
         if (isFinishing()) {
             Intent intent = new Intent();
-            setResult(RESULT_OK, intent);
+            setResult(Activity.RESULT_OK, intent);
         }
     }
 }

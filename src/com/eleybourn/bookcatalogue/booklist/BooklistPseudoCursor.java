@@ -26,6 +26,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.database.cursors.BooklistCursor;
 import com.eleybourn.bookcatalogue.database.cursors.BooklistRowView;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -236,8 +237,8 @@ public class BooklistPseudoCursor extends AbstractCursor implements BooklistSupp
         }
         // Purge them
         for (Integer i : toPurge) {
-            if (BuildConfig.DEBUG) {
-                Logger.info("Removing cursor at " + i);
+            if (DEBUG_SWITCHES.BOOKLIST_BUILDER && BuildConfig.DEBUG) {
+                Logger.info(this,"Removing cursor at " + i);
             }
             BooklistCursor c = mCursors.remove(i);
             c.close();

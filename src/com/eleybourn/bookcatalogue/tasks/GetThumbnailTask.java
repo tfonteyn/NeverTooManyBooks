@@ -27,6 +27,7 @@ import android.support.annotation.Nullable;
 import android.widget.ImageView;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.booklist.BooklistPreferencesActivity;
 import com.eleybourn.bookcatalogue.database.CoversDbHelper;
@@ -67,9 +68,9 @@ public class GetThumbnailTask implements SimpleTask {
         if (nr > 4) {
             maxTasks = 3; // just a poke in the dark TODO: experiment more
         }
-        if (BuildConfig.DEBUG) {
-            Logger.info("GetThumbnailTask: #cpu     : " + nr);
-            Logger.info("GetThumbnailTask: #maxTasks: " + maxTasks);
+        if (DEBUG_SWITCHES.TASK_MANAGER && BuildConfig.DEBUG) {
+            Logger.info(GetThumbnailTask.class,"GetThumbnailTask: #cpu     : " + nr);
+            Logger.info(GetThumbnailTask.class,"GetThumbnailTask: #maxTasks: " + maxTasks);
         }
         mQueue = new SimpleTaskQueue("thumbnails", maxTasks);
     }

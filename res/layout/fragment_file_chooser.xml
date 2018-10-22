@@ -9,7 +9,7 @@
     android:paddingStart="@dimen/padding_border">
 
     <RelativeLayout
-        android:id="@+id/path_details"
+        android:id="@+id/row_path_up"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
@@ -40,13 +40,13 @@
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textStyle="bold"
             tools:text="/foo/bar/gum"
-            android:textIsSelectable="true" />
+            android:textIsSelectable="false" />
     </RelativeLayout>
 
     <View
         android:id="@+id/header_divider"
         style="@style/listDividerHorizontal"
-        android:layout_below="@id/path_details" />
+        android:layout_below="@id/row_path_up" />
 
     <com.eleybourn.bookcatalogue.widgets.FastScrollListView
         android:id="@android:id/list"

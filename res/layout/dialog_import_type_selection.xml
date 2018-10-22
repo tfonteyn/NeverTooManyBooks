@@ -12,7 +12,7 @@
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <LinearLayout
-        android:id="@+id/all_books_row"
+        android:id="@+id/row_all_books"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
@@ -29,7 +29,7 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/new_and_changed_books_row"
+        android:id="@+id/row_new_and_changed_books"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">

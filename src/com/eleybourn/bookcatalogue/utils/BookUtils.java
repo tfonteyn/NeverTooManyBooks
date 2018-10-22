@@ -20,9 +20,7 @@
 package com.eleybourn.bookcatalogue.utils;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.database.CursorIndexOutOfBoundsException;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -34,6 +32,7 @@ import com.eleybourn.bookcatalogue.EditBookActivity;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.DBExceptions;
 import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
 import com.eleybourn.bookcatalogue.database.cursors.BooksCursor;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -62,38 +61,39 @@ public class BookUtils {
                                      final long bookId) {
         final Bundle bookData = new Bundle();
         try (BooksCursor cursor = db.fetchBookById(bookId)) {
-            BookRowView bookRowView = cursor.getRowView();
-            cursor.moveToFirst();
+            if (cursor.moveToFirst()) {
+                BookRowView bookRowView = cursor.getRowView();
 
-            bookData.putSerializable(UniqueId.BKEY_AUTHOR_ARRAY, db.getBookAuthorList(bookId));
-            bookData.putSerializable(UniqueId.BKEY_SERIES_ARRAY, db.getBookSeriesList(bookId));
+                bookData.putString(UniqueId.KEY_TITLE, bookRowView.getTitle());
+                bookData.putString(UniqueId.KEY_BOOK_ISBN, bookRowView.getIsbn());
+                bookData.putString(UniqueId.KEY_DESCRIPTION, bookRowView.getDescription());
 
-            bookData.putString(UniqueId.KEY_TITLE, bookRowView.getTitle());
-            bookData.putString(UniqueId.KEY_BOOK_ISBN, bookRowView.getIsbn());
-            bookData.putString(UniqueId.KEY_DESCRIPTION, bookRowView.getDescription());
+                bookData.putSerializable(UniqueId.BKEY_AUTHOR_ARRAY, db.getBookAuthorList(bookId));
+                bookData.putSerializable(UniqueId.BKEY_SERIES_ARRAY, db.getBookSeriesList(bookId));
 
-            bookData.putInt(UniqueId.KEY_ANTHOLOGY_BITMASK, bookRowView.getAnthologyMask());
-            bookData.putSerializable(UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY, db.getAnthologyTitleListByBook(bookId));
+                bookData.putInt(UniqueId.KEY_ANTHOLOGY_BITMASK, bookRowView.getAnthologyMask());
+                bookData.putSerializable(UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY, db.getAnthologyTitleListByBook(bookId));
 
-            bookData.putString(UniqueId.KEY_BOOK_PUBLISHER, bookRowView.getPublisherName());
-            bookData.putString(UniqueId.KEY_BOOK_DATE_PUBLISHED, bookRowView.getDatePublished());
-            bookData.putString(UniqueId.KEY_FIRST_PUBLICATION, bookRowView.getFirstPublication());
+                bookData.putString(UniqueId.KEY_BOOK_PUBLISHER, bookRowView.getPublisherName());
+                bookData.putString(UniqueId.KEY_BOOK_DATE_PUBLISHED, bookRowView.getDatePublished());
+                bookData.putString(UniqueId.KEY_BOOK_FORMAT, bookRowView.getFormat());
+                bookData.putString(UniqueId.KEY_BOOK_GENRE, bookRowView.getGenre());
+                bookData.putString(UniqueId.KEY_BOOK_LIST_PRICE, bookRowView.getListPrice());
+                bookData.putString(UniqueId.KEY_BOOK_LANGUAGE, bookRowView.getLanguage());
+                bookData.putString(UniqueId.KEY_BOOK_PAGES, bookRowView.getPages());
+                bookData.putDouble(UniqueId.KEY_BOOK_RATING, bookRowView.getRating());
+                bookData.putString(UniqueId.KEY_BOOK_LOCATION, bookRowView.getLocation());
+                bookData.putString(UniqueId.KEY_BOOK_READ_END, bookRowView.getReadEnd());
+                bookData.putString(UniqueId.KEY_BOOK_READ_START, bookRowView.getReadStart());
+                bookData.putInt(UniqueId.KEY_BOOK_READ, bookRowView.getRead());
+                bookData.putInt(UniqueId.KEY_BOOK_SIGNED, bookRowView.getSigned());
 
-            bookData.putString(UniqueId.KEY_BOOK_FORMAT, bookRowView.getFormat());
-            bookData.putString(UniqueId.KEY_BOOK_GENRE, bookRowView.getGenre());
-            bookData.putString(UniqueId.KEY_BOOK_LIST_PRICE, bookRowView.getListPrice());
-            bookData.putString(UniqueId.KEY_BOOK_LANGUAGE, bookRowView.getLanguage());
-            bookData.putString(UniqueId.KEY_BOOK_PAGES, bookRowView.getPages());
+                bookData.putString(UniqueId.KEY_FIRST_PUBLICATION, bookRowView.getFirstPublication());
+                bookData.putString(UniqueId.KEY_NOTES, bookRowView.getNotes());
+            }
 
-            bookData.putString(UniqueId.KEY_NOTES, bookRowView.getNotes());
-            bookData.putDouble(UniqueId.KEY_BOOK_RATING, bookRowView.getRating());
-            bookData.putInt(UniqueId.KEY_BOOK_SIGNED, bookRowView.getSigned());
-            bookData.putString(UniqueId.KEY_BOOK_LOCATION, bookRowView.getLocation());
-            bookData.putInt(UniqueId.KEY_BOOK_READ, bookRowView.getRead());
-            bookData.putString(UniqueId.KEY_BOOK_READ_END, bookRowView.getReadEnd());
-            bookData.putString(UniqueId.KEY_BOOK_READ_START, bookRowView.getReadStart());
-
-        } catch (CursorIndexOutOfBoundsException e) {
+        } catch (DBExceptions.ColumnNotPresent e) {
+            // fetchBookById had an incomplete selectClause, the log will tell us which column
             StandardDialogs.showBriefMessage(activity, R.string.error_unknown);
             Logger.error(e);
             return;
@@ -135,22 +135,25 @@ public class BookUtils {
      *
      * @param bookId  of the book
      */
-    public static void shareBook(@NonNull final Context context,
+    public static void shareBook(@NonNull final Activity activity,
                                  @NonNull final CatalogueDBAdapter db,
                                  final long bookId) {
         String title;
         double rating;
-        String ratingString = "";
         String author;
         String series;
 
         try (BooksCursor cursor = db.fetchBookById(bookId)) {
-            cursor.moveToFirst();
-            BookRowView bookRowView = cursor.getRowView();
-            title = bookRowView.getTitle();
-            rating = bookRowView.getRating();
-            author = bookRowView.getPrimaryAuthorNameFormatted();
-            series = bookRowView.getPrimarySeriesFormatted();
+            if (cursor.moveToFirst()) {
+                BookRowView bookRowView = cursor.getRowView();
+                title = bookRowView.getTitle();
+                rating = bookRowView.getRating();
+                author = bookRowView.getPrimaryAuthorNameFormattedGivenFirst();
+                series = bookRowView.getPrimarySeriesFormatted();
+            } else {
+                StandardDialogs.showBriefMessage(activity, R.string.unable_to_find_book);
+                return;
+            }
         }
 
         File image = StorageUtils.getCoverFile(db.getBookUuid(bookId));
@@ -158,7 +161,9 @@ public class BookUtils {
         if (!series.isEmpty()) {
             series = " (" + series.replace("#", "%23") + ")";
         }
+
         //remove trailing 0's
+        String ratingString = "";
         if (rating > 0) {
             int ratingTmp = (int) rating;
             double decimal = rating - ratingTmp;
@@ -175,20 +180,19 @@ public class BookUtils {
 
 
         // prepare the cover to post
-        Uri coverURI = FileProvider.getUriForFile(context, GenericFileProvider.AUTHORITY, image);
+        Uri coverURI = FileProvider.getUriForFile(activity, GenericFileProvider.AUTHORITY, image);
 
         /*
-        FIXME: check this
-		 * There's a problem with the facebook app in android, so despite it being shown on the list
-		 * it will not post any text unless the user types it.
+        FIXME: There's a problem with the facebook app in android,
+         so despite it being shown on the list it will not post any text unless the user types it.
 		 */
         Intent share = new Intent(Intent.ACTION_SEND);
-        String text = context.getString(R.string.share_book_im_reading, title, author, series, ratingString);
+        String text = activity.getString(R.string.share_book_im_reading, title, author, series, ratingString);
         share.putExtra(Intent.EXTRA_TEXT, text);
         share.putExtra(Intent.EXTRA_STREAM, coverURI);
         share.setType("text/plain");
 
-        context.startActivity(Intent.createChooser(share, context.getString(R.string.share)));
+        activity.startActivity(Intent.createChooser(share, activity.getString(R.string.share)));
     }
 
     /**

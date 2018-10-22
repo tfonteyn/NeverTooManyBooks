@@ -142,9 +142,10 @@
 
         <CheckBox
             android:id="@+id/asinCheckbox"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="start"
+            android:layout_marginTop="@dimen/padding_border_double"
+            android:gravity="center|start"
             android:text="@string/allow_asin" />
 
     </LinearLayout>

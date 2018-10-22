@@ -107,9 +107,9 @@ public class ImportTypeSelectionDialogFragment extends DialogFragment {
         }
 
         View view = requireActivity().getLayoutInflater().inflate(R.layout.dialog_import_type_selection, null);
-        setOnClickListener(view, R.id.all_books_row);
+        setOnClickListener(view, R.id.row_all_books);
         if (mArchiveHasValidDates) {
-            setOnClickListener(view, R.id.new_and_changed_books_row);
+            setOnClickListener(view, R.id.row_new_and_changed_books);
         } else {
             TextView blurb = view.findViewById(R.id.new_and_changed_books_blurb);
             blurb.setText(R.string.old_archive_blurb);
@@ -125,7 +125,7 @@ public class ImportTypeSelectionDialogFragment extends DialogFragment {
     }
 
     private void handleClick(@NonNull final View v) {
-        if (!mArchiveHasValidDates && v.getId() == R.id.new_and_changed_books_row) {
+        if (!mArchiveHasValidDates && v.getId() == R.id.row_new_and_changed_books) {
             StandardDialogs.showBriefMessage(requireActivity(), R.string.old_archive_blurb);
             //Snackbar.make(v, R.string.old_archive_blurb, Snackbar.LENGTH_LONG).show();
             return;

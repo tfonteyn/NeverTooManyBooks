@@ -21,7 +21,6 @@
 package com.eleybourn.bookcatalogue.searches.librarything;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.net.ParseException;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
@@ -74,14 +73,22 @@ public class LibraryThingManager {
     /** Name of preference that contains the dev key for the user */
     static final String PREFS_LT_DEV_KEY = "lt_devkey";
 
-    private static final String AUTHOR = "author";
-    private static final String FIELD = "field";
-    private static final String ISBN = "isbn";
-    private static final String FACT = "fact";
-    private static final String CANONICAL_TITLE = "canonicaltitle";
-    private static final String SERIES = "series";
-    private static final String PLACES = "placesmentioned";
-    private static final String CHARACTERS = "characternames";
+    /** LibraryThing extra fields in the results for potential future usage */
+    private static final String LT_PLACES = "__places";
+    private static final String LT_CHARACTERS = "__characters";
+
+    /** Words in XML */
+    @NonNull
+    private static String XML_ID = "id";
+    private static final String XML_FIELD = "field";
+    private static final String XML_FACT = "fact";
+    private static final String XML_AUTHOR = "author";
+    private static final String XML_ISBN = "isbn";
+    private static final String XML_CANONICAL_TITLE = "canonicaltitle";
+    private static final String XML_NAME = "name";
+    private static final String XML_SERIES = "series";
+    private static final String XML_PLACES = "placesmentioned";
+    private static final String XML_CHARACTERS = "characternames";
 
     private static final String BASE_URL = "https://www.librarything.com";
     private static final String BASE_URL_COVERS = "https://covers.librarything.com";
@@ -95,9 +102,7 @@ public class LibraryThingManager {
 //	private static final String RESPONSE = "response";
 //	private static final String ITEM = "item";
 
-    // Words in XML
-    @NonNull
-    public static String ID = "id";
+
     @NonNull
     private static Long mLastRequestTime = 0L;
 
@@ -480,6 +485,7 @@ public class LibraryThingManager {
     void search(@NonNull final String isbn,
                 @NonNull final Bundle /* out */ book,
                 final boolean fetchThumbnail) throws IOException {
+
         String devKey = getDevKey();
         if (devKey.isEmpty()) {
             throw new RTE.DeveloperKeyMissingException();
@@ -558,8 +564,8 @@ public class LibraryThingManager {
     @Nullable
     public File getCoverImage(@NonNull final String isbn, @Nullable final Bundle book, @NonNull final ImageSizes size) {
         String url = getCoverImageUrl(isbn, size);
-        if (DEBUG_SWITCHES.LIBRARY_THING && BuildConfig.DEBUG) {
-            Logger.info("LTM: " + url + " " + isbn + " " + size);
+        if (DEBUG_SWITCHES.LIBRARY_THING_MANAGER && BuildConfig.DEBUG) {
+            Logger.info(this,url + " " + isbn + " " + size);
         }
 
         // Make sure we follow LibraryThing ToS (no more than 1 request/second).
@@ -587,8 +593,7 @@ public class LibraryThingManager {
      */
     @NonNull
     private String getDevKey() {
-        SharedPreferences prefs = BookCatalogueApp.getSharedPreferences();
-        String key = prefs.getString(PREFS_LT_DEV_KEY, "");
+        String key = BookCatalogueApp.Prefs.getStringOrEmpty(PREFS_LT_DEV_KEY);
         return key.replaceAll("[\\r\\t\\n\\s]*", "");
     }
 
@@ -640,7 +645,7 @@ public class LibraryThingManager {
         public void endElement(final String uri, @NonNull final String localName, final String name) throws SAXException {
             super.endElement(uri, localName, name);
 
-            if (localName.equalsIgnoreCase(ISBN)) {
+            if (localName.equalsIgnoreCase(XML_ISBN)) {
                 // Add the isbn
                 String isbn = mBuilder.toString();
                 mEditions.add(isbn);
@@ -687,18 +692,18 @@ public class LibraryThingManager {
             // reset the string. See note in endElement() for a discussion.
             mBuilder.setLength(0);
 
-            if (localName.equalsIgnoreCase(FIELD)) {
-                // FIELDs are the main things we want. Once we are in a field we wait for a FACT; these
+            if (localName.equalsIgnoreCase(XML_FIELD)) {
+                // FIELDs are the main things we want. Once we are in a field we wait for a XML_FACT; these
                 // are read in the endElement() method.
-                String fieldName = attributes.getValue("", "name");
+                String fieldName = attributes.getValue("", XML_NAME);
                 if (fieldName != null) {
-                    if (fieldName.equalsIgnoreCase(CANONICAL_TITLE)) {
+                    if (fieldName.equalsIgnoreCase(XML_CANONICAL_TITLE)) {
                         mFieldType = FieldTypes.TITLE;
-                    } else if (fieldName.equalsIgnoreCase(SERIES)) {
+                    } else if (fieldName.equalsIgnoreCase(XML_SERIES)) {
                         mFieldType = FieldTypes.SERIES;
-                    } else if (fieldName.equalsIgnoreCase(PLACES)) {
+                    } else if (fieldName.equalsIgnoreCase(XML_PLACES)) {
                         mFieldType = FieldTypes.PLACES;
-                    } else if (fieldName.equalsIgnoreCase(CHARACTERS)) {
+                    } else if (fieldName.equalsIgnoreCase(XML_CHARACTERS)) {
                         mFieldType = FieldTypes.CHARACTERS;
                     }
                 }
@@ -720,15 +725,15 @@ public class LibraryThingManager {
         public void endElement(final String uri, @NonNull final String localName, final String name) throws SAXException {
             super.endElement(uri, localName, name);
 
-            if (localName.equalsIgnoreCase(FIELD)) {
+            if (localName.equalsIgnoreCase(XML_FIELD)) {
                 // Reset the current field
                 mFieldType = FieldTypes.NONE;
 
-            } else if (localName.equalsIgnoreCase(AUTHOR)) {
+            } else if (localName.equalsIgnoreCase(XML_AUTHOR)) {
                 ArrayUtils.addOrAppend(mBookData, UniqueId.BKEY_AUTHOR_DETAILS, mBuilder.toString());
 
-            } else if (localName.equalsIgnoreCase(FACT)) {
-                // Process the FACT according to the active FIELD type.
+            } else if (localName.equalsIgnoreCase(XML_FACT)) {
+                // Process the XML_FACT according to the active XML_FIELD type.
 
                 switch (mFieldType) {
 
@@ -741,11 +746,11 @@ public class LibraryThingManager {
                         break;
 
                     case PLACES:
-                        ArrayUtils.addOrAppend(mBookData, "__places", mBuilder.toString());
+                        ArrayUtils.addOrAppend(mBookData, LT_PLACES, mBuilder.toString());
                         break;
 
                     case CHARACTERS:
-                        ArrayUtils.addOrAppend(mBookData, "__characters", mBuilder.toString());
+                        ArrayUtils.addOrAppend(mBookData, LT_CHARACTERS, mBuilder.toString());
                         break;
                 }
             }

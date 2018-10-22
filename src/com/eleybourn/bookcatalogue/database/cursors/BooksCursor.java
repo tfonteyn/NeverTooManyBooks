@@ -32,7 +32,8 @@ import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer;
 
 /**
  * Cursor implementation for book-related queries. The cursor wraps common
- * column lookups and reduces code clutter when accessing common columns.
+ * column lookups and reduces code clutter when accessing common columns by
+ * providing a {@link BookRowView}
  *
  * @author Philip Warner
  */

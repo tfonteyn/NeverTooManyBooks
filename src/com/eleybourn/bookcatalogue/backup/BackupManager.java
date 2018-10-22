@@ -26,11 +26,13 @@ import android.support.v4.app.FragmentActivity;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.BackupReader.BackupReaderListener;
 import com.eleybourn.bookcatalogue.backup.BackupWriter.BackupWriterListener;
 import com.eleybourn.bookcatalogue.backup.tar.TarBackupContainer;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.filechooser.BackupFileDetails;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTaskContext;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressFragment;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressFragment.FragmentTask;
@@ -55,8 +57,8 @@ public class BackupManager {
      */
     @NonNull
     private static File cleanupFile(@NonNull final File requestedFile) {
-        if (!requestedFile.getName().toUpperCase().endsWith(".BCBK")) {
-            return new File(requestedFile.getAbsoluteFile() + ".bcbk");
+        if (!BackupFileDetails.isArchive(requestedFile)) {
+            return new File(requestedFile.getAbsoluteFile() + BackupFileDetails.ARCHIVE_EXTENSION);
         } else {
             return requestedFile;
         }
@@ -93,8 +95,8 @@ public class BackupManager {
             public void run(@NonNull final SimpleTaskQueueProgressFragment fragment, @NonNull final SimpleTaskContext taskContext) {
 
                 TarBackupContainer bkp = new TarBackupContainer(tempFile);
-                if (BuildConfig.DEBUG) {
-                    Logger.info("Starting " + tempFile.getAbsolutePath());
+                if (DEBUG_SWITCHES.BACKUP && BuildConfig.DEBUG) {
+                    Logger.info(this, " Starting " + tempFile.getAbsolutePath());
                 }
                 try (BackupWriter wrt = bkp.newWriter()) {
 
@@ -128,16 +130,16 @@ public class BackupManager {
                     }, backupFlags, since);
 
                     if (fragment.isCancelled()) {
-                        if (BuildConfig.DEBUG) {
-                            Logger.info("Cancelled " + resultingFile.getAbsolutePath());
+                        if (DEBUG_SWITCHES.BACKUP && BuildConfig.DEBUG) {
+                            Logger.info(this, " Cancelled " + resultingFile.getAbsolutePath());
                         }
                         StorageUtils.deleteFile(tempFile);
                     } else {
                         StorageUtils.deleteFile(resultingFile);
                         StorageUtils.renameFile(tempFile, resultingFile);
                         mBackupOk = true;
-                        if (BuildConfig.DEBUG) {
-                            Logger.info("Finished " + resultingFile.getAbsolutePath() + ", size = " + resultingFile.length());
+                        if (DEBUG_SWITCHES.BACKUP && BuildConfig.DEBUG) {
+                            Logger.info(this, " Finished " + resultingFile.getAbsolutePath() + ", size = " + resultingFile.length());
                         }
                     }
                 } catch (Exception e) {
@@ -184,8 +186,9 @@ public class BackupManager {
             @Override
             public void run(@NonNull final SimpleTaskQueueProgressFragment fragment, @NonNull final SimpleTaskContext taskContext) {
                 try {
-                    Logger.info("Importing " + inputFile.getAbsolutePath());
-
+                    if (DEBUG_SWITCHES.BACKUP && BuildConfig.DEBUG) {
+                        Logger.info(this, " Importing " + inputFile.getAbsolutePath());
+                    }
                     readFrom(inputFile).restore(new BackupReaderListener() {
                         @Override
                         public void setMax(int max) {
@@ -207,7 +210,7 @@ public class BackupManager {
                     Logger.error(e);
                     throw new RuntimeException("Error during restore", e);
                 }
-                Logger.info("Finished " + inputFile.getAbsolutePath() + ", size = " + inputFile.length());
+                Logger.info(BackupManager.class,"Finished importing " + inputFile.getAbsolutePath() + ", size = " + inputFile.length());
             }
         };
         SimpleTaskQueueProgressFragment frag = SimpleTaskQueueProgressFragment.runTaskWithProgress(context,

@@ -51,7 +51,7 @@ import java.util.Date;
  */
 public class Logger {
 
-    private static final String TAG = "BC Logger";
+    private static final String TAG = "BC_Logger";
 
     @SuppressLint("SimpleDateFormat")
     private static final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -60,8 +60,8 @@ public class Logger {
     }
 
     /**
-     * Should really only be used from within a code block.
-     * And even then only in problematic places.
+     * Should really only be used from within a debug code block.
+     * And even then only in problematic places, as the stack trace can get large
      *
      * Generates stacktrace!
      *
@@ -70,15 +70,35 @@ public class Logger {
      * }
      */
     public static void debug(final String message) {
-        error("DEBUG: " + message);
+        error("DEBUG|" + message);
     }
 
     /**
      * Pure info, no stacktrace.
+     *
+     * For static callers
      */
-    public static void info(final String message) {
-        Log.e(TAG, "INFO: " + message);
-        writeToErrorLog("INFO: " + message);
+    public static void info(@NonNull final Class clazz, final String message) {
+        String msg = "INFO|" + clazz.getCanonicalName() + "|" + message;
+        Log.e(TAG, msg);
+        writeToErrorLog(msg);
+    }
+
+    /**
+     * Pure info, no stacktrace.
+     *
+     * For instance callers
+     */
+    public static void info(@NonNull final Object object, final String message) {
+        Class clazz = object.getClass();
+        String msg = "INFO|" + clazz.getCanonicalName() + "|" + message;
+        if (clazz.isAnonymousClass()) {
+            //FIXME: redo info method, so it 'simply gets the caller class from the stacktrace, e.g. just print line 1 i.e.
+            error(msg);
+        } else {
+            Log.e(TAG, msg);
+            writeToErrorLog(msg);
+        }
     }
 
     /**
@@ -118,7 +138,7 @@ public class Logger {
             exMsg = e.getLocalizedMessage();
         }
 
-        String error = "An Exception/Error Occurred @ " + now + "\n" +
+        String error = "ERROR|An Exception/Error Occurred @ " + now + "\n" +
                 (exMsg != null ? exMsg + "\n" : "") +
                 "In Phone " + Build.MODEL + " (" + Build.VERSION.SDK_INT + ") \n" +
                 message + "\n" +
@@ -126,10 +146,10 @@ public class Logger {
 
         // Log the exception to the console in full when in debug, but only the message when deployed.
         // Either way, the exception will be in the physical logfile.
-        if (BuildConfig.DEBUG) {
+        if (/* always log */ BuildConfig.DEBUG) {
             Log.e(TAG, error);
         } else {
-            Log.e(TAG, message); // message without the exception stuff
+            Log.e(TAG, message);
         }
 
         writeToErrorLog(error);

@@ -47,7 +47,7 @@ import java.util.Map;
 /**
  * The interface of all image collections used in gallery.
  */
-interface CropIImageList extends Parcelable {
+interface CropIImageList extends Parcelable, AutoCloseable {
 	@NonNull
 	Map<String, String> getBucketIds();
 

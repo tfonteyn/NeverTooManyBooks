@@ -98,12 +98,12 @@ public class MenuHandler {
      * Handle the default menu items
      *
      * @param activity Calling activity
-     * @param item     The item selected
+     * @param menuItem     The item selected
      *
      * @return <tt>true</tt> if handled
      */
-    public boolean onOptionsItemSelected(@NonNull final Activity activity, @NonNull final MenuItem item) {
-        switch (item.getItemId()) {
+    public boolean onOptionsItemSelected(@NonNull final Activity activity, @NonNull final MenuItem menuItem) {
+        switch (menuItem.getItemId()) {
             case R.id.MENU_BOOK_ADD_BY_SCAN:
                 addBookByScanning(activity);
                 return true;

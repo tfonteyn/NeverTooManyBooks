@@ -23,6 +23,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.backup.BackupReader.BackupReaderListener;
 import com.eleybourn.bookcatalogue.backup.BackupWriter.BackupWriterListener;
 import com.eleybourn.bookcatalogue.backup.tar.TarBackupContainer;
@@ -59,8 +60,8 @@ public class BackupTest {
     }
 
     private static void performBackupTar(@NonNull File file) throws IOException {
-        if (BuildConfig.DEBUG) {
-            Logger.info("Starting " + file.getAbsolutePath());
+        if (DEBUG_SWITCHES.BACKUP && BuildConfig.DEBUG) {
+            Logger.info(BackupTest.class,"Starting " + file.getAbsolutePath());
         }
         new TarBackupContainer(file)
                 .newWriter()
@@ -82,8 +83,8 @@ public class BackupTest {
                         if (message != null)
                             mMessage = message;
                         mPosition += delta;
-                        if (BuildConfig.DEBUG) {
-                            Logger.info("BKP: " + mMessage + " " + mPosition + " of " + mMax);
+                        if (DEBUG_SWITCHES.BACKUP && BuildConfig.DEBUG) {
+                            Logger.info(BackupTest.class,mMessage + " " + mPosition + " of " + mMax);
                         }
                     }
 
@@ -102,14 +103,14 @@ public class BackupTest {
                         mTotalBooks = books;
                     }
                 }, Exporter.EXPORT_ALL, null);
-        if (BuildConfig.DEBUG) {
-            Logger.info("Finished " + file.getAbsolutePath() + ", size = " + file.length());
+        if (DEBUG_SWITCHES.BACKUP && BuildConfig.DEBUG) {
+            Logger.info(BackupTest.class,"Finished " + file.getAbsolutePath() + ", size = " + file.length());
         }
     }
 
     private static void performRestoreTar(@NonNull File file) throws IOException {
-        if (BuildConfig.DEBUG) {
-            Logger.info("Starting " + file.getAbsolutePath());
+        if (DEBUG_SWITCHES.BACKUP && BuildConfig.DEBUG) {
+            Logger.info(BackupTest.class,"Starting " + file.getAbsolutePath());
         }
 
         TarBackupContainer bkp = new TarBackupContainer(file);
@@ -136,8 +137,8 @@ public class BackupTest {
                     mMessage = message;
                 }
                 mPosition += delta;
-                if (BuildConfig.DEBUG) {
-                    Logger.info("RST: " + mMessage + " " + mPosition + " of " + mMax);
+                if (DEBUG_SWITCHES.BACKUP && BuildConfig.DEBUG) {
+                    Logger.info(BackupTest.class,mMessage + " " + mPosition + " of " + mMax);
                 }
             }
 
@@ -147,8 +148,8 @@ public class BackupTest {
             }
         }, Importer.IMPORT_ALL);
 
-        if (BuildConfig.DEBUG) {
-            Logger.info("Finished " + file.getAbsolutePath() + ", size = " + file.length());
+        if (DEBUG_SWITCHES.BACKUP && BuildConfig.DEBUG) {
+            Logger.info(BackupTest.class,"Finished " + file.getAbsolutePath() + ", size = " + file.length());
         }
     }
 

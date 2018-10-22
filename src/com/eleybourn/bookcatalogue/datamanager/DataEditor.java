@@ -28,7 +28,7 @@ import android.support.annotation.NonNull;
  */
 public interface DataEditor {
 	/** Save current data TO the passed DataManager */
-    void saveAllEdits(@SuppressWarnings("unused") @NonNull final DataManager data);
+    <T extends DataManager>  void saveDataTo(@NonNull final T /* in/out */ data);
 	/** Load current data FROM passed DataManager */
-    void reloadData(@SuppressWarnings("unused") @NonNull final DataManager data);
+    <T extends DataManager> void loadDataFrom(@NonNull final T /* in/out */ data);
 }

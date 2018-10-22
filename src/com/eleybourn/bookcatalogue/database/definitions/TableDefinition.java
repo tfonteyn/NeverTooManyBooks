@@ -28,7 +28,7 @@ import java.util.Set;
 public class TableDefinition implements AutoCloseable, Cloneable {
     private final static String mExistsSql =
             "SELECT (SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name=?) + " +
-            "(SELECT COUNT(*) FROM sqlite_temp_master WHERE type='table' AND name=?)";
+                    "(SELECT COUNT(*) FROM sqlite_temp_master WHERE type='table' AND name=?)";
     /** List of index definitions for this table */
     private final Map<String, IndexDefinition> mIndexes = Collections.synchronizedMap(new HashMap<String, IndexDefinition>());
     /** List of domains in this table */
@@ -77,8 +77,8 @@ public class TableDefinition implements AutoCloseable, Cloneable {
      * Static method to drop the passed table, if it exists.
      */
     private static void drop(@NonNull final DbSync.SynchronizedDb db, @NonNull final String name) {
-        if (BuildConfig.DEBUG) {
-            Logger.info("Dropping TABLE " + name);
+        if (DEBUG_SWITCHES.DB_ADAPTER && BuildConfig.DEBUG) {
+            Logger.info(TableDefinition.class, "Dropping TABLE " + name);
         }
         db.execSQL("DROP TABLE If Exists " + name);
     }
@@ -402,7 +402,7 @@ public class TableDefinition implements AutoCloseable, Cloneable {
         }
         // Make sure one with same name is not already in table
         if (mDomainNameCheck.containsKey(domain.name.toLowerCase())) {
-            throw new IllegalArgumentException("A domain '"+ domain +"' has already been added");
+            throw new IllegalArgumentException("A domain '" + domain + "' has already been added");
         }
         // Add it
         mDomains.add(domain);
@@ -487,12 +487,13 @@ public class TableDefinition implements AutoCloseable, Cloneable {
     @NonNull
     public TableDefinition create(@NonNull final DbSync.SynchronizedDb db,
                                   final boolean withConstraints) {
-        if (BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.DB_ADAPTER && BuildConfig.DEBUG) {
+            @SuppressWarnings("UnusedAssignment")
             String s = this.getSql(mName, withConstraints, false);
             if (DEBUG_SWITCHES.SQL) {
-                Logger.info(s);
+                Logger.info(this, s);
             } else {
-                Logger.info("Creating table " + s.substring(0, 30));
+                Logger.info(this, "Creating table " + s.substring(0, 30));
             }
         }
         db.execSQL(this.getSql(mName, withConstraints, false));
@@ -570,12 +571,13 @@ public class TableDefinition implements AutoCloseable, Cloneable {
         s.append(mDomains.get(0).name);
 
         for (int i = 1; i < mDomains.size(); i++) {
-            s.append(",\n");
+            s.append(",");
             s.append(aliasDot);
             s.append(mDomains.get(i).name);
         }
         return s.toString();
     }
+
     /**
      * Get a base list of fields for this table using the passed list of domains. Returns partial
      * SQL of the form: '[alias].[domain-1], ..., [alias].[domain-n]'.
@@ -595,7 +597,7 @@ public class TableDefinition implements AutoCloseable, Cloneable {
         s.append(domains[0].name);
 
         for (int i = 1; i < domains.length; i++) {
-            s.append(",\n");
+            s.append(",");
             s.append(aliasDot);
             s.append(domains[i].name);
         }
@@ -618,11 +620,10 @@ public class TableDefinition implements AutoCloseable, Cloneable {
         s.append(domains[0]);
         s.append("=?");
         for (int i = 1; i < domains.length; i++) {
-            s.append(",	");
+            s.append(",");
             s.append(domains[i]);
             s.append("=?");
         }
-        s.append("\n");
         return s.toString();
     }
 
@@ -646,11 +647,11 @@ public class TableDefinition implements AutoCloseable, Cloneable {
             s.append(", ");
             s.append(domains[i]);
 
-            sPlaceholders.append(", ?");
+            sPlaceholders.append(",?");
         }
-        s.append(")\n	values (");
+        s.append(")	VALUES (");
         s.append(sPlaceholders);
-        s.append(")\n");
+        s.append(")");
         return s.toString();
     }
 
@@ -685,47 +686,27 @@ public class TableDefinition implements AutoCloseable, Cloneable {
      */
     @NonNull
     private String getSql(@NonNull final String name, final boolean withConstraints, final boolean ifNecessary) {
-        StringBuilder sql = new StringBuilder("CREATE ");
-        switch (mType) {
-            case Standard:
-                break;
-            case FTS3:
-            case FTS4:
-                sql.append("Virtual ");
-                break;
-            case Temporary:
-                sql.append("Temporary ");
-                break;
-        }
-
-        sql.append("TABLE ");
+        StringBuilder sql = new StringBuilder("CREATE").append(mType.getCreateModifier()).append(" TABLE ");
         if (ifNecessary) {
-            if (mType == TableTypes.FTS3 || mType == TableTypes.FTS4) {
+            if (mType.isVirtual()) {
                 throw new IllegalStateException("'if not exists' can not be used when creating virtual tables");
             }
-            sql.append("if not exists ");
+            sql.append(" if not exists ");
         }
 
-        sql.append(name);
+        sql.append(name).append(mType.getUsingModifier());
 
-        if (mType == TableTypes.FTS3) {
-            sql.append(" USING fts3");
-        } else if (mType == TableTypes.FTS3) {
-            sql.append(" USING fts4");
-        }
-
-        sql.append(" (\n");
+        sql.append(" (");
         boolean first = true;
         for (DomainDefinition d : mDomains) {
             if (first) {
                 first = false;
             } else {
-                sql.append(",\n");
+                sql.append(",");
             }
-            sql.append("    ");
             sql.append(d.getDefinition(withConstraints));
         }
-        sql.append(")\n");
+        sql.append(")");
         return sql.toString();
     }
 
@@ -756,7 +737,7 @@ public class TableDefinition implements AutoCloseable, Cloneable {
         } else {
             fk = mParents.get(to);
         }
-        Objects.requireNonNull(fk,"No foreign key between '" + this.getName() + "' AND '" + to.getName() + "'");
+        Objects.requireNonNull(fk, "No foreign key between '" + this.getName() + "' AND '" + to.getName() + "'");
 
         return fk.getPredicate();
     }
@@ -823,7 +804,36 @@ public class TableDefinition implements AutoCloseable, Cloneable {
         }
     }
 
-    public enum TableTypes {Standard, Temporary, FTS3, FTS4}
+    public enum TableTypes {
+        Standard, Temporary, FTS3, FTS4;
+
+        public boolean isVirtual() {
+            return this == FTS3 || this == FTS4;
+        }
+
+        public String getCreateModifier() {
+            switch (this) {
+                case FTS3:
+                case FTS4:
+                    return " Virtual";
+                case Temporary:
+                    return " Temporary";
+                default:
+                    return " ";
+            }
+        }
+
+        public String getUsingModifier() {
+            switch(this) {
+                case FTS3:
+                    return " USING fts3";
+                case FTS4:
+                    return " USING fts4";
+                default:
+                    return "";
+            }
+        }
+    }
 
     /**
      * Class used to represent a foreign key reference

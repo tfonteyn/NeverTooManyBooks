@@ -8,7 +8,6 @@ import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.StartupActivity;
 import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
@@ -254,7 +253,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      */
     private static void v83_moveCoversToDedicatedDirectory(@NonNull final DbSync.SynchronizedDb db) {
 
-        try (Cursor cur = db.rawQuery("SELECT " + DOM_BOOK_UUID + " FROM " + TBL_BOOKS)) {
+        try (Cursor cur = db.rawQuery("SELECT " + DOM_BOOK_UUID + " FROM " + TBL_BOOKS, new String[]{})) {
             while (cur.moveToNext()) {
                 final String uuid = cur.getString(0);
                 File file = StorageUtils.getFile(uuid + ".jpg");
@@ -285,9 +284,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     @CallSuper
     public void onCreate(@NonNull SQLiteDatabase db) {
-        if (BuildConfig.DEBUG) {
-            Logger.info("Creating database: " + db.getPath());
-        }
+        Logger.info(this,"Creating database: " + db.getPath());
+
         mDbWasCreated = true;
         db.execSQL(DATABASE_CREATE_AUTHORS);
         db.execSQL(DATABASE_CREATE_BOOKSHELF);
@@ -373,9 +371,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      */
     @Override
     public void onUpgrade(@NonNull final SQLiteDatabase db, final int oldVersion, final int newVersion) {
-        if (BuildConfig.DEBUG) {
-            Logger.info("Upgrading database: " + db.getPath());
-        }
+        Logger.info(this,"Upgrading database: " + db.getPath());
         mDbWasCreated = false;
 
         int curVersion = oldVersion;
@@ -420,6 +416,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
             v83_moveCoversToDedicatedDirectory(syncedDb);
+
+            //TEST an upgrade from 82 to 83
 
             // move the existing book-anthology links to the new table
             db.execSQL(DATABASE_CREATE_BOOK_ANTHOLOGY);

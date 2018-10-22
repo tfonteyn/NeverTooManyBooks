@@ -51,7 +51,7 @@
             <TextView
                 android:id="@+id/lbl_backup_catalogue"
                 style="@style/prefsItem"
-                android:drawableStart="@drawable/ic_file_upload"
+                android:drawableStart="@drawable/ic_save"
                 android:text="@string/backup_to_archive" />
 
             <TextView
@@ -63,7 +63,7 @@
             <TextView
                 android:id="@+id/lbl_export"
                 style="@style/prefsItem"
-                android:drawableStart="@drawable/ic_file_upload"
+                android:drawableStart="@drawable/ic_save"
                 android:text="@string/export_to_csv" />
 
             <TextView
@@ -158,7 +158,7 @@
             <TextView
                 android:id="@+id/lbl_backup"
                 style="@style/prefsItem"
-                android:drawableStart="@drawable/ic_file_upload"
+                android:drawableStart="@drawable/ic_save"
                 android:text="@string/copy_database" />
 
             <View style="@style/listDividerHorizontal" />

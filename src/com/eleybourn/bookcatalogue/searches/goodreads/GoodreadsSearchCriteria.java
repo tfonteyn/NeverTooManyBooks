@@ -91,7 +91,7 @@ public class GoodreadsSearchCriteria extends BaseActivity {
                 }
                 final BookRowView bookRowView = cursor.getRowView();
                 {
-                    String s = bookRowView.getPrimaryAuthorNameFormatted();
+                    String s = bookRowView.getPrimaryAuthorNameFormattedGivenFirst();
                     setViewText(R.id.author, s);
                     criteria.append(s).append(" ");
                 }

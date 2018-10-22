@@ -1,7 +1,6 @@
 package com.eleybourn.bookcatalogue;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ResolveInfo;
@@ -290,12 +289,16 @@ public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFra
             switch (requestCode) {
                 case UniqueId.ACTIVITY_REQUEST_CODE_ANDROID_IMAGE_CAPTURE:
                     if (resultCode == Activity.RESULT_OK) {
+                        // there *has* to be 'data'
+                        Objects.requireNonNull(data);
                         addCoverFromCamera(requestCode, resultCode, data);
                     }
                     break;
 
                 case UniqueId.ACTIVITY_REQUEST_CODE_ANDROID_ACTION_GET_CONTENT:
                     if (resultCode == Activity.RESULT_OK) {
+                        // there *has* to be 'data'
+                        Objects.requireNonNull(data);
                         addCoverFromGallery(data);
                     }
                     break;
@@ -473,8 +476,7 @@ public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFra
         startActivityForResult(intent, UniqueId.ACTIVITY_REQUEST_CODE_ANDROID_IMAGE_CAPTURE);
     }
 
-    private void addCoverFromCamera(final int requestCode, final int resultCode, @Nullable final Intent intent) {
-
+    private void addCoverFromCamera(final int requestCode, final int resultCode, @NonNull final Intent intent) {
         //noinspection ConstantConditions
         Bitmap bitmap = (Bitmap) intent.getExtras().get(CropIImage.BKEY_DATA);
         if (bitmap != null && bitmap.getWidth() > 0 && bitmap.getHeight() > 0) {
@@ -509,9 +511,7 @@ public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFra
                 UniqueId.ACTIVITY_REQUEST_CODE_ANDROID_ACTION_GET_CONTENT);
     }
 
-    private void addCoverFromGallery(@Nullable final Intent intent) {
-        Objects.requireNonNull(intent);
-
+    private void addCoverFromGallery(@NonNull final Intent intent) {
         Uri selectedImageUri = intent.getData();
 
         if (selectedImageUri != null) {

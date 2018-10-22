@@ -26,6 +26,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 
+import com.eleybourn.bookcatalogue.debug.Logger;
+
 import java.util.Hashtable;
 import java.util.Map;
 /**
@@ -146,6 +148,8 @@ class DBHelper extends SQLiteOpenHelper {
     @Override
     @CallSuper
     public void onCreate(@NonNull SQLiteDatabase db) {
+        Logger.info(this,"Creating database: " + db.getPath());
+
         for(int i = 0; i < mTables.length; i=i+2 ) {
             db.execSQL("CREATE TABLE " + mTables[i] + "(" + mTables[i+1] + ")");
         }
@@ -171,10 +175,10 @@ class DBHelper extends SQLiteOpenHelper {
 
             // Start definition using first field.
             StringBuilder sql = new StringBuilder("CREATE " + qualifier + " INDEX " + tbl + "_IX" + cnt + " ON " + tbl + "(\n");
-            sql.append("    ").append(defn[2]);
+            sql.append(" ").append(defn[2]);
             // Loop through remaining fields, if any
             for(int i = 3; i < defn.length; i++) {
-                sql.append(",\n    ").append(defn[i]);
+                sql.append(",\n").append(defn[i]);
             }
             sql.append(");\n");
             // Define it
@@ -187,12 +191,14 @@ class DBHelper extends SQLiteOpenHelper {
      */
     @Override
     public void onUpgrade(@NonNull final SQLiteDatabase db, final int oldVersion, final int newVersion) {
+        Logger.info(this,"Upgrading database: " + db.getPath());
+
         int currVersion = oldVersion;
 
         if (currVersion == 1) {
             //noinspection UnusedAssignment
             currVersion++;
-            String sql = "Alter TABLE " + TBL_TASK + " Add " + DOM_CATEGORY + " int default 0";
+            String sql = "ALTER TABLE " + TBL_TASK + " Add " + DOM_CATEGORY + " int default 0";
             db.execSQL(sql);
         }
 

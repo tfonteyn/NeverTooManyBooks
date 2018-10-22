@@ -33,8 +33,7 @@ public class AmazonManager {
 
     /**
      * This searches the amazon REST site based on a specific isbn.
-     * It proxies through theagiledirector.com due to amazon not supporting mobile devices
-     * FIXME: can we avoid this ?
+     * TOMF FIXME if we can ? Search proxies through theagiledirector.com due to amazon not supporting mobile devices
      *
      * @param isbn The ISBN to search for
      */

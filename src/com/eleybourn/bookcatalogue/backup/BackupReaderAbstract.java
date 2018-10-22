@@ -80,8 +80,8 @@ public abstract class BackupReaderAbstract implements BackupReader {
 
         // While not at end, loop, processing each entry based on type
         while (entity != null && !listener.isCancelled()) {
-            if (DEBUG_SWITCHES.BACKUP_READER && BuildConfig.DEBUG) {
-                Logger.info("Processing " + entity.getName());
+            if (DEBUG_SWITCHES.BACKUP && BuildConfig.DEBUG) {
+                Logger.info(this, " Processing " + entity.getName());
             }
             switch (entity.getType()) {
                 case Books:
@@ -104,15 +104,15 @@ public abstract class BackupReaderAbstract implements BackupReader {
                 default:
                     throw new RTE.IllegalTypeException("" + entity.getType());
             }
-            if (DEBUG_SWITCHES.BACKUP_READER && BuildConfig.DEBUG) {
-                Logger.info("Finished " + entity.getName());
+            if (DEBUG_SWITCHES.BACKUP && BuildConfig.DEBUG) {
+                Logger.info(this, " Finished " + entity.getName());
             }
             entity = nextEntity();
         }
         close();
 
-        if (DEBUG_SWITCHES.BACKUP_READER && BuildConfig.DEBUG) {
-            Logger.info("Restored " + coverCount + " covers");
+        if (DEBUG_SWITCHES.BACKUP && BuildConfig.DEBUG) {
+            Logger.info(this, " Restored " + coverCount + " covers");
         }
     }
 

@@ -304,7 +304,7 @@ class BookEvents {
             final BookEventHolder holder = ViewTagger.getTagOrThrow(view, R.id.TAG_BOOK_EVENT_HOLDER);
             final CatalogueDBAdapter db = (CatalogueDBAdapter) appInfo;
 
-            try (BooksCursor booksCursor = db.getBookForGoodreadsCursor(mBookId)) {
+            try (BooksCursor booksCursor = db.fetchBookForGoodreadsCursor(mBookId)) {
                 // Hide parts of view based on current book details.
                 if (booksCursor.moveToFirst()) {
                     final BookRowView bookRowView = booksCursor.getRowView();
@@ -336,7 +336,7 @@ class BookEvents {
             super.addContextMenuItems(context, parent, view, position, eventId, items, appInfo);
 
             final CatalogueDBAdapter db = (CatalogueDBAdapter) appInfo;
-            try (BooksCursor booksCursor = db.getBookForGoodreadsCursor(mBookId)) {
+            try (BooksCursor booksCursor = db.fetchBookForGoodreadsCursor(mBookId)) {
                 final BookRowView bookRowView = booksCursor.getRowView();
                 if (booksCursor.moveToFirst()) {
                     if (!bookRowView.getIsbn().isEmpty()) {

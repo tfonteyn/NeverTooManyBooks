@@ -21,6 +21,8 @@
 package com.eleybourn.bookcatalogue.searches;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
@@ -43,6 +45,7 @@ import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
+import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -59,28 +62,25 @@ public class SearchCatalogue extends BaseActivity {
 
     public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_SEARCH;
 
-    private EditText mAuthorText;
-    private EditText mTitleText;
-    private EditText mCriteriaText;
-
-    private Button mShowResultsBtn;
-    private Button mFtsRebuildBtn;
-
     /** Handle inter-thread messages */
     private final Handler mSCHandler = new Handler();
-    private CatalogueDBAdapter mDb;
-
     /** Handle the 'Search' button. */
-    private TextView mBooksFound;
-
     private final OnClickListener mShowResultsListener = new OnClickListener() {
         @Override
         public void onClick(View v) {
-            //FIXME: close search, load 'found' list in main screen, or ask Philip Warner :)
-            mBooksFound.setText("Oopsie... still to implement");
+            Intent data = new Intent();
+            data.putExtra(UniqueId.BKEY_BOOK_ID_LIST, mBookIdsFound);
+            setResult(Activity.RESULT_OK, data);
+            finish();
         }
     };
+    private EditText mAuthorTextView;
+    private EditText mTitleTextView;
+    private EditText mCSearchTextView;
 
+    private Button mShowResultsBtn;
+    private Button mFtsRebuildBtn;
+    private CatalogueDBAdapter mDb;
     /** Handle the 'FTS Rebuild' button. */
     private final OnClickListener mFtsRebuildListener = new OnClickListener() {
         @Override
@@ -88,6 +88,8 @@ public class SearchCatalogue extends BaseActivity {
             mDb.rebuildFts();
         }
     };
+    private TextView mBooksFound;
+    private ArrayList<Integer> mBookIdsFound;
     /** Indicates user has changed something since the last search. */
     private boolean mSearchDirty = false;
     /** Timer reset each time the user clicks, in order to detect an idle time */
@@ -134,31 +136,45 @@ public class SearchCatalogue extends BaseActivity {
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        mAuthorTextView = this.findViewById(R.id.author);
+        mTitleTextView = this.findViewById(R.id.title);
+        mCSearchTextView = this.findViewById(R.id.criteria);
+
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            String author = extras.getString(UniqueId.KEY_AUTHOR_NAME);
+            if (author != null) {
+                mAuthorTextView.setText(author);
+            }
+            String title = extras.getString(UniqueId.KEY_TITLE);
+            if (title != null) {
+                mTitleTextView.setText(title);
+            }
+            String text = extras.getString(UniqueId.BKEY_SEARCH_TEXT);
+            if (text != null) {
+                mCSearchTextView.setText(text);
+            }
+        }
+
         // Get the DB and setup the layout.
         mDb = new CatalogueDBAdapter(this);
         mDb.open();
 
-        View root = this.findViewById(R.id.root);
         mBooksFound = this.findViewById(R.id.books_found);
-
-        mAuthorText = this.findViewById(R.id.author);
-        mTitleText = this.findViewById(R.id.title);
-        mCriteriaText = this.findViewById(R.id.criteria);
-
         mShowResultsBtn = this.findViewById(R.id.search);
         mFtsRebuildBtn = this.findViewById(R.id.rebuild);
 
         // If the user touches anything, it's not idle
-        root.setOnTouchListener(mOnTouchListener);
+        findViewById(R.id.root).setOnTouchListener(mOnTouchListener);
 
         // If the user changes any text, it's not idle
-        mAuthorText.addTextChangedListener(mTextWatcher);
-        mTitleText.addTextChangedListener(mTextWatcher);
-        mCriteriaText.addTextChangedListener(mTextWatcher);
+        mAuthorTextView.addTextChangedListener(mTextWatcher);
+        mTitleTextView.addTextChangedListener(mTextWatcher);
+        mCSearchTextView.addTextChangedListener(mTextWatcher);
 
         // Handle button presses
-        mShowResultsBtn.setOnClickListener(mShowResultsListener);
         mFtsRebuildBtn.setOnClickListener(mFtsRebuildListener);
+        mShowResultsBtn.setOnClickListener(mShowResultsListener);
 
         // Note: Timer will be started in OnResume().
     }
@@ -200,17 +216,12 @@ public class SearchCatalogue extends BaseActivity {
      */
     private void doSearch() {
         // Get search criteria
-        String author = mAuthorText.getText().toString().trim();
-        String title = mTitleText.getText().toString().trim();
-        String criteria = mCriteriaText.getText().toString().trim();
+        String author = mAuthorTextView.getText().toString().trim();
+        String title = mTitleTextView.getText().toString().trim();
+        String criteria = mCSearchTextView.getText().toString().trim();
 
         // Save time to log how long query takes.
         long t0 = System.currentTimeMillis();
-
-        //BooksCursor c = mDb.fetchBooks(""/*order*/, ""/*bookshelf*/,
-        //		"(" + DatabaseDefinitions.KEY_AUTHOR_FAMILY_NAME + " like '%" + author + "%' " + CatalogueDBAdapter.COLLATION + " or " + DatabaseDefinitions.KEY_AUTHOR_GIVEN_NAMES + " like '%" + author + "%' " + CatalogueDBAdapter.COLLATION + ")",
-        //		"b." + DatabaseDefinitions.KEY_TITLE + " like '%" + title + "%' " + CatalogueDBAdapter.COLLATION + ",
-        //		""/*searchText*/, ""/*loaned_to*/, ""/*seriesName*/);
 
         // Get the cursor
         String tmpMsg = null;
@@ -219,9 +230,14 @@ public class SearchCatalogue extends BaseActivity {
                 int count = cursor.getCount();
                 t0 = System.currentTimeMillis() - t0;
                 tmpMsg = "(" + count + " books found in " + t0 + "ms)";
+                mBookIdsFound = new ArrayList<>();
+                while (cursor.moveToNext()) {
+                    mBookIdsFound.add(cursor.getInt(0));
+                }
+
             } else if (BuildConfig.DEBUG) {
-                    // Null return means searchFts thought parameters were effectively blank
-                    tmpMsg = "(enter search criteria)";
+                // Null return means searchFts thought parameters were effectively blank
+                tmpMsg = "(enter search criteria)";
             }
         } catch (Exception e) {
             Logger.error(e);

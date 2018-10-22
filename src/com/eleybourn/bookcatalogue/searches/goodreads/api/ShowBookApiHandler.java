@@ -494,7 +494,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
             }
         }
 
-        /* Build the original publication date based on the components */
+        /* TEST: Build the original publication date based on the components */
         String origPublicationDate = GoodreadsManager.buildDate(mBookData,
                 ShowBookFieldNames.ORIG_PUBLICATION_YEAR,
                 ShowBookFieldNames.ORIG_PUBLICATION_MONTH,

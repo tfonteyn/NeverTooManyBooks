@@ -26,6 +26,7 @@ import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -154,6 +155,7 @@ public class SearchManager implements TaskManagerListener {
         }
     };
     private final long mMessageSenderId = mMessageSwitch.createSender(mController);
+
     /** Flags applicable to *current* search */
     private int mSearchFlags;
     /** Accumulated book data */
@@ -234,8 +236,8 @@ public class SearchManager implements TaskManagerListener {
     @Override
     public void onTaskEnded(@NonNull final TaskManager manager, @NonNull final ManagedTask task) {
         int size;
-        if (BuildConfig.DEBUG) {
-            Logger.info(task.getClass().getCanonicalName() + "(" + +task.getId() + ") onTaskEnded starting");
+        if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
+            Logger.info(this,"enter onTaskEnded(taskId=" + task + ")");
         }
 
         // Handle the result, and optionally queue another task
@@ -247,9 +249,9 @@ public class SearchManager implements TaskManagerListener {
         synchronized (mRunningTasks) {
             mRunningTasks.remove(task);
             size = mRunningTasks.size();
-            if (BuildConfig.DEBUG) {
+            if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
                 for (ManagedTask t : mRunningTasks) {
-                    Logger.info(t.getClass().getCanonicalName() + "(" + +t.getId() + ") still running");
+                    Logger.info(this,"Task(" + t + ") still running");
                 }
             }
         }
@@ -257,14 +259,14 @@ public class SearchManager implements TaskManagerListener {
             // Stop listening FIRST...otherwise, if sendResults() calls a listener that starts
             // a new task, we will stop listening for the new task.
             TaskManager.getMessageSwitch().removeListener(mTaskManager.getSenderId(), this);
-            if (BuildConfig.DEBUG) {
-                Logger.info("SearchManager not listening(1)");
+            if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
+                Logger.info(this,"SearchManager now stopped listening");
             }
             // Notify the listeners.
             sendResults();
         }
-        if (BuildConfig.DEBUG) {
-            Logger.info(task.getClass().getCanonicalName() + "(" + +task.getId() + ") onTaskEnded Exiting");
+        if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
+            Logger.info(this,"exit onTaskEnded(taskId=" + task + ")");
         }
     }
 
@@ -292,8 +294,8 @@ public class SearchManager implements TaskManagerListener {
         synchronized (mRunningTasks) {
             mRunningTasks.add(thread);
             mTaskManager.addTask(thread);
-            if (BuildConfig.DEBUG) {
-                Logger.info(thread.getClass().getCanonicalName() + "(id=" + +thread.getId() + ") STARTING");
+            if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
+                Logger.info(thread,"(id=" + +thread.getId() + ") STARTING");
             }
         }
         thread.start();
@@ -404,8 +406,8 @@ public class SearchManager implements TaskManagerListener {
 
         // List for task ends
         TaskManager.getMessageSwitch().addListener(mTaskManager.getSenderId(), this, false);
-        if (BuildConfig.DEBUG) {
-            Logger.info("SearchManager.doSearch listener started");
+        if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
+            Logger.info(this,"doSearch listener started");
         }
 
         // We really want to ensure we get the same book from each, so if isbn is not present,
@@ -418,6 +420,7 @@ public class SearchManager implements TaskManagerListener {
                 if (mHasValidIsbn) {
                     // We have a valid ISBN, just do the search
                     mWaitingForIsbn = false;
+                    // go go go !!!
                     tasksStarted = startSearches(mSearchFlags);
                 } else {
                     // Assume it's an ASIN, and just search Amazon
@@ -434,8 +437,8 @@ public class SearchManager implements TaskManagerListener {
             if (!tasksStarted) {
                 sendResults();
                 TaskManager.getMessageSwitch().removeListener(mTaskManager.getSenderId(), this);
-                if (BuildConfig.DEBUG) {
-                    Logger.info("SearchManager.doSearch listener stopped");
+                if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
+                    Logger.info(this,"doSearch listener stopped");
                 }
             }
         }
@@ -474,7 +477,9 @@ public class SearchManager implements TaskManagerListener {
 
         for (String key : bookData.keySet()) {
             // If its not there, copy it.
-            if (!mBookData.containsKey(key) || mBookData.getString(key) == null || mBookData.getString(key).isEmpty()) {
+            String test = mBookData.getString(key);
+            if (test == null || test.isEmpty()) {
+                //noinspection ConstantConditions
                 mBookData.putString(key, bookData.get(key).toString());
             } else {
                 // Copy, append or update data as appropriate.
@@ -515,6 +520,9 @@ public class SearchManager implements TaskManagerListener {
      * {@link UniqueId#BKEY_ANTHOLOGY_DETAILS} -> {@link UniqueId#BKEY_ANTHOLOGY_DETAILS}
      */
     private void sendResults() {
+        if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
+            Logger.info(this,"sendResults");
+        }
         /* This list will be the actual order of the result we apply, based on the
          * actual results and the default order. */
         final List<Integer> results = new ArrayList<>();
@@ -599,14 +607,23 @@ public class SearchManager implements TaskManagerListener {
 
         // If book is not found or missing required data, warn the user
         if (authors == null || authors.isEmpty() || title == null || title.isEmpty()) {
-            mTaskManager.showQuickNotice(BookCatalogueApp.getResourceString(R.string.book_not_found));
+            mTaskManager.showBriefMessage(BookCatalogueApp.getResourceString(R.string.book_not_found));
         }
-
+        if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
+            Logger.info(this,"All done, Pass the data back");
+        }
         // All done, Pass the data back
         mMessageSwitch.send(mMessageSenderId, new MessageSwitch.Message<SearchListener>() {
                     @Override
                     public boolean deliver(@NonNull final SearchListener listener) {
+                        if (DEBUG_SWITCHES.MESSAGING && BuildConfig.DEBUG) {
+                            Logger.info(SearchManager.this,"deliver");
+                        }
                         return listener.onSearchFinished(mBookData, mCancelledFlg);
+                    }
+
+                    public String toString() {
+                        return "SearchManager is done, sending back data for title: " + mBookData.getString(UniqueId.KEY_TITLE);
                     }
                 }
         );
@@ -656,6 +673,9 @@ public class SearchManager implements TaskManagerListener {
      * Start specific search listed in passed parameter.
      */
     private boolean startOneSearch(final int source) {
+        if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
+            Logger.info(this, "Starting search " + source);
+        }
         switch (source) {
             case SEARCH_GOOGLE:
                 return startGoogle();

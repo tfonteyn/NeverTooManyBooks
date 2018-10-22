@@ -132,16 +132,16 @@ public class CsvImporter implements Importer {
         long lastUpdate = 0;
 
         /* Iterate through each imported row */
-        SyncLock syncLock = null;
+        SyncLock txLock = null;
         try {
             while (row < importedList.size() && listener.isActive()) {
                 // every 10 inserted, we commit the transaction
                 if (mDb.inTransaction() && txRowCount > 10) {
                     mDb.setTransactionSuccessful();
-                    mDb.endTransaction(syncLock);
+                    mDb.endTransaction(txLock);
                 }
                 if (!mDb.inTransaction()) {
-                    syncLock = mDb.startTransaction(true);
+                    txLock = mDb.startTransaction(true);
                     txRowCount = 0;
                 }
                 txRowCount++;
@@ -230,7 +230,7 @@ public class CsvImporter implements Importer {
         } finally {
             if (mDb.inTransaction()) {
                 mDb.setTransactionSuccessful();
-                mDb.endTransaction(syncLock);
+                mDb.endTransaction(txLock);
             }
             try {
                 mDb.purgeAuthors();
@@ -246,7 +246,7 @@ public class CsvImporter implements Importer {
             }
         }
 
-        Logger.info("Csv Import successful: rows processed: " + row + ", created:" + mCreated + ", updated: " + mUpdated);
+        Logger.info(this,"Csv Import successful: rows processed: " + row + ", created:" + mCreated + ", updated: " + mUpdated);
         return true;
     }
 

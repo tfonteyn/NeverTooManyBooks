@@ -131,9 +131,9 @@ public class MessageDialogFragment extends DialogFragment {
 
     private void handleButton(final int button) {
         try {
-            OnMessageDialogResultListener a = (OnMessageDialogResultListener) getActivity();
-            if (a != null)
-                a.onMessageDialogResult(mDialogId, button);
+            OnMessageDialogResultListener listenerActivity = (OnMessageDialogResultListener) getActivity();
+            if (listenerActivity != null)
+                listenerActivity.onMessageDialogResult(mDialogId, button);
         } catch (Exception e) {
             Logger.error(e);
         }

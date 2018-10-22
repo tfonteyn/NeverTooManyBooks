@@ -28,9 +28,9 @@ public class ImportThread extends ManagedTask {
         @Override
         public void onProgress(@NonNull final String message, final int position) {
             if (position > 0) {
-                mManager.doProgress(ImportThread.this, message, position);
+                mTaskManager.doProgress(ImportThread.this, message, position);
             } else {
-                mManager.doProgress(message);
+                mTaskManager.doProgress(message);
             }
         }
 
@@ -41,12 +41,14 @@ public class ImportThread extends ManagedTask {
 
         @Override
         public void setMax(final int max) {
-            mManager.setMax(ImportThread.this, max);
+            mTaskManager.setMax(ImportThread.this, max);
         }
     };
 
     public ImportThread(@NonNull final TaskManager manager, @NonNull final String fileSpec) {
         super(manager);
+        setName("ImportThread");
+
         final File file = new File(fileSpec);
         // Changed getCanonicalPath to getAbsolutePath based on this bug in Android 2.1:
         //     http://code.google.com/p/android/issues/detail?id=4961
@@ -63,19 +65,19 @@ public class ImportThread extends ManagedTask {
     }
 
     @Override
-    protected void onRun() {
+    protected void runTask() {
         FileInputStream in = null;
         try {
             in = new FileInputStream(mFileSpec);
             new CsvImporter().importBooks(in, mCoverFinder, mImportListener, Importer.IMPORT_ALL);
 
             if (isCancelled()) {
-                showQuickNotice(getString(R.string.cancelled));
+                showBriefMessage(getString(R.string.cancelled));
             } else {
-                showQuickNotice(getString(R.string.import_complete));
+                showBriefMessage(getString(R.string.import_complete));
             }
         } catch (IOException e) {
-            showQuickNotice(BookCatalogueApp.getResourceString(R.string.error_import_failed_is_location_correct));
+            showBriefMessage(BookCatalogueApp.getResourceString(R.string.error_import_failed_is_location_correct));
             Logger.error(e);
         } finally {
             if (in != null && in.getChannel().isOpen())

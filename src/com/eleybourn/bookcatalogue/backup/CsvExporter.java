@@ -212,7 +212,7 @@ public class CsvExporter implements Exporter {
                 // the selected bookshelves: two CSV columns with CSV id's + CSV names
                 StringBuilder bookshelves_id_text = new StringBuilder();
                 StringBuilder bookshelves_name_text = new StringBuilder();
-                try (Cursor bookshelves = db.fetchAllBookshelvesByBook(bookId)) {
+                try (Cursor bookshelves = db.fetchBookshelvesForBookId(bookId)) {
                     int bsIdCol = bookshelves.getColumnIndex(DOM_ID.name);
                     int bsCol = bookshelves.getColumnIndex(DOM_BOOKSHELF.name);
                     while (bookshelves.moveToNext()) {
@@ -271,7 +271,7 @@ public class CsvExporter implements Exporter {
                 }
             }
         } finally {
-            Logger.info("Books Exported: " + num);
+            Logger.info(this,"Books Exported: " + num);
             if (displayingStartupMessage) {
                 try {
                     listener.onProgress("", 0);

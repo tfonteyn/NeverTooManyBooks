@@ -33,7 +33,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.provider.MediaStore;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -52,7 +51,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 
 /**
@@ -334,7 +332,7 @@ public class CropImageActivity extends CropMonitoredActivity {
         findViewById(R.id.cancel).setOnClickListener(
                 new View.OnClickListener() {
                     public void onClick(View v) {
-                        setResult(RESULT_CANCELED);
+                        setResult(Activity.RESULT_CANCELED);
                         finish();
                     }
                 });
@@ -497,7 +495,7 @@ public class CropImageActivity extends CropMonitoredActivity {
             extras.putParcelable(CropIImage.BKEY_DATA, croppedImage);
             Intent intent = new Intent("inline-data");
             intent.putExtras(extras);
-            setResult(RESULT_OK, intent);
+            setResult(Activity.RESULT_OK, intent);
             finish();
         } else {
             final Bitmap bitmap = croppedImage;
@@ -524,7 +522,7 @@ public class CropImageActivity extends CropMonitoredActivity {
             Bundle extras = new Bundle();
             Intent intent = new Intent(mOptionSaveUri.toString());
             intent.putExtras(extras);
-            setResult(RESULT_OK, intent);
+            setResult(Activity.RESULT_OK, intent);
         }
 
         croppedImage.recycle();

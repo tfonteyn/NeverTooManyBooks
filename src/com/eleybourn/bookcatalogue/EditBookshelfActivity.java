@@ -20,6 +20,7 @@
 
 package com.eleybourn.bookcatalogue;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
@@ -69,14 +70,14 @@ public class EditBookshelfActivity extends BaseActivity {
             mConfirmButton.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View view) {
                     saveState();
-                    setResult(RESULT_OK);
+                    setResult(Activity.RESULT_OK);
                     finish();
                 }
             });
 
             findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
                 public void onClick(View view) {
-                    setResult(RESULT_CANCELED);
+                    setResult(Activity.RESULT_CANCELED);
                     finish();
                 }
             });

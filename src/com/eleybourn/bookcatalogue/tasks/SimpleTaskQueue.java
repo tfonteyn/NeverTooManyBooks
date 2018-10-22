@@ -27,6 +27,7 @@ import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
@@ -170,8 +171,8 @@ public class SimpleTaskQueue {
             mManagedTaskCount++;
         }
 
-        if (BuildConfig.DEBUG) {
-            Logger.info("SimpleTaskQueue(added): " + mExecutionStack.size());
+        if (DEBUG_SWITCHES.MESSAGING && BuildConfig.DEBUG) {
+            Logger.info(this,"added: " + mExecutionStack.size());
         }
         synchronized (this) {
             int qSize = mExecutionStack.size();
@@ -495,8 +496,8 @@ public class SimpleTaskQueue {
                         }
                     }
 
-                    if (BuildConfig.DEBUG) {
-                        Logger.info("SimpleTaskQueue(run): " + mExecutionStack.size());
+                    if (DEBUG_SWITCHES.MESSAGING && BuildConfig.DEBUG) {
+                        Logger.info(this,"run: " + mExecutionStack.size());
                     }
                     handleRequest(this, req);
                 }
