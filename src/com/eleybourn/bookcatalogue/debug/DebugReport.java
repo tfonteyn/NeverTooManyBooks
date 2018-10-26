@@ -103,7 +103,7 @@ public class DebugReport {
         // setup the mail message
         final Intent emailIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
         emailIntent.setType("plain/text");
-        emailIntent.putExtra(Intent.EXTRA_EMAIL, activity.getString(R.string.debug_email).split(";"));
+        emailIntent.putExtra(Intent.EXTRA_EMAIL, activity.getString(R.string.email_debug).split(";"));
         String subject = "[" + activity.getString(R.string.app_name) + "] " + activity.getString(R.string.debug_subject);
         emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
         StringBuilder message = new StringBuilder();
@@ -156,7 +156,7 @@ public class DebugReport {
             }
         } catch (Exception e) {
             // Don't lose the other debug info if scanner data dies for some reason
-            message.append("Scanner failure: ").append(e.getLocalizedMessage()).append("\n");
+            message.append("Scanner onCancel: ").append(e.getLocalizedMessage()).append("\n");
         }
         message.append("\n");
 

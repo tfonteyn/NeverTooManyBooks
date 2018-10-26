@@ -81,8 +81,8 @@ public class BooklistGroup implements Serializable {
     private static final String PREF_SHOW_ALL_AUTHORS = "APP.ShowAllAuthors";
     private static final String PREF_SHOW_ALL_SERIES = "APP.ShowAllSeries";
     private static final String PREF_DISPLAY_FIRST_THEN_LAST_NAMES = "APP.DisplayFirstThenLast";
-    private static final Map<Integer, String> mRowKindNames = new UniqueMap<>();
 
+    private static final Map<Integer, String> mRowKindNames = new UniqueMap<>();
     static {
         mRowKindNames.put(ROW_KIND_AUTHOR, BookCatalogueApp.getResourceString(R.string.author));
         mRowKindNames.put(ROW_KIND_SERIES, BookCatalogueApp.getResourceString(R.string.series));
@@ -101,7 +101,7 @@ public class BooklistGroup implements Serializable {
         mRowKindNames.put(ROW_KIND_MONTH_READ, BookCatalogueApp.getResourceString(R.string.read_month));
         mRowKindNames.put(ROW_KIND_DAY_READ, BookCatalogueApp.getResourceString(R.string.read_day));
         mRowKindNames.put(ROW_KIND_LOCATION, BookCatalogueApp.getResourceString(R.string.location));
-        mRowKindNames.put(ROW_KIND_LANGUAGE, BookCatalogueApp.getResourceString(R.string.language));
+        mRowKindNames.put(ROW_KIND_LANGUAGE, BookCatalogueApp.getResourceString(R.string.lbl_language));
         mRowKindNames.put(ROW_KIND_UPDATE_DAY, BookCatalogueApp.getResourceString(R.string.update_day));
         mRowKindNames.put(ROW_KIND_UPDATE_MONTH, BookCatalogueApp.getResourceString(R.string.update_month));
         mRowKindNames.put(ROW_KIND_UPDATE_YEAR, BookCatalogueApp.getResourceString(R.string.update_year));
@@ -281,7 +281,7 @@ public class BooklistGroup implements Serializable {
     }
 
     /**
-     * Specialized BooklistGroup representing an Author group. Includes extra attributes based
+     * Specialized BooklistGroup representing an Series group. Includes extra attributes based
      * on preferences.
      *
      * @author Philip Warner
@@ -294,8 +294,8 @@ public class BooklistGroup implements Serializable {
         static {
             String kind = BookCatalogueApp.getResourceString(R.string.series);
             mAllSeriesItems.add(null, R.string.use_default_setting);
-            mAllSeriesItems.add(false, R.string.show_book_under_primary_thing, kind);
-            mAllSeriesItems.add(true, R.string.show_book_under_each_thing, kind);
+            mAllSeriesItems.add(false, R.string.books_with_multiple_show_book_under_primary_1s_only, kind);
+            mAllSeriesItems.add(true, R.string.books_with_multiple_show_book_under_each_1s, kind);
         }
 
         /** Show book under each series it appears in? */
@@ -309,7 +309,7 @@ public class BooklistGroup implements Serializable {
 
         private void initProperties() {
             mAllSeries = new BooleanListProperty(mAllSeriesItems, "AllSeries",
-                    PropertyGroup.GRP_SERIES, R.string.books_in_multiple_series)
+                    PropertyGroup.GRP_SERIES, R.string.books_with_multiple_series)
                     .setPreferenceKey(PREF_SHOW_ALL_SERIES)
                     .setDefaultValue(false)
                     .setHint(R.string.hint_series_book_may_appear_more_than_once);
@@ -351,7 +351,7 @@ public class BooklistGroup implements Serializable {
     }
 
     /**
-     * Specialized BooklistGroup representing an Series group. Includes extra attributes based
+     * Specialized BooklistGroup representing an Author group. Includes extra attributes based
      * on preferences.
      *
      * @author Philip Warner
@@ -370,8 +370,8 @@ public class BooklistGroup implements Serializable {
         static {
             String kind = BookCatalogueApp.getResourceString(R.string.author);
             mAllAuthorsItems.add(null, R.string.use_default_setting);
-            mAllAuthorsItems.add(false, R.string.show_book_under_primary_thing, kind);
-            mAllAuthorsItems.add(true, R.string.show_book_under_each_thing, kind);
+            mAllAuthorsItems.add(false, R.string.books_with_multiple_show_book_under_primary_1s_only, kind);
+            mAllAuthorsItems.add(true, R.string.books_with_multiple_show_book_under_each_1s, kind);
         }
 
         /** Support for 'Show Given Name' property */

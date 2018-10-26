@@ -31,17 +31,17 @@
             android:checkMark="?android:attr/textCheckMark"
             android:focusable="false"
             android:focusableInTouchMode="false"
-            android:paddingEnd="@dimen/padding_border_double"
-            android:paddingStart="@dimen/padding_border_double" />
+            android:paddingStart="@dimen/padding_border_double"
+            android:paddingEnd="@dimen/padding_border_double" />
 
         <RelativeLayout
             android:id="@id/ROW_DETAILS"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
             android:layout_alignParentTop="true"
-            android:layout_toEndOf="@id/row_enabled"
+            android:layout_alignParentBottom="true"
             android:layout_toStartOf="@id/grabber"
+            android:layout_toEndOf="@id/row_enabled"
             android:orientation="vertical"
             android:padding="2dp">
 
@@ -53,17 +53,17 @@
                 android:gravity="start"
                 android:singleLine="false"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                tools:text="site name"
-                android:textIsSelectable="false" />
+                android:textIsSelectable="false"
+                tools:text="site name" />
         </RelativeLayout>
 
         <ImageView
             android:id="@+id/grabber"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentEnd="true"
+            style="@style/tlv_dragHandle"
             android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
             android:layout_centerVertical="true"
-            style="@style/touch_list_view_row_ic_grabber"
             app:srcCompat="@drawable/ic_drag_handle"
             tools:ignore="ContentDescription" />
     </RelativeLayout>

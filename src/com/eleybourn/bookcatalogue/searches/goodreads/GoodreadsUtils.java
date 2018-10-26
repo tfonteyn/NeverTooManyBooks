@@ -16,9 +16,9 @@ import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.taskqueue.QueueManager;
 import com.eleybourn.bookcatalogue.tasks.BCQueueManager;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTaskContext;
-import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressFragment;
-import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressFragment.FragmentTask;
-import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressFragment.FragmentTaskAbstract;
+import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressDialogFragment;
+import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressDialogFragment.FragmentTask;
+import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressDialogFragment.FragmentTaskAbstract;
 
 public class GoodreadsUtils {
     public static final String GOODREADS_FILENAME_SUFFIX = "_GR";
@@ -90,7 +90,7 @@ public class GoodreadsUtils {
 
         FragmentTask task = new FragmentTaskAbstract() {
             @Override
-            public void run(@NonNull final SimpleTaskQueueProgressFragment fragment,
+            public void run(@NonNull final SimpleTaskQueueProgressDialogFragment fragment,
                             @NonNull final SimpleTaskContext taskContext) {
 
                 if (BCQueueManager.getQueueManager().hasActiveTasks(BCQueueManager.CAT_GOODREADS_IMPORT_ALL)) {
@@ -123,7 +123,7 @@ public class GoodreadsUtils {
                 }
             }
         };
-        SimpleTaskQueueProgressFragment.runTaskWithProgress(context, R.string.connecting_to_web_site, task, true, 0);
+        SimpleTaskQueueProgressDialogFragment.runTaskWithProgress(context, R.string.connecting_to_web_site, task, true, 0);
     }
 
     /**
@@ -168,7 +168,7 @@ public class GoodreadsUtils {
     private static void sendToGoodreads(@NonNull final FragmentActivity context, final boolean updatesOnly) {
         FragmentTask task = new FragmentTaskAbstract() {
             @Override
-            public void run(@NonNull final SimpleTaskQueueProgressFragment fragment, @NonNull final SimpleTaskContext taskContext) {
+            public void run(@NonNull final SimpleTaskQueueProgressDialogFragment fragment, @NonNull final SimpleTaskContext taskContext) {
                 int msg = checkCanSendToGoodreads();
                 if (msg == 0) {
                     QueueManager.getQueueManager().enqueueTask(new SendAllBooksTask(updatesOnly), BCQueueManager.QUEUE_MAIN);
@@ -178,7 +178,7 @@ public class GoodreadsUtils {
             }
 
             @Override
-            public void onFinish(@NonNull final SimpleTaskQueueProgressFragment fragment,
+            public void onFinish(@NonNull final SimpleTaskQueueProgressDialogFragment fragment,
                                  @Nullable final Exception e) {
                 final int msg = getState();
                 if (msg == -1) {
@@ -195,14 +195,14 @@ public class GoodreadsUtils {
 
             }
         };
-        SimpleTaskQueueProgressFragment.runTaskWithProgress(context, R.string.connecting_to_web_site, task, true, 0);
+        SimpleTaskQueueProgressDialogFragment.runTaskWithProgress(context, R.string.connecting_to_web_site, task, true, 0);
     }
 
     /**
      * Ask the user which books to send, then send them.
      *
      * Optionally, display a dialog warning the user that goodreads authentication is required; gives them
-     * the options: 'request now', 'more info' or 'cancel'.
+     * the options: 'request now', 'more info' or 'onCancel'.
      */
     public static void sendBooksToGoodreads(@NonNull final BaseActivity ctx) {
 
@@ -211,14 +211,14 @@ public class GoodreadsUtils {
              * Just check we can send. If so, onFinish() will be called.
              */
             @Override
-            public void run(@NonNull final SimpleTaskQueueProgressFragment fragment,
+            public void run(@NonNull final SimpleTaskQueueProgressDialogFragment fragment,
                             @NonNull final SimpleTaskContext taskContext) {
                 int msg = GoodreadsUtils.checkCanSendToGoodreads();
                 setState(msg);
             }
 
             @Override
-            public void onFinish(@NonNull final SimpleTaskQueueProgressFragment fragment,
+            public void onFinish(@NonNull final SimpleTaskQueueProgressDialogFragment fragment,
                                  @Nullable final Exception e) {
                 final FragmentActivity context = fragment.getActivity();
                 switch (getState()) {
@@ -279,7 +279,7 @@ public class GoodreadsUtils {
             }
         };
         // Run the task
-        SimpleTaskQueueProgressFragment.runTaskWithProgress(ctx, R.string.connecting_to_web_site, task, true, 0);
+        SimpleTaskQueueProgressDialogFragment.runTaskWithProgress(ctx, R.string.connecting_to_web_site, task, true, 0);
 
     }
 

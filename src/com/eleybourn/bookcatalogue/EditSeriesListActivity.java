@@ -41,7 +41,7 @@ import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 /**
- * Activity to edit a list of authors provided in an ArrayList<Series> and return an updated list.
+ * Activity to edit a list of series provided in an ArrayList<Series> and return an updated list.
  *
  * @author Philip Warner
  */
@@ -55,7 +55,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
      * Constructor; pass the superclass the main and row based layouts to use.
      */
     public EditSeriesListActivity() {
-        super(UniqueId.BKEY_SERIES_ARRAY, R.layout.activity_edit_list_series, R.layout.row_edit_series_list);
+        super(R.layout.activity_edit_list_series, R.layout.row_edit_series_list, UniqueId.BKEY_SERIES_ARRAY);
     }
 
     @Override
@@ -80,7 +80,6 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.setTitle(mBookTitle);
-
         try {
 
             mSeriesAdapter = new ArrayAdapter<>(this,

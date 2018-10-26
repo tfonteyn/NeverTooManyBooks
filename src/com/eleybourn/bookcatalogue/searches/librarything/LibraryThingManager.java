@@ -730,7 +730,7 @@ public class LibraryThingManager {
                 mFieldType = FieldTypes.NONE;
 
             } else if (localName.equalsIgnoreCase(XML_AUTHOR)) {
-                ArrayUtils.addOrAppend(mBookData, UniqueId.BKEY_AUTHOR_DETAILS, mBuilder.toString());
+                ArrayUtils.addOrAppend(mBookData, UniqueId.BKEY_AUTHOR_STRING_LIST, mBuilder.toString());
 
             } else if (localName.equalsIgnoreCase(XML_FACT)) {
                 // Process the XML_FACT according to the active XML_FIELD type.
@@ -742,7 +742,7 @@ public class LibraryThingManager {
                         break;
 
                     case SERIES:
-                        ArrayUtils.addOrAppend(mBookData, UniqueId.BKEY_SERIES_DETAILS, mBuilder.toString());
+                        ArrayUtils.addOrAppend(mBookData, UniqueId.BKEY_SERIES_STRING_LIST, mBuilder.toString());
                         break;
 
                     case PLACES:

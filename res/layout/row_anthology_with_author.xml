@@ -16,20 +16,10 @@
         android:gravity="start"
         android:paddingStart="@dimen/padding_border"
         android:paddingEnd="@dimen/padding_border"
-        android:singleLine="true"
+        android:singleLine="false"
         android:textIsSelectable="false"
         android:textSize="16sp"
-        tools:text="Story title" />
-
-    <TextView
-        android:id="@+id/year"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toEndOf="@id/title"
-        android:layout_alignBaseline="@id/title"
-        android:textIsSelectable="false"
-        android:textSize="12sp"
-        tools:text="(1960)" />
+        tools:text="Obscure Life and Hard Times of Kilgore Trout: A Skirmish in Biography, The" />
 
     <TextView
         android:id="@+id/author"
@@ -42,6 +32,16 @@
         android:singleLine="true"
         android:textIsSelectable="false"
         android:textSize="12sp"
-        tools:text="the Author" />
+        tools:text="Philip J. Farmer" />
 
+    <TextView
+        android:id="@+id/year"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/title"
+        android:layout_toEndOf="@id/author"
+        android:layout_alignBaseline="@id/author"
+        android:textIsSelectable="false"
+        android:textSize="12sp"
+        tools:text="(1971)" />
 </RelativeLayout>

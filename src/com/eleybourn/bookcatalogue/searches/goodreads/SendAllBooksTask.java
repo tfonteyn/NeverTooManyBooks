@@ -23,6 +23,7 @@ package com.eleybourn.bookcatalogue.searches.goodreads;
 import android.content.Context;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
@@ -101,17 +102,15 @@ public class SendAllBooksTask extends GenericTask {
             return false;
         }
 
-        // Get the app context; the underlying activity may go away. And get DB.
         GoodreadsManager grManager = new GoodreadsManager();
-        Context ctx = context.getApplicationContext();
-
-        CatalogueDBAdapter db = new CatalogueDBAdapter(ctx.getApplicationContext());
-
         // Ensure we are allowed
         if (!grManager.hasValidCredentials()) {
             throw new NotAuthorizedException();
         }
 
+        // Get the app context; the underlying activity may go away. And get DB.
+        Context ctx = context.getApplicationContext();
+        CatalogueDBAdapter db = new CatalogueDBAdapter(ctx.getApplicationContext());
         db.open();
 
         try (BooksCursor books = db.fetchBooksForGoodreadsCursor(mLastId, mUpdatesOnly)) {
@@ -182,10 +181,7 @@ public class SendAllBooksTask extends GenericTask {
             }
 
         } finally {
-            try {
-                db.close();
-            } catch (Exception ignored) {
-            }
+            db.close();
         }
 
         // Notify the user: '15 books processed: 3 sent successfully, 5 with no ISBN and 7 with ISBN but not found in goodreads'

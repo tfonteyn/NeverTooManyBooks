@@ -26,7 +26,7 @@ import android.support.annotation.StringRes;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.searches.SearchManager;
-import com.eleybourn.bookcatalogue.searches.SearchThread;
+import com.eleybourn.bookcatalogue.searches.SearchTask;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.BookNotFoundException;
 import com.eleybourn.bookcatalogue.tasks.TaskManager;
 
@@ -44,16 +44,14 @@ import oauth.signpost.exception.OAuthMessageSignerException;
  *
  * @author Philip Warner
  */
-public class SearchGoodreadsThread extends SearchThread {
+public class SearchGoodreadsTask extends SearchTask {
 
-    public SearchGoodreadsThread(@NonNull final TaskManager manager,
-                                 @NonNull final String author,
-                                 @NonNull final String title,
-                                 @NonNull final String isbn,
-                                 final boolean fetchThumbnail) {
-        super(manager, author, title, isbn, fetchThumbnail);
-        setName("SearchGoodreadsThread isbn=" + isbn);
-
+    public SearchGoodreadsTask(@NonNull final TaskManager manager,
+                               @NonNull final String author,
+                               @NonNull final String title,
+                               @NonNull final String isbn,
+                               final boolean fetchThumbnail) {
+        super("SearchGoodreadsTask isbn=" + isbn, manager, author, title, isbn, fetchThumbnail);
     }
 
     @Override
@@ -91,11 +89,11 @@ public class SearchGoodreadsThread extends SearchThread {
                 showError(R_ID_SEARCHING, R.string.gr_auth_failed);
 
             } catch (java.net.SocketTimeoutException e) {
-                showError(R_ID_SEARCHING, R.string.network_timeout);
+                showError(R_ID_SEARCHING, R.string.error_network_timeout);
 
             } catch (MalformedURLException | UnknownHostException e) {
                 Logger.error(e);
-                showError(R_ID_SEARCHING, R.string.search_configuration_error);
+                showError(R_ID_SEARCHING, R.string.error_search_configuration);
 
             } catch (GoodreadsManager.Exceptions.NetworkException | IOException e) { // added NetworkException
                 showError(R_ID_SEARCHING, R.string.error_search_failed);

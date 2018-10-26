@@ -27,6 +27,7 @@ import android.support.annotation.Nullable;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.entities.AnthologyTitle;
 import com.eleybourn.bookcatalogue.entities.Author;
+import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.entities.Series;
 
 import java.util.ArrayList;
@@ -37,6 +38,8 @@ public class ArrayUtils<T> {
 
     public static final char MULTI_STRING_SEPARATOR = '|';
 
+    @Nullable
+    private static ArrayUtils<Bookshelf> mBookshelfUtils = null;
     @Nullable
     private static ArrayUtils<Author> mAuthorUtils = null;
     @Nullable
@@ -53,6 +56,21 @@ public class ArrayUtils<T> {
         mFactory = factory;
     }
 
+    //<editor-fold desc="Bookshelf">
+    @NonNull
+    public static ArrayUtils<Bookshelf> getBookshelfUtils() {
+        if (mBookshelfUtils == null) {
+            mBookshelfUtils = new ArrayUtils<>(new Factory<Bookshelf>() {
+                @Override
+                @NonNull
+                public Bookshelf get(@NonNull final String stringEncodedList) {
+                    return new Bookshelf(stringEncodedList);
+                }
+            });
+        }
+        return mBookshelfUtils;
+    }
+    //</editor-fold>
 
     //<editor-fold desc="Author">
     @NonNull
@@ -91,7 +109,6 @@ public class ArrayUtils<T> {
     }
     //</editor-fold>
 
-
     //<editor-fold desc="Series">
     @NonNull
     public static ArrayUtils<Series> getSeriesUtils() {
@@ -128,7 +145,6 @@ public class ArrayUtils<T> {
         return list != null ? list : new ArrayList<Series>();
     }
     //</editor-fold>
-
 
     //<editor-fold desc="AnthologyTitle">
     @NonNull
@@ -167,7 +183,6 @@ public class ArrayUtils<T> {
 //    }
     //</editor-fold>
 
-
     /**
      * Utility routine to get the list from the passed bundle. Added to reduce lint warnings...
      *
@@ -199,30 +214,30 @@ public class ArrayUtils<T> {
     /**
      * Decode a text list separated by '|' and encoded by encodeListItem.
      *
-     * @param s String representing the list
+     * @param stringList String representing the list
      *
      * @return Array of strings resulting from list
      */
     @NonNull
-    public static ArrayList<String> decodeList(@NonNull final String s) {
-        return decodeList(MULTI_STRING_SEPARATOR, s);
+    public static ArrayList<String> decodeList(@NonNull final String stringList) {
+        return decodeList(MULTI_STRING_SEPARATOR, stringList);
     }
 
     /**
      * Decode a text list separated by '|' and encoded by encodeListItem.
      *
-     * @param delim delimiter used in string s
-     * @param s     String representing the list
+     * @param delim      delimiter used in stringList
+     * @param stringList String representing the list
      *
      * @return Array of strings(trimmed) resulting from list
      */
     @NonNull
-    public static ArrayList<String> decodeList(final char delim, @NonNull final String s) {
+    public static ArrayList<String> decodeList(final char delim, @NonNull final String stringList) {
         StringBuilder ns = new StringBuilder();
         ArrayList<String> list = new ArrayList<>();
         boolean inEsc = false;
-        for (int i = 0; i < s.length(); i++) {
-            char c = s.charAt(i);
+        for (int i = 0; i < stringList.length(); i++) {
+            char c = stringList.charAt(i);
             if (inEsc) {
                 switch (c) {
                     case '\\':
@@ -390,13 +405,13 @@ public class ArrayUtils<T> {
      *
      * This is used to build text lists separated by 'delim'.
      *
-     * @param sa String to convert
+     * @param list String to convert
      *
      * @return Converted string
      */
     @NonNull
-    public String encodeList(@NonNull final List<T> sa) {
-        return encodeList(MULTI_STRING_SEPARATOR, sa);
+    public String encodeList(@NonNull final List<T> list) {
+        return encodeList(MULTI_STRING_SEPARATOR, list);
     }
 
     /**
@@ -427,34 +442,34 @@ public class ArrayUtils<T> {
     /**
      * Decode a text list separated by '|' and encoded by encodeListItem.
      *
-     * @param s String representing the list
+     * @param stringList String representing the list
      *
      * @return Array of strings resulting from list
      */
     @NonNull
-    public ArrayList<T> decodeList(@Nullable final String s, final boolean allowBlank) {
-        return decodeList(MULTI_STRING_SEPARATOR, s, allowBlank);
+    public ArrayList<T> decodeList(@Nullable final String stringList, final boolean allowBlank) {
+        return decodeList(MULTI_STRING_SEPARATOR, stringList, allowBlank);
     }
 
     /**
      * Decode a text list separated by '|' and encoded by encodeListItem.
      *
-     * @param s String representing the list
+     * @param stringList String representing the list
      *
      * @return Array of strings resulting from list
      */
     @SuppressWarnings("SameParameterValue")
     @NonNull
-    private ArrayList<T> decodeList(final char delim, @Nullable final String s, final boolean allowBlank) {
+    public ArrayList<T> decodeList(final char delim, @Nullable final String stringList, final boolean allowBlank) {
         StringBuilder ns = new StringBuilder();
         ArrayList<T> list = new ArrayList<>();
-        if (s == null) {
+        if (stringList == null) {
             return list;
         }
 
         boolean inEsc = false;
-        for (int i = 0; i < s.length(); i++) {
-            char c = s.charAt(i);
+        for (int i = 0; i < stringList.length(); i++) {
+            char c = stringList.charAt(i);
             if (inEsc) {
                 switch (c) {
                     case '\\':

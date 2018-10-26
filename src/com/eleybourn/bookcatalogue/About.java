@@ -80,7 +80,7 @@ public class About extends BaseActivity {
         findViewById(R.id.website).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.website)));
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.url_website)));
                 startActivity(intent);
             }
         });
@@ -88,7 +88,7 @@ public class About extends BaseActivity {
         findViewById(R.id.sourcecode).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.sourcecode)));
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.url_sourcecode)));
                 startActivity(intent);
             }
         });
@@ -96,14 +96,14 @@ public class About extends BaseActivity {
         findViewById(R.id.contact1).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendContactEmail(R.string.contact1);
+                sendContactEmail(R.string.email_contact1);
             }
         });
 
         findViewById(R.id.contact2).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendContactEmail(R.string.contact2);
+                sendContactEmail(R.string.email_contact2);
             }
         });
 
@@ -111,9 +111,9 @@ public class About extends BaseActivity {
         TextView amazon = findViewById(R.id.amazon_links_info);
         // Setup the linked HTML
         String text = getString(R.string.hint_amazon_links_blurb,
-                getString(R.string.amazon_books_by_author),
-                getString(R.string.amazon_books_in_series),
-                getString(R.string.amazon_books_by_author_in_series),
+                getString(R.string.menu_amazon_books_by_author),
+                getString(R.string.menu_amazon_books_in_series),
+                getString(R.string.menu_amazon_books_by_author_in_series),
                 getString(R.string.app_name));
         amazon.setText(Utils.linkifyHtml(text, Linkify.ALL));
         amazon.setMovementMethod(LinkMovementMethod.getInstance());

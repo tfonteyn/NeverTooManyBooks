@@ -58,10 +58,7 @@ public class RTE {
         private static final long serialVersionUID = 1L;
 
         public MustImplementException(@NonNull final Context context, @NonNull final Class clazz) {
-            this(context, clazz.getCanonicalName());
-        }
-        public MustImplementException(@NonNull final Context context, @NonNull final String interfaces) {
-            super("Class " + context.getClass().getCanonicalName() + " must implement " + interfaces);
+            super("Class " + context.getClass().getCanonicalName() + " must implement " + clazz.getCanonicalName());
         }
     }
 

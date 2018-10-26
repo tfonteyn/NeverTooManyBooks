@@ -34,7 +34,7 @@ import java.util.ArrayList;
  * Class to manage storage and retrieval of a piece of data from a bundle as well as
  * ancillary details such as visibility.
  *
- * In theory, all strings PUT into the collection will get automatically trimmed.
+ * Note: In theory, all strings PUT into the collection will get automatically trimmed.
  *
  * @author pjw
  */
@@ -94,7 +94,7 @@ public class Datum {
      *
      * @param o Object
      *
-     * @return Resulting value
+     * @return Resulting value (null or empty becomes 0)
      */
     private static double toDouble(@Nullable final Object o) {
         if (o == null) {
@@ -142,7 +142,7 @@ public class Datum {
      *
      * @param o Object
      *
-     * @return Resulting value
+     * @return Resulting value (null becomes empty)
      */
     @NonNull
     public static String toString(@Nullable final Object o) {
@@ -153,7 +153,7 @@ public class Datum {
      * Utility function to convert string to boolean
      *
      * @param s            String to convert
-     * @param emptyIsFalse if true, empty string is handled as false
+     * @param emptyIsFalse if true, null and empty string is handled as false
      *
      * @return Boolean value
      */

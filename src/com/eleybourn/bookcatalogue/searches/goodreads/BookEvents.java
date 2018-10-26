@@ -68,7 +68,7 @@ import java.util.List;
  *
  * @author Philip Warner
  */
-class BookEvents {
+public class BookEvents {
     private BookEvents() {
     }
 
@@ -232,8 +232,8 @@ class BookEvents {
 //            	@Override
 //            	public void run() {
 //            		BookEventHolder holder = ViewTagger.getTagOrThrow(view, R.id.TAG_BOOK_EVENT_HOLDER);
-//            		Intent intent = new Intent(context, GoodreadsSearchCriteria.class);
-//            		intent.putExtra(GoodreadsSearchCriteria.REQUEST_EXTRA_BOOK_ID, holder.event.getBookId());
+//            		Intent intent = new Intent(context, GoodreadsSearchCriteriaActivity.class);
+//            		intent.putExtra(GoodreadsSearchCriteriaActivity.REQUEST_EXTRA_BOOK_ID, holder.event.getBookId());
 //            		context.startActivity(intent);
 //            	}}));
 

@@ -35,7 +35,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
-import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.utils.Utils;
@@ -53,7 +52,7 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
      * Constructor; pass the superclass the main and row based layouts to use.
      */
     public EditAuthorListActivity() {
-        super(UniqueId.BKEY_AUTHOR_ARRAY, R.layout.activity_edit_list_author, R.layout.row_edit_author_list);
+        super(R.layout.activity_edit_list_author, R.layout.row_edit_author_list, UniqueId.BKEY_AUTHOR_ARRAY);
     }
 
     @Override
@@ -74,17 +73,12 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
         super.onCreate(savedInstanceState);
         this.setTitle(mBookTitle);
 
-        try {
-            // Setup autocomplete for author name
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                    android.R.layout.simple_dropdown_item_1line,  mDb.getAuthors());
-            ((AutoCompleteTextView) this.findViewById(R.id.author)).setAdapter(adapter);
+        // Setup autocomplete for author name
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_dropdown_item_1line, mDb.getAuthorsFormattedName());
+        ((AutoCompleteTextView) this.findViewById(R.id.author)).setAdapter(adapter);
 
-            getWindow().setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-
-        } catch (Exception e) {
-            Logger.error(e);
-        }
+        getWindow().setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
     }
 
     /**

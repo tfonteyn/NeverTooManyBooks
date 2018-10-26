@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue.backup;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -39,7 +40,7 @@ public interface Importer {
      * @param coverFinder  (Optional) object to find a file on the local device
      * @param listener     Progress and cancellation provider
      *
-     * @return <tt>true</tt>on success
+     * @return <tt>true</tt>on onConfirm
      */
     @SuppressWarnings("UnusedReturnValue")
     boolean importBooks(@NonNull final InputStream importStream,
@@ -66,7 +67,7 @@ public interface Importer {
      *
      * @author pjw
      */
-    interface CoverFinder {
+    interface CoverFinder extends AutoCloseable {
         void copyOrRenameCoverFile(@NonNull final String srcUuid, final long srcId, final long dstId) throws IOException;
     }
 }

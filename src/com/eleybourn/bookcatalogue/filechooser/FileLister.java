@@ -6,8 +6,8 @@ import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.filechooser.FileChooserFragment.FileDetails;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTaskContext;
-import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressFragment;
-import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressFragment.FragmentTask;
+import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressDialogFragment;
+import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressDialogFragment.FragmentTask;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -43,7 +43,7 @@ public abstract class FileLister implements FragmentTask {
     protected abstract ArrayList<FileDetails> processList(@Nullable final File[] files);
 
     @Override
-    public void run(@NonNull final SimpleTaskQueueProgressFragment fragment, @NonNull final SimpleTaskContext taskContext) {
+    public void run(@NonNull final SimpleTaskQueueProgressDialogFragment fragment, @NonNull final SimpleTaskContext taskContext) {
         // Get a file list
         File[] files = mRoot.listFiles(getFilter());
         // Filter/fill-in using the subclass
@@ -53,7 +53,7 @@ public abstract class FileLister implements FragmentTask {
     }
 
     @Override
-    public void onFinish(@NonNull final SimpleTaskQueueProgressFragment fragment, @Nullable final Exception exception) {
+    public void onFinish(@NonNull final SimpleTaskQueueProgressDialogFragment fragment, @Nullable final Exception exception) {
         // Display it in UI thread.
         Activity listenerActivity = fragment.getActivity();
         if (listenerActivity instanceof FileListerListener) {

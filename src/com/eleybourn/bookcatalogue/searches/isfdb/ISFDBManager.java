@@ -83,7 +83,7 @@ public class ISFDBManager {
 
 
     /**
-     * FIXME this has been shoehorned in here. Need to redo this by using the SearchISFDBThread really
+     * FIXME this has been shoehorned in here. Need to redo this by using the SearchISFDBTask really
      *
      * specifically used by {@link EditBookAnthologyFragment}
      * First step, get all editions for the ISBN
@@ -97,7 +97,7 @@ public class ISFDBManager {
     }
 
     /**
-     * FIXME this has been shoehorned in here. Need to redo this by using the SearchISFDBThread really
+     * FIXME this has been shoehorned in here. Need to redo this by using the SearchISFDBTask really
      *
      * specifically used by {@link EditBookAnthologyFragment}
      * First step, get all editions for the ISBN via {@link #searchEditions(String, HandlesISFDB)}

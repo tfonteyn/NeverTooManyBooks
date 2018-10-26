@@ -90,13 +90,12 @@ public class SendOneBookTask extends GenericTask {
             return false;
         }
 
-        // Get the goodreads manager and app context; the underlying activity may go away. Also get DB
         GoodreadsManager grManager = new GoodreadsManager();
-
+        // Ensure we are allowed
         if (!grManager.hasValidCredentials()) {
             throw new NotAuthorizedException();
         }
-
+        // get the app context; the underlying activity may go away. Also get DB
         Context ctx = context.getApplicationContext();
         CatalogueDBAdapter db = new CatalogueDBAdapter(ctx);
         db.open();
@@ -140,10 +139,7 @@ public class SendOneBookTask extends GenericTask {
                 }
             }
         } finally {
-            try {
-                db.close();
-            } catch (Exception ignore) {
-            }
+            db.close();
         }
         return true;
     }

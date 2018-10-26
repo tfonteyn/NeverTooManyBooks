@@ -65,7 +65,7 @@
 
         <ImageView
             android:id="@+id/grabber"
-            style="@style/touch_list_view_row_ic_grabber"
+            style="@style/tlv_dragHandle"
             app:srcCompat="@drawable/ic_drag_handle"
             tools:ignore="ContentDescription" />
 

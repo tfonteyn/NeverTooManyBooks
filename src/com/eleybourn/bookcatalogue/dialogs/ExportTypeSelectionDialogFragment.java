@@ -56,16 +56,14 @@ public class ExportTypeSelectionDialogFragment extends DialogFragment {
     }
 
     /**
-     * Ensure activity supports event
+     * Ensure activity supports interface
      */
     @Override
     @CallSuper
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull final Context context) {
         super.onAttach(context);
-
         if (!(context instanceof OnExportTypeSelectionDialogResultListener))
             throw new RTE.MustImplementException(context, OnExportTypeSelectionDialogResultListener.class);
-
     }
 
     /**
@@ -91,16 +89,16 @@ public class ExportTypeSelectionDialogFragment extends DialogFragment {
         mFile = new File(Objects.requireNonNull(getArguments().getString(UniqueId.BKEY_FILE_SPEC)));
 
         View v = requireActivity().getLayoutInflater().inflate(R.layout.dialog_export_type_selection, null);
+
+        setOnClickListener(v, R.id.row_all_books);
+        setOnClickListener(v, R.id.row_advanced_options);
+
         AlertDialog dialog = new AlertDialog.Builder(requireActivity())
                 .setView(v)
                 .setTitle(R.string.backup_to_archive)
                 .setIcon(R.drawable.ic_help_outline)
                 .create();
         dialog.setCanceledOnTouchOutside(false);
-
-        setOnClickListener(v, R.id.row_all_books);
-        setOnClickListener(v, R.id.row_advanced_options);
-
         return dialog;
     }
 
@@ -124,7 +122,9 @@ public class ExportTypeSelectionDialogFragment extends DialogFragment {
      * @author pjw
      */
     public interface OnExportTypeSelectionDialogResultListener {
-        void onExportTypeSelectionDialogResult(final int dialogId, @NonNull final DialogFragment dialog, @NonNull final ExportSettings settings);
+        void onExportTypeSelectionDialogResult(final int dialogId,
+                                               @NonNull final DialogFragment dialog,
+                                               @NonNull final ExportSettings settings);
     }
 
     public static class ExportSettings {

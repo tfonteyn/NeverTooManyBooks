@@ -34,11 +34,11 @@ import com.eleybourn.bookcatalogue.entities.AnthologyTitle;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.messaging.MessageSwitch;
-import com.eleybourn.bookcatalogue.searches.amazon.SearchAmazonThread;
-import com.eleybourn.bookcatalogue.searches.goodreads.SearchGoodreadsThread;
-import com.eleybourn.bookcatalogue.searches.googlebooks.SearchGoogleBooksThread;
-import com.eleybourn.bookcatalogue.searches.isfdb.SearchISFDBThread;
-import com.eleybourn.bookcatalogue.searches.librarything.SearchLibraryThingThread;
+import com.eleybourn.bookcatalogue.searches.amazon.SearchAmazonTask;
+import com.eleybourn.bookcatalogue.searches.goodreads.SearchGoodreadsTask;
+import com.eleybourn.bookcatalogue.searches.googlebooks.SearchGoogleBooksTask;
+import com.eleybourn.bookcatalogue.searches.isfdb.SearchISFDBTask;
+import com.eleybourn.bookcatalogue.searches.librarything.SearchLibraryThingTask;
 import com.eleybourn.bookcatalogue.tasks.ManagedTask;
 import com.eleybourn.bookcatalogue.tasks.TaskManager;
 import com.eleybourn.bookcatalogue.tasks.TaskManager.TaskManagerListener;
@@ -54,11 +54,11 @@ import java.util.Hashtable;
 import java.util.List;
 
 /**
- * Class to co-ordinate multiple SearchThread objects using an existing TaskManager.
+ * Class to co-ordinate multiple {@link SearchTask} objects using an existing {@link TaskManager}.
  *
- * It uses the task manager it is passed and listens to OnTaskEndedListener messages;
- * it maintain its own internal list of tasks and as tasks it knows about end, it
- * processes the data. Once all tasks are complete, it sends a message to its
+ * It uses the {@link TaskManager} it is passed and listens to {@link #onTaskEnded} messages;
+ * it maintain its own internal list of tasks {@link #mRunningTasks} and as tasks it knows about
+ * end, it processes the data. Once all tasks are complete, it sends a message to its
  * creator via its SearchHandler.
  *
  * @author Philip Warner
@@ -95,7 +95,7 @@ public class SearchManager implements TaskManagerListener {
     private static ArrayList<SearchSite> mPreferredCoverSearchOrder;
 
     static {
-        /*ENHANCE: note to self... redo this mess. To complicated for what it is doing.
+        /*ENHANCE: note to self... redo this mess. To complicated for what it is doing. Isolate ALL functionality in SearchSite
 
          * default search order
          *
@@ -184,12 +184,12 @@ public class SearchManager implements TaskManagerListener {
      * Constructor.
      *
      * @param taskManager TaskManager to use
-     * @param taskHandler SearchHandler to send results
+     * @param searchListener to send results to
      */
     public SearchManager(@NonNull final TaskManager taskManager,
-                         @NonNull final SearchListener taskHandler) {
+                         @NonNull final SearchListener searchListener) {
         mTaskManager = taskManager;
-        getMessageSwitch().addListener(getSenderId(), taskHandler, false);
+        getMessageSwitch().addListener(getSenderId(), searchListener, false);
     }
 
     @NonNull
@@ -235,16 +235,16 @@ public class SearchManager implements TaskManagerListener {
      */
     @Override
     public void onTaskEnded(@NonNull final TaskManager manager, @NonNull final ManagedTask task) {
-        int size;
         if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
             Logger.info(this,"enter onTaskEnded(taskId=" + task + ")");
         }
 
         // Handle the result, and optionally queue another task
-        if (task instanceof SearchThread) {
-            handleSearchTaskFinished((SearchThread) task);
+        if (task instanceof SearchTask) {
+            handleSearchTaskFinished((SearchTask) task);
         }
 
+        int size;
         // Remove the finished task, and terminate if no more.
         synchronized (mRunningTasks) {
             mRunningTasks.remove(task);
@@ -259,9 +259,6 @@ public class SearchManager implements TaskManagerListener {
             // Stop listening FIRST...otherwise, if sendResults() calls a listener that starts
             // a new task, we will stop listening for the new task.
             TaskManager.getMessageSwitch().removeListener(mTaskManager.getSenderId(), this);
-            if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
-                Logger.info(this,"SearchManager now stopped listening");
-            }
             // Notify the listeners.
             sendResults();
         }
@@ -290,7 +287,7 @@ public class SearchManager implements TaskManagerListener {
      *
      * @param thread Task to start
      */
-    private void startOne(@NonNull final SearchThread thread) {
+    private void startOne(@NonNull final SearchTask thread) {
         synchronized (mRunningTasks) {
             mRunningTasks.add(thread);
             mTaskManager.addTask(thread);
@@ -306,7 +303,7 @@ public class SearchManager implements TaskManagerListener {
      */
     private boolean startAmazon() {
         if (!mCancelledFlg) {
-            startOne(new SearchAmazonThread(mTaskManager, mAuthor, mTitle, mIsbn, mFetchThumbnail));
+            startOne(new SearchAmazonTask(mTaskManager, mAuthor, mTitle, mIsbn, mFetchThumbnail));
             return true;
         } else {
             return false;
@@ -318,7 +315,7 @@ public class SearchManager implements TaskManagerListener {
      */
     private boolean startGoogle() {
         if (!mCancelledFlg) {
-            startOne(new SearchGoogleBooksThread(mTaskManager, mAuthor, mTitle, mIsbn, mFetchThumbnail));
+            startOne(new SearchGoogleBooksTask(mTaskManager, mAuthor, mTitle, mIsbn, mFetchThumbnail));
             return true;
         } else {
             return false;
@@ -330,7 +327,7 @@ public class SearchManager implements TaskManagerListener {
      */
     private boolean startLibraryThing() {
         if (!mCancelledFlg && mHasValidIsbn) {
-            startOne(new SearchLibraryThingThread(mTaskManager, mAuthor, mTitle, mIsbn, mFetchThumbnail));
+            startOne(new SearchLibraryThingTask(mTaskManager, mAuthor, mTitle, mIsbn, mFetchThumbnail));
             return true;
         } else {
             return false;
@@ -342,7 +339,7 @@ public class SearchManager implements TaskManagerListener {
      */
     private boolean startGoodreads() {
         if (!mCancelledFlg) {
-            startOne(new SearchGoodreadsThread(mTaskManager, mAuthor, mTitle, mIsbn, mFetchThumbnail));
+            startOne(new SearchGoodreadsTask(mTaskManager, mAuthor, mTitle, mIsbn, mFetchThumbnail));
             return true;
         } else {
             return false;
@@ -354,7 +351,7 @@ public class SearchManager implements TaskManagerListener {
      */
     private boolean startISFDB() {
         if (!mCancelledFlg) {
-            startOne(new SearchISFDBThread(mTaskManager, mAuthor, mTitle, mIsbn, mFetchThumbnail));
+            startOne(new SearchISFDBTask(mTaskManager, mAuthor, mTitle, mIsbn, mFetchThumbnail));
             return true;
         } else {
             return false;
@@ -406,12 +403,10 @@ public class SearchManager implements TaskManagerListener {
 
         // List for task ends
         TaskManager.getMessageSwitch().addListener(mTaskManager.getSenderId(), this, false);
-        if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
-            Logger.info(this,"doSearch listener started");
-        }
+
 
         // We really want to ensure we get the same book from each, so if isbn is not present,
-        // do these in serially
+        // do these serially
 
         boolean tasksStarted = false;
         mSearchingAsin = false;
@@ -438,7 +433,7 @@ public class SearchManager implements TaskManagerListener {
                 sendResults();
                 TaskManager.getMessageSwitch().removeListener(mTaskManager.getSenderId(), this);
                 if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
-                    Logger.info(this,"doSearch listener stopped");
+                    Logger.info(this,"listener stopped");
                 }
             }
         }
@@ -483,13 +478,13 @@ public class SearchManager implements TaskManagerListener {
                 mBookData.putString(key, bookData.get(key).toString());
             } else {
                 // Copy, append or update data as appropriate.
-                if (UniqueId.BKEY_AUTHOR_DETAILS.equals(key)) {
+                if (UniqueId.BKEY_AUTHOR_STRING_LIST.equals(key)) {
                     appendData(key, bookData, mBookData);
 
-                } else if (UniqueId.BKEY_SERIES_DETAILS.equals(key)) {
+                } else if (UniqueId.BKEY_SERIES_STRING_LIST.equals(key)) {
                     appendData(key, bookData, mBookData);
 
-                } else if (UniqueId.BKEY_ANTHOLOGY_DETAILS.equals(key)) {
+                } else if (UniqueId.BKEY_ANTHOLOGY_STRING_LIST.equals(key)) {
                     appendData(key, bookData, mBookData);
 
                 } else if (UniqueId.BKEY_THUMBNAIL_FILES_SPEC.equals(key)) {
@@ -515,9 +510,9 @@ public class SearchManager implements TaskManagerListener {
      * Combine all the data and create a book or display an error.
      *
      * This is where string encoded fields get transformed into arrays
-     * {@link UniqueId#BKEY_AUTHOR_DETAILS} -> {@link UniqueId#BKEY_AUTHOR_ARRAY}
-     * {@link UniqueId#BKEY_SERIES_DETAILS} -> {@link UniqueId#BKEY_SERIES_DETAILS}
-     * {@link UniqueId#BKEY_ANTHOLOGY_DETAILS} -> {@link UniqueId#BKEY_ANTHOLOGY_DETAILS}
+     * {@link UniqueId#BKEY_AUTHOR_STRING_LIST} -> {@link UniqueId#BKEY_AUTHOR_ARRAY}
+     * {@link UniqueId#BKEY_SERIES_STRING_LIST} -> {@link UniqueId#BKEY_SERIES_STRING_LIST}
+     * {@link UniqueId#BKEY_ANTHOLOGY_STRING_LIST} -> {@link UniqueId#BKEY_ANTHOLOGY_STRING_LIST}
      */
     private void sendResults() {
         if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
@@ -561,14 +556,14 @@ public class SearchManager implements TaskManagerListener {
         ImageUtils.cleanupThumbnails(mBookData);
 
         // Try to use/construct authors
-        String authors = mBookData.getString(UniqueId.BKEY_AUTHOR_DETAILS);
+        String authors = mBookData.getString(UniqueId.BKEY_AUTHOR_STRING_LIST);
         if (authors == null || authors.isEmpty()) {
             authors = mAuthor;
         }
         if (authors != null && !authors.isEmpty()) {
             ArrayList<Author> list = ArrayUtils.getAuthorUtils().decodeList(authors, false);
             mBookData.putSerializable(UniqueId.BKEY_AUTHOR_ARRAY, list);
-            mBookData.remove(UniqueId.BKEY_AUTHOR_DETAILS);
+            mBookData.remove(UniqueId.BKEY_AUTHOR_STRING_LIST);
         }
 
         // Try to use/construct title
@@ -590,19 +585,19 @@ public class SearchManager implements TaskManagerListener {
         }
 
         // Try to use/construct series
-        String series = mBookData.getString(UniqueId.BKEY_SERIES_DETAILS);
+        String series = mBookData.getString(UniqueId.BKEY_SERIES_STRING_LIST);
         if (series != null && !series.isEmpty()) {
             ArrayList<Series> list = ArrayUtils.getSeriesUtils().decodeList(series, false);
             mBookData.putSerializable(UniqueId.BKEY_SERIES_ARRAY, list);
-            mBookData.remove(UniqueId.BKEY_SERIES_DETAILS);
+            mBookData.remove(UniqueId.BKEY_SERIES_STRING_LIST);
         }
 
         // Try to use/construct anthologyTitles
-        String anthologyTitlesAsStringList = mBookData.getString(UniqueId.BKEY_ANTHOLOGY_DETAILS);
+        String anthologyTitlesAsStringList = mBookData.getString(UniqueId.BKEY_ANTHOLOGY_STRING_LIST);
         if (anthologyTitlesAsStringList != null && !anthologyTitlesAsStringList.isEmpty()) {
             ArrayList<AnthologyTitle> list = ArrayUtils.getAnthologyTitleUtils().decodeList(anthologyTitlesAsStringList, false);
             mBookData.putSerializable(UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY, list);
-            mBookData.remove(UniqueId.BKEY_ANTHOLOGY_DETAILS);
+            mBookData.remove(UniqueId.BKEY_ANTHOLOGY_STRING_LIST);
         }
 
         // If book is not found or missing required data, warn the user
@@ -610,14 +605,14 @@ public class SearchManager implements TaskManagerListener {
             mTaskManager.showBriefMessage(BookCatalogueApp.getResourceString(R.string.book_not_found));
         }
         if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
-            Logger.info(this,"All done, Pass the data back");
+            Logger.info(this,"All done, Pass the data back to mMessageSenderId:" + mMessageSenderId);
         }
         // All done, Pass the data back
         mMessageSwitch.send(mMessageSenderId, new MessageSwitch.Message<SearchListener>() {
                     @Override
                     public boolean deliver(@NonNull final SearchListener listener) {
                         if (DEBUG_SWITCHES.MESSAGING && BuildConfig.DEBUG) {
-                            Logger.info(SearchManager.this,"deliver");
+                            Logger.info(SearchManager.this,"deliver to SearchListener: " + listener);
                         }
                         return listener.onSearchFinished(mBookData, mCancelledFlg);
                     }
@@ -696,10 +691,13 @@ public class SearchManager implements TaskManagerListener {
     /**
      * Handle task search results; start another task if necessary.
      */
-    private void handleSearchTaskFinished(@NonNull final SearchThread searchThread) {
-        mCancelledFlg = searchThread.isCancelled();
-        final Bundle bookData = searchThread.getBookData();
-        mSearchResults.put(searchThread.getSearchId(), bookData);
+    private void handleSearchTaskFinished(@NonNull final SearchTask searchTask) {
+        if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
+            Logger.info(this,"enter handleSearchTaskFinished(searchTask=" + searchTask + ")");
+        }
+        mCancelledFlg = searchTask.isCancelled();
+        final Bundle bookData = searchTask.getBookData();
+        mSearchResults.put(searchTask.getSearchId(), bookData);
         if (mCancelledFlg) {
             mWaitingForIsbn = false;
         } else {
@@ -720,12 +718,22 @@ public class SearchManager implements TaskManagerListener {
                         mWaitingForIsbn = true;
                     }
                 }
+                if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
+                    Logger.info(this,"mSearchingAsin result mWaitingForIsbn=" + mWaitingForIsbn);
+                }
             }
+
             if (mWaitingForIsbn) {
                 if (Utils.isNonBlankString(bookData, UniqueId.KEY_BOOK_ISBN)) {
+
                     mWaitingForIsbn = false;
-                    // Start the other two...even if they have run before
+
                     mIsbn = bookData.getString(UniqueId.KEY_BOOK_ISBN);
+                    if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
+                        Logger.info(this,"mWaitingForIsbn result isbn=" + mIsbn);
+                    }
+
+                    // Start the others...even if they have run before
                     startSearches(mSearchFlags);
                 } else {
                     // Start next one that has not run.

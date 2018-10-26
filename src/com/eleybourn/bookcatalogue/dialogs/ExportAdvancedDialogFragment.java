@@ -30,15 +30,6 @@ public class ExportAdvancedDialogFragment extends DialogFragment {
     private int mDialogId;
     private File mFile;
 
-//	/**
-//	 * Listener interface to receive notifications when dialog is closed by any means.
-//	 * 
-//	 * @author pjw
-//	 */
-//	public interface OnExportAdvancedDialogResultListener {
-//		public void onExportAdvancedDialogResult(int dialogId, ExportAdvancedDialogFragment dialog, int rowId, File file);
-//	}
-
     /**
      * Constructor
      *
@@ -58,19 +49,16 @@ public class ExportAdvancedDialogFragment extends DialogFragment {
     }
 
     /**
-     * Ensure activity supports event
+     * Ensure activity supports interface
      */
     @Override
     @CallSuper
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull final Context context) {
         super.onAttach(context);
-
         if (!(context instanceof OnExportTypeSelectionDialogResultListener)) {
             throw new RTE.MustImplementException(context, OnExportTypeSelectionDialogResultListener.class);
         }
-
     }
-
 
     /**
      * Utility routine to set the OnClickListener for a given view to change a checkbox.
@@ -89,23 +77,6 @@ public class ExportAdvancedDialogFragment extends DialogFragment {
         });
     }
 
-//	private OnClickListener mRowClickListener = new OnClickListener() {
-//		@Override
-//		public void onClick(View v) {
-//			handleClick(v);
-//		}};
-//
-//	/**
-//	 * Utility routine to set the OnClickListener for a given view item.
-//	 * 
-//	 * @param id		Sub-View ID
-//	 */
-//	private void setOnClickListener(View root, @IdRes int id) {
-//		View v = root.findViewById(id);
-//		v.setOnClickListener(mRowClickListener);
-//		v.setBackgroundResource(android.R.drawable.list_selector_background);
-//	}
-
     /**
      * Create the underlying dialog
      */
@@ -117,13 +88,6 @@ public class ExportAdvancedDialogFragment extends DialogFragment {
         mFile = new File(Objects.requireNonNull(getArguments().getString(UniqueId.BKEY_FILE_SPEC)));
 
         View v = requireActivity().getLayoutInflater().inflate(R.layout.dialog_export_advanced_options, null);
-        AlertDialog dialog = new AlertDialog.Builder(requireActivity())
-                .setView(v)
-                .setTitle(R.string.advanced_options)
-                .setIcon(R.drawable.ic_help_outline)
-                .create();
-
-        dialog.setCanceledOnTouchOutside(false);
 
         v.findViewById(R.id.cancel).setOnClickListener(new OnClickListener() {
             @Override
@@ -141,8 +105,31 @@ public class ExportAdvancedDialogFragment extends DialogFragment {
         setRelatedView(v, R.id.books_check, R.id.row_all_books);
         setRelatedView(v, R.id.covers_check, R.id.row_covers);
 
+        AlertDialog dialog = new AlertDialog.Builder(requireActivity())
+                .setView(v)
+                .setTitle(R.string.advanced_options)
+                .setIcon(R.drawable.ic_help_outline)
+                .create();
+        dialog.setCanceledOnTouchOutside(false);
         return dialog;
     }
+
+//	private OnClickListener mRowClickListener = new OnClickListener() {
+//		@Override
+//		public void onClick(View v) {
+//			handleClick(v);
+//		}};
+//
+//	/**
+//	 * Utility routine to set the OnClickListener for a given view item.
+//	 * 
+//	 * @param id		Sub-View ID
+//	 */
+//	private void setOnClickListener(View root, @IdRes int id) {
+//		View v = root.findViewById(id);
+//		v.setOnClickListener(mRowClickListener);
+//		v.setBackgroundResource(android.R.drawable.list_selector_background);
+//	}
 
     private void handleClick(@SuppressWarnings("unused") @NonNull final View view) {
         try {
@@ -196,5 +183,18 @@ public class ExportAdvancedDialogFragment extends DialogFragment {
         }
 
         return settings;
+    }
+
+    /**
+     * Listener interface to receive notifications when dialog is closed by any means.
+     *
+     * @author pjw
+     */
+    @SuppressWarnings("unused")
+    public interface OnExportAdvancedDialogResultListener {
+        public void onExportAdvancedDialogResult(final int dialogId,
+                                                 @NonNull final ExportAdvancedDialogFragment dialog,
+                                                 final int rowId,
+                                                 @NonNull final File file);
     }
 }

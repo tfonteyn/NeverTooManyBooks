@@ -80,7 +80,7 @@ public class EditPublisherDialog {
     }
 
     /**
-     * ENHANCE: once Publisher use id's, use code from {@link EditSeriesDialog#confirmEdit}
+     * ENHANCE: once {@link Publisher} use id's, use code from {@link EditSeriesDialog#confirmEdit}
      */
     private void confirmEdit(@NonNull final Publisher from, @NonNull final Publisher to) {
         // case sensitive equality

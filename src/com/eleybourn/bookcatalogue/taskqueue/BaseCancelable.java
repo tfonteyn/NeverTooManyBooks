@@ -157,7 +157,7 @@ public abstract class BaseCancelable<T> implements Cancelable<T> {
     }
 
     /**
-     * Whether the task's has been requested for cancel.
+     * Whether the task's has been requested for onCancel.
      */
     protected synchronized boolean isCanceling() {
         return mState == STATE_CANCELING;

@@ -25,6 +25,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.support.v4.content.FileProvider;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
@@ -52,13 +53,14 @@ public class BookUtils {
     }
 
     /**
-     * Open a new book editing activity with fields copied from saved book.
+     * Duplicate a book by putting applicable fields in a Bundle ready for further processing.
      *
      * @param bookId from which to copy fields
+     *
+     * @return bundle with book data
      */
-    public static void duplicateBook(@NonNull final Activity activity,
-                                     @NonNull final CatalogueDBAdapter db,
-                                     final long bookId) {
+    public static Bundle duplicateBook(@NonNull final CatalogueDBAdapter db,
+                                       final long bookId) {
         final Bundle bookData = new Bundle();
         try (BooksCursor cursor = db.fetchBookById(bookId)) {
             if (cursor.moveToFirst()) {
@@ -94,14 +96,11 @@ public class BookUtils {
 
         } catch (DBExceptions.ColumnNotPresent e) {
             // fetchBookById had an incomplete selectClause, the log will tell us which column
-            StandardDialogs.showBriefMessage(activity, R.string.error_unknown);
             Logger.error(e);
-            return;
+            return null;
         }
 
-        Intent intent = new Intent(activity, EditBookActivity.class);
-        intent.putExtra(UniqueId.BKEY_BOOK_DATA, bookData);
-        activity.startActivityForResult(intent, EditBookActivity.REQUEST_CODE);
+        return bookData;
     }
 
     /**
@@ -113,7 +112,8 @@ public class BookUtils {
                                   @NonNull final CatalogueDBAdapter db,
                                   final long bookId,
                                   @Nullable final Runnable runnable) {
-        int res = StandardDialogs.deleteBookAlert(activity, db, bookId, new Runnable() {
+        @StringRes
+        int result = StandardDialogs.deleteBookAlert(activity, db, bookId, new Runnable() {
             @Override
             public void run() {
                 db.purgeAuthors();
@@ -123,17 +123,16 @@ public class BookUtils {
                 }
             }
         });
-        if (res != 0) {
-            StandardDialogs.showBriefMessage(activity, res);
+        if (result != 0) {
+            StandardDialogs.showBriefMessage(activity, result);
         }
     }
 
     /**
-     * Perform sharing of book by its database rowId. Create chooser with matched
-     * apps for sharing some text like the next:<br>
+     * Perform sharing of book. Create chooser with matched apps for sharing some text like:
      * <b>"I'm reading " + title + " by " + author + series + " " + ratingString</b>
      *
-     * @param bookId  of the book
+     * @param bookId to share
      */
     public static void shareBook(@NonNull final Activity activity,
                                  @NonNull final CatalogueDBAdapter db,
@@ -202,7 +201,7 @@ public class BookUtils {
      * @param db       database
      * @param book to update
      *
-     * @return <tt>true</tt> if the update was successful, false on failure
+     * @return <tt>true</tt> if the update was successful, false on onCancel
      */
     @SuppressWarnings("UnusedReturnValue")
     public static boolean setRead(@NonNull final CatalogueDBAdapter db,
@@ -226,7 +225,8 @@ public class BookUtils {
     public static boolean setRead(@NonNull final CatalogueDBAdapter db,
                                   final long bookId,
                                   final boolean read) {
-        Book book = new Book(bookId);
+        Book book = db.getBookById(bookId);
+        //noinspection ConstantConditions
         book.putBoolean(UniqueId.KEY_BOOK_READ, read);
         book.putString(UniqueId.KEY_BOOK_READ_END, DateUtils.todaySqlDateOnly());
         return (db.updateBook(bookId, book, 0) == 1);

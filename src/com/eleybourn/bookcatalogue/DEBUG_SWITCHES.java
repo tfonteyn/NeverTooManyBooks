@@ -1,5 +1,7 @@
 package com.eleybourn.bookcatalogue;
 
+import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressDialogFragment;
+
 /**
  * Global location where you can switch individual DEBUG options of/off
  *
@@ -26,7 +28,7 @@ public final class DEBUG_SWITCHES {
     public static final boolean TIMERS = false;
 
     /** dump the sql string to the log */
-    public static final boolean SQL = true;
+    public static final boolean SQL = false;
 
     /** {@link com.eleybourn.bookcatalogue.database.CatalogueDBAdapter} */
     public static final boolean DB_ADAPTER = false;
@@ -48,20 +50,20 @@ public final class DEBUG_SWITCHES {
     /** {@link com.eleybourn.bookcatalogue.utils.ImageUtils} */
     public static final boolean IMAGE_UTILS = false;
 
-    /** {@link com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressFragment} */
+    /** {@link SimpleTaskQueueProgressDialogFragment} */
     public static final boolean SQPFragment = false;
 
     /** {@link com.eleybourn.bookcatalogue.utils.StorageUtils} */
     public static final boolean STORAGE_UTILS = false;
 
     /** {@link com.eleybourn.bookcatalogue.tasks.TaskManager} */
-    public static final boolean TASK_MANAGER = false;
+    public static final boolean TASK_MANAGER = true;
 
     /** {@link com.eleybourn.bookcatalogue.searches.SearchManager} and related */
-    public static final boolean SEARCH_INTERNET = false;
+    public static final boolean SEARCH_INTERNET = true;
 
     /** all things related to sending messages around */
-    public static final boolean MESSAGING = false;
+    public static final boolean MESSAGING = true;
 
     /** reading/writing a backup file */
     public static final boolean BACKUP = false;

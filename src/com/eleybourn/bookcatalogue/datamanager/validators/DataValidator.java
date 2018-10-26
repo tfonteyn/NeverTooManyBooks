@@ -40,7 +40,7 @@ public interface DataValidator {
      * @param datum           The Datum to validate
      * @param crossValidating Options indicating if this is the cross-validation pass.
      *
-     * @throws ValidatorException For any validation failure.
+     * @throws ValidatorException For any validation onCancel.
      */
     void validate(@NonNull final DataManager data, @NonNull final Datum datum, final boolean crossValidating)
             throws ValidatorException;

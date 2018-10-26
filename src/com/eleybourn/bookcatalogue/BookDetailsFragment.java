@@ -5,6 +5,9 @@ import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -28,19 +31,17 @@ import java.util.Date;
 /**
  * Class for representing read-only book details.
  *
+ *      * ok, so why an Adapter and not handle this just like Series is currently handled....
+ *      *
+ *      * TODO the idea is to have a new Activity: {@link AnthologyTitle} -> books containing the story
+ *      * There is not much point in doing this in the Builder. The amount of entries is expected to be small.
+ *      * Main audience: the collector who wants *everything* of a certain author.
+ *
  * @author n.silin
  */
 public class BookDetailsFragment extends BookAbstractFragmentWithCoverImage {
 
-    /**
-     * ok, so why an Adapter and not handle this just like Series is currently handled....
-     *
-     * TODO the idea is to have a new Activity: {@link AnthologyTitle} -> books containing the story
-     * There is not much point in doing this in the Builder. The amount of entries is expected to be small.
-     * Main audience: the collector who wants *everything* of a certain author.
-     */
     @Override
-    @CallSuper
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
@@ -76,9 +77,9 @@ public class BookDetailsFragment extends BookAbstractFragmentWithCoverImage {
         mFields.add(R.id.read_start, UniqueId.KEY_BOOK_READ_START, null, new Fields.DateFieldFormatter());
         mFields.add(R.id.read_end, UniqueId.KEY_BOOK_READ_END, null, new Fields.DateFieldFormatter());
 
+        // Make labels reflect actual fields
         mFields.add(R.id.lbl_isbn, "", UniqueId.KEY_BOOK_ISBN, null);
         mFields.add(R.id.lbl_publishing, "", UniqueId.KEY_BOOK_PUBLISHER, null);
-
 
         // set the formatter for binary values as yes/no/blank for simple displaying
         mFields.getField(R.id.signed).formatter = new Fields.BinaryYesNoEmptyFormatter(this.getResources());
@@ -86,8 +87,8 @@ public class BookDetailsFragment extends BookAbstractFragmentWithCoverImage {
 
     @Override
     @CallSuper
-    protected void onLoadBookDetails(@NonNull final Book book, final boolean setAllDone) {
-        super.onLoadBookDetails(book, setAllDone);
+    protected void onLoadBookDetails(@NonNull final Book book, final boolean setAllFrom) {
+        super.onLoadBookDetails(book, setAllFrom);
         populateAuthorListField(book);
         populateSeriesListField(book);
     }
@@ -263,7 +264,7 @@ public class BookDetailsFragment extends BookAbstractFragmentWithCoverImage {
 
     /**
      * Inflates 'Loaned' field showing a person the book loaned to.
-     * If book is not loaned field is invisible.
+     * If book is not loaned the field is invisible.
      *
      * @param bookId the loaned book
      */
@@ -289,7 +290,7 @@ public class BookDetailsFragment extends BookAbstractFragmentWithCoverImage {
         boolean visible = Fields.isVisible(UniqueId.KEY_BOOK_READ);
         if (visible) {
             // set initial display state
-            readField.setChecked(book.isRead());
+            readField.setChecked(book.getBoolean(Book.IS_READ));
             readField.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(final View v) {
@@ -305,16 +306,50 @@ public class BookDetailsFragment extends BookAbstractFragmentWithCoverImage {
     }
 
     /**
+     *
+     * @see #setHasOptionsMenu
+     * @see #onPrepareOptionsMenu
+     * @see #onOptionsItemSelected
+     */
+    @Override
+    @CallSuper
+    public void onCreateOptionsMenu(@NonNull final Menu menu, @NonNull final MenuInflater inflater) {
+        menu.add(Menu.NONE, R.id.MENU_BOOK_EDIT, 0, R.string.edit_book)
+                .setIcon(R.drawable.ic_mode_edit)
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    /**
+     * This will be called when a menu item is selected.
+     *
+     * @param item The item selected
+     *
+     * @return <tt>true</tt> if handled
+     */
+    @Override
+    @CallSuper
+    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.MENU_BOOK_EDIT:
+                EditBookActivity.startActivityForResult(requireActivity(),  /* result handled by hosting Activity */
+                        getBook().getBookId(), EditBookActivity.TAB_EDIT);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    /**
      * returning here from somewhere else (e.g. from editing the book) and have an ID...reload!
      */
     @CallSuper
     @Override
     public void onResume() {
-
-        Book book = getBook();
-        if (book.getBookId() != 0) {
-            book.reload();
-        }
         super.onResume();
+        long bookId = getBook().getBookId();
+        if (bookId != 0) {
+            getBook().reload(bookId);
+        }
     }
 }

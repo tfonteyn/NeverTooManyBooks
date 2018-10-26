@@ -56,14 +56,14 @@ import java.util.Objects;
  *
  * The layout must have the top id of:
  *
- * - ROW        onRowClick, unless ROW_DETAILS is defined.
+ * - ROW        {@link #onRowClick}, unless ROW_DETAILS is defined.
  *
  * The layout can optionally contain these "@+id/" :
  *
- * - ROW_DETAILS         onRowClick; if no 'id/ROW_DETAILS' found, then 'id/ROW' is tried instead
- * - ROW_UP              onRowUp
- * - ROW_DOWN            onRowDown
- * - ROW_DELETE          onRowDelete
+ * - ROW_DETAILS         {@link #onRowClick}; if no 'id/ROW_DETAILS' found, then 'id/ROW' is tried instead
+ * - ROW_UP              {@link #onRowUp}
+ * - ROW_DOWN            {@link #onRowDown}
+ * - ROW_DELETE          {@link #onRowDelete}
  *
  * ROW is the complete row, ROW_DETAIL is a child of ROW.
  * So you should never have a ROW_DETAIL without an enclosing ROW element
@@ -130,7 +130,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
                     onListChanged();
                 }
             } catch (Exception e) {
-                // TODO: Allow a specific exception to cancel the action
+                // TODO: Allow a specific exception to onCancel the action
                 Logger.error(e);
             }
         }
@@ -154,7 +154,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
                 notifyDataSetChanged();
                 onListChanged();
             } catch (Exception e) {
-                // TODO: Allow a specific exception to cancel the action
+                // TODO: Allow a specific exception to onCancel the action
                 Logger.error(e);
             }
         }
@@ -178,7 +178,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
                 notifyDataSetChanged();
                 onListChanged();
             } catch (Exception e) {
-                // TODO: Allow a specific exception to cancel the action
+                // TODO: Allow a specific exception to onCancel the action
                 Logger.error(e);
             }
 
@@ -205,7 +205,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
      * Called when an otherwise inactive part of the row is clicked.
      *
      * @param target The view clicked
-     * @param item The object associated with this row
+     * @param item   The object associated with this row
      */
     protected void onRowClick(@NonNull final View target, @NonNull final T item, final int position) {
     }
@@ -214,7 +214,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
      * Called when an otherwise inactive part of the row is long clicked.
      *
      * @param target The view clicked
-     * @param item The object associated with this row
+     * @param item   The object associated with this row
      *
      * @return <tt>true</tt>if handled
      */
@@ -238,9 +238,10 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
     }
 
     /**
-     * Call to set up the row view. This is called by the original {@link #getView}
+     * Call to set up the row view. This is called by {@link #getView}
+     *
      * @param convertView The target row view object
-     * @param item The object (or type T) from which to draw values.
+     * @param item        The object (or type T) from which to draw values.
      */
     abstract protected void onSetupView(@NonNull final View convertView, @NonNull final T item);
 
@@ -267,7 +268,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
         // Save this views position
         ViewTagger.setTag(convertView, R.id.TAG_POSITION, position);
 
-        // If we use a TouchListView, then don't enable the whole row, so grabber/del buttons keep working
+        // If we use a TouchListView, then don't enable the whole row, so buttons keep working
         View row = convertView.findViewById(R.id.ROW_DETAILS);
         if (row == null) {
             // but if we did not define a details row subview, try row anyhow
@@ -333,9 +334,8 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
     }
 
     /**
-     * Find the first ancestor that has the ID R.id.ROW. This
-     * will be the complete row View. Use the TAG on that to get
-     * the physical row number.
+     * Find the first ancestor that has the ID R.id.ROW. This will be the complete row View.
+     * Use the TAG on that to get the physical row number.
      *
      * @param view View to search from
      *

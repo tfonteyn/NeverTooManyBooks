@@ -101,10 +101,10 @@ public interface CropIImage {
     @NonNull
     String getTitle();
 
-    // Get/Set the title of the image
+    /** Get/Set the title of the image */
     void setTitle(String name);
 
-    // Get metadata of the image
+    /** Get metadata of the image */
     long getDateTaken();
 
     @NonNull
@@ -117,23 +117,23 @@ public interface CropIImage {
     @NonNull
     String getDisplayName();
 
-    // Get property of the image
+    /** Get property of the image */
     boolean isReadonly();
 
     boolean isDrm();
 
-    // Get the bitmap/uri of the medium thumbnail
+    /** Get the bitmap/uri of the medium thumbnail */
     @NonNull
     Bitmap thumbBitmap(boolean rotateAsNeeded);
 
     @NonNull
     Uri thumbUri();
 
-    // Get the bitmap of the mini thumbnail.
+    /** Get the bitmap of the mini thumbnail. */
     @NonNull
     Bitmap miniThumbBitmap();
 
-    // Rotate the image
+    /** Rotate the image */
     boolean rotateImageBy(int degrees);
 
 }

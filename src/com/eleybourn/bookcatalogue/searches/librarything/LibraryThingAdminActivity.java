@@ -34,8 +34,8 @@ import android.widget.EditText;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTaskContext;
-import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressFragment;
-import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressFragment.FragmentTask;
+import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressDialogFragment;
+import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressDialogFragment.FragmentTask;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 import java.io.File;
@@ -47,7 +47,7 @@ import java.io.File;
  *
  * @author Philip Warner
  */
-public class AdministrationLibraryThing extends BaseActivity {
+public class LibraryThingAdminActivity extends BaseActivity {
 
     @Override
     protected int getLayoutId() {
@@ -97,7 +97,7 @@ public class AdministrationLibraryThing extends BaseActivity {
                          * Validate the key by getting a known cover
                          */
                         @Override
-                        public void run(@NonNull final SimpleTaskQueueProgressFragment fragment, @NonNull final SimpleTaskContext taskContext) {
+                        public void run(@NonNull final SimpleTaskQueueProgressDialogFragment fragment, @NonNull final SimpleTaskContext taskContext) {
                             //TEST Library Thing
                             Bundle tmp = new Bundle();
                             LibraryThingManager ltm = new LibraryThingManager();
@@ -117,13 +117,13 @@ public class AdministrationLibraryThing extends BaseActivity {
                         }
 
                         @Override
-                        public void onFinish(@NonNull final SimpleTaskQueueProgressFragment fragment, @Nullable final Exception exception) {
+                        public void onFinish(@NonNull final SimpleTaskQueueProgressDialogFragment fragment, @Nullable final Exception exception) {
                         }
 
                     };
 
                     // Get the fragment to display task progress
-                    SimpleTaskQueueProgressFragment.runTaskWithProgress(AdministrationLibraryThing.this, R.string.connecting_to_web_site, task, true, 0);
+                    SimpleTaskQueueProgressDialogFragment.runTaskWithProgress(LibraryThingAdminActivity.this, R.string.connecting_to_web_site, task, true, 0);
 
                 }
             }

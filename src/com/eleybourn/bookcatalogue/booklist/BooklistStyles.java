@@ -182,7 +182,7 @@ public class BooklistStyles extends ArrayList<BooklistStyle> {
         style.addGroups(ROW_KIND_LOCATION, ROW_KIND_AUTHOR, ROW_KIND_SERIES);
 
         // Location
-        style = new BooklistStyle(R.string.language);
+        style = new BooklistStyle(R.string.lbl_language);
         list.add(style);
         style.addGroups(ROW_KIND_LANGUAGE, ROW_KIND_AUTHOR, ROW_KIND_SERIES);
 

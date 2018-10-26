@@ -38,10 +38,10 @@ import com.eleybourn.bookcatalogue.R;
  *
  * @author pjw
  */
-class TextFieldEditor extends AlertDialog {
+class TextFieldEditorDialog extends AlertDialog {
     /** View which displays the text */
     private final EditText mTextView;
-    /** Listener for dialog exit/save/cancel */
+    /** Listener for dialog exit/save/onCancel */
     private OnEditListener mListener;
 
     /**
@@ -49,7 +49,7 @@ class TextFieldEditor extends AlertDialog {
      *
      * @param context Calling context
      */
-    TextFieldEditor(@NonNull final Context context) {
+    TextFieldEditorDialog(@NonNull final Context context) {
         super(context);
 
         // Get the layout

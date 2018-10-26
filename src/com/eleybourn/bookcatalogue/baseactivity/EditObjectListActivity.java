@@ -35,10 +35,11 @@ import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
+import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
-import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter;
 import com.eleybourn.bookcatalogue.widgets.TouchListView;
 import com.eleybourn.bookcatalogue.widgets.TouchListViewWithDropListener;
 
@@ -52,7 +53,7 @@ import java.util.Objects;
  * which will be automatically handled. Optional IDs are noted:
  *
  * Main View:
- * - cancel
+ * - onCancel
  * - confirm
  * - add (OPTIONAL)
  *
@@ -96,15 +97,6 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Bas
     private final int mBaseViewId;
     /** The resource ID for the row view */
     private final int mRowViewId;
-    /** the rows */
-    protected ArrayList<T> mList = null;
-    protected EditObjectListAdapter mAdapter;
-    protected CatalogueDBAdapter mDb;
-    @Nullable
-    protected String mBookTitle;
-    /** Row ID... mainly used (if list is from a book) to know if book is new. */
-    protected long mRowId = 0;
-
     /**
      * Handle 'Cancel'
      */
@@ -112,11 +104,12 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Bas
         @Override
         public void onClick(View v) {
             if (onCancel())
-                setResult(Activity.RESULT_CANCELED);
-                finish();
+                setResult(Activity.RESULT_CANCELED); /* bca659b6-dfb9-4a97-b651-5b05ad102400,
+                dd74343a-50ff-4ce9-a2e4-a75f7bcf9e36, 3f210502-91ab-4b11-b165-605e09bb0c17,
+                13854efe-e8fd-447a-a195-47678c0d87e7 */
+            finish();
         }
     };
-
     /**
      * Handle 'Add'
      */
@@ -127,6 +120,8 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Bas
             onListChanged();
         }
     };
+    /** the rows */
+    protected ArrayList<T> mList = null;
     /**
      * Handle 'Save'
      */
@@ -136,20 +131,27 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Bas
             Intent intent = new Intent();
             intent.putExtra(mBKey, mList);
             if (onSave(intent)) {
-                setResult(Activity.RESULT_OK, intent);
+                setResult(Activity.RESULT_OK, intent); /* bca659b6-dfb9-4a97-b651-5b05ad102400,
+                 dd74343a-50ff-4ce9-a2e4-a75f7bcf9e36, 3f210502-91ab-4b11-b165-605e09bb0c17
+                 13854efe-e8fd-447a-a195-47678c0d87e7 */
                 finish();
             }
         }
     };
+    protected EditObjectListAdapter mAdapter;
+    protected CatalogueDBAdapter mDb;
+    @Nullable
+    protected String mBookTitle;
+    /** Row ID... mainly used (if list is from a book) to know if book is new. */
+    protected long mRowId = 0;
 
     /**
      * Constructor
-     *
-     * @param bkey       The key to use in the Bundle to get the array
      * @param baseViewId Resource id of base view
      * @param rowViewId  Resource id of row view
+     * @param bkey       The key to use in the Bundle to get the array
      */
-    protected EditObjectListActivity(@Nullable final String bkey, final int baseViewId, final int rowViewId) {
+    protected EditObjectListActivity(final int baseViewId, final int rowViewId, @Nullable final String bkey) {
         mBKey = bkey;
         mBaseViewId = baseViewId;
         mRowViewId = rowViewId;
@@ -196,9 +198,9 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Bas
     protected boolean onRowLongClick(@NonNull final View target, @NonNull final T object, final int position) {
         return true;
     }
+
     /**
-     *
-     * @return  true if delete is allowed to happen
+     * @return true if delete is allowed to happen
      */
     @SuppressWarnings({"unused", "SameReturnValue"})
     @CallSuper
@@ -213,6 +215,7 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Bas
     @SuppressWarnings({"unused", "EmptyMethod"})
     protected void onRowUp(@NonNull final View target, @NonNull final T object, final int position) {
     }
+
     /**
      * Called when user clicks the 'Save' button (if present). Primary task is
      * to return a boolean indicating it is OK to continue.
@@ -288,26 +291,28 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Bas
             setOnClickListener(R.id.cancel, mCancelListener);
             setOnClickListener(R.id.add, mAddListener);
 
-            // Ask the subclass to setup the list; we need this before building the adapter.
-            if (savedInstanceState != null && mBKey != null && savedInstanceState.containsKey(mBKey)) {
-                mList = ArrayUtils.getListFromBundle(savedInstanceState, mBKey);
+            // we need the ArrayList before building the adapter.
+            if (mBKey != null) {
+                if (savedInstanceState != null  && savedInstanceState.containsKey(mBKey)){
+                    mList = ArrayUtils.getListFromBundle(savedInstanceState, mBKey);
+                }
+                // not in savedInstanceState ? check the intent
+                if (mList == null) {
+                    mList = ArrayUtils.getListFromIntentExtras(getIntent(), mBKey);
+                }
             }
-            // not in bundle ? check the intent
-            if (mList == null) {
-                mList = ArrayUtils.getListFromIntentExtras(getIntent(), mBKey);
-            }
-            // still nothing ? then ask subclass explicitly
+            // still nothing ? Then ask the subclass to setup the list
             if (mList == null) {
                 mList = getList();
             }
             // give up if still null
-            Objects.requireNonNull(mList, "Unable to find list key '" + mBKey + "' in passed intent extras");
+            Objects.requireNonNull(mList, "Unable to find list for key '" + mBKey + "'");
 
             // Set up list handling
             this.mAdapter = new EditObjectListAdapter(this, mRowViewId, mList);
             setListAdapter(this.mAdapter);
 
-            // Look for title and title_label
+            // Look for id and title
             Bundle extras = getIntent().getExtras();
             if (extras != null) {
                 mRowId = extras.getLong(UniqueId.KEY_ID);
@@ -324,8 +329,8 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Bas
     /**
      * Utility routine to setup a listener for the specified view id
      *
-     * @param viewId Resource ID
-     * @param listener  Listener
+     * @param viewId   Resource ID
+     * @param listener Listener
      */
     private void setOnClickListener(@IdRes final int viewId, @NonNull final OnClickListener listener) {
         View v = this.findViewById(viewId);
@@ -386,9 +391,12 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Bas
     @Override
     @CallSuper
     protected void onDestroy() {
-        super.onDestroy();
-        if (mDb != null)
+        Tracker.enterOnDestroy(this);
+        if (mDb != null) {
             mDb.close();
+        }
+        super.onDestroy();
+        Tracker.exitOnDestroy(this);
     }
 
     /**
@@ -414,7 +422,7 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Bas
         @Override
         @CallSuper
         protected boolean onRowLongClick(@NonNull final View target, @NonNull final T item, final int position) {
-            super.onRowLongClick(target,item,position);
+            super.onRowLongClick(target, item, position);
             return EditObjectListActivity.this.onRowLongClick(target, item, position);
         }
 
@@ -426,7 +434,7 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Bas
         @Override
         @CallSuper
         protected boolean onRowDelete(@NonNull final View target, @NonNull final T item, final int position) {
-            super.onRowDelete(target,item,position);
+            super.onRowDelete(target, item, position);
             return EditObjectListActivity.this.onRowDelete(target, item, position);
         }
 

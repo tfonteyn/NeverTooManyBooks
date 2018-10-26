@@ -93,22 +93,21 @@ public class UpgradeMessageManager {
             // It's either a new install, or an install using old database-based message system
 
             // Up until version 98, messages were handled via the CatalogueDBAdapter object,
-            // so create one and see if there is a message.
-            try (CatalogueDBAdapter tmpDb = new CatalogueDBAdapter(BookCatalogueApp.getAppContext())) {
-                // On new installs, there is no upgrade message
-                if (tmpDb.isNewInstall()) {
-                    mMessage = "";
-                    setMessageAcknowledged();
-                    return mMessage;
-                }
-                // It's not a new install, so we use the 'old' message format and set the version to the
-                // last installed version that used the old method.
-                lastVersion = 98;
-                if (!DatabaseHelper.getMessage().isEmpty()) {
-                    message.append("<p>").append(DatabaseHelper.getMessage()).append("</p>");
-                }
+            // so create one and see if there is a message. On new installs, there is no upgrade message
+            //Note: we're not calling open(), so not calling close() either.
+            if (new CatalogueDBAdapter(BookCatalogueApp.getAppContext()).isNewInstall()) {
+                mMessage = "";
+                setMessageAcknowledged();
+                return mMessage;
+            }
+            // It's not a new install, so we use the 'old' message format and set the version to the
+            // last installed version that used the old method.
+            lastVersion = 98;
+            if (!DatabaseHelper.getMessage().isEmpty()) {
+                message.append("<p>").append(DatabaseHelper.getMessage()).append("</p>");
             }
         }
+
 
         boolean first = true;
         for (UpgradeMessage msg : mMessages) {

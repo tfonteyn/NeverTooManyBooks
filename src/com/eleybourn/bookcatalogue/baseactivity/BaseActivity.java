@@ -1,6 +1,7 @@
 package com.eleybourn.bookcatalogue.baseactivity;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -17,9 +18,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import com.eleybourn.bookcatalogue.About;
-import com.eleybourn.bookcatalogue.AdministrationFunctions;
+import com.eleybourn.bookcatalogue.AdminActivity;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.BooksOnBookshelf;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.Donate;
 import com.eleybourn.bookcatalogue.EditBookshelvesActivity;
@@ -34,20 +34,10 @@ import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 /**
  * Base class for all (most) Activity's
  *
- * ENHANCE: handle the home/up button better
- * right now, the only activity with a DrawerLayout == {@link BooksOnBookshelf}
- * -> click 'home' and {@link #onOptionsItemSelected} will open the drawer.
- *
- * Activities started with 'startActivityForResult' override {@link #onOptionsItemSelected}
- * and handle the 'home' button to provide their results.
- *
- * Lastly, all other activities are handled here with a plain 'finish'
- * in {@link #onOptionsItemSelected}
- *
  * @author pjw
  */
 abstract public class BaseActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, CanBeDirty {
+        implements NavigationView.OnNavigationItemSelectedListener {
 
     /** The side/navigation panel */
     @Nullable
@@ -76,7 +66,7 @@ abstract public class BaseActivity extends AppCompatActivity
     @Override
     @CallSuper
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
-
+        // call setTheme before super.onCreate
         setTheme(BookCatalogueApp.getThemeResId());
         super.onCreate(savedInstanceState);
 
@@ -155,19 +145,19 @@ abstract public class BaseActivity extends AppCompatActivity
                 return true;
             case R.id.nav_manage_bookshelves:
                 intent = new Intent(this, EditBookshelvesActivity.class);
-                startActivityForResult(intent, EditBookshelvesActivity.REQUEST_CODE);
+                startActivityForResult(intent, EditBookshelvesActivity.REQUEST_CODE); /* 41e84172-5833-4906-a891-8df302ecc190 */
                 break;
             case R.id.nav_booklist_prefs:
                 intent = new Intent(this, BooklistPreferencesActivity.class);
-                startActivityForResult(intent, BooklistPreferencesActivity.REQUEST_CODE);
+                startActivityForResult(intent, BooklistPreferencesActivity.REQUEST_CODE); /* 9cdb2cbe-1390-4ed8-a491-87b3b1a1edb9 */
                 return true;
             case R.id.nav_other_prefs:
                 intent = new Intent(this, PreferencesActivity.class);
-                startActivityForResult(intent, PreferencesActivity.REQUEST_CODE);
+                startActivityForResult(intent, PreferencesActivity.REQUEST_CODE); /* 46f41e7b-f49c-465d-bea0-80ec85330d1c */
                 return true;
             case R.id.nav_admin:
-                intent = new Intent(this, AdministrationFunctions.class);
-                startActivityForResult(intent, AdministrationFunctions.REQUEST_CODE);
+                intent = new Intent(this, AdminActivity.class);
+                startActivityForResult(intent, AdminActivity.REQUEST_CODE); /* 7f46620d-7951-4637-8783-b410730cd460 */
                 return true;
             case R.id.nav_about:
                 intent = new Intent(this, About.class);
@@ -194,18 +184,16 @@ abstract public class BaseActivity extends AppCompatActivity
     }
 
     /**
-     * This will be called when a menu item is selected. A large switch
-     * statement to call the appropriate functions (or other activities)
+     * This will be called when a menu item is selected.
      *
-     * @param item The item selected
+     * @param item selected
      *
      * @return <tt>true</tt> if handled
      */
     @Override
     @CallSuper
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        int itemId = item.getItemId();
-        switch (itemId) {
+        switch (item.getItemId()) {
             // Default handler for home icon
             case android.R.id.home:
                 if (mDrawerLayout != null) {
@@ -214,24 +202,18 @@ abstract public class BaseActivity extends AppCompatActivity
                 }
 
                 if (BuildConfig.DEBUG) {
-                    Logger.info(this, " BaseActivity.onOptionsItemSelected with android.R.id.home");
+                    Logger.info(this, " BaseActivity.onOptionsItemSelected handling android.R.id.home as onBackPressed");
                 }
                 // for all activities that were opened with startActivity()
-                // where 'home' is treated as 'up', pretend/mimic
+                // where 'home' is treated as 'up', pretend user pressing the back button
                 onBackPressed();
-                return true;
-
-            // standard search call
-            case R.id.MENU_SEARCH:
-                Logger.debug("Just a check if we ever get here");
-                onSearchRequested();
                 return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
     /**
-     * When the user clicks 'back/up', prepare our result.
+     * When the user clicks 'back/up':
      */
     @Override
     @CallSuper
@@ -239,45 +221,73 @@ abstract public class BaseActivity extends AppCompatActivity
         if (BuildConfig.DEBUG) {
             Logger.info(this, " BaseActivity.onBackPressed with dirty=" + isDirty());
         }
+
         // Check if edits need saving, and finish the activity if not
         if (isDirty()) {
             StandardDialogs.showConfirmUnsavedEditsDialog(this,
+                    /* run when user clicks 'exit' */
                     new Runnable() {
                         @Override
                         public void run() {
-                            setResultAndFinish();
+                            // set default result
+                            Intent data = new Intent();
+                            data.putExtra(UniqueId.BKEY_BACK_PRESSED, true);
+                            setResult(Activity.RESULT_OK, data);  /* onBackPressed */
+                            // but overriding classes can override us
+                            setActivityResult();
+                            finish();
                         }
+                        /* if they click 'cancel', the dialog just closes without further actions */
                     });
         } else {
-            setResultAndFinish();
+            // set default result
+            Intent data = new Intent();
+            data.putExtra(UniqueId.BKEY_BACK_PRESSED, true);
+            setResult(Activity.RESULT_OK, data); /* onBackPressed */
+            // but overriding classes can (arf) override us
+            setActivityResult();
+            finish();
         }
     }
 
-    /**
-     * override if you want more/different results.
-     */
-    protected void setResultAndFinish() {
-        if (BuildConfig.DEBUG) {
-            Logger.info(this, " BaseActivity.setResultAndFinish with dirty=" + isDirty());
+    @Override
+    protected void onPause() {
+        if (isFinishing()) {
+            // keep in mind the base method only does logging. Only overriden methods will actually set the result.
+            setActivityResult();
         }
-        if (isDirty()) {
-            setResult(Activity.RESULT_OK);
-        }
-        finish();
+        // call super *after* setting the result, so we can override when needed in a fragment
+        super.onPause();
     }
 
     /**
-     * get the {@link UniqueId#KEY_ID} either from the savedInstanceState or the extras.
+     * Called by {@link BaseActivity#onBackPressed()}
+     * and, when finishing, from {@link BaseActivity#onPause}
+     *
+     * Override, and do the desired {@link #setResult} call.
+     *
+     * CallSuper so we get the debug information
      */
-    protected long getId(final @Nullable Bundle savedInstanceState, final @Nullable Bundle extras) {
-        long id = 0;
+    @CallSuper
+    protected void setActivityResult() {
+        ComponentName caller = getCallingActivity();
+        if (BuildConfig.DEBUG && caller != null) {
+            Logger.info(this, "setResult goes to: " + caller.flattenToString());
+        }
+    }
+
+        /**
+         * get a key/value pair either from the savedInstanceState or the extras.
+         */
+    protected long getLongFromBundles(@NonNull final String key, @Nullable final Bundle savedInstanceState, @Nullable final Bundle extras) {
+        long value = 0;
         if (savedInstanceState != null) {
-            id = savedInstanceState.getLong(UniqueId.KEY_ID);
+            value = savedInstanceState.getLong(key);
         }
-        if ((id == 0) && (extras != null)) {
-            id = extras.getLong(UniqueId.KEY_ID);
+        if ((value == 0) && (extras != null)) {
+            value = extras.getLong(key);
         }
-        return id;
+        return value;
     }
 
     /** saving on some typing */
@@ -291,11 +301,11 @@ abstract public class BaseActivity extends AppCompatActivity
     @Override
     @CallSuper
     protected void onResume() {
+        super.onResume();
+
         updateLocaleIfChanged();
         updateThemeIfChanged();
         restartActivityIfNeeded();
-
-        super.onResume();
     }
 
 
@@ -329,5 +339,11 @@ abstract public class BaseActivity extends AppCompatActivity
             finish();
             startActivity(getIntent());
         }
+    }
+
+    public interface CanBeDirty {
+        boolean isDirty();
+
+        void setDirty(boolean isDirty);
     }
 }

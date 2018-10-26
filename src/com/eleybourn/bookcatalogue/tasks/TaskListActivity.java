@@ -35,6 +35,7 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.BindableItemListActivity;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.ContextDialogItem;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsExportFailuresActivity;
@@ -66,14 +67,13 @@ public class TaskListActivity extends BindableItemListActivity {
             TaskListActivity.this.refreshData();
         }
     };
+
     private CatalogueDBAdapter mDb = null;
     private TasksCursor mCursor;
 
-    /**
-     * Constructor. Give superclass the list view ID.
-     */
-    public TaskListActivity() {
-        super(R.layout.activity_admin_task_list);
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_admin_task_list;
     }
 
     @Override
@@ -83,9 +83,9 @@ public class TaskListActivity extends BindableItemListActivity {
             super.onCreate(savedInstanceState);
             this.setTitle(R.string.background_tasks);
 
-            // Get a DB adapter
-            mDb = new CatalogueDBAdapter(this);
-            mDb.open();
+            mDb = new CatalogueDBAdapter(this)
+                    .open();
+
             //When any Event is added/changed/deleted, update the list. Lazy, yes.
             BookCatalogueApp.getQueueManager().registerTaskListener(m_OnTaskChangeListener);
 
@@ -138,10 +138,10 @@ public class TaskListActivity extends BindableItemListActivity {
         }
     }
 
-    private void doShowTaskEvents(long taskId) {
+    private void doShowTaskEvents(final long taskId) {
         Intent intent = new Intent(this, GoodreadsExportFailuresActivity.class);
         intent.putExtra(GoodreadsExportFailuresActivity.REQUEST_KEY_TASK_ID, taskId);
-        startActivityForResult(intent, GoodreadsExportFailuresActivity.REQUEST_CODE);
+        startActivity(intent);
     }
 
     /**
@@ -178,20 +178,21 @@ public class TaskListActivity extends BindableItemListActivity {
     @Override
     @CallSuper
     protected void onDestroy() {
-        try {
-            super.onDestroy();
-        } catch (Exception ignore) {}
-        try {
-            if (mDb != null)
-                mDb.close();
-        } catch (Exception ignore) {}
+        Tracker.enterOnDestroy(this);
+
         try {
             BookCatalogueApp.getQueueManager().unregisterTaskListener(m_OnTaskChangeListener);
         } catch (Exception ignore) {}
+
         try {
             if (mCursor != null)
                 mCursor.close();
         } catch (Exception ignore) {}
-    }
 
+        if (mDb != null) {
+            mDb.close();
+        }
+        super.onDestroy();
+        Tracker.exitOnDestroy(this);
+    }
 }

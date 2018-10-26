@@ -159,7 +159,7 @@ public class CoversDbHelper implements AutoCloseable {
 
         synchronized (this) {
             mNumberOfInstances++;
-            if (BuildConfig.DEBUG) {
+            if (/* always show debug */ BuildConfig.DEBUG) {
                 Logger.info(this,"instances created: " + mNumberOfInstances);
             }
         }
@@ -209,7 +209,7 @@ public class CoversDbHelper implements AutoCloseable {
     public void close() {
         synchronized (this) {
             mNumberOfInstances--;
-            if (BuildConfig.DEBUG) {
+            if (/* always show debug */BuildConfig.DEBUG) {
                 Logger.info(this,"instances left: " + mNumberOfInstances);
             }
 

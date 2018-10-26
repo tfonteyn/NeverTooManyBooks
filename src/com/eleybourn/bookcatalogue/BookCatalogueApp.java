@@ -72,15 +72,26 @@ import java.util.Set;
         mailTo = "",
         mode = ReportingInteractionMode.DIALOG,
         customReportContent = {
+                ReportField.APP_VERSION_CODE,
+                ReportField.APP_VERSION_NAME,
+                ReportField.PACKAGE_NAME,
+                ReportField.PHONE_MODEL,
+                ReportField.ANDROID_VERSION,
+                ReportField.BUILD,
+                ReportField.PRODUCT,
+                ReportField.TOTAL_MEM_SIZE,
+                ReportField.AVAILABLE_MEM_SIZE,
+
+                ReportField.CUSTOM_DATA,
+                ReportField.STACK_TRACE,
+                ReportField.DISPLAY,
+
                 ReportField.USER_COMMENT,
                 ReportField.USER_APP_START_DATE,
                 ReportField.USER_CRASH_DATE,
-                ReportField.APP_VERSION_NAME,
-                ReportField.APP_VERSION_CODE,
-                ReportField.ANDROID_VERSION,
-                ReportField.PHONE_MODEL,
-                ReportField.CUSTOM_DATA,
-                ReportField.STACK_TRACE},
+                ReportField.THREAD_DETAILS,
+                //ReportField.APPLICATION_LOG,
+                },
         //optional, displayed as soon as the crash occurs, before collecting data which can take a few seconds
         resToastText = R.string.crash_message_text,
         resNotifTickerText = R.string.crash_notif_ticker_text,
@@ -93,6 +104,7 @@ import java.util.Set;
         resDialogCommentPrompt = R.string.crash_dialog_comment_prompt,
         // optional. displays a message when the user accepts to send a report.
         resDialogOkToast = R.string.crash_dialog_ok_message
+        //applicationLogFile = ""
 )
 
 public class BookCatalogueApp extends Application {
@@ -504,6 +516,25 @@ public class BookCatalogueApp extends Application {
     }
 
     /**
+     * As per {@link ACRA#init} documentation:
+     *
+     * Initialize ACRA for a given Application.
+     *
+     * The call to this method should be placed as soon as possible in the {@link Application#attachBaseContext(Context)} method.
+     *
+     * @param base The new base context for this wrapper.
+     */
+    @Override
+    @CallSuper
+    protected void attachBaseContext(@NonNull final Context base) {
+        super.attachBaseContext(base);
+
+        ACRA.init(this);
+        ACRA.getErrorReporter().putCustomData("TrackerEventsInfo", Tracker.getEventsInfo());
+        ACRA.getErrorReporter().putCustomData("Signed-By", DebugReport.signedBy(this));
+    }
+
+    /**
      * Most real initialization should go here, since before this point, the App is still
      * 'Under Construction'.
      */
@@ -524,10 +555,6 @@ public class BookCatalogueApp extends Application {
         }
 
         Terminator.init();
-
-        ACRA.init(this);
-        ACRA.getErrorReporter().putCustomData("TrackerEventsInfo", Tracker.getEventsInfo());
-        ACRA.getErrorReporter().putCustomData("Signed-By", DebugReport.signedBy(this));
 
         // Create the notifier
         mNotifier = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);

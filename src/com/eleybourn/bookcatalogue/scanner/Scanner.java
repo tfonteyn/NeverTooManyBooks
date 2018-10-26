@@ -4,13 +4,17 @@ import android.app.Activity;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 
+import com.eleybourn.bookcatalogue.UniqueId;
+
 /**
  * Interface defining required methods for any external scanner interface.
  *
  * @author pjw
  */
 public interface Scanner {
-    /** tag used in intent.getStringExtra */
+    int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_SCANNER;
+
+    /** tag used in {@link Intent#getStringExtra} */
     String SCAN_RESULT = "SCAN_RESULT";
 
     /** Request a scan */

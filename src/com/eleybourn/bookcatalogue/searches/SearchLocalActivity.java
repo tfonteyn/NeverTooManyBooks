@@ -44,6 +44,7 @@ import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.debug.Tracker;
 
 import java.util.ArrayList;
 import java.util.Timer;
@@ -58,7 +59,7 @@ import java.util.TimerTask;
  *
  * @author Philip Warner
  */
-public class SearchCatalogue extends BaseActivity {
+public class SearchLocalActivity extends BaseActivity {
 
     public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_SEARCH;
 
@@ -70,7 +71,7 @@ public class SearchCatalogue extends BaseActivity {
         public void onClick(View v) {
             Intent data = new Intent();
             data.putExtra(UniqueId.BKEY_BOOK_ID_LIST, mBookIdsFound);
-            setResult(Activity.RESULT_OK, data);
+            setResult(Activity.RESULT_OK, data); /* 6f6e83e1-10fb-445c-8e35-fede41eba03b */
             finish();
         }
     };
@@ -156,9 +157,8 @@ public class SearchCatalogue extends BaseActivity {
             }
         }
 
-        // Get the DB and setup the layout.
-        mDb = new CatalogueDBAdapter(this);
-        mDb.open();
+        mDb = new CatalogueDBAdapter(this)
+                .open();
 
         mBooksFound = this.findViewById(R.id.books_found);
         mShowResultsBtn = this.findViewById(R.id.search);
@@ -184,7 +184,7 @@ public class SearchCatalogue extends BaseActivity {
      */
     private void startIdleTimer() {
         // Synchronize since this is relevant to more than 1 thread.
-        synchronized (SearchCatalogue.this) {
+        synchronized (SearchLocalActivity.this) {
             if (mTimer != null) {
                 return;
             }
@@ -201,7 +201,7 @@ public class SearchCatalogue extends BaseActivity {
     private void stopIdleTimer() {
         Timer tmr;
         // Synchronize since this is relevant to more than 1 thread.
-        synchronized (SearchCatalogue.this) {
+        synchronized (SearchLocalActivity.this) {
             tmr = mTimer;
             mTimer = null;
         }
@@ -261,7 +261,7 @@ public class SearchCatalogue extends BaseActivity {
      */
     @SuppressLint("SetTextI18n")
     private void userIsActive(final boolean dirty) {
-        synchronized (SearchCatalogue.this) {
+        synchronized (SearchLocalActivity.this) {
             // Mark search dirty if necessary
             mSearchDirty = mSearchDirty || dirty;
             // Reset the idle timer since the user did something
@@ -282,8 +282,8 @@ public class SearchCatalogue extends BaseActivity {
     @Override
     @CallSuper
     protected void onPause() {
-        super.onPause();
         stopIdleTimer();
+        super.onPause();
     }
 
     /**
@@ -302,17 +302,18 @@ public class SearchCatalogue extends BaseActivity {
     @Override
     @CallSuper
     public void onDestroy() {
-        super.onDestroy();
-        try {
-            if (mDb != null) {
-                mDb.close();
-            }
-        } catch (Exception ignored) {
-        }
+        Tracker.enterOnDestroy(this);
+
         try {
             stopIdleTimer();
         } catch (Exception ignored) {
         }
+
+        if (mDb != null) {
+            mDb.close();
+        }
+        super.onDestroy();
+        Tracker.exitOnDestroy(this);
     }
 
     /**
@@ -327,7 +328,7 @@ public class SearchCatalogue extends BaseActivity {
         public void run() {
             boolean doSearch = false;
             // Synchronize since this is relevant to more than 1 thread.
-            synchronized (SearchCatalogue.this) {
+            synchronized (SearchLocalActivity.this) {
                 long timeNow = System.currentTimeMillis();
                 boolean idle = (timeNow - mIdleStart) > 1000;
                 if (idle) {

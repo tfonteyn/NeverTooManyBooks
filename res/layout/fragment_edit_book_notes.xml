@@ -155,7 +155,7 @@
                 android:completionThreshold="2"
                 android:inputType="textCapSentences" />
 
-            <ImageView
+            <ImageButton
                 android:id="@+id/location_button"
                 style="@style/dropDownMenuButton"
                 android:layout_alignBottom="@id/location"

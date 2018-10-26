@@ -315,7 +315,7 @@ public class SearchAmazonHandler extends DefaultHandler {
                 mInListPrice = false;
             } else if (entry) {
                 if (localName.equalsIgnoreCase(XML_AUTHOR)) {
-                    ArrayUtils.addOrAppend(mBookData, UniqueId.BKEY_AUTHOR_DETAILS, mBuilder.toString());
+                    ArrayUtils.addOrAppend(mBookData, UniqueId.BKEY_AUTHOR_STRING_LIST, mBuilder.toString());
                 } else if (localName.equalsIgnoreCase(XML_TITLE)) {
                     addIfNotPresent(UniqueId.KEY_TITLE);
                 } else if (localName.equalsIgnoreCase(XML_EAN)

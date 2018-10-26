@@ -250,12 +250,12 @@ public class CropImageActivity extends CropMonitoredActivity {
 
         if (remaining == NO_STORAGE_ERROR) {
             if (Environment.MEDIA_CHECKING.equals(Environment.getExternalStorageState())) {
-                noStorageText = activity.getString(R.string.storage_error_preparing_card);
+                noStorageText = activity.getString(R.string.error_storage_preparing_card);
             } else {
-                noStorageText = activity.getString(R.string.storage_error_no_card);
+                noStorageText = activity.getString(R.string.error_storage_no_card);
             }
         } else if (remaining < 1) {
-            noStorageText = activity.getString(R.string.storage_error_no_space);
+            noStorageText = activity.getString(R.string.error_storage_no_space);
         }
 
         if (noStorageText != null) {
@@ -287,7 +287,7 @@ public class CropImageActivity extends CropMonitoredActivity {
 
         super.onCreate(savedInstanceState);
 
-        mImageView = findViewById(R.id.image);
+        mImageView = findViewById(R.id.coverImage);
 
         showQuickNotice(this);
 
@@ -332,7 +332,7 @@ public class CropImageActivity extends CropMonitoredActivity {
         findViewById(R.id.cancel).setOnClickListener(
                 new View.OnClickListener() {
                     public void onClick(View v) {
-                        setResult(Activity.RESULT_CANCELED);
+                        setResult(Activity.RESULT_CANCELED); /* 31c90366-d352-496f-9b7d-3237dd199a77 */
                         finish();
                     }
                 });
@@ -495,7 +495,7 @@ public class CropImageActivity extends CropMonitoredActivity {
             extras.putParcelable(CropIImage.BKEY_DATA, croppedImage);
             Intent intent = new Intent("inline-data");
             intent.putExtras(extras);
-            setResult(Activity.RESULT_OK, intent);
+            setResult(Activity.RESULT_OK, intent); /* 31c90366-d352-496f-9b7d-3237dd199a77 */
             finish();
         } else {
             final Bitmap bitmap = croppedImage;
@@ -522,7 +522,7 @@ public class CropImageActivity extends CropMonitoredActivity {
             Bundle extras = new Bundle();
             Intent intent = new Intent(mOptionSaveUri.toString());
             intent.putExtras(extras);
-            setResult(Activity.RESULT_OK, intent);
+            setResult(Activity.RESULT_OK, intent); /* 31c90366-d352-496f-9b7d-3237dd199a77 */
         }
 
         croppedImage.recycle();
@@ -532,19 +532,18 @@ public class CropImageActivity extends CropMonitoredActivity {
     @Override
     @CallSuper
     protected void onPause() {
-        super.onPause();
         CropBitmapManager.instance().cancelThreadDecoding(mDecodingThreads);
         // DO NOT RECYCLE HERE; will leave mBitmap unusable after a resume.
         // mBitmap.recycle();
+        super.onPause();
     }
 
     @Override
     @CallSuper
     protected void onDestroy() {
-        super.onDestroy();
         if (mBitmap != null && !mBitmap.isRecycled()) {
             mBitmap.recycle();
         }
+        super.onDestroy();
     }
-
 }

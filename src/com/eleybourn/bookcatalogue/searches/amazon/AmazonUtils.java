@@ -25,6 +25,10 @@ import java.net.URLEncoder;
  * NOTE: The project manifest must contain the app key granted by Amazon.
  * For testing purposes this KEY can be junk.
  *
+ *
+ * Not used, but as a reminder:
+ *    http://www.amazon.com/gp/product/ASIN-VALUE-HERE
+ *
  * @author pjw
  */
 public class AmazonUtils {
@@ -71,7 +75,7 @@ public class AmazonUtils {
 
     @Nullable
     private static String buildSearchArgs(@Nullable String author, @Nullable String series) {
-        // This code works, but Amazon have a nasty tendency to cancel Associate IDs...
+        // This code works, but Amazon have a nasty tendency to onCancel Associate IDs...
         //String baseUrl = "http://www.amazon.com/gp/search?index=books&tag=philipwarneri-20&tracking_id=philipwarner-20";
         String extra = "";
         // http://www.amazon.com/gp/search?index=books&field-author=steven+a.+mckay&field-keywords=the+forest+lord
@@ -129,7 +133,7 @@ public class AmazonUtils {
             // An Amazon error should not crash the app
             Logger.error(e, "Unable to call the Amazon API");
             StandardDialogs.showBriefMessage(activity, R.string.error_unexpected_error);
-            /* This code works, but Amazon have a nasty tendency to cancel Associate IDs... */
+            /* This code works, but Amazon have a nasty tendency to onCancel Associate IDs... */
 //            String baseUrl = "http://www.amazon.com/gp/search?index=books&tag=philipwarneri-20&tracking_id=philipwarner-20";
 //            String extra = buildSearchArgs(author, series);
 //            if (extra != null && !extra.isEmpty()) {

@@ -27,75 +27,65 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 
 import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
-import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.RTE;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Fragment wrapper for the Bookshelf list
  *
+ * TOMF TODO: redo this code style as all other DialogFragment extenders in this project!
+ *
  * @author pjw
  */
 public class BookshelfDialogFragment extends DialogFragment {
-    private static final String BKEY_ROW_ID = "rowId";
-    private static final String BKEY_TEXT = "text";
-    private static final String BKEY_LIST = "list";
 
-    /** Current display text for bookshelf list */
-    @Nullable
-    private String mCurrText;
-    /** Current encoded list (,|) of bookshelves */
-    @Nullable
-    private String mCurrList;
+    private long mBookId;
+
+    /** all bookshelves in the database, with a 'selected' flag added reflecting the book being on this shelf or not */
+    private List<SelectedBookshelf> mAllBookshelves;
 
     /**
      * Constructor
      *
-     * @param bookId      Book ID
-     * @param initialText Initial display text for bookshelf list
-     * @param initialList Initial encoded list of bookshelves
-     *
      * @return Instance of dialog fragment
      */
     @NonNull
-    public static BookshelfDialogFragment newInstance(final long bookId,
-                                                      @NonNull final String initialText,
-                                                      @NonNull final String initialList) {
+    public static BookshelfDialogFragment newInstance(final long bookId) {
         BookshelfDialogFragment frag = new BookshelfDialogFragment();
         Bundle args = new Bundle();
-        args.putLong(BKEY_ROW_ID, bookId);
-        args.putString(BKEY_TEXT, initialText);
-        args.putString(BKEY_LIST, initialList);
+        args.putLong(UniqueId.KEY_ID, bookId);
         frag.setArguments(args);
         return frag;
     }
 
+
     /**
-     * Ensure activity supports event
+     * Ensure activity supports interface
      */
     @Override
     @CallSuper
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull final Context context) {
         super.onAttach(context);
-
-        if (!(context instanceof OnBookshelfCheckChangeListener))
-            throw new RTE.MustImplementException(context, OnBookshelfCheckChangeListener.class);
-
+        if (!(context instanceof OnBookshelfSelectionDialogResultListener))
+            throw new RTE.MustImplementException(context, OnBookshelfSelectionDialogResultListener.class);
     }
 
     @Override
-    public View onCreateView(@NonNull final LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable final Bundle savedInstanceState) {
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container,
+                             @Nullable final Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_bookshelves, null);
     }
 
@@ -105,151 +95,87 @@ public class BookshelfDialogFragment extends DialogFragment {
     @Override
     @CallSuper
     public void onSaveInstanceState(@NonNull final Bundle outState) {
-        outState.putString(BKEY_LIST, mCurrList);
-        outState.putString(BKEY_TEXT, mCurrText);
+        outState.putLong(UniqueId.KEY_ID, mBookId);
         super.onSaveInstanceState(outState);
     }
 
-    /**
-     * Note for developer: the logic goes like this:
-     *
-     * 1. the incoming data has a two lists attached:
-     * - BKEY_TEXT with human readable bookshelf names comma separated
-     * - BKEY_LIST same, but with ,| etc encoded
-     *
-     * 2. a full list of bookshelves is fetched from the db
-     * 3. walk that list, each one that occurs in BOTH 1+2 -> set the checkbox
-     * 4. user makes checkbox changes
-     * 5. each change will add or extract the chosen one from the lists of 1.
-     * 6. upon "ok", the two lists from 1. are rebuild and send back.
-     *
-     * TODO: make strong coffee and see if the caller can present structured data using bookshelf ID's instead of two strings.
-     *
-     * Temporary removed from the db adapter, here is the sql that fetches a suitable data set.
-     * Re-insert it in the db adapter, modify it to return an ArrayList<Bookshelf> and redo the below AFTER coffee is brewed.
-     *
-     * //     /**
-     * //     * Return a Cursor over the list of all bookshelves in the database
-     * //     *
-     * //     * DOM_ID
-     * //     * DOM_BOOKSHELF
-     * //     * 0 or 1               boolean if book was on shelf or not.
-     * //     *
-     * //     * @param bookId the book, which in turn adds a new field on each row as to the active state of that bookshelf for the book
-     * //     * @return Cursor over all bookshelves
-     * //
-     */
-//    @NonNull
-//    public Cursor fetchBookshelvesByBookId(final long bookId) {
-//        String sql = "SELECT DISTINCT bs." + DOM_ID + " AS " + DOM_ID + "," +
-//                " bs." + DOM_BOOKSHELF + " AS " + DOM_BOOKSHELF + "," +
-//                " CASE WHEN w." + DOM_BOOK_ID + " IS NULL THEN 0 ELSE 1 END as " + DOM_BOOK_ID +
-//                " FROM " + TBL_BOOKSHELF + " bs LEFT OUTER JOIN " + DB_TB_BOOK_BOOKSHELF_WEAK + " w" +
-//
-//                " ON (w." + DOM_BOOKSHELF + "=bs." + DOM_ID + " AND w." + DOM_BOOK_ID + "=" + bookId + ") " +
-//                " ORDER BY Upper(bs." + DOM_BOOKSHELF + ") " + COLLATION;
-//        return mSyncedDb.rawQuery(sql, new String[]{});
-//    }
     @Override
     @CallSuper
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        //long bookId = getArguments().getLong(BKEY_ROW_ID);
-
-        // Retrieve dynamic values
-        if (savedInstanceState != null && savedInstanceState.containsKey(BKEY_TEXT)) {
-            mCurrText = savedInstanceState.getString(BKEY_TEXT);
+        if (savedInstanceState != null && savedInstanceState.containsKey(UniqueId.KEY_ID)) {
+            mBookId = savedInstanceState.getLong(UniqueId.KEY_ID);
         } else {
             //noinspection ConstantConditions
-            mCurrText = getArguments().getString(BKEY_TEXT);
+            mBookId = getArguments().getLong(UniqueId.KEY_ID);
         }
 
-        if (savedInstanceState != null && savedInstanceState.containsKey(BKEY_LIST)) {
-            mCurrList = savedInstanceState.getString(BKEY_LIST);
-        } else {
-            mCurrList = getArguments().getString(BKEY_LIST);
-        }
+        mAllBookshelves = new ArrayList<>();
+
+        // get the list of all bookshelves in the database
+        CatalogueDBAdapter db = new CatalogueDBAdapter(requireContext())
+                .open();
+        Book book = db.getBookById(mBookId);
+        // and the list of all shelves the book is currently on.
+        //noinspection ConstantConditions
+        List<Bookshelf> currentShelves = book.getBookshelfList();
 
         // Setup the dialog
         getDialog().setTitle(R.string.select_bookshelves);
 
         // Handle the OK button
         //noinspection ConstantConditions
-        Button button = getView().findViewById(R.id.bookshelf_dialog_button);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                BookshelfDialogFragment.this.dismiss();
-            }
-        });
+        getView().findViewById(R.id.bookshelf_dialog_button).setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // rebuild the books bookshelf list and send back to the Activity
+                        ArrayList<Bookshelf> list = new ArrayList<>();
+                        for (SelectedBookshelf sbs : mAllBookshelves) {
+                            if (sbs.selected) {
+                                list.add(sbs.bookshelf);
+                            }
+                        }
+                        // let the activity know, so it can update its display
+                        ((OnBookshelfSelectionDialogResultListener) requireActivity())
+                                .OnBookshelfSelectionDialogResult(list);
+
+                        // and that's all folks, close
+                        BookshelfDialogFragment.this.dismiss();
+                    }
+                });
 
         // Get the root view for the list of checkboxes
         LinearLayout cbRoot = getView().findViewById(R.id.bookshelf_dialog_root);
 
-        final String shelves = Bookshelf.SEPARATOR + mCurrList + Bookshelf.SEPARATOR;
+        // Loop through all bookshelves in the database and build the shelves/checkbox list for this book
+        for (Bookshelf bookshelf : db.getBookshelves()) {
 
-        // Loop through all bookshelves and build the checkbox list
-        CatalogueDBAdapter db = new CatalogueDBAdapter(requireContext());
-        db.open();
-        List<Bookshelf> allBookshelves = db.getBookshelves();
-        db.close();
+            boolean selected = currentShelves.contains(bookshelf);
 
-        //noinspection ConstantConditions
-        final List<String> currentShelves = ArrayUtils.decodeList(Bookshelf.SEPARATOR, mCurrList);
-
-        for (Bookshelf bookshelf : allBookshelves) {
-            String db_encoded_bookshelf = ArrayUtils.encodeListItem(Bookshelf.SEPARATOR, bookshelf.name);
+            mAllBookshelves.add(new SelectedBookshelf(bookshelf, selected));
 
             final CompoundButton cb = new CheckBox(getActivity());
-            cb.setChecked((shelves.contains(Bookshelf.SEPARATOR + db_encoded_bookshelf + Bookshelf.SEPARATOR)));
-            //TODO: not sure... just delete, or use an attr so light-theme works.
-            //cb.setHintTextColor(Color.WHITE);
-            cb.setHint(bookshelf.name);
-            // Setup a click listener that sends all clicks back to the calling activity and maintains the two lists
-            cb.setOnClickListener(new OnClickListener() {
+            cb.setText(bookshelf.name);
+            cb.setChecked(selected);
+            cb.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    String hint = cb.getHint() + "";
-                    String name = hint.trim();
-                    String encoded_name = ArrayUtils.encodeListItem(Bookshelf.SEPARATOR, name);
-                    // If box is checked, then we just append to list
-                    if (cb.isChecked()) {
-                        if (mCurrText == null || mCurrText.isEmpty()) {
-                            mCurrText = name;
-                            mCurrList = encoded_name;
-                        } else {
-                            mCurrText += Bookshelf.SEPARATOR + " " + name;
-                            mCurrList += Bookshelf.SEPARATOR + encoded_name;
+                    String name = cb.getText().toString().trim();
+                    // find the clicked list, and set its add/remove status
+                    for (SelectedBookshelf sbs : mAllBookshelves) {
+                        if (sbs.bookshelf.name.equals(name)) {
+                            sbs.selected = cb.isChecked();
                         }
-                    } else {
-                        StringBuilder newList = new StringBuilder();
-                        StringBuilder newText = new StringBuilder();
-
-                        for (String shelf : currentShelves) {
-                            // If item in underlying list is non-blank, and does not match
-                            if (shelf != null && !shelf.isEmpty() && !shelf.equalsIgnoreCase(name)) {
-                                // Append to list (or set to only element if list empty)
-                                String encoded_shelf = ArrayUtils.encodeListItem(Bookshelf.SEPARATOR, shelf);
-                                if (newList.length() == 0) {
-                                    newList.append(encoded_shelf);
-                                    newText.append(shelf);
-                                } else {
-                                    newList.append(Bookshelf.SEPARATOR).append(encoded_shelf);
-                                    newText.append(Bookshelf.SEPARATOR).append(" ").append(shelf);
-                                }
-
-                            }
-                        }
-                        mCurrList = newList.toString();
-                        mCurrText = newText.toString();
                     }
-                    ((OnBookshelfCheckChangeListener) requireActivity()).onBookshelfCheckChanged(mCurrText, mCurrList);
                 }
             });
 
             cbRoot.addView(cb, cbRoot.getChildCount() - 1);
         }
+
+        db.close();
     }
 
     /**
@@ -257,8 +183,17 @@ public class BookshelfDialogFragment extends DialogFragment {
      *
      * @author pjw
      */
-    public interface OnBookshelfCheckChangeListener {
-        void onBookshelfCheckChanged(@NonNull final String textList,
-                                     @NonNull final String encodedList);
+    public interface OnBookshelfSelectionDialogResultListener {
+        void OnBookshelfSelectionDialogResult(@NonNull final ArrayList<Bookshelf> list);
+    }
+
+    private class SelectedBookshelf {
+        Bookshelf bookshelf;
+        boolean selected;
+
+        SelectedBookshelf(@NonNull final Bookshelf bookshelf, final boolean selected) {
+            this.bookshelf = bookshelf;
+            this.selected = selected;
+        }
     }
 }

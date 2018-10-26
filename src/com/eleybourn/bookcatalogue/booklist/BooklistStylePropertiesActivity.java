@@ -37,6 +37,7 @@ import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.properties.Properties;
@@ -96,7 +97,7 @@ public class BooklistStylePropertiesActivity extends BaseActivity {
                 }
                 Intent intent = new Intent();
                 intent.putExtra(REQUEST_KEY_STYLE, mStyle);
-                setResult(Activity.RESULT_OK, intent);
+                setResult(Activity.RESULT_OK, intent);  /* fadd7b9a-7eaf-4af9-90ce-6ffb7b93afe6 */
                 finish();
             }
         });
@@ -155,7 +156,7 @@ public class BooklistStylePropertiesActivity extends BaseActivity {
         Intent intent = new Intent(this, BooklistStyleGroupsActivity.class);
         intent.putExtra(BooklistStyleGroupsActivity.REQUEST_KEY_STYLE, mStyle);
         intent.putExtra(BooklistStyleGroupsActivity.REQUEST_KEY_SAVE_TO_DATABASE, false);
-        startActivityForResult(intent, BooklistStyleGroupsActivity.REQUEST_CODE);
+        startActivityForResult(intent, BooklistStyleGroupsActivity.REQUEST_CODE); /* 06ed8d0e-7120-47aa-b47e-c0cd46361dcb */
     }
 
     @Override
@@ -164,22 +165,29 @@ public class BooklistStylePropertiesActivity extends BaseActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         switch (requestCode) {
-            case BooklistStyleGroupsActivity.REQUEST_CODE: {
-                if (resultCode == Activity.RESULT_OK && data != null && data.hasExtra(BooklistStyleGroupsActivity.REQUEST_KEY_STYLE)) {
-                    // When groups have been edited, copy them to this style.
-                    BooklistStyle editedStyle = null;
-                    try {
-                        editedStyle = (BooklistStyle) data.getSerializableExtra(BooklistStyleGroupsActivity.REQUEST_KEY_STYLE);
-                    } catch (Exception e) {
-                        Logger.error(e);
-                    }
-                    if (editedStyle != null) {
-                        mStyle.setGroups(editedStyle);
-                        displayProperties();
+
+            case BooklistStyleGroupsActivity.REQUEST_CODE: /* 06ed8d0e-7120-47aa-b47e-c0cd46361dcb */
+                if (resultCode == Activity.RESULT_OK) {
+                    // having a result is optional
+                    if (data != null && data.hasExtra(BooklistStyleGroupsActivity.REQUEST_KEY_STYLE)) {
+                        // When groups have been edited, copy them to this style.
+                        BooklistStyle editedStyle = null;
+                        try {
+                            editedStyle = (BooklistStyle) data.getSerializableExtra(BooklistStyleGroupsActivity.REQUEST_KEY_STYLE);
+                        } catch (Exception e) {
+                            Logger.error(e);
+                        }
+                        if (editedStyle != null) {
+                            mStyle.setGroups(editedStyle);
+                            displayProperties();
+                        }
                     }
                 }
                 break;
-            }
+
+            default:
+                Logger.error("onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
+                break;
         }
     }
 
@@ -198,10 +206,12 @@ public class BooklistStylePropertiesActivity extends BaseActivity {
     @Override
     @CallSuper
     protected void onDestroy() {
-        super.onDestroy();
+        Tracker.enterOnDestroy(this);
         if (mDb != null) {
             mDb.close();
         }
+        super.onDestroy();
+        Tracker.exitOnDestroy(this);
     }
 
     /**

@@ -52,10 +52,10 @@ abstract class CropMonitoredActivity extends BaseActivity {
     @Override
     @CallSuper
     protected void onDestroy() {
-        super.onDestroy();
         for (LifeCycleListener listener : mListeners) {
             listener.onActivityDestroyed(this);
         }
+        super.onDestroy();
     }
 
     @Override

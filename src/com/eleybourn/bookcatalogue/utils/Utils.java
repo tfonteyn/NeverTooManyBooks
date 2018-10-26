@@ -164,7 +164,7 @@ public class Utils {
                     connInfo.connection.setConnectTimeout(30000);
                     connInfo.connection.setReadTimeout(30000);
 
-                    // start the connection as a background task, so that we can cancel any runaway timeouts.
+                    // start the connection as a background task, so that we can onCancel any runaway timeouts.
                     Terminator.enqueue(new Runnable() {
                         @Override
                         public void run() {

@@ -6,13 +6,11 @@
     android:orientation="horizontal" >
 
     <ImageView
-        android:id="@+id/cover"
+        android:id="@+id/coverImage"
+        style="@style/coverImage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:paddingStart="@dimen/padding_border"
-        android:paddingEnd="@dimen/padding_border_double"
-        android:paddingTop="@dimen/padding_border"
         tools:ignore="ContentDescription" />
 
     <LinearLayout

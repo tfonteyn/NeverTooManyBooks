@@ -18,7 +18,7 @@ Small notes in addition:
   Fields
   2018-10-01 ok
 
-  getSharedPreferences string
+  getSharedPreferences strings
   not checked yet.
 
   The database (as of v82) will/can contain untrimmed strings.
@@ -33,10 +33,10 @@ Small notes in addition:
     * CheckedTextView extends TextView, implements Checkable
 
     Use 'CompoundButton' and/or 'Checkable' when possible.
-    This leaves the layout flexible to choose a different type.
+    This leaves the layout flexible to choose a different type without code changes
 
-* Instead of simply letting NullPointersException happen (and/or using a lint 'suppress'), check it explicitly:
-                    // there *has* to be 'data'
+* Instead of simply letting NullPointersException happen (and/or using a lint 'suppress'),
+  check it explicitly there *has* to be 'data':
                     Objects.requireNonNull(data);
    Main reason is a reminder to the developer that if it was null it's *their* fault.
    But, nothing wrong with this:
@@ -50,5 +50,6 @@ Small notes in addition:
   - TODO
   - FIXME
   - ENHANCE
+  - TEST: work done, but needs proper testing
   - RELEASE : things that must be checked before doing a public release
   - NEWKIND : where a list of 'items' is processed -> where you can/should add 'items' to that list

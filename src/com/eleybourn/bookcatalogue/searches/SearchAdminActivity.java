@@ -13,7 +13,7 @@ import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 
 import java.util.ArrayList;
 
-public class SearchAdmin extends BaseActivity {
+public class SearchAdminActivity extends BaseActivity {
 
     private static final int TAB_HOSTS = 0;
     private static final int TAB_SEARCH_ORDER = 1;
@@ -30,6 +30,7 @@ public class SearchAdmin extends BaseActivity {
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTitle(R.string.search_internet);
+
         mTabLayout = findViewById(R.id.tab_panel);
         mTabLayout.addOnTabSelectedListener(new TabListener());
         Holder holder = new Holder();

@@ -37,6 +37,7 @@
     <item name="MENU_SERIES_EDIT" type="id"/>
 
     <item name="MENU_DELETE_ANTHOLOGY" type="id"/>
+    <item name="MENU_POPULATE_ANTHOLOGY_ISFDB" type="id"/>
 
     <item name="MENU_STYLE_DELETE" type="id"/>
     <item name="MENU_STYLE_EDIT" type="id"/>
@@ -73,6 +74,8 @@
     <item name="MENU_ROTATE_THUMB_180" type="id"/>
 
     <item name="MENU_CROP_THUMB" type="id"/>
+
+    <item name="MENU_PREFS_SEARCH_SITES" type="id"/>
 
     <!-- END predefined menu items -->
 

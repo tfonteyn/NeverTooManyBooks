@@ -33,7 +33,6 @@ public class AdminSearchOrderFragment extends Fragment {
         mList = (ArrayList<SearchManager.SearchSite>)args.getSerializable(SearchManager.BKEY_SEARCH_SITES);
     }
 
-    @Nullable
     @Override
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
@@ -41,10 +40,12 @@ public class AdminSearchOrderFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_edit_search_order, container, false);
     }
 
+
     @Override
     @CallSuper
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
         mAdapter = new SearchSiteListAdapter(requireContext(), R.layout.row_edit_searchsite, mList);
         //noinspection ConstantConditions
         mListView = getView().findViewById(android.R.id.list);

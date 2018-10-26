@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+<string name="new_in_42">
+<![CDATA[
+    <p><b>New in 4.2</b>\n\n
+			* Date-Picker die datums tot 0 AD ondersteund zowel als partiële datums\n\n
+			* HTML beschrijvingen correct afgebeeld met tik voor bewerken\n\n
+			* Preferentie voor pre-selectie hele afbeelding bij bijsnijden\n\n
+			* Preferentie voor automatisch draaien van camera-opnames\n\n
+			* Preferentie voor externe cropping tool (experimenteel)\n\n
+			* Meer items toegevoeg aan optie menus\n\n
+			* Franse vertalingsupdates (Imkal)\n\n
+			* Duitse vertalingsupdates (Robert Wetzlmayr)\n\n
+			* Russische vertalingsupdates (Nick Silin)\n\n
+			* Bijgewerkte OK/Annuleren knop posities conform de Android standaards\n\n
+			* Volledig toetsenbord beschikbaar bij invullen ASINs\n\n
+			* Bewaren van 5 voorgaande exportbestanden\n\n
+			* Betere detectie van \'veranderingen\' bij bewerken van boeken\n\n
+			* Ondersteuning voor een meer typen vane galerij- en bestandsbrowsers\n\n
+			* Betrouwbaardere datum afhandeling bij import/export/sync\n\n
+			* Herstelde afhandeling van dubbele bloemlezingtitels\n\n
+			* Verscheiden foutcorrecties\n\n
+			Veel dank aan onze toegewijde betatesters en vertalers!\n\n
+			Verwijt Grunthos alle bugs en fouten. En zend ons foutrapporten.
+			</p>
+		]]>
+    </string>
+    <string name="new_in_421">
+<![CDATA[
+    <p><b>New in 4.2.1</b>\n\n
+			* Crash gefixt bij uitklappen lijstitems en gebruiken van \'Alles uitklappen\'\n\n
+			</p>
+		]]>
+    </string>
+    <string name="new_in_422">
+<![CDATA[
+    <p><b>New in 4.2.2</b>\n\n
+			* In tegels weergeven van achtergrondafbeeldingen hersteld voor sommige Android versies\n\n
+			* Betere afhandeling van niet compatibele scanner apps\n\n
+			* Verzenden van meer details bij crash of bij vragen om hulp\n\n
+			* Opschonen van lay-outs (Nick Silin)\n\n
+			* Foutcorrecties\n\n
+			</p>
+		]]>
+    </string>
+    <string name="new_in_423">
+<![CDATA[
+    <p><b>New in 4.2.3</b>\n\n
+			* Verbeterde afhandeling van ongeldige ISBN\'s bij verzenden naar goodreads\n\n
+			* Andere kleine fouten hersteld\n\n
+			</p>
+		]]>
+    </string>
+    <string name="new_in_424">
+<![CDATA[
+	<p><b>New in 4.2.4</b>\n\n
+		* Een niet-bewerkbare weergave van boekdetails met \'fling\' ondersteuning! (Zie \"Andere voorkeuren\") (Nick Silin)\n\n
+		* Ondersteuning voor pic2shop scanner (beter voor vaste focus, minder licht en voor webcam camera\'s)\n\n
+		* Eerdere controle van internetverbinding bij het scnnen van boeken\n\n
+		* Meer Duitse vertalingsupdates (Robert Wetzlmayr)\n\n
+		* Meer Franse vertalingsupdates (Djiko)\n\n
+		* Foutcorrecties\n\n
+		</p>
+		]]>
+    </string>
+    <string name="new_in_500">
+<![CDATA[
+	<p><b>Nieuw in 5.0.0</b>\n\n
+		* Een niet-bewerkbaar overzicht van de boekdetails met \'fling\' ondersteuning! (Zie \"Ander Voorkeuren\") (Nick Silin)\n\n
+		* Archivering (Back-up & Importeren) van de gehele catalogus, inclusief boeken, omslagen, voorkeuren en stijlen\n\n
+		* Geüpdate interface met Actiebalk ondersteuning voor gebruiksgemak en om beter te werken op apparaten zonder menu-knoppen\n\n
+		* Ondersteuning voor de pic2shop scanner (beter voor camera\'s met vaste focus, omstandigheden met weinig licht en voor webcam camera\'s)\n\n
+		* Goodreads staat nu in het hoofdmenu indien u daarvor toestemming geeft\n\n
+		* Eerdere controle van internetverbinding als er geprobeerd wordt boeken te scannen\n\n
+		* Duits vertalingsupdates (Robert Wetzlmayr)\n\n
+		* Franse vertalingsupdates (Imkal & Djiko)\n\n
+		* Russische vertalingsupdates (Nick Silin)\n\n
+		* Interne veranderingen anticiperend op verbeterde tablet interface\n\n
+		* Foutcorrecties\n\n
+		</p>
+		]]>
+    </string>
+    <string name="new_in_502">
+		<![CDATA[
+			<p><b>Nieuw in 5.0.2</b>\n\n
+				* Foutcorrecties\n\n
+			</p>
+		]]>
+    </string>
+    <string name="new_in_503">
+		<![CDATA[
+			<p><b>Nieuw in 5.0.3</b>\n\n
+				* Foutcorrecties\n\n
+				* Franse vertalingsupdates (Imkal)\n\n
+			</p>
+		]]>
+    </string>
+    <string name="new_in_504">
+		<![CDATA[
+			<p><b>Nieuw in 5.0.4</b>\n\n
+				* Nieuw veld: Taal\n\n
+				* Franse vertalingsupdates (Imkal)\n\n
+				* Foutcorrecties\n\n
+			</p>
+		]]>
+    </string>
+    <string name="new_in_505">
+		<![CDATA[
+			<p><b>Nieuw in 5.0.5</b>\n\n
+				* "Datum toegevoegd" Lijst nu gesorteerd in tegengestelde volgorde\n\n
+				* Franse vertalingsupdates (Imkal)\n\n
+				* Foutcorrecties\n\n
+			</p>
+		]]>
+    </string>
+    <string name="new_in_508">
+		<![CDATA[
+			<p><b>Nieuw in 5.0.8</b>\n\n
+				* Duitse vertalingsupdates (Robert Wetzlmayr)\n\n
+			</p>
+		]]>
+    </string>
+    <string name="new_in_509">
+		<![CDATA[
+			<p><b>New in 5.0.9</b>\n\n
+				* Foutcorrecties voor Android 4.4 (KitKat)\n\n
+				* Dutch translation (Gideon van Melle)\n\n
+				* Andere kleine foutcorrecties
+			</p>
+		]]>
+    </string>
+    <string name="new_in_510">
+		<![CDATA[
+			<p><b>Nieuw in 5.1.0</b>\n\n
+				* Italiaanse vertaling (Eugenio Davolio)\n\n
+				* Spaanse vertaling (José M. Galdo)\n\n
+				* Turkse vertaling (Emir Sarı)\n\n
+				* De mogelijkheid om alleen nieuwe en/of bijgewerkte boeken te archiveren en omslagen of boeken uit te sluiten\n\n
+				* Betere miniatuurafbeeldingen in boekenlijsten voor schermen met hogere resoluties\n\n
+				* Opties toegevoegd om boeken op Auteur/Serie te vinden bij Amazon\n\n
+				* Andere kleinere foutcorrecties\n\n
+			</p>
+		]]>
+    </string>
+    <string name="new_in_511">
+		<![CDATA[
+			<p><b>New in 5.1.1</b>\n\n
+				* Foutcorrecties\n\n
+				* Nieuwe stijl: Groeperen op datum laatste update\n\n
+				* Nieuwe stijl: Groeperen op  waardering\n\n
+				* Nieuwe stijl: Groeperen op naam van boekenplank\n\n
+			</p>
+		]]>
+    </string>
+    <string name="new_in_520">
+		<![CDATA[
+			<p><b>Nieuw in 5.2.0</b>\n\n
+			    * Door de gebruiker te kiezen taal in de voorkeursinstellingen\n\n
+			    * Griekse vertaling (Dimitris Klisiaris)\n\n
+                * Taal afhankelijke hoofdletterkeuze (de, fr)\n\n
+                * Verbeteringen in zoeken\n\n
+				* Bug fixes\n\n
+			</p>
+		]]>
+    </string>
+
+</resources>

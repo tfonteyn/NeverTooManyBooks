@@ -12,19 +12,19 @@
     <string name="read">Вы прочитали эту книгу?</string>
     <string name="series">Серия</string>
     <string name="pages">Страницы</string>
-    <string name="confirm_add">Добавить книгу</string>
-    <string name="confirm_update">Обновить</string>
+    <string name="btn_confirm_add_book">Добавить книгу</string>
+    <string name="btn_confirm_update">Обновить</string>
     <string name="no_books_yet">На этой полке нет книг. Пожалуйста, добавьте книги, используя меню в нижней части этого экрана.</string>
     <string name="menu_expand_all">Развернуть всё</string>
     <string name="menu_sort_by">Отсортировать по</string>
     <string name="menu_collapse_all">Свернуть всё</string>
     <string name="search">Поиск</string>
-    <string name="confirm_save">Сохранить книгу</string>
+    <string name="btn_confirm_save_book">Сохранить книгу</string>
     <string name="no_bookshelves_yet">Вы не создали ни одной полки. Пожалуйста, добавьте полку, используя меню в нижней части этого экрана.</string>
     <string name="menu_insert_bs">Создать полку</string>
-    <string name="confirm_add_bs">Добавить полку</string>
+    <string name="btn_confirm_add_bs">Добавить полку</string>
     <string name="menu_bookshelf">Полки</string>
-    <string name="confirm_save_bs">Сохранить полку</string>
+    <string name="btn_confirm_save_bs">Сохранить полку</string>
     <string name="menu_delete_bs">Удалить полку</string>
     <string name="delete_1st_bs">Невозможно удалить единственную книжную полку</string>
     <string name="lbl_bookshelf">Полка: </string>
@@ -128,8 +128,8 @@
     <string name="error_file_must_contain_any_column">Файл должен содержать столбец с одним из следующих имён: %s</string>
     <string name="error_column_is_blank">Столбец %1$s в строке %2$s пуст</string>
     <string name="error_columns_are_blank">В строке %2$d столбцы %1$s пусты</string>
-    <string name="save">Сохранить</string>
-    <string name="add">Добавить</string>
+    <string name="btn_confirm_save">Сохранить</string>
+    <string name="btn_confirm_add">Добавить</string>
     <string name="no_authors_yet">Не указаны авторы книги. Пожалуйста, добавьте автора(ов), используя текстовую область и кнопку в верхней части этого экрана.</string>
     <string name="no_series_yet">Не указана серия книги. Вы можете добавить серию используя текстовую область в верхней части этого экрана.</string>
     <string name="cover_not_set">Обложка не установлена</string>
@@ -155,8 +155,8 @@
     <string name="immediate_global_changes">ЗАМЕЧАНИЕ: Все сохраняемые изменения применяются немедленно</string>
     <string name="menu_replace_thumb">Заменить миниатюру&#8230;</string>
     <string name="menu_thumb_alt_editions">Из других изданий&#8230;</string>
-    <string name="author_required">Должен быть указан хотя бы один автор</string>
-    <string name="title_required">Должно быть указано название</string>
+    <string name="required_author">Должен быть указан хотя бы один автор</string>
+    <string name="required_title">Должно быть указано название</string>
     <string name="menu_delete_series">Удаление серии&#8230;</string>
     <string name="menu_edit_author">Редактирование автора&#8230;</string>
     <string name="menu_edit_series">Редактирование серии&#8230;</string>
@@ -244,7 +244,7 @@
     <string name="cleanup_old_events">Очистить старые события</string>
     <string name="text_and_or_isbn">Текст и/или ISBN</string>
     <string name="search_criteria">Параметры поиска</string>
-    <string name="add_manually">Добавить вручную</string>
+    <string name="menu_add_book_manually">Добавить вручную</string>
     <string name="search_internet">Поиск в Интернете</string>
     <string name="show_results">Показать результаты</string>
     <string name="rebuild_fts">Переобрать FTS (только альфа-версия!)</string>
@@ -287,8 +287,8 @@
     <string name="no_publisher">(без издателя)</string>
     <string name="no_author">(без автора)</string>
     <string name="no_date">(без даты)</string>
-    <string name="show_thumbnails">Показывать миниатюры</string>
-    <string name="prefer_large_thumbnails">Большие миниатюры предпочтительней</string>
+    <string name="thumbnails_show">Показывать миниатюры</string>
+    <string name="thumbnails_prefer_large">Большие миниатюры предпочтительней</string>
     <string name="sort_author_series">Сначала автор потом серия</string>
     <string name="sort_series">Серии</string>
     <string name="sort_title_first_letter">Первая буква названия</string>
@@ -313,9 +313,9 @@
     <string name="starting_up">Запуск&#8230;</string>
     <string name="book_catalogue_startup">Запуск BookCatalogue</string>
     <string name="book_list_state">Состояние списка книг</string>
-    <string name="always_start_booklists_expanded">Всегда открывать списки раскрытыми</string>
-    <string name="always_start_booklists_collapsed">Всегда открывать списоки свернутыми</string>
-    <string name="remember_booklists_state">Запоминать состояние списков</string>
+    <string name="book_list_state_always_start_expanded">Всегда открывать списки раскрытыми</string>
+    <string name="book_list_state_always_start_collapsed">Всегда открывать списоки свернутыми</string>
+    <string name="book_list_state_remember_state">Запоминать состояние списков</string>
     <string name="searching_goodreads">Поиск Goodreads</string>
     <string name="edit_book_list_styles">Редактировать стили списков книг</string>
     <string name="show_more_ellipsis">Показать больше&#8230;</string>
@@ -349,10 +349,10 @@
     <string name="new_style">Новый стиль</string>
     <string name="select_based_on_read_status">Выбор основан на статусе \'Прочитана\'</string>
     <string name="books_with_multiple_authors">Книги с множеством авторов</string>
-    <string name="books_in_multiple_series">Книги в множестве серий</string>
+    <string name="books_with_multiple_series">Книги в множестве серий</string>
     <string name="use_default_setting">Использовать настройки по умолчанию</string>
-    <string name="show_book_under_each_thing">Под каждым %1$s</string>
-    <string name="show_book_under_primary_thing">Только под первым %1$s</string>
+    <string name="books_with_multiple_show_book_under_each_1s">Под каждым %1$s</string>
+    <string name="books_with_multiple_show_book_under_primary_1s_only">Только под первым %1$s</string>
     <string name="format_of_author_names">Форматирование по авторским именам</string>
     <string name="given_name_first_eg">Первое имя, например \'Иван, Иванов\'</string>
     <string name="family_name_first_eg">Первая фамилия, например \'Иванов, Иван\'</string>
@@ -444,19 +444,19 @@
     <string name="edit_format_name">Редактировать имя формата</string>
     <string name="name_can_not_be_blank">Имя не может быть пустым</string>
     <string name="export_starting_ellipsis">Начало экспорта&#8230;</string>
-    <string name="resizing_cover_thumbnails">Изменение размера миниатюр обложек</string>
-    <string name="resize_each_time">Не кэшировать (используется меньше места, но пролистывание будет медленнее)</string>
-    <string name="cache_resized_thumbnails_for_later_use">Кэшировать(используется больше места, но пролистывание быстрее)</string>
-    <string name="generating_cover_thumbnails">Создание миниатюр обложек</string>
-    <string name="use_background_thread">Использовать фоновый поток (списки пролистываются быстрее, картинки показываются по мере их загрузки)</string>
-    <string name="generate_immediately">Создавать немедленно (списки пролистываются медленнее, зато картинки показываются сразу)</string>
-    <string name="sort_and_style_ellipsis">Сортировать &amp; Стиль…</string>
+    <string name="thumbnails_resizing">Изменение размера миниатюр обложек</string>
+    <string name="thumbnails_resizing_each_time">Не кэшировать (используется меньше места, но пролистывание будет медленнее)</string>
+    <string name="thumbnails_resizing_cache_for_later_use">Кэшировать(используется больше места, но пролистывание быстрее)</string>
+    <string name="thumbnails_generating_mode">Создание миниатюр обложек</string>
+    <string name="thumbnails_generating_mode_use_background_thread">Использовать фоновый поток (списки пролистываются быстрее, картинки показываются по мере их загрузки)</string>
+    <string name="thumbnails_generating_mode_generate_immediately">Создавать немедленно (списки пролистываются медленнее, зато картинки показываются сразу)</string>
+    <string name="menu_sort_and_style_ellipsis">Сортировать &amp; Стиль…</string>
     <string name="disable_background_image">Отключить фоновый рисунок</string>
     <string name="displaying_n_books_in_m_entries">отображается %1$d книг, в %2$d элементах</string>
     <string name="displaying_n_books">Книг на полке: %1$d</string>
     <string name="available">Доступно</string>
-    <string name="summary_details_in_header">Суммарная информация в заголовке</string>
-    <string name="hide_summary_details">Спрятать суммарную информацию</string>
+    <string name="summary_details">Суммарная информация в заголовке</string>
+    <string name="summary_details_hide">Спрятать суммарную информацию</string>
     <string name="x_is_not_a_valid_isbn">%1$s не правльный ISBN</string>
     <string name="beep_if_scanned_isbn_invalid">Подать звуковой сигнал, если сканируемый ISBN не правильный</string>
     <string name="no_image_found">Рисунок не найден</string>
@@ -484,96 +484,21 @@
     <string name="invalid_isbn_x_specified_in_search">В поиске указан неверный ISBN \'%1$s\'</string>
     <string name="if_day_is_specified_month_and_year_must_be">Если указан день, также необходимо указать месяц и год.</string>
     <string name="if_month_is_specified_year_must_be">Если указан месяц, также необходимо указать год.</string>
-    <string name="use_external_image_cropper">Использовать внешний редактор рисунков (экспериментально)</string>
-    <string name="auto_rotate_camera_images">Автоматически поворачивать фото, полученное камерой</string>
+    <string name="thumbnails_use_external_image_cropper">Использовать внешний редактор рисунков (экспериментально)</string>
+    <string name="thumbnails_rotate_auto">Автоматически поворачивать фото, полученное камерой</string>
     <string name="hint_autorotate_camera_images">Если вы заметили, что всегда поворачиваете камеру в одном направлении, попробуйте установить в настройках опцию автоматического поворота.</string>
-    <string name="default_crop_frame_is_whole_image">Рамка по умолчанию: всё изображение</string>
+    <string name="thumbnails_default_crop_frame_is_whole_image">Рамка по умолчанию: всё изображение</string>
     <string name="cancelled">Отменено</string>
     <string name="import_complete">Импорт завершен</string>
     <string name="library_thing">LibraryThing</string>
     <string name="searching_ellipsis">Поиск&#8230;</string>
     <string name="adding_book_ellipsis">Добавление книги&#8230;</string>
-    <string name="prefs_global_opening_book_mode">Просмотр книги в режиме чтения</string>
+    <string name="user_interface_open_book_read_only">Просмотр книги в режиме чтения</string>
     <string name="book_details_readonly_publishing">Публикация</string>
     <string name="book_details_readonly_by">от</string>
     <string name="book_details_readonly_loaned_to">Дана вдолг: %1$s</string>
     <string name="book_details_readonly_pages">Страниц: %1$s</string>
-    <string name="new_in_42">
-<![CDATA[
-    		<p><b>Новое в версии 4.2</b>\n\n
-			* Диалог выбора даты, поддерживающий как даты вплоть до 0 года нашей эры так и отдельные.\n\n
-			* Исправлено отображение описание книги в формате HTML. Добавлена кнопка редактирования.\n\n
-			* Добавлена возможность выбора всего изображения при обрезании\n\n
-			* Добавлена возможность автоповорота изображений с камеры\n\n
-			* Добавлена возможность использования внешнего редактора изображений (экспериментально)\n\n
-			* Больше элементов в меню настроек\n\n
-			* Обновление перевода на французский (Imkal)\n\n
-			* Обновление перевода на немецкий (Robert Wetzlmayr)\n\n
-			* Обновление перевода на русский (Коля Силин)\n\n
-			* Обновлено положение кнопок ОК/Отмена\n\n
-			* Доступна полная клавиатура при вводе кодов ASIN\n\n
-			* Хранение предыдущих 5 файлов экспорта\n\n
-			* Улучшено определение изменений во время редактирования\n\n
-			* Поддержка большего числа внешних приложений\n\n
-			* Повышена надежность импорта/экспорта/синхронизации\n\n
-			* Исправлена работа с названиями антологий\n\n
-			* Исправлено множество ошибок\n\n
-			Огромное спасибо всем тем, кто принимал участие в тестировании и переводе!\n\n
-			Bо всех багах и ошибках вините Grunthos:) И шлите нам отчеты с ошибками.
-			</p>
-		]]>
-    </string>
-    <string name="new_in_421">
-<![CDATA[
-    		<p><b>Новое в 4.2.1</b>\n\n
-			* Исправлена ошибка, возникающая при раскрытии списка с использованием \'Раскрыть всё\'\n\n
-			</p>]]>
-    </string>
     <string name="bad_scanner">Возможно, ваше приложение-сканер не совместимо с Book Catalogue. Мы рекомендуем установить Zxing сканер, или если он уже установлен, удалите его, затем снова установите.</string>
-    <string name="new_in_422">
-<![CDATA[
-    	<p><b>Новое в 4.2.2</b>\n\n
-			* Исправление отображения фонового изображения для некоторых версии\n\n
-			* Улучшено взаимодействие со сторонними программами-сканерами\n\n
-			* Улучшены отправляемые подробности об аварийном завершении или просьбе о помощи\n\n
-			* Исправлены шаблоны пользовательского интерфейса (Коля Силин)\n\n
-			* Исправлены некоторые баги\n\n
-			</p>]]>
-    </string>
-    <string name="new_in_423">
-<![CDATA[
-    	<p><b>Новое в 4.2.3</b>\n\n
-			* Улучшена обработка неверного ISBN при отправке на Goodreads\n\n
-			* Исправление небольших багов\n\n
-			</p>]]>
-    </string>
-
-    <string name="new_in_424"><![CDATA[
-		<p><b>Новое в 4.2.4</b>\n\n
-		* Возможность просмотра книге без редактирования с поддержкой слайдинга! (Смотри \"Другие настройки\") (Силин Коля)\n\n
-		* Поддержка pic2shop сканнера (лучше для фронтальных камер и камер без автофокуса, низкого освещения)\n\n
-		* Проверка соединения с Интернетом заранее перед попыткой отсканировать книгу\n\n
-		* Доработан перевод на немецкий (Robert Wetzlmayr)\n\n
-		* Доработан перевод на французский (Djiko)\n\n
-		* Исправление багов\n\n
-		</p>
-		]]></string>
-
-    <string name="new_in_500"><![CDATA[
-	<p><b>Новое в версии 5.0.0</b>\n\n
-		* Возможность просмотра книге без редактирования с поддержкой слайдинга! (Смотри \"Другие настройки\") (Силин Коля)\n\n
-		* Полное архивирование (Бэкап & Импорт) каталога, включая книги, обложки, настройки и стили\n\n
-		* Обновленный интерфейс с поддержкой Action Bar для удобной работы на устройствах без кнопок меню\n\n
-		* Поддержка pic2shop сканнера (лучше для фронтальных камер и камер без автофокуса, низкого освещения)\n\n
-		* Goodreads сейчас появляется в главном меню (если авторизовано)\n\n
-		* Проверка соединения с Интернетом заранее перед попыткой отсканировать книгу\n\n
-		* Доработан перевод на немецкий (Robert Wetzlmayr)\n\n
-		* Доработан перевод на французский (Imkal & Djiko)\n\n
-		* Доработан перевод на русский (Коля Силин)\n\n
-		* Внутренние изменения в предвкушении улучшения интерфейса для планшетов\n\n
-		* Исправление багов\n\n
-		</p>
-		]]></string>
 
     <string name="hint_view_only_book_details">
 	    При клике на элемент этого листе, вы , если хотите, можете открыть просмотр в режиме без редактирования.
@@ -587,7 +512,7 @@
     <string name="details">Детали</string>
     <string name="loan">Долг</string>
     <string name="forget_credentials">Убрать credentials</string>
-    <string name="goodreads_auth_blurb_part4">Похоже, что Вы уже авторизовали приложение. Если Вы хотите удалить
+    <string name="gr_auth_blurb_part4">Похоже, что Вы уже авторизовали приложение. Если Вы хотите удалить
     credentials с этого телефона, то воспользуйтесь кнопкой ниже. В этом случае не забудьте деавторизировать приложение на сайте Goodreads.
     \n\nПосле сброса credentials пункт меню Goodreads пропадет из главного меню.</string>
     <string name="connecting_to_web_site">Соединение с сайтом&#8230;</string>
@@ -601,78 +526,27 @@
     <string name="importing_ellipsis">Импорт&#8230;</string>
     <string name="up_folder">Выше</string>
     <string name="no_parent_directory_found">Родительская папка не найдена</string>
-    <string name="open">Открыть</string>
+    <string name="btn_confirm_open">Открыть</string>
     <string name="export_to_csv">Экспортировать в CSV файл</string>
     <string name="import_from_csv">Импортировать CSV файл</string>
     <string name="please_select_an_existing_file">Пожалуйста, выберите существующий файл</string>
     <string name="please_select_a_non_directory">Пожалуйста, выберите файл (не папку)</string>
     <string name="copy_database">Скопировать базу данных (для техподдержки)</string>
-    <string name="show_book_count">Показывать номера книг</string>
-    <string name="show_first_level_and_book_count">Показывать первыми заголовок и номер книг</string>
-    <string name="show_all_summary_details">Показать все детали</string>
+    <string name="summary_details_show_book_count">Показывать номера книг</string>
+    <string name="summary_details_show_first_level_and_book_count">Показывать первыми заголовок и номер книг</string>
+    <string name="summary_details_show_all">Показать все детали</string>
     <string name="import_failed">Импорт не удался.</string>
     <string name="please_check_sd_writable">Пожалуйста, проверьте что на SD карте достаточно места и возможна запись.</string>
     <string name="please_check_sd_readable">Пожалуйста, проверьте что SD карта доступна.</string>
+    <string name="lbl_language">Язык</string>
 
-    <string name="new_in_502">
-		<![CDATA[
-			<p><b>Новое в версии 5.0.2</b>\n\n
-				* Исправление багов\n\n
-			</p>
-		]]>
-    </string>
-    <string name="new_in_503">
-		<![CDATA[
-			<p><b>Новое в версии 5.0.3</b>\n\n
-				* Исправление багов\n\n
-				* Доработан перевод на французский (Imkal)\n\n
-			</p>
-		]]>
-    </string>
 
-    <string name="language">Язык</string>
-    <string name="new_in_504">
-		<![CDATA[
-			<p><b>Новое в версии 5.0.4</b>\n\n
-				* Новое поле: Язык\n\n
-				* Доработан перевод на французский (Imkal)\n\n
-				* Исправление багов\n\n
-			</p>
-		]]>
-    </string>
 
     <string name="booklist_generation">Составление списка книг</string>
     <string name="force_compatibility_mode">Режим совместимости</string>
     <string name="force_enhanced_compatibility_mode">Повышенный режим совместимости</string>
     <string name="force_fully_featured">Полная функциональность</string>
     <string name="automatically_use_recommended_option">Автоматически использовать рекомендованный вариант</string>
-
-    <string name="new_in_505">
-		<![CDATA[
-			<p><b>Новое в версии 5.0.5</b>\n\n
-				* "Added Date" List now sorted in reverse order \n\n
-				* Обновлен перевод на французский (Imkal)\n\n
-				* Исправление багов\n\n
-			</p>
-		]]>
-    </string>
-    <string name="new_in_508">
-		<![CDATA[
-			<p><b>Новое в версии 5.0.8</b>\n\n
-				* Обновлен перевод на немецкий (Robert Wetzlmayr)\n\n
-			</p>
-		]]>
-    </string>
-
-    <string name="new_in_509">
-		<![CDATA[
-			<p><b>Новое в версии 5.0.9</b>\n\n
-				* Исправление ошибки на Android 4.4 (KitKat)\n\n
-				* Голландский перевод (Gideon van Melle)\n\n
-				* Исправление багов
-			</p>
-		]]>
-    </string>
 
     <string name="import_books_blurb">Книги этого архива будут импортированы. Выберите один из вариантов, чтобы начать импорт, или \'НАЗАД\' для отмены:</string>
     <string name="all_books_blurb">Все книги архива будут импортированы, обновив существующие и добавив новые.</string>
@@ -721,23 +595,9 @@
 
     <string name="searching_directory_ellipsis">Просмотр папки&#8230;</string>
 
-    <string name="new_in_510">
-		<![CDATA[
-			<p><b>Новое в версии 5.1.0</b>\n\n
-				* Перевод на итальянский (Eugenio Davolio)\n\n
-				* Перевод на испанский (José M. Galdo)\n\n
-				* Перевод на турецкий (Emir Sarı)\n\n
-				* Возможность архивировать только новые/обновленные книги и исключать обложки (или книги)\n\n
-				* Исправлен размер миниатюр в списках для экранов с высоким разрешением\n\n
-				* Добавлены опции для просмотра книг по автору/серии на Amazon\n\n
-				* Исправление багов\n\n
-			</p>
-		]]>
-    </string>
-
-    <string name="amazon_books_in_series">Книги в этой серии</string>
-    <string name="amazon_books_by_author">Книги этого автора</string>
-    <string name="amazon_books_by_author_in_series">Книги по автору/серии</string>
+    <string name="menu_amazon_books_in_series">Книги в этой серии</string>
+    <string name="menu_amazon_books_by_author">Книги этого автора</string>
+    <string name="menu_amazon_books_by_author_in_series">Книги по автору/серии</string>
 
     <string name="hint_book_list">Клик по книге покажет детальную информацию, долгое нажатие на элемент списка покажет остальные действия.</string>
 
@@ -762,32 +622,15 @@
         <item quantity="other">%1$s звезд</item>
     </plurals>
 
-    <string name="new_in_511">
-		<![CDATA[
-			<p><b>Новое в версии 5.1.1</b>\n\n
-				* Исправление ошибок\n\n
-				* Новый стиль: Группировка по дате последнего обновления\n\n
-				* Новый стиль: Группировка по рейтингу\n\n
-				* Новый стиль: Группировка по имени полки\n\n
-			</p>
-		]]>
-    </string>
-    <string name="beep_if_scanned_isbn_valid">Подать звуковой сигнал, если сканируемый ISBN правильный</string>
-    <string name="pic2shop_scanner">Pic2Shop сканер</string>
-    <string name="preferred_interface_language">Предпочтительный язык</string>
-    <string name="preferred_scanner">Предпочтительный сканер</string>
+    <string name="scanning_beep_if_scanned_isbn_valid">Подать звуковой сигнал, если сканируемый ISBN правильный</string>
+    <string name="scanning_preferred_scanner_pic2shop">Pic2Shop сканер</string>
+    <string name="user_interface_preferred_language">Предпочтительный язык</string>
+    <string name="scanning_preferred_scanner">Предпочтительный сканер</string>
     <string name="scanning">Сканирование</string>
     <string name="system_locale">Локаль системы</string>
-    <string name="zxing_compatible_scanner">Zxing совместимый сканер</string>
-    <string name="zxing_scanner">Zxing сканер</string>
-    <string name="new_in_520"><![CDATA[
-			<p><b>Новое в 5.2.0</b>\n\n
-			    * Настраиваемый  в настройках язык приложения\n\n
-			    * Перевод на греческий (Dimitris Klisiaris)\n\n
-       * Усовершенствованный поиск\n\n
-				   * Исправление ошибок\n\n
-			</p>
-		]]></string>
+    <string name="scanning_preferred_scanner_zxing_compatible">Zxing совместимый сканер</string>
+    <string name="scanning_preferred_scanner_zxing">Zxing сканер</string>
+
     <string name="title_reorder">a|A|an|An|the|The</string>
 
     <!-- Begin: Added/Updated in [Next Version] DO NOT TRANSLATE YET! MAY CHANGE OR BE DELETED! -->

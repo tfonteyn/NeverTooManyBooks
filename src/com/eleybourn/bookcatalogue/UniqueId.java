@@ -1,6 +1,5 @@
 package com.eleybourn.bookcatalogue;
 
-import com.eleybourn.bookcatalogue.backup.CsvImporter;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.entities.Book;
 
@@ -56,6 +55,7 @@ public class UniqueId {
     public static final int ACTIVITY_REQUEST_CODE_GOODREADS_EXPORT_FAILURES = 202; // ok
     public static final int ACTIVITY_REQUEST_CODE_GOODREADS_SEARCH_CRITERIA = 203; // ok
 
+    public static final int ACTIVITY_REQUEST_CODE_SCANNER = 300; // ok
     public static final int ACTIVITY_REQUEST_CODE_ADD_BOOK_BY_SCAN = 301; // ok
     public static final int ACTIVITY_REQUEST_CODE_ADD_BOOK_BY_SEARCH = 302; // ok
 
@@ -100,14 +100,17 @@ public class UniqueId {
     public static final String BKEY_AUTHOR_ARRAY = "author_array";
     public static final String BKEY_SERIES_ARRAY = "series_array";
     public static final String BKEY_ANTHOLOGY_TITLES_ARRAY = "anthology_titles_array";
+    public static final String BKEY_BOOKSHELF_ARRAY = "bookshelf_array";
 
+
+    //TODO: these should become ArrayList<String> which is supported by Bundle
+    /* The CSV file has columns with these names */
     /** string-encoded - used in import/export and internet searches, never change the string! */
-    //TODO: these can become ArrayList<String> which is supported by Bundle
-    public static final String BKEY_AUTHOR_DETAILS = "author_details";
+    public static final String BKEY_AUTHOR_STRING_LIST = "author_details";
     /** string-encoded - used in import/export and internet searches, never change the string! */
-    public static final String BKEY_SERIES_DETAILS = "series_details";
+    public static final String BKEY_SERIES_STRING_LIST = "series_details";
     /** string-encoded - used in import/export and internet searches, never change the string! */
-    public static final String BKEY_ANTHOLOGY_DETAILS = "anthology_titles";
+    public static final String BKEY_ANTHOLOGY_STRING_LIST = "anthology_titles";
 
     /* BKEY_* and BVAL_* which are used in more then one class should be moved here */
     public static final String BKEY_NO_COVER = "noCover";
@@ -121,13 +124,17 @@ public class UniqueId {
     /** fileSpec of a thumbnail fetches from the internet */
     public static final String BKEY_THUMBNAIL_FILES_SPEC = "__thumbnail";
 
+    /** to return the status of a startActivityForResult when a task was 'isCancelled' */
+    public static final String BKEY_CANCELED = "cancelled";
+    /** to return the status of a startActivityForResult with an onBackPressed event */
+    public static final String BKEY_BACK_PRESSED = "backPressed";
+
 
     //^^^^ all verified & used correctly
 
     // the ones below still need checking
 
-    /** used in {@link CsvImporter} (maybe from old versions?) + {@link BookAbstractFragmentWithCoverImage} seems not used. */
-    public static final String BKEY_BOOKSHELF_TEXT = "bookshelf_text";
+
 
     //TODO: cleaned up any over-use of the DOM equiv
 

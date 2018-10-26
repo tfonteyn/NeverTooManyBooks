@@ -6,7 +6,7 @@ import android.support.annotation.StringRes;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.searches.SearchManager;
-import com.eleybourn.bookcatalogue.searches.SearchThread;
+import com.eleybourn.bookcatalogue.searches.SearchTask;
 import com.eleybourn.bookcatalogue.tasks.TaskManager;
 import com.eleybourn.bookcatalogue.utils.IsbnUtils;
 
@@ -21,16 +21,14 @@ import java.net.UnknownHostException;
  * We always contact LibraryThing because it is a good source of Series data and thumbnails.
  * But it does require an ISBN AND a developer key.
 */
-public class SearchLibraryThingThread extends SearchThread {
+public class SearchLibraryThingTask extends SearchTask {
 
-    public SearchLibraryThingThread(@NonNull final TaskManager manager,
-                                    @NonNull final String author,
-                                    @NonNull final String title,
-                                    @NonNull final String isbn,
-                                    final boolean fetchThumbnail) {
-        super(manager, author, title, isbn, fetchThumbnail);
-        setName("SearchLibraryThingThread isbn=" + isbn);
-
+    public SearchLibraryThingTask(@NonNull final TaskManager manager,
+                                  @NonNull final String /* ignored */ author,
+                                  @NonNull final String /* ignored */  title,
+                                  @NonNull final String isbn,
+                                  final boolean fetchThumbnail) {
+        super("SearchLibraryThingTask isbn=" + isbn, manager, author, title, isbn, fetchThumbnail);
     }
 
     @Override
@@ -47,10 +45,10 @@ public class SearchLibraryThingThread extends SearchThread {
                     checkForSeriesName();
 
                 } catch (java.net.SocketTimeoutException e) {
-                    showError(R_ID_SEARCHING, R.string.network_timeout);
+                    showError(R_ID_SEARCHING, R.string.error_network_timeout);
                 } catch (MalformedURLException | UnknownHostException e) {
                     Logger.error(e);
-                    showError(R_ID_SEARCHING, R.string.search_configuration_error);
+                    showError(R_ID_SEARCHING, R.string.error_search_configuration);
 
                 } catch (IOException e) {
                     showError(R_ID_SEARCHING, R.string.error_search_failed);

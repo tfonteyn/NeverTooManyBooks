@@ -99,10 +99,10 @@
         <activity android:name=".Help" />
         <activity android:name=".About" />
         <activity android:name=".Donate" />
-        <activity android:name=".AdministrationFunctions" />
+        <activity android:name=".AdminActivity" />
 
         <!-- ************************************************************ -->
-        <!-- AdministrationFunctions: General -->
+        <!-- AdminActivity: General -->
         <!-- ************************************************************ -->
 
 
@@ -122,24 +122,24 @@
             android:windowSoftInputMode="stateHidden" />
         <activity android:name=".booklist.BooklistStyleGroupsActivity" />
 
-        <!-- AdministrationFunctions:Data Import/Export -->
-        <activity android:name=".filechooser.BackupChooser" />
+        <!-- AdminActivity:Data Import/Export -->
+        <activity android:name=".filechooser.BackupChooserActivity" />
 
-        <!-- AdministrationFunctions: Update Fields -->
+        <!-- AdminActivity: Update Fields -->
         <activity android:name=".UpdateFromInternetActivity" />
 
-        <!-- AdministrationFunctions: Credentials -->
+        <!-- AdminActivity: Credentials -->
         <activity
-            android:name=".searches.goodreads.GoodreadsRegister"
+            android:name=".searches.goodreads.GoodreadsRegisterActivity"
             android:launchMode="standard" />
-        <activity android:name=".searches.librarything.AdministrationLibraryThing" />
+        <activity android:name=".searches.librarything.LibraryThingAdminActivity" />
 
-        <!-- AdministrationFunctions: Background tasks -->
+        <!-- AdminActivity: Background tasks -->
         <activity android:name=".tasks.TaskListActivity" />
 
-        <!-- AdministrationFunctions: Search configuration -->
+        <!-- AdminActivity: Search configuration -->
         <activity
-            android:name=".searches.SearchAdmin"
+            android:name=".searches.SearchAdminActivity"
             android:windowSoftInputMode="adjustResize" />
         <!-- *********************************************************************************** -->
         <!-- END admin pages -->
@@ -148,7 +148,7 @@
 
         <!-- Search -->
         <activity
-            android:name=".searches.SearchCatalogue"
+            android:name=".searches.SearchLocalActivity"
             android:windowSoftInputMode="adjustResize" />
 
         <!-- Booklist Preferences -->
@@ -177,8 +177,8 @@
         <activity android:name=".cropper.CropImageActivity" />
 
         <!-- and then some GoodReads activities... TODO: satisfy curiosity later -->
-        <activity android:name=".searches.goodreads.GoodreadsSearchCriteria" />
-        <activity android:name=".searches.goodreads.GoodreadsSearchResults" />
+        <activity android:name=".searches.goodreads.GoodreadsSearchCriteriaActivity" />
+        <activity android:name=".searches.goodreads.GoodreadsSearchResultsActivity" />
         <activity android:name=".searches.goodreads.GoodreadsExportFailuresActivity" />
         <activity
             android:name=".searches.goodreads.GoodreadsAuthorizationActivity"

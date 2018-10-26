@@ -36,7 +36,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/ISFDB"
+        android:text="@string/url_ISFDB"
         android:visibility="gone" />
 
     <EditText

@@ -35,7 +35,7 @@ import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-abstract public class SearchThread extends ManagedTask {
+abstract public class SearchTask extends ManagedTask {
     protected static boolean mFetchThumbnail;
     @NonNull
     protected final String mAuthor;
@@ -51,17 +51,19 @@ abstract public class SearchThread extends ManagedTask {
      * Constructor. Will search according to passed parameters. If an ISBN
      * is provided that will be used to the exclusion of all others.
      *
+     * @param name    of this thread
      * @param manager TaskHandler implementation
      * @param author  Author to search for
      * @param title   Title to search for
      * @param isbn    ISBN to search for.
      */
-    protected SearchThread(@NonNull final TaskManager manager,
-                           @NonNull final String author,
-                           @NonNull final String title,
-                           @NonNull final String isbn,
-                           final boolean fetchThumbnail) {
-        super(manager);
+    protected SearchTask(@NonNull final String name,
+                         @NonNull final TaskManager manager,
+                         @NonNull final String author,
+                         @NonNull final String title,
+                         @NonNull final String isbn,
+                         final boolean fetchThumbnail) {
+        super(name, manager);
         // trims might not be needed, but heck.
         mAuthor = author.trim();
         mTitle = title.trim();
@@ -88,13 +90,13 @@ abstract public class SearchThread extends ManagedTask {
                 SeriesDetails details = Series.findSeriesFromBookTitle(thisTitle);
                 if (details != null && !details.name.isEmpty()) {
                     List<Series> list;
-                    if (mBookData.containsKey(UniqueId.BKEY_SERIES_DETAILS)) {
-                        list = ArrayUtils.getSeriesUtils().decodeList(mBookData.getString(UniqueId.BKEY_SERIES_DETAILS), false);
+                    if (mBookData.containsKey(UniqueId.BKEY_SERIES_STRING_LIST)) {
+                        list = ArrayUtils.getSeriesUtils().decodeList(mBookData.getString(UniqueId.BKEY_SERIES_STRING_LIST), false);
                     } else {
                         list = new ArrayList<>();
                     }
                     list.add(new Series(details.name, details.position));
-                    mBookData.putString(UniqueId.BKEY_SERIES_DETAILS, ArrayUtils.getSeriesUtils().encodeList(list));
+                    mBookData.putString(UniqueId.BKEY_SERIES_STRING_LIST, ArrayUtils.getSeriesUtils().encodeList(list));
                     mBookData.putString(UniqueId.KEY_TITLE, thisTitle.substring(0, details.startChar - 1).trim());
                 }
             }

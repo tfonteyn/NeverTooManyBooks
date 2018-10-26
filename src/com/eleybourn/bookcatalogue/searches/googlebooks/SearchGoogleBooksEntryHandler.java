@@ -168,7 +168,7 @@ class SearchGoogleBooksEntryHandler extends DefaultHandler {
                 break;
             }
             case AUTHOR: {
-                ArrayUtils.addOrAppend(mValues, UniqueId.BKEY_AUTHOR_DETAILS, builder.toString());
+                ArrayUtils.addOrAppend(mValues, UniqueId.BKEY_AUTHOR_STRING_LIST, builder.toString());
                 break;
             }
             case PUBLISHER: {

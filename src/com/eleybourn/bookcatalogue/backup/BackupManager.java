@@ -34,9 +34,9 @@ import com.eleybourn.bookcatalogue.backup.tar.TarBackupContainer;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.filechooser.BackupFileDetails;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTaskContext;
-import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressFragment;
-import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressFragment.FragmentTask;
-import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressFragment.FragmentTaskAbstract;
+import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressDialogFragment;
+import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressDialogFragment.FragmentTask;
+import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressDialogFragment.FragmentTaskAbstract;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
@@ -92,7 +92,7 @@ public class BackupManager {
             private boolean mBackupOk = false;
 
             @Override
-            public void run(@NonNull final SimpleTaskQueueProgressFragment fragment, @NonNull final SimpleTaskContext taskContext) {
+            public void run(@NonNull final SimpleTaskQueueProgressDialogFragment fragment, @NonNull final SimpleTaskContext taskContext) {
 
                 TarBackupContainer bkp = new TarBackupContainer(tempFile);
                 if (DEBUG_SWITCHES.BACKUP && BuildConfig.DEBUG) {
@@ -151,7 +151,7 @@ public class BackupManager {
 
             @Override
             @CallSuper
-            public void onFinish(@NonNull final SimpleTaskQueueProgressFragment fragment, @Nullable final Exception e) {
+            public void onFinish(@NonNull final SimpleTaskQueueProgressDialogFragment fragment, @Nullable final Exception e) {
                 super.onFinish(fragment, e);
                 if (e != null) {
                     StorageUtils.deleteFile(tempFile);
@@ -166,7 +166,7 @@ public class BackupManager {
             }
 
         };
-        SimpleTaskQueueProgressFragment frag = SimpleTaskQueueProgressFragment
+        SimpleTaskQueueProgressDialogFragment frag = SimpleTaskQueueProgressDialogFragment
                 .runTaskWithProgress(context, R.string.backing_up_ellipsis, task, false, taskId);
         frag.setNumberFormat(null);
         return resultingFile;
@@ -184,7 +184,7 @@ public class BackupManager {
 
         final FragmentTask task = new FragmentTaskAbstract() {
             @Override
-            public void run(@NonNull final SimpleTaskQueueProgressFragment fragment, @NonNull final SimpleTaskContext taskContext) {
+            public void run(@NonNull final SimpleTaskQueueProgressDialogFragment fragment, @NonNull final SimpleTaskContext taskContext) {
                 try {
                     if (DEBUG_SWITCHES.BACKUP && BuildConfig.DEBUG) {
                         Logger.info(this, " Importing " + inputFile.getAbsolutePath());
@@ -213,7 +213,7 @@ public class BackupManager {
                 Logger.info(BackupManager.class,"Finished importing " + inputFile.getAbsolutePath() + ", size = " + inputFile.length());
             }
         };
-        SimpleTaskQueueProgressFragment frag = SimpleTaskQueueProgressFragment.runTaskWithProgress(context,
+        SimpleTaskQueueProgressDialogFragment frag = SimpleTaskQueueProgressDialogFragment.runTaskWithProgress(context,
                 R.string.importing_ellipsis, task, false, taskId);
         frag.setNumberFormat(null);
     }

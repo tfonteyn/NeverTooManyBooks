@@ -47,10 +47,10 @@ public class ImageUtils {
     public static Bitmap fetchFileIntoImageView(@Nullable final ImageView destView,
                                                 @NonNull final File file,
                                                 final int maxWidth, final int maxHeight, final boolean exact) {
-        // Get the file, if it exists. Otherwise set 'help' icon and exit.
+        // Get the file, if it exists. Otherwise set 'broken image' icon and exit.
         if (!file.exists()) {
             if (destView != null)
-                destView.setImageResource(R.drawable.ic_help_outline);
+                destView.setImageResource(R.drawable.ic_broken_image);
             return null;
         }
 
@@ -72,7 +72,7 @@ public class ImageUtils {
             BitmapFactory.decodeFile(fileSpec, opt);
         }
 
-        // If no size info, or a single pixel, assume file bad and set the 'alert' icon
+        // If no size info, or a single pixel, assume file bad and set 'broken image' icon
         if (opt.outHeight <= 0 || opt.outWidth <= 0 || (opt.outHeight == 1 && opt.outWidth == 1)) {
             if (destView != null) {
                 destView.setImageResource(R.drawable.ic_broken_image);
@@ -213,7 +213,7 @@ public class ImageUtils {
      * @param urlText            Image file URL
      * @param filenameSuffix    Suffix to add
      *
-     * @return Downloaded fileSpec, or blank "" on failure
+     * @return Downloaded fileSpec, or blank "" on onCancel
      */
     @NonNull
     public static String saveThumbnailFromUrl(@NonNull final String urlText, @NonNull final String filenameSuffix) {
@@ -255,7 +255,7 @@ public class ImageUtils {
      *
      * @param urlText Image file URL
      *
-     * @return Downloaded byte[] or null upon failure
+     * @return Downloaded byte[] or null upon onCancel
      */
     @Nullable
     public static byte[] getBytesFromUrl(@NonNull final String urlText) {

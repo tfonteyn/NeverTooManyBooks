@@ -82,7 +82,7 @@ public class ViewTagger {
         } else {
             // Make sure it's a valid object type
             if (!(tag instanceof ViewTagger)) {
-                throw new IllegalStateException("View already has a tag that inputStream not a ViewTagger");
+                throw new IllegalStateException("View already has a tag that is not a ViewTagger");
             }
             return (ViewTagger) tag;
         }

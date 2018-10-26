@@ -46,8 +46,7 @@ public class ImportThread extends ManagedTask {
     };
 
     public ImportThread(@NonNull final TaskManager manager, @NonNull final String fileSpec) {
-        super(manager);
-        setName("ImportThread");
+        super("ImportThread", manager);
 
         final File file = new File(fileSpec);
         // Changed getCanonicalPath to getAbsolutePath based on this bug in Android 2.1:
@@ -89,4 +88,12 @@ public class ImportThread extends ManagedTask {
         }
     }
 
+    @Override
+    protected void onTaskFinish() {
+        try {
+            mCoverFinder.close();
+        } catch (Exception ignore) {
+        }
+        super.onTaskFinish();
+    }
 }

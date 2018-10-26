@@ -46,7 +46,7 @@ import java.util.Date;
  *
  * error methods will always print a stacktrace (even if you do not pass in an exception)
  *
- *  FIXME Remove Log.error! Replace with ACRA?
+ *  ENHANCE Remove Log.error! Replace with ACRA?
  *  ACRA.getErrorReporter().handleException(e);
  */
 public class Logger {
@@ -93,7 +93,7 @@ public class Logger {
         Class clazz = object.getClass();
         String msg = "INFO|" + clazz.getCanonicalName() + "|" + message;
         if (clazz.isAnonymousClass()) {
-            //FIXME: redo info method, so it 'simply gets the caller class from the stacktrace, e.g. just print line 1 i.e.
+            //ENHANCE: redo info method, so it 'simply gets the caller class from the stacktrace, e.g. just print line 1 i.e.
             error(msg);
         } else {
             Log.e(TAG, msg);
@@ -178,7 +178,7 @@ public class Logger {
                     StorageUtils.renameFile(orig, backup);
                 }
             } catch (Exception ignore) {
-                // Ignore backup failure...
+                // Ignore backup onCancel...
             }
             BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(StorageUtils.getErrorLog()), "utf8"), 8192);
             out.write("");

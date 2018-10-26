@@ -31,6 +31,7 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.AnthologyTitle;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Book;
+import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
@@ -60,11 +61,18 @@ public class CsvImporter implements Importer {
 
     private final static String STRINGED_ID = UniqueId.KEY_ID;
 
-    private final CatalogueDBAdapter mDb = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
+    @NonNull
+    private final CatalogueDBAdapter mDb;
+
     @NonNull
     private Integer mCreated = 0;
     @NonNull
     private Integer mUpdated = 0;
+
+    CsvImporter() {
+        mDb = new CatalogueDBAdapter(BookCatalogueApp.getAppContext())
+        .open();
+    }
 
     @SuppressWarnings("UnusedReturnValue")
     public boolean importBooks(@NonNull final InputStream exportStream,
@@ -86,7 +94,6 @@ public class CsvImporter implements Importer {
 
         listener.setMax(importedList.size() - 1);
 
-        // Container for values.
         final Book book = new Book();
 
         // first line in import are the column names
@@ -113,7 +120,7 @@ public class CsvImporter implements Importer {
                 UniqueId.KEY_AUTHOR_FAMILY_NAME,
                 UniqueId.KEY_AUTHOR_FORMATTED,
                 UniqueId.KEY_AUTHOR_NAME,
-                UniqueId.BKEY_AUTHOR_DETAILS);
+                UniqueId.BKEY_AUTHOR_STRING_LIST);
 
         final boolean updateOnlyIfNewer;
         if ((importFlags & Importer.IMPORT_NEW_OR_UPDATED) != 0) {
@@ -124,8 +131,6 @@ public class CsvImporter implements Importer {
         } else {
             updateOnlyIfNewer = false;
         }
-
-        mDb.open();
 
         int row = 1; // Start after headings.
         int txRowCount = 0;
@@ -148,7 +153,7 @@ public class CsvImporter implements Importer {
 
                 // Get row
                 final String[] csvDataRow = returnRow(importedList.get(row), fullEscaping);
-                // and add each field into book
+                // clear book (avoiding construction another object) and add each field
                 book.clear();
                 for (int i = 0; i < csvColumnNames.length; i++) {
                     book.putString(csvColumnNames[i], csvDataRow[i]);
@@ -189,15 +194,19 @@ public class CsvImporter implements Importer {
                 // storing the book data does all that
                 handleAuthors(mDb, book);
                 handleSeries(mDb, book);
-                if (book.containsKey(UniqueId.BKEY_ANTHOLOGY_DETAILS)) {
+                if (book.containsKey(UniqueId.BKEY_ANTHOLOGY_STRING_LIST)) {
                     // ignore the actual value of the UniqueId.KEY_ANTHOLOGY_BITMASK! it will be
                     // 'reset' to mirror what we actually have when storing the book data
                     handleAnthology(mDb, book);
                 }
 
-                // Make sure we have UniqueId.BKEY_BOOKSHELF_TEXT if we imported bookshelf
-                if (book.containsKey(UniqueId.KEY_BOOKSHELF_NAME) && !book.containsKey(UniqueId.BKEY_BOOKSHELF_TEXT)) {
-                    book.setBookshelfList(book.getString(UniqueId.KEY_BOOKSHELF_NAME));
+                // v5 has columns
+                // "bookshelf_id" == UniqueId.DOM_BOOKSHELF_ID => see CsvExporter EXPORT_FIELD_HEADERS
+                // "bookshelf" == UniqueId.KEY_BOOKSHELF_NAME
+                // I suspect "bookshelf_text" is from older versions and obsolete now (Classic ?)
+                if (book.containsKey(UniqueId.KEY_BOOKSHELF_NAME) && !book.containsKey("bookshelf_text")) {
+                    handleBookshelves(mDb, book);
+
                 }
 
                 try {
@@ -239,16 +248,15 @@ public class CsvImporter implements Importer {
             } catch (Exception e) {
                 Logger.error(e);
             }
-            try {
-                mDb.close();
-            } catch (Exception e) {
-                Logger.error(e);
-            }
+
+            mDb.close();
         }
 
         Logger.info(this,"Csv Import successful: rows processed: " + row + ", created:" + mCreated + ", updated: " + mUpdated);
         return true;
     }
+
+
 
     /**
      * @return new or updated bookId
@@ -335,15 +343,27 @@ public class CsvImporter implements Importer {
     }
 
     /**
+     * The "bookshelf_id" column is not used at all (similar to how author etc is done)
+     */
+    private void handleBookshelves(@NonNull final CatalogueDBAdapter db,
+                                   @NonNull final Book book) {
+        String encodedList = book.getString(UniqueId.KEY_BOOKSHELF_NAME);
+
+        book.putBookshelfList(ArrayUtils.getBookshelfUtils().decodeList(Bookshelf.SEPARATOR, encodedList, false));
+
+        book.remove(UniqueId.KEY_BOOKSHELF_NAME);
+    }
+
+    /**
      * Database access is strictly limited to fetching id's
      * TODO:  can we use ? ArrayUtils.getAnthologyTitleUtils().decodeList(anthologyTitlesAsStringList, false);
      */
     private void handleAnthology(@NonNull final CatalogueDBAdapter db,
                                  @NonNull final Book book) {
 
-        String anthologyTitlesAsStringList = book.getString(UniqueId.BKEY_ANTHOLOGY_DETAILS);
-        if (!anthologyTitlesAsStringList.isEmpty()) {
-            ArrayList<String> list = ArrayUtils.decodeList(anthologyTitlesAsStringList);
+        String encodedList = book.getString(UniqueId.BKEY_ANTHOLOGY_STRING_LIST);
+        if (!encodedList.isEmpty()) {
+            ArrayList<String> list = ArrayUtils.decodeList(encodedList);
             // There is *always* one; but it will be empty if no titles present
             if (!list.get(0).isEmpty()) {
                 ArrayList<AnthologyTitle> ata = new ArrayList<>();
@@ -360,78 +380,81 @@ public class CsvImporter implements Importer {
                 }
                 // fixup the id's
                 Utils.pruneList(db, ata);
-                book.setContentList(ata);
+                book.putContentList(ata);
             }
         }
 
         // remove the unneeded string encoded set
-        book.remove(UniqueId.BKEY_ANTHOLOGY_DETAILS);
+        book.remove(UniqueId.BKEY_ANTHOLOGY_STRING_LIST);
     }
 
     /**
      * Database access is strictly limited to fetching id's
+     *
+     * Get the list of series from whatever source is available.
      */
     private void handleSeries(@NonNull final CatalogueDBAdapter db,
                               @NonNull final Book book) {
-        String seriesDetails = book.getString(UniqueId.BKEY_SERIES_DETAILS);
-        if (seriesDetails.isEmpty()) {
+        String encodedList = book.getString(UniqueId.BKEY_SERIES_STRING_LIST);
+        if (encodedList.isEmpty()) {
             // Try to build from SERIES_NAME and SERIES_NUM. It may all be blank
             if (book.containsKey(UniqueId.KEY_SERIES_NAME)) {
-                seriesDetails = book.getString(UniqueId.KEY_SERIES_NAME);
-                if (!seriesDetails.isEmpty()) {
+                encodedList = book.getString(UniqueId.KEY_SERIES_NAME);
+                if (!encodedList.isEmpty()) {
                     String seriesNum = book.getString(UniqueId.KEY_SERIES_NUM);
-                    seriesDetails += "(" + seriesNum + ")";
+                    encodedList += "(" + seriesNum + ")";
                 } else {
-                    seriesDetails = null;
+                    encodedList = null;
                 }
             }
         }
         // Handle the series
-        final ArrayList<Series> list = ArrayUtils.getSeriesUtils().decodeList(seriesDetails, false);
+        final ArrayList<Series> list = ArrayUtils.getSeriesUtils().decodeList(encodedList, false);
         Series.pruneSeriesList(list);
         Utils.pruneList(db, list);
-        book.setSeriesList(list);
-        book.remove(UniqueId.BKEY_SERIES_DETAILS);
+        book.putSeriesList(list);
+        book.remove(UniqueId.BKEY_SERIES_STRING_LIST);
     }
 
     /**
      * Database access is strictly limited to fetching id's
+     *
+     * Get the list of authors from whatever source is available.
      */
     private void handleAuthors(@NonNull final CatalogueDBAdapter db,
                                @NonNull final Book book) {
-        // Get the list of authors from whatever source is available.
-        String authorDetails = book.getString(UniqueId.BKEY_AUTHOR_DETAILS);
-        if (authorDetails.isEmpty()) {
+        String encodedList = book.getString(UniqueId.BKEY_AUTHOR_STRING_LIST);
+        if (encodedList.isEmpty()) {
             // Need to build it from other fields.
             if (book.containsKey(UniqueId.KEY_AUTHOR_FAMILY_NAME)) {
                 // Build from family/given
-                authorDetails = book.getString(UniqueId.KEY_AUTHOR_FAMILY_NAME);
+                encodedList = book.getString(UniqueId.KEY_AUTHOR_FAMILY_NAME);
                 String given = "";
                 if (book.containsKey(UniqueId.KEY_AUTHOR_GIVEN_NAMES)) {
                     given = book.getString(UniqueId.KEY_AUTHOR_GIVEN_NAMES);
                 }
                 if (!given.isEmpty()) {
-                    authorDetails += ", " + given;
+                    encodedList += ", " + given;
                 }
             } else if (book.containsKey(UniqueId.KEY_AUTHOR_NAME)) {
-                authorDetails = book.getString(UniqueId.KEY_AUTHOR_NAME);
+                encodedList = book.getString(UniqueId.KEY_AUTHOR_NAME);
             } else if (book.containsKey(UniqueId.KEY_AUTHOR_FORMATTED)) {
-                authorDetails = book.getString(UniqueId.KEY_AUTHOR_FORMATTED);
+                encodedList = book.getString(UniqueId.KEY_AUTHOR_FORMATTED);
             }
         }
 
         // A pre-existing bug sometimes results in blank author-details due to bad underlying data
         // (it seems a 'book' record gets written without an 'author' record; should not happen)
         // so we allow blank author_details and fill in a regional version of "Author, Unknown"
-        if (authorDetails.isEmpty()) {
-            authorDetails = BookCatalogueApp.getResourceString(R.string.author) + ", " + BookCatalogueApp.getResourceString(R.string.unknown);
+        if (encodedList.isEmpty()) {
+            encodedList = BookCatalogueApp.getResourceString(R.string.author) + ", " + BookCatalogueApp.getResourceString(R.string.unknown);
         }
 
         // Now build the array for authors
-        final ArrayList<Author> list = ArrayUtils.getAuthorUtils().decodeList(authorDetails, false);
+        final ArrayList<Author> list = ArrayUtils.getAuthorUtils().decodeList(encodedList, false);
         Utils.pruneList(db, list);
-        book.setAuthorList(list);
-        book.remove(UniqueId.BKEY_AUTHOR_DETAILS);
+        book.putAuthorList(list);
+        book.remove(UniqueId.BKEY_AUTHOR_STRING_LIST);
     }
 
     //

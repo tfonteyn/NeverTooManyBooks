@@ -38,25 +38,33 @@ abstract class CropImageViewTouchBase extends AppCompatImageView {
     private static final float SCALE_LIMIT_MAX = Float.MAX_VALUE;
     @SuppressWarnings("unused")
     private static final String TAG = "CropImageViewTouchBase";
-    // This is the base transformation which is used to show the image
-    // initially. The current computation for this shows the image in
-    // it's entirety, letter boxing as needed. One could choose to
-    // show the image as cropped instead.
-    //
-    // This matrix is recomputed when we go from the thumbnail image to
-    // the full size image.
+
+    /**
+     * This is the base transformation which is used to show the image
+     * initially. The current computation for this shows the image in
+     * it's entirety, letter boxing as needed. One could choose to
+     * show the image as cropped instead.
+     *
+     * This matrix is recomputed when we go from the thumbnail image to
+     * the full size image.
+     */
     protected final Matrix mBaseMatrix = new Matrix();
-    // This is the supplementary transformation which reflects what
-    // the user has done in terms of zooming and panning.
-    //
-    // This matrix remains the same when we go from the thumbnail image
-    // to the full size image.
+
+    /**
+     * This is the supplementary transformation which reflects what
+     * the user has done in terms of zooming and panning.
+     *
+     * This matrix remains the same when we go from the thumbnail image
+     * to the full size image.
+     */
     protected final Matrix mSuppMatrix = new Matrix();
     /** The current bitmap being displayed. */
     final protected CropRotateBitmap mBitmapDisplayed = new CropRotateBitmap();
     protected final Handler mHandler = new Handler();
-    /** This is the final matrix which is computed as the concatenation
-     * of the base matrix and the supplementary matrix. */
+    /**
+     * This is the final matrix which is computed as the concatenation
+     * of the base matrix and the supplementary matrix.
+     */
     private final Matrix mDisplayMatrix = new Matrix();
     /** Temporary buffer used for getting the values out of a matrix. */
     private final float[] mMatrixValues = new float[9];
@@ -83,6 +91,7 @@ abstract class CropImageViewTouchBase extends AppCompatImageView {
         super(context);
         init();
     }
+
     public CropImageViewTouchBase(@NonNull final Context context, @NonNull final AttributeSet attrs) {
         super(context, attrs);
         init();
@@ -153,7 +162,8 @@ abstract class CropImageViewTouchBase extends AppCompatImageView {
         setImageBitmapResetBase(null, true);
     }
 
-    /** This function changes bitmap, reset base matrix according to the size
+    /**
+     * This function changes bitmap, reset base matrix according to the size
      * of the bitmap, and optionally reset the supplementary matrix.
      */
     public void setImageBitmapResetBase(@Nullable final Bitmap bitmap, final boolean resetSupp) {
@@ -267,7 +277,7 @@ abstract class CropImageViewTouchBase extends AppCompatImageView {
         return getScale(mSuppMatrix);
     }
 
-    // Setup the base matrix so that the image is centered and scaled properly.
+    /** Setup the base matrix so that the image is centered and scaled properly. */
     private void getProperBaseMatrix(@NonNull final CropRotateBitmap bitmap, @NonNull final Matrix matrix) {
         float viewWidth = getWidth();
         float viewHeight = getHeight();
@@ -277,9 +287,8 @@ abstract class CropImageViewTouchBase extends AppCompatImageView {
         // int rotation = bitmap.getRotation();
         matrix.reset();
 
-        // Originally We limited up-scaling to 2x otherwise the result may
-        // look bad if it's a small icon.
-        // However, we need to crop small thumbnails on huge phones...so
+        // Originally We limited up-scaling to 2x otherwise the result may look bad if
+        // it's a small icon. However, we need to crop small thumbnails on huge phones...so
         // there is little choice. We now have no effective limit.
         float widthScale = Math.min(viewWidth / w, SCALE_LIMIT_MAX);
         float heightScale = Math.min(viewHeight / h, SCALE_LIMIT_MAX);
@@ -288,11 +297,13 @@ abstract class CropImageViewTouchBase extends AppCompatImageView {
         matrix.postConcat(bitmap.getRotateMatrix());
         matrix.postScale(scale, scale);
 
-        matrix.postTranslate((viewWidth - w * scale) / 2F, (viewHeight - h
-                * scale) / 2F);
+        matrix.postTranslate((viewWidth - w * scale) / 2F,
+                (viewHeight - h * scale) / 2F);
     }
 
-    // Combine the base matrix and the supp matrix to make the final matrix.
+    /**
+     * Combine the base matrix and the supp matrix to make the final matrix.
+     */
     @NonNull
     protected Matrix getImageViewMatrix() {
         // The final matrix is computed as the concatenation of the base matrix
@@ -302,10 +313,12 @@ abstract class CropImageViewTouchBase extends AppCompatImageView {
         return mDisplayMatrix;
     }
 
-    // Sets the maximum zoom, which is a SCALE relative to the base matrix. It
-    // is calculated to show the image at 400% zoom regardless of screen or
-    // image orientation. If in the future we decode the full 3 mega-pixel image,
-    // rather than the current 1024x768, this should be changed down to 200%.
+    /**
+     * Sets the maximum zoom, which is a SCALE relative to the base matrix. It
+     * is calculated to show the image at 400% zoom regardless of screen or
+     * image orientation. If in the future we decode the full 3 mega-pixel image,
+     * rather than the current 1024x768, this should be changed down to 200%.
+     */
     protected float maxZoom() {
         if (mBitmapDisplayed.getBitmap() == null) {
             return 1F;
@@ -413,8 +426,10 @@ abstract class CropImageViewTouchBase extends AppCompatImageView {
         setImageMatrix(getImageViewMatrix());
     }
 
-    // ImageViewTouchBase will pass a Bitmap to the Recycler if it has finished
-    // its use of that Bitmap.
+    /**
+     * ImageViewTouchBase will pass a Bitmap to the Recycler if it has finished
+     * its use of that Bitmap.
+     */
     public interface Recycler {
         void recycle(@NonNull final Bitmap b);
     }

@@ -55,7 +55,6 @@ public class BooklistStyleGroupsActivity extends EditObjectListActivity<GroupWra
     /** Preferences setup */
     public static final String REQUEST_KEY_STYLE = TAG + ".Style";
     public static final String REQUEST_KEY_SAVE_TO_DATABASE = TAG + ".SaveToDb";
-    private static final String BKEY_GROUPS = TAG + ".Groups";
 
     /** Copy of the style we are editing */
     private BooklistStyle mStyle;
@@ -66,7 +65,7 @@ public class BooklistStyleGroupsActivity extends EditObjectListActivity<GroupWra
      * Constructor
      */
     public BooklistStyleGroupsActivity() {
-        super(BKEY_GROUPS, R.layout.booklist_style_edit_group_list, R.layout.booklist_style_edit_row);
+        super(R.layout.booklist_style_edit_group_list, R.layout.booklist_style_edit_row, null);
     }
 
     @Override
@@ -86,24 +85,9 @@ public class BooklistStyleGroupsActivity extends EditObjectListActivity<GroupWra
                 mStyle = new BooklistStyle("");
             }
 
-            // Build an array list with the groups from the style, and record that they are present in mGroups.
-            ArrayList<GroupWrapper> groups = new ArrayList<>();
-            for (BooklistGroup g : mStyle) {
-                groups.add(new GroupWrapper(g, true));
-            }
-
-            // Get all other groups and add any missing ones to the list
-            for (BooklistGroup g : BooklistGroup.getAllGroups()) {
-                if (!mStyle.hasKind(g.kind)) {
-                    groups.add(new GroupWrapper(g, false));
-                }
-            }
-
-            // Store the full list in the intent
-            intent.putExtra(BKEY_GROUPS, groups);
-
-            // Init the subclass now it has the array it expects
+            // Init the subclass now that we have the style
             super.onCreate(savedInstanceState);
+
             this.setTitle(getString(R.string.groupings) + ": " + mStyle.getDisplayName());
 
             if (savedInstanceState == null) {
@@ -113,6 +97,28 @@ public class BooklistStyleGroupsActivity extends EditObjectListActivity<GroupWra
         } catch (Exception e) {
             Logger.error(e);
         }
+    }
+
+    /**
+     * Required by parent class since we do not pass a key for the intent to get the list.
+     */
+    @Nullable
+    @Override
+    protected ArrayList<GroupWrapper> getList() {
+        // Build an array list with the groups from the style
+        ArrayList<GroupWrapper> groups = new ArrayList<>();
+        for (BooklistGroup g : mStyle) {
+            groups.add(new GroupWrapper(g, true));
+        }
+
+        // Get all other groups and add any missing ones to the list
+        for (BooklistGroup g : BooklistGroup.getAllGroups()) {
+            if (!mStyle.hasKind(g.kind)) {
+                groups.add(new GroupWrapper(g, false));
+            }
+        }
+
+        return groups;
     }
 
     @Override
@@ -149,7 +155,6 @@ public class BooklistStyleGroupsActivity extends EditObjectListActivity<GroupWra
         // Setup the variant fields in the holder
         holder.wrapper = wrapper;
         holder.name.setText(wrapper.group.getName());
-
         holder.present.setChecked(holder.wrapper.present);
     }
 
@@ -170,11 +175,12 @@ public class BooklistStyleGroupsActivity extends EditObjectListActivity<GroupWra
                 mStyle.addGroup(wrapper.group);
             }
         }
+
         // Apply any saved properties.
         mStyle.setProperties(props);
 
         // Store in resulting Intent
-        intent.putExtra(REQUEST_KEY_STYLE, mStyle);
+        intent.putExtra(REQUEST_KEY_STYLE, mStyle); /* 06ed8d0e-7120-47aa-b47e-c0cd46361dcb */
 
         // Save to DB if necessary
         if (mSaveToDb) {

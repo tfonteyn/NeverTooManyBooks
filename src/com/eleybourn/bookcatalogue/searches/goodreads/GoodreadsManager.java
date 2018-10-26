@@ -775,7 +775,7 @@ public class GoodreadsManager {
 
             // Build the list of shelves that we have in the local database for the book
             int exclusiveCount = 0;
-            try (Cursor shelfCsr = db.fetchBookshelvesForBookId(bookId)) {
+            try (Cursor shelfCsr = db.fetchBookshelvesByBookId(bookId)) {
                 int shelfCol = shelfCsr.getColumnIndexOrThrow(DatabaseDefinitions.DOM_BOOKSHELF.name);
                 // Collect all shelf names for this book
                 while (shelfCsr.moveToNext()) {

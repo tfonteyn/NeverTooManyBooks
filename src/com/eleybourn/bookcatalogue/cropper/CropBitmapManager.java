@@ -25,15 +25,15 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 /**
- * This class provides several utilities to cancel bitmap decoding.
+ * This class provides several utilities to onCancel bitmap decoding.
  *
  * The function decodeFileDescriptor() is used to decode a bitmap. During
- * decoding if another thread wants to cancel it, it calls the function
+ * decoding if another thread wants to onCancel it, it calls the function
  * cancelThreadDecoding() specifying the Thread which is in decoding.
  *
  * cancelThreadDecoding() is sticky until allowThreadDecoding() is called.
  *
- * You can also cancel decoding for a set of threads using ThreadSet as the
+ * You can also onCancel decoding for a set of threads using ThreadSet as the
  * parameter for cancelThreadDecoding. To put a thread into a ThreadSet, use the
  * add() method. A ThreadSet holds (weak) references to the threads, so you
  * don't need to remove Thread from it if some thread dies.
@@ -91,7 +91,7 @@ class CropBitmapManager {
     }
 
     /**
-     * The following two methods are used to allow/cancel a set of threads for
+     * The following two methods are used to allow/onCancel a set of threads for
      * bitmap decoding.
      */
     @SuppressWarnings("unused")

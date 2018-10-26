@@ -1,4 +1,4 @@
-package com.eleybourn.bookcatalogue.searches.amazon;
+package com.eleybourn.bookcatalogue.searches.googlebooks;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
@@ -6,40 +6,40 @@ import android.support.annotation.StringRes;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.searches.SearchManager;
-import com.eleybourn.bookcatalogue.searches.SearchThread;
+import com.eleybourn.bookcatalogue.searches.SearchTask;
 import com.eleybourn.bookcatalogue.tasks.TaskManager;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
 
-public class SearchAmazonThread extends SearchThread {
+public class SearchGoogleBooksTask extends SearchTask {
 
-    public SearchAmazonThread(@NonNull final TaskManager manager,
-                              @NonNull final String author,
-                              @NonNull final String title,
-                              @NonNull final String isbn,
-                              final boolean fetchThumbnail) {
-        super(manager, author, title, isbn, fetchThumbnail);
-        setName("SearchAmazonThread isbn=" + isbn);
+    public SearchGoogleBooksTask(@NonNull final TaskManager manager,
+                                 @NonNull final String author,
+                                 @NonNull final String title,
+                                 @NonNull final String isbn,
+                                 final boolean fetchThumbnail) {
+        super("SearchGoogleBooksTask isbn=" + isbn, manager, author, title, isbn, fetchThumbnail);
     }
 
     @Override
     protected void runTask() {
-        @StringRes final int R_ID_SEARCHING = R.string.searching_amazon_books;
+        @StringRes
+        final int R_ID_SEARCHING = R.string.searching_google_books;
         doProgress(getString(R_ID_SEARCHING), 0);
         try {
-            AmazonManager.search(mIsbn, mAuthor, mTitle, mBookData, mFetchThumbnail);
+            GoogleBooksManager.search(mIsbn, mAuthor, mTitle, mBookData, mFetchThumbnail);
             if (mBookData.size() > 0) {
                 // Look for series name and clean KEY_TITLE
                 checkForSeriesName();
             }
         } catch (java.net.SocketTimeoutException e) {
-            showError(R_ID_SEARCHING, R.string.network_timeout);
+            showError(R_ID_SEARCHING, R.string.error_network_timeout);
 
         } catch (MalformedURLException | UnknownHostException e) {
             Logger.error(e);
-            showError(R_ID_SEARCHING, R.string.search_configuration_error);
+            showError(R_ID_SEARCHING, R.string.error_search_configuration);
 
         } catch (IOException e) {
             showError(R_ID_SEARCHING, R.string.error_search_failed);
@@ -49,7 +49,6 @@ public class SearchAmazonThread extends SearchThread {
             Logger.error(e);
             showException(R_ID_SEARCHING, e);
         }
-
     }
 
     /**
@@ -57,7 +56,7 @@ public class SearchAmazonThread extends SearchThread {
      */
     @Override
     public int getSearchId() {
-        return SearchManager.SEARCH_AMAZON;
+        return SearchManager.SEARCH_GOOGLE;
     }
 
 }

@@ -74,7 +74,11 @@ public class MessageSwitch<T, U> {
     @SuppressLint("UseSparseArrays")
     private final Map<Long, MessageListeners> mListeners = Collections.synchronizedMap(new HashMap<Long, MessageListeners>());
 
-    /** Register a new sender and it's controller object; return the unique ID for this sender */
+    /**
+     * Register a new sender and it's controller object;
+     *
+     * @return the unique ID for this sender
+     */
     @NonNull
     public Long createSender(@NonNull final U controller) {
         MessageSender<U> s = new MessageSenderImpl(controller);
@@ -90,6 +94,9 @@ public class MessageSwitch<T, U> {
      * @param deliverLast If true, send the last message (if any) to this listener
      */
     public void addListener(@NonNull final Long senderId, @NonNull final T listener, final boolean deliverLast) {
+        if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
+            Logger.info(this,"\nadded: senderId=" + senderId + "\n" + listener);
+        }
         // Add the listener to the queue, creating queue if necessary
         MessageListeners queue;
         synchronized (mListeners) {
@@ -108,16 +115,17 @@ public class MessageSwitch<T, U> {
                 // Do it on the UI thread.
                 if (mHandler.getLooper().getThread() == Thread.currentThread()) {
                     if (DEBUG_SWITCHES.MESSAGING && BuildConfig.DEBUG) {
-                        Logger.info(this,"delivering to listener: " + listener + ", message: " + routingSlip.message.toString());
+                        Logger.info(this, "\nUI thread\ndelivering to listener: " + listener + "\n" + routingSlip.message.toString());
                     }
                     routingSlip.message.deliver(listener);
                 } else {
+                    if (DEBUG_SWITCHES.MESSAGING && BuildConfig.DEBUG) {
+                        Logger.info(this, "\npost runnable\ndelivering to listener: " + listener + "\n" + routingSlip.message.toString());
+                    }
                     mHandler.post(new Runnable() {
                         @Override
                         public void run() {
-                            if (DEBUG_SWITCHES.MESSAGING && BuildConfig.DEBUG) {
-                                Logger.info(this,"delivering to listener: " + listener + ", message: " + routingSlip.message.toString());
-                            }
+
                             routingSlip.message.deliver(listener);
                         }
                     });
@@ -127,11 +135,14 @@ public class MessageSwitch<T, U> {
     }
 
     /** Remove the specified listener from the specified queue */
-    public void removeListener(@NonNull final Long senderId, @NonNull final T l) {
+    public void removeListener(@NonNull final Long senderId, @NonNull final T listener) {
+        if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
+            Logger.info(this,"\nremoveListener: senderId=" + senderId + "\n" + listener);
+        }
         synchronized (mListeners) {
             MessageListeners queue = mListeners.get(senderId);
             if (queue != null)
-                queue.remove(l);
+                queue.remove(listener);
         }
     }
 
@@ -143,7 +154,7 @@ public class MessageSwitch<T, U> {
      */
     public void send(@NonNull final Long senderId, @NonNull final Message<T> message) {
         if (DEBUG_SWITCHES.MESSAGING && BuildConfig.DEBUG) {
-            Logger.info(this,"sending to " + senderId + " message: " + message);
+            Logger.info(this, "\nsending to senderId=" + senderId + "\nmessage: " + message);
         }
         // Create a routing slip
         RoutingSlip m = new MessageRoutingSlip(senderId, message);
@@ -219,7 +230,7 @@ public class MessageSwitch<T, U> {
          * @param listener Listener to who message must be delivered
          *
          * @return <tt>true</tt>if message should not be delivered to any other listeners or
-         * stored for delivery as 'last message' should only return true if the message has
+         * stored for delivery as 'last message'. Should only return true if the message has
          * been handled and would break the app if delivered more than once.
          */
         boolean deliver(@NonNull final T listener);
@@ -308,9 +319,9 @@ public class MessageSwitch<T, U> {
             List<WeakReference<T>> toRemove = null;
             synchronized (mList) {
                 for (WeakReference<T> w : mList) {
-                    T l = w.get();
-                    if (l != null) {
-                        list.add(l);
+                    T listener = w.get();
+                    if (listener != null) {
+                        list.add(listener);
                     } else {
                         if (toRemove == null)
                             toRemove = new ArrayList<>();
@@ -349,7 +360,7 @@ public class MessageSwitch<T, U> {
         @Override
         public void deliver() {
             if (DEBUG_SWITCHES.MESSAGING && BuildConfig.DEBUG) {
-                Logger.info(this,"enter deliver()");
+                Logger.info(this, "enter deliver()");
             }
             // Iterator for iterating queue
             Iterator<T> queueIterator = null;
@@ -371,7 +382,7 @@ public class MessageSwitch<T, U> {
                     T listener = queueIterator.next();
                     try {
                         if (DEBUG_SWITCHES.MESSAGING && BuildConfig.DEBUG) {
-                            Logger.info(this,"delivering to listener: " + listener + ", message: " + message.toString());
+                            Logger.info(this, "\nqueueIterator\ndelivering to listener: " + listener + "\n" + message.toString());
                         }
                         if (message.deliver(listener)) {
                             handled = true;

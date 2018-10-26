@@ -131,7 +131,7 @@
                 android:layout_weight="1">
 
                 <ImageView
-                    android:id="@+id/image"
+                    android:id="@+id/coverImage"
                     style="@style/coverImage"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -249,7 +249,7 @@
                 <TextView
                     android:id="@+id/lbl_language"
                     style="@style/bookDetailLabel"
-                    android:text="@string/language" />
+                    android:text="@string/lbl_language" />
 
                 <TextView
                     android:id="@+id/language"

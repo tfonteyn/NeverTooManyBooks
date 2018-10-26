@@ -69,7 +69,7 @@ public class ZxingScanner implements Scanner {
             intent.setPackage(PACKAGE);
         }
         // not limiting the format, just grab anything supported.
-        activity.startActivityForResult(intent, requestCode);
+        activity.startActivityForResult(intent, requestCode); // c2c28575-5327-40c6-827a-c7973bd24d12
     }
 
     /**

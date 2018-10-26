@@ -91,9 +91,9 @@ public class DataManager {
     }
 
     /**
-     * Add a validator for the specified Datum
+     * Add a validator for the specified {@link Datum}
      *
-     * @param key       Key to the Datum
+     * @param key       Key to the {@link Datum}
      * @param validator Validator
      *
      * @return the DataManager, for chaining
@@ -106,9 +106,9 @@ public class DataManager {
     }
 
     /**
-     * Add an Accessor for the specified Datum
+     * Add an {@link DataAccessor} for the specified {@link Datum}
      *
-     * @param key      Key to the Datum
+     * @param key      Key to the {@link Datum}
      * @param accessor Accessor
      *
      * @return the DataManager, for chaining
@@ -133,9 +133,7 @@ public class DataManager {
     }
 
     /**
-     * Get the data object specified by the passed Datum
-     *
-     * @param datum Datum
+     * Get the data object specified by the passed {@link Datum}
      *
      * @return Data object
      */
@@ -319,12 +317,13 @@ public class DataManager {
     }
 
     /**
-     * Store the contents of the passed cursor
+     * Store all passed values in our collection.
+     * We do the laborious method here to allow Accessors to do their thing.
      */
-    protected void putAll(@NonNull final Cursor cursor) {
-
+    @SuppressWarnings("UnusedReturnValue")
+    @NonNull
+    protected DataManager putAll(@NonNull final Cursor cursor) {
         cursor.moveToFirst();
-
         for (int i = 0; i < cursor.getColumnCount(); i++) {
             final String name = cursor.getColumnName(i);
             switch (cursor.getType(i)) {
@@ -345,11 +344,13 @@ public class DataManager {
                     throw new RTE.IllegalTypeException("" + cursor.getType(i));
             }
         }
+
+        return this;
     }
 
     /**
      * Get the serializable object from the collection.
-     * We currently do not use a Datum for special access.
+     * We currently do not use a {@link Datum} for special access.
      *
      * @param key Key of object
      *
@@ -362,7 +363,7 @@ public class DataManager {
 
     /**
      * Set the serializable object in the collection.
-     * We currently do not use a Datum for special access.
+     * We currently do not use a {@link Datum} for special access.
      *
      * @param key   Key of object
      * @param value The serializable object
@@ -446,7 +447,7 @@ public class DataManager {
      *
      * @param key Key of data to remove.
      *
-     * @return the old datum
+     * @return the old {@link Datum}
      */
     @SuppressWarnings("UnusedReturnValue")
     public Datum remove(@NonNull final String key) {
@@ -511,7 +512,7 @@ public class DataManager {
     }
 
     /**
-     * Class to manage the collection of Datum objects for this DataManager
+     * Class to manage the collection of {@link Datum} objects for this DataManager
      *
      * @author pjw
      */
@@ -519,7 +520,7 @@ public class DataManager {
         private static final long serialVersionUID = -650159534364183779L;
 
         /**
-         * Get the specified Datum, and create a stub if not present
+         * Get the specified {@link Datum}, and create a stub if not present
          */
         @Override
         @NonNull

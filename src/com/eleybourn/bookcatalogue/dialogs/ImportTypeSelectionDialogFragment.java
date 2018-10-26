@@ -62,16 +62,14 @@ public class ImportTypeSelectionDialogFragment extends DialogFragment {
     }
 
     /**
-     * Ensure activity supports event
+     * Ensure activity supports interface
      */
     @Override
     @CallSuper
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull final Context context) {
         super.onAttach(context);
-
         if (!(context instanceof OnImportTypeSelectionDialogResultListener))
             throw new RTE.MustImplementException(context, OnImportTypeSelectionDialogResultListener.class);
-
     }
 
     /**
@@ -149,7 +147,8 @@ public class ImportTypeSelectionDialogFragment extends DialogFragment {
      * @author pjw
      */
     public interface OnImportTypeSelectionDialogResultListener {
-        void onImportTypeSelectionDialogResult(final int dialogId, @NonNull final DialogFragment dialog,
+        void onImportTypeSelectionDialogResult(final int dialogId,
+                                               @NonNull final DialogFragment dialog,
                                                @NonNull final ImportTypeSelectionDialogFragment.ImportSettings settings);
     }
 

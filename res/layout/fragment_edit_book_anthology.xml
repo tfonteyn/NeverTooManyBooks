@@ -50,7 +50,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_below="@id/add_title"
-        android:text="@string/add" />
+        android:text="@string/btn_confirm_add" />
 
     <ScrollView
         android:layout_width="match_parent"

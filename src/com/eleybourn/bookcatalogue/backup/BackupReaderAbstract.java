@@ -51,8 +51,8 @@ public abstract class BackupReaderAbstract implements BackupReader {
      * Constructor
      */
     protected BackupReaderAbstract() {
-        mDb = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
-        mDb.open();
+        mDb = new CatalogueDBAdapter(BookCatalogueApp.getAppContext())
+                .open();
     }
 
     /**
@@ -206,7 +206,6 @@ public abstract class BackupReaderAbstract implements BackupReader {
      */
     @Override
     public void close() throws IOException {
-        mDb.close();
-    }
-
+            mDb.close();
+        }
 }

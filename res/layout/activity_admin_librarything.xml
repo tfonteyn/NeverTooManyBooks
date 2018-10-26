@@ -63,7 +63,7 @@
                 android:gravity="center"
                 android:paddingLeft="60dp"
                 android:paddingRight="60dp"
-                android:text="@string/save" />
+                android:text="@string/btn_confirm_save" />
 
             <TextView
                 android:layout_width="match_parent"

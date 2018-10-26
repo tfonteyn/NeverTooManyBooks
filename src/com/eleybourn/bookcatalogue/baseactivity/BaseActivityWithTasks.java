@@ -80,7 +80,7 @@ abstract public class BaseActivityWithTasks extends BaseActivity {
     private String mProgressMessage = "";
 
     /**
-     * Wait for the 'Back' key and cancel all tasks on keyUp.
+     * Wait for the 'Back' key and onCancel all tasks on keyUp.
      */
     private final OnKeyListener mDialogKeyListener = new OnKeyListener() {
         @Override
@@ -135,14 +135,8 @@ abstract public class BaseActivityWithTasks extends BaseActivity {
 
             // If empty, close any dialog
             if ((mProgressMessage.isEmpty()) || mProgressMax == mProgressCount) {
-                if (DEBUG_SWITCHES.MESSAGING && BuildConfig.DEBUG) {
-                    Logger.info(BaseActivityWithTasks.this, "closeProgressDialog");
-                }
                 closeProgressDialog();
             } else {
-                if (DEBUG_SWITCHES.MESSAGING && BuildConfig.DEBUG) {
-                    Logger.info(BaseActivityWithTasks.this, "initProgressDialog");
-                }
                 initProgressDialog();
             }
         }
@@ -207,7 +201,6 @@ abstract public class BaseActivityWithTasks extends BaseActivity {
     @Override
     @CallSuper
     protected void onPause() {
-        super.onPause();
         // Stop listening
         if (mTaskManagerId != 0) {
             TaskManager.getMessageSwitch().removeListener(mTaskManagerId, mTaskListener);
@@ -217,6 +210,7 @@ abstract public class BaseActivityWithTasks extends BaseActivity {
             }
         }
         closeProgressDialog();
+        super.onPause();
     }
 
     @Override
@@ -242,6 +236,10 @@ abstract public class BaseActivityWithTasks extends BaseActivity {
      * Setup the ProgressDialog according to our needs
      */
     private void initProgressDialog() {
+        if (DEBUG_SWITCHES.MESSAGING && BuildConfig.DEBUG) {
+            Logger.info(BaseActivityWithTasks.this, "initProgressDialog");
+        }
+
         boolean wantInDeterminate = (mProgressMax == 0);
 
         // if currently shown, but no longer suitable type due to a change of mProgressMax, dismiss it.
@@ -287,6 +285,9 @@ abstract public class BaseActivityWithTasks extends BaseActivity {
     }
 
     private void closeProgressDialog() {
+        if (DEBUG_SWITCHES.MESSAGING && BuildConfig.DEBUG) {
+            Logger.info(BaseActivityWithTasks.this, "closeProgressDialog");
+        }
         if (mProgressDialog != null) {
             mProgressDialog.dismiss();
             mProgressDialog = null;
@@ -297,6 +298,9 @@ abstract public class BaseActivityWithTasks extends BaseActivity {
      * Cancel all tasks, and if the progress is showing, update it (it will check task manager status)
      */
     private void cancelAndUpdateProgress() {
+        if (DEBUG_SWITCHES.MESSAGING && BuildConfig.DEBUG) {
+            Logger.info(BaseActivityWithTasks.this, "cancelAndUpdateProgress");
+        }
         if (mTaskManager != null) {
             mTaskManager.cancelAllTasks();
             closeProgressDialog();

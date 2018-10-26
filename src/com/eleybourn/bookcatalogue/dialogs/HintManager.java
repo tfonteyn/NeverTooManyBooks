@@ -65,11 +65,15 @@ public class HintManager {
         mHints.put(R.string.hint_booklist_global_properties, new Hint("BOOKLIST_GLOBAL_PROPERTIES"));
         mHints.put(R.string.hint_authors_book_may_appear_more_than_once, new Hint("BOOKLIST_MULTI_AUTHORS"));
         mHints.put(R.string.hint_series_book_may_appear_more_than_once, new Hint("BOOKLIST_MULTI_SERIES"));
+
         mHints.put(R.string.hint_background_tasks, new Hint("BACKGROUND_TASKS"));
         mHints.put(R.string.hint_background_task_events, new Hint("BACKGROUND_TASK_EVENTS"));
+
         mHints.put(R.string.hint_startup_screen, new Hint("STARTUP_SCREEN"));
+
         mHints.put(R.string.gr_explain_goodreads_no_isbn, new Hint("explain_goodreads_no_isbn"));
         mHints.put(R.string.gr_explain_goodreads_no_match, new Hint("explain_goodreads_no_match"));
+
         mHints.put(R.string.hint_booklist_style_menu, new Hint("hint_booklist_style_menu"));
         mHints.put(R.string.hint_autorotate_camera_images, new Hint("hint_autorotate_camera_images"));
         mHints.put(R.string.hint_view_only_book_details, new Hint("hint_view_only_book_details"));

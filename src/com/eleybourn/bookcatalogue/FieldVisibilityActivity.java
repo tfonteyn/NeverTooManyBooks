@@ -20,6 +20,7 @@
 
 package com.eleybourn.bookcatalogue;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
@@ -77,7 +78,7 @@ public class FieldVisibilityActivity extends BaseActivity {
         mFields.add(new FieldInfo(UniqueId.KEY_BOOK_LIST_PRICE, R.string.list_price, false));
         mFields.add(new FieldInfo(UniqueId.KEY_BOOK_FORMAT, R.string.format, false));
         mFields.add(new FieldInfo(UniqueId.KEY_BOOK_GENRE, R.string.genre, false));
-        mFields.add(new FieldInfo(UniqueId.KEY_BOOK_LANGUAGE, R.string.language, false));
+        mFields.add(new FieldInfo(UniqueId.KEY_BOOK_LANGUAGE, R.string.lbl_language, false));
 
         mFields.add(new FieldInfo(UniqueId.KEY_ANTHOLOGY_BITMASK, R.string.anthology, false));
         mFields.add(new FieldInfo(UniqueId.KEY_LOAN_LOANED_TO, R.string.loan, false));
@@ -147,6 +148,14 @@ public class FieldVisibilityActivity extends BaseActivity {
 
             parent.addView(layout);
         }
+    }
+
+    @Override
+    @CallSuper
+    protected void setActivityResult() {
+        setResult(Activity.RESULT_OK); /* 2f885b11-27f2-40d7-8c8b-fcb4d95a4151 */
+
+        super.setActivityResult();
     }
 
     private static class FieldInfo {

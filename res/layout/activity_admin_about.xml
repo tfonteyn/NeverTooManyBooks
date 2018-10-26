@@ -62,7 +62,7 @@
             <TextView
                 android:id="@+id/website"
                 style="@style/link_url"
-                android:text="@string/website" />
+                android:text="@string/url_website" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -75,7 +75,7 @@
             <TextView
                 android:id="@+id/sourcecode"
                 style="@style/link_url"
-                android:text="@string/sourcecode" />
+                android:text="@string/url_sourcecode" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -88,12 +88,12 @@
             <TextView
                 android:id="@+id/contact1"
                 style="@style/link_url"
-                android:text="@string/contact1" />
+                android:text="@string/email_contact1" />
 
             <TextView
                 android:id="@+id/contact2"
                 style="@style/link_url"
-                android:text="@string/contact2" />
+                android:text="@string/email_contact2" />
 
             <TextView
                 android:layout_width="match_parent"

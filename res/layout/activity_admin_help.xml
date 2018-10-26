@@ -39,7 +39,7 @@
             <TextView
                 android:id="@+id/help_page"
                 style="@style/link_url"
-                android:text="@string/help_page" />
+                android:text="@string/url_help" />
 
             <TextView
                 android:layout_width="match_parent"

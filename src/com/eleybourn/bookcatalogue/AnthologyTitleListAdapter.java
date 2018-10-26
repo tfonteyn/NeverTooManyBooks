@@ -30,16 +30,16 @@ public class AnthologyTitleListAdapter extends SimpleListAdapter<AnthologyTitle>
     protected void onSetupView(@NonNull final View convertView,
                                @NonNull final AnthologyTitle item) {
 
-        // always
         TextView vTitle = convertView.findViewById(R.id.title);
         vTitle.setText(item.getTitle());
 
+        // optional
         TextView vAuthor = convertView.findViewById(R.id.author);
         if (vAuthor != null) {
             vAuthor.setText(item.getAuthor().getDisplayName());
         }
 
-        // maybe not there
+        // optional
         TextView vYear = convertView.findViewById(R.id.year);
         if (vYear != null) {
             String year = item.getFirstPublication();
@@ -61,5 +61,9 @@ public class AnthologyTitleListAdapter extends SimpleListAdapter<AnthologyTitle>
     @Override
     protected void onRowClick(@NonNull final View target, @NonNull final AnthologyTitle item, final int position) {
         //TODO: navigate to new Activity where we show the Anthology title + a list of all books it appears in
+    }
+
+    public class Holder {
+
     }
 }

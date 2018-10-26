@@ -10,23 +10,21 @@
     <!-- android:textIsSelectable="false" because we want to be able to click on the row -->
     <TextView
         android:id="@+id/title"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:ellipsize="marquee"
-        android:gravity="start"
-        android:paddingStart="@dimen/padding_border"
-        android:paddingEnd="@dimen/padding_border"
-        android:singleLine="true"
+        android:layout_weight="9"
         android:textIsSelectable="false"
         android:textSize="16sp"
-        tools:text="Story title" />
+        tools:text="Obscure Life and Hard Times of Kilgore Trout: A Skirmish in Biography, The" />
 
     <TextView
         android:id="@+id/year"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:textIsSelectable="false"
+        android:layout_weight="1"
+        android:minEms="6"
         android:textSize="12sp"
-        tools:text="(1960)" />
+        tools:text="(1971)" />
 
 </LinearLayout>

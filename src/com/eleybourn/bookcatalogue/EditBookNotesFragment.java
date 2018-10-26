@@ -37,8 +37,8 @@ import com.eleybourn.bookcatalogue.Fields.FieldFormatter;
 import com.eleybourn.bookcatalogue.datamanager.validators.ValidatorException;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
-import com.eleybourn.bookcatalogue.dialogs.PartialDatePickerFragment;
-import com.eleybourn.bookcatalogue.dialogs.PartialDatePickerFragment.OnPartialDatePickerListener;
+import com.eleybourn.bookcatalogue.dialogs.PartialDatePickerDialogFragment;
+import com.eleybourn.bookcatalogue.dialogs.PartialDatePickerDialogFragment.OnPartialDatePickerResultListener;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
@@ -49,7 +49,7 @@ import java.util.List;
 /**
  * This class is called by {@link EditBookActivity} and displays the Notes Tab
  */
-public class EditBookNotesFragment extends BookAbstractFragment implements OnPartialDatePickerListener {
+public class EditBookNotesFragment extends BookAbstractFragment implements OnPartialDatePickerResultListener {
 
     /** Lists in database so far, we cache them for performance */
     private List<String> mLocations;
@@ -148,7 +148,7 @@ public class EditBookNotesFragment extends BookAbstractFragment implements OnPar
         field = mFields.add(R.id.read_start, UniqueId.KEY_BOOK_READ_START, null, dateFormatter);
         field.getView().setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                PartialDatePickerFragment frag = PartialDatePickerFragment.newInstance()
+                PartialDatePickerDialogFragment frag = PartialDatePickerDialogFragment.newInstance()
                         .setTitle(R.string.read_start)
                         .setDialogId(R.id.read_start); // Set to the destination field ID
                 try {
@@ -164,7 +164,7 @@ public class EditBookNotesFragment extends BookAbstractFragment implements OnPar
         field = mFields.add(R.id.read_end, UniqueId.KEY_BOOK_READ_END, null, dateFormatter);
         field.getView().setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                PartialDatePickerFragment frag = PartialDatePickerFragment.newInstance()
+                PartialDatePickerDialogFragment frag = PartialDatePickerDialogFragment.newInstance()
                         .setTitle(R.string.read_end)
                         .setDialogId(R.id.read_end); // Set to the destination field ID
                 try {
@@ -217,7 +217,7 @@ public class EditBookNotesFragment extends BookAbstractFragment implements OnPar
      */
     @Override
     public void onPartialDatePickerSet(final int dialogId,
-                                       @NonNull final PartialDatePickerFragment dialog,
+                                       @NonNull final PartialDatePickerDialogFragment dialog,
                                        @Nullable final Integer year,
                                        @Nullable final Integer month,
                                        @Nullable final Integer day) {
@@ -231,21 +231,21 @@ public class EditBookNotesFragment extends BookAbstractFragment implements OnPar
      * Dismiss it.
      */
     @Override
-    public void onPartialDatePickerCancel(final int dialogId, @NonNull final PartialDatePickerFragment dialog) {
+    public void onPartialDatePickerCancel(final int dialogId, @NonNull final PartialDatePickerDialogFragment dialog) {
         dialog.dismiss();
     }
 
     @Override
     @CallSuper
     public void onPause() {
-        mFields.getAllInto(getBook());
+        mFields.putAllInto(getBook());
         super.onPause();
     }
 
     @Override
     @CallSuper
-    protected void onLoadBookDetails(@NonNull final Book book, final boolean setAllDone) {
-        super.onLoadBookDetails(book, setAllDone);
+    protected void onLoadBookDetails(@NonNull final Book book, final boolean setAllFrom) {
+        super.onLoadBookDetails(book, setAllFrom);
 
         // Restore default visibility and hide unused/unwanted and empty fields
         showHideFields(false);

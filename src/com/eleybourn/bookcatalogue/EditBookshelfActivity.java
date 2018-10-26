@@ -32,6 +32,7 @@ import android.widget.EditText;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.debug.Tracker;
 
 /**
  * Activity where we can edit a Bookshelf (its name)
@@ -61,23 +62,23 @@ public class EditBookshelfActivity extends BaseActivity {
             super.onCreate(savedInstanceState);
             this.setTitle(R.string.title_edit_bs);
 
-            mDb = new CatalogueDBAdapter(this);
-            mDb.open();
+            mDb = new CatalogueDBAdapter(this)
+                    .open();
 
-            mRowId = getId(savedInstanceState, getIntent().getExtras());
+            mRowId = getLongFromBundles(UniqueId.KEY_ID, savedInstanceState, getIntent().getExtras());
 
             mConfirmButton = findViewById(R.id.confirm);
             mConfirmButton.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View view) {
-                    saveState();
-                    setResult(Activity.RESULT_OK);
+                    insertOrUpdateBookshelf();
+                    setResult(Activity.RESULT_OK); /* ed5e0eb7-6440-4e67-a253-41326bd5c8f4, eabd012d-e5db-4c3b-ad65-876ed04b8eca */
                     finish();
                 }
             });
 
             findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
                 public void onClick(View view) {
-                    setResult(Activity.RESULT_CANCELED);
+                    setResult(Activity.RESULT_CANCELED); /* ed5e0eb7-6440-4e67-a253-41326bd5c8f4, eabd012d-e5db-4c3b-ad65-876ed04b8eca */
                     finish();
                 }
             });
@@ -93,9 +94,9 @@ public class EditBookshelfActivity extends BaseActivity {
     private void populateFields() {
         if (mRowId > 0) {
             mBookshelfText.setText(mDb.getBookshelfName(mRowId));
-            mConfirmButton.setText(R.string.save);
+            mConfirmButton.setText(R.string.btn_confirm_save);
         } else {
-            mConfirmButton.setText(R.string.add);
+            mConfirmButton.setText(R.string.btn_confirm_add);
         }
     }
 
@@ -113,7 +114,7 @@ public class EditBookshelfActivity extends BaseActivity {
         populateFields();
     }
 
-    private void saveState() {
+    private void insertOrUpdateBookshelf() {
         String bookshelf = mBookshelfText.getText().toString().trim();
         if (mRowId == 0) {
             long id = mDb.insertBookshelf(bookshelf);
@@ -130,7 +131,6 @@ public class EditBookshelfActivity extends BaseActivity {
     protected void onDestroy() {
         if (mDb != null) {
             mDb.close();
-            mDb = null;
         }
         super.onDestroy();
     }

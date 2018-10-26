@@ -60,7 +60,7 @@ public class Help extends BaseActivity {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(Intent.ACTION_VIEW,
-                            Uri.parse(getString(R.string.help_page)));
+                            Uri.parse(getString(R.string.url_help)));
                     startActivity(intent);
                 }
             });
@@ -69,7 +69,7 @@ public class Help extends BaseActivity {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(Intent.ACTION_VIEW,
-                            Uri.parse(getString(R.string.help_page)));
+                            Uri.parse(getString(R.string.url_help)));
                     startActivity(intent);
                 }
             });

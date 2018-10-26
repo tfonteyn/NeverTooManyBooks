@@ -544,11 +544,11 @@ public abstract class ShowBookApiHandler extends ApiHandler {
         }
 
         if (mAuthors != null && mAuthors.size() > 0) {
-            mBookData.putString(UniqueId.BKEY_AUTHOR_DETAILS, ArrayUtils.getAuthorUtils().encodeList(mAuthors));
+            mBookData.putString(UniqueId.BKEY_AUTHOR_STRING_LIST, ArrayUtils.getAuthorUtils().encodeList(mAuthors));
         }
 
         if (mSeries != null && mSeries.size() > 0) {
-            mBookData.putString(UniqueId.BKEY_SERIES_DETAILS, ArrayUtils.getSeriesUtils().encodeList(mSeries));
+            mBookData.putString(UniqueId.BKEY_SERIES_STRING_LIST, ArrayUtils.getSeriesUtils().encodeList(mSeries));
         }
 
         if (mShelves != null && mShelves.size() > 0) {

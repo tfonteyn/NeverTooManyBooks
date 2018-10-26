@@ -23,6 +23,8 @@ package com.eleybourn.bookcatalogue.tasks;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 
+import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivityWithTasks;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.messaging.MessageSwitch;
@@ -42,6 +44,11 @@ import com.eleybourn.bookcatalogue.messaging.MessageSwitch;
  * {@link ManagedTask}
  * Background task that is managed by TaskManager and uses TaskManager to do all display activities.
  *
+ *
+ * {@link TaskController}
+ * Ask the {@link TaskMessageSwitch} for the controller. The controller gives access to the sender.
+ * via its {@link TaskController#getTask()} task and can {@link TaskController#requestAbort()}
+ *
  * @author Philip Warner
  */
 abstract public class ManagedTask extends Thread {
@@ -54,15 +61,16 @@ abstract public class ManagedTask extends Thread {
     private final long mMessageSenderId;
     /** Options indicating the main runTask method has completed. Set in thread run */
     private boolean mFinished = false;
-    /** Indicates the user has requested a cancel. Up to subclass to decide what to do. */
+    /** Indicates the user has requested a onCancel. Up to the subclass to decide what to do. */
     private boolean mCancelFlg = false;
 
     /**
      * Constructor.
      *
+     * @param name    of this task(thread)
      * @param manager Associated task manager
      */
-    protected ManagedTask(@NonNull final TaskManager manager) {
+    protected ManagedTask(@NonNull final String name, @NonNull final TaskManager manager) {
         /* Controller instance for this specific task */
         TaskController controller = new TaskController() {
             @Override
@@ -76,6 +84,9 @@ abstract public class ManagedTask extends Thread {
                 return ManagedTask.this;
             }
         };
+
+        // Set the thread name to something helpful.
+        setName(name);
 
         mMessageSenderId = mMessageSwitch.createSender(controller);
         // Save the stuff for later
@@ -96,7 +107,8 @@ abstract public class ManagedTask extends Thread {
         //do nothing
     }
 
-    /** Called to do the main thread work.
+    /**
+     * Called to do the main thread work.
      * Can use {@link #doProgress} and {@link #showBriefMessage} to display messages.
      */
     abstract protected void runTask() throws InterruptedException;
@@ -146,6 +158,7 @@ abstract public class ManagedTask extends Thread {
         try {
             runTask();
         } catch (InterruptedException e) {
+            Logger.info(ManagedTask.this, "" + this + " was interrupted");
             mCancelFlg = true;
         } catch (Exception e) {
             Logger.error(e);
@@ -156,7 +169,8 @@ abstract public class ManagedTask extends Thread {
         onTaskFinish();
 
         // Queue the 'onTaskFinished' message; this should also inform the TaskManager
-        mMessageSwitch.send(mMessageSenderId, new MessageSwitch.Message<TaskListener>() {
+        mMessageSwitch.send(mMessageSenderId,
+                new MessageSwitch.Message<TaskListener>() {
                     @Override
                     public boolean deliver(@NonNull final TaskListener listener) {
                         listener.onTaskFinished(ManagedTask.this);
@@ -174,6 +188,9 @@ abstract public class ManagedTask extends Thread {
      * Mark this thread as 'cancelled'
      */
     protected void cancelTask() {
+        if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
+            Logger.info(this, " cancelTask");
+        }
         mCancelFlg = true;
         this.interrupt();
     }
@@ -202,7 +219,7 @@ abstract public class ManagedTask extends Thread {
      * @author Philip Warner
      */
     public interface TaskListener {
-        void onTaskFinished(@NonNull final ManagedTask t);
+        void onTaskFinished(@NonNull final ManagedTask task);
     }
 
     /**

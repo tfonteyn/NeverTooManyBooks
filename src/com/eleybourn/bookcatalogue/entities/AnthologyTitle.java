@@ -281,6 +281,7 @@ public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
                     return no;
                 case 0x01:
                     return singleAuthor;
+                case 0x10: // cover legacy mistakes?
                 case 0x11:
                     return multipleAuthors;
                 default:

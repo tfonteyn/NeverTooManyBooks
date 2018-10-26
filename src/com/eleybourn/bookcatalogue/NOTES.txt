@@ -21,14 +21,15 @@ TOMF ENHANCE database using 'Upper()' when sorting (performance?). Replace by an
   * pro: sorting faster
   * con: more space
 
-TOMF ENHANCE finish FTS searching {@link com.eleybourn.bookcatalogue.searches.SearchCatalogue}
+TOMF ENHANCE finish FTS searching {@link com.eleybourn.bookcatalogue.searches.SearchLocalActivity}
  * and {@link #searchFts(String, String, String)}
  * - what is android 'local' search ? ->research
 
-TOMF ENHANCE instead of string encoding of lists, use JSON ? or at the very least ArrayList<String> Bookshelves in particular!
+TOMF ENHANCE instead of string encoding of lists, use JSON ? or at the very least ArrayList<String>
  * pro: easier / (sort of) foolproof / FLEXIBLE!
  * con: fools / fields will be bigger due to json labels
  * => or... do a specific JSON Exporter / Importer as an alternative to the Csv model (con: not easy to get 'others' to provide import files)
 
+TOMF ENHANCE: should Activities all become Fragments ? Or whatever is new ?
 
 

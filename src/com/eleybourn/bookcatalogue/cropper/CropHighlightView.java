@@ -190,7 +190,7 @@ class CropHighlightView {
         }
     }
 
-    // Determines which edges are hit by touching at (x, y).
+    /** Determines which edges are hit by touching at (x, y). */
     int getHit(final float x, final float y) {
         Rect r = computeLayout();
         final float hysteresis = 20F;
@@ -359,14 +359,14 @@ class CropHighlightView {
         mContext.invalidate();
     }
 
-    // Returns the cropping rectangle in image space.
+    /** Returns the cropping rectangle in image space. */
     @NonNull
     Rect getCropRect() {
         return new Rect((int) mCropRect.left, (int) mCropRect.top,
                 (int) mCropRect.right, (int) mCropRect.bottom);
     }
 
-    // Maps the cropping rectangle from image space to screen space.
+    /** Maps the cropping rectangle from image space to screen space. */
     private Rect computeLayout() {
         RectF r = new RectF(mCropRect.left, mCropRect.top, mCropRect.right,
                 mCropRect.bottom);

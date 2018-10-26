@@ -324,7 +324,7 @@ class ImportAllTask extends GenericTask {
         Book book = buildBundle(db, bookRowView, review);
 
         db.updateBook(bookRowView.getId(), book, CatalogueDBAdapter.BOOK_UPDATE_SKIP_PURGE_REFERENCES | CatalogueDBAdapter.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
-        //db.setGoodreadsSyncDate(rv.getId());
+        //db.setGoodreadsSyncDate(rv.getLongFromBundles());
     }
 
     /**
@@ -423,7 +423,7 @@ class ImportAllTask extends GenericTask {
                 authors.add(new Author(name));
             }
         }
-        book.setAuthorList(authors);
+        book.putAuthorList(authors);
 
         if (bookRowView == null) {
             // Use the GR added date for new books
@@ -467,32 +467,27 @@ class ImportAllTask extends GenericTask {
                 book.putString(UniqueId.KEY_TITLE, thisTitle.substring(0, details.startChar - 1));
 
                 Series.pruneSeriesList(allSeries);
-                book.setSeriesList(allSeries);
+                book.putSeriesList(allSeries);
             }
         }
 
-        // Process any bookshelves
+        /*
+         * Process any bookshelves
+         */
         if (review.containsKey(ListReviewsFieldNames.SHELVES)) {
             ArrayList<Bundle> shelves = review.getParcelableArrayList(ListReviewsFieldNames.SHELVES);
             if (shelves == null) {
                 Logger.error("shelves was null");
                 return book;
             }
-            StringBuilder shelfNames = null;
-            for (Bundle sb : shelves) {
-                String shelf = translateBookshelf(db, sb.getString(ListReviewsFieldNames.SHELF));
-                if (shelf != null && !shelf.isEmpty()) {
-                    shelf = ArrayUtils.encodeListItem(Bookshelf.SEPARATOR, shelf);
-                    if (shelfNames == null) {
-                        shelfNames = new StringBuilder(shelf);
-                    } else {
-                        shelfNames.append(Bookshelf.SEPARATOR).append(shelf);
-                    }
+            ArrayList<Bookshelf> bsList = new ArrayList<>();
+            for (Bundle shelfBundle : shelves) {
+                String bookshelfName = translateBookshelf(db, shelfBundle.getString(ListReviewsFieldNames.SHELF));
+                if (bookshelfName != null && !bookshelfName.isEmpty()) {
+                    bsList.add(new Bookshelf(bookshelfName));
                 }
             }
-            if (shelfNames != null && shelfNames.length() > 0) {
-                book.setBookshelfList(shelfNames.toString());
-            }
+            book.putBookshelfList(bsList);
         }
 
         // We need to set BOTH of these fields, otherwise the add/update method will set the

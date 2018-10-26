@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="new_in_502">
+		<![CDATA[
+			<p><b>New in 5.0.2</b>\n\n
+				* Hata düzeltmeleri\n\n
+			</p>
+		]]>
+    </string>
+    <string name="new_in_503">
+		<![CDATA[
+			<p><b>New in 5.0.3</b>\n\n
+				* Hata düzeltmeleri\n\n
+				* Fransızca çeviri güncellemeleri (Imkal)\n\n
+			</p>
+		]]>
+    </string>
+    <string name="new_in_504">
+		<![CDATA[
+			<p><b>5.0.4 sürümündeki yenilikler</b>\n\n
+				* Yeni alan: Dil\n\n
+				* Fransızca çeviri güncellemeleri (Imkal)\n\n
+				* Hata düzeltmeleri\n\n
+			</p>
+		]]>
+    </string>
+    <string name="new_in_505">
+		<![CDATA[
+			<p><b>5.0.5 sürümündeki yenilikler</b>\n\n
+				* "Eklenen günay" dizelgesi şimdi ters sırada diziliyor \n\n
+				* Fransızca çeviri güncellemeleri (Imkal)\n\n
+				* Hata düzeltmeleri\n\n
+			</p>
+		]]>
+    </string>
+    <string name="new_in_508">
+		<![CDATA[
+			<p><b>5.0.8 sürümündeki yenilikler</b>\n\n
+				* Almanca çeviri güncellendi (Robert Wetzlmayr)\n\n
+			</p>
+		]]>
+    </string>
+    <string name="new_in_510">
+   <![CDATA[
+   <p><b>5.1.0 sürümündeki yenilikler</b>\n\n
+   * İtalyanca çeviri (Eugenio Davolio)\n\n
+   * İspanyolca çeviri (José M. Galdo)\n\n
+   * Türkçe çeviri (Emir Sarı)\n\n
+   * Yalnıca yeni eklenen/güncellenen kitapları arşivleme ve kapak görsellerini (veya kitapları) içerme seçeneği\n\n
+   * Yüksek belirginlikli ekranlar için daha iyi ufak resim boyutu\n\n
+   * Kitapları Amazon\'daki yazarlara/dizilere göre gösterme desteği\n\n
+   * Diğer ufak hata düzeltmeleri\n\n
+   </p>
+   ]]>
+   </string>
+    <string name="new_in_511">
+   <![CDATA[
+   <p><b>5.1.1 sürümündeki yenilikler</b>\n\n
+   * Hata düzeltmeleri\n\n
+   * Yeni biçem: Son güncelleme günayına göre öbekle\n\n
+   * Yeni biçem: Beğeniye göre öbekle\n\n
+   * Yeni biçem: Kitap rafı adına göre öbekle\n\n
+   </p>
+   ]]>
+   </string>
+
+</resources>

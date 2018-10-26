@@ -131,7 +131,7 @@ public class BooklistRowView extends BookRowViewBase {
      * @param level Level of the row group
      * @param s     Source value
      *
-     * @return Formatted string, or original string on any failure
+     * @return Formatted string, or original string on any onCancel
      */
     @Nullable
     private String formatRowGroup(final int level, @Nullable final String s) {

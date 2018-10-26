@@ -23,8 +23,6 @@ public class AdminHostsFragment extends Fragment {
 
     private boolean isCreated;
 
-
-    @Nullable
     @Override
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,

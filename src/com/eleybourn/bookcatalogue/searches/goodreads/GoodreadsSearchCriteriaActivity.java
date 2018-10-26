@@ -36,6 +36,7 @@ import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
 import com.eleybourn.bookcatalogue.database.cursors.BooksCursor;
+import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 
 /**
@@ -47,7 +48,7 @@ import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
  *
  * @author Philip Warner
  */
-public class GoodreadsSearchCriteria extends BaseActivity {
+public class GoodreadsSearchCriteriaActivity extends BaseActivity {
 
     public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_GOODREADS_SEARCH_CRITERIA;
     public static final String REQUEST_EXTRA_BOOK_ID = "bookId";
@@ -161,16 +162,19 @@ public class GoodreadsSearchCriteria extends BaseActivity {
             return;
         }
 
-        Intent i = new Intent(this, GoodreadsSearchResults.class);
-        i.putExtra(GoodreadsSearchResults.BKEY_SEARCH_CRITERIA, criteria);
+        Intent i = new Intent(this, GoodreadsSearchResultsActivity.class);
+        i.putExtra(GoodreadsSearchResultsActivity.BKEY_SEARCH_CRITERIA, criteria);
         this.startActivity(i);
     }
 
     @Override
     @CallSuper
     public void onDestroy() {
-        super.onDestroy();
-        if (mDb != null)
+        Tracker.enterOnDestroy(this);
+        if (mDb != null) {
             mDb.close();
+        }
+        super.onDestroy();
+        Tracker.exitOnDestroy(this);
     }
 }

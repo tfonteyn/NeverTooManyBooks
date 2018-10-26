@@ -53,15 +53,15 @@ public class PreferencesActivity extends PreferencesBaseActivity {
     /** Camera image rotation property values */
     private static final ItemEntries<Integer> mRotationListItems = new ItemEntries<Integer>()
             .add(null, R.string.use_default_setting)
-            .add(0, android.R.string.no)
+            .add(0, R.string.no)
             .add(90, R.string.menu_rotate_thumb_cw)
             .add(-90, R.string.menu_rotate_thumb_ccw)
             .add(180, R.string.menu_rotate_thumb_180);
 
     /** List of supported BriefMessage implementation */
     private static final ItemEntries<Integer> mBriefMessageItems = new ItemEntries<Integer>()
-            .add(0, R.string.bm_toast)
-            .add(1, R.string.bm_snackbar);
+            .add(0, R.string.user_interface_brief_messages_toast)
+            .add(1, R.string.user_interface_brief_messages_snackbar);
 
     /** List of supported locales */
     private static final ItemEntries<String> mLocalesListItems = getLocalesListItems();
@@ -71,9 +71,9 @@ public class PreferencesActivity extends PreferencesBaseActivity {
     /** Preferred Scanner property values */
     private static final ItemEntries<Integer> mScannerListItems = new ItemEntries<Integer>()
             .add(null, R.string.use_default_setting)
-            .add(ScannerManager.SCANNER_ZXING_COMPATIBLE, R.string.zxing_compatible_scanner)
-            .add(ScannerManager.SCANNER_ZXING, R.string.zxing_scanner)
-            .add(ScannerManager.SCANNER_PIC2SHOP, R.string.pic2shop_scanner);
+            .add(ScannerManager.SCANNER_ZXING_COMPATIBLE, R.string.scanning_preferred_scanner_zxing_compatible)
+            .add(ScannerManager.SCANNER_ZXING, R.string.scanning_preferred_scanner_zxing)
+            .add(ScannerManager.SCANNER_PIC2SHOP, R.string.scanning_preferred_scanner_pic2shop);
 
     /**
      * Build the complete list of all preferences
@@ -88,20 +88,20 @@ public class PreferencesActivity extends PreferencesBaseActivity {
              * is opened in read-only mode (editing through menu), else in edit mode.
              */
             .add(new BooleanProperty(BooksOnBookshelf.PREF_OPEN_BOOK_READ_ONLY,
-                    PropertyGroup.GRP_USER_INTERFACE, R.string.prefs_global_opening_book_mode)
+                    PropertyGroup.GRP_USER_INTERFACE, R.string.user_interface_open_book_read_only)
                     .setDefaultValue(true)
                     .setPreferenceKey(BooksOnBookshelf.PREF_OPEN_BOOK_READ_ONLY)
                     .setGlobal(true))
 
             .add(new StringListProperty(mLocalesListItems, BookCatalogueApp.PREF_APP_LOCALE,
-                    PropertyGroup.GRP_USER_INTERFACE, R.string.preferred_interface_language)
+                    PropertyGroup.GRP_USER_INTERFACE, R.string.user_interface_preferred_language)
                     .setPreferenceKey(BookCatalogueApp.PREF_APP_LOCALE)
                     .setGlobal(true)
                     .setWeight(200)
                     .setGroup(PropertyGroup.GRP_USER_INTERFACE))
 
             .add(new IntegerListProperty(mAppThemeItems, BookCatalogueApp.PREF_APP_THEME,
-                    PropertyGroup.GRP_USER_INTERFACE, R.string.preferred_theme)
+                    PropertyGroup.GRP_USER_INTERFACE, R.string.user_interface_theme)
                     .setDefaultValue(BookCatalogueApp.DEFAULT_THEME)
                     .setPreferenceKey(BookCatalogueApp.PREF_APP_THEME)
                     .setGlobal(true)
@@ -109,7 +109,7 @@ public class PreferencesActivity extends PreferencesBaseActivity {
                     .setGroup(PropertyGroup.GRP_USER_INTERFACE))
 
             .add(new IntegerListProperty(mBriefMessageItems, BookCatalogueApp.PREF_APP_BRIEF_MESSAGE,
-                    PropertyGroup.GRP_USER_INTERFACE, R.string.preferred_brief_message_tech)
+                    PropertyGroup.GRP_USER_INTERFACE, R.string.user_interface_brief_messages)
                     .setDefaultValue(0)
                     .setPreferenceKey(BookCatalogueApp.PREF_APP_BRIEF_MESSAGE)
                     .setGlobal(true)
@@ -128,14 +128,14 @@ public class PreferencesActivity extends PreferencesBaseActivity {
                     .setWeight(300))
 
             .add(new BooleanProperty(SoundManager.PREF_BEEP_IF_SCANNED_ISBN_VALID,
-                    PropertyGroup.GRP_SCANNER, R.string.beep_if_scanned_isbn_valid)
+                    PropertyGroup.GRP_SCANNER, R.string.scanning_beep_if_scanned_isbn_valid)
                     .setDefaultValue(false)
                     .setPreferenceKey(SoundManager.PREF_BEEP_IF_SCANNED_ISBN_VALID)
                     .setGlobal(true)
                     .setWeight(300))
 
             .add(new IntegerListProperty(mScannerListItems, ScannerManager.PREF_PREFERRED_SCANNER,
-                    PropertyGroup.GRP_SCANNER, R.string.preferred_scanner)
+                    PropertyGroup.GRP_SCANNER, R.string.scanning_preferred_scanner)
                     .setDefaultValue(ScannerManager.SCANNER_ZXING_COMPATIBLE)
                     .setPreferenceKey(ScannerManager.PREF_PREFERRED_SCANNER)
                     .setGlobal(true))
@@ -145,19 +145,19 @@ public class PreferencesActivity extends PreferencesBaseActivity {
              ******************************************************************************/
 
             .add(new BooleanProperty(BookAbstractFragmentWithCoverImage.PREF_CROP_FRAME_WHOLE_IMAGE,
-                    PropertyGroup.GRP_THUMBNAILS, R.string.default_crop_frame_is_whole_image)
+                    PropertyGroup.GRP_THUMBNAILS, R.string.thumbnails_default_crop_frame_is_whole_image)
                     .setDefaultValue(false)
                     .setPreferenceKey(BookAbstractFragmentWithCoverImage.PREF_CROP_FRAME_WHOLE_IMAGE)
                     .setGlobal(true))
 
             .add(new IntegerListProperty(mRotationListItems, BookAbstractFragmentWithCoverImage.PREF_AUTOROTATE_CAMERA_IMAGES,
-                    PropertyGroup.GRP_THUMBNAILS, R.string.auto_rotate_camera_images)
+                    PropertyGroup.GRP_THUMBNAILS, R.string.thumbnails_rotate_auto)
                     .setDefaultValue(PREF_AUTOROTATE_CAMERA_IMAGES_DEFAULT)
                     .setPreferenceKey(BookAbstractFragmentWithCoverImage.PREF_AUTOROTATE_CAMERA_IMAGES)
                     .setGlobal(true))
 
             .add(new BooleanProperty(BookAbstractFragmentWithCoverImage.PREF_USE_EXTERNAL_IMAGE_CROPPER,
-                    PropertyGroup.GRP_THUMBNAILS, R.string.use_external_image_cropper)
+                    PropertyGroup.GRP_THUMBNAILS, R.string.thumbnails_use_external_image_cropper)
                     .setDefaultValue(false)
                     .setPreferenceKey(BookAbstractFragmentWithCoverImage.PREF_USE_EXTERNAL_IMAGE_CROPPER)
                     .setGlobal(true));
@@ -202,7 +202,7 @@ public class PreferencesActivity extends PreferencesBaseActivity {
     private static ItemEntries<Integer> getThemeListItems() {
         ItemEntries<Integer> items = new ItemEntries<>();
 
-        String[] themeList = BookCatalogueApp.getResourceStringArray(R.array.supported_themes);
+        String[] themeList = BookCatalogueApp.getResourceStringArray(R.array.user_interface_theme_supported);
         for (int i = 0; i < themeList.length; i++) {
             items.add(i, R.string.single_string, themeList[i]);
         }

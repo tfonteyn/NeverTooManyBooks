@@ -35,7 +35,7 @@
                 android:id="@+id/goodreads_url"
                 style="@style/link_url"
                 android:gravity="center"
-                android:text="@string/goodreads_url" />
+                android:text="@string/url_goodreads" />
 
             <!-- BLURB 2 -->
 
@@ -73,7 +73,7 @@
                 android:layout_height="wrap_content"
                 android:paddingBottom="@dimen/padding_border_quad"
                 android:paddingTop="@dimen/padding_border_quad"
-                android:text="@string/goodreads_auth_blurb_part4"
+                android:text="@string/gr_auth_blurb_part4"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <Button

@@ -89,6 +89,17 @@ public class UpdateFromInternetThread extends ManagedTask {
     /** The (subset) of fields relevant to the current book */
     private UpdateFromInternetActivity.FieldUsages mCurrentBookFieldUsages;
 
+    /**
+     * Our class local {@link SearchManager.SearchListener}.
+     * This must be a class global. Don't make this local to the constructor.
+     */
+    @SuppressWarnings("FieldCanBeLocal")
+    private final SearchManager.SearchListener mSearchListener = new SearchManager.SearchListener() {
+        @Override
+        public boolean onSearchFinished(@NonNull final Bundle bookData, final boolean cancelled) {
+            return UpdateFromInternetThread.this.onSearchFinished(bookData, cancelled);
+        }
+    };
 
     /**
      * where clause to use in cursor, none by default, but
@@ -106,27 +117,13 @@ public class UpdateFromInternetThread extends ManagedTask {
     public UpdateFromInternetThread(@NonNull final TaskManager manager,
                                     @NonNull final UpdateFromInternetActivity.FieldUsages requestedFields,
                                     @NonNull final TaskListener listener) {
-        super(manager);
-        setName("UpdateFromInternetThread");
+        super("UpdateFromInternetThread", manager);
 
-        mDb = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
-        mDb.open();
+        mDb = new CatalogueDBAdapter(BookCatalogueApp.getAppContext())
+                .open();
 
         mRequestedFields = requestedFields;
-        SearchManager.SearchListener mSearchListener = new SearchManager.SearchListener() {
 
-            @Override
-            public boolean onSearchFinished(@NonNull final Bundle bookData, final boolean cancelled) {
-                return UpdateFromInternetThread.this.onSearchFinished(bookData, cancelled);
-            }
-
-            public String toString() {
-                return "created by " + UpdateFromInternetThread.this.getClass().getCanonicalName();
-            }
-        };
-        if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
-            Logger.info(this, "mSearchListener " + mSearchListener);
-        }
         mSearchManager = new SearchManager(mTaskManager, mSearchListener);
         mTaskManager.doProgress(BookCatalogueApp.getResourceString(R.string.starting_search));
         getMessageSwitch().addListener(getSenderId(), listener, false);
@@ -177,18 +174,20 @@ public class UpdateFromInternetThread extends ManagedTask {
 
     @Override
     public void runTask() throws InterruptedException {
-        int counter = 0;
-        /* Test write to the SDCard; abort if not writable */
+        int progressCounter = 0;
+        // Test write to the SDCard; abort if not writable
         if (StorageUtils.isWriteProtected()) {
-            mFinalMessage = getString(R.string.error_download_thumbnail_failed);
+            mFinalMessage = getString(R.string.error_storage_cannot_write);
             return;
         }
-        // had order: "b." + DatabaseDefinitions.DOM_ID ... why ? -> removed
-        try (Cursor books = mDb.fetchBooksWhere(mBookWhereClause, new String[]{}, "")) {
+        // the 'order by' makes sure we update the 'oldest' book to 'newest'
+        // So if we get interrupted, we can pick up the thread (arf...) again later.
+        try (Cursor books = mDb.fetchBooksWhere(mBookWhereClause, new String[]{},
+                DatabaseDefinitions.TBL_BOOKS.dot(DatabaseDefinitions.DOM_ID))) {
+
             mTaskManager.setMax(this, books.getCount());
             while (books.moveToNext() && !isCancelled()) {
-                // Increment the progress counter
-                counter++;
+                progressCounter++;
 
                 // Copy the fields from the cursor and build a complete set of data for this book.
                 // This only needs to include data that we can fetch (so, for example, bookshelves are ignored).
@@ -196,6 +195,7 @@ public class UpdateFromInternetThread extends ManagedTask {
                 for (int i = 0; i < books.getColumnCount(); i++) {
                     mOriginalBookData.putString(books.getColumnName(i), books.getString(i));
                 }
+
                 // Get the book ID
                 mCurrentBookId = Utils.getLongFromBundle(mOriginalBookData, UniqueId.KEY_ID);
                 // Get the book UUID
@@ -241,35 +241,32 @@ public class UpdateFromInternetThread extends ManagedTask {
                     }
                 }
 
-                mTaskManager.doProgress(this, null, counter);
+                mTaskManager.doProgress(this, null, progressCounter);
 
                 // Start searching if we need to, then wait...
                 if (wantSearch) {
                     // TODO: Allow user-selection of search sources specific for this similar to 'normal' search order preferences.
                     // Might be nice to select on the fly here ?
                     mSearchManager.search(author, title, isbn, tmpThumbWanted, SearchManager.SEARCH_ALL);
-                    // Wait for the search to complete; when the search has completed it uses class-level state
-                    // data when processing the results. It will signal this lock when it no longer needs any class
-                    // level state data (eg. mOriginalBookData).
-
-                    Logger.info(this, "10. locking mSearchLock");
+                    // Wait for the search to complete. When the search has completed
+                    // it uses class-level state data when processing the results.
+                    // It will call "mSearchDone.signal()"  when it no longer needs any
+                    // class level state data (eg. mOriginalBookData).
                     mSearchLock.lock();
-                    Logger.info(this, "11. locked mSearchLock");
                     try {
-                        Logger.info(this, "12. mSearchDone going to wait");
+                        Logger.info(this, "mSearchDone await");
                         mSearchDone.await();
-                        Logger.info(this, "13. mSearchDone done waiting");
+                        Logger.info(this, "mSearchDone done with await");
                     } finally {
                         mSearchLock.unlock();
-                        Logger.info(this, "14. unlocked mSearchLock");
                     }
                 }
             }
         } finally {
             // Empty/close the progress.
             mTaskManager.doProgress(null);
-            // Make the final message
-            mFinalMessage = String.format(getString(R.string.num_books_searched), "" + counter);
+            // Make the final message (brief message, not a Progress message)
+            mFinalMessage = String.format(getString(R.string.num_books_searched), "" + progressCounter);
             if (isCancelled()) {
                 mFinalMessage = String.format(BookCatalogueApp.getResourceString(R.string.cancelled_info), mFinalMessage);
                 Logger.info(this, " was cancelled");
@@ -360,7 +357,7 @@ public class UpdateFromInternetThread extends ManagedTask {
     @SuppressWarnings("SameReturnValue")
     private boolean onSearchFinished(@NonNull final Bundle newBookData, final boolean cancelled) {
         if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
-            Logger.info(this, " onSearchFinished (cancel = " + cancelled + ")");
+            Logger.info(this, " onSearchFinished");
         }
 
         // Set cancelled flag if the task was cancelled
@@ -375,18 +372,13 @@ public class UpdateFromInternetThread extends ManagedTask {
             processSearchResults(mCurrentBookId, mCurrentBookUuid, mCurrentBookFieldUsages, newBookData, mOriginalBookData);
         }
 
-        // Done! This need to go after processSearchResults() because doSearchDone() frees
+        // Done! This need to go after processSearchResults() because we will signal(free) the
         // main thread which may disconnect database connection if on last book.
-        doSearchDone();
-
-        return true;
-    }
-
-    /**
-     * Called to signal that the search is complete AND the class-level data has
-     * been cached by the processing thread, so that a new search can begin.
-     */
-    private void doSearchDone() {
+//        if (BuildConfig.DEBUG) {
+//            Logger.info(this, "onSearchFinished, Let another search begin, signal mSearchDone");
+//        }
+        // The search is complete AND the class-level data has
+        // been cached by the processing thread, so that a new search can begin.
         // Let another search begin
         mSearchLock.lock();
         try {
@@ -394,7 +386,10 @@ public class UpdateFromInternetThread extends ManagedTask {
         } finally {
             mSearchLock.unlock();
         }
+
+        return true;
     }
+
     /**
      * Passed the old & new data, construct the update data and perform the update.
      *
@@ -407,6 +402,9 @@ public class UpdateFromInternetThread extends ManagedTask {
                                       @NonNull final UpdateFromInternetActivity.FieldUsages requestedFields,
                                       @NonNull final Bundle newBookData,
                                       @NonNull final Bundle originalBookData) {
+        if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
+            Logger.info(this, "processSearchResults bookId=" + bookId);
+        }
         // First, filter the data to remove keys we don't care about
         List<String> toRemove = new ArrayList<>();
         for (String key : newBookData.keySet()) {
@@ -503,7 +501,7 @@ public class UpdateFromInternetThread extends ManagedTask {
 
         // Update
         if (!newBookData.isEmpty()) {
-            mDb.updateBook(bookId, new Book(newBookData), 0);
+            mDb.updateBook(bookId, new Book(bookId, newBookData), 0);
         }
 
     }
@@ -514,8 +512,8 @@ public class UpdateFromInternetThread extends ManagedTask {
     private void cleanup() {
         if (mDb != null) {
             mDb.close();
-            mDb = null;
         }
+        mDb = null;
     }
 
     @Override

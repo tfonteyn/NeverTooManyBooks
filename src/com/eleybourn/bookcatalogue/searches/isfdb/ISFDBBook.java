@@ -180,7 +180,7 @@ public class ISFDBBook extends AbstractBase {
                     Elements as = li.select("a");
                     if (as != null) {
                         for (Element a : as) {
-                            ArrayUtils.addOrAppend(bookData, UniqueId.BKEY_AUTHOR_DETAILS, a.text());
+                            ArrayUtils.addOrAppend(bookData, UniqueId.BKEY_AUTHOR_STRING_LIST, a.text());
                             ArrayUtils.addOrAppend(bookData, ISFDB_AUTHOR_ID, Long.toString(stripNumber(a.attr("href"))));
                         }
                     }
@@ -214,7 +214,7 @@ public class ISFDBBook extends AbstractBase {
                     Elements as = li.select("a");
                     if (as != null) {
                         for (Element a : as) {
-                            ArrayUtils.addOrAppend(bookData, UniqueId.BKEY_SERIES_DETAILS, a.text());
+                            ArrayUtils.addOrAppend(bookData, UniqueId.BKEY_SERIES_STRING_LIST, a.text());
                             ArrayUtils.addOrAppend(bookData, ISFDB_SERIES_ID, Long.toString(stripNumber(a.attr("href"))));
                         }
                     }
@@ -256,7 +256,7 @@ public class ISFDBBook extends AbstractBase {
 
                     // Cover artist, handle as author
                     Node node_a = li.childNode(4);
-                    ArrayUtils.addOrAppend(bookData, UniqueId.BKEY_AUTHOR_DETAILS, node_a.childNode(0).toString().trim());
+                    ArrayUtils.addOrAppend(bookData, UniqueId.BKEY_AUTHOR_STRING_LIST, node_a.childNode(0).toString().trim());
                     ArrayUtils.addOrAppend(bookData, ISFDB_BOOK_COVER_ARTIST_ID, Long.toString(stripNumber(node_a.attr("href"))));
 
                 } else if ("Notes:".equalsIgnoreCase(fieldName)) {
@@ -268,7 +268,7 @@ public class ISFDBBook extends AbstractBase {
                     Elements as = li.select("a");
                     if (as != null) {
                         for (Element a : as) {
-                            ArrayUtils.addOrAppend(bookData, UniqueId.BKEY_AUTHOR_DETAILS, a.text());
+                            ArrayUtils.addOrAppend(bookData, UniqueId.BKEY_AUTHOR_STRING_LIST, a.text());
                             ArrayUtils.addOrAppend(bookData, ISFDB_EDITORS_ID, Long.toString(stripNumber(a.attr("href"))));
                         }
                     }
@@ -315,7 +315,7 @@ public class ISFDBBook extends AbstractBase {
 
         // another gamble for the series "name (nr)"
         if (mSeries != null) {
-            ArrayUtils.addOrAppend(bookData, UniqueId.BKEY_SERIES_DETAILS, mSeries);
+            ArrayUtils.addOrAppend(bookData, UniqueId.BKEY_SERIES_STRING_LIST, mSeries);
         }
 
         // optional fetch of the cover.
@@ -451,8 +451,6 @@ public class ISFDBBook extends AbstractBase {
                     author = new Author(cleanUpName(a.text()));
 
                 } else if (mSeries == null && href.contains("pe.cgi")) {
-                    @SuppressWarnings("UnusedAssignment")
-                    long tm0 = System.currentTimeMillis();
                     mSeries = a.text();
                     // check for the number; series don't always have a number
                     int start = liAsString.indexOf("[");
@@ -467,15 +465,12 @@ public class ISFDBBook extends AbstractBase {
                             mSeries += " (" + data[1] + ")";
                         }
                     }
-                    if (BuildConfig.DEBUG) {
-                        Logger.info(this,"year from li: " + (System.currentTimeMillis() - tm0));
-                    }
                 }
             }
 
             // unlikely, but if so, then grab first book author
             if (author == null) {
-                author = ArrayUtils.getAuthorUtils().decodeList(bookData.getString(UniqueId.BKEY_AUTHOR_DETAILS),false).get(0);
+                author = ArrayUtils.getAuthorUtils().decodeList(bookData.getString(UniqueId.BKEY_AUTHOR_STRING_LIST),false).get(0);
                 Logger.info(this,"ISFDB search for content found no author for li=" + li);
             }
             // very unlikely
@@ -495,7 +490,7 @@ public class ISFDBBook extends AbstractBase {
             //TODO: bit annoying to use DETAILS string... as the SearchManager will reform it to ARRAY anyhow. So have SearchManager check on ARRAY first, and use that by preference
             AnthologyTitle anthologyTitle = new AnthologyTitle(author, title, year);
             results.add(anthologyTitle);
-            ArrayUtils.addOrAppend(bookData, UniqueId.BKEY_ANTHOLOGY_DETAILS, anthologyTitle.toString());
+            ArrayUtils.addOrAppend(bookData, UniqueId.BKEY_ANTHOLOGY_STRING_LIST, anthologyTitle.toString());
         }
 
         return results;

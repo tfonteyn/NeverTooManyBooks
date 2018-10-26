@@ -6,7 +6,7 @@
     android:padding="@dimen/padding_border_double">
 
     <view
-        android:id="@+id/image"
+        android:id="@+id/coverImage"
         class="com.eleybourn.bookcatalogue.cropper.CropImageView"
         android:layout_width="match_parent"
         android:layout_height="0dp"

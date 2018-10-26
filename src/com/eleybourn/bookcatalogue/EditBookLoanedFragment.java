@@ -72,8 +72,8 @@ public class EditBookLoanedFragment extends BookAbstractFragment {
     }
 
     /**
-     * Called when the activity is first created. This function will check whether a book has been loaned
-     * and display the appropriate page as required.
+     * Called when the activity is first created. This function will check whether
+     * a book has been loaned and display the appropriate page as required.
      *
      * @param savedInstanceState The saved bundle (from pausing). Can be null.
      */
@@ -159,7 +159,7 @@ public class EditBookLoanedFragment extends BookAbstractFragment {
             ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.READ_CONTACTS}, UniqueId.ACTIVITY_REQUEST_CODE_ANDROID_PERMISSIONS_REQUEST);
             return;
         }
-        ArrayList<String> contacts = getFriends();
+        ArrayList<String> contacts = getContacts();
         ArrayAdapter<String> adapter = new ArrayAdapter<>(requireActivity(), android.R.layout.simple_dropdown_item_1line, contacts);
         ((AutoCompleteTextView) mWho).setAdapter(adapter);
     }
@@ -171,7 +171,7 @@ public class EditBookLoanedFragment extends BookAbstractFragment {
      */
     @RequiresPermission(Manifest.permission.READ_CONTACTS)
     @NonNull
-    private ArrayList<String> getFriends() throws SecurityException{
+    private ArrayList<String> getContacts() throws SecurityException{
         ArrayList<String> list = new ArrayList<>();
         ContentResolver cr = requireActivity().getContentResolver();
         try (Cursor contactsCursor = cr.query(ContactsContract.Contacts.CONTENT_URI, PROJECTION, null, null, null)) {

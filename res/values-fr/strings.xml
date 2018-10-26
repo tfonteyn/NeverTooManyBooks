@@ -4,87 +4,10 @@
     <string name="lbl_contacts">Contact:</string>
     <string name="series_num">No</string>
 
-    <!-- Begin : What's New Section -->
-
-    <string name="new_in_42">
-<![CDATA[
-	<p><b>Nouveautés de la 4.2</b>\n\n
-		* Dates supportées jusqu\'en l\'an 0 ainsi que les dates partielles\n\n
-		* Les descriptions en HTML s\'affichent correctement lors du click sur « Modifier »\n\n
-		* Paramètre de sélection de l\'image entière lors du recadrage\n\n
-		* Paramètre de rotation automatique des photos\n\n
-		* Paramètre pour l\'utilisation d\'un outil de recadrage externe (expérimental)\n\n
-		* Nouvelles options dans le menu « Plus » \n\n
-		* Mise à jour de la version française (Imkal)\n\n
-		* Mise à jour de la version allemande (Robert Wetzlmayr)\n\n
-		* Mise à jour de la version russe (Nick Silin)\n\n
-		* Mise à jour des boutons « OK » et « Annuler » pour se conformer aux nouveaux standards Android\n\n
-		* Clavier complet disponible pour l\'introduction d\'ASINs\n\n
-		* Sauvegarde des cinq derniers fichiers d\'export\n\n
-		* Meilleure détection des changements lors de l\'édition d\'un livre\n\n
-		* Support d\'un choix plus large d\'explorateurs de la galerie et de fichiers\n\n
-		* Meilleure gestion des dates lors de l\'import/export/sync\n\n
-		* Correction de la gestion des doubles dans les titres d\'une anthologie\n\n
-		* Correction d\'un certain nombre de bogues\n\n
-		Tous nos remerciements à nos dévoués bêta-testeurs et nos traducteurs.\n\n
-		Tous les bugs et erreurs sont à imputer à Grunthos. Et envoyez-nous vos rapports de bugs.
-			</p>
-		]]>
-    </string>
-    <string name="new_in_421">
-<![CDATA[
-	<p><b>Nouveautés de la version 4.2.1</b>\n\n
-		* Correction de crash lors de l\'utilisation « Tout étendre »\n\n
-			</p>
-		]]>
-    </string>
-    <string name="new_in_422">
-<![CDATA[
-	<p><b>Nouveautés de la version 4.2.2</b>\n\n
-		* Correction : mosaïque de l\'image de fond pour certaines versions d\'Android\n\n
-		* Meilleure prise en charge des scanners de code barre incompatibles\n\n
-		* Plus important niveau de détails envoyés lors d\'un crash ou d\'une demande d\'aide\n\n
-		* Nettoyage des mises en page (Nick Silin)\n\n
-		* Correction de bogues\n\n
-			</p>
-		]]>
-    </string>
-    <string name="new_in_423">
-<![CDATA[
-	<p><b>Nouveautés de la version 4.2.3</b>\n\n
-		* Meilleure prise en charge des ISBN invalides lors de l\'envoi à Goodreads\n\n
-		* Autres corrections de bogues mineurs\n\n
-			</p>
-		]]>
-    </string>
-
-    <!-- This is pretty close to the expected feature list! It is a merge of 424 and 430... -->
-
-    <string name="new_in_500">
-<![CDATA[
-	<p><b>Nouveau dans la version 5.0.0</b>\n\n
-		* Ajout d\'une vue en mode lecture avec les détails du livre et support du défilement par « balayage »! (voir « Autres préférences ») (Nick Silin)\n\n
-		* Archivage et restauration du catalogue complet incluant les couvertures, les paramètres et les styles\n\n
-		* Interface améliorée avec une barre d\'action pour une utilisation plus facile sans bouton de menu\n\n
-		* Support du scanner pic2shop (meilleur pour les focus fixe, en faible lumière et les caméras frontal)\n\n
-		* Goodreads présent dans le menu prinicpal si la connection est validée\n\n
-		* Validation au plus tôt de la connection internet lors d\'un scan.\n\n
-		* Mise à jour de la version allemande (Robert Wetzlmayr)\n\n
-		* Mise à jour de la version française (Imkal & Djiko)\n\n
-		* Mise à jour de la version russe (Nick Silin)\n\n
-		* Adaptation interne en prévision de la version pour les tablettes\n\n
-		* Correction de bogues\n\n
-			</p>
-		]]>
-    </string>
-
-    <!-- End : What's New Section -->
-
-
     <!-- Begin : String Section -->
 
     <string name="bad_scanner">Votre scanner de code barre ne semble pas être compatible avec Book Catalogue. Nous vous recommandons d\'installer le scanner de code barre de Zxing et, s\'il est déjà installé, de le désinstaller puis le réinstaller.</string>
-    <string name="show_book_under_primary_thing">Sous %1$s principal(e) seulement</string>
+    <string name="books_with_multiple_show_book_under_primary_1s_only">Sous %1$s principal(e) seulement</string>
     <string name="retry_x_of_y_next_at_z">Essai %1$d de %2$d, suivant à %3$s</string>
     <string name="menu_insert">Ajouter un livre</string>
     <string name="menu_delete">Supprimer un livre</string>
@@ -97,19 +20,19 @@
     <string name="read">Avez-vous lu ce livre ?</string>
     <string name="series">Série</string>
     <string name="pages">Pages</string>
-    <string name="confirm_add">Ajouter le livre</string>
-    <string name="confirm_update">Mettre à jour</string>
+    <string name="btn_confirm_add_book">Ajouter le livre</string>
+    <string name="btn_confirm_update">Mettre à jour</string>
     <string name="no_books_yet">Il n\'y a pas de livre dans cette biblothèque. Veuillez en ajouter par le menu en bas de cet écran.</string>
     <string name="menu_expand_all">Tout étendre</string>
     <string name="menu_sort_by">Trier par</string>
     <string name="menu_collapse_all">Tout réduire</string>
     <string name="search">Recherche</string>
-    <string name="confirm_save">Sauvegarder le livre</string>
+    <string name="btn_confirm_save_book">Sauvegarder le livre</string>
     <string name="no_bookshelves_yet">Vous n\'avez pas encore créé de bibliothèque. Veuillez en ajouter une par le menu en bas de cet écran.</string>
     <string name="menu_insert_bs">Créer une bibliothèque</string>
-    <string name="confirm_add_bs">Ajouter une bibliothèque</string>
+    <string name="btn_confirm_add_bs">Ajouter une bibliothèque</string>
     <string name="menu_bookshelf">Gérer les bibliothèques</string>
-    <string name="confirm_save_bs">Sauvegarder la bibliothèque</string>
+    <string name="btn_confirm_save_bs">Sauvegarder la bibliothèque</string>
     <string name="menu_delete_bs">Supprimer la bibliothèque</string>
     <string name="delete_1st_bs">Impossible de supprimer la première bibliothèque</string>
     <string name="lbl_bookshelf">Bibliothèque : </string>
@@ -211,8 +134,8 @@
     <string name="error_file_must_contain_any_column">Le fichier doit contenir au moins une des colonnes suivantes : %s</string>
     <string name="error_column_is_blank">La colonne %1$s est vide à la ligne %2$s</string>
     <string name="error_columns_are_blank">Les colonnes %1$s sont toutes vides à la ligne %2$d</string>
-    <string name="save">Sauvegarder</string>
-    <string name="add">Ajouter</string>
+    <string name="btn_confirm_save">Sauvegarder</string>
+    <string name="btn_confirm_add">Ajouter</string>
     <string name="no_authors_yet">Il n\'y a pas d\'auteur pour ce livre. Veuillez en ajouter un en utilisant la zone de texte et le bouton en haut de cet écran.</string>
     <string name="no_series_yet">Il n\'y a pas de série pour ce livre. Vous pouvez en ajouter une en utilisant la zone de texte et le bouton en haut de cet écran.</string>
     <string name="cover_not_set">Couverture non définie</string>
@@ -238,8 +161,8 @@
     <string name="immediate_global_changes">Note : toutes les modifications sont prises en compte immédiatement et globalement.</string>
     <string name="menu_replace_thumb">Remplacer la vignette&#8230;</string>
     <string name="menu_thumb_alt_editions">À partir d\'autres éditions&#8230;</string>
-    <string name="author_required">Au moins un auteur doit être spécifié</string>
-    <string name="title_required">un titre non vide doit être spécifié</string>
+    <string name="required_author">Au moins un auteur doit être spécifié</string>
+    <string name="required_title">un titre non vide doit être spécifié</string>
     <string name="menu_delete_series">Supprimer une série&#8230;</string>
     <string name="menu_edit_author">Modifier l\'auteur&#8230;</string>
     <string name="menu_edit_series">Modifier les séries&#8230;</string>
@@ -330,7 +253,7 @@
     <string name="cleanup_old_events">Nettoyer les anciens événements</string>
     <string name="text_and_or_isbn">Texte et/ou ISBN</string>
     <string name="search_criteria">Critères de recherche</string>
-    <string name="add_manually">Ajouter manuellement</string>
+    <string name="menu_add_book_manually">Ajouter manuellement</string>
     <string name="search_internet">Chercher sur Internet</string>
     <string name="show_results">Montrer les résultats</string>
     <string name="rebuild_fts">Re-construire FTS (alpha uniquement !)</string>
@@ -373,8 +296,8 @@
     <string name="no_publisher">(Pas d\'éditeur)</string>
     <string name="no_author">(Pas d\'auteur)</string>
     <string name="no_date">(Pas de date)</string>
-    <string name="show_thumbnails">Montrer les miniatures</string>
-    <string name="prefer_large_thumbnails">Preférer les grandes miniatures</string>
+    <string name="thumbnails_show">Montrer les miniatures</string>
+    <string name="thumbnails_prefer_large">Preférer les grandes miniatures</string>
     <string name="sort_author_series">Auteur puis série</string>
     <string name="sort_series">Séries</string>
     <string name="sort_title_first_letter">Première lettre du titre</string>
@@ -397,9 +320,9 @@
     <string name="starting_up">Démarrage&#8230;</string>
     <string name="book_catalogue_startup">Démarrage de Book Catalogue</string>
     <string name="book_list_state">État de la liste de livres</string>
-    <string name="always_start_booklists_expanded">Toujours démarrer avec une liste de livre étendue</string>
-    <string name="always_start_booklists_collapsed">Toujours démarrer avec une liste de livre réduite</string>
-    <string name="remember_booklists_state">Conserver l\'état de la liste de livres</string>
+    <string name="book_list_state_always_start_expanded">Toujours démarrer avec une liste de livre étendue</string>
+    <string name="book_list_state_always_start_collapsed">Toujours démarrer avec une liste de livre réduite</string>
+    <string name="book_list_state_remember_state">Conserver l\'état de la liste de livres</string>
     <string name="searching_goodreads">Recherche en cours sur Goodreads</string>
     <string name="edit_book_list_styles">Modifier les styles de liste de livres</string>
     <string name="show_more_ellipsis">Montrer plus&#8230;</string>
@@ -441,9 +364,9 @@
     <string name="new_style">Nouveau style</string>
     <string name="select_based_on_read_status">Sélectionner en utilisant le statut « lu »</string>
     <string name="books_with_multiple_authors">Livres d\'auteurs multiples</string>
-    <string name="books_in_multiple_series">Livres appartenant à des séries multiples</string>
+    <string name="books_with_multiple_series">Livres appartenant à des séries multiples</string>
     <string name="use_default_setting">Utiliser les réglages par défaut</string>
-    <string name="show_book_under_each_thing">Sous chaque %1$s</string>
+    <string name="books_with_multiple_show_book_under_each_1s">Sous chaque %1$s</string>
     <string name="format_of_author_names">Format des noms d\'auteur</string>
     <string name="given_name_first_eg">Prénom en premier, par exemple « Bill Smith »</string>
     <string name="family_name_first_eg">Nom de famille en premier, par exemple « Smith, Bill »</string>
@@ -534,19 +457,19 @@
     <string name="edit_format_name">Renommer le format</string>
     <string name="name_can_not_be_blank">Le nom ne peut pas être vide</string>
     <string name="export_starting_ellipsis">Démarrage de l\'export&#8230;</string>
-    <string name="resizing_cover_thumbnails">Redimensionner les miniatures des couvertures</string>
-    <string name="resize_each_time">Redimensionner à chaque fois que nécessaire (moins d\'espace nécessaire, défilement des listes plus lent)</string>
-    <string name="cache_resized_thumbnails_for_later_use">Mettre les miniatures en cache (plus d\'espace nécessaire, défilement des listes plus rapide)</string>
-    <string name="generating_cover_thumbnails">Création des miniatures en cours</string>
-    <string name="use_background_thread">Utiliser un thread (défilement des listes plus rapide, affichage décalé des images)</string>
-    <string name="generate_immediately">Générer immédiatement (défilement des listes plus lent, affichage immédiat des images)</string>
-    <string name="sort_and_style_ellipsis">Tri &amp; style…</string>
+    <string name="thumbnails_resizing">Redimensionner les miniatures des couvertures</string>
+    <string name="thumbnails_resizing_each_time">Redimensionner à chaque fois que nécessaire (moins d\'espace nécessaire, défilement des listes plus lent)</string>
+    <string name="thumbnails_resizing_cache_for_later_use">Mettre les miniatures en cache (plus d\'espace nécessaire, défilement des listes plus rapide)</string>
+    <string name="thumbnails_generating_mode">Création des miniatures en cours</string>
+    <string name="thumbnails_generating_mode_use_background_thread">Utiliser un thread (défilement des listes plus rapide, affichage décalé des images)</string>
+    <string name="thumbnails_generating_mode_generate_immediately">Générer immédiatement (défilement des listes plus lent, affichage immédiat des images)</string>
+    <string name="menu_sort_and_style_ellipsis">Tri &amp; style…</string>
     <string name="disable_background_image">Désactiver l\'image d\'arrière plan</string>
     <string name="displaying_n_books_in_m_entries">Affichage de %1$d livres, parmi %2$d entrées</string>
     <string name="displaying_n_books">Affichage de %1$d livres</string>
     <string name="available">Disponible</string>
-    <string name="summary_details_in_header">Détails du résumé dans l\'en-tête</string>
-    <string name="hide_summary_details">Cacher les détails du résumé</string>
+    <string name="summary_details">Détails du résumé dans l\'en-tête</string>
+    <string name="summary_details_hide">Cacher les détails du résumé</string>
     <string name="x_is_not_a_valid_isbn">%1$s n\'est pas un ISBN valable</string>
     <string name="beep_if_scanned_isbn_invalid">Beeper si l\'ISBN scanné est invalide</string>
     <string name="no_image_found">Aucune image trouvée</string>
@@ -575,10 +498,10 @@
     <string name="invalid_isbn_x_specified_in_search">ISBN incorrect dans la recherche \'%1$s\'</string>
     <string name="if_day_is_specified_month_and_year_must_be">Si le jour est précisé, le mois et l\'année doivent l\'être aussi.</string>
     <string name="if_month_is_specified_year_must_be">Si le mois est précisé, l\'année doit l\'être aussi.</string>
-    <string name="use_external_image_cropper">Recadrage d\'image avec un outil externe (expérimental)</string>
-    <string name="auto_rotate_camera_images">Rotation automatique des photos</string>
+    <string name="thumbnails_use_external_image_cropper">Recadrage d\'image avec un outil externe (expérimental)</string>
+    <string name="thumbnails_rotate_auto">Rotation automatique des photos</string>
     <string name="hint_autorotate_camera_images">Si vous devez systematiquement tourner vos photos dans le même sens, envisagez d\'autoriser la rotation automatique en changeant vos paramètres.</string>
-    <string name="default_crop_frame_is_whole_image">Le cadre par défaut de l\'image à recadrer sera l\'image complète</string>
+    <string name="thumbnails_default_crop_frame_is_whole_image">Le cadre par défaut de l\'image à recadrer sera l\'image complète</string>
     <string name="cancelled">Annulé</string>
     <string name="import_complete">Import terminé</string>
     <string name="library_thing">LibraryThing</string>
@@ -588,13 +511,13 @@
     <!-- Heading for scanner-related preferences -->
     <string name="scanning">Scan en cours</string>
     <!-- Preference name, displayed in a preference activity -->
-    <string name="preferred_scanner">Scanner préféré</string>
+    <string name="scanning_preferred_scanner">Scanner préféré</string>
     <!-- Preference VALUE, displayed in a preference activity -->
-    <string name="zxing_compatible_scanner">Scanner compatible Zxing</string>
+    <string name="scanning_preferred_scanner_zxing_compatible">Scanner compatible Zxing</string>
     <!-- Preference VALUE, displayed in a preference activity -->
-    <string name="pic2shop_scanner">Scanner Pic2Shop</string>
+    <string name="scanning_preferred_scanner_pic2shop">Scanner Pic2Shop</string>
     <!-- Preference name, displayed in a preference activity -->
-    <string name="beep_if_scanned_isbn_valid">Beeper si l\'ISBN scanné est valide</string>
+    <string name="scanning_beep_if_scanned_isbn_valid">Beeper si l\'ISBN scanné est valide</string>
     <!-- Hint text displayed when user enters the book listw -->
     <string name="hint_view_only_book_details">Quand vous cliquez sur un élément de cette liste, vous pouvez choisir de d\'abord l\'ouvrir en mode lecture.
 		Voir le menu « autres préférences » pour adapter ce paramètre.</string>
@@ -609,7 +532,7 @@
     <!-- Button text on the Goodreads activity; only displayed after user has registered -->
     <string name="forget_credentials">Suppr. les données de connexion</string>
     <!-- Extra text displayed on the Goodreads activity when a user HAS registered -->
-    <string name="goodreads_auth_blurb_part4">Cette application est déjà autorisée auprès de Goodreads. Si vous souhaitez effacer
+    <string name="gr_auth_blurb_part4">Cette application est déjà autorisée auprès de Goodreads. Si vous souhaitez effacer
 		vos données de connexion, vos pouvez cliquer sur le bouton ci-dessous. Mais, il est aussi
 		important  d\'enlever cette autoristation sur le site de Goodreads également.
 		\n\nSupprimer les données de connection enlevera l\'option Goodreads du menu principal.</string>
@@ -636,7 +559,7 @@
     <!-- Displayed when a user tries to browse higher than the root directory, or if the parent is unable to be read -->
     <string name="no_parent_directory_found">Pas de répertoire parent disponible</string>
     <!-- For saving and opening exports or backups -->
-    <string name="open">Ouvrir</string>
+    <string name="btn_confirm_open">Ouvrir</string>
     <!-- Admin option to export books -->
     <string name="export_to_csv">Export vers un fichier CSV</string>
     <!-- Admin option to import books -->
@@ -648,9 +571,9 @@
     <!-- Displayed in Admin menu advanced options (top make a copy of the internal database on the sdcard -->
     <string name="copy_database">Copie de la base de données (support tech.)</string>
     <!-- Items in list of options for the 'Summary Details' preference. Determines what is show in book list header -->
-    <string name="show_book_count">Montrer le nombre de livres</string>
-    <string name="show_first_level_and_book_count">Montrer l\'entête de 1er niveau et le nombre de livres</string>
-    <string name="show_all_summary_details">Montrer tous les détails</string>
+    <string name="summary_details_show_book_count">Montrer le nombre de livres</string>
+    <string name="summary_details_show_first_level_and_book_count">Montrer l\'entête de 1er niveau et le nombre de livres</string>
+    <string name="summary_details_show_all">Montrer tous les détails</string>
     <!-- Displayed when an archive operation fails -->
     <string name="import_failed">Restauration échouée</string>
     <!-- Displayed when any write operation to the sd card fails -->
@@ -659,52 +582,13 @@
     <string name="please_check_sd_readable">Veuillez vérifier que votre carte SD est bien accessible.</string>
 
     <!-- Missed as they had no comment -->
-    <string name="prefs_global_opening_book_mode">Affichage en mode visualisation</string>
+    <string name="user_interface_open_book_read_only">Affichage en mode visualisation</string>
     <string name="book_details_readonly_publishing">Édition</string>
     <string name="book_details_readonly_by">par</string>
     <string name="book_details_readonly_loaned_to">En prêt chez %1$s</string>
 
-
-    <!-- End : String Section -->
-
-    <!-- Begin: Added/Updated in 5.0.2 -->
-
-    <string name="new_in_502">
-		<![CDATA[
-			<p><b>Nouveau dans la version 5.0.2</b>\n\n
-				* Correction de bogues\n\n
-			</p>
-		]]>
-    </string>
-
-    <!-- End: Added/Updated in 5.0.2 -->
-
-    <!-- Begin: Added/Updated in 5.0.3 -->
-
-    <string name="new_in_503">
-		<![CDATA[
-			<p><b>Nouveau dans la version 5.0.3</b>\n\n
-				* Correction de bogues\n\n
-				* Mise à jour de la version française (Imkal)\n\n
-			</p>
-		]]>
-    </string>
-
-    <!-- End: Added/Updated in 5.0.3 -->
-
-    <!-- Begin: Added/Updated in 5.0.4 -->
     <!-- Short Heading for 'Language' field in book details -->
-    <string name="language">Langue</string>
-    <string name="new_in_504">
-		<![CDATA[
-			<p><b>Nouveau dans la version 5.0.4</b>\n\n
-				* Nouveau champ: Langage\n\n
-				* Correction de bogues\n\n
-				* Mise à jour de la version française (Imkal)\n\n
-			</p>
-		]]>
-    </string>
-    <!-- End Added/Updated in 5.0.4 -->
+    <string name="lbl_language">Langue</string>
 
     <!-- Begin: Added/Updated in 5.0.5 -->
 
@@ -722,38 +606,8 @@
     <!-- Default Option listed under "booklist_generation" referring to a conservative way of generating bookslists -->
     <string name="automatically_use_recommended_option">Recommandations automatiques</string>
 
-    <string name="new_in_505">
-		<![CDATA[
-			<p><b>Nouveau dans la version 5.0.5</b>\n\n
-				* Tri décroissant sur la date d\'ajout \n\n
-				* Mise à jour de la version française (Imkal)\n\n
-				* Correction de bogues\n\n
-			</p>
-		]]>
-    </string>
+
     <!-- End Added/Updated in 5.0.5 -->
-
-    <!-- Begin: Added/Updated in 5.0.8 -->
-    <string name="new_in_508">
-		<![CDATA[
-			<p><b>Nouveau dans la version 5.0.8</b>\n\n
-				* Mise à jour de la version allemande (Robert Wetzlmayr)\n\n
-			</p>
-		]]>
-    </string>
-    <!-- End: Added/Updated in 5.0.8 -->
-
-    <!-- Begin: Added/Updated in 5.0.9 -->
-    <string name="new_in_509">
-		<![CDATA[
-			<p><b>Nouveau dans la version 5.0.9</b>\n\n
-				* Correction de bogues pour Android 4.4 (KitKat)\n\n
-				* Traduction en néérlandais (Gideon van Melle)\n\n
-				* Corrections de bogues mineures
-			</p>
-		]]>
-    </string>
-    <!-- End: Added/Updated in 5.0.9 -->
 
     <!-- Begin: Added/Updated in 5.1.0 -->
 
@@ -819,32 +673,18 @@
     <!-- Short progress message -->
     <string name="searching_directory_ellipsis">Recherche dans le répertoire &#8230;</string>
 
-    <string name="new_in_510">
-		<![CDATA[
-			<p><b>New in 5.1.0</b>\n\n
-				* Traduction en italien (Eugenio Davolio)\n\n
-				* Traduction en espagnol (José M. Galdo)\n\n
-				* Traduction en turque (Emir Sarı)\n\n
-				* Possibilité de sauvegarder les livres ajoutés ou mis à jour récemment et d\'exclure les couvertures (ou les livres)\n\n
-				* Amélioration de la taille des miniatures pour les écrans haute définition\n\n
-				* Ajout d\'une option pour voir les livres par Auteur/series sur Amazon\n\n
-				* Correction de bogues mineures\n\n
-			</p>
-		]]>
-    </string>
-
     <!-- Menu item -->
-    <string name="amazon_books_in_series">Livres dans cette série</string>
+    <string name="menu_amazon_books_in_series">Livres dans cette série</string>
     <!-- Menu item -->
-    <string name="amazon_books_by_author">Livres de cet auteur</string>
+    <string name="menu_amazon_books_by_author">Livres de cet auteur</string>
     <!-- Menu item -->
-    <string name="amazon_books_by_author_in_series">Livres par auteur par série</string>
+    <string name="menu_amazon_books_by_author_in_series">Livres par auteur par série</string>
 
     <!-- Hint text displayed when user enters the book listw -->
     <string name="hint_book_list">Cliquez sur un livre vous montrera les détails du livre, un appui long sur un livre dans la liste vous donnera d\'autres options.</string>
 
     <!-- Preference VALUE, displayed in a preference activity -->
-    <string name="zxing_scanner">Zxing Scanner</string>
+    <string name="scanning_preferred_scanner_zxing">Zxing Scanner</string>
     <!-- Heading in 'about' dialog -->
     <string name="lbl_special_thanks">Remerciements particuliers </string>
     <!-- Credits in the 'about' dialog -->
@@ -868,32 +708,19 @@
         <item quantity="one">%1$s étoile</item>
         <item quantity="other">%1$s étoiles</item>
     </plurals>
-    <string name="new_in_511">
-    <![CDATA[
-    <p><b>Nouveau dans la version 5.1.1</b>\n\n
-    * Corrections de bogue\n\n
-    * Nouveau style: Groupage par date de mise à jour date\n\n
-    * Nouveau style: Groupage par évaluation\n\n
-    * Nouveau style: Groupage par bibliothèque\n\n
-    </p>
-    ]]>
-    </string>
+
     <!-- End: Added/Updated in 5.1.1 -->
 
     <!-- Begin: Added/Updated in 5.1.2 -->
     <!-- A heading in the 'about' dialog -->
     <string name="amazon">Amazon</string>
-    <!-- The following strings are not in this release, but will be in a future release -->
-    <!-- Menu Item - will be in the next release -->
-    <!-- Heading for the "new_in_xxx" message to make future updates less work for translators...I hope -->
-    <!-- The plan is to use specific feature strings so that we can also update the store listing and add/remove reatures easily -->
-    <!-- Part of the "new in x.x.x" message -->
+
     <!-- End: Added/Updated in 5.1.2 -->
 
     <!-- Begin: Added/Updated in 5.2.0 -->
 
     <!-- Preference name (fairly short) for preferred language -->
-    <string name="preferred_interface_language">Langue préférée</string>
+    <string name="user_interface_preferred_language">Langue préférée</string>
     <!-- Preference value for a specific language. First arg is name in it's own language, second arg is name in current locale -->
 
     <!-- This is an UPDATED string copied from earlier in the file; "Google Googles" (sic) was removed from the list of scanners -->
@@ -904,17 +731,7 @@
     <!-- Credits in the 'about' dialog -->
     <string name="translators_blurb">Book Catalogue est le résultat de l\'effort de beaucoup de personnes, et n\'aurait pas une diffusion et une utilisation aussi large sans l\'aide de nos généreux traducteurs: Eugenio Davolio, José M. Galdo, Imkal, Dimitris Klisiari, Gideon van Melle, Emir Sarı, Nick Silin, and Robert Wetzlmayr (if we have forgotten someone, please tell us).</string>
 
-    <string name="new_in_520">
-		<![CDATA[
-			<p><b>Nouveau dans la version 5.2.0</b>\n\n
-			    * Selection de la localisation dans les préférences\n\n
-			    * Version grecque (Dimitris Klisiaris)\n\n
-                * Gestion des majuscules spécifiques à la localisation (de, fr)\n\n
-                * Amélioration dela recherche\n\n
-				* Correction de bogues\n\n
-			</p>
-		]]>
-    </string>
+
     <string name="loaned_to_2">→</string>
 
     <!-- End: Added/Updated in 5.2.0 -->

@@ -54,8 +54,8 @@ public abstract class BackupWriterAbstract implements BackupWriter {
      * Constructor
      */
     protected BackupWriterAbstract() {
-        mDb = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
-        mDb.open();
+        mDb = new CatalogueDBAdapter(BookCatalogueApp.getAppContext())
+                .open();
     }
 
     /**

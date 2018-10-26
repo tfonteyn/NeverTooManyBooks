@@ -26,6 +26,14 @@ public class Bookshelf implements Serializable, Utils.ItemWithIdFixup {
 
     /**
      * Constructor
+     *
+     */
+    public Bookshelf(@NonNull final String name) {
+        this.name = name.trim();
+    }
+
+    /**
+     * Constructor
      */
     public Bookshelf(final long id, @NonNull final String name) {
         this.id = id;
@@ -63,7 +71,7 @@ public class Bookshelf implements Serializable, Utils.ItemWithIdFixup {
      * Two bookshelves are equal if:
      * - it's the same Object duh..
      * - one or both of them is 'new' (e.g. id == 0) but their names are equal
-     *   FIXME: but what about 'all books' ? that's id==0 as well.
+     *   TOMF: but what about 'all books' ? that's id==0 as well.
      * - ids are equal
      *
      * Compare is CASE SENSITIVE ! This allows correcting case mistakes.

@@ -92,8 +92,10 @@ class CropImageView extends CropImageViewTouchBase {
         }
     }
 
-    // According to the event's position, change the focus to the first
-    // hitting cropping rectangle.
+    /**
+     * According to the event's position, change the focus to the first
+     * hitting cropping rectangle.
+     */
     private void recomputeFocus(@NonNull final MotionEvent event) {
         for (int i = 0; i < mHighlightViews.size(); i++) {
             CropHighlightView hv = mHighlightViews.get(i);
@@ -143,6 +145,7 @@ class CropImageView extends CropImageViewTouchBase {
                     }
                 }
                 break;
+
             case MotionEvent.ACTION_UP:
                 if (cropImage.mWaitingToPickFace) {
                     for (int i = 0; i < mHighlightViews.size(); i++) {
@@ -166,6 +169,7 @@ class CropImageView extends CropImageViewTouchBase {
                 mMotionHighlightView = null;
                 center(true, true);
                 break;
+
             case MotionEvent.ACTION_MOVE:
                 if (cropImage.mWaitingToPickFace) {
                     recomputeFocus(event);

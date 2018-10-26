@@ -254,7 +254,7 @@ public class GetThumbnailTask implements SimpleTask {
             }
         } else {
             if (view != null) {
-                view.setImageResource(R.drawable.ic_image);
+                view.setImageResource(R.drawable.ic_broken_image);
             }
         }
 

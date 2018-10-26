@@ -20,6 +20,7 @@
 
 package com.eleybourn.bookcatalogue.searches;
 
+import android.content.ContentProvider;
 import android.content.SearchRecentSuggestionsProvider;
 import android.database.Cursor;
 import android.net.Uri;
@@ -27,6 +28,8 @@ import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+
+import java.io.Closeable;
 
 /**
  * @author evan
@@ -40,7 +43,11 @@ public class SearchSuggestionProvider extends SearchRecentSuggestionsProvider {
     public SearchSuggestionProvider() {
         setupSuggestions(AUTHORITY, MODE);
     }
-    
+
+    /**
+     * Note: {@link ContentProvider#onCreate()} states that database connections etc should be
+     * deferred until needed. Hence creating it on the fly
+     */
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         if (selectionArgs[0].isEmpty()) {
@@ -48,9 +55,20 @@ public class SearchSuggestionProvider extends SearchRecentSuggestionsProvider {
         }
         if (mDb == null) {
             //noinspection ConstantConditions
-            mDb = new CatalogueDBAdapter(this.getContext());
-            mDb.open();
+            mDb = new CatalogueDBAdapter(this.getContext())
+                    .open();
         }
         return mDb.fetchSearchSuggestions(selectionArgs[0]);
+    }
+
+    /**
+     *
+     * There does not seem to be a way to cleanup resources (here, our db) in a {@link ContentProvider}
+     * Added/Leaving this method here as a reminder
+     */
+    public void close() {
+        if (mDb != null) {
+            mDb.close();
+        }
     }
 }

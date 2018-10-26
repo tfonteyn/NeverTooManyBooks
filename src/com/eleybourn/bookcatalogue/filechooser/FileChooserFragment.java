@@ -86,7 +86,7 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
     }
 
     /**
-     * Ensure activity supports event
+     * Ensure activity supports interface
      */
     @Override
     @CallSuper
@@ -97,7 +97,9 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
     }
 
     @Override
-    public View onCreateView(@NonNull final LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable final Bundle savedInstanceState) {
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container,
+                             @Nullable final Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_file_chooser, container, false);
     }
 

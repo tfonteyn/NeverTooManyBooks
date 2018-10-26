@@ -34,26 +34,7 @@ class CropUtil {
     private CropUtil() {
     }
 
-//	// Rotates the bitmap by the specified degree.
-//	// If a new bitmap is created, the original bitmap is recycled.
-//	public static Bitmap rotate(Bitmap b, int degrees) {
-//		if (degrees != 0 && b != null) {
-//			Matrix m = new Matrix();
-//			m.setRotate(degrees, (float) b.getWidth() / 2,
-//					(float) b.getHeight() / 2);
-//			try {
-//				Bitmap b2 = Bitmap.createBitmap(b, 0, 0, b.getWidth(),
-//						b.getHeight(), m, true);
-//				if (b != b2) {
-//					b.recycle();
-//					b = b2;
-//				}
-//			} catch (OutOfMemoryError ex) {
-//				// We have no memory to rotate. Return the original bitmap.
-//			}
-//		}
-//		return b;
-//	}
+
 
     /**
      * Compute the sample size as a function of minSideLength and maxNumOfPixels.
@@ -62,9 +43,10 @@ class CropUtil {
      * in terms of memory usage.
      *
      * The function returns a sample size based on the constraints. Both size and minSideLength
-     * can be passed in as IImage.UNCONSTRAINED, which indicates no care of the corresponding
-     * constraint. The functions prefers returning a sample size that generates a smaller bitmap,
-     * unless minSideLength = IImage.UNCONSTRAINED.
+     * can be passed in as {@link CropIImage#UNCONSTRAINED}, which indicates no care of
+     * the corresponding constraint.
+     * The functions prefers returning a sample size that generates a smaller bitmap,
+     * unless minSideLength = {@link CropIImage#UNCONSTRAINED}.
      */
     static Bitmap transform(@NonNull Matrix scaler,
                             @NonNull final Bitmap source,
@@ -210,6 +192,30 @@ class CropUtil {
         }
     }
 
+
+//    /**
+//     * Rotates the bitmap by the specified degree.
+//     * If a new bitmap is created, the original bitmap is recycled.
+//     */
+//    public static Bitmap rotate(Bitmap b, int degrees) {
+//        if (degrees != 0 && b != null) {
+//            Matrix m = new Matrix();
+//            m.setRotate(degrees, (float) b.getWidth() / 2,
+//                    (float) b.getHeight() / 2);
+//            try {
+//                Bitmap b2 = Bitmap.createBitmap(b, 0, 0, b.getWidth(),
+//                        b.getHeight(), m, true);
+//                if (b != b2) {
+//                    b.recycle();
+//                    b = b2;
+//                }
+//            } catch (OutOfMemoryError ex) {
+//                // We have no memory to rotate. Return the original bitmap.
+//            }
+//        }
+//        return b;
+//    }
+
 //	/**
 //	 * Creates a centered bitmap of the desired size. Recycles the input.
 //	 */
@@ -265,6 +271,7 @@ class CropUtil {
 //		}
 //		return -1;
 //	}
+
 //    /**
 //     * Make a bitmap from a given Uri.
 //     */

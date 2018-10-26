@@ -25,13 +25,13 @@ public interface Cancelable<T> {
     /*
      * Requests this <code>Cancelable</code> to be canceled. This function will
      * return <code>true</code> if and only if the task is originally running
-     * and now begin requested for cancel.
+     * and now begin requested for onCancel.
      *
-     * If subclass need to do more things to cancel the task. It can override
+     * If subclass need to do more things to onCancel the task. It can override
      * the code like this: <pre>
      *
      * @Override public boolean requestCancel() { if (super.requestCancel()) {
-     * // do necessary work to cancel the task return true; } return false; }
+     * // do necessary work to onCancel the task return true; } return false; }
      * </pre>
      */
     @SuppressWarnings("UnusedReturnValue")

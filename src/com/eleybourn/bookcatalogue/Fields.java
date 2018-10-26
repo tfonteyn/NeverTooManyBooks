@@ -73,7 +73,7 @@ import java.util.List;
  * will be necessary to add new {@link FieldDataAccessor} implementations.
  * <li> Custom data accessors and formatters to provide application-specific data rules.
  * <li> validation: calling validate will call user-defined or predefined validation routines and
- * return success or failure. The text of any exceptions will be available after the call.
+ * return onConfirm or onCancel. The text of any exceptions will be available after the call.
  * <li> simplified loading of data from a Cursor.
  * <li> simplified extraction of data to a {@link ContentValues} collection.
  * </ul>
@@ -342,12 +342,12 @@ public class Fields extends ArrayList<Fields.Field> {
     }
 
     /**
-     * For a View that supports onClick() (all of them?), set the listener.
+     * For a View that supports onClick() (all of them?), set the setOnClickListener.
      *
      * @param fieldId  Layout ID of View
      * @param listener onClick() listener.
      */
-    void setListener(@IdRes final int fieldId, @NonNull final View.OnClickListener listener) {
+    void setOnClickListener(@IdRes final int fieldId, @NonNull final View.OnClickListener listener) {
         getField(fieldId).getView().setOnClickListener(listener);
     }
 
@@ -356,7 +356,7 @@ public class Fields extends ArrayList<Fields.Field> {
      *
      * @param cursor Cursor to load Field objects from.
      */
-    public void setAll(@NonNull final Cursor cursor) {
+    public void setAllFrom(@NonNull final Cursor cursor) {
         for (Field field : this) {
             field.set(cursor);
         }
@@ -367,7 +367,7 @@ public class Fields extends ArrayList<Fields.Field> {
      *
      * @param values Bundle to load Field objects from.
      */
-    public void setAll(@NonNull final Bundle values) {
+    public void setAllFrom(@NonNull final Bundle values) {
         for (Field field : this) {
             field.set(values);
         }
@@ -378,7 +378,7 @@ public class Fields extends ArrayList<Fields.Field> {
      *
      * @param data Cursor to load Field objects from.
      */
-    public void setAll(@NonNull final DataManager data) {
+    public void setAllFrom(@NonNull final DataManager data) {
         for (Field field : this) {
             field.set(data);
         }
@@ -389,7 +389,7 @@ public class Fields extends ArrayList<Fields.Field> {
      *
      * @param data Cursor to load Field objects from.
      */
-    void getAllInto(@NonNull final DataManager data) {
+    void putAllInto(@NonNull final DataManager data) {
         for (Field field : this) {
             if (!field.column.isEmpty()) {
                 field.getValue(data);
@@ -610,7 +610,7 @@ public class Fields extends ArrayList<Fields.Field> {
          *                        field values set and can be read.
          * @param crossValidating Options indicating if this is the cross-validation pass.
          *
-         * @throws ValidatorException For any validation failure.
+         * @throws ValidatorException For any validation onCancel.
          */
         void validate(@NonNull final Fields fields,
                       @NonNull final Field field,
@@ -1014,7 +1014,7 @@ public class Fields extends ArrayList<Fields.Field> {
     }
 
     /**
-     * Formatter for date fields. On failure just return the raw string.
+     * Formatter for date fields. On onCancel just return the raw string.
      *
      * @author Philip Warner
      */
@@ -1055,7 +1055,7 @@ public class Fields extends ArrayList<Fields.Field> {
     }
 
     /**
-     * Formatter for boolean fields. On failure just return the raw string or blank
+     * Formatter for boolean fields. On onCancel just return the raw string or blank
      *
      * @author Philip Warner
      */

@@ -30,5 +30,5 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical|end"
         android:layout_weight="1"
-        android:text="@string/confirm_update" />
+        android:text="@string/btn_confirm_update" />
 </LinearLayout>

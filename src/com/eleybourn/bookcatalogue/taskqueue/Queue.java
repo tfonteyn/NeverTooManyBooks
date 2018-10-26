@@ -176,7 +176,7 @@ public class Queue extends Thread {
      * Update the related database record to process the task correctly.
      *
      * @param task    Task object
-     * @param result  true on success, false on failure
+     * @param result  true on onConfirm, false on onCancel
      * @param requeue true if requeue needed
      */
     private void handleResult(@NonNull final Task task, final boolean result, final boolean requeue) {

@@ -26,6 +26,7 @@ import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 
@@ -45,8 +46,13 @@ public class LocalCoverFinder implements Importer.CoverFinder {
     LocalCoverFinder(@NonNull final String srcPath, @NonNull final String dstPath) {
         mSrc = srcPath;
         mIsForeign = !mSrc.equals(dstPath);
-        mDb = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
-        mDb.open();
+        mDb = new CatalogueDBAdapter(BookCatalogueApp.getAppContext())
+                .open();
+    }
+
+    @Override
+    public void close() {
+        mDb.close();
     }
 
     public void copyOrRenameCoverFile(@Nullable final String srcUuid, final long srcId, final long dstId) throws IOException {

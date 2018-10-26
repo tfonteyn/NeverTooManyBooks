@@ -30,6 +30,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v7.app.AlertDialog;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.CompoundButton;
@@ -40,6 +42,7 @@ import com.eleybourn.bookcatalogue.baseactivity.BaseActivityWithTasks;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
+import com.eleybourn.bookcatalogue.searches.SearchAdminActivity;
 import com.eleybourn.bookcatalogue.searches.UpdateFromInternetThread;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
 import com.eleybourn.bookcatalogue.tasks.ManagedTask;
@@ -63,20 +66,17 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
     private LinearLayout mListContainer;
 
     private long mUpdateSenderId = 0;
+
     /** this is where the results can be 'consumed' before finishing this activity */
-    private final ManagedTask.TaskListener mThumbnailsHandler = new ManagedTask.TaskListener() {
+    private final ManagedTask.TaskListener mSearchTaskListener = new ManagedTask.TaskListener() {
         @Override
         public void onTaskFinished(@NonNull final ManagedTask task) {
             mUpdateSenderId = 0;
             Intent data = new Intent();
             // 0 if we did 'all books' or the id of the (hopefully) updated book.
             data.putExtra(UniqueId.KEY_ID, mBookId);
-            setResult(task.isCancelled() ? Activity.RESULT_CANCELED : Activity.RESULT_OK, data);
-            if (DEBUG_SWITCHES.TASK_MANAGER && BuildConfig.DEBUG) {
-                Logger.info(UpdateFromInternetActivity.this, "onTaskFinished=" + task);
-                Logger.info(UpdateFromInternetActivity.this, (task.isCancelled() ? "RESULT_CANCELLED" : "RESULT_OK"));
-                Logger.info(UpdateFromInternetActivity.this, "mBookId=" + mBookId);
-            }
+            data.putExtra(UniqueId.BKEY_CANCELED, task.isCancelled());
+            setResult(Activity.RESULT_OK, data); /* 98a6d1eb-4df5-4893-9aaf-fac0ce0fee01 */
             finish();
         }
     };
@@ -89,72 +89,83 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
     @Override
     @CallSuper
     public void onCreate(@Nullable final Bundle savedInstanceState) {
-        try {
-            super.onCreate(savedInstanceState);
+        super.onCreate(savedInstanceState);
 
-            Bundle extras = getIntent().getExtras();
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            mBookId = extras.getLong(UniqueId.KEY_ID, 0L);
+            if (mBookId > 0) {
+                // we're only requesting ONE book to be updated.
+                TextView authorView = findViewById(R.id.author);
+                authorView.setText(extras.getString(UniqueId.KEY_AUTHOR_FORMATTED));
+                TextView titleView = findViewById(R.id.title);
+                titleView.setText(extras.getString(UniqueId.KEY_TITLE));
 
-            if (extras != null) {
-                mBookId = extras.getLong(UniqueId.KEY_ID, 0L);
-                if (mBookId > 0) {
-                    // we're only requesting ONE book to be updated.
-                    TextView authorView = findViewById(R.id.author);
-                    authorView.setText(extras.getString(UniqueId.KEY_AUTHOR_FORMATTED));
-                    TextView titleView = findViewById(R.id.title);
-                    titleView.setText(extras.getString(UniqueId.KEY_TITLE));
-
-                    findViewById(R.id.row_book).setVisibility(View.VISIBLE);
-                }
+                findViewById(R.id.row_book).setVisibility(View.VISIBLE);
             }
-            this.setTitle(R.string.select_fields_to_update);
-            LibraryThingManager.showLtAlertIfNecessary(this, false, "update_from_internet");
-
-            mListContainer = findViewById(R.id.manage_fields_scrollview);
-
-            initFields();
-            populateFields();
-            initCancelConfirmButtons();
-        } catch (Exception e) {
-            Logger.error(e);
         }
+        this.setTitle(R.string.select_fields_to_update);
+        LibraryThingManager.showLtAlertIfNecessary(this, false, "update_from_internet");
+
+        mListContainer = findViewById(R.id.manage_fields_scrollview);
+
+        initFields();
+        populateFields();
+        initCancelConfirmButtons();
     }
 
     private void initFields() {
-        addIfVisible(UniqueId.BKEY_AUTHOR_ARRAY, UniqueId.KEY_AUTHOR_ID, R.string.author, true,
+        addIfVisible(UniqueId.BKEY_AUTHOR_ARRAY, UniqueId.KEY_AUTHOR_ID,
+                R.string.author, true,
                 FieldUsage.Usage.ADD_EXTRA);
-        addIfVisible(UniqueId.KEY_TITLE, null, R.string.title, false,
+        addIfVisible(UniqueId.KEY_TITLE, null,
+                R.string.title, false,
                 FieldUsage.Usage.COPY_IF_BLANK);
-        addIfVisible(UniqueId.KEY_BOOK_ISBN, null, R.string.isbn, false,
+        addIfVisible(UniqueId.KEY_BOOK_ISBN, null,
+                R.string.isbn, false,
                 FieldUsage.Usage.COPY_IF_BLANK);
-        addIfVisible(UniqueId.KEY_BOOK_THUMBNAIL, null, R.string.thumbnail, false,
+        addIfVisible(UniqueId.KEY_BOOK_THUMBNAIL, null,
+                R.string.thumbnail, false,
                 FieldUsage.Usage.COPY_IF_BLANK);
-        addIfVisible(UniqueId.BKEY_SERIES_ARRAY, UniqueId.KEY_SERIES_NAME, R.string.series, true,
+        addIfVisible(UniqueId.BKEY_SERIES_ARRAY, UniqueId.KEY_SERIES_NAME,
+                R.string.series, true,
                 FieldUsage.Usage.ADD_EXTRA);
-        addIfVisible(UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY, UniqueId.KEY_ANTHOLOGY_BITMASK, R.string.anthology, true,
+        addIfVisible(UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY, UniqueId.KEY_ANTHOLOGY_BITMASK,
+                R.string.anthology, true,
                 FieldUsage.Usage.ADD_EXTRA);
-        addIfVisible(UniqueId.KEY_BOOK_PUBLISHER, null, R.string.publisher, false,
+        addIfVisible(UniqueId.KEY_BOOK_PUBLISHER, null,
+                R.string.publisher, false,
                 FieldUsage.Usage.COPY_IF_BLANK);
-        addIfVisible(UniqueId.KEY_BOOK_DATE_PUBLISHED, null, R.string.date_published, false,
+        addIfVisible(UniqueId.KEY_BOOK_DATE_PUBLISHED, null,
+                R.string.date_published, false,
                 FieldUsage.Usage.COPY_IF_BLANK);
-        addIfVisible(UniqueId.KEY_FIRST_PUBLICATION, null, R.string.first_publication, false,
+        addIfVisible(UniqueId.KEY_FIRST_PUBLICATION, null,
+                R.string.first_publication, false,
                 FieldUsage.Usage.COPY_IF_BLANK);
-        addIfVisible(UniqueId.KEY_DESCRIPTION, null, R.string.description, false,
+        addIfVisible(UniqueId.KEY_DESCRIPTION, null,
+                R.string.description, false,
                 FieldUsage.Usage.COPY_IF_BLANK);
-        addIfVisible(UniqueId.KEY_BOOK_PAGES, null, R.string.pages, false,
+        addIfVisible(UniqueId.KEY_BOOK_PAGES, null,
+                R.string.pages, false,
                 FieldUsage.Usage.COPY_IF_BLANK);
-        addIfVisible(UniqueId.KEY_BOOK_LIST_PRICE, null, R.string.list_price, false,
+        addIfVisible(UniqueId.KEY_BOOK_LIST_PRICE, null,
+                R.string.list_price, false,
                 FieldUsage.Usage.COPY_IF_BLANK);
-        addIfVisible(UniqueId.KEY_BOOK_FORMAT, null, R.string.format, false,
+        addIfVisible(UniqueId.KEY_BOOK_FORMAT, null,
+                R.string.format, false,
                 FieldUsage.Usage.COPY_IF_BLANK);
-        addIfVisible(UniqueId.KEY_BOOK_GENRE, null, R.string.genre, false,
+        addIfVisible(UniqueId.KEY_BOOK_GENRE, null,
+                R.string.genre, false,
                 FieldUsage.Usage.COPY_IF_BLANK);
-        addIfVisible(UniqueId.KEY_BOOK_LANGUAGE, null, R.string.language, false,
+        addIfVisible(UniqueId.KEY_BOOK_LANGUAGE, null,
+                R.string.lbl_language, false,
                 FieldUsage.Usage.COPY_IF_BLANK);
     }
 
     /**
      * Add a FieldUsage if the specified field has not been hidden by the user.
-     *  @param field     name to use in FieldUsages
+     *
+     * @param field     name to use in FieldUsages
      * @param visField  Field name to check for visibility. If null, use field itself.
      * @param stringId  of field label string
      * @param canAppend if the field is a list to which we can append to
@@ -163,7 +174,8 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
     private void addIfVisible(@NonNull final String field,
                               @Nullable String visField,
                               @StringRes final int stringId,
-                              final boolean canAppend, @NonNull final FieldUsage.Usage usage) {
+                              final boolean canAppend,
+                              @NonNull final FieldUsage.Usage usage) {
 
         if (visField == null || visField.trim().isEmpty()) {
             visField = field;
@@ -194,30 +206,8 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
                     // ENHANCE The check is really a FOUR-state.
                     final CompoundButton cb = (CompoundButton) v;
                     final FieldUsage usage = ViewTagger.getTagOrThrow(cb);
-
-                    // if (canAppend): SKIP -> COPY_IF_BLANK -> ADD_EXTRA -> OVERWRITE -> SKIP
-                    // else: SKIP -> COPY_IF_BLANK -> OVERWRITE -> SKIP
-                    switch (usage.usage) {
-                        case SKIP:
-                            usage.usage = FieldUsage.Usage.COPY_IF_BLANK;
-                            cb.setChecked(true); //reset to checked
-                            break;
-                        case COPY_IF_BLANK:
-                            if (usage.canAppend) {
-                                usage.usage = FieldUsage.Usage.ADD_EXTRA;
-                            } else {
-                                usage.usage = FieldUsage.Usage.OVERWRITE;
-                            }
-                            cb.setChecked(true);
-                            break;
-                        case ADD_EXTRA:
-                            usage.usage = FieldUsage.Usage.OVERWRITE;
-                            cb.setChecked(true);
-                            break;
-                        case OVERWRITE:
-                            usage.usage = FieldUsage.Usage.SKIP;
-                            cb.setChecked(false);
-                    }
+                    usage.nextState();
+                    cb.setChecked(usage.isSelected());
                     cb.setText(usage.getUsageInfo(UpdateFromInternetActivity.this));
                 }
             });
@@ -237,9 +227,10 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
                     return;
                 }
 
-                // If they have selected thumbnails, check if they want to download ALL.
+                // If they have selected thumbnails, check if they want to download ALL
                 FieldUsage coversWanted = mFieldUsages.get(UniqueId.KEY_BOOK_THUMBNAIL);
-                if (coversWanted.isSelected()) {
+                // but don't ask if its a single book only
+                if (mBookId == 0 && coversWanted.isSelected()) {
                     // Verify - this can be a dangerous operation
                     AlertDialog dialog = new AlertDialog.Builder(UpdateFromInternetActivity.this)
                             .setMessage(R.string.overwrite_thumbnail)
@@ -277,9 +268,44 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
         findViewById(R.id.cancel).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(final View v) {
+                // not sure if needed... can't harm.
+                ManagedTask.TaskController tc = UpdateFromInternetThread.getMessageSwitch().getController(mUpdateSenderId);
+                if (tc != null) {
+                    tc.requestAbort();
+                }
                 finish();
             }
         });
+    }
+
+    /**
+     * @param menu The options menu in which you place your items.
+     *
+     * @return super.onCreateOptionsMenu(menu);
+     *
+     * @see #onPrepareOptionsMenu
+     * @see #onOptionsItemSelected
+     */
+    @Override
+    @CallSuper
+    public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
+        menu.add(Menu.NONE, R.id.MENU_PREFS_SEARCH_SITES, 0, R.string.search_sites)
+                .setIcon(R.drawable.ic_search)
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    @CallSuper
+    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.MENU_PREFS_SEARCH_SITES:
+                Intent intent = new Intent(this, SearchAdminActivity.class);
+                startActivity(intent);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private int countUserSelections() {
@@ -302,13 +328,13 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
      * @param bookId 0 for all books, or a valid book id for one book
      */
     private void startUpdate(final long bookId) {
-        UpdateFromInternetThread updateThread = new UpdateFromInternetThread(getTaskManager(), mFieldUsages, mThumbnailsHandler);
+        UpdateFromInternetThread updateThread = new UpdateFromInternetThread(getTaskManager(), mFieldUsages, mSearchTaskListener);
         if (bookId > 0) {
             updateThread.setBookId(bookId);
         }
 
         mUpdateSenderId = updateThread.getSenderId();
-        UpdateFromInternetThread.getMessageSwitch().addListener(mUpdateSenderId, mThumbnailsHandler, false);
+        UpdateFromInternetThread.getMessageSwitch().addListener(mUpdateSenderId, mSearchTaskListener, false);
         updateThread.start();
     }
 
@@ -316,10 +342,10 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
     @CallSuper
     protected void onPause() {
         Tracker.enterOnPause(this);
-        super.onPause();
         if (mUpdateSenderId != 0) {
-            UpdateFromInternetThread.getMessageSwitch().removeListener(mUpdateSenderId, mThumbnailsHandler);
+            UpdateFromInternetThread.getMessageSwitch().removeListener(mUpdateSenderId, mSearchTaskListener);
         }
+        super.onPause();
         Tracker.exitOnPause(this);
     }
 
@@ -329,7 +355,7 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
         Tracker.enterOnResume(this);
         super.onResume();
         if (mUpdateSenderId != 0) {
-            UpdateFromInternetThread.getMessageSwitch().addListener(mUpdateSenderId, mThumbnailsHandler, true);
+            UpdateFromInternetThread.getMessageSwitch().addListener(mUpdateSenderId, mSearchTaskListener, true);
         }
         Tracker.exitOnResume(this);
     }
@@ -354,14 +380,16 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
         /** a key, usually from {@link com.eleybourn.bookcatalogue.UniqueId} */
         @NonNull
         public final String key;
-        /** is the field a list type */
-        public final boolean canAppend;
-        /** label to show to the user */
-        @StringRes
-        private final int labelId;
         /** how to use this field */
         @NonNull
         public Usage usage;
+
+        /** is the field a list type */
+        private final boolean canAppend;
+        /** label to show to the user */
+        @StringRes
+        private final int labelId;
+
 
         public FieldUsage(@NonNull final String name,
                           @StringRes final int id,
@@ -383,6 +411,32 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
 
         public String getUsageInfo(@NonNull final Context context) {
             return context.getString(usage.getStringId());
+        }
+
+        /**
+         * Cycle to the next Usage stage:
+         *
+         * if (canAppend): SKIP -> COPY_IF_BLANK -> ADD_EXTRA -> OVERWRITE -> SKIP
+         * else          : SKIP -> COPY_IF_BLANK -> OVERWRITE -> SKIP
+         */
+        public void nextState() {
+            switch (usage) {
+                case SKIP:
+                    usage = Usage.COPY_IF_BLANK;
+                    break;
+                case COPY_IF_BLANK:
+                    if (canAppend) {
+                        usage = Usage.ADD_EXTRA;
+                    } else {
+                        usage = Usage.OVERWRITE;
+                    }
+                    break;
+                case ADD_EXTRA:
+                    usage = Usage.OVERWRITE;
+                    break;
+                case OVERWRITE:
+                    usage = Usage.SKIP;
+            }
         }
 
         public enum Usage {

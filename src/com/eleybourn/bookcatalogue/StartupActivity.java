@@ -47,6 +47,7 @@ import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.CoversDbHelper;
 import com.eleybourn.bookcatalogue.database.UpgradeDatabase;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.filechooser.BackupChooserActivity;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.OnTaskFinishListener;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTask;
@@ -74,10 +75,9 @@ public class StartupActivity extends AppCompatActivity {
     private static final String PREF_START_COUNT = "Startup.StartCount";
 
     /** Number of app startup's between offers to backup */
-    private static final int BACKUP_PROMPT_WAIT = 5;
-
+    private static final int PROMPT_WAIT_BACKUP = 5;
     /** Number of app startup's between displaying the Amazon hint */
-    private static final int AMAZON_PROMPT_WAIT = 7;
+    private static final int PROMPT_WAIT_AMAZON = 7;
 
     /** Indicates the upgrade message has been shown */
     private static boolean mUpgradeMessageShown = false;
@@ -101,8 +101,9 @@ public class StartupActivity extends AppCompatActivity {
     @Nullable
     @Deprecated
     private ProgressDialog mProgress = null;
-    /** Options indicating an export is required after startup */
-    private boolean mExportRequired = false;
+
+    /** Options indicating a backup is required after startup */
+    private boolean mBackupRequired = false;
     /** UI thread */
     private Thread mUiThread;
     /** stage the startup is at. */
@@ -189,7 +190,7 @@ public class StartupActivity extends AppCompatActivity {
                 break;
             }
             case 3:
-                proposeBackup();
+                backupRequired();
                 break;
             case 4:
                 gotoMainScreen();
@@ -338,24 +339,10 @@ public class StartupActivity extends AppCompatActivity {
         }
     }
 
-    private void proposeBackup() {
-        int opened = BookCatalogueApp.Prefs.getInt(PREFS_STATE_OPENED, BACKUP_PROMPT_WAIT);
-        int startCount = BookCatalogueApp.Prefs.getInt(PREF_START_COUNT, 0) + 1;
+    private void backupRequired() {
+        mBackupRequired = false;
 
-        final SharedPreferences.Editor ed = BookCatalogueApp.Prefs.edit();
-        if (opened == 0) {
-            ed.putInt(PREFS_STATE_OPENED, BACKUP_PROMPT_WAIT);
-        } else {
-            ed.putInt(PREFS_STATE_OPENED, opened - 1);
-        }
-        ed.putInt(PREF_START_COUNT, startCount);
-        ed.apply();
-
-        mShowAmazonHint = ((startCount % AMAZON_PROMPT_WAIT) == 0);
-
-        mExportRequired = false;
-
-        if (opened == 0) {
+        if (proposeBackup()) {
             AlertDialog dialog = new AlertDialog.Builder(this)
                     .setMessage(R.string.backup_request)
                     .setTitle(R.string.backup_title)
@@ -373,7 +360,7 @@ public class StartupActivity extends AppCompatActivity {
                     getString(android.R.string.ok),
                     new DialogInterface.OnClickListener() {
                         public void onClick(@NonNull final DialogInterface dialog, final int which) {
-                            mExportRequired = true;
+                            mBackupRequired = true;
                             dialog.dismiss();
                         }
                     });
@@ -390,14 +377,39 @@ public class StartupActivity extends AppCompatActivity {
     }
 
     /**
+     * Decrease and store the number of times the app was opened.
+     * Used for proposing Backup/Amazon
+     *
+     * @return true when counter reached 0
+     */
+    private boolean proposeBackup() {
+        int opened = BookCatalogueApp.Prefs.getInt(PREFS_STATE_OPENED, PROMPT_WAIT_BACKUP);
+        int startCount = BookCatalogueApp.Prefs.getInt(PREF_START_COUNT, 0) + 1;
+
+        final SharedPreferences.Editor ed = BookCatalogueApp.Prefs.edit();
+        if (opened == 0) {
+            ed.putInt(PREFS_STATE_OPENED, PROMPT_WAIT_BACKUP);
+        } else {
+            ed.putInt(PREFS_STATE_OPENED, opened - 1);
+        }
+        ed.putInt(PREF_START_COUNT, startCount);
+        ed.apply();
+
+        mShowAmazonHint = ((startCount % PROMPT_WAIT_AMAZON) == 0);
+        return opened == 0;
+    }
+
+    /**
      * Last step
      */
     private void gotoMainScreen() {
         Intent intent = new Intent(this, BooksOnBookshelf.class);
         startActivity(intent);
 
-        if (mExportRequired) {
-            AdministrationFunctions.exportToArchive(this);
+        if (mBackupRequired) {
+            Intent backupIntent = new Intent(this, BackupChooserActivity.class);
+            backupIntent.putExtra(BackupChooserActivity.BKEY_MODE, BackupChooserActivity.BVAL_MODE_SAVE_AS);
+            startActivity(backupIntent);
         }
 
         // We are done
@@ -406,11 +418,11 @@ public class StartupActivity extends AppCompatActivity {
 
     @Override
     @CallSuper
-    public void onDestroy() {
-        super.onDestroy();
+    protected void onDestroy() {
         if (mTaskQueue != null) {
             mTaskQueue.finish();
         }
+        super.onDestroy();
     }
 
     /**

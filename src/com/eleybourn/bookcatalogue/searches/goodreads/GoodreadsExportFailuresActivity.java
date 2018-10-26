@@ -34,8 +34,10 @@ import android.widget.TextView;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
+import com.eleybourn.bookcatalogue.adapters.BindableItemCursorAdapter;
 import com.eleybourn.bookcatalogue.baseactivity.BindableItemListActivity;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.ContextDialogItem;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.dialogs.HintManager.HintOwner;
@@ -45,7 +47,6 @@ import com.eleybourn.bookcatalogue.taskqueue.Listeners.EventActions;
 import com.eleybourn.bookcatalogue.taskqueue.Listeners.OnEventChangeListener;
 import com.eleybourn.bookcatalogue.taskqueue.QueueManager;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
-import com.eleybourn.bookcatalogue.adapters.BindableItemCursorAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,10 +60,9 @@ import java.util.List;
  */
 public class GoodreadsExportFailuresActivity extends BindableItemListActivity {
 
-    public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_GOODREADS_EXPORT_FAILURES;
-
     /** Key to store optional task ID when activity is started */
     public static final String REQUEST_KEY_TASK_ID = "GoodreadsExportFailuresActivity.TaskId";
+
     /** DB connection */
     private CatalogueDBAdapter mDb = null;
     private BindableItemCursor mCursor;
@@ -80,29 +80,25 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity {
     /** Task ID, if provided in intent */
     private long mTaskId = 0;
 
-    /**
-     * Constructor. Tell superclass the resource for the list.
-     */
-    public GoodreadsExportFailuresActivity() {
-        super(R.layout.goodreads_event_list);
+    @Override
+    protected int getLayoutId() {
+        return R.layout.goodreads_event_list;
     }
 
     @Override
     @CallSuper
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         // Get a DB adapter
-        mDb = new CatalogueDBAdapter(this);
-        mDb.open();
+        mDb = new CatalogueDBAdapter(this)
+                .open();
 
         Intent intent = getIntent();
-        if (intent != null && intent.hasExtra(REQUEST_KEY_TASK_ID)) {
+        if (intent != null) {
             mTaskId = intent.getLongExtra(REQUEST_KEY_TASK_ID, 0);
-        } else {
-            mTaskId = 0;
         }
-
         // Once the basic criteria have been setup, call the parent
         super.onCreate(savedInstanceState);
+        setTitle(R.string.task_errors);
 
         //When any Event is added/changed/deleted, update the list. Lazy, yes.
         BookCatalogueApp.getQueueManager().registerEventListener(mOnEventChangeListener);
@@ -110,17 +106,12 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity {
         updateHeader();
 
         // Handle the 'cleanup' button.
-        {
-            View v = this.findViewById(R.id.cleanup);
-            v.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    QueueManager.getQueueManager().cleanupOldEvents(7);
-                }
-            });
-        }
-
-        this.setTitle(R.string.task_errors);
+        findViewById(R.id.cleanup).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                QueueManager.getQueueManager().cleanupOldEvents(7);
+            }
+        });
 
         if (savedInstanceState == null) {
             HintManager.displayHint(this, R.string.hint_background_task_events, null);
@@ -192,23 +183,25 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity {
     @Override
     @CallSuper
     protected void onDestroy() {
-        try {
-            super.onDestroy();
-        } catch (Exception ignore) {}
+        Tracker.enterOnDestroy(this);
+
         try {
             if (mCursor != null) {
                 mCursor.close();
-                mCursor = null;
             }
-        } catch (Exception ignore) {}
-        try {
-            if (mDb != null) {
-                mDb.close();
-            }
-        } catch (Exception ignore) {}
+        } catch (Exception ignore) {
+        }
+
         try {
             BookCatalogueApp.getQueueManager().unregisterEventListener(mOnEventChangeListener);
-        } catch (Exception ignore) {}
+        } catch (Exception ignore) {
+        }
+
+        if (mDb != null) {
+            mDb.close();
+        }
+        super.onDestroy();
+        Tracker.exitOnDestroy(this);
     }
 
     /**
@@ -245,5 +238,4 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity {
 
         return mCursor;
     }
-
 }

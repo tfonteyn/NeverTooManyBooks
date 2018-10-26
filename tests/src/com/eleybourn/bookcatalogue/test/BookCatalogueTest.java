@@ -77,7 +77,7 @@ public class BookCatalogueTest extends ActivityInstrumentationTestCase2 {
 		t.clickOnMenuItem("Add Book...");
 		t.clickOnText("Add by ISBN");
 		t.assertCurrentActivity("Expected BookISBNSearch activity", "BookISBNSearch");
-		assertFalse("Did not expect cancel button", t.searchButton("Cancel"));
+		assertFalse("Did not expect onCancel button", t.searchButton("Cancel"));
 		t.goBack();
 		
 		//reset again
@@ -103,7 +103,7 @@ public class BookCatalogueTest extends ActivityInstrumentationTestCase2 {
 		t.clickOnText("Add by ISBN");
 		t.assertCurrentActivity("Expected BookISBNSearch activity", "BookISBNSearch");
 		t.clickOnText("More Info"); // This will fail if it does not exist
-		t.assertCurrentActivity("Expected AdministrationLibraryThing activity", "AdministrationLibraryThing");
+		t.assertCurrentActivity("Expected LibraryThingAdminActivity activity", "LibraryThingAdminActivity");
 		t.clickOnEditText(0); //Dev Key
 		t.goBack();
 		t.enterText(0, "118983f247fc3fe43dcafcd042655440");
@@ -117,7 +117,7 @@ public class BookCatalogueTest extends ActivityInstrumentationTestCase2 {
 		t.clickOnMenuItem("Add Book...");
 		t.clickOnText("Add by ISBN");
 		t.assertCurrentActivity("Expected BookISBNSearch activity", "BookISBNSearch");
-		assertFalse("Did not expect cancel button", t.searchButton("Cancel"));
+		assertFalse("Did not expect onCancel button", t.searchButton("Cancel"));
 		t.goBack();
 	}
 	
@@ -328,7 +328,7 @@ public class BookCatalogueTest extends ActivityInstrumentationTestCase2 {
 		assertFalse(t.searchText("Foobar"));
 		
 		
-		//search & cancel
+		//search & onCancel
 		t.clickOnMenuItem("Automatically Populate Titles");
 		t.sleep(3000);
 		t.clickOnButton("Cancel");
@@ -481,7 +481,7 @@ public class BookCatalogueTest extends ActivityInstrumentationTestCase2 {
 		t.clickOnMenuItem("Help & Admin");
 		t.assertCurrentActivity("Expected Administration activity", "Administration");
 		t.clickOnText("Administration Functions");
-		t.assertCurrentActivity("Expected AdministrationFunctions activity", "AdministrationFunctions");
+		t.assertCurrentActivity("Expected AdminActivity activity", "AdminActivity");
 		t.clickOnText("Manage Bookshelves");
 		t.assertCurrentActivity("Expected Bookshelf activity", "Bookshelf");
 		
@@ -527,7 +527,7 @@ public class BookCatalogueTest extends ActivityInstrumentationTestCase2 {
 		t.clickOnMenuItem("Help & Admin");
 		t.assertCurrentActivity("Expected Administration activity", "Administration");
 		t.clickOnText("Administration Functions");
-		t.assertCurrentActivity("Expected AdministrationFunctions activity", "AdministrationFunctions");
+		t.assertCurrentActivity("Expected AdminActivity activity", "AdminActivity");
 		t.clickOnText("Backup Database");
 		t.sleep(1000);
 		String filename = com.eleybourn.bookcatalogue.Utils.EXTERNAL_FILE_PATH + "/bookCatalogueDbExport.db";
@@ -540,7 +540,7 @@ public class BookCatalogueTest extends ActivityInstrumentationTestCase2 {
 		t.clickOnMenuItem("Help & Admin");
 		t.assertCurrentActivity("Expected Administration activity", "Administration");
 		t.clickOnText("Administration Functions");
-		t.assertCurrentActivity("Expected AdministrationFunctions activity", "AdministrationFunctions");
+		t.assertCurrentActivity("Expected AdminActivity activity", "AdminActivity");
 		t.clickOnText("Manage Field Visibility");
 		t.assertCurrentActivity("Expected FieldVisibilityActivity activity", "FieldVisibilityActivity");
 		
@@ -626,7 +626,7 @@ public class BookCatalogueTest extends ActivityInstrumentationTestCase2 {
 		t.clickOnMenuItem("Help & Admin");
 		t.assertCurrentActivity("Expected Administration activity", "Administration");
 		t.clickOnText("Administration Functions");
-		t.assertCurrentActivity("Expected AdministrationFunctions activity", "AdministrationFunctions");
+		t.assertCurrentActivity("Expected AdminActivity activity", "AdminActivity");
 		t.clickOnText("Manage Field Visibility");
 		t.assertCurrentActivity("Expected FieldVisibilityActivity activity", "FieldVisibilityActivity");
 		
@@ -729,7 +729,7 @@ public class BookCatalogueTest extends ActivityInstrumentationTestCase2 {
 		t.clickOnMenuItem("Help & Admin");
 		t.assertCurrentActivity("Expected Administration activity", "Administration");
 		t.clickOnText("Administration Functions");
-		t.assertCurrentActivity("Expected AdministrationFunctions activity", "AdministrationFunctions");
+		t.assertCurrentActivity("Expected AdminActivity activity", "AdminActivity");
 		t.clickOnText("Export Books");
 		t.sleep(10000);
 		export = new File(mFileName);
@@ -755,7 +755,7 @@ public class BookCatalogueTest extends ActivityInstrumentationTestCase2 {
 		t.clickOnMenuItem("Help & Admin");
 		t.assertCurrentActivity("Expected Administration activity", "Administration");
 		t.clickOnText("Administration Functions");
-		t.assertCurrentActivity("Expected AdministrationFunctions activity", "AdministrationFunctions");
+		t.assertCurrentActivity("Expected AdminActivity activity", "AdminActivity");
 		t.clickOnText("Import Books");
 		t.clickOnText("OK");
 		t.sleep(10000);
@@ -790,7 +790,7 @@ public class BookCatalogueTest extends ActivityInstrumentationTestCase2 {
 		t.clickOnMenuItem("Help & Admin");
 		t.assertCurrentActivity("Expected Administration activity", "Administration");
 		t.clickOnText("Administration Functions");
-		t.assertCurrentActivity("Expected AdministrationFunctions activity", "AdministrationFunctions");
+		t.assertCurrentActivity("Expected AdminActivity activity", "AdminActivity");
 		t.clickOnText("Automatically Update Fields");
 		//leave everything default
 		t.clickOnButton("Update");

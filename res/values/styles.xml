@@ -212,7 +212,7 @@
     <!--
         TouchListView icons
     -->
-    <style name="touch_list_view_row_ic_delete">
+    <style name="tlv_delete_button">
         <item name="android:layout_width">25dp</item>
         <item name="android:layout_height">25dp</item>
         <item name="android:layout_alignParentBottom">true</item>
@@ -226,7 +226,12 @@
         <item name="android:paddingStart">@dimen/padding_border</item>
     </style>
 
-    <style name="touch_list_view_row_ic_grabber">
+    <style name="TouchListView">
+        <item name="android:fadingEdge">none</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="tlv_dragHandle">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_centerVertical">true</item>
@@ -261,10 +266,7 @@
         <item name="android:paddingBottom">12dp</item>
     </style>
 
-    <style name="TouchListView">
-        <item name="android:fadingEdge">none</item>
-        <item name="android:textSize">16sp</item>
-    </style>
+
 
     <style name="dialogFrame">
         <item name="android:layout_width">match_parent</item>

@@ -53,7 +53,7 @@ public interface Exporter {
      * @param outputStream Stream to send data
      * @param listener     Progress & cancellation interface
      *
-     * @return <tt>true</tt>on success
+     * @return <tt>true</tt>on onConfirm
      */
     boolean export(@NonNull final OutputStream outputStream,
                    @NonNull final ExportListener listener,

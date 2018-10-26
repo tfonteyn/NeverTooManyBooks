@@ -35,13 +35,11 @@ import com.eleybourn.bookcatalogue.datamanager.DataAccessor;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.datamanager.Datum;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
 
 /**
  * Represents the underlying data for a book.
@@ -50,39 +48,30 @@ import java.util.List;
  */
 public class Book extends DataManager {
 
-    /** Key for accessor to the underlying {@link UniqueId#KEY_ANTHOLOGY_BITMASK}
-     * boolean! only return "0" or "1"
+    /**
+     * Key for accessor to the underlying {@link UniqueId#KEY_ANTHOLOGY_BITMASK}
+     * boolean
      */
     public static final String IS_ANTHOLOGY = "+IsAnthology";
 
-    /** Key for accessor (read-only), for the user-readable string list of Bookshelves */
-    public static final String BOOKSHELF_TEXT = "+BookshelfText";
+    /**
+     * Key for accessor to the underlying {@link UniqueId#KEY_BOOK_READ}
+     * boolean
+     */
+    public static final String IS_READ = "+IsRead";
 
     /**
-     * Key for special field, for the encoded string list of Bookshelves
-     * it's shielded from 'outside' by {@link #setBookshelfList} and {@link #getBookshelfList}
+     * Constructor. All overloaded constructors MUST call this();
      */
-    private static final String BOOKSHELF_LIST = "+BookshelfList";
-
-
-    /** Row ID for book */
-    private long mBookId;
-
     public Book() {
-        this(0, null);
+        initValidatorsAndAccessors();
     }
 
     public Book(final long bookId) {
-        this(bookId, null);
-    }
-
-    /**
-     * Constructor
-     *
-     * @param bundle with book data (may be null)
-     */
-    public Book(@Nullable final Bundle bundle) {
-        this(0L, bundle);
+        this();
+        if (bookId > 0) {
+            reload(bookId);
+        }
     }
 
     /**
@@ -91,25 +80,24 @@ public class Book extends DataManager {
      * @param cursor with book data
      */
     public Book(@NonNull final Cursor cursor) {
+        this();
         putAll(cursor);
     }
 
     /**
-     * Constructor
+     * Main Constructor
      *
      * @param bookId of book (may be 0 for new)
      * @param bundle Bundle with book data (may be null)
      */
     public Book(final long bookId, @Nullable final Bundle bundle) {
-        this.mBookId = bookId;
-
+        this();
         // Load from bundle or database
         if (bundle != null) {
             putAll(bundle);
-        } else if (this.mBookId > 0) {
-            reload();
+        } else if (bookId > 0) {
+            reload(bookId);
         }
-        initValidatorsAndAccessors();
     }
 
     /**
@@ -128,48 +116,37 @@ public class Book extends DataManager {
 
     /** hide the special accessor */
     public boolean isAnthology() {
-        return getInt(IS_ANTHOLOGY) > 0;
-    }
-
-    //TODO: can we simplify this ? not just a 'string' but structured data with proper ID's
-    @NonNull
-    public String getBookshelfList() {
-        return getString(BOOKSHELF_LIST);
-    }
-
-    public void setBookshelfList(@NonNull final String encodedList) {
-        putString(BOOKSHELF_LIST, encodedList);
+        return getBoolean(IS_ANTHOLOGY);
     }
 
     /**
-     * Accessor
+     * Convenience Accessor
      */
     public long getBookId() {
-        return mBookId;
+        return this.getLong(UniqueId.KEY_ID);
     }
 
     /**
      * Load the book details from the database
      */
-    public void reload() {
+    public void reload(final long bookId) {
         // If ID = 0, no details in DB
-        if (mBookId == 0) {
+        if (bookId == 0) {
             return;
         }
 
         // Connect to DB and get cursor for book details
         CatalogueDBAdapter db = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
         db.open();
-        try (BooksCursor book = db.fetchBookById(mBookId)) {
+        try (BooksCursor book = db.fetchBookById(bookId)) {
             if (book.moveToFirst()) {
                 // Put all cursor fields in collection
                 putAll(book);
 
-                setBookshelfList(db.getBookshelvesByBookIdAsStringList(mBookId));
-
-                setAuthorList(db.getBookAuthorList(mBookId));
-                setSeriesList(db.getBookSeriesList(mBookId));
-                setContentList(db.getAnthologyTitleListByBook(mBookId));
+                putBookshelfList(db.getBookshelvesByBookId(bookId));
+                putAuthorList(db.getBookAuthorList(bookId));
+                putSeriesList(db.getBookSeriesList(bookId));
+                putContentList(db.getAnthologyTitleListByBook(bookId));
             }
         } finally {
             db.close();
@@ -177,11 +154,12 @@ public class Book extends DataManager {
     }
 
     /**
-     * Special Accessor for easier debug
+     * Special Accessor for easier debug, TBR
      */
     @NonNull
     @Override
     @CallSuper
+    @Deprecated
     public DataManager putSerializable(@NonNull final String key, @NonNull final Serializable value) {
         if (BuildConfig.DEBUG) {
             Logger.info(this, " putSerializable, key=" + key + " , type=" + value.getClass().getCanonicalName());
@@ -190,10 +168,50 @@ public class Book extends DataManager {
         return this;
     }
 
+    /**
+     * TODO: use {@link DataAccessor}
+     *
+     * @return the list of bookshelves formatted as "shelf1, shelf2, shelf3, ...
+     */
+    public String getBookshelfListAsText() {
+        String s;
+        final List<Bookshelf> list = getBookshelfList();
+        if (list.size() == 0) {
+            s = "";
+        } else {
+            final StringBuilder text = new StringBuilder(list.get(0).name);
+            for (int i = 1; i < list.size(); i++) {
+                text.append(Bookshelf.SEPARATOR).append(" ").append(list.get(i));
+            }
+            s = text.toString();
+        }
+        return s;
+    }
 
+    /**
+     * Utility routine to get a bookshelf list from a data manager
+     *
+     * TODO: use {@link DataAccessor}
+     *
+     * @return List of bookshelves
+     */
+    @NonNull
+    public ArrayList<Bookshelf> getBookshelfList() {
+        ArrayList<Bookshelf> list = super.getSerializable(UniqueId.BKEY_BOOKSHELF_ARRAY);
+        return list != null ? list : new ArrayList<Bookshelf>();
+    }
+
+    /**
+     * Special Accessor
+     */
+    public void putBookshelfList(@NonNull final ArrayList<Bookshelf> list) {
+        super.putSerializable(UniqueId.BKEY_BOOKSHELF_ARRAY, list);
+    }
 
     /**
      * Utility routine to get an author list from a data manager
+     *
+     * TODO: use {@link DataAccessor}
      *
      * @return List of authors
      */
@@ -206,12 +224,14 @@ public class Book extends DataManager {
     /**
      * Special Accessor
      */
-    public void setAuthorList(@NonNull final ArrayList<Author> list) {
+    public void putAuthorList(@NonNull final ArrayList<Author> list) {
         super.putSerializable(UniqueId.BKEY_AUTHOR_ARRAY, list);
     }
 
     /**
      * Special Accessor.
+     *
+     * TODO: use {@link DataAccessor}
      *
      * Build a formatted string for author list.
      */
@@ -233,6 +253,8 @@ public class Book extends DataManager {
     /**
      * Utility routine to get an series list from a data manager
      *
+     * TODO: use {@link DataAccessor}
+     *
      * @return List of series
      */
     @NonNull
@@ -244,11 +266,14 @@ public class Book extends DataManager {
     /**
      * Special Accessor
      */
-    public void setSeriesList(@NonNull final ArrayList<Series> list) {
+    public void putSeriesList(@NonNull final ArrayList<Series> list) {
         super.putSerializable(UniqueId.BKEY_SERIES_ARRAY, list);
     }
+
     /**
      * Special Accessor.
+     *
+     * TODO: use {@link DataAccessor}
      *
      * Build a formatted string for series list.
      */
@@ -267,10 +292,10 @@ public class Book extends DataManager {
         }
     }
 
-
-
     /**
      * Utility routine to get a Content (an AnthologyTitle list) from a data manager
+     *
+     * TODO: use {@link DataAccessor}
      *
      * @return List of anthology titles
      */
@@ -285,16 +310,10 @@ public class Book extends DataManager {
      * Special Accessor
      */
     @CallSuper
-    public void setContentList(@NonNull final ArrayList<AnthologyTitle> list) {
+    public void putContentList(@NonNull final ArrayList<AnthologyTitle> list) {
         super.putSerializable(UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY, list);
     }
 
-    /**
-     * Convenience Accessor
-     */
-    public boolean isRead() {
-        return getInt(UniqueId.KEY_BOOK_READ) != 0;
-    }
 
     /**
      * Update author details from DB
@@ -306,7 +325,7 @@ public class Book extends DataManager {
         for (Author a : list) {
             db.refreshAuthor(a);
         }
-        setAuthorList(list);
+        putAuthorList(list);
     }
 
     /**
@@ -340,7 +359,7 @@ public class Book extends DataManager {
          * bitmask! used for {@link DatabaseDefinitions#DOM_BOOK_ANTHOLOGY_BITMASK}
          *  00 = not an ant,
          *  01 = ant from one author
-         *  10 = not an ant, multiple authors -> not in the wild, but cold be Omnibus of a set of novels
+         *  10 = not an ant, multiple authors -> not in the wild, but could be Omnibus of a set of novels
          *  11 = ant from multiple authors
          *  So for now, the field should be 0,1,3
          *
@@ -382,60 +401,27 @@ public class Book extends DataManager {
 
         });
 
-        /* Make a csv formatted list of bookshelves */
-        addAccessor(BOOKSHELF_TEXT, new DataAccessor() {
+        addAccessor(IS_READ, new DataAccessor() {
             @NonNull
             @Override
             public Object get(@NonNull final DataManager data, @NonNull final Datum datum, @NonNull final Bundle rawData) {
-                return getBookshelfDisplayText();
+                return 0 != data.getInt(UniqueId.KEY_BOOK_READ);
             }
 
             @Override
-            public void set(@NonNull final DataManager data, @NonNull final Datum datum, @NonNull final Bundle rawData, @NonNull final Object value) {
-                throw new UnsupportedOperationException("Bookshelf Text can not be set");
+            public void set(@NonNull final DataManager data,
+                            @NonNull final Datum datum,
+                            @NonNull final Bundle rawData,
+                            @NonNull final Object value) {
+                putBoolean(UniqueId.KEY_BOOK_READ, Datum.toBoolean(value));
+
             }
 
             @Override
             public boolean isPresent(@NonNull final DataManager data, @NonNull final Datum datum, @NonNull final Bundle rawData) {
-                return !getBookshelfDisplayText().isEmpty();
-            }
-
-            /**
-             * @return a csv formatted list of bookshelves
-             */
-            @NonNull
-            private String getBookshelfDisplayText() {
-                final List<String> list = ArrayUtils.decodeList(Bookshelf.SEPARATOR, getString(BOOKSHELF_LIST));
-                if (list.size() == 0) {
-                    return "";
-                }
-
-                final StringBuilder text = new StringBuilder(list.get(0));
-                for (int i = 1; i < list.size(); i++) {
-                    text.append(Bookshelf.SEPARATOR).append(" ").append(list.get(i));
-                }
-                return text.toString();
+                return rawData.containsKey(UniqueId.KEY_BOOK_READ);
             }
         });
 
-        // Whenever the row ID is written, make sure mBookId is updated.
-        addAccessor(UniqueId.KEY_ID, new DataAccessor() {
-            @Override
-            @NonNull
-            public Object get(@NonNull final DataManager data, @NonNull final Datum datum, @NonNull final Bundle rawData) {
-                return Datum.toLong(rawData.get(datum.getKey()));
-            }
-
-            @Override
-            public void set(@NonNull final DataManager data, @NonNull final Datum datum, @NonNull final Bundle rawData, @NonNull final Object value) {
-                rawData.putLong(datum.getKey(), Datum.toLong(value));
-                mBookId = rawData.getLong(datum.getKey());
-            }
-
-            @Override
-            public boolean isPresent(@NonNull final DataManager data, @NonNull final Datum datum, @NonNull final Bundle rawData) {
-                return true;
-            }
-        });
     }
 }

@@ -89,7 +89,7 @@ public class MenuHandler {
                     .setIcon(R.drawable.ic_zoom_in);
             subMenu.add(Menu.NONE, R.id.MENU_BOOK_ADD_BY_SEARCH_TEXT, mSort++, R.string.search_internet)
                     .setIcon(R.drawable.ic_zoom_in);
-            subMenu.add(Menu.NONE, R.id.MENU_BOOK_ADD_MANUALLY, mSort++, R.string.add_manually)
+            subMenu.add(Menu.NONE, R.id.MENU_BOOK_ADD_MANUALLY, mSort++, R.string.menu_add_book_manually)
                     .setIcon(R.drawable.ic_add);
         }
     }
@@ -123,17 +123,17 @@ public class MenuHandler {
     private void addBookByScanning(@NonNull final Activity activity) {
         Intent intent = new Intent(activity, BookSearchActivity.class);
         intent.putExtra(BookSearchActivity.REQUEST_KEY_BY, BookSearchActivity.BY_SCAN);
-        activity.startActivityForResult(intent, BookSearchActivity.REQUEST_CODE_SCAN);
+        activity.startActivityForResult(intent, BookSearchActivity.REQUEST_CODE_SCAN); /* f1e0d846-852e-451b-9077-6daa5d94f37d */
     }
 
     private void addBookBySearch(@NonNull final Activity activity, @NonNull final String by) {
         Intent intent = new Intent(activity, BookSearchActivity.class);
         intent.putExtra(BookSearchActivity.REQUEST_KEY_BY, by);
-        activity.startActivityForResult(intent, BookSearchActivity.REQUEST_CODE_SEARCH);
+        activity.startActivityForResult(intent, BookSearchActivity.REQUEST_CODE_SEARCH); /* 59fd9653-f033-40b5-bee8-f1dfa5b5be6b */
     }
 
     private void addBookManually(@NonNull final Activity activity) {
         Intent intent = new Intent(activity, EditBookActivity.class);
-        activity.startActivityForResult(intent, EditBookActivity.REQUEST_CODE);
+        activity.startActivityForResult(intent, EditBookActivity.REQUEST_CODE); /* 88a6c414-2d3b-4637-9044-b7291b6b9100 */
     }
 }

@@ -109,7 +109,7 @@ public class StorageUtils {
     /**
      * Check if the external storage is writable
      *
-     * @return success or failure
+     * @return onConfirm or onCancel
      */
     static public boolean isWriteProtected() throws SecurityException {
         try {
@@ -495,10 +495,12 @@ public class StorageUtils {
      */
     public static void backupDatabaseFile(@NonNull final String destFilename) {
         try {
+            //FIXME: really ? just to get the path ?
             CatalogueDBAdapter db = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
             db.open();
             String dbPath = db.getPath();
             db.close();
+
             backupFile(dbPath, destFilename);
         } catch (Exception e) {
             Logger.error(e);

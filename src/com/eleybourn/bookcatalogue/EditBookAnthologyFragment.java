@@ -63,8 +63,6 @@ import java.util.List;
  * This class is called by {@link EditBookActivity} and displays the Anthology (aka Content) Tab
  */
 public class EditBookAnthologyFragment extends BookAbstractFragment implements HandlesISFDB {
-    /** context menu specific for Anthology */
-    private static final int MENU_POPULATE_ISFDB = 100;
 
     private EditText mTitleText;
     private EditText mPubDateText;
@@ -109,7 +107,7 @@ public class EditBookAnthologyFragment extends BookAbstractFragment implements H
         //noinspection ConstantConditions
         mAuthorText = getView().findViewById(R.id.add_author);
         ArrayAdapter<String> author_adapter = new ArrayAdapter<>(requireActivity(),
-                android.R.layout.simple_dropdown_item_1line, mDb.getAuthors());
+                android.R.layout.simple_dropdown_item_1line, mDb.getAuthorsFormattedName());
         mAuthorText.setAdapter(author_adapter);
 
         // mSingleAuthor checkbox
@@ -157,7 +155,7 @@ public class EditBookAnthologyFragment extends BookAbstractFragment implements H
                     adapter.notifyDataSetChanged();
 
                     mEditPosition = null;
-                    mAddButton.setText(R.string.anthology_add);
+                    mAddButton.setText(R.string.btn_confirm_add);
                 }
 
                 mPubDateText.setText("");
@@ -198,7 +196,7 @@ public class EditBookAnthologyFragment extends BookAbstractFragment implements H
                 mPubDateText.setText(anthologyTitle.getFirstPublication());
                 mTitleText.setText(anthologyTitle.getTitle());
                 mAuthorText.setText(anthologyTitle.getAuthor().getDisplayName());
-                mAddButton.setText(R.string.anthology_save);
+                mAddButton.setText(R.string.btn_confirm_save);
             }
         });
     }
@@ -234,11 +232,11 @@ public class EditBookAnthologyFragment extends BookAbstractFragment implements H
      */
     @Override
     public void onGotISFDBBook(@NonNull final Bundle bookData) {
-        String encoded_content_list = bookData.getString(UniqueId.BKEY_ANTHOLOGY_DETAILS);
+        String encoded_content_list = bookData.getString(UniqueId.BKEY_ANTHOLOGY_STRING_LIST);
         final List<AnthologyTitle> results = ArrayUtils.getAnthologyTitleUtils().decodeList(encoded_content_list, false);
-        bookData.remove(UniqueId.BKEY_ANTHOLOGY_DETAILS);
+        bookData.remove(UniqueId.BKEY_ANTHOLOGY_STRING_LIST);
 
-        String encoded_series_list = bookData.getString(UniqueId.BKEY_SERIES_DETAILS);
+        String encoded_series_list = bookData.getString(UniqueId.BKEY_SERIES_STRING_LIST);
         if (encoded_content_list != null) {
             ArrayList<Series> inBook = getBook().getSeriesList();
             List<Series> series = ArrayUtils.getSeriesUtils().decodeList(encoded_series_list, false);
@@ -247,7 +245,7 @@ public class EditBookAnthologyFragment extends BookAbstractFragment implements H
                     inBook.add(s);
                 }
             }
-            getBook().setSeriesList(inBook);
+            getBook().putSeriesList(inBook);
             //Logger.info(this, " onGotISFDBBook: series=" + series);
         }
 
@@ -318,20 +316,19 @@ public class EditBookAnthologyFragment extends BookAbstractFragment implements H
 
     /**
      * Run each time the menu button is pressed. This will setup the options menu
-     * Need to use this as we want the menu cleared before.
+     * Need to use this (and NOT {@link #onCreateOptionsMenu}as we want the menu cleared before.
      */
     @Override
     @CallSuper
     public void onPrepareOptionsMenu(@NonNull final Menu menu) {
         menu.clear();
-        menu.add(Menu.NONE, MENU_POPULATE_ISFDB, 0, R.string.populate_anthology_titles)
+        menu.add(Menu.NONE, R.id.MENU_POPULATE_ANTHOLOGY_ISFDB, 0, R.string.populate_anthology_titles)
                 .setIcon(R.drawable.ic_autorenew);
         super.onPrepareOptionsMenu(menu);
     }
 
     /**
-     * This will be called when a menu item is selected. A large switch
-     * statement to call the appropriate functions (or other activities)
+     * This will be called when a menu item is selected.
      *
      * @param item The item selected
      *
@@ -341,7 +338,7 @@ public class EditBookAnthologyFragment extends BookAbstractFragment implements H
     @CallSuper
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         switch (item.getItemId()) {
-            case MENU_POPULATE_ISFDB:
+            case R.id.MENU_POPULATE_ANTHOLOGY_ISFDB:
                 StandardDialogs.showBriefMessage(requireActivity(), R.string.connecting_to_web_site);
                 ISFDBManager.searchEditions(mIsbn, this);
                 return true;
@@ -352,8 +349,10 @@ public class EditBookAnthologyFragment extends BookAbstractFragment implements H
     @Override
     @CallSuper
     public void onCreateContextMenu(@NonNull final ContextMenu menu, @NonNull final View v, @NonNull final ContextMenuInfo menuInfo) {
+        menu.add(Menu.NONE, R.id.MENU_DELETE_ANTHOLOGY, 0, R.string.menu_delete_anthology)
+                .setIcon(R.drawable.ic_delete);
+
         super.onCreateContextMenu(menu, v, menuInfo);
-        menu.add(Menu.NONE, R.id.MENU_DELETE_ANTHOLOGY, 0, R.string.menu_delete_anthology);
     }
 
     @Override
@@ -371,7 +370,7 @@ public class EditBookAnthologyFragment extends BookAbstractFragment implements H
     }
 
     private void saveState(@NonNull final Book book) {
-        book.setContentList(mList);
+        book.putContentList(mList);
         // multiple authors is now automatically done during database access. The checkbox is only
         // a visual aid for hiding/showing the author EditText.
         // So while this command is 'correct', it does not stop (and does not bother) the user
@@ -386,8 +385,8 @@ public class EditBookAnthologyFragment extends BookAbstractFragment implements H
     @Override
     @CallSuper
     public void onPause() {
-        super.onPause();
         saveState(getBook());
+        super.onPause();
     }
 
     @Override
@@ -414,7 +413,7 @@ public class EditBookAnthologyFragment extends BookAbstractFragment implements H
             mTitleText.setText(item.getTitle());
             mAuthorText.setText(item.getAuthor().getDisplayName());
             mEditPosition = position;
-            mAddButton.setText(R.string.anthology_save);
+            mAddButton.setText(R.string.btn_confirm_save);
         }
 
         @Override

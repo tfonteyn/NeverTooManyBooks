@@ -50,7 +50,7 @@ import java.util.Calendar;
  *
  * @author pjw
  */
-public class PartialDatePicker extends AlertDialog {
+class PartialDatePickerDialog extends AlertDialog {
     private static final String UNKNOWN_MONTH = "---";
     private static final String UNKNOWN_DAY = "--";
     /** Calling context */
@@ -82,7 +82,7 @@ public class PartialDatePicker extends AlertDialog {
      *
      * @param activity Calling context
      */
-    PartialDatePicker(@NonNull final Activity activity) {
+    PartialDatePickerDialog(@NonNull final Activity activity) {
         this(activity, null, null, null);
     }
 
@@ -95,10 +95,10 @@ public class PartialDatePicker extends AlertDialog {
      * @param day      Starting day
      */
     @SuppressWarnings("SameParameterValue")
-    private PartialDatePicker(@NonNull final Activity activity,
-                              @Nullable final Integer year,
-                              @Nullable final Integer month,
-                              @Nullable final Integer day) {
+    private PartialDatePickerDialog(@NonNull final Activity activity,
+                                    @Nullable final Integer year,
+                                    @Nullable final Integer month,
+                                    @Nullable final Integer day) {
         super(activity);
 
         mActivity = activity;
@@ -304,7 +304,7 @@ public class PartialDatePicker extends AlertDialog {
                                     StandardDialogs.showBriefMessage(mActivity, R.string.if_month_is_specified_year_must_be);
                                 } else {
                                     if (mListener != null)
-                                        mListener.onDateSet(PartialDatePicker.this, mYear, mMonth, mDay);
+                                        mListener.onDateSet(PartialDatePickerDialog.this, mYear, mMonth, mDay);
                                 }
                             }
                         }
@@ -316,7 +316,7 @@ public class PartialDatePicker extends AlertDialog {
                     @Override
                     public void onClick(final View v) {
                         if (mListener != null)
-                            mListener.onCancel(PartialDatePicker.this);
+                            mListener.onCancel(PartialDatePickerDialog.this);
                     }
                 }
         );
@@ -328,7 +328,7 @@ public class PartialDatePicker extends AlertDialog {
 //			@Override
 //			public void onCancel(DialogInterface arg0) {
 //				if (mListener != null)
-//					mListener.onCancel(PartialDatePicker.this);
+//					mListener.onCancel(PartialDatePickerDialog.this);
 //			}});
 
         // Set the initial date
@@ -570,12 +570,12 @@ public class PartialDatePicker extends AlertDialog {
      * @author pjw
      */
     protected interface OnDateSetListener {
-        void onDateSet(@NonNull final PartialDatePicker dialog,
+        void onDateSet(@NonNull final PartialDatePickerDialog dialog,
                        @Nullable final Integer year,
                        @Nullable final Integer month,
                        @Nullable final Integer day);
 
-        void onCancel(@NonNull final PartialDatePicker dialog);
+        void onCancel(@NonNull final PartialDatePickerDialog dialog);
     }
 
 }

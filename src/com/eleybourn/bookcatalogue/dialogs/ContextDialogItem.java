@@ -24,7 +24,7 @@ import android.support.annotation.NonNull;
 
 /**
  * Class to make building a 'context menu' from an AlertDialog a little easier.
- * Used in Event.buildDialogItems and related Activities.
+ * Used in {@link com.eleybourn.bookcatalogue.taskqueue.Event} and related Activities.
  * 
  * @author Philip Warner
  *

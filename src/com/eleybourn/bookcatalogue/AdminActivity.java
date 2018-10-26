@@ -20,7 +20,6 @@
 
 package com.eleybourn.bookcatalogue;
 
-import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
@@ -45,11 +44,11 @@ import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs.SimpleDialogFileItem;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs.SimpleDialogItem;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs.SimpleDialogOnClickListener;
-import com.eleybourn.bookcatalogue.filechooser.BackupChooser;
-import com.eleybourn.bookcatalogue.searches.SearchAdmin;
-import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsRegister;
+import com.eleybourn.bookcatalogue.filechooser.BackupChooserActivity;
+import com.eleybourn.bookcatalogue.searches.SearchAdminActivity;
+import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsRegisterActivity;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsUtils;
-import com.eleybourn.bookcatalogue.searches.librarything.AdministrationLibraryThing;
+import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingAdminActivity;
 import com.eleybourn.bookcatalogue.tasks.ManagedTask;
 import com.eleybourn.bookcatalogue.tasks.TaskListActivity;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
@@ -63,7 +62,7 @@ import java.util.List;
  *
  * @author Evan Leybourn
  */
-public class AdministrationFunctions extends BaseActivityWithTasks {
+public class AdminActivity extends BaseActivityWithTasks {
 
     public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_ADMIN;
 
@@ -73,15 +72,6 @@ public class AdministrationFunctions extends BaseActivityWithTasks {
     private boolean finish_after = false;
     private boolean mExportOnStartup = false;
 
-    /**
-     * Start the archiving activity
-     */
-    public static void exportToArchive(@NonNull Activity a) {
-        Intent intent = new Intent(a, BackupChooser.class);
-        intent.putExtra(BackupChooser.BKEY_MODE, BackupChooser.BVAL_MODE_SAVE_AS);
-        a.startActivity(intent);
-    }
-
     @Override
     protected int getLayoutId() {
         return R.layout.activity_admin_functions;
@@ -90,28 +80,24 @@ public class AdministrationFunctions extends BaseActivityWithTasks {
     @Override
     @CallSuper
     public void onCreate(@Nullable final Bundle savedInstanceState) {
-        try {
-            super.onCreate(savedInstanceState);
-            this.setTitle(R.string.lbl_administration);
+        super.onCreate(savedInstanceState);
+        this.setTitle(R.string.lbl_administration);
 
-            Bundle extras = getIntent().getExtras();
-            if (extras != null && extras.containsKey(DO_AUTO)) {
-                String val = extras.getString(DO_AUTO);
-                if (val != null) {
-                    switch (val) {
-                        case DO_AUTO_EXPORT:
-                            finish_after = true;
-                            mExportOnStartup = true;
-                            break;
-                        default:
-                            throw new IllegalArgumentException("Unsupported DO_AUTO option: " + val);
-                    }
+        Bundle extras = getIntent().getExtras();
+        if (extras != null && extras.containsKey(DO_AUTO)) {
+            String val = extras.getString(DO_AUTO);
+            if (val != null) {
+                switch (val) {
+                    case DO_AUTO_EXPORT:
+                        finish_after = true;
+                        mExportOnStartup = true;
+                        break;
+                    default:
+                        throw new IllegalArgumentException("Unsupported DO_AUTO option: " + val);
                 }
             }
-            setupAdminPage();
-        } catch (Exception e) {
-            Logger.error(e);
         }
+        setupAdminPage();
     }
 
     /**
@@ -130,7 +116,8 @@ public class AdministrationFunctions extends BaseActivityWithTasks {
             v.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    manageFields();
+                    Intent intent = new Intent(AdminActivity.this, FieldVisibilityActivity.class);
+                    startActivityForResult(intent, FieldVisibilityActivity.REQUEST_CODE); /* 2f885b11-27f2-40d7-8c8b-fcb4d95a4151 */
                 }
             });
         }
@@ -143,7 +130,8 @@ public class AdministrationFunctions extends BaseActivityWithTasks {
             v.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    manageBooklistStyles();
+                    Intent intent = new Intent(AdminActivity.this, BooklistStylesActivity.class);
+                    startActivityForResult(intent, BooklistStylesActivity.REQUEST_CODE); /* 13854efe-e8fd-447a-a195-47678c0d87e7 */
                 }
             });
         }
@@ -156,21 +144,24 @@ public class AdministrationFunctions extends BaseActivityWithTasks {
             v.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    exportToArchive(AdministrationFunctions.this);
+                    Intent intent = new Intent(AdminActivity.this, BackupChooserActivity.class);
+                    intent.putExtra(BackupChooserActivity.BKEY_MODE, BackupChooserActivity.BVAL_MODE_SAVE_AS);
+                    startActivity(intent);
                 }
             });
         }
 
-        /* Import from Archive */
+        /* Import from Archive - Start the restore activity*/
         {
-            /* Restore Catalogue Link */
             View v = findViewById(R.id.lbl_restore_catalogue);
             // Make line flash when clicked.
             v.setBackgroundResource(android.R.drawable.list_selector_background);
             v.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    importFromArchive();
+                    Intent intent = new Intent(AdminActivity.this, BackupChooserActivity.class);
+                    intent.putExtra(BackupChooserActivity.BKEY_MODE, BackupChooserActivity.BVAL_MODE_OPEN);
+                    startActivity(intent);
                 }
             });
         }
@@ -202,7 +193,7 @@ public class AdministrationFunctions extends BaseActivityWithTasks {
             });
         }
 
-        /* Automatically Update Fields */
+        /* Automatically Update Fields from internet*/
         {
             View v = findViewById(R.id.lbl_update_internet);
             // Make line flash when clicked.
@@ -210,7 +201,8 @@ public class AdministrationFunctions extends BaseActivityWithTasks {
             v.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    updateFieldsFromInternet();
+                    Intent intent = new Intent(AdminActivity.this, UpdateFromInternetActivity.class);
+                    startActivity(intent);
                 }
             });
         }
@@ -223,7 +215,7 @@ public class AdministrationFunctions extends BaseActivityWithTasks {
             v.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    GoodreadsUtils.importAllFromGoodreads(AdministrationFunctions.this, true);
+                    GoodreadsUtils.importAllFromGoodreads(AdminActivity.this, true);
                 }
             });
         }
@@ -236,7 +228,7 @@ public class AdministrationFunctions extends BaseActivityWithTasks {
             v.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    GoodreadsUtils.importAllFromGoodreads(AdministrationFunctions.this, false);
+                    GoodreadsUtils.importAllFromGoodreads(AdminActivity.this, false);
                 }
             });
         }
@@ -249,7 +241,7 @@ public class AdministrationFunctions extends BaseActivityWithTasks {
             v.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    GoodreadsUtils.sendBooksToGoodreads(AdministrationFunctions.this);
+                    GoodreadsUtils.sendBooksToGoodreads(AdminActivity.this);
                 }
             });
         }
@@ -262,7 +254,7 @@ public class AdministrationFunctions extends BaseActivityWithTasks {
             v.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(AdministrationFunctions.this, GoodreadsRegister.class);
+                    Intent intent = new Intent(AdminActivity.this, GoodreadsRegisterActivity.class);
                     startActivity(intent);
                 }
             });
@@ -276,7 +268,7 @@ public class AdministrationFunctions extends BaseActivityWithTasks {
             v.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(AdministrationFunctions.this, AdministrationLibraryThing.class);
+                    Intent intent = new Intent(AdminActivity.this, LibraryThingAdminActivity.class);
                     startActivity(intent);
                 }
             });
@@ -290,13 +282,13 @@ public class AdministrationFunctions extends BaseActivityWithTasks {
             v.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(AdministrationFunctions.this, SearchAdmin.class);
+                    Intent intent = new Intent(AdminActivity.this, SearchAdminActivity.class);
                     startActivity(intent);
                 }
             });
         }
 
-        /* Background Tasks */
+        /* Start the activity that shows the basic details of background tasks. */
         {
             View v = findViewById(R.id.lbl_background_tasks);
             // Make line flash when clicked.
@@ -304,7 +296,8 @@ public class AdministrationFunctions extends BaseActivityWithTasks {
             v.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    showBackgroundTasks();
+                    Intent intent = new Intent(AdminActivity.this, TaskListActivity.class);
+                    startActivity(intent);
                 }
             });
         }
@@ -319,7 +312,7 @@ public class AdministrationFunctions extends BaseActivityWithTasks {
                 public void onClick(View v) {
                     HintManager.resetHints();
                     //Snackbar.make(v, R.string.hints_have_been_reset, Snackbar.LENGTH_LONG).show();
-                    StandardDialogs.showBriefMessage(AdministrationFunctions.this, R.string.hints_have_been_reset);
+                    StandardDialogs.showBriefMessage(AdminActivity.this, R.string.hints_have_been_reset);
                 }
             });
         }
@@ -332,7 +325,7 @@ public class AdministrationFunctions extends BaseActivityWithTasks {
             v.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    try (CoversDbHelper coversDbHelper = CoversDbHelper.getInstance(AdministrationFunctions.this)) {
+                    try (CoversDbHelper coversDbHelper = CoversDbHelper.getInstance(AdminActivity.this)) {
                         coversDbHelper.eraseCoverCache();
                     }
                 }
@@ -349,13 +342,23 @@ public class AdministrationFunctions extends BaseActivityWithTasks {
                 public void onClick(View v) {
                     StorageUtils.backupDatabaseFile();
                     //Snackbar.make(v, R.string.backup_success, Snackbar.LENGTH_LONG).show();
-                    StandardDialogs.showBriefMessage(AdministrationFunctions.this, R.string.backup_success);
+                    StandardDialogs.showBriefMessage(AdminActivity.this, R.string.backup_success);
                 }
             });
 
         }
     }
 
+    /**
+     * Export all data to a CSV file
+     */
+    private void exportToCSV() {
+        new ExportThread(getTaskManager()).start();
+    }
+
+    /**
+     * Ask before importing
+     */
     private void confirmToImportFromCSV() {
         AlertDialog dialog = new AlertDialog.Builder(this)
                 .setMessage(R.string.import_alert)
@@ -375,51 +378,6 @@ public class AdministrationFunctions extends BaseActivityWithTasks {
                     }
                 });
         dialog.show();
-    }
-
-    @Override
-    protected void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode) {
-            case FieldVisibilityActivity.REQUEST_CODE:
-            case BooklistStylesActivity.REQUEST_CODE:
-                // pass up
-                setResult(resultCode, data);
-                break;
-        }
-    }
-
-    /**
-     * Load the Manage Field Visibility Activity
-     */
-    private void manageFields() {
-        Intent intent = new Intent(this, FieldVisibilityActivity.class);
-        startActivityForResult(intent, FieldVisibilityActivity.REQUEST_CODE);
-    }
-
-    /**
-     * Load the Edit Book List Styles Activity
-     */
-    private void manageBooklistStyles() {
-        Intent intent = new Intent(this, BooklistStylesActivity.class);
-        startActivityForResult(intent, BooklistStylesActivity.REQUEST_CODE);
-    }
-
-
-    /**
-     * Start the restore activity
-     */
-    private void importFromArchive() {
-        Intent intent = new Intent(this, BackupChooser.class);
-        intent.putExtra(BackupChooser.BKEY_MODE, BackupChooser.BVAL_MODE_OPEN);
-        startActivity(intent);
-    }
-
-    /**
-     * Export all data to a CSV file
-     */
-    private void exportToCSV() {
-        new ExportThread(getTaskManager()).start();
     }
 
     /**
@@ -458,22 +416,22 @@ public class AdministrationFunctions extends BaseActivityWithTasks {
         new ImportThread(getTaskManager(), fileSpec).start();
     }
 
-    /**
-     * Update blank Fields from internet
-     *
-     * There is a current limitation that restricts the search to only books with an ISBN
-     */
-    private void updateFieldsFromInternet() {
-        Intent intent = new Intent(this, UpdateFromInternetActivity.class);
-        startActivity(intent);
-    }
 
-    /**
-     * Start the activity that shows the basic details of background tasks.
-     */
-    private void showBackgroundTasks() {
-        Intent intent = new Intent(this, TaskListActivity.class);
-        startActivity(intent);
+    @Override
+    @CallSuper
+    protected void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode) {
+            case FieldVisibilityActivity.REQUEST_CODE: /* 2f885b11-27f2-40d7-8c8b-fcb4d95a4151 */
+            case BooklistStylesActivity.REQUEST_CODE: /* 13854efe-e8fd-447a-a195-47678c0d87e7 */
+                // pass up
+                setResult(resultCode, data); /* 7f46620d-7951-4637-8783-b410730cd460 */
+                break;
+            default:
+                Logger.error("onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
+                break;
+        }
     }
 
     @Override
@@ -503,7 +461,7 @@ public class AdministrationFunctions extends BaseActivityWithTasks {
             return;
         }
 
-        AlertDialog dialog = new AlertDialog.Builder(AdministrationFunctions.this)
+        AlertDialog dialog = new AlertDialog.Builder(AdminActivity.this)
                 .setTitle(R.string.email_export)
                 .setIcon(R.drawable.ic_send)
                 .create();
@@ -525,7 +483,7 @@ public class AdministrationFunctions extends BaseActivityWithTasks {
                             startActivity(Intent.createChooser(emailIntent, getString(R.string.send_mail)));
                         } catch (NullPointerException e) {
                             Logger.error(e);
-                            StandardDialogs.showBriefMessage(AdministrationFunctions.this, R.string.error_export_failed);
+                            StandardDialogs.showBriefMessage(AdminActivity.this, R.string.error_export_failed);
                         }
 
                         dialog.dismiss();

@@ -22,8 +22,8 @@ import java.util.Arrays;
  */
 public class Pic2ShopScanner implements Scanner {
     /**
-     * When a barcode is read, pic2shop returns Activity.RESULT_OK in onActivityResult()
-     * of the activity which requested the scan using startActivityForResult().
+     * When a barcode is read, pic2shop returns Activity.RESULT_OK in {@link Activity#onActivityResult})
+     * of the activity which requested the scan using {@link #startActivityForResult}.
      * The barcode can be retrieved with intent.getStringExtra("BARCODE").
      *
      * If the user exits pic2shop by pressing Back before a barcode is read, the
@@ -71,7 +71,7 @@ public class Pic2ShopScanner implements Scanner {
             intent = new Intent(Pro.ACTION);
             intent.putExtra(Pro.FORMATS, Pro.BARCODE_TYPES);
         }
-        activity.startActivityForResult(intent, requestCode);
+        activity.startActivityForResult(intent, requestCode); // 4f410d34-dc9c-4ee2-903e-79d69a328517
     }
 
     /**

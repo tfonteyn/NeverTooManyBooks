@@ -49,7 +49,7 @@ import java.util.List;
  *
  * @author pjw
  */
-public class SimpleTaskQueueProgressFragment extends DialogFragment {
+public class SimpleTaskQueueProgressDialogFragment extends DialogFragment {
     private static final String BKEY_DIALOG_MESSAGE = "title";
     private static final String BKEY_DIALOG_IS_INDETERMINATE = "isIndeterminate";
     private static final String BKEY_TASK_ID = "taskId";
@@ -104,7 +104,7 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
     /**
      * Constructor
      */
-    public SimpleTaskQueueProgressFragment() {
+    public SimpleTaskQueueProgressDialogFragment() {
         mQueue = new SimpleTaskQueue("FragmentQueue");
 		/* Dismiss dialog if all tasks finished */
         SimpleTaskQueue.OnTaskFinishListener mTaskFinishListener = new SimpleTaskQueue.OnTaskFinishListener() {
@@ -128,20 +128,20 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
      * @param task    Task to run
      */
     @NonNull
-    public static SimpleTaskQueueProgressFragment runTaskWithProgress(@NonNull final FragmentActivity context,
-                                                                      final int message,
-                                                                      @NonNull final FragmentTask task,
-                                                                      final boolean isIndeterminate,
-                                                                      final int taskId) {
-        SimpleTaskQueueProgressFragment frag = SimpleTaskQueueProgressFragment.newInstance(message, isIndeterminate, taskId);
+    public static SimpleTaskQueueProgressDialogFragment runTaskWithProgress(@NonNull final FragmentActivity context,
+                                                                            final int message,
+                                                                            @NonNull final FragmentTask task,
+                                                                            final boolean isIndeterminate,
+                                                                            final int taskId) {
+        SimpleTaskQueueProgressDialogFragment frag = SimpleTaskQueueProgressDialogFragment.newInstance(message, isIndeterminate, taskId);
         frag.enqueue(task);
         frag.show(context.getSupportFragmentManager(), null);
         return frag;
     }
 
     @NonNull
-    private static SimpleTaskQueueProgressFragment newInstance(final int title, final boolean isIndeterminate, final int taskId) {
-        SimpleTaskQueueProgressFragment frag = new SimpleTaskQueueProgressFragment();
+    private static SimpleTaskQueueProgressDialogFragment newInstance(final int title, final boolean isIndeterminate, final int taskId) {
+        SimpleTaskQueueProgressDialogFragment frag = new SimpleTaskQueueProgressDialogFragment();
         Bundle args = new Bundle();
         args.putInt(BKEY_DIALOG_MESSAGE, title);
         args.putInt(BKEY_TASK_ID, taskId);
@@ -483,15 +483,17 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
      * when the underlying Activity is actually present.
      */
     private interface TaskMessage {
-        void deliver(@NonNull final Activity a);
+        void deliver(@NonNull final Activity activity);
     }
 
     /**
      * Listener for OnTaskFinished messages
      */
     public interface OnTaskFinishedListener {
-        void onTaskFinished(@NonNull final SimpleTaskQueueProgressFragment fragment,
-                            final int taskId, final boolean success, final boolean cancelled,
+        void onTaskFinished(@NonNull final SimpleTaskQueueProgressDialogFragment fragment,
+                            final int taskId,
+                            final boolean success,
+                            final boolean cancelled,
                             @NonNull final FragmentTask task);
     }
 
@@ -500,8 +502,10 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
      */
     public interface OnAllTasksFinishedListener {
         @SuppressWarnings("EmptyMethod")
-        void onAllTasksFinished(@NonNull final SimpleTaskQueueProgressFragment fragment,
-                                final int taskId, final boolean success, final boolean cancelled);
+        void onAllTasksFinished(@NonNull final SimpleTaskQueueProgressDialogFragment fragment,
+                                final int taskId,
+                                final boolean success,
+                                final boolean cancelled);
     }
 
     /**
@@ -514,12 +518,14 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
         /**
          * Run the task in it's own thread
          */
-        void run(@NonNull final SimpleTaskQueueProgressFragment fragment, @NonNull final SimpleTaskContext taskContext);
+        void run(@NonNull final SimpleTaskQueueProgressDialogFragment fragment,
+                 @NonNull final SimpleTaskContext taskContext);
 
         /**
          * Called in UI thread after task complete  TODO
          */
-        void onFinish(@NonNull final SimpleTaskQueueProgressFragment fragment, @Nullable final Exception exception);
+        void onFinish(@NonNull final SimpleTaskQueueProgressDialogFragment fragment,
+                      @Nullable final Exception exception);
     }
 
     /**
@@ -532,7 +538,7 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
         private int mState = 0;
 
         @Override
-        public void onFinish(@NonNull final SimpleTaskQueueProgressFragment fragment, @Nullable final Exception e) {
+        public void onFinish(@NonNull final SimpleTaskQueueProgressDialogFragment fragment, @Nullable final Exception e) {
             if (e != null) {
                 Logger.error(e);
                 StandardDialogs.showBriefMessage(fragment.requireActivity(), R.string.error_unexpected_error);
@@ -565,15 +571,15 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
         }
 
         @Override
-        public void deliver(@NonNull final Activity a) {
+        public void deliver(@NonNull final Activity activity) {
             try {
-                mTask.onFinish(SimpleTaskQueueProgressFragment.this, mException);
+                mTask.onFinish(SimpleTaskQueueProgressDialogFragment.this, mException);
             } catch (Exception e) {
                 Logger.error(e);
             }
             try {
-                if (a instanceof OnTaskFinishedListener) {
-                    ((OnTaskFinishedListener) a).onTaskFinished(SimpleTaskQueueProgressFragment.this, mTaskId, mSuccess, mWasCancelled, mTask);
+                if (activity instanceof OnTaskFinishedListener) {
+                    ((OnTaskFinishedListener) activity).onTaskFinished(SimpleTaskQueueProgressDialogFragment.this, mTaskId, mSuccess, mWasCancelled, mTask);
                 }
             } catch (Exception e) {
                 Logger.error(e);
@@ -592,9 +598,9 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
         }
 
         @Override
-        public void deliver(@NonNull final Activity a) {
-            if (a instanceof OnAllTasksFinishedListener) {
-                ((OnAllTasksFinishedListener) a).onAllTasksFinished(SimpleTaskQueueProgressFragment.this, mTaskId, mSuccess, mWasCancelled);
+        public void deliver(@NonNull final Activity activity) {
+            if (activity instanceof OnAllTasksFinishedListener) {
+                ((OnAllTasksFinishedListener) activity).onAllTasksFinished(SimpleTaskQueueProgressDialogFragment.this, mTaskId, mSuccess, mWasCancelled);
             }
             dismiss();
         }
@@ -617,7 +623,7 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
         @Override
         public void run(@NonNull final SimpleTaskContext taskContext) {
             try {
-                mInnerTask.run(SimpleTaskQueueProgressFragment.this, taskContext);
+                mInnerTask.run(SimpleTaskQueueProgressDialogFragment.this, taskContext);
             } catch (Exception e) {
                 mSuccess = false;
                 throw e;
@@ -626,7 +632,7 @@ public class SimpleTaskQueueProgressFragment extends DialogFragment {
 
         @Override
         public void onFinish(@Nullable final Exception e) {
-            SimpleTaskQueueProgressFragment.this.queueTaskFinished(mInnerTask, e);
+            SimpleTaskQueueProgressDialogFragment.this.queueTaskFinished(mInnerTask, e);
         }
 
     }

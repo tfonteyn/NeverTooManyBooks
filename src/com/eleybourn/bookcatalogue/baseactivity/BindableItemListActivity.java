@@ -44,21 +44,10 @@ import java.util.List;
  * @author pjw
  */
 abstract public class BindableItemListActivity extends BaseListActivity implements BindableItemBinder {
-    /** The resource ID for the base view */
-    private final int mBaseViewId;
     /** Cursor of book IDs */
     private BindableItemCursor mBindableItems;
     /** Adapter for list */
     private BindableItemCursorAdapter mListAdapter;
-
-    /**
-     * Constructor; this will be called by the subclass to set the resource IDs.
-     *
-     * @param baseViewId Resource id of base view
-     */
-    public BindableItemListActivity(final int baseViewId) {
-        mBaseViewId = baseViewId;
-    }
 
     /**
      * Subclass MUST implement to return the cursor that will be used to select TaskNotes to
@@ -70,11 +59,6 @@ abstract public class BindableItemListActivity extends BaseListActivity implemen
      */
     @NonNull
     protected abstract BindableItemCursor getBindableItemCursor(@Nullable final Bundle savedInstanceState);
-
-    @Override
-    protected int getLayoutId() {
-        return mBaseViewId;
-    }
 
     @Override
     @CallSuper
@@ -113,14 +97,13 @@ abstract public class BindableItemListActivity extends BaseListActivity implemen
     @Override
     @CallSuper
     protected void onDestroy() {
-        super.onDestroy();
         try {
             if (mBindableItems != null) {
                 mBindableItems.close();
-                mBindableItems = null;
             }
         } catch (Exception ignore) {
         }
+        super.onDestroy();
     }
 
     protected void onListItemClick(@NonNull final AdapterView<?> parent, @NonNull final View v, final int position, final long id) {

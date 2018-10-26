@@ -35,9 +35,13 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseListActivity;
+import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
+import com.eleybourn.bookcatalogue.widgets.TouchListViewWithDropListener;
 
 import java.util.ArrayList;
 
@@ -45,7 +49,8 @@ import java.util.ArrayList;
 /**
  * Admin Activity where we list all bookshelves and can add/delete/edit them.
  *
- * ENHANCE: refit with  extends EditObjectListActivity<Bookshelf>
+ * refit with extends {@link EditObjectListActivity} ? => no point,
+ * we don't want/need a {@link TouchListViewWithDropListener}
  */
 public class EditBookshelvesActivity extends BaseListActivity {
 
@@ -64,8 +69,8 @@ public class EditBookshelvesActivity extends BaseListActivity {
         super.onCreate(savedInstanceState);
         setTitle(R.string.title_manage_bs);
 
-        mDb = new CatalogueDBAdapter(this);
-        mDb.open();
+        mDb = new CatalogueDBAdapter(this)
+                .open();
         populateList();
         registerForContextMenu(getListView());
     }
@@ -79,9 +84,10 @@ public class EditBookshelvesActivity extends BaseListActivity {
     @Override
     @CallSuper
     public void onCreateContextMenu(@NonNull final ContextMenu menu, final View v, final ContextMenuInfo menuInfo) {
+        menu.add(Menu.NONE, R.id.MENU_DELETE, 0, R.string.menu_delete)
+                .setIcon(R.drawable.ic_delete);
+
         super.onCreateContextMenu(menu, v, menuInfo);
-        menu.add(Menu.NONE, R.id.MENU_DELETE, 0, R.string.menu_delete_bs)
-                .setIcon(R.drawable.ic_mode_edit);
     }
 
     @Override
@@ -103,31 +109,32 @@ public class EditBookshelvesActivity extends BaseListActivity {
         return super.onContextItemSelected(item);
     }
 
+    /**
+     * @param menu The options menu in which you place your items.
+     *
+     * @return super.onCreateOptionsMenu(menu);
+     *
+     * @see #onPrepareOptionsMenu
+     * @see #onOptionsItemSelected
+     */
     @Override
     @CallSuper
     public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
-        super.onCreateOptionsMenu(menu);
+
         menu.add(Menu.NONE, R.id.MENU_INSERT, 0, R.string.menu_insert_bs)
                 .setIcon(R.drawable.ic_add)
                 .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-        return true;
+
+        return super.onCreateOptionsMenu(menu);
     }
 
-    /**
-     * This will be called when a menu item is selected. A large switch
-     * statement to call the appropriate functions (or other activities)
-     *
-     * @param item The item selected
-     *
-     * @return <tt>true</tt> if handled
-     */
     @Override
     @CallSuper
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         switch (item.getItemId()) {
             case R.id.MENU_INSERT:
                 Intent intent = new Intent(this, EditBookshelfActivity.class);
-                startActivityForResult(intent, EditBookshelfActivity.REQUEST_CODE_CREATE);
+                startActivityForResult(intent, EditBookshelfActivity.REQUEST_CODE_CREATE); /* ed5e0eb7-6440-4e67-a253-41326bd5c8f4 */
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -138,18 +145,23 @@ public class EditBookshelvesActivity extends BaseListActivity {
         Bookshelf bookshelf = mList.get(position);
         Intent intent = new Intent(this, EditBookshelfActivity.class);
         intent.putExtra(UniqueId.KEY_ID, bookshelf.id);
-        startActivityForResult(intent, EditBookshelfActivity.REQUEST_CODE_EDIT);
+        startActivityForResult(intent, EditBookshelfActivity.REQUEST_CODE_EDIT); /* eabd012d-e5db-4c3b-ad65-876ed04b8eca */
     }
 
     @Override
     @CallSuper
     protected void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
         switch (requestCode) {
-            case EditBookshelfActivity.REQUEST_CODE_EDIT:
-            case EditBookshelfActivity.REQUEST_CODE_CREATE:
+            case EditBookshelfActivity.REQUEST_CODE_EDIT: /* eabd012d-e5db-4c3b-ad65-876ed04b8eca */
+            case EditBookshelfActivity.REQUEST_CODE_CREATE: /* ed5e0eb7-6440-4e67-a253-41326bd5c8f4 */
                 // pass up
-                setResult(resultCode, data);
+                setResult(resultCode, data); /* 41e84172-5833-4906-a891-8df302ecc190 */
+                break;
+
+            default:
+                Logger.error("onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
                 break;
         }
         populateList();
@@ -158,7 +170,11 @@ public class EditBookshelvesActivity extends BaseListActivity {
     @Override
     @CallSuper
     protected void onDestroy() {
+        Tracker.enterOnDestroy(this);
+        if (mDb != null) {
+            mDb.close();
+        }
         super.onDestroy();
-        mDb.close();
+        Tracker.exitOnDestroy(this);
     }
 }

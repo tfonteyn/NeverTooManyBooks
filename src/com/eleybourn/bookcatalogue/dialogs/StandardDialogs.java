@@ -51,8 +51,8 @@ import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Series;
-import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsRegister;
-import com.eleybourn.bookcatalogue.searches.librarything.AdministrationLibraryThing;
+import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsRegisterActivity;
+import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingAdminActivity;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
 import com.eleybourn.bookcatalogue.taskqueue.QueueManager;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
@@ -65,7 +65,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * FIXME: decide Toast/Snackbar ? it's a preference setting for now... but overkill (bigger app)
+ * ENHANCE: decide Toast/Snackbar ? it's a preference setting for now... but overkill (bigger app)
  * TODO: Snackbar: needs styling
  * TODO: Snackbar: uses getDecorView for now so it's always at the bottom of the screen.
  *
@@ -102,7 +102,8 @@ public class StandardDialogs {
     /**
      * Show a dialog asking if unsaved edits should be ignored. Finish activity if so.
      */
-    public static void showConfirmUnsavedEditsDialog(@NonNull final Activity activity, @Nullable final Runnable onConfirm) {
+    public static void showConfirmUnsavedEditsDialog(@NonNull final Activity activity,
+                                                     @Nullable final Runnable onConfirm) {
         AlertDialog dialog = new AlertDialog.Builder(activity)
                 .setTitle(R.string.details_have_changed)
                 .setMessage(R.string.you_have_unsaved_changes)
@@ -163,7 +164,7 @@ public class StandardDialogs {
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getString(R.string.more_info),
                 new DialogInterface.OnClickListener() {
                     public void onClick(@NonNull final DialogInterface dialog, final int which) {
-                        Intent i = new Intent(context, AdministrationLibraryThing.class);
+                        Intent i = new Intent(context, LibraryThingAdminActivity.class);
                         context.startActivity(i);
                         dialog.dismiss();
                     }
@@ -226,14 +227,14 @@ public class StandardDialogs {
      */
     public static int deleteBookAlert(@NonNull final Context context,
                                       @NonNull final CatalogueDBAdapter db,
-                                      final long id,
+                                      final long bookId,
                                       @NonNull final Runnable onDeleted) {
 
-        List<Author> authorList = db.getBookAuthorList(id);
+        List<Author> authorList = db.getBookAuthorList(bookId);
 
         // get the book title
         String title;
-        try (Cursor cursor = db.fetchBookById(id)) {
+        try (Cursor cursor = db.fetchBookById(bookId)) {
             if (!cursor.moveToFirst()) {
                 return R.string.unable_to_find_book;
             }
@@ -267,7 +268,7 @@ public class StandardDialogs {
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getString(android.R.string.ok),
                 new DialogInterface.OnClickListener() {
                     public void onClick(@NonNull final DialogInterface dialog, final int which) {
-                        db.deleteBook(id);
+                        db.deleteBook(bookId);
                         dialog.dismiss();
                         onDeleted.run();
                     }
@@ -286,7 +287,7 @@ public class StandardDialogs {
 
     /**
      * Display a dialog warning the user that goodreads authentication is required;
-     * gives the options: 'request now', 'more info' or 'cancel'.
+     * gives the options: 'request now', 'more info' or 'onCancel'.
      */
     public static void goodreadsAuthAlert(@NonNull final FragmentActivity context) {
         final AlertDialog dialog = new AlertDialog.Builder(context)
@@ -299,7 +300,7 @@ public class StandardDialogs {
                 new DialogInterface.OnClickListener() {
                     public void onClick(@NonNull final DialogInterface dialog, final int which) {
                         dialog.dismiss();
-                        GoodreadsRegister.requestAuthorizationInBackground(context);
+                        GoodreadsRegisterActivity.requestAuthorizationInBackground(context);
                     }
                 });
 
@@ -307,7 +308,7 @@ public class StandardDialogs {
                 new DialogInterface.OnClickListener() {
                     public void onClick(@NonNull final DialogInterface dialog, final int which) {
                         dialog.dismiss();
-                        Intent i = new Intent(context, GoodreadsRegister.class);
+                        Intent i = new Intent(context, GoodreadsRegisterActivity.class);
                         context.startActivity(i);
                     }
                 });

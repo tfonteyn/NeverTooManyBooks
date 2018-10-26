@@ -19,7 +19,6 @@
  */
 package com.eleybourn.bookcatalogue.backup;
 
-import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -30,7 +29,6 @@ import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
 import com.eleybourn.bookcatalogue.database.cursors.BooksCursor;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.entities.AnthologyTitle;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
@@ -42,7 +40,6 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.Date;
 
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKSHELF;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ANTHOLOGY_BITMASK;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_ADDED;
@@ -77,17 +74,18 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE
  * @author pjw
  */
 public class CsvExporter implements Exporter {
-    private static final String UTF8 = "utf8";
-    private static final int BUFFER_SIZE = 32768;
-
     /** standard export file */
     public static final String EXPORT_FILE_NAME = "export.csv";
     /** standard temp export file, first we write here, then rename to csv */
     static final String EXPORT_TEMP_FILE_NAME = "export.tmp";
+    private static final String UTF8 = "utf8";
+    private static final int BUFFER_SIZE = 32768;
     /** pattern we look for to rename/keep older copies */
     private static final String EXPORT_CSV_FILES_PATTERN = "export.%s.csv";
     /** backup copies to keep */
     private static final int COPIES = 5;
+    @NonNull
+    private final CatalogueDBAdapter mDb;
     /**
      * The order of the header MUST be the same as the order used to write the data (obvious eh?)
      *
@@ -95,17 +93,17 @@ public class CsvExporter implements Exporter {
      */
     private final String EXPORT_FIELD_HEADERS =
             '"' + DOM_ID.name + "\"," +
-                    '"' + UniqueId.BKEY_AUTHOR_DETAILS + "\"," +
+                    '"' + UniqueId.BKEY_AUTHOR_STRING_LIST + "\"," +
                     '"' + DOM_TITLE + "\"," +
                     '"' + DOM_BOOK_ISBN + "\"," +
                     '"' + DOM_BOOK_PUBLISHER + "\"," +
                     '"' + DOM_BOOK_DATE_PUBLISHED + "\"," +
                     '"' + DOM_FIRST_PUBLICATION + "\"," +
                     '"' + DOM_BOOK_RATING + "\"," +
-                    '"' + "bookshelf_id\"," + // DOM_BOOKSHELF_ID but we misnamed it originally
+                    '"' + "bookshelf_id\"," + // == UniqueId.DOM_BOOKSHELF_ID but it was misnamed originally
                     '"' + DOM_BOOKSHELF + "\"," +
                     '"' + DOM_BOOK_READ + "\"," +
-                    '"' + UniqueId.BKEY_SERIES_DETAILS + "\"," +
+                    '"' + UniqueId.BKEY_SERIES_STRING_LIST + "\"," +
                     '"' + DOM_BOOK_PAGES + "\"," +
                     '"' + DOM_BOOK_NOTES + "\"," +
                     '"' + DOM_BOOK_LIST_PRICE + "\"," +
@@ -116,7 +114,7 @@ public class CsvExporter implements Exporter {
                     '"' + DOM_BOOK_FORMAT + "\"," +
                     '"' + DOM_BOOK_SIGNED + "\"," +
                     '"' + DOM_LOANED_TO + "\"," +
-                    '"' + UniqueId.BKEY_ANTHOLOGY_DETAILS + "\"," +
+                    '"' + UniqueId.BKEY_ANTHOLOGY_STRING_LIST + "\"," +
                     '"' + DOM_DESCRIPTION + "\"," +
                     '"' + DOM_BOOK_GENRE + "\"," +
                     '"' + DOM_BOOK_LANGUAGE + "\"," +
@@ -129,6 +127,11 @@ public class CsvExporter implements Exporter {
 
     @SuppressWarnings("FieldCanBeLocal")
     private String mLastError;
+
+    CsvExporter() {
+        mDb = new CatalogueDBAdapter(BookCatalogueApp.getAppContext())
+                .open();
+    }
 
     void renameFiles(final @NonNull File temp) {
         File fLast = StorageUtils.getFile(String.format(EXPORT_CSV_FILES_PATTERN, COPIES));
@@ -175,10 +178,7 @@ public class CsvExporter implements Exporter {
         int num = 0;
         final StringBuilder row = new StringBuilder();
 
-        final CatalogueDBAdapter db = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
-        db.open();
-
-        try (BooksCursor bookCursor = db.exportBooks(since);
+        try (BooksCursor bookCursor = mDb.exportBooks(since);
              BufferedWriter out = new BufferedWriter(new OutputStreamWriter(outputStream, UTF8), BUFFER_SIZE)) {
 
             final BookRowView bookRowView = bookCursor.getRowView();
@@ -195,10 +195,10 @@ public class CsvExporter implements Exporter {
                 num++;
                 long bookId = bookCursor.getLong(bookCursor.getColumnIndexOrThrow(DOM_ID.name));
 
-                String authorDetails = ArrayUtils.getAuthorUtils().encodeList(db.getBookAuthorList(bookId));
+                String author_stringList = ArrayUtils.getAuthorUtils().encodeList(mDb.getBookAuthorList(bookId));
                 // Sanity check: ensure author is non-blank. This HAPPENS. Probably due to constraint failures.
-                if (authorDetails.trim().isEmpty()) {
-                    authorDetails = AUTHOR + ", " + UNKNOWN;
+                if (author_stringList.trim().isEmpty()) {
+                    author_stringList = AUTHOR + ", " + UNKNOWN;
                 }
 
                 String title = bookRowView.getTitle();
@@ -209,35 +209,35 @@ public class CsvExporter implements Exporter {
                     title = UNKNOWN;
                 }
 
+                // For the names, could use this of course:
+                //   ArrayUtils.getBookshelfUtils().encodeList( mDb.getBookshelvesByBookId(bookId));
+                // but we also want a list of the id's.
+                // so....
                 // the selected bookshelves: two CSV columns with CSV id's + CSV names
-                StringBuilder bookshelves_id_text = new StringBuilder();
-                StringBuilder bookshelves_name_text = new StringBuilder();
-                try (Cursor bookshelves = db.fetchBookshelvesForBookId(bookId)) {
-                    int bsIdCol = bookshelves.getColumnIndex(DOM_ID.name);
-                    int bsCol = bookshelves.getColumnIndex(DOM_BOOKSHELF.name);
-                    while (bookshelves.moveToNext()) {
-                        bookshelves_id_text
-                                .append(bookshelves.getString(bsIdCol))
-                                .append(Bookshelf.SEPARATOR);
-                        bookshelves_name_text
-                                .append(ArrayUtils.encodeListItem(Bookshelf.SEPARATOR, bookshelves.getString(bsCol)))
-                                .append(Bookshelf.SEPARATOR);
-                    }
+                StringBuilder bookshelves_id_stringList = new StringBuilder();
+                StringBuilder bookshelves_name_stringList = new StringBuilder();
+                for (Bookshelf bookshelf : mDb.getBookshelvesByBookId(bookId)) {
+                    bookshelves_id_stringList
+                            .append(bookshelf.id)
+                            .append(Bookshelf.SEPARATOR);
+                    bookshelves_name_stringList
+                            .append(ArrayUtils.encodeListItem(Bookshelf.SEPARATOR, bookshelf.name))
+                            .append(Bookshelf.SEPARATOR);
                 }
 
                 row.setLength(0);
                 row.append(formatCell(bookId))
-                        .append(formatCell(authorDetails))
+                        .append(formatCell(author_stringList))
                         .append(formatCell(title))
                         .append(formatCell(bookRowView.getIsbn()))
                         .append(formatCell(bookRowView.getPublisherName()))
                         .append(formatCell(bookRowView.getDatePublished()))
                         .append(formatCell(bookRowView.getFirstPublication()))
                         .append(formatCell(bookRowView.getRating()))
-                        .append(formatCell(bookshelves_id_text.toString()))
-                        .append(formatCell(bookshelves_name_text.toString()))
+                        .append(formatCell(bookshelves_id_stringList.toString()))
+                        .append(formatCell(bookshelves_name_stringList.toString()))
                         .append(formatCell(bookRowView.getRead()))
-                        .append(formatCell(ArrayUtils.getSeriesUtils().encodeList(db.getBookSeriesList(bookId))))
+                        .append(formatCell(ArrayUtils.getSeriesUtils().encodeList(mDb.getBookSeriesList(bookId))))
                         .append(formatCell(bookRowView.getPages()))
                         .append(formatCell(bookRowView.getNotes()))
                         .append(formatCell(bookRowView.getListPrice()))
@@ -248,7 +248,7 @@ public class CsvExporter implements Exporter {
                         .append(formatCell(bookRowView.getFormat()))
                         .append(formatCell(bookRowView.getSigned()))
                         .append(formatCell(bookRowView.getLoanedTo()))
-                        .append(formatCell(getAnthologyTitlesForExport(db, bookId, bookRowView)))
+                        .append(formatCell(ArrayUtils.getAnthologyTitleUtils().encodeList( mDb.getAnthologyTitleListByBook(bookId))))
                         .append(formatCell(bookRowView.getDescription()))
                         .append(formatCell(bookRowView.getGenre()))
                         .append(formatCell(bookRowView.getLanguage()))
@@ -271,50 +271,16 @@ public class CsvExporter implements Exporter {
                 }
             }
         } finally {
-            Logger.info(this,"Books Exported: " + num);
+            Logger.info(this, "Books Exported: " + num);
             if (displayingStartupMessage) {
                 try {
                     listener.onProgress("", 0);
                 } catch (Exception ignored) {
                 }
             }
-            db.close();
+            mDb.close();
         }
         return true;
-    }
-
-    /**
-     * // V82: Giants In The Sky * Blish, James|We, The Marauders * Silverberg, Robert|
-     * // V83: Giants In The Sky (1952) * Blish, James|We, The Marauders (1958) * Silverberg, Robert|
-     */
-    @NonNull
-    private String getAnthologyTitlesForExport(@NonNull final CatalogueDBAdapter db, final long bookId, final BookRowView bookRowView) {
-        StringBuilder anthology_titles = new StringBuilder();
-        if (bookRowView.getAnthologyMask() != 0) {
-            try (Cursor titles = db.fetchAnthologyTitlesByBookId(bookId)) {
-                final int authorCol = titles.getColumnIndexOrThrow(DOM_AUTHOR_NAME.name);
-                final int titleCol = titles.getColumnIndexOrThrow(DOM_TITLE.name);
-                final int pubDateCol = titles.getColumnIndexOrThrow(DOM_FIRST_PUBLICATION.name);
-
-                while (titles.moveToNext()) {
-                    // we store the whole date, not just the year.. for future compatibility
-                    String year = titles.getString(pubDateCol);
-                    if (year != null && !year.isEmpty()) {
-                        // start with space
-                        year = " (" + year + ")";
-                    } else {
-                        year = "";
-                    }
-                    anthology_titles
-                            .append(titles.getString(titleCol))
-                            .append(year)    //V83 added
-                            .append(" " + AnthologyTitle.TITLE_AUTHOR_DELIM + " ")
-                            .append(titles.getString(authorCol))
-                            .append(ArrayUtils.MULTI_STRING_SEPARATOR);
-                }
-            }
-        }
-        return anthology_titles.toString();
     }
 
     @NonNull

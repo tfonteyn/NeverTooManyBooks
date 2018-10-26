@@ -7,6 +7,7 @@ import android.widget.ArrayAdapter;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseListActivity;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.entities.AnthologyTitle;
 import com.eleybourn.bookcatalogue.entities.Author;
 
@@ -32,13 +33,14 @@ public class AuthorActivity extends BaseListActivity {
         Bundle extras = getIntent().getExtras();
         @SuppressWarnings("ConstantConditions")
         long authorId = extras.getLong(UniqueId.KEY_ID);
-        mDb = new CatalogueDBAdapter(this);
+        mDb = new CatalogueDBAdapter(this)
+                .open();
 
         Author author = mDb.getAuthor(authorId);
         //noinspection ConstantConditions
         setTitle(author.getDisplayName());
 
-        mList = mDb.getAnthologyTitleListByAuthor(author);
+        mList = mDb.getAnthologyTitlesByAuthor(author);
 
         ArrayAdapter<AnthologyTitle> adapter = new AnthologyTitleListAdapter(this, R.layout.row_anthology, mList);
         setListAdapter(adapter);
@@ -47,7 +49,11 @@ public class AuthorActivity extends BaseListActivity {
     @Override
     @CallSuper
     protected void onDestroy() {
+        Tracker.enterOnDestroy(this);
+        if (mDb != null) {
+            mDb.close();
+        }
         super.onDestroy();
-        mDb.close();
+        Tracker.exitOnDestroy(this);
     }
 }

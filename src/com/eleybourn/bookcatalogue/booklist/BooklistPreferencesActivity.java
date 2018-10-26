@@ -20,8 +20,6 @@
 
 package com.eleybourn.bookcatalogue.booklist;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
@@ -95,7 +93,7 @@ public class BooklistPreferencesActivity extends PreferencesBaseActivity {
     private static final ItemEntries<Boolean> mCacheThumbnailsListItems = new ItemEntries<>();
     private static final BooleanListProperty mCacheThumbnailsProperty =
             new BooleanListProperty(mCacheThumbnailsListItems, PREF_CACHE_THUMBNAILS,
-                    PropertyGroup.GRP_THUMBNAILS, R.string.resizing_cover_thumbnails)
+                    PropertyGroup.GRP_THUMBNAILS, R.string.thumbnails_resizing)
                     .setPreferenceKey(PREF_CACHE_THUMBNAILS)
                     .setDefaultValue(false)
                     .setGlobal(true)
@@ -104,7 +102,7 @@ public class BooklistPreferencesActivity extends PreferencesBaseActivity {
     private static final ItemEntries<Boolean> mBackgroundThumbnailsListItems = new ItemEntries<>();
     private static final BooleanListProperty mBackgroundThumbnailsProperty =
             new BooleanListProperty(mBackgroundThumbnailsListItems, PREF_BACKGROUND_THUMBNAILS,
-                    PropertyGroup.GRP_THUMBNAILS, R.string.generating_cover_thumbnails)
+                    PropertyGroup.GRP_THUMBNAILS, R.string.thumbnails_generating_mode)
                     .setPreferenceKey(PREF_BACKGROUND_THUMBNAILS)
                     .setDefaultValue(false)
                     .setGlobal(true)
@@ -112,9 +110,9 @@ public class BooklistPreferencesActivity extends PreferencesBaseActivity {
 
     static {
         mBooklistStateListItems.add(null, R.string.use_default_setting)
-                .add(BOOK_LIST_ALWAYS_EXPANDED, R.string.always_start_booklists_expanded)
-                .add(BOOK_LIST_ALWAYS_COLLAPSED, R.string.always_start_booklists_collapsed)
-                .add(BOOK_LIST_STATE_PRESERVED, R.string.remember_booklists_state);
+                .add(BOOK_LIST_ALWAYS_EXPANDED, R.string.book_list_state_always_start_expanded)
+                .add(BOOK_LIST_ALWAYS_COLLAPSED, R.string.book_list_state_always_start_collapsed)
+                .add(BOOK_LIST_STATE_PRESERVED, R.string.book_list_state_remember_state);
 
         mBooklistCompatibilityModeListItems.add(null, R.string.use_default_setting)
                 .add(BOOKLIST_GENERATE_OLD_STYLE, R.string.force_compatibility_mode)
@@ -123,12 +121,12 @@ public class BooklistPreferencesActivity extends PreferencesBaseActivity {
                 .add(BOOKLIST_GENERATE_AUTOMATIC, R.string.automatically_use_recommended_option);
 
         mCacheThumbnailsListItems.add(null, R.string.use_default_setting)
-                .add(false, R.string.resize_each_time)
-                .add(true, R.string.cache_resized_thumbnails_for_later_use);
+                .add(false, R.string.thumbnails_resizing_each_time)
+                .add(true, R.string.thumbnails_resizing_cache_for_later_use);
 
         mBackgroundThumbnailsListItems.add(null, R.string.use_default_setting)
-                .add(false, R.string.generate_immediately)
-                .add(true, R.string.use_background_thread);
+                .add(false, R.string.thumbnails_generating_mode_generate_immediately)
+                .add(true, R.string.thumbnails_generating_mode_use_background_thread);
     }
 
     /**
@@ -215,21 +213,5 @@ public class BooklistPreferencesActivity extends PreferencesBaseActivity {
         globalProperties.add(mCacheThumbnailsProperty);
         globalProperties.add(mBackgroundThumbnailsProperty);
         globalProperties.add(mBooklistCompatibilityModeProperty);
-    }
-
-    /**
-     * Trap the onPause, and if the Activity is finishing then set the result.
-     */
-    @Override
-    @CallSuper
-    public void onPause() {
-        super.onPause();
-
-        // as we don't really have an easy way to detect changes, nor use a 'confirm' anywhere,
-        // just set Activity.RESULT_OK here basically assuming that the user must have made a change
-        if (isFinishing()) {
-            Intent intent = new Intent();
-            setResult(Activity.RESULT_OK, intent);
-        }
     }
 }

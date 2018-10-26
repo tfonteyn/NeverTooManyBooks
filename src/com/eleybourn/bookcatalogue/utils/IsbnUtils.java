@@ -23,6 +23,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
 import java.util.ArrayList;
@@ -76,6 +77,9 @@ public class IsbnUtils {
      * matches.... but not necessarily valid !
      */
     public static boolean matches(@Nullable final String isbn1, @Nullable final String isbn2) {
+        if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
+            Logger.info(IsbnUtils.class, "matches: " + isbn1 + " ?= " + isbn2);
+        }
         if (isbn1 == null || isbn2 == null) {
             return false;
         }
@@ -209,27 +213,30 @@ public class IsbnUtils {
                 digits = upcToDigits(s);
                 if (isValid(digits)) {
                     mDigits = digits;
-                    return;
                 }
             } catch (NumberFormatException e) {
                 if (/* always show debug */ BuildConfig.DEBUG) {
                     Logger.error(e);
                 }
             }
-            throw new NumberFormatException();
         }
 
         public boolean isValid() {
             return isValid(mDigits);
         }
 
-        private boolean isValid(List<Integer> digits) {
+        private boolean isValid(@Nullable final List<Integer> digits) {
+            if (digits == null) {
+                return false;
+            }
+
             switch (digits.size()) {
                 case 10:
                     return (getChecksum(digits) == 0);
                 case 13:
                     // Start with 978 or 979
-                    return digits.get(0) == 9 && digits.get(1) == 7 && (digits.get(2) == 8 || digits.get(2) == 9)
+                    return digits.get(0) == 9 && digits.get(1) == 7
+                            && (digits.get(2) == 8 || digits.get(2) == 9)
                             && (getChecksum(digits) == 0);
                 default:
                     return false;
@@ -395,13 +402,13 @@ public class IsbnUtils {
         /**
          * @param upc UPC code, example: "070999 00225 530054", "00225" (price) and "5" will be discarded to construct the isbn
          *
-         * @return list of digits
+         * @return list of digits or empty on onCancel
          */
         @NonNull
         private List<Integer> upcToDigits(@NonNull final String upc) throws NumberFormatException {
             String isbnPrefix = UPC_2_ISBN_PREFIX.get(upc.substring(0, 6));
             if (isbnPrefix == null) {
-                throw new NumberFormatException();
+                return new ArrayList<>();
             }
 
             List<Integer> tmp = isbnToDigits(isbnPrefix + upc.substring(12));

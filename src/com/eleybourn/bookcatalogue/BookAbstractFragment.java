@@ -29,6 +29,7 @@ import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -41,12 +42,12 @@ import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.Fields.AfterFieldChangeListener;
 import com.eleybourn.bookcatalogue.Fields.Field;
-import com.eleybourn.bookcatalogue.baseactivity.CanBeDirty;
-import com.eleybourn.bookcatalogue.baseactivity.HasBook;
+import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.datamanager.DataEditor;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.Series;
@@ -62,77 +63,120 @@ import java.util.Objects;
 /**
  * Based class for all fragments that appear in {@link EditBookActivity}
  *
+ * {@link BookDetailsFragment} extends {@link BookAbstractFragmentWithCoverImage}
+ *
+ * {@link EditBookFieldsFragment} extends {@link BookAbstractFragmentWithCoverImage}
+ * {@link EditBookNotesFragment}
+ * {@link EditBookLoanedFragment}
+ * {@link EditBookAnthologyFragment}
+ *
  * @author pjw
  */
 public abstract class BookAbstractFragment extends Fragment implements DataEditor {
+
+    private final int MENU_GROUP_BOOK = 1;
+    private final int MENU_GROUP_BOOK_AMAZON_AUTHOR = 2;
+    private final int MENU_GROUP_BOOK_AMAZON_AUTHOR_IN_SERIES = 3;
+    private final int MENU_GROUP_BOOK_AMAZON_SERIES = 4;
+
     /** */
     protected Fields mFields;
     /** Database instance */
     protected CatalogueDBAdapter mDb;
 
-    /*  the casting is a kludge... ever since pulling edit/show book apart. Needs redoing */
-    /** A link to the Activity */
-    private Context mContext;
+    /** A link to the Activity, cached to avoid requireActivity() all over the place */
+    private Activity mActivity;
 
+    /*  the casting is a kludge... ever since pulling edit/show book apart. Needs redoing */
     protected boolean isDirty() {
-        return ((CanBeDirty) mContext).isDirty();
+        return ((BaseActivity.CanBeDirty) mActivity).isDirty();
     }
 
     protected void setDirty(final boolean isDirty) {
-        ((CanBeDirty) mContext).setDirty(isDirty);
-    }
-
-    /** should obviously only be called when the caller implemented HasAnthologyTab. Crashes if not */
-    public void addAnthologyTab(final boolean show) {
-        ((HasAnthologyTab) mContext).addAnthologyTab(show);
+        ((BaseActivity.CanBeDirty) mActivity).setDirty(isDirty);
     }
 
     protected Book getBook() {
-        return ((HasBook) mContext).getBook();
+        return ((HasBook) mActivity).getBook();
     }
 
     protected void setBookId(final long bookId) {
-        ((HasBook) mContext).setBookId(bookId);
+        ((HasBook) mActivity).setBookId(bookId);
     }
 
+    /**
+     * Called to do initial creation of a fragment.  This is called after
+     * {@link #onAttach(Activity)} and before
+     * {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     *
+     * <p>Note that this can be called while the fragment's activity is
+     * still in the process of being created.  As such, you can not rely
+     * on things like the activity's content view hierarchy being initialized
+     * at this point.  If you want to do work once the activity itself is
+     * created, see {@link #onActivityCreated(Bundle)}.
+     *
+     * <p>Any restored child fragments will be created before the base
+     * <code>Fragment.onCreate</code> method returns.</p>
+     *
+     * @param savedInstanceState If the fragment is being re-created from
+     *                           a previous saved state, this is the state.
+     */
     @Override
     @CallSuper
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // make sure onCreateOptionsMenu is called
+
+        // make sure {@link #onCreateOptionsMenu} is called
         this.setHasOptionsMenu(true);
     }
 
+    /**
+     * Ensure activity supports interface
+     *
+     * Called when a fragment is first attached to its context.
+     * {@link #onCreate(Bundle)} will be called after this.
+     */
     @Override
     @CallSuper
     public void onAttach(@NonNull final Context context) {
         super.onAttach(context);
-        // FIXME: bad kludge but hey-ho.... caller must have these!
-        if (!(context instanceof HasBook) || !(context instanceof CanBeDirty)) {
-            throw new RTE.MustImplementException(context, HasBook.class.getCanonicalName() + ", " + CanBeDirty.class.getCanonicalName());
+        if (!(context instanceof HasBook)) {
+            throw new RTE.MustImplementException(context, HasBook.class);
         }
 
-        mContext = context;
-
-        mDb = new CatalogueDBAdapter(context);
-        mDb.open();
+        if (!(context instanceof BaseActivity.CanBeDirty)) {
+            throw new RTE.MustImplementException(context, BaseActivity.CanBeDirty.class);
+        }
     }
 
+    /**
+     * Called when the fragment's activity has been created and this
+     * fragment's view hierarchy instantiated.  It can be used to do final
+     * initialization once these pieces are in place, such as retrieving
+     * views or restoring state.  It is also useful for fragments that use
+     * {@link #setRetainInstance(boolean)} to retain their instance,
+     * as this callback tells the fragment when it is fully associated with
+     * the new activity instance.  This is called after {@link #onCreateView}
+     * and before {@link #onViewStateRestored(Bundle)}.
+     *
+     * @param savedInstanceState If the fragment is being re-created from
+     *                           a previous saved state, this is the state.
+     */
     @Override
     @CallSuper
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        mActivity = requireActivity();
+
+        mDb = new CatalogueDBAdapter(mActivity)
+                .open();
+
         mFields = new Fields(this);
     }
 
     /**
-     * Initialize the contents of the Fragment host's standard options menu.  You
-     * should place your menu items in to <var>menu</var>.  For this method
-     * to be called, you must have first called {@link #setHasOptionsMenu}.  See
-     * {@link Activity#onCreateOptionsMenu(Menu) Activity.onCreateOptionsMenu}
-     * for more information.
-     *
-     * @param menu The options menu in which you place your items.
+     * visibility false by default, see {@link #onPrepareOptionsMenu}
      *
      * @see #setHasOptionsMenu
      * @see #onPrepareOptionsMenu
@@ -141,75 +185,63 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
     @Override
     @CallSuper
     public void onCreateOptionsMenu(@NonNull final Menu menu, @NonNull final MenuInflater inflater) {
+
+        menu.add(MENU_GROUP_BOOK, R.id.MENU_BOOK_DELETE, 0, R.string.menu_delete)
+                .setVisible(false)
+                .setIcon(R.drawable.ic_delete);
+
+        menu.add(MENU_GROUP_BOOK, R.id.MENU_BOOK_DUPLICATE, 0, R.string.menu_duplicate)
+                .setVisible(false)
+                .setIcon(R.drawable.ic_content_copy);
+
+        menu.add(MENU_GROUP_BOOK, R.id.MENU_BOOK_UPDATE_FROM_INTERNET, 0, R.string.internet_update_fields)
+                .setVisible(false)
+                .setIcon(R.drawable.ic_search);
+
+        /* TODO: Consider allowing Tweets (or other sharing methods) to work on un-added books. */
+        menu.add(MENU_GROUP_BOOK, R.id.MENU_SHARE, 0, R.string.menu_share_this)
+                .setVisible(false)
+                .setIcon(R.drawable.ic_share);
+
+
+        menu.add(MENU_GROUP_BOOK_AMAZON_AUTHOR, R.id.MENU_AMAZON_BOOKS_BY_AUTHOR, 0, R.string.menu_amazon_books_by_author)
+                .setVisible(false)
+                .setIcon(R.drawable.ic_search);
+
+        menu.add(MENU_GROUP_BOOK_AMAZON_AUTHOR_IN_SERIES, R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES, 0, R.string.menu_amazon_books_by_author_in_series)
+                .setIcon(R.drawable.ic_search);
+
+        menu.add(MENU_GROUP_BOOK_AMAZON_SERIES, R.id.MENU_AMAZON_BOOKS_IN_SERIES, 0, R.string.menu_amazon_books_in_series)
+                .setVisible(false)
+                .setIcon(R.drawable.ic_search);
+
         super.onCreateOptionsMenu(menu, inflater);
-        //menu.clear();
-        final long bookId = getBook().getBookId();
-        if (bookId != 0) {
-            menu.add(Menu.NONE, R.id.MENU_BOOK_DELETE, 0, R.string.menu_delete)
-                    .setIcon(R.drawable.ic_mode_edit);
-
-            menu.add(Menu.NONE, R.id.MENU_BOOK_DUPLICATE, 0, R.string.menu_duplicate)
-                    .setIcon(R.drawable.ic_content_copy);
-
-            menu.add(Menu.NONE, R.id.MENU_BOOK_UPDATE_FROM_INTERNET, 0, R.string.internet_update_fields)
-                    .setIcon(R.drawable.ic_search);
-
-            /* TODO: Consider allowing Tweets (or other sharing methods) to work on un-added books.
-             *
-             * Very rarely used, and easy to miss-click, so do not add as action_if_room!
-             *    .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-             */
-            menu.add(Menu.NONE, R.id.MENU_SHARE, 0, R.string.menu_share_this)
-                    .setIcon(R.drawable.ic_share);
-        }
-
-        if (this instanceof BookDetailsFragment) {
-            menu.add(Menu.NONE, R.id.MENU_BOOK_EDIT, 0, R.string.edit_book)
-                    .setIcon(R.drawable.ic_mode_edit)
-                    .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-        }
-
-        boolean hasAuthor = getBook().getAuthorList().size() > 0;
-        if (hasAuthor) {
-            menu.add(Menu.NONE, R.id.MENU_AMAZON_BOOKS_BY_AUTHOR, 0, R.string.amazon_books_by_author)
-                    .setIcon(R.drawable.ic_search);
-        }
-
-        if (getBook().getSeriesList().size() > 0) {
-            if (hasAuthor) {
-                menu.add(Menu.NONE, R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES, 0, R.string.amazon_books_by_author_in_series)
-                        .setIcon(R.drawable.ic_search);
-            }
-            menu.add(Menu.NONE, R.id.MENU_AMAZON_BOOKS_IN_SERIES, 0, R.string.amazon_books_in_series)
-                    .setIcon(R.drawable.ic_search);
-        }
-
-        menu.add(0, R.id.MENU_SEARCH, 0, R.string.menu_search)
-                .setIcon(android.R.drawable.ic_menu_search);
     }
 
-//    /**
-//     * Prepare the Fragment host's standard options menu to be displayed.  This is
-//     * called right before the menu is shown, every time it is shown.  You can
-//     * use this method to efficiently enable/disable items or otherwise
-//     * dynamically modify the contents.  See
-//     * {@link Activity#onPrepareOptionsMenu(Menu) Activity.onPrepareOptionsMenu}
-//     * for more information.
-//     *
-//     * @param menu The options menu as last shown or first initialized by
-//     *             onCreateOptionsMenu().
-//     *
-//     * @see #setHasOptionsMenu
-//     * @see #onCreateOptionsMenu
-//     */
-//    @Override
-//    public void onPrepareOptionsMenu(final Menu menu) {
-//        super.onPrepareOptionsMenu(menu);
-//    }
+    /**
+     * Set visibility of menu items as appropriate
+     *
+     * @see #setHasOptionsMenu
+     * @see #onCreateOptionsMenu
+     */
+    @Override
+    public void onPrepareOptionsMenu(final Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+
+        boolean bookExists = getBook().getBookId() != 0;
+
+        menu.setGroupVisible(MENU_GROUP_BOOK, bookExists);
+
+        boolean hasAuthor = getBook().getAuthorList().size() > 0;
+        boolean hasSeries = getBook().getSeriesList().size() > 0;
+
+        menu.setGroupVisible(MENU_GROUP_BOOK_AMAZON_AUTHOR, hasAuthor);
+        menu.setGroupVisible(MENU_GROUP_BOOK_AMAZON_AUTHOR_IN_SERIES, hasAuthor && hasSeries);
+        menu.setGroupVisible(MENU_GROUP_BOOK_AMAZON_SERIES, hasSeries);
+    }
 
     /**
-     * This will be called when a menu item is selected. A large switch
-     * statement to call the appropriate functions (or other activities)
+     * This will be called when a menu item is selected.
      *
      * @param item The item selected
      *
@@ -221,54 +253,45 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
         final long bookId = getBook().getBookId();
 
         switch (item.getItemId()) {
-            case R.id.SUBMENU_REPLACE_THUMB:
-                if (this instanceof EditBookFieldsFragment) {
-                    ((EditBookFieldsFragment) this).showCoverContextMenu();
-                    return true;
-                }
-                return false;
-
-            case R.id.MENU_SHARE:
-                BookUtils.shareBook(requireActivity(), mDb, bookId);
-                return true;
 
             case R.id.MENU_BOOK_DELETE:
-                BookUtils.deleteBook(requireActivity(), mDb, bookId,
+                BookUtils.deleteBook(mActivity, mDb, bookId,
                         new Runnable() {
                             @Override
                             public void run() {
-                                requireActivity().finish();
+                                mActivity.finish();
                             }
                         });
                 return true;
 
             case R.id.MENU_BOOK_DUPLICATE:
-                BookUtils.duplicateBook(requireActivity(), mDb, bookId);
+                Bundle bookData = BookUtils.duplicateBook(mDb, bookId);
+                Intent intent = new Intent(mActivity, EditBookActivity.class);
+                intent.putExtra(UniqueId.BKEY_BOOK_DATA, bookData);
+                mActivity.startActivityForResult(intent, EditBookActivity.REQUEST_CODE); /* result handled by hosting Activity */
                 return true;
 
             case R.id.MENU_BOOK_UPDATE_FROM_INTERNET:
+                /* 98a6d1eb-4df5-4893-9aaf-fac0ce0fee01 */
                 updateFromInternet(getBook());
                 return true;
 
-            case R.id.MENU_BOOK_EDIT:
-                EditBookActivity.startActivityForResult(requireActivity(), bookId, EditBookActivity.TAB_EDIT);
+
+            case R.id.MENU_SHARE:
+                BookUtils.shareBook(mActivity, mDb, bookId);
                 return true;
 
+
             case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR:
-                AmazonUtils.openSearchPage(requireActivity(), getAuthorFromBook(), null);
+                AmazonUtils.openSearchPage(mActivity, getAuthorFromBook(), null);
                 return true;
 
             case R.id.MENU_AMAZON_BOOKS_IN_SERIES:
-                AmazonUtils.openSearchPage(requireActivity(), null, getSeriesFromBook());
+                AmazonUtils.openSearchPage(mActivity, null, getSeriesFromBook());
                 return true;
 
             case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES:
-                AmazonUtils.openSearchPage(requireActivity(), getAuthorFromBook(), getSeriesFromBook());
-                return true;
-
-            // standard search call
-            case R.id.MENU_SEARCH:
-                requireActivity().onSearchRequested();
+                AmazonUtils.openSearchPage(mActivity, getAuthorFromBook(), getSeriesFromBook());
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -277,9 +300,11 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
     @Override
     @CallSuper
     public void onPause() {
-        super.onPause();
+        Tracker.enterOnPause(this);
         // This is now done in onPause() since the view may have been deleted when this is called
         onSaveBookDetails(getBook());
+        super.onPause();
+        Tracker.exitOnPause(this);
     }
 
     @Override
@@ -305,8 +330,12 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
     @Override
     @CallSuper
     public void onDestroy() {
+        Tracker.enterOnDestroy(this);
+        if (mDb != null) {
+            mDb.close();
+        }
         super.onDestroy();
-        mDb.close();
+        Tracker.exitOnDestroy(this);
     }
 
     private void updateFromInternet(@NonNull final Book book) {
@@ -316,7 +345,7 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
         // just as info, to display on the screen
         intent.putExtra(UniqueId.KEY_TITLE, book.getString(UniqueId.KEY_TITLE));
         intent.putExtra(UniqueId.KEY_AUTHOR_FORMATTED, book.getString(UniqueId.KEY_AUTHOR_FORMATTED));
-        startActivityForResult(intent, UpdateFromInternetActivity.REQUEST_CODE);
+        startActivityForResult(intent, UpdateFromInternetActivity.REQUEST_CODE); /* 98a6d1eb-4df5-4893-9aaf-fac0ce0fee01 */
     }
 
     @Override
@@ -325,24 +354,37 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
         super.onActivityResult(requestCode, resultCode, data);
 
         switch (requestCode) {
-            case UpdateFromInternetActivity.REQUEST_CODE: {
+            case UpdateFromInternetActivity.REQUEST_CODE: /* 98a6d1eb-4df5-4893-9aaf-fac0ce0fee01 */
                 if (resultCode == Activity.RESULT_OK) {
                     Objects.requireNonNull(data);
                     long bookId = data.getLongExtra(UniqueId.KEY_ID, 0);
                     if (bookId != 0) {
                         setBookId(bookId);
+                    } else {
+                        boolean wasCancelled = data.getBooleanExtra(UniqueId.BKEY_CANCELED, false);
+                        Logger.info(this, "UpdateFromInternet wasCancelled= " + wasCancelled);
                     }
                 }
-            }
+                break;
+
+            default:
+                Logger.error("onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
+                break;
         }
     }
 
+    /**
+     * @return the first author in the list of authors for this book
+     */
     @Nullable
     private String getAuthorFromBook() {
         ArrayList<Author> list = getBook().getAuthorList();
         return list.size() > 0 ? list.get(0).getDisplayName() : null;
     }
 
+    /**
+     * @return the first series in the list of series for this book
+     */
     @Nullable
     private String getSeriesFromBook() {
         ArrayList<Series> list = getBook().getSeriesList();
@@ -354,12 +396,12 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
      * Override as needed, calling super as the first step
      *
      * @param book       to load from
-     * @param setAllDone Options indicating setAll() has already been called on the mFields object
+     * @param setAllFrom Options indicating setAllFrom() has already been called on the mFields object
      */
     @CallSuper
-    protected void onLoadBookDetails(@NonNull final Book book, final boolean setAllDone) {
-        if (!setAllDone) {
-            mFields.setAll(book);
+    protected void onLoadBookDetails(@NonNull final Book book, final boolean setAllFrom) {
+        if (!setAllFrom) {
+            mFields.setAllFrom(book);
         }
     }
 
@@ -367,9 +409,9 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
      * This is 'final' because we want inheritors to implement {@link #onLoadBookDetails}
      */
     @Override
-    public final <T extends DataManager> void loadDataFrom(@NonNull final T dataManager) {
+    public final <T extends DataManager> void transferDataFrom(@NonNull final T dataManager) {
         final boolean wasDirty = isDirty();
-        onLoadBookDetails((Book)dataManager, false);
+        onLoadBookDetails((Book) dataManager, false);
         setDirty(wasDirty);
     }
 
@@ -379,15 +421,15 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
      */
     @CallSuper
     protected void onSaveBookDetails(@NonNull final Book book) {
-        mFields.getAllInto(book);
+        mFields.putAllInto(book);
     }
 
     /**
      * This is 'final' because we want inheritors to implement {@link #onSaveBookDetails}
      */
     @Override
-    public final <T extends DataManager> void saveDataTo(@NonNull final T dataManager) {
-        onSaveBookDetails((Book)dataManager);
+    public final <T extends DataManager> void transferDataTo(@NonNull final T dataManager) {
+        onSaveBookDetails((Book) dataManager);
     }
 
     /**
@@ -406,7 +448,7 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
     protected void showHideFields(final boolean hideIfEmpty) {
         mFields.resetVisibility();
 
-        showHideField(hideIfEmpty, R.id.image, R.id.row_image);
+        showHideField(hideIfEmpty, R.id.coverImage, R.id.row_image);
 
         showHideField(hideIfEmpty, R.id.isbn, R.id.row_isbn);
         showHideField(hideIfEmpty, R.id.series, R.id.row_series, R.id.lbl_series);
@@ -456,7 +498,7 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
                 if (visibility != View.GONE) {
                     // Determine if we should hide it
                     if (view instanceof ImageView) {
-                        visibility = view.getVisibility();
+                        visibility = view.getVisibility(); //TOMF ??
                     } else {
                         final String value = mFields.getField(fieldId).getValue().toString();
                         final boolean isExist = value != null && !value.isEmpty();
@@ -475,8 +517,11 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
         }
     }
 
-    protected interface HasAnthologyTab {
-        void addAnthologyTab(final boolean showAnthology);
+    public interface HasBook {
+        @NonNull
+        Book getBook();
+
+        void setBookId(final long bookId);
     }
 
     static class ViewUtils {
@@ -674,4 +719,5 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
             void setNext(@NonNull final View v, @IdRes final int id);
         }
     }
+
 }

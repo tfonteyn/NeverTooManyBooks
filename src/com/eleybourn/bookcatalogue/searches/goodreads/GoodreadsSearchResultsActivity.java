@@ -37,6 +37,7 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.BaseListActivity;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.searches.goodreads.api.SearchBooksApiHandler;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue;
@@ -52,7 +53,7 @@ import java.util.Objects;
  *
  * @author Philip Warner
  */
-public class GoodreadsSearchResults extends BaseListActivity {
+public class GoodreadsSearchResultsActivity extends BaseListActivity {
 
     public static final String BKEY_SEARCH_CRITERIA = "criteria";
     private final SimpleTaskQueue mTaskQueue = new SimpleTaskQueue("gr-covers");
@@ -134,10 +135,12 @@ public class GoodreadsSearchResults extends BaseListActivity {
     @Override
     @CallSuper
     public void onDestroy() {
-        super.onDestroy();
+        Tracker.enterOnDestroy(this);
         if (mDb != null) {
             mDb.close();
         }
+        super.onDestroy();
+        Tracker.exitOnDestroy(this);
     }
 
     /**
@@ -169,7 +172,7 @@ public class GoodreadsSearchResults extends BaseListActivity {
         final LayoutInflater mInflater;
 
         ResultsAdapter() {
-            super(GoodreadsSearchResults.this, 0, mList);
+            super(GoodreadsSearchResultsActivity.this, 0, mList);
             // Save Inflater for later use
             //noinspection ConstantConditions
             mInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -184,7 +187,7 @@ public class GoodreadsSearchResults extends BaseListActivity {
                     // Get a new View and make the holder for it.
                     convertView = mInflater.inflate(R.layout.goodreads_work_item, parent, false);
 
-                    holder = new ListHolder((ImageView) convertView.findViewById(R.id.cover));
+                    holder = new ListHolder((ImageView) convertView.findViewById(R.id.coverImage));
                     holder.author = convertView.findViewById(R.id.author);
                     holder.title = convertView.findViewById(R.id.title);
 

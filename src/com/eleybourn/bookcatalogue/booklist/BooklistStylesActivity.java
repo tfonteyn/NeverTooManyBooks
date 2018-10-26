@@ -62,7 +62,7 @@ public class BooklistStylesActivity extends EditObjectListActivity<BooklistStyle
      * Constructor
      */
     public BooklistStylesActivity() {
-        super(null, R.layout.booklist_styles_edit_list, R.layout.booklist_styles_edit_row);
+        super(R.layout.booklist_styles_edit_list, R.layout.booklist_styles_edit_row, null);
     }
 
     @Override
@@ -207,7 +207,7 @@ public class BooklistStylesActivity extends EditObjectListActivity<BooklistStyle
 
         Intent intent = new Intent(this, BooklistStylePropertiesActivity.class);
         intent.putExtra(BooklistStylePropertiesActivity.REQUEST_KEY_STYLE, style);
-        startActivityForResult(intent, BooklistStylePropertiesActivity.REQUEST_CODE);
+        startActivityForResult(intent, BooklistStylePropertiesActivity.REQUEST_CODE); /* fadd7b9a-7eaf-4af9-90ce-6ffb7b93afe6 */
     }
 
     @Override
@@ -218,15 +218,21 @@ public class BooklistStylesActivity extends EditObjectListActivity<BooklistStyle
     @Override
     @CallSuper
     protected void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent data) {
-        super.onActivityResult(requestCode,resultCode,data);
+        super.onActivityResult(requestCode, resultCode, data);
 
         switch (requestCode) {
-            case BooklistStylePropertiesActivity.REQUEST_CODE:
+            case BooklistStylePropertiesActivity.REQUEST_CODE:  /* fadd7b9a-7eaf-4af9-90ce-6ffb7b93afe6 */
                 if (resultCode == Activity.RESULT_OK) {
-                    // there *has* to be 'data'
+                    /* there *has* to be 'data' */
                     Objects.requireNonNull(data);
-                    handleStyleResult(data);
+                    BooklistStyle style = (BooklistStyle) data.getSerializableExtra(BooklistStylePropertiesActivity.REQUEST_KEY_STYLE);
+                    // style can be null (when it was deleted)
+                    handleStyleResult(style);
                 }
+                break;
+
+            default:
+                Logger.error("onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
                 break;
         }
     }
@@ -234,43 +240,42 @@ public class BooklistStylesActivity extends EditObjectListActivity<BooklistStyle
     /**
      * Called after a style has been edited.
      *
-     * @param data Data passed to onActivityResult
+     * @param booklistStyle as received from onActivityResult
      */
-    private void handleStyleResult(@NonNull final Intent data) {
+    private void handleStyleResult(@Nullable final BooklistStyle booklistStyle) {
         try {
-            BooklistStyle result = (BooklistStyle) data.getSerializableExtra(BooklistStylePropertiesActivity.REQUEST_KEY_STYLE);
-            if (result == null) {
+            if (booklistStyle == null) {
                 // Style was deleted. Refresh.
                 setList(getList());
             } else if (mEditedRow < 0) {
                 // Was added. So put at top and set as preferred
-                result.setPreferred(true);
-                mList.add(0, result);
+                booklistStyle.setPreferred(true);
+                mList.add(0, booklistStyle);
                 BooklistStyles.saveMenuOrder(mList);
             } else {
                 BooklistStyle origStyle = mList.get(mEditedRow);
-                if (origStyle.id != result.id) {
+                if (origStyle.id != booklistStyle.id) {
                     if (!origStyle.isUserDefined()) {
                         // Working on a clone of a builtin style
                         if (origStyle.isPreferred()) {
                             // Replace the original row with the new one
-                            mList.set(mEditedRow, result);
+                            mList.set(mEditedRow, booklistStyle);
                             // And demote the original
                             origStyle.setPreferred(false);
                             mList.add(origStyle);
                         } else {
                             // Try to put it directly after original
-                            mList.add(mEditedRow, result);
+                            mList.add(mEditedRow, booklistStyle);
                         }
                     } else {
                         // A clone of an original. Put it directly after the original
-                        mList.add(mEditedRow, result);
+                        mList.add(mEditedRow, booklistStyle);
                     }
-                    if (result.isPreferred()) {
+                    if (booklistStyle.isPreferred()) {
                         BooklistStyles.saveMenuOrder(mList);
                     }
                 } else {
-                    mList.set(mEditedRow, result);
+                    mList.set(mEditedRow, booklistStyle);
                 }
             }
             setList(mList);

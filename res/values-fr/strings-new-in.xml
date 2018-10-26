@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="new_in_42">
+<![CDATA[
+	<p><b>Nouveautés de la 4.2</b>\n\n
+		* Dates supportées jusqu\'en l\'an 0 ainsi que les dates partielles\n\n
+		* Les descriptions en HTML s\'affichent correctement lors du click sur « Modifier »\n\n
+		* Paramètre de sélection de l\'image entière lors du recadrage\n\n
+		* Paramètre de rotation automatique des photos\n\n
+		* Paramètre pour l\'utilisation d\'un outil de recadrage externe (expérimental)\n\n
+		* Nouvelles options dans le menu « Plus » \n\n
+		* Mise à jour de la version française (Imkal)\n\n
+		* Mise à jour de la version allemande (Robert Wetzlmayr)\n\n
+		* Mise à jour de la version russe (Nick Silin)\n\n
+		* Mise à jour des boutons « OK » et « Annuler » pour se conformer aux nouveaux standards Android\n\n
+		* Clavier complet disponible pour l\'introduction d\'ASINs\n\n
+		* Sauvegarde des cinq derniers fichiers d\'export\n\n
+		* Meilleure détection des changements lors de l\'édition d\'un livre\n\n
+		* Support d\'un choix plus large d\'explorateurs de la galerie et de fichiers\n\n
+		* Meilleure gestion des dates lors de l\'import/export/sync\n\n
+		* Correction de la gestion des doubles dans les titres d\'une anthologie\n\n
+		* Correction d\'un certain nombre de bogues\n\n
+		Tous nos remerciements à nos dévoués bêta-testeurs et nos traducteurs.\n\n
+		Tous les bugs et erreurs sont à imputer à Grunthos. Et envoyez-nous vos rapports de bugs.
+			</p>
+		]]>
+    </string>
+    <string name="new_in_421">
+<![CDATA[
+	<p><b>Nouveautés de la version 4.2.1</b>\n\n
+		* Correction de crash lors de l\'utilisation « Tout étendre »\n\n
+			</p>
+		]]>
+    </string>
+    <string name="new_in_422">
+<![CDATA[
+	<p><b>Nouveautés de la version 4.2.2</b>\n\n
+		* Correction : mosaïque de l\'image de fond pour certaines versions d\'Android\n\n
+		* Meilleure prise en charge des scanners de code barre incompatibles\n\n
+		* Plus important niveau de détails envoyés lors d\'un crash ou d\'une demande d\'aide\n\n
+		* Nettoyage des mises en page (Nick Silin)\n\n
+		* Correction de bogues\n\n
+			</p>
+		]]>
+    </string>
+    <string name="new_in_423">
+<![CDATA[
+	<p><b>Nouveautés de la version 4.2.3</b>\n\n
+		* Meilleure prise en charge des ISBN invalides lors de l\'envoi à Goodreads\n\n
+		* Autres corrections de bogues mineurs\n\n
+			</p>
+		]]>
+    </string>
+
+    <!-- This is pretty close to the expected feature list! It is a merge of 424 and 430... -->
+
+    <string name="new_in_500">
+<![CDATA[
+	<p><b>Nouveau dans la version 5.0.0</b>\n\n
+		* Ajout d\'une vue en mode lecture avec les détails du livre et support du défilement par « balayage »! (voir « Autres préférences ») (Nick Silin)\n\n
+		* Archivage et restauration du catalogue complet incluant les couvertures, les paramètres et les styles\n\n
+		* Interface améliorée avec une barre d\'action pour une utilisation plus facile sans bouton de menu\n\n
+		* Support du scanner pic2shop (meilleur pour les focus fixe, en faible lumière et les caméras frontal)\n\n
+		* Goodreads présent dans le menu prinicpal si la connection est validée\n\n
+		* Validation au plus tôt de la connection internet lors d\'un scan.\n\n
+		* Mise à jour de la version allemande (Robert Wetzlmayr)\n\n
+		* Mise à jour de la version française (Imkal & Djiko)\n\n
+		* Mise à jour de la version russe (Nick Silin)\n\n
+		* Adaptation interne en prévision de la version pour les tablettes\n\n
+		* Correction de bogues\n\n
+			</p>
+		]]>
+    </string>
+    <string name="new_in_502">
+		<![CDATA[
+			<p><b>Nouveau dans la version 5.0.2</b>\n\n
+				* Correction de bogues\n\n
+			</p>
+		]]>
+    </string>
+    <string name="new_in_503">
+		<![CDATA[
+			<p><b>Nouveau dans la version 5.0.3</b>\n\n
+				* Correction de bogues\n\n
+				* Mise à jour de la version française (Imkal)\n\n
+			</p>
+		]]>
+    </string>
+    <string name="new_in_504">
+		<![CDATA[
+			<p><b>Nouveau dans la version 5.0.4</b>\n\n
+				* Nouveau champ: Langage\n\n
+				* Correction de bogues\n\n
+				* Mise à jour de la version française (Imkal)\n\n
+			</p>
+		]]>
+    </string>
+    <string name="new_in_505">
+		<![CDATA[
+			<p><b>Nouveau dans la version 5.0.5</b>\n\n
+				* Tri décroissant sur la date d\'ajout \n\n
+				* Mise à jour de la version française (Imkal)\n\n
+				* Correction de bogues\n\n
+			</p>
+		]]>
+    </string>
+    <string name="new_in_508">
+		<![CDATA[
+			<p><b>Nouveau dans la version 5.0.8</b>\n\n
+				* Mise à jour de la version allemande (Robert Wetzlmayr)\n\n
+			</p>
+		]]>
+    </string>
+    <string name="new_in_509">
+		<![CDATA[
+			<p><b>Nouveau dans la version 5.0.9</b>\n\n
+				* Correction de bogues pour Android 4.4 (KitKat)\n\n
+				* Traduction en néérlandais (Gideon van Melle)\n\n
+				* Corrections de bogues mineures
+			</p>
+		]]>
+    </string>
+    <string name="new_in_510">
+		<![CDATA[
+			<p><b>New in 5.1.0</b>\n\n
+				* Traduction en italien (Eugenio Davolio)\n\n
+				* Traduction en espagnol (José M. Galdo)\n\n
+				* Traduction en turque (Emir Sarı)\n\n
+				* Possibilité de sauvegarder les livres ajoutés ou mis à jour récemment et d\'exclure les couvertures (ou les livres)\n\n
+				* Amélioration de la taille des miniatures pour les écrans haute définition\n\n
+				* Ajout d\'une option pour voir les livres par Auteur/series sur Amazon\n\n
+				* Correction de bogues mineures\n\n
+			</p>
+		]]>
+    </string>
+    <string name="new_in_511">
+    <![CDATA[
+    <p><b>Nouveau dans la version 5.1.1</b>\n\n
+    * Corrections de bogue\n\n
+    * Nouveau style: Groupage par date de mise à jour date\n\n
+    * Nouveau style: Groupage par évaluation\n\n
+    * Nouveau style: Groupage par bibliothèque\n\n
+    </p>
+    ]]>
+    </string>
+    <string name="new_in_520">
+		<![CDATA[
+			<p><b>Nouveau dans la version 5.2.0</b>\n\n
+			    * Selection de la localisation dans les préférences\n\n
+			    * Version grecque (Dimitris Klisiaris)\n\n
+                * Gestion des majuscules spécifiques à la localisation (de, fr)\n\n
+                * Amélioration dela recherche\n\n
+				* Correction de bogues\n\n
+			</p>
+		]]>
+    </string>
+
+</resources>

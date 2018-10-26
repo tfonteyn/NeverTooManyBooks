@@ -171,10 +171,10 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
         mCondensedListItems.add(true, R.string.smaller);
 
         mShowHeaderInfoListItems.add(null, R.string.use_default_setting);
-        mShowHeaderInfoListItems.add(SUMMARY_HIDE, R.string.hide_summary_details);
-        mShowHeaderInfoListItems.add(SUMMARY_SHOW_COUNT, R.string.show_book_count);
-        mShowHeaderInfoListItems.add(SUMMARY_SHOW_LEVEL_1_AND_COUNT, R.string.show_first_level_and_book_count);
-        mShowHeaderInfoListItems.add(SUMMARY_SHOW_ALL, R.string.show_all_summary_details);
+        mShowHeaderInfoListItems.add(SUMMARY_HIDE, R.string.summary_details_hide);
+        mShowHeaderInfoListItems.add(SUMMARY_SHOW_COUNT, R.string.summary_details_show_book_count);
+        mShowHeaderInfoListItems.add(SUMMARY_SHOW_LEVEL_1_AND_COUNT, R.string.summary_details_show_first_level_and_book_count);
+        mShowHeaderInfoListItems.add(SUMMARY_SHOW_ALL, R.string.summary_details_show_all);
 
         mReadFilterListItems.add(FILTER_NO, R.string.select_unread_only);
         mReadFilterListItems.add(FILTER_YES, R.string.select_read_only);
@@ -389,13 +389,13 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
 
     private void initProperties() {
         mXtraShowThumbnails = new BooleanProperty("XThumbnails",
-                PropertyGroup.GRP_THUMBNAILS,R.string.show_thumbnails)
+                PropertyGroup.GRP_THUMBNAILS,R.string.thumbnails_show)
                 .setPreferenceKey(PREF_SHOW_THUMBNAILS)
                 .setDefaultValue(true)
                 .setWeight(-100);
 
         mXtraLargeThumbnails = new BooleanProperty("XLargeThumbnails",
-                PropertyGroup.GRP_THUMBNAILS, R.string.prefer_large_thumbnails)
+                PropertyGroup.GRP_THUMBNAILS, R.string.thumbnails_prefer_large)
                 .setPreferenceKey(PREF_LARGE_THUMBNAILS)
                 .setWeight(-99);
 
@@ -429,7 +429,7 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
                 .setPreferenceKey(PREF_CONDENSED_TEXT);
 
         mShowHeaderInfo = new IntegerListProperty(mShowHeaderInfoListItems, PREF_SHOW_HEADER_INFO,
-                PropertyGroup.GRP_GENERAL, R.string.summary_details_in_header)
+                PropertyGroup.GRP_GENERAL, R.string.summary_details)
                 .setPreferenceKey(PREF_SHOW_HEADER_INFO)
                 .setDefaultValue(SUMMARY_SHOW_ALL);
 

@@ -180,12 +180,12 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
 		 *
 		if (root instanceof ImageView) {
 			ImageView img = (ImageView) root;
-			if (img.getId() == R.id.read) {
+			if (img.getLongFromBundles() == R.id.read) {
 				img.setMaxHeight((int) (30*BooklistStyle.SCALE));
 				img.setMaxWidth((int) (30*BooklistStyle.SCALE) );
 				Logger.info("SCALE READ");
 				img.requestLayout();
-			} else if (img.getId() == R.id.cover) {
+			} else if (img.getLongFromBundles() == R.id.cover) {
 				img.setMaxHeight((int) (rowView.getMaxThumbnailHeight()*BooklistStyle.SCALE));
 				img.setMaxWidth((int) (rowView.getMaxThumbnailWidth()*BooklistStyle.SCALE) );
 				LayoutParams lp = new LayoutParams(LayoutParams.WRAP_CONTENT, (int) (rowView.getMaxThumbnailHeight()*BooklistStyle.SCALE) );
@@ -378,16 +378,16 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
             // add search by author ?
             boolean hasAuthor = (rowView.hasAuthorId() && rowView.getAuthorId() > 0);
             if (hasAuthor) {
-                addMenuItem(menu, R.id.MENU_AMAZON_BOOKS_BY_AUTHOR, R.string.amazon_books_by_author, R.drawable.ic_search);
+                addMenuItem(menu, R.id.MENU_AMAZON_BOOKS_BY_AUTHOR, R.string.menu_amazon_books_by_author, R.drawable.ic_search);
             }
 
             // add search by series ?
             boolean hasSeries = (rowView.hasSeriesId() && rowView.getSeriesId() > 0);
             if (hasSeries) {
                 if (hasAuthor) {
-                    addMenuItem(menu, R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES, R.string.amazon_books_by_author_in_series, R.drawable.ic_search);
+                    addMenuItem(menu, R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES, R.string.menu_amazon_books_by_author_in_series, R.drawable.ic_search);
                 }
-                addMenuItem(menu, R.id.MENU_AMAZON_BOOKS_IN_SERIES, R.string.amazon_books_in_series, R.drawable.ic_search);
+                addMenuItem(menu, R.id.MENU_AMAZON_BOOKS_IN_SERIES, R.string.menu_amazon_books_in_series, R.drawable.ic_search);
             }
         } catch (Exception e) {
             Logger.error(e);
@@ -417,7 +417,8 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
 
             case R.id.MENU_BOOK_DELETE: {
                 // Show the standard dialog
-                int res = StandardDialogs.deleteBookAlert(activity, db, rowView.getBookId(), new Runnable() {
+                @StringRes
+                int result = StandardDialogs.deleteBookAlert(activity, db, rowView.getBookId(), new Runnable() {
                     @Override
                     public void run() {
                         db.purgeAuthors();
@@ -425,44 +426,45 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                         // Let the activity know
                         if (activity instanceof BooklistChangeListener) {
                             final BooklistChangeListener listener = (BooklistChangeListener) activity;
-                            listener.onBooklistChange(rowView.getStyle().getExtraFieldsStatus(), BooklistChangeListener.FLAG_AUTHOR | BooklistChangeListener.FLAG_SERIES);
+                            listener.onBooklistChange(rowView.getStyle().getExtraFieldsStatus(),
+                                    BooklistChangeListener.FLAG_AUTHOR | BooklistChangeListener.FLAG_SERIES);
                         }
                     }
                 });
                 // Display an error, if any
-                if (res != 0) {
-                    StandardDialogs.showBriefMessage(activity, res);
+                if (result != 0) {
+                    StandardDialogs.showBriefMessage(activity, result);
                 }
                 return true;
             }
-            case R.id.MENU_BOOK_EDIT: {
-                EditBookActivity.startActivityForResult(activity, rowView.getBookId(), EditBookActivity.TAB_EDIT);
+
+            case R.id.MENU_BOOK_EDIT:
+                EditBookActivity.startActivityForResult(activity, /* 01564e26-b463-425e-8889-55a8228c82d5 */
+                        rowView.getBookId(), EditBookActivity.TAB_EDIT);
                 return true;
-            }
-            case R.id.MENU_BOOK_EDIT_NOTES: {
-                EditBookActivity.startActivityForResult(activity, rowView.getBookId(), EditBookActivity.TAB_EDIT_NOTES);
+
+            case R.id.MENU_BOOK_EDIT_NOTES:
+                EditBookActivity.startActivityForResult(activity, /* 8a5c649a-e97b-4d53-8133-6060ef3c3072 */
+                        rowView.getBookId(), EditBookActivity.TAB_EDIT_NOTES);
                 return true;
-            }
-            case R.id.MENU_BOOK_EDIT_LOANS: {
-                EditBookActivity.startActivityForResult(activity, rowView.getBookId(), EditBookActivity.TAB_EDIT_LOANS);
+
+            case R.id.MENU_BOOK_EDIT_LOANS:
+                EditBookActivity.startActivityForResult(activity, /* 0308715c-e1d2-4a7f-9ba3-cb8f641e096b */
+                        rowView.getBookId(), EditBookActivity.TAB_EDIT_LOANS);
                 return true;
-            }
-            case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR: {
-                String author = getAuthorFromRow(db, rowView);
-                AmazonUtils.openSearchPage(activity, author, null);
+
+            case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR:
+                AmazonUtils.openSearchPage(activity, getAuthorFromRow(db, rowView), null);
                 return true;
-            }
-            case R.id.MENU_AMAZON_BOOKS_IN_SERIES: {
-                String series = getSeriesFromRow(db, rowView);
-                AmazonUtils.openSearchPage(activity, null, series);
+
+            case R.id.MENU_AMAZON_BOOKS_IN_SERIES:
+                AmazonUtils.openSearchPage(activity, null, getSeriesFromRow(db, rowView));
                 return true;
-            }
-            case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES: {
-                String author = getAuthorFromRow(db, rowView);
-                String series = getSeriesFromRow(db, rowView);
-                AmazonUtils.openSearchPage(activity, author, series);
+
+            case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES:
+                AmazonUtils.openSearchPage(activity, getAuthorFromRow(db, rowView), getSeriesFromRow(db, rowView));
                 return true;
-            }
+
             case R.id.MENU_BOOK_SEND_TO_GOODREADS: {
                 /* Get a GoodreadsManager and make sure we are authorized.
                  * FIXME: This does network traffic on main thread and will ALWAYS die in Android 4.2+.
@@ -483,6 +485,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                 qm.enqueueTask(task, BCQueueManager.QUEUE_MAIN);
                 return true;
             }
+
             case R.id.MENU_SERIES_EDIT: {
                 long id = rowView.getSeriesId();
                 if (id == -1) {
@@ -534,8 +537,8 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                 return true;
             }
             case R.id.MENU_AUTHOR_EDIT: {
-                Author s = db.getAuthor(rowView.getAuthorId());
-                Objects.requireNonNull(s);
+                Author author = db.getAuthor(rowView.getAuthorId());
+                Objects.requireNonNull(author);
                 EditAuthorDialog d = new EditAuthorDialog(activity, db, new Runnable() {
                     @Override
                     public void run() {
@@ -547,11 +550,11 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                         }
                     }
                 });
-                d.edit(s);
+                d.edit(author);
                 return true;
             }
             case R.id.MENU_PUBLISHER_EDIT: {
-                Publisher s = new Publisher(rowView.getPublisherName());
+                Publisher publisher = new Publisher(rowView.getPublisherName());
                 EditPublisherDialog d = new EditPublisherDialog(activity, db, new Runnable() {
                     @Override
                     public void run() {
@@ -562,11 +565,11 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                         }
                     }
                 });
-                d.edit(s);
+                d.edit(publisher);
                 return true;
             }
             case R.id.MENU_LANGUAGE_EDIT: {
-                String s = rowView.getLanguage();
+                String language = rowView.getLanguage();
                 EditLanguageDialog d = new EditLanguageDialog(activity, db, new Runnable() {
                     @Override
                     public void run() {
@@ -577,11 +580,11 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                         }
                     }
                 });
-                d.edit(s);
+                d.edit(language);
                 return true;
             }
             case R.id.MENU_LOCATION_EDIT: {
-                String s = rowView.getLocation();
+                String location = rowView.getLocation();
                 EditLocationDialog d = new EditLocationDialog(activity, db, new Runnable() {
                     @Override
                     public void run() {
@@ -592,11 +595,11 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                         }
                     }
                 });
-                d.edit(s);
+                d.edit(location);
                 return true;
             }
             case R.id.MENU_GENRE_EDIT: {
-                String s = rowView.getGenre();
+                String genre = rowView.getGenre();
                 EditGenreDialog d = new EditGenreDialog(activity, db, new Runnable() {
                     @Override
                     public void run() {
@@ -607,11 +610,11 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                         }
                     }
                 });
-                d.edit(s);
+                d.edit(genre);
                 return true;
             }
             case R.id.MENU_FORMAT_EDIT: {
-                String s = rowView.getFormat();
+                String format = rowView.getFormat();
                 EditFormatDialog d = new EditFormatDialog(activity, db, new Runnable() {
                     @Override
                     public void run() {
@@ -622,7 +625,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                         }
                     }
                 });
-                d.edit(s);
+                d.edit(format);
                 return true;
             }
             case R.id.MENU_BOOK_READ: {
@@ -982,7 +985,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
 
             final int extras = style.getExtraFieldsStatus();
 
-            cover = bookView.findViewById(R.id.cover);
+            cover = bookView.findViewById(R.id.coverImage);
             if ((extras & BooklistStyle.EXTRAS_THUMBNAIL) != 0) {
                 cover.setVisibility(View.VISIBLE);
 

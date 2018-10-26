@@ -35,7 +35,7 @@ import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.filechooser.FileChooserFragment.FileDetails;
 import com.eleybourn.bookcatalogue.filechooser.FileChooserFragment.PathChangedListener;
 import com.eleybourn.bookcatalogue.filechooser.FileLister.FileListerListener;
-import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressFragment;
+import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressDialogFragment;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -47,8 +47,8 @@ import java.util.ArrayList;
  * @author pjw
  */
 public abstract class FileChooser extends BaseActivity implements
-        SimpleTaskQueueProgressFragment.OnAllTasksFinishedListener,
-        SimpleTaskQueueProgressFragment.OnTaskFinishedListener,
+        SimpleTaskQueueProgressDialogFragment.OnAllTasksFinishedListener,
+        SimpleTaskQueueProgressDialogFragment.OnTaskFinishedListener,
         FileLister.FileListerListener,
         PathChangedListener {
 
@@ -110,7 +110,7 @@ public abstract class FileChooser extends BaseActivity implements
         Button confirm = findViewById(R.id.confirm);
 
         if (mIsSaveDialog) {
-            confirm.setText(R.string.save);
+            confirm.setText(R.string.btn_confirm_save);
             confirm.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(final View view) {
@@ -119,7 +119,7 @@ public abstract class FileChooser extends BaseActivity implements
             });
 
         } else {
-            confirm.setText(R.string.open);
+            confirm.setText(R.string.btn_confirm_open);
             confirm.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(final View view) {
@@ -206,7 +206,7 @@ public abstract class FileChooser extends BaseActivity implements
         FileLister lister = getFileLister(root);
 
         // Start the task
-        SimpleTaskQueueProgressFragment.runTaskWithProgress(this, R.string.searching_directory_ellipsis, lister, true, 0);
+        SimpleTaskQueueProgressDialogFragment.runTaskWithProgress(this, R.string.searching_directory_ellipsis, lister, true, 0);
 
     }
 }

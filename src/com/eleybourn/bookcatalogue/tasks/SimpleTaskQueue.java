@@ -121,8 +121,9 @@ public class SimpleTaskQueue {
     public SimpleTaskQueue(@NonNull final String name, @IntRange(from = 1, to = 10) final int maxTasks) {
         mName = name;
         mMaxTasks = maxTasks;
-        if (maxTasks < 1 || maxTasks > 10)
+        if (maxTasks < 1 || maxTasks > 10) {
             throw new IllegalArgumentException("maxTasks=" + maxTasks);
+        }
     }
 
     /**
@@ -192,8 +193,9 @@ public class SimpleTaskQueue {
         for (SimpleTaskWrapper w : mExecutionStack) {
             if (w.id == id) {
                 synchronized (this) {
-                    if (mExecutionStack.remove(w))
+                    if (mExecutionStack.remove(w)) {
                         mManagedTaskCount--;
+                    }
                 }
                 return true;
             }
@@ -208,8 +210,9 @@ public class SimpleTaskQueue {
         for (SimpleTaskWrapper w : mExecutionStack) {
             if (w.task.equals(task)) {
                 synchronized (this) {
-                    if (mExecutionStack.remove(w))
+                    if (mExecutionStack.remove(w)) {
                         mManagedTaskCount--;
+                    }
                 }
                 return;
             }
@@ -272,8 +275,9 @@ public class SimpleTaskQueue {
             while (!mTerminate) {
                 // Get next; if none, exit.
                 SimpleTaskWrapper req = mResultQueue.poll();
-                if (req == null)
+                if (req == null) {
                     break;
+                }
 
                 final SimpleTask task = req.task;
 
@@ -293,12 +297,13 @@ public class SimpleTaskQueue {
                 }
 
                 // Call the task listener; log and ignore errors.
-                if (mTaskFinishListener != null)
+                if (mTaskFinishListener != null) {
                     try {
                         mTaskFinishListener.onTaskFinish(task, req.exception);
                     } catch (Exception e) {
                         Logger.error(e, "Error from listener while processing request result");
                     }
+                }
             }
         } catch (Exception e) {
             Logger.error(e, "Exception in processResults in UI thread");
@@ -469,8 +474,8 @@ public class SimpleTaskQueue {
         public CatalogueDBAdapter getOpenDb() {
             if (mDb == null) {
                 // Reminder: don't make/put the context in a static variable! -> Memory Leak!
-                mDb = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
-                mDb.open();
+                mDb = new CatalogueDBAdapter(BookCatalogueApp.getAppContext())
+                        .open();
             }
             return mDb;
         }
@@ -480,6 +485,7 @@ public class SimpleTaskQueue {
          */
         public void run() {
             try {
+                // Set the thread name to something helpful.
                 this.setName(mName);
                 while (!mTerminate) {
                     SimpleTaskWrapper req = mExecutionStack.poll(15000, TimeUnit.MILLISECONDS);
@@ -505,14 +511,10 @@ public class SimpleTaskQueue {
             } catch (Exception e) {
                 Logger.error(e);
             } finally {
-                try {
-                    if (mDb != null)
+                    if (mDb != null) {
                         mDb.close();
-                } catch (Exception ignored) {
-                }
+                    }
             }
         }
-
-
     }
 }

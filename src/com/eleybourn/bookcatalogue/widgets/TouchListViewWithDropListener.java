@@ -46,9 +46,9 @@ public class TouchListViewWithDropListener<T> extends TouchListView implements T
         // now after the list has changed
         final int first2 = getFirstVisiblePosition();
 
-        if (BuildConfig.DEBUG) {
-            Logger.info(this,from + " -> " + to + ", first " + firstPos + "(" + first2 + ")");
-        }
+//        if (BuildConfig.DEBUG) {
+//            Logger.info(this,from + " -> " + to + ", first " + firstPos + "(" + first2 + ")");
+//        }
         final int newFirst = (to > from && from < firstPos) ? (firstPos - 1) : firstPos;
 
         View firstView = getChildAt(0);
@@ -56,9 +56,9 @@ public class TouchListViewWithDropListener<T> extends TouchListView implements T
         post(new Runnable() {
             @Override
             public void run() {
-                if (BuildConfig.DEBUG) {
-                    Logger.info(this,"Positioning to " + newFirst + "+{" + offset + "}");
-                }
+//                if (BuildConfig.DEBUG) {
+//                    Logger.info(this,"Positioning to " + newFirst + "+{" + offset + "}");
+//                }
                 requestFocusFromTouch();
                 setSelectionFromTop(newFirst, offset);
                 post(new Runnable() {

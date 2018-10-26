@@ -15,7 +15,7 @@
         android:paddingEnd="@dimen/padding_border"
         android:paddingStart="@dimen/padding_border">
 
-        <ImageView
+        <ImageButton
             android:id="@+id/edit_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

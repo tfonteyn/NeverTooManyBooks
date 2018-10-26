@@ -97,8 +97,8 @@ public class TaskManager implements AutoCloseable {
      */
     private final ManagedTask.TaskListener mTaskListener = new ManagedTask.TaskListener() {
         @Override
-        public void onTaskFinished(@NonNull ManagedTask t) {
-            TaskManager.this.onTaskFinished(t);
+        public void onTaskFinished(@NonNull ManagedTask task) {
+            TaskManager.this.onTaskFinished(task);
         }
     };
 
@@ -182,7 +182,7 @@ public class TaskManager implements AutoCloseable {
     }
 
     /**
-     * Utility routine to cancel all tasks.
+     * Utility routine to onCancel all tasks.
      */
     public void cancelAllTasks() {
         synchronized (mTasks) {

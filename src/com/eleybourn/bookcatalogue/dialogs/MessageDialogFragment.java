@@ -69,13 +69,12 @@ public class MessageDialogFragment extends DialogFragment {
     }
 
     /**
-     * Ensure activity supports event
+     * Ensure activity supports interface
      */
     @Override
     @CallSuper
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull final Context context) {
         super.onAttach(context);
-
         if (!(context instanceof OnMessageDialogResultListener))
             throw new RTE.MustImplementException(context, OnMessageDialogResultListener.class);
     }

@@ -38,8 +38,8 @@ import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.NetworkException;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTaskContext;
-import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressFragment;
-import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressFragment.FragmentTask;
+import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressDialogFragment;
+import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressDialogFragment.FragmentTask;
 
 /**
  * Activity to allow the user to authorize the application to access their goodreads account and
@@ -47,7 +47,7 @@ import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressFragment.Fragmen
  *
  * @author Philip Warner
  */
-public class GoodreadsRegister extends BaseActivity {
+public class GoodreadsRegisterActivity extends BaseActivity {
 
     /**
      * Called by button click to start a non-UI-thread task to do the work.
@@ -60,7 +60,7 @@ public class GoodreadsRegister extends BaseActivity {
              * Call the static method to start the web page; this can take a few seconds
              */
             @Override
-            public void run(@NonNull final SimpleTaskQueueProgressFragment fragment, @NonNull final SimpleTaskContext taskContext) {
+            public void run(@NonNull final SimpleTaskQueueProgressDialogFragment fragment, @NonNull final SimpleTaskContext taskContext) {
                 mMessage = requestAuthorizationImmediate(activity);
             }
 
@@ -68,7 +68,7 @@ public class GoodreadsRegister extends BaseActivity {
              * Display any error message
              */
             @Override
-            public void onFinish(@NonNull final SimpleTaskQueueProgressFragment fragment, @Nullable final Exception exception) {
+            public void onFinish(@NonNull final SimpleTaskQueueProgressDialogFragment fragment, @Nullable final Exception exception) {
                 if (mMessage != 0)
                     fragment.showBriefMessage(fragment.getString(mMessage));
             }
@@ -76,7 +76,7 @@ public class GoodreadsRegister extends BaseActivity {
         };
 
         // Get the fragment to display task progress
-        SimpleTaskQueueProgressFragment.runTaskWithProgress(activity, R.string.connecting_to_web_site, task, true, 0);
+        SimpleTaskQueueProgressDialogFragment.runTaskWithProgress(activity, R.string.connecting_to_web_site, task, true, 0);
     }
 
     /**
@@ -115,7 +115,7 @@ public class GoodreadsRegister extends BaseActivity {
         register.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                String url = res.getString(R.string.goodreads_url);
+                String url = res.getString(R.string.url_goodreads);
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
             }
         });
@@ -124,7 +124,7 @@ public class GoodreadsRegister extends BaseActivity {
         findViewById(R.id.authorize).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                requestAuthorizationInBackground(GoodreadsRegister.this);
+                requestAuthorizationInBackground(GoodreadsRegisterActivity.this);
             }
         });
 

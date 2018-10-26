@@ -22,15 +22,15 @@
         android:padding="@dimen/padding_border_double"
         tools:ignore="UselessParent">
 
-        <ImageView
+        <ImageButton
             android:id="@id/ROW_DELETE"
-            style="@style/touch_list_view_row_ic_delete"
+            style="@style/tlv_delete_button"
             app:srcCompat="@drawable/ic_delete"
             tools:ignore="ContentDescription" />
 
         <ImageView
             android:id="@+id/grabber"
-            style="@style/touch_list_view_row_ic_grabber"
+            style="@style/tlv_dragHandle"
             app:srcCompat="@drawable/ic_drag_handle"
             tools:ignore="ContentDescription" />
 
