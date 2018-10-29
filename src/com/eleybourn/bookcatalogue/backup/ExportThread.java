@@ -63,7 +63,7 @@ public class ExportThread extends ManagedTask {
             renameFiles(tmpFile);
         } catch (IOException e) {
             Logger.error(e);
-            mTaskManager.showBriefMessage(getString(R.string.error_export_failed));
+            mTaskManager.showUserMessage(getString(R.string.error_export_failed));
         }
     }
 

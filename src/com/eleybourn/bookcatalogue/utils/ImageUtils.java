@@ -344,7 +344,7 @@ public class ImageUtils {
 
         // Check if we have a file and/or it is valid
         if (thumbFile == null || !thumbFile.exists()) {
-            StandardDialogs.showBriefMessage(activity, R.string.cover_not_set);
+            StandardDialogs.showUserMessage(activity, R.string.cover_not_set);
         } else {
             BitmapFactory.Options opt = new BitmapFactory.Options();
             opt.inJustDecodeBounds = true;
@@ -352,7 +352,7 @@ public class ImageUtils {
 
             // If no size info, assume file bad and return appropriate icon
             if (opt.outHeight <= 0 || opt.outWidth <= 0) {
-                StandardDialogs.showBriefMessage(activity, R.string.cover_corrupt);
+                StandardDialogs.showUserMessage(activity, R.string.cover_corrupt);
             } else {
                 final Dialog dialog = new StandardDialogs.BasicDialog(activity, R.style.ZoomedImage);
 

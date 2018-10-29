@@ -83,8 +83,7 @@ public class UpdateFromInternetThread extends ManagedTask {
     /** current book ID */
     private long mCurrentBookId = 0;
     /** current book UUID */
-    @NonNull
-    private String mCurrentBookUuid = "";
+    private String mCurrentBookUuid = null;
 
     /** The (subset) of fields relevant to the current book */
     private UpdateFromInternetActivity.FieldUsages mCurrentBookFieldUsages;
@@ -199,7 +198,6 @@ public class UpdateFromInternetThread extends ManagedTask {
                 // Get the book ID
                 mCurrentBookId = Utils.getLongFromBundle(mOriginalBookData, UniqueId.KEY_ID);
                 // Get the book UUID
-                //noinspection ConstantConditions
                 mCurrentBookUuid = mOriginalBookData.getString(UniqueId.KEY_BOOK_UUID);
                 // Get the extra data about the book
                 mOriginalBookData.putSerializable(UniqueId.BKEY_AUTHOR_ARRAY, mDb.getBookAuthorList(mCurrentBookId));
@@ -265,7 +263,7 @@ public class UpdateFromInternetThread extends ManagedTask {
         } finally {
             // Empty/close the progress.
             mTaskManager.doProgress(null);
-            // Make the final message (brief message, not a Progress message)
+            // Make the final message (user message, not a Progress message)
             mFinalMessage = String.format(getString(R.string.num_books_searched), "" + progressCounter);
             if (isCancelled()) {
                 mFinalMessage = String.format(BookCatalogueApp.getResourceString(R.string.cancelled_info), mFinalMessage);
@@ -303,7 +301,7 @@ public class UpdateFromInternetThread extends ManagedTask {
                             case UniqueId.BKEY_AUTHOR_ARRAY:
                                 // We should never have a book with no authors, but lets be paranoid
                                 if (mOriginalBookData.containsKey(usage.key)) {
-                                    List<Author> list = ArrayUtils.getAuthorsFromBundle(mOriginalBookData);
+                                    List<Author> list = ArrayUtils.getAuthorListFromBundle(mOriginalBookData);
                                     if (list == null || list.size() == 0) {
                                         mCurrentBookFieldUsages.put(usage);
                                     }
@@ -312,7 +310,7 @@ public class UpdateFromInternetThread extends ManagedTask {
 
                             case UniqueId.BKEY_SERIES_ARRAY:
                                 if (mOriginalBookData.containsKey(usage.key)) {
-                                    List<Series> list = ArrayUtils.getSeriesFromBundle(mOriginalBookData);
+                                    List<Series> list = ArrayUtils.getSeriesListFromBundle(mOriginalBookData);
                                     if (list == null || list.size() == 0) {
                                         mCurrentBookFieldUsages.put(usage);
                                     }
@@ -321,7 +319,7 @@ public class UpdateFromInternetThread extends ManagedTask {
 
                             case UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY:
                                 if (mOriginalBookData.containsKey(usage.key)) {
-                                    List<AnthologyTitle> list = ArrayUtils.getAnthologyTitleFromBundle(mOriginalBookData);
+                                    List<AnthologyTitle> list = ArrayUtils.getTOCFromBundle(mOriginalBookData);
                                     if (list == null || list.size() == 0) {
                                         mCurrentBookFieldUsages.put(usage);
                                     }
@@ -345,7 +343,7 @@ public class UpdateFromInternetThread extends ManagedTask {
     @Override
     public void onTaskFinish() {
         try {
-            mTaskManager.showBriefMessage(mFinalMessage);
+            mTaskManager.showUserMessage(mFinalMessage);
         } finally {
             cleanup();
         }
@@ -364,7 +362,7 @@ public class UpdateFromInternetThread extends ManagedTask {
         if (cancelled) {
             cancelTask();
         } else if (newBookData.size() == 0) {
-            mTaskManager.showBriefMessage(BookCatalogueApp.getResourceString(R.string.unable_to_find_book));
+            mTaskManager.showUserMessage(BookCatalogueApp.getResourceString(R.string.unable_to_find_book));
         }
 
         // Save the local data from the context so we can start a new search
@@ -445,7 +443,7 @@ public class UpdateFromInternetThread extends ManagedTask {
                             switch (usage.key) {
                                 case UniqueId.BKEY_AUTHOR_ARRAY:
                                     if (originalBookData.containsKey(usage.key)) {
-                                        ArrayList<Author> list = ArrayUtils.getAuthorsFromBundle(originalBookData);
+                                        ArrayList<Author> list = ArrayUtils.getAuthorListFromBundle(originalBookData);
                                         if (list != null && list.size() > 0) {
                                             newBookData.remove(usage.key);
                                         }
@@ -453,7 +451,7 @@ public class UpdateFromInternetThread extends ManagedTask {
                                     break;
                                 case UniqueId.BKEY_SERIES_ARRAY:
                                     if (originalBookData.containsKey(usage.key)) {
-                                        ArrayList<Series> list = ArrayUtils.getSeriesFromBundle(originalBookData);
+                                        ArrayList<Series> list = ArrayUtils.getSeriesListFromBundle(originalBookData);
                                         if (list != null && list.size() > 0) {
                                             newBookData.remove(usage.key);
                                         }
@@ -461,7 +459,7 @@ public class UpdateFromInternetThread extends ManagedTask {
                                     break;
                                 case UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY:
                                     if (originalBookData.containsKey(usage.key)) {
-                                        ArrayList<AnthologyTitle> list = ArrayUtils.getAnthologyTitleFromBundle(originalBookData);
+                                        ArrayList<AnthologyTitle> list = ArrayUtils.getTOCFromBundle(originalBookData);
                                         if (list != null && list.size() > 0) {
                                             newBookData.remove(usage.key);
                                         }

@@ -107,10 +107,10 @@ public class LibraryThingAdminActivity extends BaseActivity {
                                 long length = tmpFile.length();
                                 if (length < 100) {
                                     // Queue a message
-                                    fragment.showBriefMessage(getString(R.string.lt_incorrect_key));
+                                    fragment.showUserMessage(getString(R.string.lt_incorrect_key));
                                 } else {
                                     // Queue a message
-                                    fragment.showBriefMessage(getString(R.string.lt_correct_key));
+                                    fragment.showUserMessage(getString(R.string.lt_correct_key));
                                 }
                                 StorageUtils.deleteFile(tmpFile);
                             }

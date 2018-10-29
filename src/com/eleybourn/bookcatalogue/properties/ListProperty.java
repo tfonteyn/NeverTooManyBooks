@@ -30,7 +30,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.RadioButton;
+import android.widget.CompoundButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
@@ -78,7 +78,7 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
     @Override
     public View getView(@NonNull final LayoutInflater inflater) {
         final ViewGroup root = (ViewGroup) inflater.inflate(R.layout.property_value_list, null);
-        ViewTagger.setTag(root, R.id.TAG_PROPERTY, this);
+        ViewTagger.setTag(root, R.id.TAG_PROPERTY, this);// value: ListProperty
         // Display the list of values when clicked.
         root.setOnClickListener(new OnClickListener() {
             @Override
@@ -165,7 +165,7 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
             @Override
             public void onClick(@NonNull View v) {
                 dialog.dismiss();
-                Holder<T> holder = ViewTagger.getTagOrThrow(v, R.id.TAG_HOLDER);
+                Holder<T> holder = ViewTagger.getTagOrThrow(v, R.id.TAG_HOLDER);// value: ListProperty.Holder
                 set(holder.item.value);
                 setValueInView(holder.baseView, holder.item);
             }
@@ -186,7 +186,7 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
 
                 // Make the view for this item
                 View line = inflater.inflate(R.layout.property_value_list_item, radioGroup, false);
-                RadioButton sel = line.findViewById(R.id.selector);
+                CompoundButton sel = line.findViewById(R.id.selector);
 
                 //Set the various values
                 sel.setChecked(selected);
@@ -196,7 +196,7 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
                 sel.setOnClickListener(clickListener);
 
                 // Set the tacks used by the listeners
-                ViewTagger.setTag(sel, R.id.TAG_HOLDER, new Holder<>(entry, baseView));
+                ViewTagger.setTag(sel, R.id.TAG_HOLDER, new Holder<>(entry, baseView));// value: ListProperty.Holder
 
                 // Add it to the group
                 radioGroup.addView(line);

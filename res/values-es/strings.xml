@@ -661,13 +661,13 @@ y puede editar el libro utilizando el menú de opciones.
 
     <!-- Text for button -->
     <string name="book_details">Detalles de los libros</string>
-    <!-- Brief descriptionn -->
+    <!-- Brief description -->
     <string name="book_details_blurb">Todos los datos de todos los libros</string>
     <!-- Text for button -->
     <string name="cover_images">Portadas</string>
-    <!-- Brief descriptionn -->
+    <!-- Brief description -->
     <string name="cover_images_blurb">Portadas de todos los libros seleccionadas. La exportación requerirá mucho más tiempo.</string>
-    <!-- Brief descriptionn -->
+    <!-- Brief description -->
     <string name="preferences_blurb">Preferencias y estilos definidos por el usuario</string>
 
     <!-- Explanatory note for export date (not yet implemented) -->

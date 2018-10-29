@@ -64,7 +64,7 @@ public class EditSeriesDialog {
             public void onClick(View v) {
                 String newName = seriesView.getText().toString().trim();
                 if (newName.isEmpty()) {
-                    StandardDialogs.showBriefMessage(mContext, R.string.series_is_blank);
+                    StandardDialogs.showUserMessage(mContext, R.string.series_is_blank);
                     return;
                 }
                 confirmEdit(series, new Series(newName, ""));

@@ -32,6 +32,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
@@ -88,7 +89,7 @@ public class BooklistStylePropertiesActivity extends BaseActivity {
                 try {
                     mProperties.validate();
                 } catch (ValidationException e) {
-                    StandardDialogs.showBriefMessage(BooklistStylePropertiesActivity.this, e.getLocalizedMessage());
+                    StandardDialogs.showUserMessage(BooklistStylePropertiesActivity.this, e.getLocalizedMessage());
                     return;
                 }
 
@@ -104,6 +105,7 @@ public class BooklistStylePropertiesActivity extends BaseActivity {
         findViewById(R.id.cancel).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
+                setResult(Activity.RESULT_CANCELED);
                 finish();
             }
         });
@@ -162,10 +164,10 @@ public class BooklistStylePropertiesActivity extends BaseActivity {
     @Override
     @CallSuper
     protected void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
+        if (BuildConfig.DEBUG) {
+            Logger.info(this,"onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
+        }
         switch (requestCode) {
-
             case BooklistStyleGroupsActivity.REQUEST_CODE: /* 06ed8d0e-7120-47aa-b47e-c0cd46361dcb */
                 if (resultCode == Activity.RESULT_OK) {
                     // having a result is optional
@@ -183,12 +185,10 @@ public class BooklistStylePropertiesActivity extends BaseActivity {
                         }
                     }
                 }
-                break;
-
-            default:
-                Logger.error("onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
-                break;
+                return;
         }
+
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     /**
@@ -254,7 +254,7 @@ public class BooklistStylePropertiesActivity extends BaseActivity {
         @Override
         public View getView(@NonNull final LayoutInflater inflater) {
             View v = inflater.inflate(R.layout.property_value_string_button, null);
-            ViewTagger.setTag(v, R.id.TAG_PROPERTY, this);
+            ViewTagger.setTag(v, R.id.TAG_PROPERTY, this); // value: GroupsProperty
 
             final TextView name = v.findViewById(R.id.name);
             name.setText(getName());

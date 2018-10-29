@@ -20,6 +20,7 @@
 
 package com.eleybourn.bookcatalogue.searches.goodreads;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
@@ -86,7 +87,8 @@ public class GoodreadsSearchCriteriaActivity extends BaseActivity {
 
             try (BooksCursor cursor = mDb.fetchBookById(mBookId)){
                 if (!cursor.moveToFirst()) {
-                    StandardDialogs.showBriefMessage(this, R.string.book_no_longer_exists);
+                    StandardDialogs.showUserMessage(this, R.string.book_no_longer_exists);
+                    setResult(Activity.RESULT_CANCELED);
                     finish();
                     return;
                 }
@@ -158,7 +160,7 @@ public class GoodreadsSearchCriteriaActivity extends BaseActivity {
         String criteria = getViewText(R.id.search_text);
 
         if (criteria.isEmpty()) {
-            StandardDialogs.showBriefMessage(this, R.string.please_enter_search_criteria);
+            StandardDialogs.showUserMessage(this, R.string.please_enter_search_criteria);
             return;
         }
 

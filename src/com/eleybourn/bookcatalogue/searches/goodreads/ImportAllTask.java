@@ -193,8 +193,9 @@ class ImportAllTask extends GenericTask {
                     return false;
                 }
 
-                if (mUpdatesAfter != null && review.containsKey(ListReviewsFieldNames.UPDATED)) {
-                    if (review.getString(ListReviewsFieldNames.UPDATED).compareTo(mUpdatesAfter) > 0) {
+                if (mUpdatesAfter != null) {
+                    String upd = review.getString(ListReviewsFieldNames.UPDATED);
+                    if (upd != null && upd.compareTo(mUpdatesAfter) > 0) {
                         return true;
                     }
                 }
@@ -430,12 +431,13 @@ class ImportAllTask extends GenericTask {
             addStringIfNonBlank(review, ListReviewsFieldNames.ADDED, book, DatabaseDefinitions.DOM_BOOK_DATE_ADDED.name);
             // Also fetch thumbnail if add
             String thumbnail;
-            if (review.containsKey(ListReviewsFieldNames.LARGE_IMAGE)
-                    && !review.getString(ListReviewsFieldNames.LARGE_IMAGE).toLowerCase().contains(UniqueId.BKEY_NO_COVER)) {
-                thumbnail = review.getString(ListReviewsFieldNames.LARGE_IMAGE);
-            } else if (review.containsKey(ListReviewsFieldNames.SMALL_IMAGE)
-                    && !review.getString(ListReviewsFieldNames.SMALL_IMAGE).toLowerCase().contains(UniqueId.BKEY_NO_COVER)) {
-                thumbnail = review.getString(ListReviewsFieldNames.SMALL_IMAGE);
+
+            String largeImage = review.getString(ListReviewsFieldNames.LARGE_IMAGE);
+            String smallImage = review.getString(ListReviewsFieldNames.SMALL_IMAGE);
+            if (largeImage != null && !largeImage.toLowerCase().contains(UniqueId.BKEY_NO_COVER)) {
+                thumbnail = largeImage;
+            } else if (smallImage != null && !smallImage.toLowerCase().contains(UniqueId.BKEY_NO_COVER)) {
+                thumbnail = smallImage;
             } else {
                 thumbnail = null;
             }

@@ -38,10 +38,10 @@ import android.support.v7.app.AppCompatDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Checkable;
-import android.widget.LinearLayout;
-import android.widget.RadioButton;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -80,8 +80,8 @@ public class StandardDialogs {
     /**
      * Shielding the actual implementation of Toast/Snackbar or whatever is next.
      */
-    public static void showBriefMessage(@NonNull final Activity activity, @StringRes final int message) {
-        if (0 == BookCatalogueApp.Prefs.getInt(BookCatalogueApp.PREF_APP_BRIEF_MESSAGE, 0)) {
+    public static void showUserMessage(@NonNull final Activity activity, @StringRes final int message) {
+        if (0 == BookCatalogueApp.Prefs.getInt(BookCatalogueApp.PREF_APP_USER_MESSAGE, 0)) {
             Toast.makeText(activity, message, Toast.LENGTH_LONG).show();
         } else {
             Snackbar.make(activity.getWindow().getDecorView(), message, Snackbar.LENGTH_LONG).show();
@@ -91,13 +91,15 @@ public class StandardDialogs {
     /**
      * Shielding the actual implementation of Toast/Snackbar or whatever is next.
      */
-    public static void showBriefMessage(@NonNull final Activity activity, @NonNull final String message) {
-        if (0 == BookCatalogueApp.Prefs.getInt(BookCatalogueApp.PREF_APP_BRIEF_MESSAGE, 0)) {
+    public static void showUserMessage(@NonNull final Activity activity, @NonNull final String message) {
+        if (0 == BookCatalogueApp.Prefs.getInt(BookCatalogueApp.PREF_APP_USER_MESSAGE, 0)) {
             Toast.makeText(activity, message, Toast.LENGTH_LONG).show();
         } else {
             Snackbar.make(activity.getWindow().getDecorView(), message, Snackbar.LENGTH_LONG).show();
         }
     }
+
+    /* ========================================================================================== */
 
     /**
      * Show a dialog asking if unsaved edits should be ignored. Finish activity if so.
@@ -119,6 +121,7 @@ public class StandardDialogs {
                         if (onConfirm != null) {
                             onConfirm.run();
                         } else {
+                            activity.setResult(Activity.RESULT_CANCELED);
                             activity.finish();
                         }
                     }
@@ -324,6 +327,8 @@ public class StandardDialogs {
 
     }
 
+    /* ========================================================================================== */
+
     /**
      * Select a custom item from a list, and call handler when/if item is selected.
      */
@@ -332,17 +337,17 @@ public class StandardDialogs {
                                         @NonNull final List<SimpleDialogItem> items,
                                         @Nullable final SimpleDialogItem selectedItem,
                                         @NonNull final SimpleDialogOnClickListener handler) {
-        // Get the view and the radio group
-        final View root = inflater.inflate(R.layout.dialog_select_from_list, null);
-        TextView msg = root.findViewById(R.id.message);
 
-        // Build the base dialog and the top message (if any)
+        // Build the base dialog
+        final View root = inflater.inflate(R.layout.dialog_select_one_from_list, null);
         final AlertDialog.Builder builder = new AlertDialog.Builder(inflater.getContext())
                 .setView(root);
+        // and the top message (if any)
+        TextView messageView = root.findViewById(R.id.message);
         if (message != null && !message.isEmpty()) {
-            msg.setText(message);
+            messageView.setText(message);
         } else {
-            msg.setVisibility(View.GONE);
+            messageView.setVisibility(View.GONE);
             root.findViewById(R.id.messageBottomDivider).setVisibility(View.GONE);
         }
 
@@ -353,28 +358,15 @@ public class StandardDialogs {
             @Override
             public void onClick(@NonNull final View v) {
                 SimpleDialogItem item = ViewTagger.getTag(v, R.id.TAG_DIALOG_ITEM);
-                // For a consistent UI, make sure the selector is checked as well. NOT mandatory from
-                // a functional point of view, just consistent
+                // For a consistent UI, make sure the selector is checked as well.
+                // NOT mandatory from a functional point of view, just consistent
                 if (item != null && !(v instanceof Checkable)) {
-                    RadioButton btn = item.getSelector(v);
+                    CompoundButton btn = item.getSelector(v);
                     if (btn != null) {
                         btn.setChecked(true);
                         btn.invalidate();
                     }
                 }
-                //
-                // It would be nice to have the other radio buttons reflect the new state before it
-                // disappears, but not really worth the effort. Esp. since the code below does not work...
-                // and the dialog disappears too fast to make this worthwhile.
-                //
-                //LinearLayout list = (LinearLayout)root.findViewById(R.id.list);
-                //for(int i = 0; i < list.getChildCount(); i++) {
-                //	View child = list.getChildAt(i);
-                //	SimpleDialogItem other = ViewTagger.getTagOrThrow(child, R.id.TAG_DIALOG_ITEM);
-                //	RadioButton btn = other.getSelector(child);
-                //	btn.setSelected(other == item);
-                //	btn.invalidate();
-                //}
                 dialog.dismiss();
                 if (item != null) {
                     handler.onClick(item);
@@ -383,7 +375,7 @@ public class StandardDialogs {
         };
 
         // Add the items to the dialog
-        LinearLayout list = root.findViewById(android.R.id.list);
+        ViewGroup list = root.findViewById(android.R.id.list);
         for (SimpleDialogItem item : items) {
             View view = item.getView(inflater);
             view.setOnClickListener(listener);
@@ -392,7 +384,7 @@ public class StandardDialogs {
             ViewTagger.setTag(view, R.id.TAG_DIALOG_ITEM, item);
             list.addView(view);
 
-            RadioButton btn = item.getSelector(view);
+            CompoundButton btn = item.getSelector(view);
             if (btn != null) {
                 ViewTagger.setTag(btn, R.id.TAG_DIALOG_ITEM, item);
                 btn.setChecked(item == selectedItem);
@@ -444,7 +436,7 @@ public class StandardDialogs {
         View getView(@NonNull final LayoutInflater inflater);
 
         @Nullable
-        RadioButton getSelector(View v);
+        CompoundButton getSelector(View v);
     }
 
     /**
@@ -472,7 +464,7 @@ public class StandardDialogs {
 
         @Override
         @Nullable
-        public RadioButton getSelector(final View v) {
+        public CompoundButton getSelector(final View v) {
             return null;
         }
 
@@ -513,21 +505,21 @@ public class StandardDialogs {
         }
 
         /**
-         * Get a View to display the object -> toString() and put into RadioButton.text
+         * Get a View to display the object -> toString() and put into CompoundButton.text
          */
         @Override
         @NonNull
         public View getView(@NonNull final LayoutInflater inflater) {
             @SuppressLint("InflateParams") // root==null as it's a dialog
-            View view = inflater.inflate(R.layout.dialog_string_list_item, null);
+            View view = inflater.inflate(R.layout.row_string_list_item, null);
             TextView name = view.findViewById(R.id.name);
             name.setText(mObject.toString());
             return view;
         }
 
         @NonNull
-        public RadioButton getSelector(@NonNull final View view) {
-            return (RadioButton) view.findViewById(R.id.selector);
+        public CompoundButton getSelector(@NonNull final View view) {
+            return (CompoundButton) view.findViewById(R.id.selector);
         }
 
         /**
@@ -559,11 +551,13 @@ public class StandardDialogs {
             View view = super.getView(inflater);
             TextView name = view.findViewById(R.id.name);
             name.setCompoundDrawablesWithIntrinsicBounds(mDrawableId, 0, 0, 0);
-            // Now make the actual RadioButton gone
+            // Now make the actual CompoundButton gone
             getSelector(view).setVisibility(View.GONE);
             return view;
         }
     }
+
+    /* ========================================================================================== */
 
     /**
      * This class exists only for:

@@ -42,8 +42,6 @@ import android.widget.AutoCompleteTextView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.entities.Book;
 
 import java.util.ArrayList;
@@ -52,7 +50,9 @@ import java.util.ArrayList;
  * This class is called by {@link EditBookActivity} and displays the Loaned Tab
  *
  * Users can select a book and, from this activity, select a friend to "loan" the book to.
- * This will then be saved in the database for reference.
+ *
+ * This will then be saved in the database.
+ * So this fragment does NOT participate in the {@link #onLoadBookDetails} and {@link #onSaveBookDetails}
  */
 public class EditBookLoanedFragment extends BookAbstractFragment {
 
@@ -62,7 +62,7 @@ public class EditBookLoanedFragment extends BookAbstractFragment {
             ContactsContract.Contacts.DISPLAY_NAME_PRIMARY
     };
 
-    private TextView mWho;
+    private TextView mLoanedTo;
 
     @Override
     public View onCreateView(@NonNull final LayoutInflater inflater,
@@ -80,19 +80,13 @@ public class EditBookLoanedFragment extends BookAbstractFragment {
     @Override
     @CallSuper
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        Tracker.enterOnCreate(this);
-        try {
-            super.onActivityCreated(savedInstanceState);
-            String friend = mDb.getLoanByBookId(getBook().getBookId());
-            if (friend == null) {
-                showLoanTo();
-            } else {
-                showLoaned(friend);
-            }
-        } catch (Exception e) {
-            Logger.error(e);
-        } finally {
-            Tracker.exitOnCreate(this);
+        super.onActivityCreated(savedInstanceState);
+
+        String friend = mDb.getLoanByBookId(getBook().getBookId());
+        if (friend == null) {
+            showLoanTo();
+        } else {
+            showLoaned(friend);
         }
     }
 
@@ -101,12 +95,12 @@ public class EditBookLoanedFragment extends BookAbstractFragment {
      */
     private void showLoanTo() {
         ScrollView sv = loadFragmentIntoScrollView(R.layout.fragment_edit_book_loan_to);
-        mWho = sv.findViewById(R.id.who);
+        mLoanedTo = sv.findViewById(R.id.loaned_to);
         setAdapter();
 
         sv.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                String friend = mWho.getText().toString().trim();
+                String friend = mLoanedTo.getText().toString().trim();
                 saveLoan(friend);
                 showLoaned(friend);
             }
@@ -120,9 +114,9 @@ public class EditBookLoanedFragment extends BookAbstractFragment {
      */
     private void showLoaned(@NonNull final String user) {
         ScrollView sv = loadFragmentIntoScrollView(R.layout.fragment_edit_book_loaned);
-        mWho = sv.findViewById(R.id.who);
+        mLoanedTo = sv.findViewById(R.id.loaned_to);
 
-        mWho.setText(user);
+        mLoanedTo.setText(user);
 
         sv.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
@@ -155,13 +149,15 @@ public class EditBookLoanedFragment extends BookAbstractFragment {
      * Auto complete list comes from your Contacts
      */
     private void setAdapter() {
+        // check security
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.READ_CONTACTS}, UniqueId.ACTIVITY_REQUEST_CODE_ANDROID_PERMISSIONS_REQUEST);
             return;
         }
+        // call secured method
         ArrayList<String> contacts = getContacts();
         ArrayAdapter<String> adapter = new ArrayAdapter<>(requireActivity(), android.R.layout.simple_dropdown_item_1line, contacts);
-        ((AutoCompleteTextView) mWho).setAdapter(adapter);
+        ((AutoCompleteTextView) mLoanedTo).setAdapter(adapter);
     }
 
     /**
@@ -171,7 +167,7 @@ public class EditBookLoanedFragment extends BookAbstractFragment {
      */
     @RequiresPermission(Manifest.permission.READ_CONTACTS)
     @NonNull
-    private ArrayList<String> getContacts() throws SecurityException{
+    private ArrayList<String> getContacts() throws SecurityException {
         ArrayList<String> list = new ArrayList<>();
         ContentResolver cr = requireActivity().getContentResolver();
         try (Cursor contactsCursor = cr.query(ContactsContract.Contacts.CONTENT_URI, PROJECTION, null, null, null)) {
@@ -195,11 +191,11 @@ public class EditBookLoanedFragment extends BookAbstractFragment {
      * and results arrays which should be treated as a cancellation.
      * </p>
      *
-     * @param requestCode The request code passed in {@link #requestPermissions(String[], int)}.
-     * @param permissions The requested permissions. Never null.
+     * @param requestCode  The request code passed in {@link #requestPermissions(String[], int)}.
+     * @param permissions  The requested permissions. Never null.
      * @param grantResults The grant results for the corresponding permissions
-     *     which is either {@link android.content.pm.PackageManager#PERMISSION_GRANTED}
-     *     or {@link android.content.pm.PackageManager#PERMISSION_DENIED}. Never null.
+     *                     which is either {@link android.content.pm.PackageManager#PERMISSION_GRANTED}
+     *                     or {@link android.content.pm.PackageManager#PERMISSION_DENIED}. Never null.
      *
      * @see #requestPermissions(String[], int)
      */

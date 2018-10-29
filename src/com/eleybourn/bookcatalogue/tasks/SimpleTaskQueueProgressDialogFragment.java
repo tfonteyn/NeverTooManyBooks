@@ -61,7 +61,7 @@ public class SimpleTaskQueueProgressDialogFragment extends DialogFragment {
     private final Handler mHandler = new Handler();
     /** List of messages to be sent to the underlying activity, but not yet sent */
     private final List<TaskMessage> mTaskMessages = new ArrayList<>();
-    /** List of messages queued; only used if activity not present when showBriefMessage() is called */
+    /** List of messages queued; only used if activity not present when showUserMessage() is called */
     @Nullable
     private List<String> mMessages = null;
     /** Options indicating dialog was cancelled */
@@ -204,13 +204,13 @@ public class SimpleTaskQueueProgressDialogFragment extends DialogFragment {
     /**
      * Utility routine to display a message or queue it as appropriate.
      */
-    public void showBriefMessage(@NonNull final String message) {
+    public void showUserMessage(@NonNull final String message) {
         // Can only display in main thread.
         if (Looper.getMainLooper().getThread() == Thread.currentThread()) {
             synchronized (this) {
                 Activity activity = getActivity();
                 if (activity != null) {
-                    StandardDialogs.showBriefMessage(activity, message);
+                    StandardDialogs.showUserMessage(activity, message);
                 } else {
                     // Assume the message was sent before the fragment was displayed; this
                     // list will be read in onAttach
@@ -225,7 +225,7 @@ public class SimpleTaskQueueProgressDialogFragment extends DialogFragment {
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    showBriefMessage(message);
+                    showUserMessage(message);
                 }
             });
         }
@@ -257,7 +257,7 @@ public class SimpleTaskQueueProgressDialogFragment extends DialogFragment {
             if (mMessages != null) {
                 for (String message : mMessages) {
                     if (message != null && !message.isEmpty()) {
-                        StandardDialogs.showBriefMessage(requireActivity(), message);
+                        StandardDialogs.showUserMessage(requireActivity(), message);
                     }
                 }
                 mMessages.clear();
@@ -529,8 +529,8 @@ public class SimpleTaskQueueProgressDialogFragment extends DialogFragment {
     }
 
     /**
-     * Trivial implementation of FragmentTask that never calls onFinish(). The setState()/getState()
-     * calls can be used to store state info by a caller, eg. if they override requiresOnFinish() etc.
+     * Trivial implementation of {@link FragmentTask} that never calls {@link #onFinish}.
+     * The {@link #setState} & {@link #getState} calls can be used to store state info by a caller.
      *
      * @author pjw
      */
@@ -541,7 +541,7 @@ public class SimpleTaskQueueProgressDialogFragment extends DialogFragment {
         public void onFinish(@NonNull final SimpleTaskQueueProgressDialogFragment fragment, @Nullable final Exception e) {
             if (e != null) {
                 Logger.error(e);
-                StandardDialogs.showBriefMessage(fragment.requireActivity(), R.string.error_unexpected_error);
+                StandardDialogs.showUserMessage(fragment.requireActivity(), R.string.error_unexpected_error);
             }
         }
 
@@ -556,8 +556,6 @@ public class SimpleTaskQueueProgressDialogFragment extends DialogFragment {
 
     /**
      * TaskFinished message.
-     *
-     * We only deliver onFinish() to the FragmentTask when the activity is present.
      */
     private class TaskFinishedMessage implements TaskMessage {
         @NonNull
@@ -579,7 +577,9 @@ public class SimpleTaskQueueProgressDialogFragment extends DialogFragment {
             }
             try {
                 if (activity instanceof OnTaskFinishedListener) {
-                    ((OnTaskFinishedListener) activity).onTaskFinished(SimpleTaskQueueProgressDialogFragment.this, mTaskId, mSuccess, mWasCancelled, mTask);
+                    ((OnTaskFinishedListener) activity).onTaskFinished(
+                            SimpleTaskQueueProgressDialogFragment.this,
+                            mTaskId, mSuccess, mWasCancelled, mTask);
                 }
             } catch (Exception e) {
                 Logger.error(e);

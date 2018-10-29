@@ -197,6 +197,7 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
      * bill <-- delete
      * bill(1)
      */
+    @SuppressWarnings("UnusedReturnValue")
     public static boolean pruneSeriesList(@Nullable final List<Series> list) {
         Objects.requireNonNull(list);
 

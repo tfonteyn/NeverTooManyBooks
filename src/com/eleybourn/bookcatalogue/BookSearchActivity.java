@@ -104,7 +104,7 @@ public class BookSearchActivity extends BaseActivityWithTasks {
     private String mIsbn;
     /**
      * Options to indicate the Activity should not 'finish()' because an alert is being displayed.
-     * The alert will call finish().
+     * The alert will call {@link #finish()}.
      */
     private boolean mDisplayingAlert = false;
 
@@ -156,7 +156,7 @@ public class BookSearchActivity extends BaseActivityWithTasks {
         try {
             boolean network_available = Utils.isNetworkAvailable(this);
             if (!network_available) {
-                StandardDialogs.showBriefMessage(this, R.string.error_no_internet_connection);
+                StandardDialogs.showUserMessage(this, R.string.error_no_internet_connection);
                 setResult(Activity.RESULT_CANCELED);
                 finish();
                 return;
@@ -164,7 +164,7 @@ public class BookSearchActivity extends BaseActivityWithTasks {
 
             // Must do this before super.onCreate as getLayoutId() needs them
             Bundle extras = getIntent().getExtras();
-            //noinspection ConstantConditions
+            Objects.requireNonNull(extras);
             mIsbn = extras.getString(UniqueId.KEY_BOOK_ISBN);
             mBy = extras.getString(REQUEST_KEY_BY);
 
@@ -309,7 +309,7 @@ public class BookSearchActivity extends BaseActivityWithTasks {
 
 
         // Setup the 'Allow ASIN' button
-        final CompoundButton allowAsinCb = this.findViewById(R.id.asinCheckbox);
+        final CompoundButton allowAsinCb = this.findViewById(R.id.allow_asin);
         allowAsinCb.setOnCheckedChangeListener(new OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -469,6 +469,7 @@ public class BookSearchActivity extends BaseActivityWithTasks {
                                 Intent marketIntent = new Intent(Intent.ACTION_VIEW,
                                         Uri.parse("market://details?id=com.google.zxing.client.android"));
                                 startActivity(marketIntent);
+                                setResult(Activity.RESULT_CANCELED);
                                 finish();
                             }
                         });
@@ -476,6 +477,7 @@ public class BookSearchActivity extends BaseActivityWithTasks {
                         new DialogInterface.OnClickListener() {
                             public void onClick(final DialogInterface dialog, final int which) {
                                 //do nothing
+                                setResult(Activity.RESULT_CANCELED);
                                 finish();
                             }
                         });
@@ -564,7 +566,7 @@ public class BookSearchActivity extends BaseActivityWithTasks {
         try {
             if (!mIsbn.isEmpty()) {
                 // If the layout has an 'Allow ASIN' checkbox, see if it is checked.
-                final Checkable allowAsinCb = findViewById(R.id.asinCheckbox);
+                final Checkable allowAsinCb = findViewById(R.id.allow_asin);
                 final boolean allowAsin = allowAsinCb != null && allowAsinCb.isChecked();
 
                 if (!IsbnUtils.isValid(mIsbn) && (!allowAsin || !AsinUtils.isValid(mIsbn))) {
@@ -574,7 +576,7 @@ public class BookSearchActivity extends BaseActivityWithTasks {
                     } else {
                         msg = R.string.x_is_not_a_valid_isbn;
                     }
-                    StandardDialogs.showBriefMessage(this, getString(msg, mIsbn));
+                    StandardDialogs.showUserMessage(this, getString(msg, mIsbn));
                     if (mMode == Mode.Scan) {
                         // Optionally beep if scan failed.
                         SoundManager.beepLow();
@@ -664,7 +666,7 @@ public class BookSearchActivity extends BaseActivityWithTasks {
                 mIsbn = "";
             } catch (Exception e) {
                 Logger.error(e);
-                StandardDialogs.showBriefMessage(this, R.string.error_search_failed);
+                StandardDialogs.showUserMessage(this, R.string.error_search_failed);
                 setResult(Activity.RESULT_CANCELED);
                 finish();
             }
@@ -736,32 +738,30 @@ public class BookSearchActivity extends BaseActivityWithTasks {
     @Override
     @CallSuper
     protected void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
+        if (BuildConfig.DEBUG) {
+            Logger.info(this, "onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
+        }
         switch (requestCode) {
             case Scanner.REQUEST_CODE: /* 4f410d34-dc9c-4ee2-903e-79d69a328517, c2c28575-5327-40c6-827a-c7973bd24d12*/
                 mScannerStarted = false;
-                try {
-                    if (resultCode == Activity.RESULT_OK) {
-                        /* there *has* to be 'data' */
-                        Objects.requireNonNull(data);
-                        String isbn = mScanner.getBarcode(data);
-                        mIsbnText.setText(isbn);
-                        go(isbn, "", "");
-                    } else {
-                        // Scanner Cancelled/failed. pass that up
-                        setResult(mLastBookIntent != null ? Activity.RESULT_OK : Activity.RESULT_CANCELED, mLastBookIntent);
-                        // and exit if no dialog present.
-                        if (!mDisplayingAlert) {
-                            finish();
-                        }
+                if (resultCode == Activity.RESULT_OK) {
+                    /* there *has* to be 'data' */
+                    Objects.requireNonNull(data);
+                    String isbn = mScanner.getBarcode(data);
+                    mIsbnText.setText(isbn);
+                    go(isbn, "", "");
+                } else {
+                    // Scanner Cancelled/failed. pass that up
+                    setResult(mLastBookIntent != null ? Activity.RESULT_OK : Activity.RESULT_CANCELED, mLastBookIntent);
+                    // and exit if no dialog present.
+                    if (!mDisplayingAlert) {
+                        finish();
+                        return;
                     }
-                } catch (NullPointerException e) {
-                    Logger.error(e);
-                    setResult(Activity.RESULT_CANCELED);
-                    finish();
                 }
-                break;
+
+                initAuthorList();
+                return;
 
             case EditBookActivity.REQUEST_CODE: /* 341ace23-c2c8-42d6-a71e-909a3a19ba99, 9e2c0b04-8217-4b49-9937-96d160104265 */
                 if (data != null) {
@@ -775,15 +775,15 @@ public class BookSearchActivity extends BaseActivityWithTasks {
                     // set the default result to cancelled by passing it up
                     setResult(Activity.RESULT_CANCELED);
                 }
-                break;
 
-            default:
-                Logger.error("onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
-                break;
+                initAuthorList();
+                return;
         }
 
         // No matter what the activity was, rebuild the author list in case a new author was added.
-        initAuthorList();
+        //initAuthorList();
+
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     private void initAuthorList() {

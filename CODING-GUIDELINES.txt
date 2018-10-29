@@ -28,11 +28,15 @@ Small notes in addition:
 
   No doubt some places do a trim which is not really needed, something for a rainy day.
 
+* Layout in code:
+    * Use a ViewGroup instead of f.e. LinearLayout where possible.
+      This leaves the layout flexible to choose a different type without code changes
+
 * checkable Buttons:
     * CheckBox, RadioButton, Switch, ToggleButton extend CompoundButton, implements Checkable
     * CheckedTextView extends TextView, implements Checkable
 
-    Use 'CompoundButton' and/or 'Checkable' when possible.
+    Use 'CompoundButton' and/or 'Checkable' where possible.
     This leaves the layout flexible to choose a different type without code changes
 
 * Instead of simply letting NullPointersException happen (and/or using a lint 'suppress'),
@@ -42,6 +46,7 @@ Small notes in addition:
    But, nothing wrong with this:
        if (resultCode == Activity.RESULT_OK && data != null && data.hasExtra(UniqueId.BKEY_AUTHOR_ARRAY)) {
 
+   System stuff + not finding R.id fields in layout... just use lint suppress, will all show on first test run anyhow
 
 * pedantic but I hope polite request:
   Single character variables names are best left to BASIC style from the 1980's

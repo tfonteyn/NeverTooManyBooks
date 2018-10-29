@@ -132,7 +132,7 @@ public class AmazonUtils {
         } catch (Exception e) {
             // An Amazon error should not crash the app
             Logger.error(e, "Unable to call the Amazon API");
-            StandardDialogs.showBriefMessage(activity, R.string.error_unexpected_error);
+            StandardDialogs.showUserMessage(activity, R.string.error_unexpected_error);
             /* This code works, but Amazon have a nasty tendency to onCancel Associate IDs... */
 //            String baseUrl = "http://www.amazon.com/gp/search?index=books&tag=philipwarneri-20&tracking_id=philipwarner-20";
 //            String extra = buildSearchArgs(author, series);

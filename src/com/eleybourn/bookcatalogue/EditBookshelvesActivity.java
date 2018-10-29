@@ -77,7 +77,7 @@ public class EditBookshelvesActivity extends BaseListActivity {
 
     private void populateList() {
         mList = mDb.getBookshelves();
-        ArrayAdapter<Bookshelf> adapter = new ArrayAdapter<>(this, R.layout.row_bookshelf, R.id.row_bookshelf, mList);
+        ArrayAdapter<Bookshelf> adapter = new ArrayAdapter<>(this, R.layout.row_bookshelf, R.id.row_bookshelves, mList);
         setListAdapter(adapter);
     }
 
@@ -102,7 +102,7 @@ public class EditBookshelvesActivity extends BaseListActivity {
                     populateList();
                 } else {
                     //TODO: why not ? as long as we make sure there is another one left.. e.g. count > 2, then you can delete 'one'
-                    StandardDialogs.showBriefMessage(this, R.string.delete_1st_bs);
+                    StandardDialogs.showUserMessage(this, R.string.delete_1st_bs);
                 }
                 return true;
         }
@@ -151,20 +151,21 @@ public class EditBookshelvesActivity extends BaseListActivity {
     @Override
     @CallSuper
     protected void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
+        if (BuildConfig.DEBUG) {
+            Logger.info(this,"onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
+        }
         switch (requestCode) {
             case EditBookshelfActivity.REQUEST_CODE_EDIT: /* eabd012d-e5db-4c3b-ad65-876ed04b8eca */
             case EditBookshelfActivity.REQUEST_CODE_CREATE: /* ed5e0eb7-6440-4e67-a253-41326bd5c8f4 */
                 // pass up
                 setResult(resultCode, data); /* 41e84172-5833-4906-a891-8df302ecc190 */
-                break;
 
-            default:
-                Logger.error("onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
-                break;
+                // regardless of activity, rebuild
+                populateList();
+                return;
         }
-        populateList();
+
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override

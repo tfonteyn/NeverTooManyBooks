@@ -69,8 +69,6 @@ public class BindableItemCursorAdapter extends CursorAdapter {
         super(context, cursor);
         //noinspection ConstantConditions
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        // This is saved in the parent class, but inaccessible for some reason. Google sources say
-        // it's protected, but apparently not. So we keep a copy too.
         mContext = context;
         mBinder = binder;
     }

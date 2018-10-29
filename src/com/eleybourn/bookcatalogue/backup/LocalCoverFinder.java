@@ -26,7 +26,6 @@ import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
-import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 

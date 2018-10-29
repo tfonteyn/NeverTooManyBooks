@@ -42,6 +42,8 @@ public interface DataValidator {
      *
      * @throws ValidatorException For any validation onCancel.
      */
-    void validate(@NonNull final DataManager data, @NonNull final Datum datum, final boolean crossValidating)
+    void validate(@NonNull final DataManager data,
+                  @NonNull final Datum datum,
+                  final boolean crossValidating)
             throws ValidatorException;
 }

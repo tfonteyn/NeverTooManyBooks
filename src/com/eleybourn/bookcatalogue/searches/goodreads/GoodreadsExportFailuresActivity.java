@@ -33,7 +33,6 @@ import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.adapters.BindableItemCursorAdapter;
 import com.eleybourn.bookcatalogue.baseactivity.BindableItemListActivity;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;

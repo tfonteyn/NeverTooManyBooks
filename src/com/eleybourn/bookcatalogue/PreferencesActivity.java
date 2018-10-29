@@ -58,10 +58,10 @@ public class PreferencesActivity extends PreferencesBaseActivity {
             .add(-90, R.string.menu_rotate_thumb_ccw)
             .add(180, R.string.menu_rotate_thumb_180);
 
-    /** List of supported BriefMessage implementation */
-    private static final ItemEntries<Integer> mBriefMessageItems = new ItemEntries<Integer>()
-            .add(0, R.string.user_interface_brief_messages_toast)
-            .add(1, R.string.user_interface_brief_messages_snackbar);
+    /** List of supported message implementations */
+    private static final ItemEntries<Integer> mMessageImplementationItems = new ItemEntries<Integer>()
+            .add(0, R.string.user_interface_messages_use_toast)
+            .add(1, R.string.user_interface_messages_use_snackbar);
 
     /** List of supported locales */
     private static final ItemEntries<String> mLocalesListItems = getLocalesListItems();
@@ -108,10 +108,10 @@ public class PreferencesActivity extends PreferencesBaseActivity {
                     .setWeight(200)
                     .setGroup(PropertyGroup.GRP_USER_INTERFACE))
 
-            .add(new IntegerListProperty(mBriefMessageItems, BookCatalogueApp.PREF_APP_BRIEF_MESSAGE,
-                    PropertyGroup.GRP_USER_INTERFACE, R.string.user_interface_brief_messages)
+            .add(new IntegerListProperty(mMessageImplementationItems, BookCatalogueApp.PREF_APP_USER_MESSAGE,
+                    PropertyGroup.GRP_USER_INTERFACE, R.string.user_interface_messages_use)
                     .setDefaultValue(0)
-                    .setPreferenceKey(BookCatalogueApp.PREF_APP_BRIEF_MESSAGE)
+                    .setPreferenceKey(BookCatalogueApp.PREF_APP_USER_MESSAGE)
                     .setGlobal(true)
                     .setWeight(200)
                     .setGroup(PropertyGroup.GRP_USER_INTERFACE))

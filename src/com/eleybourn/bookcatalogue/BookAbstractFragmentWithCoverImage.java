@@ -79,15 +79,10 @@ public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFra
     @Override
     @CallSuper
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        // create the common 'Fields'
-        super.onActivityCreated(savedInstanceState);
-
+        // make this available first
         mPrefs = BookCatalogueApp.getSharedPreferences();
 
-        // add the rest of the fields.
-        initFields();
-        // and the cover image
-        initCoverImageField();
+        super.onActivityCreated(savedInstanceState);
     }
 
     /**
@@ -95,63 +90,50 @@ public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFra
      */
     @CallSuper
     protected void initFields() {
-        /* Title has some post-processing on the text, to move leading 'A', 'The' etc to the end.
-         * While we could do it in a formatter, it it not really a display-oriented function and
-         * is handled in pre-processing in the database layer since it also needs to be applied
-         * to imported record etc.
-         * Or in short: nothing special here.
-         */
-        mFields.add(R.id.title, UniqueId.KEY_TITLE, null);
+        super.initFields();
 
-        mFields.add(R.id.author, "", UniqueId.KEY_AUTHOR_FORMATTED, null);
+        // formatted author
+        mFields.add(R.id.author, "", UniqueId.KEY_AUTHOR_FORMATTED);
 
-        mFields.add(R.id.format, UniqueId.KEY_BOOK_FORMAT, null);
-        mFields.add(R.id.genre, UniqueId.KEY_BOOK_GENRE, null);
-        mFields.add(R.id.isbn, UniqueId.KEY_BOOK_ISBN, null);
-        mFields.add(R.id.language, UniqueId.KEY_BOOK_LANGUAGE, null);
-        mFields.add(R.id.list_price, UniqueId.KEY_BOOK_LIST_PRICE, null);
-        mFields.add(R.id.pages, UniqueId.KEY_BOOK_PAGES, null);
-        mFields.add(R.id.series, UniqueId.KEY_SERIES_NAME, null);
-        mFields.add(R.id.description, UniqueId.KEY_DESCRIPTION, null).setShowHtml(true);
-        mFields.add(R.id.bookshelf, UniqueId.KEY_BOOKSHELF_NAME, null).doNoFetch = true; // Output-only field
+        mFields.add(R.id.series, UniqueId.KEY_SERIES_NAME);
+        mFields.add(R.id.title, UniqueId.KEY_TITLE);
+        mFields.add(R.id.isbn, UniqueId.KEY_BOOK_ISBN);
+        mFields.add(R.id.list_price, UniqueId.KEY_BOOK_LIST_PRICE);
+        mFields.add(R.id.description, UniqueId.KEY_DESCRIPTION).setShowHtml(true);
+        mFields.add(R.id.genre, UniqueId.KEY_BOOK_GENRE);
+        mFields.add(R.id.language, UniqueId.KEY_BOOK_LANGUAGE);
+        mFields.add(R.id.pages, UniqueId.KEY_BOOK_PAGES);
+        mFields.add(R.id.format, UniqueId.KEY_BOOK_FORMAT);
 
-        mFields.add(R.id.signed, UniqueId.KEY_BOOK_SIGNED, null);
+        mFields.add(R.id.coverImage, "", UniqueId.KEY_BOOK_THUMBNAIL);
+
+        // We need the view in many places. Cache it, to avoid clutter & casting
+        mCoverView = mFields.getField(R.id.coverImage).getView();
+        // See how big the display is and use that to set bitmap sizes
+        initThumbSize(requireActivity());
+        // add the zoom & context features
+        initCoverImageListeners(mFields.getField(R.id.coverImage));
     }
 
     @Override
-    @CallSuper
     protected void onLoadBookDetails(@NonNull final Book book, final boolean setAllFrom) {
         super.onLoadBookDetails(book, setAllFrom);
+
         populateFields(book);
+        populateAuthorListField(book);
+        populateSeriesListField(book);
     }
 
     abstract protected void populateFields(@NonNull final Book book);
-
-    // yes, these 2 are not actually used from the base class. Just for a reminder.
     abstract protected void populateAuthorListField(@NonNull final Book book);
-
     abstract protected void populateSeriesListField(@NonNull final Book book);
-
-    /**
-     * Gets all bookshelves for the book from database and populate corresponding field with them.
-     *
-     * @param field to populate with the shelves
-     * @param book  from which the shelves will be taken
-     *
-     * @return <tt>true</tt>if populated, false otherwise
-     */
-    protected boolean populateBookshelves(@NonNull final Field field, @NonNull final Book book) {
-        // Display the selected bookshelves
-        String bookshelfText = book.getBookshelfListAsText();
-        field.setValue(bookshelfText);
-        return !bookshelfText.isEmpty();
-    }
 
     @Override
     @CallSuper
     public void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
+        if (BuildConfig.DEBUG) {
+            Logger.info(this,"onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
+        }
         switch (requestCode) {
             case UniqueId.ACTIVITY_REQUEST_CODE_ANDROID_IMAGE_CAPTURE: /* 0b7027eb-a9da-469b-8ba7-2122f1006e92 */
                 if (resultCode == Activity.RESULT_OK) {
@@ -162,7 +144,7 @@ public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFra
                     Objects.requireNonNull(extras);
                     addCoverFromCamera(requestCode, resultCode, extras);
                 }
-                break;
+                return;
 
             case UniqueId.ACTIVITY_REQUEST_CODE_ANDROID_ACTION_GET_CONTENT: /* 27ecaa27-5ed8-4670-8947-112ab4ab0098 */
                 if (resultCode == Activity.RESULT_OK) {
@@ -170,7 +152,7 @@ public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFra
                     Objects.requireNonNull(data);
                     addCoverFromGallery(data);
                 }
-                break;
+                return;
 
             case CropImageActivity.REQUEST_CODE: /* 31c90366-d352-496f-9b7d-3237dd199a77 */
             case UniqueId.ACTIVITY_REQUEST_CODE_EXTERNAL_CROP_IMAGE: /* 28ec93b0-24fb-4a81-ae6d-a282f3a7b918 */ {
@@ -182,19 +164,16 @@ public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFra
                         // Update the ImageView with the new image
                         setCoverImage(getBook().getBookId());
                     } else {
-                        Tracker.handleEvent(this, "onActivityResult(" + requestCode + "," + resultCode + ") - result OK, no image file", Tracker.States.Running);
+                        Tracker.handleEvent(this, "onActivityResult(" + requestCode + "," + resultCode + ") - result OK, but no image file", Tracker.States.Running);
                     }
                 } else {
                     Tracker.handleEvent(this, "onActivityResult(" + requestCode + "," + resultCode + ") - bad result", Tracker.States.Running);
                     StorageUtils.deleteFile(this.getCroppedTempCoverFile());
                 }
-                break;
+                return;
             }
-
-            default:
-                Logger.error("onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
-                break;
         }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     /**
@@ -303,17 +282,6 @@ public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFra
 
     //<editor-fold desc="Cover init">
 
-    private void initCoverImageField() {
-        // See how big the display is and use that to set bitmap sizes
-        initThumbSize(requireActivity());
-
-        mFields.add(R.id.coverImage, "", UniqueId.KEY_BOOK_THUMBNAIL, null);
-        // We need the view in many places. Cache it, to avoid clutter & casting
-        mCoverView = mFields.getField(R.id.coverImage).getView();
-
-        initCoverImageListeners(mFields.getField(R.id.coverImage));
-    }
-
     private void initCoverImageListeners(@NonNull final Field coverField) {
         //Allow zooming by clicking on image
         coverField.getView().setOnClickListener(new OnClickListener() {
@@ -363,7 +331,6 @@ public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFra
     }
 
     /**
-     *
      * @param activity which will determine the actual size for the thumbnails
      */
     public void initThumbSize(@NonNull final Activity activity) {
@@ -425,7 +392,7 @@ public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFra
      */
     private void getCoverFromAlternativeEditions() {
         Field isbnField = mFields.getField(R.id.isbn);
-        String isbn = isbnField.getValue().toString();
+        String isbn = isbnField.putValueInto().toString();
         if (IsbnUtils.isValid(isbn)) {
             mCoverBrowser = new CoverBrowser(requireActivity(), isbn, new OnImageSelectedListener() {
                 @Override
@@ -446,7 +413,7 @@ public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFra
             mCoverBrowser.showEditionCovers();
         } else {
             //Snackbar.make(isbnField.getView(), R.string.editions_require_isbn, Snackbar.LENGTH_LONG).show();
-            StandardDialogs.showBriefMessage(requireActivity(), R.string.editions_require_isbn);
+            StandardDialogs.showUserMessage(requireActivity(), R.string.editions_require_isbn);
         }
     }
 
@@ -501,13 +468,13 @@ public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFra
                 setCoverImage(getBook().getBookId());
             } else {
                 String s = getString(R.string.could_not_copy_image) + ". " + getString(R.string.if_the_problem_persists);
-                StandardDialogs.showBriefMessage(requireActivity(), s);
+                StandardDialogs.showUserMessage(requireActivity(), s);
             }
         } else {
             /* Deal with the case where the chooser returns a null intent. This seems to happen
              * when the filename is not properly understood by the choose (eg. an apostrophe in
              * the file name confuses ES File Explorer in the current version as of 23-Sep-2012. */
-            StandardDialogs.showBriefMessage(requireActivity(), R.string.could_not_copy_image);
+            StandardDialogs.showUserMessage(requireActivity(), R.string.could_not_copy_image);
         }
     }
 
@@ -622,7 +589,7 @@ public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFra
 
             List<ResolveInfo> list = requireActivity().getPackageManager().queryIntentActivities(intent, 0);
             if (list.size() == 0) {
-                StandardDialogs.showBriefMessage(requireActivity(), R.string.error_no_external_crop_app);
+                StandardDialogs.showUserMessage(requireActivity(), R.string.error_no_external_crop_app);
             } else {
                 startActivityForResult(intent, UniqueId.ACTIVITY_REQUEST_CODE_EXTERNAL_CROP_IMAGE); /* 28ec93b0-24fb-4a81-ae6d-a282f3a7b918 */
             }

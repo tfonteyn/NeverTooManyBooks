@@ -109,7 +109,7 @@ abstract public class ManagedTask extends Thread {
 
     /**
      * Called to do the main thread work.
-     * Can use {@link #doProgress} and {@link #showBriefMessage} to display messages.
+     * Can use {@link #doProgress} and {@link #showUserMessage} to display messages.
      */
     abstract protected void runTask() throws InterruptedException;
 
@@ -140,8 +140,8 @@ abstract public class ManagedTask extends Thread {
      *
      * @param message Message to display
      */
-    protected void showBriefMessage(@NonNull final String message) {
-        mTaskManager.showBriefMessage(message);
+    protected void showUserMessage(@NonNull final String message) {
+        mTaskManager.showUserMessage(message);
     }
 
 

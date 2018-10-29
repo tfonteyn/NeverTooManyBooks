@@ -29,8 +29,6 @@ import android.support.annotation.Nullable;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 
-import java.io.Closeable;
-
 /**
  * @author evan
  */

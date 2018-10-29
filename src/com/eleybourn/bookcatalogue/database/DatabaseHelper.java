@@ -28,6 +28,7 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ANTHOLOGY_POSITION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_ADDED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_PUBLISHED;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_EDITION_BITMASK;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_FORMAT;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_GENRE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_GOODREADS_BOOK_ID;
@@ -173,6 +174,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     DOM_BOOK_PUBLISHER + " text, " +
                     DOM_BOOK_DATE_PUBLISHED + " date, " +
                     DOM_FIRST_PUBLICATION +  " date, " +
+                    DOM_BOOK_EDITION_BITMASK + " int  not null default 0, " +
                     DOM_BOOK_RATING + " float not null default 0, " +
                     DOM_BOOK_READ + " boolean not null default 0, " +
                     DOM_BOOK_PAGES + " int, " +
@@ -428,8 +430,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             UpgradeDatabase.recreateAndReloadTable(syncedDb, TBL_ANTHOLOGY.getName(), DATABASE_CREATE_ANTHOLOGY,
                     /* remove fields: */ DOM_BOOK_ID.name, DOM_BOOK_ANTHOLOGY_POSITION.name);
 
-            // add new field
+            // add new fields
             db.execSQL("ALTER TABLE " + TBL_BOOKS + " ADD " + DOM_FIRST_PUBLICATION + " date");
+            db.execSQL("ALTER TABLE " + TBL_BOOKS + " ADD " + DOM_BOOK_EDITION_BITMASK + " int not null default 0");
         }
 
         // Rebuild all indices

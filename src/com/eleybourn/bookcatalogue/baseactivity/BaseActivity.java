@@ -1,7 +1,6 @@
 package com.eleybourn.bookcatalogue.baseactivity;
 
 import android.app.Activity;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -37,7 +36,7 @@ import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
  * @author pjw
  */
 abstract public class BaseActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener,CanBeDirty {
 
     /** The side/navigation panel */
     @Nullable
@@ -213,6 +212,19 @@ abstract public class BaseActivity extends AppCompatActivity
     }
 
     /**
+     * Dispatch incoming result to the correct fragment.
+     */
+    @Override
+    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+        if (BuildConfig.DEBUG) {
+            // lowest level of our Activities, see what's left if any
+            Logger.info(this, "onActivityResult: BaseActivity - requestCode=" + requestCode + ", resultCode=" + resultCode);
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    /**
      * When the user clicks 'back/up':
      */
     @Override
@@ -233,7 +245,7 @@ abstract public class BaseActivity extends AppCompatActivity
                             Intent data = new Intent();
                             data.putExtra(UniqueId.BKEY_BACK_PRESSED, true);
                             setResult(Activity.RESULT_OK, data);  /* onBackPressed */
-                            // but overriding classes can override us
+                            // but allow overriding
                             setActivityResult();
                             finish();
                         }
@@ -244,36 +256,31 @@ abstract public class BaseActivity extends AppCompatActivity
             Intent data = new Intent();
             data.putExtra(UniqueId.BKEY_BACK_PRESSED, true);
             setResult(Activity.RESULT_OK, data); /* onBackPressed */
-            // but overriding classes can (arf) override us
+            // but allow overriding
             setActivityResult();
             finish();
         }
     }
 
-    @Override
-    protected void onPause() {
-        if (isFinishing()) {
-            // keep in mind the base method only does logging. Only overriden methods will actually set the result.
-            setActivityResult();
-        }
-        // call super *after* setting the result, so we can override when needed in a fragment
-        super.onPause();
-    }
+//    @Override
+//    protected void onPause() {
+//        if (isFinishing()) {
+//            // keep in mind the base method only does logging. Only overridden methods will actually set the result.
+//            setActivityResult();
+//        }
+//        // call super *after* setting the result, so we can override when needed in a fragment
+//        super.onPause();
+//    }
 
     /**
-     * Called by {@link BaseActivity#onBackPressed()}
-     * and, when finishing, from {@link BaseActivity#onPause}
+     * Always called by {@link BaseActivity#onBackPressed()}
      *
-     * Override, and do the desired {@link #setResult} call.
-     *
-     * CallSuper so we get the debug information
+     * If your activity needs to send a result, override this call.
+     * If your activity does an actual finish() call it *must* take care of the result itself
+     * (of course it can still implement and call this method for the sake of uniformity
      */
-    @CallSuper
     protected void setActivityResult() {
-        ComponentName caller = getCallingActivity();
-        if (BuildConfig.DEBUG && caller != null) {
-            Logger.info(this, "setResult goes to: " + caller.flattenToString());
-        }
+        // do nothing
     }
 
         /**
@@ -341,9 +348,4 @@ abstract public class BaseActivity extends AppCompatActivity
         }
     }
 
-    public interface CanBeDirty {
-        boolean isDirty();
-
-        void setDirty(boolean isDirty);
-    }
 }

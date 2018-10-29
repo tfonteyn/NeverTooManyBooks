@@ -619,13 +619,13 @@ Entweder sind die Daten des Buchs falsch (Sie sollten die ISBN überprüfen) ode
 
     <!-- Text for button -->
     <string name="book_details">Buchdetails</string>
-    <!-- Brief descriptionn -->
+    <!-- Brief description -->
     <string name="book_details_blurb">Die Details der Bücher</string>
     <!-- Text for button -->
     <string name="cover_images">Cover-Bilder</string>
-    <!-- Brief descriptionn -->
+    <!-- Brief description -->
     <string name="cover_images_blurb">Cover-Bilder für alle ausgewählten Bücher. Der Export wird dadurch viel größer.</string>
-    <!-- Brief descriptionn -->
+    <!-- Brief description -->
     <string name="preferences_blurb">Einstellungen und benutzerdefinierte Stile</string>
 
     <!-- Explanatory note for export date (not yet implemented) -->
@@ -699,13 +699,6 @@ Entweder sind die Daten des Buchs falsch (Sie sollten die ISBN überprüfen) ode
     </plurals>
 
     <!-- End: Added/Updated in 5.1.1 -->
-
-    <!-- Begin: Added/Updated in 5.1.2 -->
-
-    <!-- A heading in the 'about' dialog -->
-    <string name="amazon">Amazon</string>
-
-    <!-- End: Added/Updated in 5.1.2 -->
 
     <!-- Begin: Added/Updated in 5.2.0 -->
 

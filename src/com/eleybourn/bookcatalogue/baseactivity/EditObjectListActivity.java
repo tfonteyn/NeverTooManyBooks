@@ -59,11 +59,12 @@ import java.util.Objects;
  *
  * Row View must have layout ID set to "@id/ROW" (defined in ids.xml)
  *
- * The row view is tagged using TAG_POSITION,, to save the rows position for
+ * The row view is tagged using TAG_ROW_POSITION, to save the rows position for
  * use when moving the row up/down or deleting it.
  *
- * Abstract methods are defined for specific tasks (Add, Save, Load etc). While would
- * be tempting to add local implementations the java generic model seems to prevent this.
+ * Abstract method {@link #onSetupView} should be implemented by all.
+ * Method {@link #onAdd} has an implementation that throws an {@link UnsupportedOperationException}
+ * So if your list supports adding to, you must implement the onAdd.
  *
  * This Activity uses {@link TouchListViewWithDropListener} extended from {@link TouchListView}
  * from CommonsWare which is in turn based on Android code
@@ -71,20 +72,21 @@ import java.util.Objects;
  *
  * For this code to work, the  main view must contain:
  *
- * - a {@link TouchListViewWithDropListener} with id = @android:id/list
- * - the {@link TouchListViewWithDropListener} must have the following attributes:
- * tlv:ic_grabber="@+id/<SOME ID FOR AN IMAGE>" (eg. "@+id/ic_grabber")
- * tlv:remove_mode="none"
- * tlv:normal_height="64dip" ---- or some similar value
+ * - {@link TouchListViewWithDropListener} with id = @android:id/list
+ * - with the following attributes:
+ * -    tlv:ic_grabber="@+id/<SOME ID FOR AN IMAGE>" (eg. "@+id/ic_grabber")
+ * -    tlv:remove_mode="none"
+ * -    tlv:normal_height="64dip" ---- or some similar value
  *
  * Each row view must have:
  *
- * - an ID of @id/ROW
+ * - an ID of "@id/ROW"
  * - an {@link ImageView} with an ID of "@+id/<SOME ID FOR AN IMAGE>" (eg. "@+id/ic_grabber")
  * - (OPTIONAL) a subview with an ID of "@+d/ROW_DETAILS"; when clicked, this will result
- * in the {@link #onRowClick} event. If not present, then the {@link #onRowClick} is set on the "@id/ROW"
+ * -            in the {@link #onRowClick} event. If not present, then the
+ * -            {@link #onRowClick} is set on the "@id/ROW"
  *
- * @param <T>
+ * @param <T> the object type as used in the List
  *
  * @author Philip Warner
  */
@@ -103,11 +105,12 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Bas
     private final OnClickListener mCancelListener = new OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (onCancel())
+            if (onCancel()) {
                 setResult(Activity.RESULT_CANCELED); /* bca659b6-dfb9-4a97-b651-5b05ad102400,
                 dd74343a-50ff-4ce9-a2e4-a75f7bcf9e36, 3f210502-91ab-4b11-b165-605e09bb0c17,
                 13854efe-e8fd-447a-a195-47678c0d87e7 */
-            finish();
+                finish();
+            }
         }
     };
     /**
@@ -147,6 +150,7 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Bas
 
     /**
      * Constructor
+     *
      * @param baseViewId Resource id of base view
      * @param rowViewId  Resource id of row view
      * @param bkey       The key to use in the Bundle to get the array
@@ -162,7 +166,9 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Bas
      *
      * @param target The view that was clicked ('add' button).
      */
-    abstract protected void onAdd(@NonNull final View target);
+    protected void onAdd(@NonNull final View target) {
+        throw new UnsupportedOperationException("Unexpected call to 'onAdd'");
+    }
 
     /**
      * Call to set up the row view.
@@ -293,7 +299,7 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Bas
 
             // we need the ArrayList before building the adapter.
             if (mBKey != null) {
-                if (savedInstanceState != null  && savedInstanceState.containsKey(mBKey)){
+                if (savedInstanceState != null && savedInstanceState.containsKey(mBKey)) {
                     mList = ArrayUtils.getListFromBundle(savedInstanceState, mBKey);
                 }
                 // not in savedInstanceState ? check the intent

@@ -32,7 +32,6 @@
             tools:ignore="Autofill" />
     </LinearLayout>
 
-    <!-- studio editor will show at top... but ButtonBar *does* show properly at the bottom when run -->
     <include
         android:id="@+id/buttonbar_cancel_save"
         layout="@layout/inc_buttonbar_cancel_save"

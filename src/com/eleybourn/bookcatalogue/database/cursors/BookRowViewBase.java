@@ -45,6 +45,7 @@ public class BookRowViewBase {
     private int mFirstPublicationCol = -2;
     private int mGoodreadsBookIdCol = -2;
     private int mAnthologyMaskCol = -2;
+    private int mEditionMaskCol = -2;
     private int mDateAddedCol = -2;
     private int mDateLastUpdatedCol = -2;
     private int mDateLastSyncedWithGoodReadsCol = -2;
@@ -312,7 +313,7 @@ public class BookRowViewBase {
         return mCursor.getInt(mSignedCol);
     }
 
-    public final int getAnthologyMask() {
+    public final int getAnthologyBitMask() {
         if (mAnthologyMaskCol < 0) {
             mAnthologyMaskCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_ANTHOLOGY_BITMASK.name);
             if (mAnthologyMaskCol < 0) {
@@ -320,6 +321,16 @@ public class BookRowViewBase {
             }
         }
         return mCursor.getInt(mAnthologyMaskCol);
+    }
+
+    public final int getEditionBitMask() {
+        if (mEditionMaskCol < 0) {
+            mEditionMaskCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_EDITION_BITMASK.name);
+            if (mEditionMaskCol < 0) {
+                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_BOOK_EDITION_BITMASK.name);
+            }
+        }
+        return mCursor.getInt(mEditionMaskCol);
     }
 
     public final String getDateAdded() {

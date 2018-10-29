@@ -76,7 +76,7 @@ import java.util.Objects;
  * 		<item name="ROW_DOWN" type="id"/>
  * 		<item name="ROW_DELETE" type="id"/>
  *     	<item name="ROW_POSITION" type="id" />
- *     	<item name="TAG_POSITION" type="id" />
+ *     	<item name="TAG_ROW_POSITION" type="id" />
  * 	</pre>
  *
  * @author Philip Warner
@@ -266,7 +266,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
         }
 
         // Save this views position
-        ViewTagger.setTag(convertView, R.id.TAG_POSITION, position);
+        ViewTagger.setTag(convertView, R.id.TAG_ROW_POSITION, position);
 
         // If we use a TouchListView, then don't enable the whole row, so buttons keep working
         View row = convertView.findViewById(R.id.ROW_DETAILS);
@@ -350,7 +350,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
             }
             view = (View) parent;
         }
-        Object o = ViewTagger.getTag(view, R.id.TAG_POSITION);
+        Object o = ViewTagger.getTag(view, R.id.TAG_ROW_POSITION);
         Objects.requireNonNull(o, "A view with the tag R.id.ROW was found, but it is not the view for the row");
         return (Integer) o;
     }

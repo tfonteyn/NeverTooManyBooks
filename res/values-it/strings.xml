@@ -655,13 +655,13 @@
 
     <!-- Text for button -->
     <string name="book_details">Dettagli dei libri</string>
-    <!-- Brief descriptionn -->
+    <!-- Brief description -->
     <string name="book_details_blurb">Le informazioni dettagliate stesse</string>
     <!-- Text for button -->
     <string name="cover_images">Immagini delle copertine</string>
-    <!-- Brief descriptionn -->
+    <!-- Brief description -->
     <string name="cover_images_blurb">Copertine di tutti i libri selezionati. Ciò renderà l\'esportazione molto più pesante.</string>
-    <!-- Brief descriptionn -->
+    <!-- Brief description -->
     <string name="preferences_blurb">Preferenze e stili di elencazione personalizzati</string>
 
     <!-- Explanatory note for export date (not yet implemented) -->
@@ -716,13 +716,6 @@
     </plurals>
 
     <!-- End: Added/Updated in 5.1.1 -->
-
-    <!-- Begin: Added/Updated in 5.1.2 -->
-
-    <!-- A heading in the 'about' dialog -->
-    <string name="amazon">Amazon</string>
-
-    <!-- End: Added/Updated in 5.1.2 -->
 
     <!-- Begin: Added/Updated in 5.2.0 -->
 

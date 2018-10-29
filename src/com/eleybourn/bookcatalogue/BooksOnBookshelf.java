@@ -471,19 +471,19 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
     @Override
     @CallSuper
     protected void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent data) {
-        Tracker.enterOnActivityResult(this, requestCode, resultCode);
-        super.onActivityResult(requestCode, resultCode, data);
-
+        if (BuildConfig.DEBUG) {
+            Logger.info(this, "onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
+        }
         mCurrentPositionedBookId = 0;
 
         switch (requestCode) {
+            case BookDetailsActivity.REQUEST_CODE: /* e63944b6-b63a-42b1-897a-a0e8e0dabf8a */
             case EditBookActivity.REQUEST_CODE: /* 88a6c414-2d3b-4637-9044-b7291b6b9100,
              91b95a7f-17d6-4f98-af58-5f040b52414f, 01564e26-b463-425e-8889-55a8228c82d5,
               8a5c649a-e97b-4d53-8133-6060ef3c3072, 0308715c-e1d2-4a7f-9ba3-cb8f641e096b */
 
             case BookSearchActivity.REQUEST_CODE_SCAN: /* f1e0d846-852e-451b-9077-6daa5d94f37d */
             case BookSearchActivity.REQUEST_CODE_SEARCH: /* 59fd9653-f033-40b5-bee8-f1dfa5b5be6b */
-            case BookDetailsActivity.REQUEST_CODE: /* e63944b6-b63a-42b1-897a-a0e8e0dabf8a */
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     long newId = data.getLongExtra(UniqueId.KEY_ID, 0);
                     if (newId != 0) {
@@ -491,14 +491,11 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
                     }
                 }
 
-                try {
-                    // Always rebuild, even after a cancelled edit because there might have been global edits
-                    // ENHANCE: Allow detection of global changes to avoid unnecessary rebuilds
-                    initBookList(false);
-                } catch (Exception e) {
-                    Logger.error(e);
-                }
-                break;
+                // Always rebuild, even after a cancelled edit because there might have been global edits
+                // ENHANCE: Allow detection of global changes to avoid unnecessary rebuilds
+                savePosition();
+                initBookList(false);
+                return;
 
             case SearchLocalActivity.REQUEST_CODE: /* 6f6e83e1-10fb-445c-8e35-fede41eba03b */
                 if (resultCode == Activity.RESULT_OK) {
@@ -511,28 +508,24 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
                     savePosition();
                     initBookList(true);
                 }
-                break;
+                return;
 
             case BooklistStylePropertiesActivity.REQUEST_CODE: /* not current received, but that might change */
                 Logger.error("onActivityResult: BooklistStylePropertiesActivity.REQUEST_CODE was supposed to be unused?");
 
                 if (resultCode == Activity.RESULT_OK) {
-                    try {
-                        if (data != null && data.hasExtra(BooklistStylePropertiesActivity.REQUEST_KEY_STYLE)) {
-                            BooklistStyle style = (BooklistStyle) data.getSerializableExtra(BooklistStylePropertiesActivity.REQUEST_KEY_STYLE);
-                            if (style != null) {
-                                mCurrentStyle = style;
-                                saveBookShelfAndStyle(mCurrentBookshelf, mCurrentStyle);
-                            }
+                    if (data != null && data.hasExtra(BooklistStylePropertiesActivity.REQUEST_KEY_STYLE)) {
+                        BooklistStyle style = (BooklistStyle) data.getSerializableExtra(BooklistStylePropertiesActivity.REQUEST_KEY_STYLE);
+                        if (style != null) {
+                            mCurrentStyle = style;
+                            saveBookShelfAndStyle(mCurrentBookshelf, mCurrentStyle);
                         }
-                    } catch (Exception e) {
-                        Logger.error(e);
                     }
 
                     savePosition();
                     initBookList(true);
                 }
-                break;
+                return;
 
             case EditBookshelvesActivity.REQUEST_CODE: /* 41e84172-5833-4906-a891-8df302ecc190 */
                 if (resultCode == Activity.RESULT_OK) {
@@ -542,7 +535,7 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
                     savePosition();
                     initBookList(true);
                 }
-                break;
+                return;
 
             case BooklistPreferencesActivity.REQUEST_CODE: /* 9cdb2cbe-1390-4ed8-a491-87b3b1a1edb9 */
             case BooklistStylesActivity.REQUEST_CODE: /* 3f210502-91ab-4b11-b165-605e09bb0c17 */
@@ -553,13 +546,10 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
                     savePosition();
                     initBookList(true);
                 }
-                break;
-
-            default:
-                Logger.error("onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
-                break;
+                return;
         }
-        Tracker.exitOnActivityResult(this, requestCode, resultCode);
+
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     /**
@@ -599,8 +589,8 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
 
         // Get the ListView and set it up
         final ListView listView = getListView();
-        final ListViewHolder lvHolder = new ListViewHolder();
-        ViewTagger.setTag(listView, R.id.TAG_HOLDER, lvHolder);
+        final ListViewHolder listViewHolder = new ListViewHolder();
+        ViewTagger.setTag(listView, R.id.TAG_HOLDER, listViewHolder);// value: BooksOnBookshelf.ListViewHolder
 
         listView.setAdapter(mAdapter);
         mAdapter.notifyDataSetChanged();
@@ -632,22 +622,22 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
         final boolean hasLevel2 = (mList.numLevels() > 2);
 
         if (hasLevel2 && (showHeaderFlags & BooklistStyle.SUMMARY_SHOW_LEVEL_2) != 0) {
-            lvHolder.level2Text.setVisibility(View.VISIBLE);
-            lvHolder.level2Text.setText("");
+            listViewHolder.level2Text.setVisibility(View.VISIBLE);
+            listViewHolder.level2Text.setText("");
         } else {
-            lvHolder.level2Text.setVisibility(View.GONE);
+            listViewHolder.level2Text.setVisibility(View.GONE);
         }
         if (hasLevel1 && (showHeaderFlags & BooklistStyle.SUMMARY_SHOW_LEVEL_1) != 0) {
-            lvHolder.level1Text.setVisibility(View.VISIBLE);
-            lvHolder.level1Text.setText("");
+            listViewHolder.level1Text.setVisibility(View.VISIBLE);
+            listViewHolder.level1Text.setText("");
         } else {
-            lvHolder.level1Text.setVisibility(View.GONE);
+            listViewHolder.level1Text.setVisibility(View.GONE);
         }
 
         // Update the header details
         if (count > 0 && (showHeaderFlags &
                 (BooklistStyle.SUMMARY_SHOW_LEVEL_1 ^ BooklistStyle.SUMMARY_SHOW_LEVEL_2)) != 0) {
-            updateListHeader(lvHolder, mTopRow, hasLevel1, hasLevel2, showHeaderFlags);
+            updateListHeader(listViewHolder, mTopRow, hasLevel1, hasLevel2, showHeaderFlags);
         }
 
         // Define a scroller to update header detail when top row changes
@@ -659,7 +649,7 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
                         // Need to check isDead because BooklistPseudoCursor misbehaves when activity
                         // terminates and closes cursor
                         if (mLastTop != firstVisibleItem && !mIsDead && (showHeaderFlags != 0)) {
-                            ListViewHolder holder = ViewTagger.getTagOrThrow(view, R.id.TAG_HOLDER);
+                            ListViewHolder holder = ViewTagger.getTagOrThrow(view, R.id.TAG_HOLDER);// value: BooksOnBookshelf.ListViewHolder
                             updateListHeader(holder, firstVisibleItem, hasLevel1, hasLevel2, showHeaderFlags);
                         }
                     }
@@ -1206,7 +1196,7 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
         BooklistStyles styles = BooklistStyles.getAllStyles(mDb);
         BooklistStyle style = styles.findCanonical(name);
         if (style == null) {
-            StandardDialogs.showBriefMessage(this, R.string.error_no_style_found);
+            StandardDialogs.showUserMessage(this, R.string.error_no_style_found);
             return;
         }
         mCurrentStyle = style;
@@ -1459,8 +1449,7 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
 
             } finally {
                 if (taskContext.isTerminating()) {
-                    // onFinish() will not be called, and we can discard our
-                    // work...
+                    // onFinish() will not be called, and we can discard our work...
                     if (tempList != null && tempList != mList) {
                         if (mList == null || tempList.getBuilder() != mList.getBuilder()) {
                             try {

@@ -70,7 +70,7 @@ public class GoodreadsRegisterActivity extends BaseActivity {
             @Override
             public void onFinish(@NonNull final SimpleTaskQueueProgressDialogFragment fragment, @Nullable final Exception exception) {
                 if (mMessage != 0)
-                    fragment.showBriefMessage(fragment.getString(mMessage));
+                    fragment.showUserMessage(fragment.getString(mMessage));
             }
 
         };

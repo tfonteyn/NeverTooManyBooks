@@ -141,7 +141,7 @@
         </LinearLayout>
 
         <CheckBox
-            android:id="@+id/asinCheckbox"
+            android:id="@+id/allow_asin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/padding_border_double"

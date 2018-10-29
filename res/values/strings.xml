@@ -931,11 +931,11 @@
     <string name="error_search_configuration">Search configuration error. Please open the Admin page and check your Search Site settings</string>
 
     <!-- Preference NAME -->
-    <string name="user_interface_brief_messages">Brief Messages use</string>
+    <string name="user_interface_messages_use">Messages use</string>
     <!-- Preference VALUE -->
-    <string name="user_interface_brief_messages_snackbar">Snackbar</string>
+    <string name="user_interface_messages_use_snackbar">Snackbar</string>
     <!-- Preference VALUE -->
-    <string name="user_interface_brief_messages_toast">Toast</string>
+    <string name="user_interface_messages_use_toast">Toast</string>
 
     <!-- Preference NAME -->
     <string name="user_interface_theme">Interface Theme</string>
@@ -990,6 +990,10 @@
     <string name="populate_anthology_titles">Populate Titles (ISFDB only)</string>
     <string name="first_publication">First Publication</string>
     <string name="usage_skip">Skip</string>
+    <string name="edition">Edition</string>
+    <string name="edition_first_edition">First Edition</string>
+    <string name="edition_first_impression">First impression</string>
+    <string name="edition_book_club_edition">Bookclub edition</string>
 
 
     <!-- End: Added/Updated in  [Next Version]  -->

@@ -195,7 +195,7 @@ public class CsvImporter implements Importer {
                 handleAuthors(mDb, book);
                 handleSeries(mDb, book);
                 if (book.containsKey(UniqueId.BKEY_ANTHOLOGY_STRING_LIST)) {
-                    // ignore the actual value of the UniqueId.KEY_ANTHOLOGY_BITMASK! it will be
+                    // ignore the actual value of the UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK! it will be
                     // 'reset' to mirror what we actually have when storing the book data
                     handleAnthology(mDb, book);
                 }
@@ -356,7 +356,7 @@ public class CsvImporter implements Importer {
 
     /**
      * Database access is strictly limited to fetching id's
-     * TODO:  can we use ? ArrayUtils.getAnthologyTitleUtils().decodeList(anthologyTitlesAsStringList, false);
+     * TODO:  can we use ? ArrayUtils.getTOCUtils().decodeList(anthologyTitlesAsStringList, false);
      */
     private void handleAnthology(@NonNull final CatalogueDBAdapter db,
                                  @NonNull final Book book) {
@@ -380,7 +380,7 @@ public class CsvImporter implements Importer {
                 }
                 // fixup the id's
                 Utils.pruneList(db, ata);
-                book.putContentList(ata);
+                book.putTOC(ata);
             }
         }
 

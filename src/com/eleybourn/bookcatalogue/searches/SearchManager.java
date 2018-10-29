@@ -275,7 +275,7 @@ public class SearchManager implements TaskManagerListener {
     }
 
     @Override
-    public void onShowQuickNotice(@NonNull final String message) {
+    public void onShowUserMessage(@NonNull final String message) {
     }
 
     @Override
@@ -595,14 +595,14 @@ public class SearchManager implements TaskManagerListener {
         // Try to use/construct anthologyTitles
         String anthologyTitlesAsStringList = mBookData.getString(UniqueId.BKEY_ANTHOLOGY_STRING_LIST);
         if (anthologyTitlesAsStringList != null && !anthologyTitlesAsStringList.isEmpty()) {
-            ArrayList<AnthologyTitle> list = ArrayUtils.getAnthologyTitleUtils().decodeList(anthologyTitlesAsStringList, false);
+            ArrayList<AnthologyTitle> list = ArrayUtils.getTOCUtils().decodeList(anthologyTitlesAsStringList, false);
             mBookData.putSerializable(UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY, list);
             mBookData.remove(UniqueId.BKEY_ANTHOLOGY_STRING_LIST);
         }
 
         // If book is not found or missing required data, warn the user
         if (authors == null || authors.isEmpty() || title == null || title.isEmpty()) {
-            mTaskManager.showBriefMessage(BookCatalogueApp.getResourceString(R.string.book_not_found));
+            mTaskManager.showUserMessage(BookCatalogueApp.getResourceString(R.string.book_not_found));
         }
         if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
             Logger.info(this,"All done, Pass the data back to mMessageSenderId:" + mMessageSenderId);

@@ -21,12 +21,6 @@ import java.io.File;
 import java.util.Date;
 import java.util.Objects;
 
-/**
- * Layout clickable items:
- *
- * R.id.all_books_row
- * R.id.advanced_options_row
- */
 public class ExportTypeSelectionDialogFragment extends DialogFragment {
     private int mDialogId;
     private File mFile;
@@ -40,16 +34,16 @@ public class ExportTypeSelectionDialogFragment extends DialogFragment {
     /**
      * Constructor
      *
-     * @param dialogId ID passed by caller. Can be 0, will be passed back in event
+     * @param callerId ID passed by caller. Can be 0, will be passed back in event
      * @param file     the file
      *
      * @return Created fragment
      */
     @NonNull
-    public static ExportTypeSelectionDialogFragment newInstance(int dialogId, File file) {
+    public static ExportTypeSelectionDialogFragment newInstance(final int callerId, @NonNull final File file) {
         ExportTypeSelectionDialogFragment frag = new ExportTypeSelectionDialogFragment();
         Bundle args = new Bundle();
-        args.putInt(UniqueId.BKEY_DIALOG_ID, dialogId);
+        args.putInt(UniqueId.BKEY_CALLER_ID, callerId);
         args.putString(UniqueId.BKEY_FILE_SPEC, file.getAbsolutePath());
         frag.setArguments(args);
         return frag;
@@ -85,7 +79,7 @@ public class ExportTypeSelectionDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
         //noinspection ConstantConditions
-        mDialogId = getArguments().getInt(UniqueId.BKEY_DIALOG_ID);
+        mDialogId = getArguments().getInt(UniqueId.BKEY_CALLER_ID);
         mFile = new File(Objects.requireNonNull(getArguments().getString(UniqueId.BKEY_FILE_SPEC)));
 
         View v = requireActivity().getLayoutInflater().inflate(R.layout.dialog_export_type_selection, null);
@@ -104,14 +98,15 @@ public class ExportTypeSelectionDialogFragment extends DialogFragment {
 
     private void handleClick(@NonNull final View v) {
         if (v.getId() == R.id.row_advanced_options) {
-            ExportAdvancedDialogFragment frag = ExportAdvancedDialogFragment.newInstance(1, mFile);
-            frag.show(requireActivity().getSupportFragmentManager(), null);
+            ExportAdvancedDialogFragment.newInstance(mDialogId, mFile)
+                    .show(requireActivity().getSupportFragmentManager(), null);
         } else {
-            OnExportTypeSelectionDialogResultListener activity = (OnExportTypeSelectionDialogResultListener) requireActivity();
             ExportSettings settings = new ExportSettings();
             settings.file = mFile;
             settings.options = Exporter.EXPORT_ALL;
-            activity.onExportTypeSelectionDialogResult(mDialogId, this, settings);
+
+            OnExportTypeSelectionDialogResultListener activity = (OnExportTypeSelectionDialogResultListener) requireActivity();
+            activity.onExportTypeSelectionDialogResult(this, mDialogId, settings);
         }
         dismiss();
     }
@@ -122,8 +117,8 @@ public class ExportTypeSelectionDialogFragment extends DialogFragment {
      * @author pjw
      */
     public interface OnExportTypeSelectionDialogResultListener {
-        void onExportTypeSelectionDialogResult(final int dialogId,
-                                               @NonNull final DialogFragment dialog,
+        void onExportTypeSelectionDialogResult(@NonNull final DialogFragment dialog,
+                                               final int callerId,
                                                @NonNull final ExportSettings settings);
     }
 

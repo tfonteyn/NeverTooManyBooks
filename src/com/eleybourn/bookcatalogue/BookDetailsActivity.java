@@ -35,6 +35,7 @@ import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.booklist.FlattenedBooklist;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.datamanager.DataEditor;
+import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.entities.Book;
 
@@ -99,8 +100,7 @@ public class BookDetailsActivity extends BaseActivity implements BookAbstractFra
     }
 
     @Override
-    public void setBookId(final long bookId) {
-        // always reload, as the only reason setBookId would be called is to reload
+    public void reload(final long bookId) {
         mBook = mDb.getBookById(bookId);
         DataEditor frag = (DataEditor) getSupportFragmentManager().findFragmentById(R.id.fragment);
         frag.transferDataFrom(mBook);
@@ -190,9 +190,7 @@ public class BookDetailsActivity extends BaseActivity implements BookAbstractFra
                         if (bookId != mBook.getBookId()) {
                             mBook = mDb.getBookById(bookId);
                             Fragment frag = getSupportFragmentManager().findFragmentById(R.id.fragment);
-                            if (frag instanceof DataEditor) {
-                                ((DataEditor) frag).transferDataFrom(mBook);
-                            }
+                            ((DataEditor) frag).transferDataFrom(mBook);
                             initActivityTitle();
                         }
                     }
@@ -229,6 +227,21 @@ public class BookDetailsActivity extends BaseActivity implements BookAbstractFra
         return true;
     }
 
+    /**
+     * Dispatch incoming result to the correct fragment.
+     */
+    @Override
+    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+        if (BuildConfig.DEBUG) {
+            Logger.info(this, "onActivityResult: forwarding to fragment - requestCode=" + requestCode + ", resultCode=" + resultCode);
+        }
+
+        Fragment frag = getSupportFragmentManager().findFragmentById(R.id.fragment);
+        frag.onActivityResult(requestCode,resultCode,data);
+
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
     @Override
     @CallSuper
     protected void onDestroy() {
@@ -259,14 +272,14 @@ public class BookDetailsActivity extends BaseActivity implements BookAbstractFra
         super.onPause();
     }
 
+    /**
+     * Set default result
+     */
     @Override
-    @CallSuper
     protected void setActivityResult() {
         Intent data = new Intent();
         data.putExtra(UniqueId.KEY_ID, mBook.getBookId());
         setResult(Activity.RESULT_OK, data); /* e63944b6-b63a-42b1-897a-a0e8e0dabf8a */
-
-        super.setActivityResult();
     }
 
     @Override

@@ -105,7 +105,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
             newSeries.id = mDb.getSeriesId(newSeries.name);
             for (Series series : mList) {
                 if (series.equals(newSeries)) {
-                    StandardDialogs.showBriefMessage(EditSeriesListActivity.this, R.string.series_already_in_list);
+                    StandardDialogs.showUserMessage(EditSeriesListActivity.this, R.string.series_already_in_list);
                     return;
                 }
             }
@@ -114,7 +114,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
             seriesField.setText("");
             numberField.setText("");
         } else {
-            StandardDialogs.showBriefMessage(EditSeriesListActivity.this, R.string.series_is_blank);
+            StandardDialogs.showUserMessage(EditSeriesListActivity.this, R.string.series_is_blank);
         }
     }
 
@@ -139,7 +139,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
             public void onClick(View v) {
                 String newName = seriesNameField.getText().toString().trim();
                 if (newName.isEmpty()) {
-                    StandardDialogs.showBriefMessage(EditSeriesListActivity.this, R.string.series_is_blank);
+                    StandardDialogs.showUserMessage(EditSeriesListActivity.this, R.string.series_is_blank);
                     return;
                 }
 

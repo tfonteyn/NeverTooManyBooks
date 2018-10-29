@@ -639,13 +639,13 @@
     <string name="export_advanced_blurb">Selection de ce qui doit être enregistré dans la sauvegarde.</string>
     <!-- Text for button -->
     <string name="book_details">Details des livres</string>
-    <!-- Brief descriptionn -->
+    <!-- Brief description -->
     <string name="book_details_blurb">Le livre et tous ses détails</string>
     <!-- Text for button -->
     <string name="cover_images">Images de couverture</string>
-    <!-- Brief descriptionn -->
+    <!-- Brief description -->
     <string name="cover_images_blurb">Couvertures de tous les livres sauvegardés. La taille de la sauvegarde sera plus importante.</string>
-    <!-- Brief descriptionn -->
+    <!-- Brief description -->
     <string name="preferences_blurb">Paramètres et préférences (style de liste personnel)</string>
 
     <!-- Explanatory note for export date (not yet implemented) -->
@@ -710,12 +710,6 @@
     </plurals>
 
     <!-- End: Added/Updated in 5.1.1 -->
-
-    <!-- Begin: Added/Updated in 5.1.2 -->
-    <!-- A heading in the 'about' dialog -->
-    <string name="amazon">Amazon</string>
-
-    <!-- End: Added/Updated in 5.1.2 -->
 
     <!-- Begin: Added/Updated in 5.2.0 -->
 

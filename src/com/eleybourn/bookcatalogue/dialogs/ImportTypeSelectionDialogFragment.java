@@ -26,12 +26,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
 
-/**
- * Layout clickable items:
- *
- * R.id.all_books_row
- * R.id.new_and_changed_books_row
- */
 public class ImportTypeSelectionDialogFragment extends DialogFragment {
     private int mDialogId;
     private File mFile;
@@ -46,16 +40,16 @@ public class ImportTypeSelectionDialogFragment extends DialogFragment {
     /**
      * Constructor
      *
-     * @param dialogId ID passed by caller. Can be 0, will be passed back in event
+     * @param callerId ID passed by caller. Can be 0, will be passed back in event
      * @param file     the file
      *
      * @return Created fragment
      */
     @NonNull
-    public static ImportTypeSelectionDialogFragment newInstance(final int dialogId, @NonNull final File file) {
+    public static ImportTypeSelectionDialogFragment newInstance(final int callerId, @NonNull final File file) {
         ImportTypeSelectionDialogFragment frag = new ImportTypeSelectionDialogFragment();
         Bundle args = new Bundle();
-        args.putInt(UniqueId.BKEY_DIALOG_ID, dialogId);
+        args.putInt(UniqueId.BKEY_CALLER_ID, callerId);
         args.putString(UniqueId.BKEY_FILE_SPEC, file.getAbsolutePath());
         frag.setArguments(args);
         return frag;
@@ -79,9 +73,9 @@ public class ImportTypeSelectionDialogFragment extends DialogFragment {
      * @param id   Sub-View ID
      */
     private void setOnClickListener(@NonNull final View root, @IdRes final int id) {
-        View v = root.findViewById(id);
-        v.setOnClickListener(mRowClickListener);
-        v.setBackgroundResource(android.R.drawable.list_selector_background);
+        View view = root.findViewById(id);
+        view.setOnClickListener(mRowClickListener);
+        view.setBackgroundResource(android.R.drawable.list_selector_background);
     }
 
     /**
@@ -91,7 +85,7 @@ public class ImportTypeSelectionDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
         //noinspection ConstantConditions
-        mDialogId = getArguments().getInt(UniqueId.BKEY_DIALOG_ID);
+        mDialogId = getArguments().getInt(UniqueId.BKEY_CALLER_ID);
         mFile = new File(Objects.requireNonNull(getArguments().getString(UniqueId.BKEY_FILE_SPEC)));
 
         try {
@@ -124,17 +118,18 @@ public class ImportTypeSelectionDialogFragment extends DialogFragment {
 
     private void handleClick(@NonNull final View v) {
         if (!mArchiveHasValidDates && v.getId() == R.id.row_new_and_changed_books) {
-            StandardDialogs.showBriefMessage(requireActivity(), R.string.old_archive_blurb);
+            StandardDialogs.showUserMessage(requireActivity(), R.string.old_archive_blurb);
             //Snackbar.make(v, R.string.old_archive_blurb, Snackbar.LENGTH_LONG).show();
             return;
         }
 
         try {
-            OnImportTypeSelectionDialogResultListener a = (OnImportTypeSelectionDialogResultListener) requireActivity();
             ImportTypeSelectionDialogFragment.ImportSettings settings = new ImportTypeSelectionDialogFragment.ImportSettings();
             settings.file = mFile;
             settings.options = Importer.IMPORT_ALL;
-            a.onImportTypeSelectionDialogResult(mDialogId, this, settings);
+
+            OnImportTypeSelectionDialogResultListener activity = (OnImportTypeSelectionDialogResultListener) requireActivity();
+            activity.onImportTypeSelectionDialogResult(this, mDialogId, settings);
         } catch (Exception e) {
             Logger.error(e);
         }
@@ -147,9 +142,9 @@ public class ImportTypeSelectionDialogFragment extends DialogFragment {
      * @author pjw
      */
     public interface OnImportTypeSelectionDialogResultListener {
-        void onImportTypeSelectionDialogResult(final int dialogId,
-                                               @NonNull final DialogFragment dialog,
-                                               @NonNull final ImportTypeSelectionDialogFragment.ImportSettings settings);
+        void onImportTypeSelectionDialogResult(@NonNull final DialogFragment dialog,
+                                               final int callerId,
+                                               @NonNull final ImportSettings settings);
     }
 
     public static class ImportSettings {

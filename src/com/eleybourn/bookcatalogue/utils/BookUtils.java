@@ -41,6 +41,7 @@ import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.entities.Book;
 
 import java.io.File;
+import java.util.Objects;
 
 /**
  * Class to implement common Book functions
@@ -73,7 +74,7 @@ public class BookUtils {
                 bookData.putSerializable(UniqueId.BKEY_AUTHOR_ARRAY, db.getBookAuthorList(bookId));
                 bookData.putSerializable(UniqueId.BKEY_SERIES_ARRAY, db.getBookSeriesList(bookId));
 
-                bookData.putInt(UniqueId.KEY_ANTHOLOGY_BITMASK, bookRowView.getAnthologyMask());
+                bookData.putInt(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK, bookRowView.getAnthologyBitMask());
                 bookData.putSerializable(UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY, db.getAnthologyTitleListByBook(bookId));
 
                 bookData.putString(UniqueId.KEY_BOOK_PUBLISHER, bookRowView.getPublisherName());
@@ -89,7 +90,7 @@ public class BookUtils {
                 bookData.putString(UniqueId.KEY_BOOK_READ_START, bookRowView.getReadStart());
                 bookData.putInt(UniqueId.KEY_BOOK_READ, bookRowView.getRead());
                 bookData.putInt(UniqueId.KEY_BOOK_SIGNED, bookRowView.getSigned());
-
+                bookData.putInt(UniqueId.KEY_BOOK_EDITION_BITMASK, bookRowView.getEditionBitMask());
                 bookData.putString(UniqueId.KEY_FIRST_PUBLICATION, bookRowView.getFirstPublication());
                 bookData.putString(UniqueId.KEY_NOTES, bookRowView.getNotes());
             }
@@ -106,25 +107,27 @@ public class BookUtils {
     /**
      * Delete book by its database row _id and close current activity.
      *
+     * TOMF: how about using {@link EditBookActivity.PostConfirmOrCancelAction}
+     *
      * @param bookId  the book to delete
      */
     public static void deleteBook(@NonNull final Activity activity,
                                   @NonNull final CatalogueDBAdapter db,
                                   final long bookId,
-                                  @Nullable final Runnable runnable) {
+                                  @Nullable final Runnable onDeleted) {
         @StringRes
-        int result = StandardDialogs.deleteBookAlert(activity, db, bookId, new Runnable() {
+        int errorMsgId = StandardDialogs.deleteBookAlert(activity, db, bookId, new Runnable() {
             @Override
             public void run() {
                 db.purgeAuthors();
                 db.purgeSeries();
-                if (runnable != null) {
-                    runnable.run();
+                if (onDeleted != null) {
+                    onDeleted.run();
                 }
             }
         });
-        if (result != 0) {
-            StandardDialogs.showBriefMessage(activity, result);
+        if (errorMsgId != 0) {
+            StandardDialogs.showUserMessage(activity, errorMsgId);
         }
     }
 
@@ -150,7 +153,7 @@ public class BookUtils {
                 author = bookRowView.getPrimaryAuthorNameFormattedGivenFirst();
                 series = bookRowView.getPrimarySeriesFormatted();
             } else {
-                StandardDialogs.showBriefMessage(activity, R.string.unable_to_find_book);
+                StandardDialogs.showUserMessage(activity, R.string.unable_to_find_book);
                 return;
             }
         }
@@ -226,7 +229,7 @@ public class BookUtils {
                                   final long bookId,
                                   final boolean read) {
         Book book = db.getBookById(bookId);
-        //noinspection ConstantConditions
+        Objects.requireNonNull(book);
         book.putBoolean(UniqueId.KEY_BOOK_READ, read);
         book.putString(UniqueId.KEY_BOOK_READ_END, DateUtils.todaySqlDateOnly());
         return (db.updateBook(bookId, book, 0) == 1);

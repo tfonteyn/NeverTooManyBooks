@@ -30,7 +30,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.LinearLayout;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
@@ -41,11 +40,10 @@ import com.eleybourn.bookcatalogue.utils.RTE;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Fragment wrapper for the Bookshelf list
- *
- * TOMF TODO: redo this code style as all other DialogFragment extenders in this project!
  *
  * @author pjw
  */
@@ -86,7 +84,7 @@ public class BookshelfDialogFragment extends DialogFragment {
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_bookshelves, null);
+        return inflater.inflate(R.layout.dialog_edit_base, null);
     }
 
     /**
@@ -113,12 +111,11 @@ public class BookshelfDialogFragment extends DialogFragment {
 
         mAllBookshelves = new ArrayList<>();
 
-        // get the list of all bookshelves in the database
         CatalogueDBAdapter db = new CatalogueDBAdapter(requireContext())
                 .open();
         Book book = db.getBookById(mBookId);
-        // and the list of all shelves the book is currently on.
-        //noinspection ConstantConditions
+        Objects.requireNonNull(book);
+        // get the list of all shelves the book is currently on.
         List<Bookshelf> currentShelves = book.getBookshelfList();
 
         // Setup the dialog
@@ -126,18 +123,18 @@ public class BookshelfDialogFragment extends DialogFragment {
 
         // Handle the OK button
         //noinspection ConstantConditions
-        getView().findViewById(R.id.bookshelf_dialog_button).setOnClickListener(
+        getView().findViewById(R.id.confirm).setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        // rebuild the books bookshelf list and send back to the Activity
+                        // rebuild the books bookshelf list
                         ArrayList<Bookshelf> list = new ArrayList<>();
                         for (SelectedBookshelf sbs : mAllBookshelves) {
                             if (sbs.selected) {
                                 list.add(sbs.bookshelf);
                             }
                         }
-                        // let the activity know, so it can update its display
+                        // and send back to the Activity
                         ((OnBookshelfSelectionDialogResultListener) requireActivity())
                                 .OnBookshelfSelectionDialogResult(list);
 
@@ -146,8 +143,18 @@ public class BookshelfDialogFragment extends DialogFragment {
                     }
                 });
 
+        // Handle Cancel button
+        getView().findViewById(R.id.cancel).setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        BookshelfDialogFragment.this.dismiss();
+                    }
+                });
+
+
         // Get the root view for the list of checkboxes
-        LinearLayout cbRoot = getView().findViewById(R.id.bookshelf_dialog_root);
+        ViewGroup content = getView().findViewById(R.id.content);
 
         // Loop through all bookshelves in the database and build the shelves/checkbox list for this book
         for (Bookshelf bookshelf : db.getBookshelves()) {
@@ -172,7 +179,7 @@ public class BookshelfDialogFragment extends DialogFragment {
                 }
             });
 
-            cbRoot.addView(cb, cbRoot.getChildCount() - 1);
+            content.addView(cb);
         }
 
         db.close();

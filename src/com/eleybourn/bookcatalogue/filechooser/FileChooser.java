@@ -19,6 +19,7 @@
  */
 package com.eleybourn.bookcatalogue.filechooser;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
@@ -102,6 +103,7 @@ public abstract class FileChooser extends BaseActivity implements
         findViewById(R.id.cancel).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(final View view) {
+                setResult(Activity.RESULT_CANCELED);
                 finish();
             }
         });
@@ -153,7 +155,7 @@ public abstract class FileChooser extends BaseActivity implements
             FileChooserFragment bf = (FileChooserFragment) frag;
             File file = bf.getSelectedFile();
             if (!file.exists() || !file.isFile()) {
-                StandardDialogs.showBriefMessage(this, R.string.please_select_an_existing_file);
+                StandardDialogs.showUserMessage(this, R.string.please_select_an_existing_file);
                 return;
             }
             onOpen(file);
@@ -169,7 +171,7 @@ public abstract class FileChooser extends BaseActivity implements
             FileChooserFragment bf = (FileChooserFragment) frag;
             File file = bf.getSelectedFile();
             if ((file.exists() && !file.isFile())) {
-                StandardDialogs.showBriefMessage(this, R.string.please_select_a_non_directory);
+                StandardDialogs.showUserMessage(this, R.string.please_select_a_non_directory);
                 return;
             }
             onSave(file);

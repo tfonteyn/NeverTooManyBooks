@@ -6,9 +6,6 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ArrayAdapter;
 
-import com.eleybourn.bookcatalogue.BuildConfig;
-import com.eleybourn.bookcatalogue.debug.Logger;
-
 public class TouchListViewWithDropListener<T> extends TouchListView implements TouchListView.DropListener{
 
     public TouchListViewWithDropListener(@NonNull final Context context, @NonNull final AttributeSet attrs) {

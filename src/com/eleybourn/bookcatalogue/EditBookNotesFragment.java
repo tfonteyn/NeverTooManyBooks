@@ -36,20 +36,24 @@ import com.eleybourn.bookcatalogue.Fields.Field;
 import com.eleybourn.bookcatalogue.Fields.FieldFormatter;
 import com.eleybourn.bookcatalogue.datamanager.validators.ValidatorException;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.debug.Tracker;
+import com.eleybourn.bookcatalogue.dialogs.CheckListEditorDialogFragment;
+import com.eleybourn.bookcatalogue.dialogs.CheckListItem;
 import com.eleybourn.bookcatalogue.dialogs.PartialDatePickerDialogFragment;
-import com.eleybourn.bookcatalogue.dialogs.PartialDatePickerDialogFragment.OnPartialDatePickerResultListener;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 /**
  * This class is called by {@link EditBookActivity} and displays the Notes Tab
  */
-public class EditBookNotesFragment extends BookAbstractFragment implements OnPartialDatePickerResultListener {
+public class EditBookNotesFragment extends BookAbstractFragment
+        implements
+        PartialDatePickerDialogFragment.OnPartialDatePickerResultListener,
+        CheckListEditorDialogFragment.OnCheckListChangedListener {
 
     /** Lists in database so far, we cache them for performance */
     private List<String> mLocations;
@@ -78,50 +82,66 @@ public class EditBookNotesFragment extends BookAbstractFragment implements OnPar
     @Override
     @CallSuper
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        Tracker.enterOnCreate(this);
+        super.onActivityCreated(savedInstanceState);
+
+        if (savedInstanceState != null) {
+            setDirty(false);
+        }
+
         try {
-            super.onActivityCreated(savedInstanceState);
-
-            if (savedInstanceState != null) {
-                setDirty(false);
-            }
-
-            initFields();
-
-            try {
-                //noinspection ConstantConditions
-                ViewUtils.fixFocusSettings(getView());
-            } catch (Exception e) {
-                // Log, but ignore. This is a non-critical feature that prevents crashes when the
-                // 'next' key is pressed and some views have been hidden.
-                Logger.error(e);
-            }
-
+            //noinspection ConstantConditions
+            ViewUtils.fixFocusSettings(getView());
         } catch (Exception e) {
+            // Log, but ignore. This is a non-critical feature that prevents crashes when the
+            // 'next' key is pressed and some views have been hidden.
             Logger.error(e);
         }
-        Tracker.exitOnCreate(this);
     }
 
+    @CallSuper
+    @Override
     protected void initFields() {
+        super.initFields();
 
-        mFields.add(R.id.rating, UniqueId.KEY_BOOK_RATING, null);
-        mFields.add(R.id.lbl_rating, "", UniqueId.KEY_BOOK_RATING, null);
-        mFields.add(R.id.read, UniqueId.KEY_BOOK_READ, null);
-        mFields.add(R.id.notes, UniqueId.KEY_NOTES, null);
-        mFields.add(R.id.signed, UniqueId.KEY_BOOK_SIGNED, null);
+        mFields.add(R.id.rating, UniqueId.KEY_BOOK_RATING);
+        mFields.add(R.id.read, UniqueId.KEY_BOOK_READ);
+        mFields.add(R.id.notes, UniqueId.KEY_NOTES);
+        mFields.add(R.id.signed, UniqueId.KEY_BOOK_SIGNED);
 
-        /* location  TODO: unify with {@link EditBookFieldsFragment#setupMenuMoreButton} */
-        mFields.add(R.id.location, UniqueId.KEY_BOOK_LOCATION, null);
+        /*
+        setOutputOnly, so the field is not fetched from the database
+        source column is "", so this field is not saved to the database
+        ... so what do we get ?
+        -> all interaction between View and controller.
+         */
+        mFields.add(R.id.edition, "", UniqueId.KEY_BOOK_EDITION_BITMASK)
+                .setOutputOnly(true);
+        mFields.getField(R.id.edition).getView().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                CheckListEditorDialogFragment<Integer> c = new CheckListEditorDialogFragment<>();
+                c.setTitle(R.string.edition);
+                c.setDestinationFieldId(R.id.edition);
+                // if we chain these calls, then lint complains as the param type will be wrong
+                c.setList(getBook().getEditableEditionList());
+                c.show(requireFragmentManager(), null);
+            }
+        });
+
+
+        /* location  TOMF: unify with {@link EditBookFieldsFragment#setupMenuMoreButton} */
+        mFields.add(R.id.lbl_location, UniqueId.KEY_BOOK_LOCATION);
+        mFields.add(R.id.location, UniqueId.KEY_BOOK_LOCATION);
         ArrayAdapter<String> adapter = new ArrayAdapter<>(requireActivity(),
                 android.R.layout.simple_dropdown_item_1line, getLocations());
         mFields.setAdapter(R.id.location, adapter);
 
+        // Get the list to use in the AutoComplete Location field
         final Field locationField = mFields.getField(R.id.location);
-        // Get the list to use in the AutoComplete stuff
         AutoCompleteTextView textView = locationField.getView();
         textView.setAdapter(new ArrayAdapter<>(requireActivity(),
                 android.R.layout.simple_dropdown_item_1line, getLocations()));
+
         // Get the drop-down button for the list and setup dialog
         //noinspection ConstantConditions
         getView().findViewById(R.id.location_button).setOnClickListener(
@@ -130,7 +150,7 @@ public class EditBookNotesFragment extends BookAbstractFragment implements OnPar
                     public void onClick(View v) {
                         StandardDialogs.selectStringDialog(requireActivity().getLayoutInflater(),
                                 getString(R.string.location),
-                                getLocations(), locationField.getValue().toString(),
+                                getLocations(), locationField.putValueInto().toString(),
                                 new StandardDialogs.SimpleDialogOnClickListener() {
                                     @Override
                                     public void onClick(@NonNull final StandardDialogs.SimpleDialogItem item) {
@@ -140,17 +160,19 @@ public class EditBookNotesFragment extends BookAbstractFragment implements OnPar
                     }
                 });
 
+
         // ENHANCE: Add a partial date validator. Or not.
         //FieldValidator blankOrDateValidator = new Fields.OrValidator(new Fields.BlankValidator(), new Fields.DateValidator());
         FieldFormatter dateFormatter = new Fields.DateFieldFormatter();
 
         Field field;
-        field = mFields.add(R.id.read_start, UniqueId.KEY_BOOK_READ_START, null, dateFormatter);
+        field = mFields.add(R.id.read_start, UniqueId.KEY_BOOK_READ_START)
+                .setFormatter(dateFormatter);
         field.getView().setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 PartialDatePickerDialogFragment frag = PartialDatePickerDialogFragment.newInstance()
                         .setTitle(R.string.read_start)
-                        .setDialogId(R.id.read_start); // Set to the destination field ID
+                        .setDestinationFieldId(R.id.read_start);
                 try {
                     frag.setDate(getDateFrom(R.id.read_start));
                 } catch (Exception ignore) {
@@ -161,12 +183,13 @@ public class EditBookNotesFragment extends BookAbstractFragment implements OnPar
             }
         });
 
-        field = mFields.add(R.id.read_end, UniqueId.KEY_BOOK_READ_END, null, dateFormatter);
+        field = mFields.add(R.id.read_end, UniqueId.KEY_BOOK_READ_END)
+                .setFormatter(dateFormatter);
         field.getView().setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 PartialDatePickerDialogFragment frag = PartialDatePickerDialogFragment.newInstance()
                         .setTitle(R.string.read_end)
-                        .setDialogId(R.id.read_end); // Set to the destination field ID
+                        .setDestinationFieldId(R.id.read_end);
                 try {
                     frag.setDate(getDateFrom(R.id.read_end));
                 } catch (Exception ignore) {
@@ -202,7 +225,7 @@ public class EditBookNotesFragment extends BookAbstractFragment implements OnPar
 
     @NonNull
     private String getDateFrom(@IdRes final int fieldResId) {
-        Object value = mFields.getField(fieldResId).getValue();
+        Object value = mFields.getField(fieldResId).putValueInto();
         if (value.toString().isEmpty()) {
             return DateUtils.toSqlDateTime(new Date());
         } else {
@@ -216,12 +239,12 @@ public class EditBookNotesFragment extends BookAbstractFragment implements OnPar
      * Build a full or partial date in SQL format
      */
     @Override
-    public void onPartialDatePickerSet(final int dialogId,
-                                       @NonNull final PartialDatePickerDialogFragment dialog,
+    public void onPartialDatePickerSet(@NonNull final PartialDatePickerDialogFragment dialog,
+                                       @IdRes final int destinationFieldId,
                                        @Nullable final Integer year,
                                        @Nullable final Integer month,
                                        @Nullable final Integer day) {
-        mFields.getField(dialogId).setValue(DateUtils.buildPartialDate(year, month, day));
+        mFields.getField(destinationFieldId).setValue(DateUtils.buildPartialDate(year, month, day));
         dialog.dismiss();
     }
 
@@ -231,7 +254,8 @@ public class EditBookNotesFragment extends BookAbstractFragment implements OnPar
      * Dismiss it.
      */
     @Override
-    public void onPartialDatePickerCancel(final int dialogId, @NonNull final PartialDatePickerDialogFragment dialog) {
+    public void onPartialDatePickerCancel(@NonNull final PartialDatePickerDialogFragment dialog,
+                                          @IdRes final int destinationFieldId) {
         dialog.dismiss();
     }
 
@@ -247,7 +271,42 @@ public class EditBookNotesFragment extends BookAbstractFragment implements OnPar
     protected void onLoadBookDetails(@NonNull final Book book, final boolean setAllFrom) {
         super.onLoadBookDetails(book, setAllFrom);
 
+        populateEditions(mFields.getField(R.id.edition), book);
+
         // Restore default visibility and hide unused/unwanted and empty fields
         showHideFields(false);
+    }
+
+    /**
+     * Overriding to get some debug
+     */
+    @Override
+    protected void onSaveBookDetails(@NonNull final Book book) {
+        if (BuildConfig.DEBUG) {
+            Logger.info(this,"onSaveBookDetails");
+        }
+        // nothing special, just let all Fields be copied into the book
+        super.onSaveBookDetails(book);
+    }
+
+    @Override
+    public <T> void onCheckListSave(@NonNull final CheckListEditorDialogFragment dialog,
+                                    final int destinationFieldId,
+                                    @NonNull final List<CheckListItem<T>> list) {
+        dialog.dismiss();
+
+        ArrayList<Integer> result = new Book.EditionCheckListItem().extractList(list);
+        int bitmask = 0;
+        for (Integer bit : result) {
+            bitmask += bit;
+        }
+        getBook().putInt(UniqueId.KEY_BOOK_EDITION_BITMASK, bitmask);
+        mFields.getField(destinationFieldId).setValue(getBook().getEditionListAsText());
+    }
+
+    @Override
+    public void onCheckListCancel(@NonNull final CheckListEditorDialogFragment dialog,
+                                  @IdRes final int destinationFieldId) {
+        dialog.dismiss();
     }
 }

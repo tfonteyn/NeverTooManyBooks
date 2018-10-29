@@ -75,7 +75,7 @@ import java.util.Set;
 
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ANTHOLOGY_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ANTHOLOGY_MULTIPLE_AUTHORS;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ANTHOLOGY_SINGLE_AUTHOR;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ANTHOLOGY;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FAMILY_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FORMATTED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FORMATTED_GIVEN_FIRST;
@@ -89,6 +89,7 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ANTHOLOGY_POSITION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_ADDED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_PUBLISHED;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_EDITION_BITMASK;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_FORMAT;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_GENRE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_GOODREADS_BOOK_ID;
@@ -229,6 +230,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
                     TBL_BOOKS.dotAs(DOM_BOOK_PUBLISHER) + "," +
                     TBL_BOOKS.dotAs(DOM_BOOK_DATE_PUBLISHED) + "," +
                     TBL_BOOKS.dotAs(DOM_FIRST_PUBLICATION) + "," +
+                    TBL_BOOKS.dotAs(DOM_BOOK_EDITION_BITMASK) + "," +
                     TBL_BOOKS.dotAs(DOM_BOOK_RATING) + "," +
                     TBL_BOOKS.dotAs(DOM_BOOK_READ) + "," +
                     TBL_BOOKS.dotAs(DOM_BOOK_PAGES) + "," +
@@ -1061,14 +1063,14 @@ public class CatalogueDBAdapter implements AutoCloseable {
                 author.id = id;
             }
         } else {
-            // It was a known author, see if it still is and update fields.
+            // It was a known author, see if it still is and fetch possibly updated fields.
             Author dbAuthor = this.getAuthor(author.id);
             if (dbAuthor != null) {
                 // id stays the same obviously.
                 author.familyName = dbAuthor.familyName;
                 author.givenNames = dbAuthor.givenNames;
             } else {
-                // gone, set the author as 'new'
+                // Author not found?, set the author as 'new'
                 author.id = 0;
             }
         }
@@ -1298,14 +1300,14 @@ public class CatalogueDBAdapter implements AutoCloseable {
         }
 
         // Handle ANTHOLOGY_BITMASK only, no handling of actual titles.
-        ArrayList<AnthologyTitle> anthologyTitles = book.getContentList();
+        ArrayList<AnthologyTitle> anthologyTitles = book.getTOC();
         if (anthologyTitles.size() > 0) {
-            // definitively an anthology, overrule whatever the KEY_ANTHOLOGY_BITMASK was.
-            int type = DOM_ANTHOLOGY_SINGLE_AUTHOR;
+            // definitively an anthology, overrule whatever the KEY_BOOK_ANTHOLOGY_BITMASK was.
+            int type = DOM_ANTHOLOGY;
             if (AnthologyTitle.isSingleAuthor(anthologyTitles)) {
                 type = type ^ DOM_ANTHOLOGY_MULTIPLE_AUTHORS;
             }
-            book.putInt(UniqueId.KEY_ANTHOLOGY_BITMASK, type);
+            book.putInt(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK, type);
         }
 
         // Remove blank/null fields that have default values defined in the database
@@ -1316,6 +1318,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
                 UniqueId.KEY_BOOK_READ,
                 UniqueId.KEY_BOOK_SIGNED,
                 UniqueId.KEY_BOOK_DATE_ADDED,
+                UniqueId.KEY_BOOK_EDITION_BITMASK,
                 UniqueId.KEY_BOOK_GOODREADS_LAST_SYNC_DATE,
                 UniqueId.KEY_LAST_UPDATE_DATE}) {
             if (book.containsKey(name)) {
@@ -1650,7 +1653,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
         }
 
         if (book.containsKey(UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY)) {
-            insertOrUpdateBookAnthologyAndAnthologyTitles(bookId, book.getContentList(), false);
+            insertOrUpdateBookAnthologyAndAnthologyTitles(bookId, book.getTOC(), false);
         }
 
         if (book.containsKey(UniqueId.KEY_LOAN_LOANED_TO) && !book.getString(UniqueId.KEY_LOAN_LOANED_TO).isEmpty()) {
@@ -2268,7 +2271,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
                 book.putBookshelfList(getBookshelvesByBookId(bookId));
                 book.putAuthorList(getBookAuthorList(bookId));
                 book.putSeriesList(getBookSeriesList(bookId));
-                book.putContentList(getAnthologyTitleListByBook(bookId));
+                book.putTOC(getAnthologyTitleListByBook(bookId));
 
                 return book;
             }
@@ -2966,7 +2969,9 @@ public class CatalogueDBAdapter implements AutoCloseable {
      */
     @SuppressWarnings("UnusedReturnValue")
     public int deleteLoan(final long bookId, final boolean dirtyBookIfNecessary) {
-        int rowsAffected = mSyncedDb.delete(TBL_LOAN.getName(), DOM_BOOK_ID + "=?", new String[]{Long.toString(bookId)});
+        int rowsAffected = mSyncedDb.delete(TBL_LOAN.getName(),
+                DOM_BOOK_ID + "=?",
+                new String[]{Long.toString(bookId)});
         if (rowsAffected > 0) {
             purgeLoans();
             if (dirtyBookIfNecessary) {

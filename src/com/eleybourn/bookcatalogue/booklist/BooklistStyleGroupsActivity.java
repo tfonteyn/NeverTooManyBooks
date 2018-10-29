@@ -121,31 +121,26 @@ public class BooklistStyleGroupsActivity extends EditObjectListActivity<GroupWra
         return groups;
     }
 
-    @Override
-    protected void onAdd(@NonNull final View view) {
-        throw new UnsupportedOperationException("Unexpected call to 'onAdd'");
-    }
-
     /**
      * Set up the view for a passed wrapper.
      */
     @Override
     protected void onSetupView(@NonNull final View target, @NonNull final GroupWrapper wrapper) {
-        Holder holder = ViewTagger.getTag(target, R.id.TAG_HOLDER);
+        Holder holder = ViewTagger.getTag(target, R.id.TAG_HOLDER);// value BooklistStyleGroupsActivity.Holder
         if (holder == null) {
             // New view, so build the Holder
             holder = new Holder();
             holder.name = target.findViewById(R.id.name);
             holder.present = target.findViewById(R.id.present);
             // Tag the parts that need it
-            ViewTagger.setTag(target, R.id.TAG_HOLDER, holder);
-            ViewTagger.setTag(holder.present, R.id.TAG_HOLDER, holder);
+            ViewTagger.setTag(target, R.id.TAG_HOLDER, holder);// value BooklistStyleGroupsActivity.Holder
+            ViewTagger.setTag(holder.present, R.id.TAG_HOLDER, holder);// value BooklistStyleGroupsActivity.Holder
 
             // Handle a click on the CheckedTextView
             holder.present.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(@NonNull View v) {
-                    Holder h = ViewTagger.getTagOrThrow(v, R.id.TAG_HOLDER);
+                    Holder h = ViewTagger.getTagOrThrow(v, R.id.TAG_HOLDER);// value BooklistStyleGroupsActivity.Holder
                     boolean newStatus = !h.wrapper.present;
                     h.wrapper.present = newStatus;
                     h.present.setChecked(newStatus);

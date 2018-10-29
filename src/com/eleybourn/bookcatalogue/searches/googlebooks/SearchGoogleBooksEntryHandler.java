@@ -161,7 +161,8 @@ class SearchGoogleBooksEntryHandler extends DefaultHandler {
                 String tmp = builder.toString();
                 if (tmp.indexOf("ISBN:") == 0) {
                     tmp = tmp.substring(5);
-                    if (!mValues.containsKey(UniqueId.KEY_BOOK_ISBN) || tmp.length() > mValues.getString(UniqueId.KEY_BOOK_ISBN).length()) {
+                    String isbn = mValues.getString(UniqueId.KEY_BOOK_ISBN);
+                    if (isbn == null || tmp.length() > isbn.length()) {
                         mValues.putString(UniqueId.KEY_BOOK_ISBN, tmp);
                     }
                 }

@@ -111,11 +111,27 @@ public class DatabaseDefinitions {
 
     /**
      * {@link #DOM_BOOK_ANTHOLOGY_BITMASK}
-     *  0x01 = ant from one author
-     *  0x10 = ant from multiple authors
+     *  0%01 = it's an anthology (with a single author)
+     *  0%10 = has multiple authors
      */
-    public static final int DOM_ANTHOLOGY_SINGLE_AUTHOR = 1;
+    public static final int DOM_ANTHOLOGY = 1;
     public static final int DOM_ANTHOLOGY_MULTIPLE_AUTHORS = 1 << 1;
+
+    /**
+     * {@link #DOM_BOOK_EDITION_BITMASK}
+     *
+     * 0%00000001 = first edition
+     * 0%00000010 = first impression
+     *
+     * 0%10000000 = book club
+     *
+     * ENHANCE: deluxe ? convention ? ...
+     */
+    public static final int DOM_EDITION_FIRST = 1;
+    public static final int DOM_EDITION_FIRST_IMPRESSION = 1 << 1;
+
+    public static final int DOM_EDITION_BOOK_CLUB = 1 << 7;
+
 
     /** {@link #TBL_BOOKS} */
     public static final DomainDefinition DOM_BOOK_UUID = new DomainDefinition("book_uuid", TableInfo.TYPE_TEXT, NOT_NULL, "default (lower(hex(randomblob(16))))");
@@ -138,6 +154,7 @@ public class DatabaseDefinitions {
     public static final DomainDefinition DOM_BOOK_READ_START = new DomainDefinition("read_start", TableInfo.TYPE_DATE);
     public static final DomainDefinition DOM_BOOK_READ_END = new DomainDefinition("read_end", TableInfo.TYPE_DATE);
     public static final DomainDefinition DOM_BOOK_SIGNED = new DomainDefinition("signed", TableInfo.TYPE_BOOLEAN, NOT_NULL, "default 0");
+    public static final DomainDefinition DOM_BOOK_EDITION_BITMASK = new DomainDefinition("edition_bm", TableInfo.TYPE_INT, NOT_NULL, "default 0");
 
     /** {@link #TBL_BOOKSHELF) */
     public static final DomainDefinition DOM_BOOKSHELF = new DomainDefinition("bookshelf", TableInfo.TYPE_TEXT, NOT_NULL, "");

@@ -97,7 +97,7 @@ public class Properties implements Iterable<Property> {
         return mList.iterator();
     }
 
-    /** Call the validate() method on all properties. Errors will be thrown. */
+    /** Validate all properties. Errors will be thrown. */
     public void validate() throws ValidationException {
         for (Property p : mList) {
             p.validate();

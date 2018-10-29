@@ -34,6 +34,7 @@ import android.view.View.OnClickListener;
 import android.widget.CheckedTextView;
 import android.widget.TextView;
 
+import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
@@ -92,16 +93,9 @@ public class BooklistStylesActivity extends EditObjectListActivity<BooklistStyle
         return new ArrayList<>(BooklistStyles.getAllStyles(this.mDb));
     }
 
-    /**
-     * Required, not used
-     */
-    @Override
-    protected void onAdd(@NonNull View v) {
-    }
-
     @Override
     protected void onSetupView(@NonNull final View target, @NonNull final BooklistStyle style) {
-        Holder holder = ViewTagger.getTag(target, R.id.TAG_HOLDER);
+        Holder holder = ViewTagger.getTag(target, R.id.TAG_HOLDER);// value: BooklistStylesActivity.Holder
         if (holder == null) {
             holder = new Holder();
             holder.preferred = target.findViewById(R.id.preferred);
@@ -109,14 +103,14 @@ public class BooklistStylesActivity extends EditObjectListActivity<BooklistStyle
             holder.groups = target.findViewById(R.id.groups);
             holder.kind = target.findViewById(R.id.kind);
             // Tag relevant views
-            ViewTagger.setTag(holder.preferred, R.id.TAG_HOLDER, holder);
-            ViewTagger.setTag(target, R.id.TAG_HOLDER, holder);
+            ViewTagger.setTag(holder.preferred, R.id.TAG_HOLDER, holder);// value: BooklistStylesActivity.Holder
+            ViewTagger.setTag(target, R.id.TAG_HOLDER, holder);// value: BooklistStylesActivity.Holder
 
             // Handle clicks on the CheckedTextView
             holder.preferred.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(@NonNull View v) {
-                    Holder h = ViewTagger.getTagOrThrow(v, R.id.TAG_HOLDER);
+                    Holder h = ViewTagger.getTagOrThrow(v, R.id.TAG_HOLDER);// value: BooklistStylesActivity.Holder
                     boolean newStatus = !h.style.isPreferred();
                     h.style.setPreferred(newStatus);
                     h.preferred.setChecked(newStatus);
@@ -200,7 +194,7 @@ public class BooklistStylesActivity extends EditObjectListActivity<BooklistStyle
                 style.setName(style.getDisplayName());
             } catch (RTE.DeserializationException e) {
                 Logger.error(e);
-                StandardDialogs.showBriefMessage(this, R.string.error_unexpected_error);
+                StandardDialogs.showUserMessage(this, R.string.error_unexpected_error);
                 return;
             }
         }
@@ -218,8 +212,9 @@ public class BooklistStylesActivity extends EditObjectListActivity<BooklistStyle
     @Override
     @CallSuper
     protected void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
+        if (BuildConfig.DEBUG) {
+            Logger.info(this,"onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
+        }
         switch (requestCode) {
             case BooklistStylePropertiesActivity.REQUEST_CODE:  /* fadd7b9a-7eaf-4af9-90ce-6ffb7b93afe6 */
                 if (resultCode == Activity.RESULT_OK) {
@@ -229,12 +224,10 @@ public class BooklistStylesActivity extends EditObjectListActivity<BooklistStyle
                     // style can be null (when it was deleted)
                     handleStyleResult(style);
                 }
-                break;
-
-            default:
-                Logger.error("onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
-                break;
+                return;
         }
+
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     /**

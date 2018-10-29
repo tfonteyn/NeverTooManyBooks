@@ -38,7 +38,7 @@ import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
-import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer.LockTypes;
+import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer.LockType;
 import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer.SyncLock;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
@@ -230,7 +230,7 @@ public class DbSync {
         }
 
         /** Enum of lock types supported */
-        public enum LockTypes {
+        public enum LockType {
             shared, exclusive
         }
 
@@ -243,7 +243,7 @@ public class DbSync {
             void unlock();
 
             @NonNull
-            LockTypes getType();
+            LockType getType();
         }
 
         /**
@@ -259,8 +259,8 @@ public class DbSync {
 
             @NonNull
             @Override
-            public LockTypes getType() {
-                return LockTypes.shared;
+            public LockType getType() {
+                return LockType.shared;
             }
         }
 
@@ -277,8 +277,8 @@ public class DbSync {
 
             @NonNull
             @Override
-            public LockTypes getType() {
-                return LockTypes.exclusive;
+            public LockType getType() {
+                return LockType.exclusive;
             }
         }
     }
@@ -450,7 +450,7 @@ public class DbSync {
             }
 
             if (mTxLock != null) {
-                if (mTxLock.getType() != LockTypes.exclusive) {
+                if (mTxLock.getType() != LockType.exclusive) {
                     throw new DBExceptions.TransactionException(ERROR_UPDATE_INSIDE_SHARED_TX);
                 }
                 mSqlDb.execSQL(sql);
@@ -499,7 +499,7 @@ public class DbSync {
                     @NonNull final ContentValues cv) {
             SyncLock txLock = null;
             if (mTxLock != null) {
-                if (mTxLock.getType() != LockTypes.exclusive) {
+                if (mTxLock.getType() != LockType.exclusive) {
                     throw new DBExceptions.TransactionException(ERROR_UPDATE_INSIDE_SHARED_TX);
                 }
             } else {
@@ -528,7 +528,7 @@ public class DbSync {
                           @Nullable final String[] whereArgs) {
             SyncLock txLock = null;
             if (mTxLock != null) {
-                if (mTxLock.getType() != LockTypes.exclusive) {
+                if (mTxLock.getType() != LockType.exclusive) {
                     throw new DBExceptions.TransactionException(ERROR_UPDATE_INSIDE_SHARED_TX);
                 }
             } else {
@@ -558,7 +558,7 @@ public class DbSync {
                           @Nullable final String[] whereArgs) {
             SyncLock txLock = null;
             if (mTxLock != null) {
-                if (mTxLock.getType() != LockTypes.exclusive) {
+                if (mTxLock.getType() != LockType.exclusive) {
                     throw new DBExceptions.TransactionException(ERROR_UPDATE_INSIDE_SHARED_TX);
                 }
             } else {
@@ -615,7 +615,7 @@ public class DbSync {
         public SynchronizedStatement compileStatement(@NonNull final String sql) {
             SyncLock txLock = null;
             if (mTxLock != null) {
-                if (mTxLock.getType() != LockTypes.exclusive) {
+                if (mTxLock.getType() != LockType.exclusive) {
                     throw new DBExceptions.TransactionException("Compile inside shared TX");
                 }
             } else {
@@ -1004,6 +1004,7 @@ public class DbSync {
          * @return the number of rows affected by this SQL statement execution.
          * @throws android.database.SQLException If the SQL string is invalid for some reason
          */
+        @SuppressWarnings("UnusedReturnValue")
         public int executeUpdateDelete() {
             SyncLock exclusiveLock = mSync.getExclusiveLock();
             try {

@@ -45,7 +45,7 @@ public class ArrayUtils<T> {
     @Nullable
     private static ArrayUtils<Series> mSeriesUtils = null;
     @Nullable
-    private static ArrayUtils<AnthologyTitle> mAnthologyTitleUtils = null;
+    private static ArrayUtils<AnthologyTitle> mTOCUtils = null;
 
     private Factory<T> mFactory;
 
@@ -93,7 +93,7 @@ public class ArrayUtils<T> {
      * @return List of authors
      */
     @Nullable
-    public static ArrayList<Author> getAuthorsFromBundle(@NonNull final Bundle bundle) {
+    public static ArrayList<Author> getAuthorListFromBundle(@NonNull final Bundle bundle) {
         return getListFromBundle(bundle, UniqueId.BKEY_AUTHOR_ARRAY);
     }
 
@@ -103,7 +103,7 @@ public class ArrayUtils<T> {
      * @return List of authors, can be empty
      */
     @NonNull
-    public static ArrayList<Author> getAuthorFromIntentExtras(@NonNull final Intent intent) {
+    public static ArrayList<Author> getAuthorListFromIntentExtras(@NonNull final Intent intent) {
         ArrayList<Author> list = getListFromIntentExtras(intent, UniqueId.BKEY_AUTHOR_ARRAY);
         return list != null ? list : new ArrayList<Author>();
     }
@@ -130,7 +130,7 @@ public class ArrayUtils<T> {
      * @return List of series
      */
     @Nullable
-    public static ArrayList<Series> getSeriesFromBundle(@NonNull final Bundle bundle) {
+    public static ArrayList<Series> getSeriesListFromBundle(@NonNull final Bundle bundle) {
         return getListFromBundle(bundle, UniqueId.BKEY_SERIES_ARRAY);
     }
 
@@ -140,17 +140,17 @@ public class ArrayUtils<T> {
      * @return List of series, can be empty
      */
     @NonNull
-    public static ArrayList<Series> getSeriesFromIntentExtras(@NonNull final Intent intent) {
+    public static ArrayList<Series> getSeriesListFromIntentExtras(@NonNull final Intent intent) {
         ArrayList<Series> list = getListFromIntentExtras(intent, UniqueId.BKEY_SERIES_ARRAY);
         return list != null ? list : new ArrayList<Series>();
     }
     //</editor-fold>
 
-    //<editor-fold desc="AnthologyTitle">
+    //<editor-fold desc="TOC">
     @NonNull
-    public static ArrayUtils<AnthologyTitle> getAnthologyTitleUtils() {
-        if (mAnthologyTitleUtils == null) {
-            mAnthologyTitleUtils = new ArrayUtils<>(new Factory<AnthologyTitle>() {
+    public static ArrayUtils<AnthologyTitle> getTOCUtils() {
+        if (mTOCUtils == null) {
+            mTOCUtils = new ArrayUtils<>(new Factory<AnthologyTitle>() {
                 @Override
                 @NonNull
                 public AnthologyTitle get(@NonNull final String stringEncodedList) {
@@ -158,7 +158,7 @@ public class ArrayUtils<T> {
                 }
             });
         }
-        return mAnthologyTitleUtils;
+        return mTOCUtils;
     }
 
     /**
@@ -167,20 +167,10 @@ public class ArrayUtils<T> {
      * @return List of AnthologyTitle
      */
     @Nullable
-    public static ArrayList<AnthologyTitle> getAnthologyTitleFromBundle(@NonNull final Bundle bundle) {
+    public static ArrayList<AnthologyTitle> getTOCFromBundle(@NonNull final Bundle bundle) {
         return getListFromBundle(bundle, UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY);
     }
 
-//    /**
-//     * @param intent containing encoded list
-//     *
-//     * @return List of AnthologyTitle, can be empty
-//     */
-//    @NonNull
-//    public static ArrayList<AnthologyTitle> getAnthologyTitleFromIntentExtras(@NonNull final Intent intent) {
-//        ArrayList<AnthologyTitle> list = getListFromIntentExtras(intent, UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY);
-//        return list != null ? list : new ArrayList<AnthologyTitle>();
-//    }
     //</editor-fold>
 
     /**
@@ -324,21 +314,20 @@ public class ArrayUtils<T> {
     }
 
     /**
-     * Convert a array of objects to a string.
+     * Convert a array of objects to a csv string fit for user displaying
      *
-     * @param list Array
+     * @param list with items. toString() will be used to make the item displayable.
      *
      * @return Resulting string
      */
     @NonNull
-    public static <T> String toString(@NonNull final List<T> list) {
-        StringBuilder details = new StringBuilder();
-
-        for (T i : list) {
-            if (details.length() > 0) {
-                details.append(MULTI_STRING_SEPARATOR);
-            }
-            details.append(encodeListItem(MULTI_STRING_SEPARATOR, i.toString().trim()));
+    public static <T> String toDisplayString(@NonNull final List<T> list) {
+        if (list.isEmpty()) {
+            return "";
+        }
+        StringBuilder details = new StringBuilder(list.get(0).toString().trim());
+        for (int i=1; i < list.size(); i++) {
+            details.append(", ").append(list.get(i).toString().trim());
         }
         return details.toString();
     }

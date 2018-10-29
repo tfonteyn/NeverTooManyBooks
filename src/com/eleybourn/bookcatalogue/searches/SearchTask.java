@@ -114,7 +114,7 @@ abstract public class SearchTask extends ManagedTask {
             s = e2.getClass().getCanonicalName();
         }
         String msg = String.format(getString(R.string.error_search_exception), getString(id), s);
-        showBriefMessage(msg);
+        showUserMessage(msg);
     }
 
     /**
@@ -122,7 +122,7 @@ abstract public class SearchTask extends ManagedTask {
      */
     protected void showError(@StringRes final int id, @StringRes final int error) {
         String msg = String.format(getString(R.string.error_search_exception), getString(id), error);
-        showBriefMessage(msg);
+        showUserMessage(msg);
     }
 
     /**

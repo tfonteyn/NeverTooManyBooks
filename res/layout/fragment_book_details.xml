@@ -1,0 +1,444 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/padding_border">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:baselineAligned="false"
+            android:orientation="horizontal"
+            android:paddingBottom="8dp">
+
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2">
+
+                <TextView
+                    android:id="@+id/title"
+                    style="@style/title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignWithParentIfMissing="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_toStartOf="@id/read"
+                    tools:text="Anna Karenina" />
+
+                <TextView
+                    android:id="@+id/author"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/title"
+                    android:layout_marginTop="@dimen/padding_border"
+                    android:paddingBottom="8dp"
+                    android:textIsSelectable="true"
+                    tools:text="by Lev Tolstoy" />
+
+                <CheckedTextView
+                    android:id="@+id/read"
+                    style="@style/read_checkbox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="true"
+                    tools:checked="true" />
+
+                <LinearLayout
+                    android:id="@+id/row_rating"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/author">
+
+                    <RatingBar
+                        android:id="@+id/rating"
+                        style="?attr/ratingBarStyleIndicator"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/padding_book_details_text"
+                        android:numStars="5"
+                        android:paddingBottom="8dp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/row_isbn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/row_rating"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/lbl_isbn"
+                        style="@style/bookDetailLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="6dp"
+                        android:paddingEnd="6dp"
+                        android:text="@string/isbn" />
+
+                    <TextView
+                        android:id="@+id/isbn"
+                        style="@style/bookMinorDetailText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textIsSelectable="true"
+                        tools:text="97834579862" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/row_format"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/row_isbn"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/pages"
+                        style="@style/bookMinorDetailText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="@dimen/padding_border"
+                        android:paddingEnd="@dimen/padding_border"
+                        android:textIsSelectable="true"
+                        tools:text="573 pages" />
+
+                    <TextView
+                        android:id="@+id/format"
+                        style="@style/bookMinorDetailText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textIsSelectable="true"
+                        tools:text="(Hardcover)" />
+                </LinearLayout>
+            </RelativeLayout>
+
+            <!-- layout_height for image_wrapper used to be wrap_content but caused the image to disappear??? wtf? -->
+            <RelativeLayout
+                android:id="@+id/row_image"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="top|center_horizontal"
+                android:layout_weight="1">
+
+                <ImageView
+                    android:id="@+id/coverImage"
+                    style="@style/coverImage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/thumbnail"
+                    tools:src="@drawable/ic_image" />
+            </RelativeLayout>
+        </LinearLayout>
+
+        <View style="@style/listDividerHorizontal" />
+
+        <!-- Series -->
+        <TextView
+            android:id="@+id/lbl_series"
+            style="@style/bookDetailLabel"
+            android:text="@string/series" />
+
+        <TextView
+            android:id="@+id/series"
+            style="@style/bookDetailText"
+            android:textIsSelectable="true"
+            tools:text="Series name (1)\nSeries name (2)" />
+
+        <!-- Table Of Content (TOC, Anthology) -->
+        <LinearLayout
+            android:id="@+id/row_toc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <TextView
+                style="@style/bookDetailLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/table_of_content" />
+
+            <CheckBox
+                android:id="@+id/toc_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/expander"
+                android:buttonTint="@android:color/transparent"
+                android:textOff=""
+                android:textOn=""
+                tools:ignore="ContentDescription" />
+        </LinearLayout>
+
+        <!-- don't set padding on the toc. The toc height is calculated as needed
+        It's always visible, but often empty
+        -->
+        <ListView
+            android:id="@+id/toc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"
+            tools:ignore="NestedScrolling"
+            tools:visibility="visible" />
+
+        <!-- Publishing -->
+        <TextView
+            android:id="@+id/lbl_publishing"
+            style="@style/bookDetailLabel"
+            android:text="@string/book_details_readonly_publishing" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/publisher"
+                style="@style/bookDetailText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textIsSelectable="true"
+                tools:text="Publisher name, Jan 25, 2012" />
+        </LinearLayout>
+
+        <!-- Book Shelves -->
+        <TextView
+            android:id="@+id/lbl_bookshelves"
+            style="@style/bookDetailLabel"
+            android:text="@string/bookshelves" />
+
+        <TextView
+            android:id="@+id/bookshelves"
+            style="@style/bookDetailText"
+            android:textIsSelectable="true"
+            tools:text="The best books, Wanted" />
+
+        <!-- Genre -->
+        <TextView
+            android:id="@+id/lbl_genre"
+            style="@style/bookDetailLabel"
+            android:text="@string/genre" />
+
+        <TextView
+            android:id="@+id/genre"
+            style="@style/bookDetailText"
+            android:textIsSelectable="true"
+            tools:text="Science Fiction" />
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <!-- Language -->
+            <TableRow
+                android:id="@+id/row_language"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/lbl_language"
+                    style="@style/bookDetailLabel"
+                    android:text="@string/lbl_language" />
+
+                <TextView
+                    android:id="@+id/language"
+                    style="@style/bookDetailText"
+                    android:textIsSelectable="true"
+                    tools:text="Quenya" />
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/row_first_publication"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    style="@style/bookDetailLabel"
+                    android:text="@string/first_publication" />
+
+                <TextView
+                    android:id="@+id/first_publication"
+                    style="@style/bookDetailText"
+                    android:layout_weight="1"
+                    android:textIsSelectable="true"
+                    tools:text="1938" />
+            </TableRow>
+            <!-- List price -->
+            <TableRow
+                android:id="@+id/row_list_price"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    style="@style/bookDetailLabel"
+                    android:text="@string/list_price" />
+
+                <TextView
+                    android:id="@+id/list_price"
+                    style="@style/bookDetailText"
+                    android:layout_weight="1"
+                    android:textIsSelectable="true"
+                    tools:text="45" />
+            </TableRow>
+        </TableLayout>
+
+        <!-- Notes section starts here -->
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="@string/notes"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+        <View style="@style/listDividerHorizontal" />
+
+        <!-- Notes -->
+        <TextView
+            android:id="@+id/lbl_notes"
+            style="@style/bookDetailLabel"
+            android:text="@string/edit_book_notes" />
+
+        <TextView
+            android:id="@+id/notes"
+            style="@style/bookDetailText"
+            android:textIsSelectable="true"
+            tools:text="The best book of all times" />
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:shrinkColumns="1">
+
+            <!-- Editions -->
+            <TableRow
+                android:id="@+id/row_edition"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    style="@style/bookDetailLabel"
+                    android:layout_width="wrap_content"
+                    android:text="@string/edition" />
+
+                <TextView
+                    android:id="@+id/edition"
+                    style="@style/bookDetailText"
+                    android:layout_weight="1"
+                    tools:text="special one with a very special cover" />
+
+            </TableRow>
+
+            <!-- Has this book been signed -->
+            <TableRow
+                android:id="@+id/row_signed"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    style="@style/bookDetailLabel"
+                    android:layout_width="wrap_content"
+                    android:text="@string/signed" />
+
+                <TextView
+                    android:id="@+id/signed"
+                    style="@style/bookDetailText"
+                    tools:text="Yes" />
+
+            </TableRow>
+
+            <!-- Start and end of reading -->
+            <TableRow
+                android:id="@+id/row_read_start"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    style="@style/bookDetailLabel"
+                    android:text="@string/read_start" />
+
+                <TextView
+                    android:id="@+id/read_start"
+                    style="@style/bookDetailText"
+                    android:layout_weight="1"
+                    android:textIsSelectable="true"
+                    tools:text="Nov 10, 2011" />
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/row_read_end"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    style="@style/bookDetailLabel"
+                    android:text="@string/read_end" />
+
+                <TextView
+                    android:id="@+id/read_end"
+                    style="@style/bookDetailText"
+                    android:layout_weight="1"
+                    android:textIsSelectable="true"
+                    tools:text="Dec 15, 2011" />
+            </TableRow>
+
+            <!-- Location of the book -->
+
+            <TableRow
+                android:id="@+id/row_location"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    style="@style/bookDetailLabel"
+                    android:text="@string/location_of_book" />
+
+                <TextView
+                    android:id="@+id/location"
+                    style="@style/bookDetailText"
+                    android:layout_weight="1"
+                    android:textIsSelectable="true"
+                    tools:text="Library" />
+            </TableRow>
+        </TableLayout>
+
+        <TextView
+            android:id="@+id/loaned_to"
+            style="@style/bookDetailText"
+            android:hint="@string/not_set"
+            android:visibility="gone" />
+
+        <!-- Description -->
+        <TextView
+            android:id="@+id/lbl_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="@string/description"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+        <View
+            android:id="@+id/description_divider"
+            style="@style/listDividerHorizontal" />
+
+        <!-- reminder: textIsSelectable etc won't work here, as its done in code -->
+        <TextView
+            android:id="@+id/description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            tools:ignore="SelectableText"
+            tools:text="I hereby nominate Lizard the humongous football player and Sylphide the mysterious ballerina as two of my favorite characters of 2012. Rarely have such elite and outsize personalities felt so true on the page--a joy to be with, worth rooting for." />
+    </LinearLayout>
+
+</ScrollView>

@@ -641,13 +641,13 @@
     <!-- Introduction for 'advanced export' option -->
     <!-- Text for button -->
     <string name="book_details">Kitap ayrıntıları</string>
-    <!-- Brief descriptionn -->
+    <!-- Brief description -->
     <string name="book_details_blurb">Kitapların ayrıntılarını gösterir</string>
     <!-- Text for button -->
     <string name="cover_images">Kapak görselleri</string>
-    <!-- Brief descriptionn -->
+    <!-- Brief description -->
     <string name="cover_images_blurb">Seçilen kitaplar için kapak resimlerini gösterir. Dışarı aktarım boyutunu arttıracaktır.</string>
-    <!-- Brief descriptionn -->
+    <!-- Brief description -->
     <string name="preferences_blurb">Yeğlenenler ve kullanıcı tanımlı dizelge biçemleri</string>
     <!-- Explanatory note for export date (not yet implemented) -->
     <string name="export_advanced_date_blurb">Seçeneğe bağlı olarak, dışarı aktarılacak kitaplarda ve/veya kapak görsellerinde kullanılacak bir günay seçin:</string>
@@ -710,10 +710,6 @@
     </plurals>
 
     <!-- End: Added/Updated in 5.1.1 -->
-    <!-- Begin: Added/Updated in 5.1.2 -->
-    <string name="amazon">Amazon</string>
-
-    <!-- End: Added/Updated in 5.1.2 -->
 
     <!-- Begin: Added/Updated in [Next Version] DO NOT TRANSLATE YET! MAY CHANGE OR BE DELETED! -->
 

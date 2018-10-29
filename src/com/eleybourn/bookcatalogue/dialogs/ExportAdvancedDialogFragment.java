@@ -12,7 +12,6 @@ import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Checkable;
-import android.widget.RadioButton;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
@@ -33,16 +32,16 @@ public class ExportAdvancedDialogFragment extends DialogFragment {
     /**
      * Constructor
      *
-     * @param dialogId ID passed by caller. Can be 0, will be passed back in event
-     * @param file     the file
+     * @param callerId ID passed by caller. Can be 0, will be passed back in event
+     * @param file    the file
      *
      * @return Created fragment
      */
     @NonNull
-    public static ExportAdvancedDialogFragment newInstance(final int dialogId, @NonNull final File file) {
+    public static ExportAdvancedDialogFragment newInstance(final int callerId, @NonNull final File file) {
         final ExportAdvancedDialogFragment frag = new ExportAdvancedDialogFragment();
         final Bundle args = new Bundle();
-        args.putInt(UniqueId.BKEY_DIALOG_ID, dialogId);
+        args.putInt(UniqueId.BKEY_CALLER_ID, callerId);
         args.putString(UniqueId.BKEY_FILE_SPEC, file.getAbsolutePath());
         frag.setArguments(args);
         return frag;
@@ -84,21 +83,22 @@ public class ExportAdvancedDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
         //noinspection ConstantConditions
-        mDialogId = getArguments().getInt(UniqueId.BKEY_DIALOG_ID);
+        mDialogId = getArguments().getInt(UniqueId.BKEY_CALLER_ID);
         mFile = new File(Objects.requireNonNull(getArguments().getString(UniqueId.BKEY_FILE_SPEC)));
 
         View v = requireActivity().getLayoutInflater().inflate(R.layout.dialog_export_advanced_options, null);
+
+        v.findViewById(R.id.confirm).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                handleClick(v);
+            }
+        });
 
         v.findViewById(R.id.cancel).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 dismiss();
-            }
-        });
-        v.findViewById(R.id.confirm).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                handleClick(v);
             }
         });
 
@@ -137,7 +137,7 @@ public class ExportAdvancedDialogFragment extends DialogFragment {
             if (listenerActivity != null) {
                 ExportSettings settings = createSettings();
                 if (settings != null) {
-                    listenerActivity.onExportTypeSelectionDialogResult(mDialogId, this, settings);
+                    listenerActivity.onExportTypeSelectionDialogResult(this, mDialogId, settings);
                     dismiss();
                 }
             } else {
@@ -167,17 +167,17 @@ public class ExportAdvancedDialogFragment extends DialogFragment {
             settings.options |= Exporter.EXPORT_PREFERENCES | Exporter.EXPORT_STYLES;
         }
 
-        if (((RadioButton) dialog.findViewById(R.id.radioSinceLast)).isChecked()) {
+        if (((Checkable) dialog.findViewById(R.id.radioSinceLast)).isChecked()) {
             settings.options |= Exporter.EXPORT_SINCE;
             settings.dateFrom = null;
-        } else if (((RadioButton) dialog.findViewById(R.id.radioSinceDate)).isChecked()) {
+        } else if (((Checkable) dialog.findViewById(R.id.radioSinceDate)).isChecked()) {
             View v = dialog.findViewById(R.id.txtDate);
             try {
                 settings.options |= Exporter.EXPORT_SINCE;
                 settings.dateFrom = DateUtils.parseDate(v.toString());
             } catch (Exception e) {
                 //Snackbar.make(v, R.string.no_date, Snackbar.LENGTH_LONG).show();
-                StandardDialogs.showBriefMessage(requireActivity(), R.string.no_date);
+                StandardDialogs.showUserMessage(requireActivity(), R.string.no_date);
                 return null;
             }
         }
@@ -192,9 +192,9 @@ public class ExportAdvancedDialogFragment extends DialogFragment {
      */
     @SuppressWarnings("unused")
     public interface OnExportAdvancedDialogResultListener {
-        public void onExportAdvancedDialogResult(final int dialogId,
-                                                 @NonNull final ExportAdvancedDialogFragment dialog,
-                                                 final int rowId,
-                                                 @NonNull final File file);
+        void onExportAdvancedDialogResult(@NonNull final ExportAdvancedDialogFragment dialog,
+                                          final int callerId,
+                                          final int rowId,
+                                          @NonNull final File file);
     }
 }

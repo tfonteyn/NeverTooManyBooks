@@ -50,16 +50,12 @@ import java.util.Set;
  *
  * @author pjw
  */
-@SuppressWarnings("ALL")
 public class DataManager {
     // Generic validators; if field-specific defaults are needed, create a new one.
     protected static final DataValidator integerValidator = new IntegerValidator("0");
-
     protected static final DataValidator nonBlankValidator = new NonBlankValidator();
-
     protected static final DataValidator blankOrIntegerValidator = new OrValidator(new BlankValidator(),
             new IntegerValidator("0"));
-
     protected static final DataValidator blankOrFloatValidator = new OrValidator(new BlankValidator(),
             new FloatValidator("0.00"));
 
@@ -101,7 +97,7 @@ public class DataManager {
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
     protected DataManager addValidator(@NonNull final String key, @NonNull final DataValidator validator) {
-        mData.get(key).setValidator(validator);
+        mData.get(key).addValidator(validator);
         return this;
     }
 
@@ -116,7 +112,7 @@ public class DataManager {
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
     protected DataManager addAccessor(@NonNull final String key, @NonNull final DataAccessor accessor) {
-        mData.get(key).setAccessor(accessor);
+        mData.get(key).addAccessor(accessor);
         return this;
     }
 
@@ -414,13 +410,16 @@ public class DataManager {
      *
      * @param crossValidating Options indicating if this is a cross validation pass.
      */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private boolean validate(final boolean crossValidating) {
         boolean isOk = true;
+        DataValidator validator;
 
         for (Datum datum : mData.values()) {
-            if (datum.hasValidator()) {
+            validator = datum.getValidator();
+            if (validator != null) {
                 try {
-                    datum.getValidator().validate(this, datum, crossValidating);
+                    validator.validate(this, datum, crossValidating);
                 } catch (ValidatorException e) {
                     mValidationExceptions.add(e);
                     isOk = false;
@@ -465,7 +464,7 @@ public class DataManager {
     }
 
     /**
-     * Retrieve the text message associated with the last validation exception to occur.
+     * Retrieve the text message associated with the validation exceptions (if any)
      *
      * @return res The resource manager to use when looking up strings.
      */
@@ -520,14 +519,14 @@ public class DataManager {
         private static final long serialVersionUID = -650159534364183779L;
 
         /**
-         * Get the specified {@link Datum}, and create a stub if not present
+         * Get the specified {@link Datum}, and create a new one if not present
          */
         @Override
         @NonNull
         public Datum get(@NonNull final Object key) {
             Datum datum = super.get(key);
             if (datum == null) {
-                datum = new Datum(key.toString(), null, true);
+                datum = new Datum(key.toString(), true);
                 this.put(key.toString(), datum);
             }
             return datum;

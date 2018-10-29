@@ -36,6 +36,7 @@ import android.os.Handler;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -51,6 +52,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 
 /**
@@ -235,8 +237,7 @@ public class CropImageActivity extends CropMonitoredActivity {
                     }
 
                     if (mNumFaces > 1) {
-                        String msg = "Multi face crop help not available.";
-                        StandardDialogs.showBriefMessage(CropImageActivity.this, msg);
+                        StandardDialogs.showUserMessage(CropImageActivity.this, "Multi face crop help not available.");
                     }
                 }
             });
@@ -244,22 +245,23 @@ public class CropImageActivity extends CropMonitoredActivity {
     };
     private CropIImage mImage;
 
-    private static void showQuickNotice(@NonNull final Activity activity) {
+    private static void showUserMessage(@NonNull final Activity activity) {
         int remaining = calculatePicturesRemaining();
-        String noStorageText = null;
+        @StringRes
+        int msgId = 0;
 
         if (remaining == NO_STORAGE_ERROR) {
             if (Environment.MEDIA_CHECKING.equals(Environment.getExternalStorageState())) {
-                noStorageText = activity.getString(R.string.error_storage_preparing_card);
+                msgId = R.string.error_storage_preparing_card;
             } else {
-                noStorageText = activity.getString(R.string.error_storage_no_card);
+                msgId = R.string.error_storage_no_card;
             }
         } else if (remaining < 1) {
-            noStorageText = activity.getString(R.string.error_storage_no_space);
+            msgId = R.string.error_storage_no_space;
         }
 
-        if (noStorageText != null) {
-            StandardDialogs.showBriefMessage(activity, noStorageText);
+        if (msgId != 0) {
+            StandardDialogs.showUserMessage(activity, msgId);
         }
     }
 
@@ -289,7 +291,7 @@ public class CropImageActivity extends CropMonitoredActivity {
 
         mImageView = findViewById(R.id.coverImage);
 
-        showQuickNotice(this);
+        showUserMessage(this);
 
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
@@ -301,7 +303,7 @@ public class CropImageActivity extends CropMonitoredActivity {
             }
 
             String imagePath = extras.getString(CropIImage.REQUEST_KEY_IMAGE_ABSOLUTE_PATH);
-            //noinspection ConstantConditions
+            Objects.requireNonNull(imagePath);
             mBitmap = getBitmap(imagePath);
 
             // Use the "output" parameter if present, otherwise overwrite existing file
@@ -322,6 +324,7 @@ public class CropImageActivity extends CropMonitoredActivity {
         }
 
         if (mBitmap == null) {
+            setResult(Activity.RESULT_CANCELED);
             finish();
             return;
         }
@@ -427,7 +430,6 @@ public class CropImageActivity extends CropMonitoredActivity {
         {
             Canvas canvas = new Canvas(croppedImage);
             Rect dstRect = new Rect(0, 0, width, height);
-            //noinspection ConstantConditions
             canvas.drawBitmap(mBitmap, cropRect, dstRect, null);
         }
 
@@ -509,23 +511,28 @@ public class CropImageActivity extends CropMonitoredActivity {
     }
 
     private void saveOutput(@NonNull final Bitmap croppedImage) {
+        Bundle extras = new Bundle();
         if (mOptionSaveUri != null) {
+            Intent intent = new Intent(mOptionSaveUri.toString());
+            intent.putExtras(extras);
+
             try (OutputStream outputStream = getContentResolver().openOutputStream(mOptionSaveUri)) {
                 if (outputStream != null) {
                     croppedImage.compress(COMPRESS_FORMAT, 75, outputStream);
                 }
             } catch (IOException e) {
-                // TODO: report error to caller
+                // TODO: report error to caller + should we set RESULT_CANCELED ?
                 Logger.error(e);
             }
 
-            Bundle extras = new Bundle();
-            Intent intent = new Intent(mOptionSaveUri.toString());
-            intent.putExtras(extras);
             setResult(Activity.RESULT_OK, intent); /* 31c90366-d352-496f-9b7d-3237dd199a77 */
+        } else {
+            // we were not asked to save anything, but we're ok with that
+            setResult(Activity.RESULT_OK);
         }
 
         croppedImage.recycle();
+
         finish();
     }
 

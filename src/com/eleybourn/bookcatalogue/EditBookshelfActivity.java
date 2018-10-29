@@ -32,7 +32,6 @@ import android.widget.EditText;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.debug.Tracker;
 
 /**
  * Activity where we can edit a Bookshelf (its name)
@@ -52,7 +51,7 @@ public class EditBookshelfActivity extends BaseActivity {
 
     @Override
     protected int getLayoutId() {
-        return R.layout.bookshelf_edit;
+        return R.layout.activity_edit_bookshelf;
     }
 
     @Override
@@ -83,7 +82,7 @@ public class EditBookshelfActivity extends BaseActivity {
                 }
             });
 
-            mBookshelfText = findViewById(R.id.bookshelf);
+            mBookshelfText = findViewById(R.id.bookshelves);
             populateFields();
 
         } catch (Exception e) {

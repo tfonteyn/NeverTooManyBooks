@@ -30,12 +30,12 @@ import android.text.TextWatcher;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
 
 import com.eleybourn.bookcatalogue.R;
@@ -299,9 +299,9 @@ class PartialDatePickerDialog extends AlertDialog {
                             public void onClick(final View v) {
                                 // Ensure the date is 'hierarchically valid'; require year, if month is non-null, require month if day non-null
                                 if (mDay != null && mDay > 0 && (mMonth == null || mMonth == 0)) {
-                                    StandardDialogs.showBriefMessage(mActivity, R.string.if_day_is_specified_month_and_year_must_be);
+                                    StandardDialogs.showUserMessage(mActivity, R.string.if_day_is_specified_month_and_year_must_be);
                                 } else if (mMonth != null && mMonth > 0 && mYear == null) {
-                                    StandardDialogs.showBriefMessage(mActivity, R.string.if_month_is_specified_year_must_be);
+                                    StandardDialogs.showUserMessage(mActivity, R.string.if_month_is_specified_year_must_be);
                                 } else {
                                     if (mListener != null)
                                         mListener.onDateSet(PartialDatePickerDialog.this, mYear, mMonth, mDay);
@@ -320,16 +320,6 @@ class PartialDatePickerDialog extends AlertDialog {
                     }
                 }
         );
-
-        // setting the setOnCancelListener is not permissible in at least Android 5+
-//		// Handle any other form of cancellation
-//		this.setOnCancelListener(new OnCancelListener() {
-//
-//			@Override
-//			public void onCancel(DialogInterface arg0) {
-//				if (mListener != null)
-//					mListener.onCancel(PartialDatePickerDialog.this);
-//			}});
 
         // Set the initial date
         setDate(year, month, day);
@@ -537,7 +527,7 @@ class PartialDatePickerDialog extends AlertDialog {
         /* Remove the 3 pickers from their parent and then add them back in the
          * required order.
          */
-        LinearLayout parent = root.findViewById(R.id.dateSelector);
+        ViewGroup parent = root.findViewById(R.id.dateSelector);
         // Get the three views
         View y = root.findViewById(R.id.yearSelector);
         View m = root.findViewById(R.id.monthSelector);

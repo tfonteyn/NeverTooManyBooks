@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root"
+    style="@style/dialogFrame">
+
+    <LinearLayout
+        android:id="@+id/content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="top"
+        android:orientation="vertical">
+    </LinearLayout>
+    <include
+        android:id="@+id/buttonbar_cancel_ok"
+        layout="@layout/inc_buttonbar_cancel_ok"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+</LinearLayout>

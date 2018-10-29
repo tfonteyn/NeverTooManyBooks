@@ -34,12 +34,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.CompoundButton;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivityWithTasks;
-import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.searches.SearchAdminActivity;
@@ -63,7 +62,7 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
 
     private long mBookId = 0;
 
-    private LinearLayout mListContainer;
+    private ViewGroup mListContainer;
 
     private long mUpdateSenderId = 0;
 
@@ -130,7 +129,7 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
         addIfVisible(UniqueId.BKEY_SERIES_ARRAY, UniqueId.KEY_SERIES_NAME,
                 R.string.series, true,
                 FieldUsage.Usage.ADD_EXTRA);
-        addIfVisible(UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY, UniqueId.KEY_ANTHOLOGY_BITMASK,
+        addIfVisible(UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY, UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK,
                 R.string.anthology, true,
                 FieldUsage.Usage.ADD_EXTRA);
         addIfVisible(UniqueId.KEY_BOOK_PUBLISHER, null,
@@ -223,7 +222,7 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
             public void onClick(final View v) {
                 // sanity check
                 if (countUserSelections() == 0) {
-                    StandardDialogs.showBriefMessage(UpdateFromInternetActivity.this, R.string.select_min_1_field);
+                    StandardDialogs.showUserMessage(UpdateFromInternetActivity.this, R.string.select_min_1_field);
                     return;
                 }
 
@@ -273,6 +272,7 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
                 if (tc != null) {
                     tc.requestAbort();
                 }
+                setResult(Activity.RESULT_CANCELED);
                 finish();
             }
         });
@@ -369,10 +369,8 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
     public static class FieldUsages extends LinkedHashMap<String, FieldUsage> {
         private static final long serialVersionUID = 1L;
 
-        @NonNull
-        public FieldUsage put(@NonNull final FieldUsage usage) {
+        public void put(@NonNull final FieldUsage usage) {
             this.put(usage.key, usage);
-            return usage;
         }
     }
 

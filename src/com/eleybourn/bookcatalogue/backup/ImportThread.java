@@ -2,7 +2,6 @@ package com.eleybourn.bookcatalogue.backup;
 
 import android.support.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.tasks.ManagedTask;
@@ -71,12 +70,12 @@ public class ImportThread extends ManagedTask {
             new CsvImporter().importBooks(in, mCoverFinder, mImportListener, Importer.IMPORT_ALL);
 
             if (isCancelled()) {
-                showBriefMessage(getString(R.string.cancelled));
+                showUserMessage(getString(R.string.cancelled));
             } else {
-                showBriefMessage(getString(R.string.import_complete));
+                showUserMessage(getString(R.string.import_complete));
             }
         } catch (IOException e) {
-            showBriefMessage(BookCatalogueApp.getResourceString(R.string.error_import_failed_is_location_correct));
+            showUserMessage(getString(R.string.error_import_failed_is_location_correct));
             Logger.error(e);
         } finally {
             if (in != null && in.getChannel().isOpen())

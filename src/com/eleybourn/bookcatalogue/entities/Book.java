@@ -30,12 +30,16 @@ import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.database.cursors.BooksCursor;
 import com.eleybourn.bookcatalogue.datamanager.DataAccessor;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.datamanager.Datum;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.dialogs.CheckListItem;
+import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
+import com.eleybourn.bookcatalogue.dialogs.CheckListItemBase;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -49,16 +53,36 @@ import java.util.List;
 public class Book extends DataManager {
 
     /**
-     * Key for accessor to the underlying {@link UniqueId#KEY_ANTHOLOGY_BITMASK}
-     * boolean
+     * Key for accessor to the underlying {@link UniqueId#KEY_BOOK_ANTHOLOGY_BITMASK}
+     * Type: Boolean
+     * true: anthology by one or more authors
      */
     public static final String IS_ANTHOLOGY = "+IsAnthology";
 
     /**
      * Key for accessor to the underlying {@link UniqueId#KEY_BOOK_READ}
-     * boolean
+     * Type: Boolean
      */
     public static final String IS_READ = "+IsRead";
+
+    /**
+     * Key for accessor to the underlying {@link UniqueId#KEY_BOOK_EDITION_BITMASK}
+     * Type: Boolean
+     */
+    private static final String IS_FIRST_EDITION = "+IsFirstEdition";
+
+    /**
+     * Key for accessor to the underlying {@link UniqueId#KEY_BOOK_EDITION_BITMASK}
+     * Type: Boolean
+     */
+    private static final String IS_FIRST_IMPRESSION = "+IsFirstImpression";
+
+    /**
+     * Key for accessor to the underlying {@link UniqueId#KEY_BOOK_EDITION_BITMASK}
+     * Type: Boolean
+     */
+    private static final String IS_BOOK_CLUB_EDITION = "+IsBookClubEdition";
+
 
     /**
      * Constructor. All overloaded constructors MUST call this();
@@ -146,7 +170,7 @@ public class Book extends DataManager {
                 putBookshelfList(db.getBookshelvesByBookId(bookId));
                 putAuthorList(db.getBookAuthorList(bookId));
                 putSeriesList(db.getBookSeriesList(bookId));
-                putContentList(db.getAnthologyTitleListByBook(bookId));
+                putTOC(db.getAnthologyTitleListByBook(bookId));
             }
         } finally {
             db.close();
@@ -168,25 +192,8 @@ public class Book extends DataManager {
         return this;
     }
 
-    /**
-     * TODO: use {@link DataAccessor}
-     *
-     * @return the list of bookshelves formatted as "shelf1, shelf2, shelf3, ...
-     */
-    public String getBookshelfListAsText() {
-        String s;
-        final List<Bookshelf> list = getBookshelfList();
-        if (list.size() == 0) {
-            s = "";
-        } else {
-            final StringBuilder text = new StringBuilder(list.get(0).name);
-            for (int i = 1; i < list.size(); i++) {
-                text.append(Bookshelf.SEPARATOR).append(" ").append(list.get(i));
-            }
-            s = text.toString();
-        }
-        return s;
-    }
+
+
 
     /**
      * Utility routine to get a bookshelf list from a data manager
@@ -202,11 +209,73 @@ public class Book extends DataManager {
     }
 
     /**
+     *
+     * @return a complete list of Bookshelves each reflecting the book being on that shelf or not
+     */
+    public ArrayList<CheckListItem<Bookshelf>> getEditableBookshelvesList(@NonNull final CatalogueDBAdapter db) {
+        ArrayList<CheckListItem<Bookshelf>> list = new ArrayList<>();
+        // get the list of all shelves the book is currently on.
+        List<Bookshelf> currentShelves = getBookshelfList();
+        // Loop through all bookshelves in the database and build the list for this book
+        for (Bookshelf bookshelf : db.getBookshelves()) {
+            list.add(new BookshelfCheckListItem(bookshelf, currentShelves.contains(bookshelf)));
+        }
+        return list;
+    }
+
+    /**
+     * TODO: use {@link DataAccessor}
+     *
+     * @return the list of bookshelves formatted as "shelf1, shelf2, shelf3, ...
+     */
+    public String getBookshelfListAsText() {
+        List<String> list = new ArrayList<>();
+        for (Bookshelf bookshelf : getBookshelfList()) {
+            list.add(bookshelf.name);
+        }
+        return ArrayUtils.toDisplayString(list);
+    }
+
+    /**
      * Special Accessor
      */
     public void putBookshelfList(@NonNull final ArrayList<Bookshelf> list) {
         super.putSerializable(UniqueId.BKEY_BOOKSHELF_ARRAY, list);
     }
+
+
+    /**
+     *
+     * @return a complete list of Editions each reflecting the book being that edition
+     */
+    public ArrayList<CheckListItem<Integer>> getEditableEditionList() {
+        //Logger.info(this,"edition: " + Integer.toBinaryString(getInt(UniqueId.KEY_BOOK_EDITION_BITMASK)));
+
+        ArrayList<CheckListItem<Integer>> list = new ArrayList<>();
+        list.add(new EditionCheckListItem(R.string.edition_first_edition, getBoolean(Book.IS_FIRST_EDITION)));
+        list.add(new EditionCheckListItem(R.string.edition_first_impression, getBoolean(Book.IS_FIRST_IMPRESSION)));
+        list.add(new EditionCheckListItem(R.string.edition_book_club_edition, getBoolean(Book.IS_BOOK_CLUB_EDITION)));
+        return list;
+    }
+
+    /**
+     *
+     * @return a CSV list of editions for this book
+     */
+    public String getEditionListAsText() {
+        List<String> list = new ArrayList<>();
+        if (getBoolean(IS_FIRST_EDITION)) {
+            list.add(BookCatalogueApp.getResourceString(R.string.edition_first_edition));
+        }
+        if (getBoolean(IS_FIRST_IMPRESSION)) {
+            list.add(BookCatalogueApp.getResourceString(R.string.edition_first_impression));
+        }
+        if (getBoolean(IS_BOOK_CLUB_EDITION)) {
+            list.add(BookCatalogueApp.getResourceString(R.string.edition_book_club_edition));
+        }
+        return ArrayUtils.toDisplayString(list);
+    }
+
 
     /**
      * Utility routine to get an author list from a data manager
@@ -219,13 +288,6 @@ public class Book extends DataManager {
     public ArrayList<Author> getAuthorList() {
         ArrayList<Author> list = super.getSerializable(UniqueId.BKEY_AUTHOR_ARRAY);
         return list != null ? list : new ArrayList<Author>();
-    }
-
-    /**
-     * Special Accessor
-     */
-    public void putAuthorList(@NonNull final ArrayList<Author> list) {
-        super.putSerializable(UniqueId.BKEY_AUTHOR_ARRAY, list);
     }
 
     /**
@@ -251,6 +313,27 @@ public class Book extends DataManager {
     }
 
     /**
+     * Special Accessor
+     */
+    public void putAuthorList(@NonNull final ArrayList<Author> list) {
+        super.putSerializable(UniqueId.BKEY_AUTHOR_ARRAY, list);
+    }
+
+    /**
+     * Update author details from DB
+     *
+     * @param db Database connection
+     */
+    public void refreshAuthorList(@NonNull final CatalogueDBAdapter db) {
+        ArrayList<Author> list = getAuthorList();
+        for (Author author : list) {
+            db.refreshAuthor(author);
+        }
+        putAuthorList(list);
+    }
+
+
+    /**
      * Utility routine to get an series list from a data manager
      *
      * TODO: use {@link DataAccessor}
@@ -261,13 +344,6 @@ public class Book extends DataManager {
     public ArrayList<Series> getSeriesList() {
         ArrayList<Series> list = super.getSerializable(UniqueId.BKEY_SERIES_ARRAY);
         return list != null ? list : new ArrayList<Series>();
-    }
-
-    /**
-     * Special Accessor
-     */
-    public void putSeriesList(@NonNull final ArrayList<Series> list) {
-        super.putSerializable(UniqueId.BKEY_SERIES_ARRAY, list);
     }
 
     /**
@@ -293,6 +369,13 @@ public class Book extends DataManager {
     }
 
     /**
+     * Special Accessor
+     */
+    public void putSeriesList(@NonNull final ArrayList<Series> list) {
+        super.putSerializable(UniqueId.BKEY_SERIES_ARRAY, list);
+    }
+
+    /**
      * Utility routine to get a Content (an AnthologyTitle list) from a data manager
      *
      * TODO: use {@link DataAccessor}
@@ -301,7 +384,7 @@ public class Book extends DataManager {
      */
     @NonNull
     @CallSuper
-    public ArrayList<AnthologyTitle> getContentList() {
+    public ArrayList<AnthologyTitle> getTOC() {
         ArrayList<AnthologyTitle> list = super.getSerializable(UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY);
         return list != null ? list : new ArrayList<AnthologyTitle>();
     }
@@ -310,23 +393,11 @@ public class Book extends DataManager {
      * Special Accessor
      */
     @CallSuper
-    public void putContentList(@NonNull final ArrayList<AnthologyTitle> list) {
+    public void putTOC(@NonNull final ArrayList<AnthologyTitle> list) {
         super.putSerializable(UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY, list);
     }
 
 
-    /**
-     * Update author details from DB
-     *
-     * @param db Database connection
-     */
-    public void refreshAuthorList(@NonNull final CatalogueDBAdapter db) {
-        ArrayList<Author> list = getAuthorList();
-        for (Author a : list) {
-            db.refreshAuthor(a);
-        }
-        putAuthorList(list);
-    }
 
     /**
      * Cleanup thumbnails from underlying data
@@ -350,62 +421,18 @@ public class Book extends DataManager {
      */
     private void initValidatorsAndAccessors() {
         addValidator(UniqueId.KEY_TITLE, nonBlankValidator);
-        addValidator(UniqueId.KEY_ANTHOLOGY_BITMASK, integerValidator);
+        addValidator(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK, integerValidator);
+        addValidator(UniqueId.KEY_BOOK_EDITION_BITMASK, integerValidator);
         addValidator(UniqueId.KEY_BOOK_LIST_PRICE, blankOrFloatValidator);
         addValidator(UniqueId.KEY_BOOK_PAGES, blankOrIntegerValidator);
-
-        /* Anthology needs special handling:
-         *
-         * bitmask! used for {@link DatabaseDefinitions#DOM_BOOK_ANTHOLOGY_BITMASK}
-         *  00 = not an ant,
-         *  01 = ant from one author
-         *  10 = not an ant, multiple authors -> not in the wild, but could be Omnibus of a set of novels
-         *  11 = ant from multiple authors
-         *  So for now, the field should be 0,1,3
-         *
-         *  TODO: enumerator {@link AnthologyTitle.Type}
-         */
-        addAccessor(IS_ANTHOLOGY, new DataAccessor() {
-            @NonNull
-            @Override
-            public Object get(@NonNull final DataManager data, @NonNull final Datum datum, @NonNull final Bundle rawData) {
-                Integer bitmask = data.getInt(UniqueId.KEY_ANTHOLOGY_BITMASK);
-                return bitmask != 0 ? "1" : "0";
-            }
-
-            /**
-             * There is a shortcoming here: flipping the checkbox for an original value of "3"
-             * sets the value to "2" which means "not an anthology" written by multiple authors
-             * Of course if we re-think the value 2 being an Omnibus of a set of novels... then it would be ok.
-             */
-            @Override
-            public void set(@NonNull final DataManager data,
-                            @NonNull final Datum datum,
-                            @NonNull final Bundle rawData,
-                            @NonNull final Object value) {
-                Integer bitmask = getInt(UniqueId.KEY_ANTHOLOGY_BITMASK);
-                // Parse the string the CheckBox returns us (0 or 1)
-                if (Datum.toBoolean(value)) {
-                    bitmask |= 0x01;
-                } else {
-                    bitmask &= 0xFFFFFFFE;
-                }
-                putInt(UniqueId.KEY_ANTHOLOGY_BITMASK, bitmask);
-
-            }
-
-            @Override
-            public boolean isPresent(@NonNull final DataManager data, @NonNull final Datum datum, @NonNull final Bundle rawData) {
-                return rawData.containsKey(UniqueId.KEY_ANTHOLOGY_BITMASK);
-            }
-
-        });
 
         addAccessor(IS_READ, new DataAccessor() {
             @NonNull
             @Override
-            public Object get(@NonNull final DataManager data, @NonNull final Datum datum, @NonNull final Bundle rawData) {
-                return 0 != data.getInt(UniqueId.KEY_BOOK_READ);
+            public Boolean get(@NonNull final DataManager data,
+                               @NonNull final Datum datum,
+                               @NonNull final Bundle rawData) {
+                return data.getInt(UniqueId.KEY_BOOK_READ) != 0;
             }
 
             @Override
@@ -413,15 +440,178 @@ public class Book extends DataManager {
                             @NonNull final Datum datum,
                             @NonNull final Bundle rawData,
                             @NonNull final Object value) {
-                putBoolean(UniqueId.KEY_BOOK_READ, Datum.toBoolean(value));
+                data.putBoolean(UniqueId.KEY_BOOK_READ, Datum.toBoolean(value));
 
             }
 
             @Override
-            public boolean isPresent(@NonNull final DataManager data, @NonNull final Datum datum, @NonNull final Bundle rawData) {
+            public boolean isPresent(@NonNull final DataManager data,
+                                     @NonNull final Datum datum,
+                                     @NonNull final Bundle rawData) {
                 return rawData.containsKey(UniqueId.KEY_BOOK_READ);
             }
         });
 
+        /* This only handles the fact of being an anthology or not. Does not handle 'multiple authors' */
+        addAccessor(IS_ANTHOLOGY, new DataAccessor() {
+            @NonNull
+            @Override
+            public Boolean get(@NonNull final DataManager data,
+                              @NonNull final Datum datum,
+                              @NonNull final Bundle rawData) {
+                Integer bitmask = data.getInt(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK);
+                return (bitmask & DatabaseDefinitions.DOM_ANTHOLOGY) != 0;
+            }
+
+            @Override
+            public void set(@NonNull final DataManager data,
+                            @NonNull final Datum datum,
+                            @NonNull final Bundle rawData,
+                            @NonNull final Object value) {
+                Integer bitmask = data.getInt(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK);
+                // Parse the string the CheckBox returns us (0 or 1)
+                if (Datum.toBoolean(value)) {
+                    bitmask |= DatabaseDefinitions.DOM_ANTHOLOGY;
+                } else {
+                    bitmask &= ~DatabaseDefinitions.DOM_ANTHOLOGY;
+                }
+                data.putInt(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK, bitmask);
+            }
+
+            @Override
+            public boolean isPresent(@NonNull final DataManager data,
+                                     @NonNull final Datum datum,
+                                     @NonNull final Bundle rawData) {
+                return rawData.containsKey(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK);
+            }
+
+        });
+
+        addAccessor(IS_FIRST_EDITION, new DataAccessor() {
+            @NonNull
+            @Override
+            public Boolean get(@NonNull final DataManager data,
+                              @NonNull final Datum datum,
+                              @NonNull final Bundle rawData) {
+                Integer bitmask = data.getInt(UniqueId.KEY_BOOK_EDITION_BITMASK);
+                return (bitmask & DatabaseDefinitions.DOM_EDITION_FIRST) != 0;
+            }
+
+
+            @Override
+            public void set(@NonNull final DataManager data,
+                            @NonNull final Datum datum,
+                            @NonNull final Bundle rawData,
+                            @NonNull final Object value) {
+                Integer bitmask = data.getInt(UniqueId.KEY_BOOK_EDITION_BITMASK);
+                // Parse the string the CheckBox returns us (0 or 1)
+                if (Datum.toBoolean(value)) {
+                    bitmask |= DatabaseDefinitions.DOM_EDITION_FIRST;
+                } else {
+                    bitmask &= ~DatabaseDefinitions.DOM_EDITION_FIRST;
+                }
+                data.putInt(UniqueId.KEY_BOOK_EDITION_BITMASK, bitmask);
+
+            }
+
+            @Override
+            public boolean isPresent(@NonNull final DataManager data,
+                                     @NonNull final Datum datum,
+                                     @NonNull final Bundle rawData) {
+                return rawData.containsKey(UniqueId.KEY_BOOK_EDITION_BITMASK);
+            }
+        });
+
+        addAccessor(IS_FIRST_IMPRESSION, new DataAccessor() {
+            @NonNull
+            @Override
+            public Boolean get(@NonNull final DataManager data,
+                              @NonNull final Datum datum,
+                              @NonNull final Bundle rawData) {
+                Integer bitmask = data.getInt(UniqueId.KEY_BOOK_EDITION_BITMASK);
+                return (bitmask & DatabaseDefinitions.DOM_EDITION_FIRST_IMPRESSION) != 0;
+            }
+
+            @Override
+            public void set(@NonNull final DataManager data,
+                            @NonNull final Datum datum,
+                            @NonNull final Bundle rawData,
+                            @NonNull final Object value) {
+                Integer bitmask = data.getInt(UniqueId.KEY_BOOK_EDITION_BITMASK);
+                // Parse the string the CheckBox returns us (0 or 1)
+                if (Datum.toBoolean(value)) {
+                    bitmask |= DatabaseDefinitions.DOM_EDITION_FIRST_IMPRESSION;
+                } else {
+                    bitmask &= ~DatabaseDefinitions.DOM_EDITION_FIRST_IMPRESSION;
+                }
+                data.putInt(UniqueId.KEY_BOOK_EDITION_BITMASK, bitmask);
+
+            }
+
+            @Override
+            public boolean isPresent(@NonNull final DataManager data,
+                                     @NonNull final Datum datum,
+                                     @NonNull final Bundle rawData) {
+                return rawData.containsKey(UniqueId.KEY_BOOK_EDITION_BITMASK);
+            }
+        });
+
+        addAccessor(IS_BOOK_CLUB_EDITION, new DataAccessor() {
+            @NonNull
+            @Override
+            public Boolean get(@NonNull final DataManager data, @NonNull final Datum datum, @NonNull final Bundle rawData) {
+                Integer bitmask = data.getInt(UniqueId.KEY_BOOK_EDITION_BITMASK);
+                return (bitmask & DatabaseDefinitions.DOM_EDITION_BOOK_CLUB) != 0;
+            }
+
+            @Override
+            public void set(@NonNull final DataManager data,
+                            @NonNull final Datum datum,
+                            @NonNull final Bundle rawData,
+                            @NonNull final Object value) {
+                Integer bitmask = data.getInt(UniqueId.KEY_BOOK_EDITION_BITMASK);
+                // Parse the string the CheckBox returns us (0 or 1)
+                if (Datum.toBoolean(value)) {
+                    bitmask |= DatabaseDefinitions.DOM_EDITION_BOOK_CLUB;
+                } else {
+                    bitmask &= ~DatabaseDefinitions.DOM_EDITION_BOOK_CLUB;
+                }
+                data.putInt(UniqueId.KEY_BOOK_EDITION_BITMASK, bitmask);
+
+            }
+
+            @Override
+            public boolean isPresent(@NonNull final DataManager data,
+                                     @NonNull final Datum datum,
+                                     @NonNull final Bundle rawData) {
+                return rawData.containsKey(UniqueId.KEY_BOOK_EDITION_BITMASK);
+            }
+        });
+    }
+
+    public static class EditionCheckListItem extends CheckListItemBase<Integer> {
+        public EditionCheckListItem() {
+        }
+
+        EditionCheckListItem(@NonNull final Integer item, final boolean selected) {
+            super(item, selected);
+        }
+
+        public String getLabel() {
+            return BookCatalogueApp.getResourceString(getItem());
+        }
+    }
+
+    public static class BookshelfCheckListItem extends CheckListItemBase<Bookshelf> {
+        public BookshelfCheckListItem() {
+        }
+
+        BookshelfCheckListItem(@NonNull final Bookshelf item, final boolean selected) {
+            super(item, selected);
+        }
+
+        public String getLabel() {
+            return getItem().name;
+        }
     }
 }

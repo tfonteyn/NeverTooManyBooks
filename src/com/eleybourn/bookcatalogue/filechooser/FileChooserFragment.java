@@ -122,9 +122,10 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
 
         // If it's new, just build from scratch, otherwise, get the saved directory and list
         if (savedInstanceState == null) {
-
+            // getArguments() could be null, but the string we fetch will never be null (may be empty)
             //noinspection ConstantConditions
             mRootPath = new File(getArguments().getString(BKEY_ROOT_PATH));
+
             String fileName = getArguments().getString(BKEY_FILE_NAME);
             mFilenameField.setText(fileName);
             mPathField.setText(mRootPath.getAbsolutePath());
@@ -152,7 +153,7 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
         String parent = mRootPath.getParent();
         if (parent == null) {
             //Snackbar.make(this.getView(), R.string.no_parent_directory_found, Snackbar.LENGTH_LONG).show();
-            StandardDialogs.showBriefMessage(requireActivity(), R.string.no_parent_directory_found);
+            StandardDialogs.showUserMessage(requireActivity(), R.string.no_parent_directory_found);
             return;
         }
         mRootPath = new File(parent);

@@ -12,6 +12,7 @@ import com.eleybourn.bookcatalogue.entities.AnthologyTitle;
 import com.eleybourn.bookcatalogue.entities.Author;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 /**
  * ENHANCE: add book list to each title, and make the clickable to goto the book
@@ -31,13 +32,13 @@ public class AuthorActivity extends BaseListActivity {
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle extras = getIntent().getExtras();
-        @SuppressWarnings("ConstantConditions")
+        Objects.requireNonNull(extras);
         long authorId = extras.getLong(UniqueId.KEY_ID);
         mDb = new CatalogueDBAdapter(this)
                 .open();
 
         Author author = mDb.getAuthor(authorId);
-        //noinspection ConstantConditions
+        Objects.requireNonNull(author);
         setTitle(author.getDisplayName());
 
         mList = mDb.getAnthologyTitlesByAuthor(author);

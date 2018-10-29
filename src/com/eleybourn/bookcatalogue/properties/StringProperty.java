@@ -57,10 +57,11 @@ public class StringProperty extends ValuePropertyWithGlobalDefault<String> imple
     @NonNull
     public View getView(@NonNull final LayoutInflater inflater) {
         // Get base view and components. Tag them.
-        View v = inflater.inflate(R.layout.property_value_string, null);
-        ViewTagger.setTag(v, R.id.TAG_PROPERTY, this);
-        final TextView name = v.findViewById(R.id.name);
-        final EditText value = v.findViewById(R.id.value);
+        View view = inflater.inflate(R.layout.property_value_string, null);
+
+        ViewTagger.setTag(view, R.id.TAG_PROPERTY, this);// value: StringProperty
+        final TextView name = view.findViewById(R.id.name);
+        final EditText value = view.findViewById(R.id.value);
 
         // Set the current values
         name.setText(getName());
@@ -83,7 +84,7 @@ public class StringProperty extends ValuePropertyWithGlobalDefault<String> imple
             }
         });
 
-        return v;
+        return view;
     }
 
     @NonNull

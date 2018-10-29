@@ -42,7 +42,7 @@ import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.Fields.AfterFieldChangeListener;
 import com.eleybourn.bookcatalogue.Fields.Field;
-import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
+import com.eleybourn.bookcatalogue.baseactivity.CanBeDirty;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.datamanager.DataEditor;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
@@ -89,19 +89,19 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
 
     /*  the casting is a kludge... ever since pulling edit/show book apart. Needs redoing */
     protected boolean isDirty() {
-        return ((BaseActivity.CanBeDirty) mActivity).isDirty();
+        return ((CanBeDirty) mActivity).isDirty();
     }
 
     protected void setDirty(final boolean isDirty) {
-        ((BaseActivity.CanBeDirty) mActivity).setDirty(isDirty);
+        ((CanBeDirty) mActivity).setDirty(isDirty);
     }
 
     protected Book getBook() {
         return ((HasBook) mActivity).getBook();
     }
 
-    protected void setBookId(final long bookId) {
-        ((HasBook) mActivity).setBookId(bookId);
+    protected void reload(final long bookId) {
+        ((HasBook) mActivity).reload(bookId);
     }
 
     /**
@@ -144,8 +144,8 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
             throw new RTE.MustImplementException(context, HasBook.class);
         }
 
-        if (!(context instanceof BaseActivity.CanBeDirty)) {
-            throw new RTE.MustImplementException(context, BaseActivity.CanBeDirty.class);
+        if (!(context instanceof CanBeDirty)) {
+            throw new RTE.MustImplementException(context, CanBeDirty.class);
         }
     }
 
@@ -167,12 +167,49 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        // cache to avoid multiple calls to requireActivity()
         mActivity = requireActivity();
 
         mDb = new CatalogueDBAdapter(mActivity)
                 .open();
 
+        initFields();
+    }
+
+    /**
+     * Add any {@link Field} we need to {@link Fields}
+     */
+    @CallSuper
+    protected void initFields() {
         mFields = new Fields(this);
+    }
+
+    /**
+     * Gets all bookshelves for the book from database and populate corresponding field with them.
+     *
+     * @param field to populate with the shelves
+     * @param book  from which the shelves will be taken
+     *
+     * @return <tt>true</tt>if populated, false otherwise
+     */
+    protected boolean populateBookshelves(@NonNull final Field field, @NonNull final Book book) {
+        String bookshelfText = book.getBookshelfListAsText();
+        field.setValue(bookshelfText);
+        return !bookshelfText.isEmpty();
+    }
+
+    /**
+     * Gets all editions for the book from database and populate corresponding field with them.
+     *
+     * @param field to populate with the editions
+     * @param book  from which the editions will be taken
+     *
+     * @return <tt>true</tt>if populated, false otherwise
+     */
+    protected boolean populateEditions(@NonNull final Field field, final Book book) {
+        String editionsText = book.getEditionListAsText();
+        field.setValue(editionsText);
+        return !editionsText.isEmpty();
     }
 
     /**
@@ -256,9 +293,11 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
 
             case R.id.MENU_BOOK_DELETE:
                 BookUtils.deleteBook(mActivity, mDb, bookId,
+                        // runs if user confirmed deletion.
                         new Runnable() {
                             @Override
                             public void run() {
+                                mActivity.setResult(Activity.RESULT_OK);
                                 mActivity.finish();
                             }
                         });
@@ -330,12 +369,10 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
     @Override
     @CallSuper
     public void onDestroy() {
-        Tracker.enterOnDestroy(this);
         if (mDb != null) {
             mDb.close();
         }
         super.onDestroy();
-        Tracker.exitOnDestroy(this);
     }
 
     private void updateFromInternet(@NonNull final Book book) {
@@ -345,35 +382,44 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
         // just as info, to display on the screen
         intent.putExtra(UniqueId.KEY_TITLE, book.getString(UniqueId.KEY_TITLE));
         intent.putExtra(UniqueId.KEY_AUTHOR_FORMATTED, book.getString(UniqueId.KEY_AUTHOR_FORMATTED));
+
         startActivityForResult(intent, UpdateFromInternetActivity.REQUEST_CODE); /* 98a6d1eb-4df5-4893-9aaf-fac0ce0fee01 */
     }
 
     @Override
     @CallSuper
     public void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
+        if (BuildConfig.DEBUG) {
+            Logger.info(this,"onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
+        }
         switch (requestCode) {
             case UpdateFromInternetActivity.REQUEST_CODE: /* 98a6d1eb-4df5-4893-9aaf-fac0ce0fee01 */
                 if (resultCode == Activity.RESULT_OK) {
                     Objects.requireNonNull(data);
                     long bookId = data.getLongExtra(UniqueId.KEY_ID, 0);
-                    if (bookId != 0) {
-                        setBookId(bookId);
+                    if (bookId > 0) {
+                        reload(bookId);
                     } else {
                         boolean wasCancelled = data.getBooleanExtra(UniqueId.BKEY_CANCELED, false);
                         Logger.info(this, "UpdateFromInternet wasCancelled= " + wasCancelled);
                     }
                 }
-                break;
+                return;
 
             default:
-                Logger.error("onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
+                if (BuildConfig.DEBUG) {
+                    // lowest level of our Fragments, see what's left if any
+                    Logger.info(this, "onActivityResult: BookAbstractFragment requestCode=" + requestCode + ", resultCode=" + resultCode);
+                }
                 break;
         }
+
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     /**
+     * Used for the Amazon buying links
+     *
      * @return the first author in the list of authors for this book
      */
     @Nullable
@@ -383,6 +429,8 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
     }
 
     /**
+     * Used for the Amazon buying links
+     *
      * @return the first series in the list of series for this book
      */
     @Nullable
@@ -396,7 +444,7 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
      * Override as needed, calling super as the first step
      *
      * @param book       to load from
-     * @param setAllFrom Options indicating setAllFrom() has already been called on the mFields object
+     * @param setAllFrom flag indicating {@link Fields#setAllFrom} has already been called or not
      */
     @CallSuper
     protected void onLoadBookDetails(@NonNull final Book book, final boolean setAllFrom) {
@@ -410,16 +458,21 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
      */
     @Override
     public final <T extends DataManager> void transferDataFrom(@NonNull final T dataManager) {
+        // Load the data while preserving the isDirty() status
         final boolean wasDirty = isDirty();
         onLoadBookDetails((Book) dataManager, false);
         setDirty(wasDirty);
     }
 
     /**
-     * Default implementation of code to save existing data to the Book object
-     * Override as needed, calling super as the first step
+     * Default implementation of code to save existing data to the Book object.
+     * We simply copy all {@link Field} into the {@link DataManager} e.g. the {@link Book}
+     *
+     * Override as needed, calling super if needed
+     *
+     * We could do an instanceof {@link BookDetailsFragment} here but that's not 'clean'
+     * So we override this method there, and make it a nop.
      */
-    @CallSuper
     protected void onSaveBookDetails(@NonNull final Book book) {
         mFields.putAllInto(book);
     }
@@ -442,6 +495,7 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
      * - anthology/toc
      * - read status
      * - rating
+     * - edition
      *
      * @see FieldVisibilityActivity
      */
@@ -449,28 +503,30 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
         mFields.resetVisibility();
 
         showHideField(hideIfEmpty, R.id.coverImage, R.id.row_image);
-
-        showHideField(hideIfEmpty, R.id.isbn, R.id.row_isbn);
-        showHideField(hideIfEmpty, R.id.series, R.id.row_series, R.id.lbl_series);
+        showHideField(hideIfEmpty, R.id.isbn, R.id.row_isbn, R.id.lbl_isbn);
+        //showHideField(hideIfEmpty, R.id.series, R.id.row_series, R.id.lbl_series);
+        //showHideField(hideIfEmpty, R.id.bookshelves, R.id.lbl_bookshelves);
         showHideField(hideIfEmpty, R.id.description, R.id.lbl_description, R.id.description_divider);
+        showHideField(hideIfEmpty, R.id.publisher, R.id.row_publisher, R.id.lbl_publishing);
+        showHideField(hideIfEmpty, R.id.date_published, R.id.row_date_published, R.id.lbl_publishing);
 
-        showHideField(hideIfEmpty, R.id.publisher, R.id.lbl_publishing, R.id.row_publisher);
-        showHideField(hideIfEmpty, R.id.date_published, R.id.row_date_published);
         showHideField(hideIfEmpty, R.id.first_publication, R.id.row_first_publication);
-
-        showHideField(hideIfEmpty, R.id.pages, R.id.row_pages);
-        showHideField(hideIfEmpty, R.id.list_price, R.id.row_list_price);
-        showHideField(hideIfEmpty, R.id.format, R.id.row_format);
-        showHideField(hideIfEmpty, R.id.genre, R.id.lbl_genre, R.id.row_genre);
-        showHideField(hideIfEmpty, R.id.language, R.id.lbl_language, R.id.row_language);
-
-        // **** MY COMMENTS SECTION ****
-
-        showHideField(hideIfEmpty, R.id.notes, R.id.lbl_notes, R.id.row_notes);
-        showHideField(hideIfEmpty, R.id.location, R.id.row_location, R.id.row_location);
-        showHideField(hideIfEmpty, R.id.read_start, R.id.row_read_start);
-        showHideField(hideIfEmpty, R.id.read_end, R.id.row_read_end);
+        showHideField(hideIfEmpty, R.id.pages, R.id.row_pages, R.id.lbl_pages);
+        showHideField(hideIfEmpty, R.id.list_price, R.id.row_list_price, R.id.lbl_list_price);
+        showHideField(hideIfEmpty, R.id.format, R.id.row_format, R.id.lbl_format);
+        showHideField(hideIfEmpty, R.id.genre, R.id.row_genre, R.id.lbl_genre);
+        showHideField(hideIfEmpty, R.id.language, R.id.row_language, R.id.lbl_language);
+        //showHideField(hideIfEmpty, R.id.toc, R.id.row_toc);
+        //showHideField(hideIfEmpty, R.id.loaned_to);
+        showHideField(hideIfEmpty, R.id.notes, R.id.row_notes, R.id.lbl_notes);
+        showHideField(hideIfEmpty, R.id.location, R.id.row_location, R.id.lbl_location);
+        //showHideField(hideIfEmpty, R.id.read, R.id.row_read, R.id.lbl_read);
+        showHideField(hideIfEmpty, R.id.read_start, R.id.row_read_start, R.id.lbl_read_start);
+        showHideField(hideIfEmpty, R.id.read_end, R.id.row_read_end, R.id.lbl_read_end);
         showHideField(hideIfEmpty, R.id.signed, R.id.row_signed);
+        showHideField(hideIfEmpty, R.id.rating, R.id.row_rating, R.id.lbl_rating);
+        //showHideField(hideIfEmpty, R.id.edition, R.id.row_edition, R.id.lbl_edition);
+
 
         //NEWKIND: when adding fields that can be invisible, add them here
     }
@@ -500,13 +556,14 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
                     if (view instanceof ImageView) {
                         visibility = view.getVisibility(); //TOMF ??
                     } else {
-                        final String value = mFields.getField(fieldId).getValue().toString();
+                        final String value = mFields.getField(fieldId).putValueInto().toString();
                         final boolean isExist = value != null && !value.isEmpty();
                         visibility = isExist ? View.VISIBLE : View.GONE;
                         view.setVisibility(visibility);
                     }
                 }
             }
+
             // Set the related views
             for (int i : relatedFields) {
                 View rv = getView().findViewById(i);
@@ -521,7 +578,7 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
         @NonNull
         Book getBook();
 
-        void setBookId(final long bookId);
+        void reload(final long bookId);
     }
 
     static class ViewUtils {
@@ -696,7 +753,7 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
             }
             sb.append(view.getClass().getCanonicalName())
                     .append(" (").append(view.getId()).append(")")
-                    .append(view.getId() == R.id.lbl_row_description ? "DESC! ->" : " ->");
+                    .append(view.getId() == R.id.row_lbl_description ? "DESC! ->" : " ->");
 
             if (view instanceof TextView) {
                 String s = ((TextView) view).getText().toString().trim();

@@ -287,8 +287,8 @@ public class TaskManager implements AutoCloseable {
      *
      * @param message Message to send
      */
-    public void showBriefMessage(@NonNull final String message) {
-        mMessageSwitch.send(mMessageSenderId, new OnShowQuickNotice(message));
+    public void showUserMessage(@NonNull final String message) {
+        mMessageSwitch.send(mMessageSenderId, new OnShowUserMessage(message));
     }
 
     /**
@@ -360,7 +360,7 @@ public class TaskManager implements AutoCloseable {
 
         void onProgress(final int count, final int max, @NonNull final String message);
 
-        void onShowQuickNotice(@NonNull final String message);
+        void onShowUserMessage(@NonNull final String message);
 
         void onFinished();
     }
@@ -416,21 +416,21 @@ public class TaskManager implements AutoCloseable {
         }
     }
 
-    public static class OnShowQuickNotice implements Message<TaskManagerListener> {
+    public static class OnShowUserMessage implements Message<TaskManagerListener> {
         @NonNull
         private final String mMessage;
 
-        OnShowQuickNotice(@NonNull final String message) {
+        OnShowUserMessage(@NonNull final String message) {
             mMessage = message;
         }
 
         @Override
         public boolean deliver(@NonNull final TaskManagerListener listener) {
-            listener.onShowQuickNotice(mMessage);
+            listener.onShowUserMessage(mMessage);
             return false;
         }
         public String toString() {
-            return "\nOnShowQuickNotice: " + mMessage;
+            return "\nOnShowUserMessage: " + mMessage;
         }
     }
 

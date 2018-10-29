@@ -26,7 +26,7 @@ import android.support.annotation.StringRes;
 /**
  * Exception class for all validation errors. String ID and args are stored for later retrieval.
  *
- * The messages will be shown to the user, hence the need for String a resource
+ * The messages will be shown to the user, hence the need for a String resource
  *
  * @author Philip Warner
  */

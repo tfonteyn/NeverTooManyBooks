@@ -20,6 +20,7 @@
 
 package com.eleybourn.bookcatalogue.searches.goodreads;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
@@ -80,7 +81,8 @@ public class GoodreadsSearchResultsActivity extends BaseListActivity {
         if (criteria != null && !criteria.isEmpty()) {
             doSearch(criteria);
         } else {
-            StandardDialogs.showBriefMessage(this, R.string.please_enter_search_criteria);
+            StandardDialogs.showUserMessage(this, R.string.please_enter_search_criteria);
+            setResult(Activity.RESULT_CANCELED);
             finish();
         }
     }
@@ -99,14 +101,17 @@ public class GoodreadsSearchResultsActivity extends BaseListActivity {
             works = searcher.search(criteria.trim());
         } catch (Exception e) {
             Logger.error(e, "Failed when searching goodreads");
-            StandardDialogs.showBriefMessage(this, getString(R.string.error_while_searching) + " " + getString(R.string.if_the_problem_persists));
+            StandardDialogs.showUserMessage(this,
+                    getString(R.string.error_while_searching) + " " + getString(R.string.if_the_problem_persists));
+            setResult(Activity.RESULT_CANCELED);
             finish();
             return;
         }
 
         // Finish if no results, otherwise display them
         if (works.size() == 0) {
-            StandardDialogs.showBriefMessage(this, R.string.no_matching_book_found);
+            StandardDialogs.showUserMessage(this, R.string.no_matching_book_found);
+            setResult(Activity.RESULT_CANCELED);
             finish();
             return;
         }
@@ -128,7 +133,7 @@ public class GoodreadsSearchResultsActivity extends BaseListActivity {
 
         // TODO: Implement edition lookup - requires access to work.editions API from GR
         Logger.debug("Not implemented: see " + holder.title + " by " + holder.author);
-        StandardDialogs.showBriefMessage(this, "Not implemented: see " + holder.title + " by " + holder.author);
+        StandardDialogs.showUserMessage(this, "Not implemented: see " + holder.title + " by " + holder.author);
         //Intent i = new Intent(this, GoodreadsW)
     }
 

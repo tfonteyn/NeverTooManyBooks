@@ -117,8 +117,8 @@ public class BookCatalogueApp extends Application {
     /** Theme */
     public static final String PREF_APP_THEME = TAG + ".Theme";
 
-    /** Implementation to use for {@link com.eleybourn.bookcatalogue.dialogs.StandardDialogs#showBriefMessage} */
-    public static final String PREF_APP_BRIEF_MESSAGE = TAG + ".BriefMessage";
+    /** Implementation to use for {@link com.eleybourn.bookcatalogue.dialogs.StandardDialogs#showUserMessage} */
+    public static final String PREF_APP_USER_MESSAGE = TAG + ".UserMessage";
 
     /** Last full backup date */
     public static final String PREF_LAST_BACKUP_DATE = "Backup.LastDate";

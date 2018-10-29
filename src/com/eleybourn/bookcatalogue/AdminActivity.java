@@ -20,6 +20,7 @@
 
 package com.eleybourn.bookcatalogue;
 
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
@@ -66,11 +67,18 @@ public class AdminActivity extends BaseActivityWithTasks {
 
     public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_ADMIN;
 
-    private static final String DO_AUTO = "do_auto";
-    private static final String DO_AUTO_EXPORT = "export";
+    /**
+     * This is not in use right now, but leaving it in place.
+     *
+     * Can be used to automatically trigger an action in {@link #onResume()}.
+     */
+    private static final String BKEY_DO_AUTO = "do_auto";
+    /** supported action: do an export to a CSV file + finishes the activity when done */
+    private static final String BVAL_DO_AUTO_EXPORT = "export";
 
-    private boolean finish_after = false;
-    private boolean mExportOnStartup = false;
+
+    private boolean mExportToCsvOnStartup = false;
+    private boolean mFinishAfterExport = false;
 
     @Override
     protected int getLayoutId() {
@@ -84,16 +92,16 @@ public class AdminActivity extends BaseActivityWithTasks {
         this.setTitle(R.string.lbl_administration);
 
         Bundle extras = getIntent().getExtras();
-        if (extras != null && extras.containsKey(DO_AUTO)) {
-            String val = extras.getString(DO_AUTO);
+        if (extras != null && extras.containsKey(BKEY_DO_AUTO)) {
+            String val = extras.getString(BKEY_DO_AUTO);
             if (val != null) {
                 switch (val) {
-                    case DO_AUTO_EXPORT:
-                        finish_after = true;
-                        mExportOnStartup = true;
+                    case BVAL_DO_AUTO_EXPORT:
+                        mExportToCsvOnStartup = true;
+                        mFinishAfterExport = true;
                         break;
                     default:
-                        throw new IllegalArgumentException("Unsupported DO_AUTO option: " + val);
+                        throw new IllegalArgumentException("Unsupported BKEY_DO_AUTO option: " + val);
                 }
             }
         }
@@ -312,7 +320,7 @@ public class AdminActivity extends BaseActivityWithTasks {
                 public void onClick(View v) {
                     HintManager.resetHints();
                     //Snackbar.make(v, R.string.hints_have_been_reset, Snackbar.LENGTH_LONG).show();
-                    StandardDialogs.showBriefMessage(AdminActivity.this, R.string.hints_have_been_reset);
+                    StandardDialogs.showUserMessage(AdminActivity.this, R.string.hints_have_been_reset);
                 }
             });
         }
@@ -342,7 +350,7 @@ public class AdminActivity extends BaseActivityWithTasks {
                 public void onClick(View v) {
                     StorageUtils.backupDatabaseFile();
                     //Snackbar.make(v, R.string.backup_success, Snackbar.LENGTH_LONG).show();
-                    StandardDialogs.showBriefMessage(AdminActivity.this, R.string.backup_success);
+                    StandardDialogs.showUserMessage(AdminActivity.this, R.string.backup_success);
                 }
             });
 
@@ -388,7 +396,7 @@ public class AdminActivity extends BaseActivityWithTasks {
         List<File> files = StorageUtils.findCsvFiles();
         // If none, exit with message
         if (files.size() == 0) {
-            StandardDialogs.showBriefMessage(this, R.string.no_export_files_found);
+            StandardDialogs.showUserMessage(this, R.string.no_export_files_found);
         } else {
             if (files.size() == 1) {
                 // If only 1, just use it
@@ -420,25 +428,27 @@ public class AdminActivity extends BaseActivityWithTasks {
     @Override
     @CallSuper
     protected void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+        if (BuildConfig.DEBUG) {
+            Logger.info(this,"onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
+        }
 
         switch (requestCode) {
             case FieldVisibilityActivity.REQUEST_CODE: /* 2f885b11-27f2-40d7-8c8b-fcb4d95a4151 */
             case BooklistStylesActivity.REQUEST_CODE: /* 13854efe-e8fd-447a-a195-47678c0d87e7 */
-                // pass up
+
+                // pass results up
                 setResult(resultCode, data); /* 7f46620d-7951-4637-8783-b410730cd460 */
-                break;
-            default:
-                Logger.error("onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
-                break;
+                return;
         }
+
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
     @CallSuper
     public void onResume() {
         super.onResume();
-        if (mExportOnStartup) {
+        if (mExportToCsvOnStartup) {
             exportToCSV();
         }
     }
@@ -456,7 +466,8 @@ public class AdminActivity extends BaseActivityWithTasks {
 
     private void onExportFinished(@NonNull final ExportThread task) {
         if (task.isCancelled()) {
-            if (finish_after)
+            if (mFinishAfterExport)
+                setResult(Activity.RESULT_OK);
                 finish();
             return;
         }
@@ -483,7 +494,7 @@ public class AdminActivity extends BaseActivityWithTasks {
                             startActivity(Intent.createChooser(emailIntent, getString(R.string.send_mail)));
                         } catch (NullPointerException e) {
                             Logger.error(e);
-                            StandardDialogs.showBriefMessage(AdminActivity.this, R.string.error_export_failed);
+                            StandardDialogs.showUserMessage(AdminActivity.this, R.string.error_export_failed);
                         }
 
                         dialog.dismiss();
@@ -501,7 +512,8 @@ public class AdminActivity extends BaseActivityWithTasks {
         dialog.setOnDismissListener(new OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialog) {
-                if (finish_after)
+                if (mFinishAfterExport)
+                    setResult(Activity.RESULT_OK);
                     finish();
             }
         });

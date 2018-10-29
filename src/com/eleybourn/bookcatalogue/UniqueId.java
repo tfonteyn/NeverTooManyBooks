@@ -12,6 +12,7 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKS
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ANTHOLOGY_BITMASK;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_ADDED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_PUBLISHED;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_EDITION_BITMASK;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_FORMAT;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_GENRE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_GOODREADS_LAST_SYNC_DATE;
@@ -114,7 +115,8 @@ public class UniqueId {
 
     /* BKEY_* and BVAL_* which are used in more then one class should be moved here */
     public static final String BKEY_NO_COVER = "noCover";
-    public static final String BKEY_DIALOG_ID = "dialogId";
+    public static final String BKEY_CALLER_ID = "dialogId";
+    public static final String BKEY_FIELD_ID = "fieldId";
     public static final String BKEY_FILE_SPEC = "fileSpec";
     public static final String BKEY_SEARCH_TEXT = "searchText";
 
@@ -149,7 +151,8 @@ public class UniqueId {
     public static final String KEY_LAST_UPDATE_DATE = DOM_LAST_UPDATE_DATE.name;
 
     // mapped to the database, single table use
-    public static final String KEY_ANTHOLOGY_BITMASK = DOM_BOOK_ANTHOLOGY_BITMASK.name;
+    public static final String KEY_BOOK_ANTHOLOGY_BITMASK = DOM_BOOK_ANTHOLOGY_BITMASK.name;
+    public static final String KEY_BOOK_EDITION_BITMASK = DOM_BOOK_EDITION_BITMASK.name;
 
     public static final String KEY_AUTHOR_ID = DOM_AUTHOR_ID.name;
     public static final String KEY_AUTHOR_FAMILY_NAME = DOM_AUTHOR_FAMILY_NAME.name;

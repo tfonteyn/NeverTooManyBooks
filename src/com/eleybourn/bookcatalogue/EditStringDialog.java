@@ -64,7 +64,7 @@ abstract class EditStringDialog {
             public void onClick(View v) {
                 String newName = nameView.getText().toString().trim();
                 if (newName.isEmpty()) {
-                    StandardDialogs.showBriefMessage(mActivity, R.string.name_can_not_be_blank);
+                    StandardDialogs.showUserMessage(mActivity, R.string.name_can_not_be_blank);
                     return;
                 }
                 dialog.dismiss();

@@ -59,7 +59,7 @@ public class EditPublisherDialog {
             public void onClick(View v) {
                 String newName = nameView.getText().toString().trim();
                 if (newName.isEmpty()) {
-                    StandardDialogs.showBriefMessage(mActivity, R.string.name_can_not_be_blank);
+                    StandardDialogs.showUserMessage(mActivity, R.string.name_can_not_be_blank);
                     return;
                 }
                 Publisher newPublisher = new Publisher(newName);

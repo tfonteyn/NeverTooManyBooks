@@ -159,7 +159,7 @@ public class CoverBrowser {
         }
 
         if (!IsbnUtils.isValid(mIsbn)) {
-            StandardDialogs.showBriefMessage(mActivity, R.string.no_isbn_no_editions);
+            StandardDialogs.showUserMessage(mActivity, R.string.no_isbn_no_editions);
             shutdown();
             return;
         }
@@ -172,7 +172,7 @@ public class CoverBrowser {
         mImageFetcher.enqueue(new GetEditionsTask(mIsbn));
 
         // Setup the basic dialog
-        mDialog.setContentView(R.layout.dialog_select_edition_cover);
+        mDialog.setContentView(R.layout.dialog_cover_browser);
         mDialog.setTitle(R.string.finding_editions);
         mDialog.show();
     }
@@ -377,7 +377,7 @@ public class CoverBrowser {
         @Override
         public void onFinish(@Nullable final Exception e) {
             if (mEditions.isEmpty()) {
-                StandardDialogs.showBriefMessage(mActivity, R.string.no_editions);
+                StandardDialogs.showUserMessage(mActivity, R.string.no_editions);
                 shutdown();
                 return;
             }

@@ -145,8 +145,8 @@ abstract public class BaseActivityWithTasks extends BaseActivity {
          * Display a message
          */
         @Override
-        public void onShowQuickNotice(@NonNull final String message) {
-            StandardDialogs.showBriefMessage(BaseActivityWithTasks.this, message);
+        public void onShowUserMessage(@NonNull final String message) {
+            StandardDialogs.showUserMessage(BaseActivityWithTasks.this, message);
         }
 
         /**

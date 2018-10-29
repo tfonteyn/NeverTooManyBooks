@@ -131,14 +131,14 @@ public class BookEvents {
             holder.rowId = cursor.getId();
 
             holder.author = view.findViewById(R.id.author);
-            holder.checkbox = view.findViewById(R.id.checked);
+            holder.button = view.findViewById(R.id.checked);
             holder.date = view.findViewById(R.id.date);
             holder.error = view.findViewById(R.id.error);
             holder.retry = view.findViewById(R.id.retry);
             holder.title = view.findViewById(R.id.title);
 
             ViewTagger.setTag(view, R.id.TAG_BOOK_EVENT_HOLDER, holder);
-            ViewTagger.setTag(holder.checkbox, R.id.TAG_BOOK_EVENT_HOLDER, holder);
+            ViewTagger.setTag(holder.button, R.id.TAG_BOOK_EVENT_HOLDER, holder);
             ViewTagger.setTag(holder.retry, R.id.TAG_BOOK_EVENT_HOLDER, holder);
 
             return view;
@@ -186,8 +186,8 @@ public class BookEvents {
 
             holder.retry.setVisibility(View.GONE);
 
-            holder.checkbox.setChecked(cursor.getIsSelected());
-            holder.checkbox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+            holder.button.setChecked(cursor.getIsSelected());
+            holder.button.setOnCheckedChangeListener(new OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(@NonNull CompoundButton buttonView, boolean isChecked) {
                     BookEventHolder holder = ViewTagger.getTagOrThrow(buttonView, R.id.TAG_BOOK_EVENT_HOLDER);
@@ -259,7 +259,7 @@ public class BookEvents {
             TextView error;
             TextView date;
             Button retry;
-            CompoundButton checkbox;
+            CompoundButton button;
         }
 
     }

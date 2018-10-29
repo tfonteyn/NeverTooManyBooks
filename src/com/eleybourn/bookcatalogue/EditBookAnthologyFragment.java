@@ -90,18 +90,10 @@ public class EditBookAnthologyFragment extends BookAbstractFragment implements H
         return inflater.inflate(R.layout.fragment_edit_book_anthology, container, false);
     }
 
-    /**
-     * Display the main manage anthology page. This has three parts.
-     * 1. Setup the "Same Author" checkbox
-     * 2. Setup the "Add Title" fields
-     * 3. Populate the "Title List" - {@link #populateContentList};
-     */
     @Override
     @CallSuper
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-        final Book book = getBook();
 
         // Author AutoCompleteTextView
         //noinspection ConstantConditions
@@ -118,13 +110,8 @@ public class EditBookAnthologyFragment extends BookAbstractFragment implements H
             }
         });
 
-        // Setup the same author field and makes the Author visible or not
-        int bitmask = book.getInt(UniqueId.KEY_ANTHOLOGY_BITMASK);
-        boolean singleAuthor = (1 == (bitmask & DatabaseDefinitions.DOM_ANTHOLOGY_SINGLE_AUTHOR));
-        initSingleAuthorStatus(singleAuthor);
-
-        mBookAuthor = book.getString(UniqueId.KEY_AUTHOR_FORMATTED);
-        mIsbn = book.getString(UniqueId.KEY_BOOK_ISBN);
+        mBookAuthor = getBook().getString(UniqueId.KEY_AUTHOR_FORMATTED);
+        mIsbn = getBook().getString(UniqueId.KEY_BOOK_ISBN);
         mPubDateText = getView().findViewById(R.id.add_year);
         mTitleText = getView().findViewById(R.id.add_title);
         mListView = getView().findViewById(android.R.id.list);
@@ -142,7 +129,7 @@ public class EditBookAnthologyFragment extends BookAbstractFragment implements H
 
                 if (mEditPosition == null) {
                     AnthologyTitle anthologyTitle = new AnthologyTitle(new Author(author), title, pubDate);
-                    anthologyTitle.setBookId(book.getBookId());
+                    anthologyTitle.setBookId(getBook().getBookId());
                     // not bothering with position, the insert to the database takes care of that
                     adapter.add(anthologyTitle);
                 } else {
@@ -166,6 +153,11 @@ public class EditBookAnthologyFragment extends BookAbstractFragment implements H
             }
         });
 
+        // Setup the same author field and makes the Author visible or not
+        int bitmask = getBook().getInt(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK);
+        boolean singleAuthor = (DatabaseDefinitions.DOM_ANTHOLOGY == (bitmask & DatabaseDefinitions.DOM_ANTHOLOGY));
+        initSingleAuthorStatus(singleAuthor);
+
         populateContentList();
     }
 
@@ -179,7 +171,7 @@ public class EditBookAnthologyFragment extends BookAbstractFragment implements H
      */
     private void populateContentList() {
         // Get all of the rows from the database and create the item list
-        mList = getBook().getContentList();
+        mList = getBook().getTOC();
 
         // Now create a simple cursor adapter and set it to display
         ArrayAdapter<AnthologyTitle> adapter = new AnthologyTitleListAdapterForEditing(requireActivity(),
@@ -233,7 +225,7 @@ public class EditBookAnthologyFragment extends BookAbstractFragment implements H
     @Override
     public void onGotISFDBBook(@NonNull final Bundle bookData) {
         String encoded_content_list = bookData.getString(UniqueId.BKEY_ANTHOLOGY_STRING_LIST);
-        final List<AnthologyTitle> results = ArrayUtils.getAnthologyTitleUtils().decodeList(encoded_content_list, false);
+        final List<AnthologyTitle> results = ArrayUtils.getTOCUtils().decodeList(encoded_content_list, false);
         bookData.remove(UniqueId.BKEY_ANTHOLOGY_STRING_LIST);
 
         String encoded_series_list = bookData.getString(UniqueId.BKEY_SERIES_STRING_LIST);
@@ -339,7 +331,7 @@ public class EditBookAnthologyFragment extends BookAbstractFragment implements H
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         switch (item.getItemId()) {
             case R.id.MENU_POPULATE_ANTHOLOGY_ISFDB:
-                StandardDialogs.showBriefMessage(requireActivity(), R.string.connecting_to_web_site);
+                StandardDialogs.showUserMessage(requireActivity(), R.string.connecting_to_web_site);
                 ISFDBManager.searchEditions(mIsbn, this);
                 return true;
         }
@@ -370,21 +362,24 @@ public class EditBookAnthologyFragment extends BookAbstractFragment implements H
     }
 
     private void saveState(@NonNull final Book book) {
-        book.putContentList(mList);
+
+        book.putTOC(mList);
+
         // multiple authors is now automatically done during database access. The checkbox is only
         // a visual aid for hiding/showing the author EditText.
         // So while this command is 'correct', it does not stop (and does not bother) the user
         // setting it wrong. insert/update into the database will correctly set it by simply looking at
         // at the toc itself
-        book.putInt(UniqueId.KEY_ANTHOLOGY_BITMASK,
+        book.putInt(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK,
                 mSingleAuthor.isChecked() ?
-                        DatabaseDefinitions.DOM_ANTHOLOGY_SINGLE_AUTHOR
-                        : DatabaseDefinitions.DOM_ANTHOLOGY_MULTIPLE_AUTHORS ^ DatabaseDefinitions.DOM_ANTHOLOGY_SINGLE_AUTHOR);
+                        DatabaseDefinitions.DOM_ANTHOLOGY
+                        : DatabaseDefinitions.DOM_ANTHOLOGY_MULTIPLE_AUTHORS ^ DatabaseDefinitions.DOM_ANTHOLOGY);
     }
 
     @Override
     @CallSuper
     public void onPause() {
+        // put the list of titles into the book; the book will be handled on the activity level
         saveState(getBook());
         super.onPause();
     }
@@ -393,6 +388,7 @@ public class EditBookAnthologyFragment extends BookAbstractFragment implements H
     @CallSuper
     protected void onSaveBookDetails(@NonNull final Book book) {
         super.onSaveBookDetails(book);
+        // put the list of titles into the book
         saveState(book);
     }
 

@@ -51,9 +51,9 @@ public class EditAuthorDialog {
 
 
         final EditText familyView = dialog.findViewById(R.id.family_name);
-        final EditText givenView = dialog.findViewById(R.id.given_names);
         //noinspection ConstantConditions
         familyView.setText(author.familyName);
+        final EditText givenView = dialog.findViewById(R.id.given_names);
         //noinspection ConstantConditions
         givenView.setText(author.givenNames);
 
@@ -63,7 +63,7 @@ public class EditAuthorDialog {
             public void onClick(View v) {
                 String newFamily = familyView.getText().toString().trim();
                 if (newFamily.isEmpty()) {
-                    StandardDialogs.showBriefMessage(mActivity, R.string.author_is_blank);
+                    StandardDialogs.showUserMessage(mActivity, R.string.author_is_blank);
                     return;
                 }
                 String newGiven = givenView.getText().toString().trim();

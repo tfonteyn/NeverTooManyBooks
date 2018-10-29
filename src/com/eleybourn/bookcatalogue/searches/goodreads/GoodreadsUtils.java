@@ -94,11 +94,11 @@ public class GoodreadsUtils {
                             @NonNull final SimpleTaskContext taskContext) {
 
                 if (BCQueueManager.getQueueManager().hasActiveTasks(BCQueueManager.CAT_GOODREADS_IMPORT_ALL)) {
-                    fragment.showBriefMessage(fragment.getString(R.string.requested_task_is_already_queued));
+                    fragment.showUserMessage(fragment.getString(R.string.requested_task_is_already_queued));
                     return;
                 }
                 if (BCQueueManager.getQueueManager().hasActiveTasks(BCQueueManager.CAT_GOODREADS_EXPORT_ALL)) {
-                    fragment.showBriefMessage(fragment.getString(R.string.export_task_is_already_queued));
+                    fragment.showUserMessage(fragment.getString(R.string.export_task_is_already_queued));
                     return;
                 }
 
@@ -113,13 +113,13 @@ public class GoodreadsUtils {
                     });
                     return;
                 } else if (msg != 0) {
-                    fragment.showBriefMessage(fragment.getString(msg));
+                    fragment.showUserMessage(fragment.getString(msg));
                     return;
                 }
 
                 if (!fragment.isCancelled()) {
                     QueueManager.getQueueManager().enqueueTask(new ImportAllTask(isSync), BCQueueManager.QUEUE_MAIN);
-                    fragment.showBriefMessage(fragment.getString(R.string.task_has_been_queued_in_background));
+                    fragment.showUserMessage(fragment.getString(R.string.task_has_been_queued_in_background));
                 }
             }
         };
@@ -190,7 +190,7 @@ public class GoodreadsUtils {
                         }
                     });
                 } else {
-                    fragment.showBriefMessage(fragment.getString(msg));
+                    fragment.showUserMessage(fragment.getString(msg));
                 }
 
             }
@@ -273,7 +273,7 @@ public class GoodreadsUtils {
                         return;
 
                     default:
-                        fragment.showBriefMessage(fragment.getString(getState()));
+                        fragment.showUserMessage(fragment.getString(getState()));
                         break;
                 }
             }

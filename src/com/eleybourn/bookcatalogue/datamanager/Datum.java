@@ -54,12 +54,10 @@ public class Datum {
      * Constructor
      *
      * @param key       Key of this datum
-     * @param validator Validator for this Datum
      * @param visible   True if data should be visible
      */
-    public Datum(@NonNull final String key, @Nullable final DataValidator validator, final boolean visible) {
+    public Datum(@NonNull final String key, final boolean visible) {
         mKey = key;
-        mValidator = validator;
         mIsVisible = visible;
     }
 
@@ -228,7 +226,7 @@ public class Datum {
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    public Datum setValidator(@NonNull final DataValidator validator) {
+    public Datum addValidator(@NonNull final DataValidator validator) {
         if (mValidator != null && validator != mValidator) {
             throw new IllegalStateException("Datum '" + mKey + "' already has a validator");
         }
@@ -251,7 +249,7 @@ public class Datum {
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    public Datum setAccessor(@NonNull final DataAccessor accessor) {
+    public Datum addAccessor(@NonNull final DataAccessor accessor) {
         if (mAccessor != null && accessor != mAccessor) {
             throw new IllegalStateException("Datum '" + mKey + "' already has an Accessor");
         }
@@ -291,11 +289,7 @@ public class Datum {
         } else {
             o = mAccessor.get(data, this, bundle);
         }
-        try {
-            return (Boolean) o;
-        } catch (ClassCastException e) {
-            return toBoolean(o);
-        }
+        return toBoolean(o);
     }
 
     /**
@@ -369,7 +363,6 @@ public class Datum {
         } else {
             o = mAccessor.get(data, this, bundle);
         }
-
         return toLong(o);
     }
 
@@ -588,7 +581,7 @@ public class Datum {
         return this;
     }
 
-    private class AccessorNotSupportedException extends  IllegalStateException {
+    private class AccessorNotSupportedException extends IllegalStateException {
 
         AccessorNotSupportedException(final String typeDescription) {
             super("Accessor not supported for " + typeDescription + " objects");

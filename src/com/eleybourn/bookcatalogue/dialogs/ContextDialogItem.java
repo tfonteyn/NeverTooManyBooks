@@ -1,7 +1,7 @@
 /*
  * @copyright 2012 Philip Warner
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * TaskQueue is free software: you can redistribute it and/or modify
@@ -25,36 +25,40 @@ import android.support.annotation.NonNull;
 /**
  * Class to make building a 'context menu' from an AlertDialog a little easier.
  * Used in {@link com.eleybourn.bookcatalogue.taskqueue.Event} and related Activities.
- * 
- * @author Philip Warner
  *
+ * @author Philip Warner
  */
 public class ContextDialogItem implements CharSequence {
-	@NonNull
-    private final String name;
-	@NonNull
+    @NonNull
     public final Runnable handler;
-	public ContextDialogItem(@NonNull final String name, @NonNull final Runnable handler ) {
-		this.name = name;
-		this.handler = handler;
-	}
-	@NonNull
-	@Override
-	public String toString() {
-		return name;
-	}
-	@Override
-	public char charAt(int index) {
-		return name.charAt(index);
-	}
-	@Override
-	public int length() {
-		return name.length();
-	}
-	@NonNull
+    @NonNull
+    private final String name;
+
+    public ContextDialogItem(@NonNull final String name, @NonNull final Runnable handler) {
+        this.name = name;
+        this.handler = handler;
+    }
+
+    @NonNull
     @Override
-	public CharSequence subSequence(final int start, final int end) {
-		return name.subSequence(start, end);
-	}
+    public String toString() {
+        return name;
+    }
+
+    @Override
+    public char charAt(int index) {
+        return name.charAt(index);
+    }
+
+    @Override
+    public int length() {
+        return name.length();
+    }
+
+    @NonNull
+    @Override
+    public CharSequence subSequence(final int start, final int end) {
+        return name.subSequence(start, end);
+    }
 }
 

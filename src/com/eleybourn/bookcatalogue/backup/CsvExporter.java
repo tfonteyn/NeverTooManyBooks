@@ -44,6 +44,7 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKS
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ANTHOLOGY_BITMASK;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_ADDED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_PUBLISHED;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_EDITION_BITMASK;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_FORMAT;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_GENRE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_GOODREADS_BOOK_ID;
@@ -99,6 +100,7 @@ public class CsvExporter implements Exporter {
                     '"' + DOM_BOOK_PUBLISHER + "\"," +
                     '"' + DOM_BOOK_DATE_PUBLISHED + "\"," +
                     '"' + DOM_FIRST_PUBLICATION + "\"," +
+                    '"' + DOM_BOOK_EDITION_BITMASK + "\"," +
                     '"' + DOM_BOOK_RATING + "\"," +
                     '"' + "bookshelf_id\"," + // == UniqueId.DOM_BOOKSHELF_ID but it was misnamed originally
                     '"' + DOM_BOOKSHELF + "\"," +
@@ -125,6 +127,7 @@ public class CsvExporter implements Exporter {
                     '"' + DOM_BOOK_UUID + "\"," +
                     "\n";
 
+    //FIXME: turn into a string resource + actually report somewhere
     @SuppressWarnings("FieldCanBeLocal")
     private String mLastError;
 
@@ -241,14 +244,14 @@ public class CsvExporter implements Exporter {
                         .append(formatCell(bookRowView.getPages()))
                         .append(formatCell(bookRowView.getNotes()))
                         .append(formatCell(bookRowView.getListPrice()))
-                        .append(formatCell(bookRowView.getAnthologyMask()))
+                        .append(formatCell(bookRowView.getAnthologyBitMask()))
                         .append(formatCell(bookRowView.getLocation()))
                         .append(formatCell(bookRowView.getReadStart()))
                         .append(formatCell(bookRowView.getReadEnd()))
                         .append(formatCell(bookRowView.getFormat()))
                         .append(formatCell(bookRowView.getSigned()))
                         .append(formatCell(bookRowView.getLoanedTo()))
-                        .append(formatCell(ArrayUtils.getAnthologyTitleUtils().encodeList( mDb.getAnthologyTitleListByBook(bookId))))
+                        .append(formatCell(ArrayUtils.getTOCUtils().encodeList( mDb.getAnthologyTitleListByBook(bookId))))
                         .append(formatCell(bookRowView.getDescription()))
                         .append(formatCell(bookRowView.getGenre()))
                         .append(formatCell(bookRowView.getLanguage()))

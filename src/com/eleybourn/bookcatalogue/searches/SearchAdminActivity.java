@@ -1,5 +1,6 @@
 package com.eleybourn.bookcatalogue.searches;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
@@ -84,6 +85,7 @@ public class SearchAdminActivity extends BaseActivity {
                 if (list != null) {
                     SearchManager.setCoverSearchOrder(list);
                 }
+                setResult(Activity.RESULT_OK);
                 finish();
             }
         });
@@ -91,6 +93,7 @@ public class SearchAdminActivity extends BaseActivity {
         findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
+                setResult(Activity.RESULT_CANCELED);
                 finish();
             }
         });

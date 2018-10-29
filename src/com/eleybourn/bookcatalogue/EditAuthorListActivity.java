@@ -94,7 +94,7 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
             for (Author s : mList) {
                 if (s.equals(author)) {
                     // Snackbar.make(target, R.string.author_already_in_list, Snackbar.LENGTH_LONG).show();
-                    StandardDialogs.showBriefMessage(this, R.string.author_already_in_list);
+                    StandardDialogs.showUserMessage(this, R.string.author_already_in_list);
                     return;
                 }
             }
@@ -103,7 +103,7 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
             authorField.setText("");
         } else {
             //Snackbar.make(target, R.string.author_is_blank, Snackbar.LENGTH_LONG).show();
-            StandardDialogs.showBriefMessage(this, R.string.author_is_blank);
+            StandardDialogs.showUserMessage(this, R.string.author_is_blank);
         }
     }
 
@@ -126,7 +126,7 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
             public void onClick(View v) {
                 String newFamily = familyView.getText().toString().trim();
                 if (newFamily.isEmpty()) {
-                    StandardDialogs.showBriefMessage(EditAuthorListActivity.this, R.string.author_is_blank);
+                    StandardDialogs.showUserMessage(EditAuthorListActivity.this, R.string.author_is_blank);
                     return;
                 }
 

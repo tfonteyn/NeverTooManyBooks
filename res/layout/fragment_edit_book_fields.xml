@@ -28,6 +28,7 @@
             tools:src="@drawable/ic_image" />
 
         <RelativeLayout
+            android:id="@+id/row_author"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -50,6 +51,7 @@
         </RelativeLayout>
 
         <RelativeLayout
+            android:id="@+id/row_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -131,11 +133,11 @@
                 style="@style/personalNameTextEntry"
                 android:layout_below="@id/lbl_publisher"
                 android:layout_centerVertical="true"
-                android:layout_toStartOf="@id/publisher_button"
+                android:layout_toStartOf="@id/btn_publisher"
                 android:completionThreshold="2" />
 
             <ImageButton
-                android:id="@+id/publisher_button"
+                android:id="@+id/btn_publisher"
                 style="@style/dropDownMenuButton"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
@@ -186,7 +188,7 @@
         </RelativeLayout>
 
         <RelativeLayout
-            android:id="@+id/row_bookshelf"
+            android:id="@+id/row_bookshelves"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -196,7 +198,7 @@
                 android:text="@string/bookshelves" />
 
             <Button
-                android:id="@+id/bookshelf"
+                android:id="@+id/bookshelves"
                 style="@style/dataEntryButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -261,12 +263,12 @@
                 style="@style/editorFieldText"
                 android:layout_below="@id/lbl_format"
                 android:layout_centerVertical="true"
-                android:layout_toStartOf="@id/format_button"
+                android:layout_toStartOf="@id/btn_format"
                 android:completionThreshold="2"
                 android:singleLine="true" />
 
             <ImageButton
-                android:id="@+id/format_button"
+                android:id="@+id/btn_format"
                 style="@style/dropDownMenuButton"
                 android:layout_alignBottom="@id/format"
                 app:srcCompat="@drawable/ic_arrow_drop_down"
@@ -289,12 +291,12 @@
                 style="@style/editorFieldText"
                 android:layout_below="@id/lbl_genre"
                 android:layout_centerVertical="true"
-                android:layout_toStartOf="@id/genre_button"
+                android:layout_toStartOf="@id/btn_genre"
                 android:completionThreshold="2"
                 android:inputType="textCapWords" />
 
             <ImageButton
-                android:id="@+id/genre_button"
+                android:id="@+id/btn_genre"
                 style="@style/dropDownMenuButton"
                 android:layout_alignBottom="@id/genre"
                 app:srcCompat="@drawable/ic_arrow_drop_down"
@@ -317,12 +319,12 @@
                 style="@style/languageTextEntry"
                 android:layout_below="@id/lbl_language"
                 android:layout_centerVertical="true"
-                android:layout_toStartOf="@id/language_button"
+                android:layout_toStartOf="@id/btn_language"
                 android:completionThreshold="2"
                 android:singleLine="true" />
 
             <ImageButton
-                android:id="@+id/language_button"
+                android:id="@+id/btn_language"
                 style="@style/dropDownMenuButton"
                 android:layout_alignBottom="@id/language"
                 app:srcCompat="@drawable/ic_arrow_drop_down"
@@ -331,7 +333,7 @@
 
         <!-- the id for the layout is only for use by a debug method -->
         <RelativeLayout
-            android:id="@+id/lbl_row_description"
+            android:id="@+id/row_lbl_description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -344,14 +346,15 @@
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
             <ImageButton
-                android:id="@+id/description_edit_button"
+                android:id="@+id/btn_description"
                 style="@style/dropDownMenuButton"
                 android:layout_alignBottom="@id/lbl_description"
                 app:srcCompat="@drawable/ic_mode_edit"
                 tools:ignore="ContentDescription" />
         </RelativeLayout>
 
-        <View style="@style/listDividerHorizontal" />
+        <View android:id="@+id/description_divider"
+            style="@style/listDividerHorizontal" />
 
         <TextView
             android:id="@+id/description"

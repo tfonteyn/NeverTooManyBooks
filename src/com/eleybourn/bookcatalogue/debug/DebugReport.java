@@ -201,7 +201,7 @@ public class DebugReport {
 
         } catch (NullPointerException e) {
             Logger.error(e);
-            StandardDialogs.showBriefMessage(activity, R.string.error_export_failed);
+            StandardDialogs.showUserMessage(activity, R.string.error_export_failed);
         }
     }
 }

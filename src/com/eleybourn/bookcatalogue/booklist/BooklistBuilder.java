@@ -3084,16 +3084,16 @@ public class BooklistBuilder implements AutoCloseable {
 //					//collatedCols += ",\n	" + d.name + CatalogueDBAdapter.COLLATION;
 //					collatedCols += "\n	" + d.name + CatalogueDBAdapter.COLLATION;
 //				}
-//				sql = "Insert Into " + mListTable + "(\n	" + DOM_LEVEL + ",\n	" + DOM_ROW_KIND +
+//				sql = "INSERT INTO " + mListTable + "(\n	" + DOM_LEVEL + ",\n	" + DOM_ROW_KIND +
 //						//",\n	" + DOM_PARENT_KEY +
 //						cols + "," + DOM_ROOT_KEY +
 //						")" +
-//						"\n select " + levelId + " as " + DOM_LEVEL + ",\n	" + l.kind + " as " + DOM_ROW_KIND +
+//						"\n SELECT " + levelId + " AS " + DOM_LEVEL + ",\n	" + l.kind + " AS " + DOM_ROW_KIND +
 //						//l.getKeyExpression() +
 //						cols + "," + DOM_ROOT_KEY +
-//						"\n from " + mListTable + "\n " + " where level = " + (levelId+1) +
-//						"\n Group by " + collatedCols + "," + DOM_ROOT_KEY + CatalogueDBAdapter.COLLATION;
-//						//"\n Group by " + DOM_LEVEL + ", " + DOM_ROW_KIND + collatedCols;
+//						"\n FROM " + mListTable + "\n " + " WHERE level = " + (levelId+1) +
+//						"\n GROUP BY " + collatedCols + "," + DOM_ROOT_KEY + CatalogueDBAdapter.COLLATION;
+//						//"\n GROUP BY " + DOM_LEVEL + ", " + DOM_ROW_KIND + collatedCols;
 //
 //				SQLiteStatement stmt = mStatements.add("L" + i, sql);
 //				mLevelBuildStmts.add(stmt);

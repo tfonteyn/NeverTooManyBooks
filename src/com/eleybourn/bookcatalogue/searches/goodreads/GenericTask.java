@@ -76,12 +76,12 @@ public abstract class GenericTask extends RunnableTask {
         holder.retry_info = view.findViewById(R.id.retry_info);
         holder.error = view.findViewById(R.id.error);
         holder.job_info = view.findViewById(R.id.job_info);
-        holder.checkbox = view.findViewById(R.id.checked);
-        holder.retry = view.findViewById(R.id.retry);
+        holder.checkButton = view.findViewById(R.id.checked);
+        holder.retryButton = view.findViewById(R.id.retry);
 
         ViewTagger.setTag(view, R.id.TAG_TASK_HOLDER, holder);
 
-        ViewTagger.setTag(holder.checkbox, R.id.TAG_BOOK_EVENT_HOLDER, holder);
+        ViewTagger.setTag(holder.checkButton, R.id.TAG_BOOK_EVENT_HOLDER, holder);
 
         return view;
     }
@@ -105,12 +105,12 @@ public abstract class GenericTask extends RunnableTask {
             case STATUS_COMPLETE:
                 statusText = context.getString(R.string.completed);
                 holder.retry_info.setVisibility(View.GONE);
-                holder.retry.setVisibility(View.GONE);
+                holder.retryButton.setVisibility(View.GONE);
                 break;
             case STATUS_FAILED:
                 statusText = context.getString(R.string.failed);
                 holder.retry_info.setVisibility(View.GONE);
-                holder.retry.setVisibility(View.VISIBLE);
+                holder.retryButton.setVisibility(View.VISIBLE);
                 break;
             case STATUS_QUEUED:
                 statusText = context.getString(R.string.queued);
@@ -120,12 +120,12 @@ public abstract class GenericTask extends RunnableTask {
                                 this.getRetryLimit(),
                                 DateFormat.getDateTimeInstance().format(cursor.getRetryDate())));
                 holder.retry_info.setVisibility(View.VISIBLE);
-                holder.retry.setVisibility(View.GONE);
+                holder.retryButton.setVisibility(View.GONE);
                 break;
             default:
                 statusText = context.getString(R.string.unknown);
                 holder.retry_info.setVisibility(View.GONE);
-                holder.retry.setVisibility(View.GONE);
+                holder.retryButton.setVisibility(View.GONE);
                 break;
         }
 
@@ -179,7 +179,7 @@ public abstract class GenericTask extends RunnableTask {
         TextView retry_info;
         TextView error;
         TextView job_info;
-        CompoundButton checkbox;
-        Button retry;
+        CompoundButton checkButton;
+        Button retryButton;
     }
 }

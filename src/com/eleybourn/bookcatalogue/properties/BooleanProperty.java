@@ -58,46 +58,45 @@ public class BooleanProperty extends ValuePropertyWithGlobalDefault<Boolean> imp
     @Override
     public View getView(@NonNull final LayoutInflater inflater) {
         // Get the view and setup holder
-        View v = inflater.inflate(R.layout.property_value_boolean, null);
-        final Holder h = new Holder();
+        View view = inflater.inflate(R.layout.property_value_boolean, null);
+        final Holder holder = new Holder();
 
-        h.property = this;
-        h.cb = v.findViewById(R.id.checkbox);
-        h.name = v.findViewById(R.id.name);
-        h.value = v.findViewById(R.id.value);
+        holder.property = this;
+        holder.cb = view.findViewById(R.id.checkbox);
+        holder.name = view.findViewById(R.id.name);
+        holder.value = view.findViewById(R.id.value);
 
-        ViewTagger.setTag(v, R.id.TAG_PROPERTY, h);
-        ViewTagger.setTag(h.cb, R.id.TAG_PROPERTY, h);
+        ViewTagger.setTag(view, R.id.TAG_PROPERTY, holder);// value BooleanProperty.Holder
+        ViewTagger.setTag(holder.cb, R.id.TAG_PROPERTY, holder);// value BooleanProperty.Holder
 
         // Set the ID so weird stuff does not happen on activity reload after config changes.
-        h.cb.setId(nextViewId());
+        holder.cb.setId(nextViewId());
 
-        h.name.setText(this.getNameResourceId());
+        holder.name.setText(this.getNameResourceId());
 
-        // Set initial checkbox state
-        Boolean b = get();
-        setViewValues(h, b);
+        // Set initial state
+        setViewValues(holder, get());
 
         // Setup click handlers for view and checkbox
-        h.cb.setOnClickListener(new OnClickListener() {
+        holder.cb.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(@NonNull View v) {
                 handleClick(v);
             }
         });
 
-        v.setOnClickListener(new OnClickListener() {
+        view.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(@NonNull View v) {
                 handleClick(v);
             }
         });
 
-        return v;
+        return view;
     }
 
-    private void handleClick(@NonNull final View v) {
-        Holder holder = ViewTagger.getTagOrThrow(v, R.id.TAG_PROPERTY);
+    private void handleClick(@NonNull final View view) {
+        Holder holder = ViewTagger.getTagOrThrow(view, R.id.TAG_PROPERTY);// value BooleanProperty.Holder
         Boolean value = holder.property.get();
         // Cycle through three values: 'null', 'true', 'false'. If the value is 'global' omit 'null'.
         if (value == null) {
@@ -141,7 +140,8 @@ public class BooleanProperty extends ValuePropertyWithGlobalDefault<Boolean> imp
     @Override
     @Nullable
     protected BooleanProperty setGlobalDefault(@Nullable final Boolean value) {
-        BookCatalogueApp.Prefs.putBoolean(getPreferenceKey(), Objects.requireNonNull(value));
+        Objects.requireNonNull(value);
+        BookCatalogueApp.Prefs.putBoolean(getPreferenceKey(), value);
         return this;
     }
 
@@ -174,7 +174,8 @@ public class BooleanProperty extends ValuePropertyWithGlobalDefault<Boolean> imp
     @Override
     @CallSuper
     public BooleanProperty setDefaultValue(@Nullable final Boolean value) {
-        super.setDefaultValue(Objects.requireNonNull(value));
+        Objects.requireNonNull(value);
+        super.setDefaultValue(value);
         return this;
     }
 

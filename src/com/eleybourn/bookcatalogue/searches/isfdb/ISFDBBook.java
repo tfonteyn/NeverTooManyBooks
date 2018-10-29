@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -238,11 +237,11 @@ public class ISFDBBook extends AbstractBase {
                     bookData.putString(ISFDB_BOOK_TYPE, tmp);
 
                     if ("a1".equals(TYPE_MAP.get(tmp))) {
-                        bookData.putInt(UniqueId.KEY_ANTHOLOGY_BITMASK,
-                                DatabaseDefinitions.DOM_ANTHOLOGY_SINGLE_AUTHOR);
+                        bookData.putInt(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK,
+                                DatabaseDefinitions.DOM_ANTHOLOGY);
                     } else if ("a2".equals(TYPE_MAP.get(tmp))) {
-                        bookData.putInt(UniqueId.KEY_ANTHOLOGY_BITMASK,
-                                DatabaseDefinitions.DOM_ANTHOLOGY_SINGLE_AUTHOR |
+                        bookData.putInt(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK,
+                                DatabaseDefinitions.DOM_ANTHOLOGY |
                                         DatabaseDefinitions.DOM_ANTHOLOGY_MULTIPLE_AUTHORS);
                     }
 
@@ -292,11 +291,11 @@ public class ISFDBBook extends AbstractBase {
             boolean sameAuthor = AnthologyTitle.isSingleAuthor(toc);
             int type;
             if (sameAuthor) {
-                type = DatabaseDefinitions.DOM_ANTHOLOGY_SINGLE_AUTHOR;
+                type = DatabaseDefinitions.DOM_ANTHOLOGY;
             } else {
                 type = DatabaseDefinitions.DOM_ANTHOLOGY_MULTIPLE_AUTHORS;
             }
-            bookData.putInt(UniqueId.KEY_ANTHOLOGY_BITMASK, type | bookData.getInt(UniqueId.KEY_ANTHOLOGY_BITMASK));
+            bookData.putInt(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK, type | bookData.getInt(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK));
         }
 
         // try to deduce the first publication date

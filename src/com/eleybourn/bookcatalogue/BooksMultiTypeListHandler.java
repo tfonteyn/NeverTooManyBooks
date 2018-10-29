@@ -162,7 +162,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
      * Return the *absolute* position of the passed view in the list of books.
      */
     int getAbsolutePosition(@NonNull View v) {
-        final BooklistHolder holder = ViewTagger.getTagOrThrow(v, R.id.TAG_HOLDER);
+        final BooklistHolder holder = ViewTagger.getTagOrThrow(v, R.id.TAG_HOLDER);// value: BooklistHolder suited for the ROW_KIND
         return holder.absolutePosition;
     }
 
@@ -228,9 +228,11 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                         @NonNull final LayoutInflater inflater,
                         @Nullable View convertView,
                         @NonNull final ViewGroup parent) {
+
         final BooklistRowView rowView = ((BooklistSupportProvider) cursor).getRowView();
         final BooklistHolder holder;
         final int level = rowView.getLevel();
+
         if (convertView == null) {
             holder = newHolder(rowView);
             convertView = holder.newView(rowView, inflater, parent, level);
@@ -240,10 +242,11 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
             }
             convertView.setPadding((level - 1) * 5, 0, 0, 0);
             holder.map(rowView, convertView);
-            ViewTagger.setTag(convertView, R.id.TAG_HOLDER, holder);
+            ViewTagger.setTag(convertView, R.id.TAG_HOLDER, holder);// value: BooklistHolder suited for the ROW_KIND
             // Indent based on level; we assume rows of a given type only occur at the same level
         } else {
-            holder = ViewTagger.getTagOrThrow(convertView, R.id.TAG_HOLDER);
+            // recycling convertView
+            holder = ViewTagger.getTagOrThrow(convertView, R.id.TAG_HOLDER);// value: BooklistHolder suited for the ROW_KIND
         }
 
         holder.absolutePosition = rowView.getAbsolutePosition();
@@ -255,7 +258,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
     private String getAuthorFromRow(@NonNull final CatalogueDBAdapter db, @NonNull final BooklistRowView rowView) {
         if (rowView.hasAuthorId() && rowView.getAuthorId() > 0) {
             Author author = db.getAuthor(rowView.getAuthorId());
-            //noinspection ConstantConditions
+            Objects.requireNonNull(author);
             return author.getDisplayName();
 
         } else if (rowView.getRowKind() == RowKinds.ROW_KIND_BOOK) {
@@ -433,7 +436,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                 });
                 // Display an error, if any
                 if (result != 0) {
-                    StandardDialogs.showBriefMessage(activity, result);
+                    StandardDialogs.showUserMessage(activity, result);
                 }
                 return true;
             }
@@ -476,7 +479,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                     try {
                         grMgr.requestAuthorization(activity);
                     } catch (NetworkException e) {
-                        StandardDialogs.showBriefMessage(activity, e.getLocalizedMessage());
+                        StandardDialogs.showUserMessage(activity, e.getLocalizedMessage());
                     }
                 }
                 // get a QueueManager and queue the task.
@@ -489,7 +492,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
             case R.id.MENU_SERIES_EDIT: {
                 long id = rowView.getSeriesId();
                 if (id == -1) {
-                    StandardDialogs.showBriefMessage(activity, R.string.cannot_edit_system);
+                    StandardDialogs.showUserMessage(activity, R.string.cannot_edit_system);
                     if (BuildConfig.DEBUG) {
                         Logger.debug("FIXME id==-1, ... how? why? R.string.cannot_edit_system)");
                     }

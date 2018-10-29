@@ -446,5 +446,4 @@
     <string name="edit_format_name">Upravit jméno formátu</string>
     <string name="name_can_not_be_blank">Jméno nesmí být prázdné</string>
     <string name="title_reorder">a|A|an|An|the|The</string>
-    <string name="amazon">Amazon</string>
 </resources>
