@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <!-- TODO: make these colors styleable -->
+    <color name="CropHighlightView_outlinePaint_noFocus">#FF000000</color>
+    <color name="CropHighlightView_outlinePaint_circle">#d500f9</color>
+    <color name="CropHighlightView_outlinePaint_rectangle">#fb8c00</color>
+
+    <color name="CoverBrowser_background">#FF000000</color>
+
     <!-- Material Design - Color Palette -->
     <!-- Date: 1/15/2015 -->
     <!-- http://www.google.com/design/spec/style/color.html#color-color-palette -->
@@ -316,11 +324,11 @@
     <!-- Blue Grey -->
 
     <!-- Black -->
-    <color name="black">#000000</color>
+    <color name="black">#FF000000</color>
     <!-- Black -->
 
     <!-- White -->
-    <color name="white">#FFFFFF</color>
+    <color name="white">#FFFFFFFF</color>
     <!-- White -->
 
 </resources>

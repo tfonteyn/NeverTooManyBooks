@@ -34,12 +34,12 @@ public class GoogleBooksManager {
         return BookCatalogueApp.Prefs.getString(PREFS_HOST_URL, "http://books.google.com");
     }
 
-    public static void setBaseURL(@NonNull final String url) {
+    public static void setBaseURL(final @NonNull String url) {
         BookCatalogueApp.Prefs.putString(PREFS_HOST_URL, url);
     }
 
     @Nullable
-    static public File getCoverImage(@NonNull final String isbn) {
+    static public File getCoverImage(final @NonNull String isbn) {
         Bundle mBookData = new Bundle();
         try {
             search(isbn, "", "", mBookData, true);
@@ -58,10 +58,10 @@ public class GoogleBooksManager {
         }
     }
 
-    public static void search(@NonNull final String isbn,
+    public static void search(final @NonNull String isbn,
                               @NonNull String author,
                               @NonNull String title,
-                              @NonNull final Bundle /* out */ book,
+                              final @NonNull Bundle /* out */ book,
                               final boolean fetchThumbnail) throws IOException {
 
         String path = getBaseURL() + "/books/feeds/volumes";

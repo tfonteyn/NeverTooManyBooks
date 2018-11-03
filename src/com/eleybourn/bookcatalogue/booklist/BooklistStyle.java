@@ -184,8 +184,8 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
         mSignedFilterListItems.add(FILTER_YES, R.string.select_signed_yes);
         mSignedFilterListItems.add(FILTER_EITHER, R.string.all_books);
 
-        mAnthologyFilterListItems.add(FILTER_NO, R.string.select_anthology_no);
-        mAnthologyFilterListItems.add(FILTER_YES, R.string.select_anthology_yes);
+        mAnthologyFilterListItems.add(FILTER_NO, R.string.select_is_anthology_no);
+        mAnthologyFilterListItems.add(FILTER_YES, R.string.select_is_anthology_yes);
         mAnthologyFilterListItems.add(FILTER_EITHER, R.string.all_books);
 
         mLoanedFilterListItems.add(FILTER_NO, R.string.select_loaned_no);
@@ -234,7 +234,7 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
     /**
      * Constructor for system-defined styles.
      */
-    BooklistStyle(@StringRes final int stringId) {
+    BooklistStyle(final @StringRes int stringId) {
         mNameStringId = stringId;
         mGroups = new ArrayList<>();
         initProperties();
@@ -244,7 +244,7 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
     /**
      * Constructor for user-defined styles.
      */
-    BooklistStyle(@NonNull final String name) {
+    BooklistStyle(final @NonNull String name) {
         initProperties();
         mNameStringId = 0;
         mGroups = new ArrayList<>();
@@ -265,19 +265,19 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
     }
 
     /* the set Filter methods are meant for the build-in Styles */
-    public void setReadFilter(@NonNull final Integer v) {
+    public void setReadFilter(final @NonNull Integer v) {
         mXtraReadFilter.set(v);
     }
     @SuppressWarnings("unused")
-    public void setSignedFilter(@NonNull final Integer v) {
+    public void setSignedFilter(final @NonNull Integer v) {
         mXtraSignedFilter.set(v);
     }
     @SuppressWarnings("unused")
-    public void setAnthologyFilter(@NonNull final Integer v) {
+    public void setAnthologyFilter(final @NonNull Integer v) {
         mXtraAnthologyFilter.set(v);
     }
     @SuppressWarnings("unused")
-    public void setLoanedFilter(@NonNull final Integer v) {
+    public void setLoanedFilter(final @NonNull Integer v) {
         mXtraLoanedFilter.set(v);
     }
 
@@ -312,7 +312,7 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
     /**
      * Accessor. Sets user-defined name.
      */
-    public void setName(@NonNull final String name) {
+    public void setName(final @NonNull String name) {
         mNameProperty.set(name);
         mNameStringId = 0;
     }
@@ -330,7 +330,7 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
         }
     }
 
-    public void addGroup(@NonNull final BooklistGroup group) {
+    public void addGroup(final @NonNull BooklistGroup group) {
         mGroups.add(group);
     }
 
@@ -349,7 +349,7 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
      *
      * @param kinds one or more Kind of groups to add.
      */
-    public void addGroups(@NonNull final int... kinds) {
+    public void addGroups(final @NonNull int... kinds) {
         for (int kind : kinds) {
             BooklistGroup group = BooklistGroup.newGroup(kind);
             mGroups.add(group);
@@ -442,7 +442,7 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
                 .setDefaultValue(FILTER_EITHER);
 
         mXtraAnthologyFilter = new IntegerListProperty(mAnthologyFilterListItems, "XAnthologyFilter",
-                PropertyGroup.GRP_EXTRA_FILTERS, R.string.select_based_on_anthology_status)
+                PropertyGroup.GRP_EXTRA_FILTERS, R.string.select_based_on_is_anthology_status)
                 .setDefaultValue(FILTER_EITHER);
 
         mXtraLoanedFilter = new IntegerListProperty(mLoanedFilterListItems, "XLoanedFilter",
@@ -485,7 +485,7 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
      * Passed a Properties object, update the properties of this style
      * based on the values of the passed properties.
      */
-    public void setProperties(@NonNull final Properties newProps) {
+    public void setProperties(final @NonNull Properties newProps) {
         Properties props = getProperties();
         for (Property newVal : newProps) {
             Property thisProp = props.get(newVal.getUniqueName());
@@ -498,7 +498,7 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
     /**
      * Passed a template style, copy the group structure to this style.
      */
-    public void setGroups(@NonNull final BooklistStyle fromStyle) {
+    public void setGroups(final @NonNull BooklistStyle fromStyle) {
         Properties newProps = new Properties();
 
         // Save the current groups
@@ -690,7 +690,7 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
     /**
      * Delete this style from the database
      */
-    public void delete(@NonNull final CatalogueDBAdapter db) {
+    public void delete(final @NonNull CatalogueDBAdapter db) {
         if (id == 0) {
             throw new IllegalArgumentException("Style is not stored in the database, can not be deleted");
         }
@@ -739,7 +739,7 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
         final DomainDefinition[] domains;
 
         /** Constructor */
-        CompoundKey(@NonNull final String prefix, @NonNull final DomainDefinition... domains) {
+        CompoundKey(final @NonNull String prefix, final @NonNull DomainDefinition... domains) {
             this.prefix = prefix;
             this.domains = domains;
         }

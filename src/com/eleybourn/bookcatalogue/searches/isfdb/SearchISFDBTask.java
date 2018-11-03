@@ -15,17 +15,14 @@ import java.net.UnknownHostException;
 
 public class SearchISFDBTask extends SearchTask {
 
-    public SearchISFDBTask(@NonNull final TaskManager manager,
-                           @NonNull final String author,
-                           @NonNull final String title,
-                           @NonNull final String isbn,
-                           final boolean fetchThumbnail) {
-        super("SearchISFDBTask isbn=" + isbn, manager, author, title, isbn, fetchThumbnail);
+    public SearchISFDBTask(final @NonNull String name,
+                           final @NonNull TaskManager manager) {
+        super(name, manager);
     }
 
     @Override
     protected void runTask() {
-        @StringRes final int R_ID_SEARCHING = R.string.searching_isfdb;
+        final @StringRes int R_ID_SEARCHING = R.string.searching_isfdb;
         doProgress(getString(R_ID_SEARCHING), 0);
         try {
             ISFDBManager.search(mIsbn, mAuthor, mTitle, mBookData, mFetchThumbnail);

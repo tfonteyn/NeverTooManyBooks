@@ -25,7 +25,7 @@ public class ImportThread extends ManagedTask {
     private final Importer.OnImporterListener mImportListener = new Importer.OnImporterListener() {
 
         @Override
-        public void onProgress(@NonNull final String message, final int position) {
+        public void onProgress(final @NonNull String message, final int position) {
             if (position > 0) {
                 mTaskManager.doProgress(ImportThread.this, message, position);
             } else {
@@ -44,7 +44,7 @@ public class ImportThread extends ManagedTask {
         }
     };
 
-    public ImportThread(@NonNull final TaskManager manager, @NonNull final String fileSpec) {
+    public ImportThread(final @NonNull TaskManager manager, final @NonNull String fileSpec) {
         super("ImportThread", manager);
 
         final File file = new File(fileSpec);

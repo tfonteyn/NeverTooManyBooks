@@ -94,15 +94,15 @@ public class HintManager {
         }
     }
 
-    public static boolean shouldBeShown(@StringRes final int id) {
+    public static boolean shouldBeShown(final @StringRes int id) {
         return mHints.get(id).shouldBeShown();
     }
 
     /** Display the passed hint, if the user has not disabled it */
-    public static void displayHint(@NonNull final Context context,
-                                   @StringRes final int stringId,
-                                   @Nullable final Runnable postRun,
-                                   @Nullable final Object... args) {
+    public static void displayHint(final @NonNull Context context,
+                                   final @StringRes int stringId,
+                                   final @Nullable Runnable postRun,
+                                   final @Nullable Object... args) {
         // Get the hint and return if it has been disabled.
         final Hint hint = mHints.get(stringId);
         if (!hint.shouldBeShown()) {
@@ -170,7 +170,7 @@ public class HintManager {
          *
          * @param key Preferences key suffix specific to this hint
          */
-        private Hint(@NonNull final String key) {
+        private Hint(final @NonNull String key) {
             this.key = key;
         }
 

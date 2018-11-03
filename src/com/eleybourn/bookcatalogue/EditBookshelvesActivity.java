@@ -65,7 +65,7 @@ public class EditBookshelvesActivity extends BaseListActivity {
 
     @Override
     @CallSuper
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
+    public void onCreate(final @Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTitle(R.string.title_manage_bs);
 
@@ -83,7 +83,7 @@ public class EditBookshelvesActivity extends BaseListActivity {
 
     @Override
     @CallSuper
-    public void onCreateContextMenu(@NonNull final ContextMenu menu, final View v, final ContextMenuInfo menuInfo) {
+    public void onCreateContextMenu(final @NonNull ContextMenu menu, final View v, final ContextMenuInfo menuInfo) {
         menu.add(Menu.NONE, R.id.MENU_DELETE, 0, R.string.menu_delete)
                 .setIcon(R.drawable.ic_delete);
 
@@ -92,7 +92,7 @@ public class EditBookshelvesActivity extends BaseListActivity {
 
     @Override
     @CallSuper
-    public boolean onContextItemSelected(@NonNull final MenuItem item) {
+    public boolean onContextItemSelected(final @NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.MENU_DELETE:
                 AdapterContextMenuInfo menuInfo = (AdapterContextMenuInfo) item.getMenuInfo();
@@ -119,7 +119,7 @@ public class EditBookshelvesActivity extends BaseListActivity {
      */
     @Override
     @CallSuper
-    public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
+    public boolean onCreateOptionsMenu(final @NonNull Menu menu) {
 
         menu.add(Menu.NONE, R.id.MENU_INSERT, 0, R.string.menu_insert_bs)
                 .setIcon(R.drawable.ic_add)
@@ -130,7 +130,7 @@ public class EditBookshelvesActivity extends BaseListActivity {
 
     @Override
     @CallSuper
-    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+    public boolean onOptionsItemSelected(final @NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.MENU_INSERT:
                 Intent intent = new Intent(this, EditBookshelfActivity.class);
@@ -141,7 +141,7 @@ public class EditBookshelvesActivity extends BaseListActivity {
     }
 
     @Override
-    protected void onListItemClick(@NonNull final ListView listView, @NonNull final View view, final int position, final long id) {
+    protected void onListItemClick(final @NonNull ListView listView, final @NonNull View view, final int position, final long id) {
         Bookshelf bookshelf = mList.get(position);
         Intent intent = new Intent(this, EditBookshelfActivity.class);
         intent.putExtra(UniqueId.KEY_ID, bookshelf.id);
@@ -150,7 +150,7 @@ public class EditBookshelvesActivity extends BaseListActivity {
 
     @Override
     @CallSuper
-    protected void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent data) {
+    protected void onActivityResult(final int requestCode, final int resultCode, final @Nullable Intent data) {
         if (BuildConfig.DEBUG) {
             Logger.info(this,"onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
         }

@@ -24,15 +24,15 @@ public class AdminHostsFragment extends Fragment {
     private boolean isCreated;
 
     @Override
-    public View onCreateView(@NonNull final LayoutInflater inflater,
-                             @Nullable final ViewGroup container,
-                             @Nullable final Bundle savedInstanceState) {
+    public View onCreateView(final @NonNull LayoutInflater inflater,
+                             final @Nullable ViewGroup container,
+                             final @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_edit_search_hosts, container, false);
     }
 
     @Override
     @CallSuper
-    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
+    public void onActivityCreated(final @Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
         //noinspection ConstantConditions
@@ -48,7 +48,7 @@ public class AdminHostsFragment extends Fragment {
         isCreated = true;
     }
 
-    public void saveState() {
+    public void saveSettings() {
         if (isCreated) {
             //TODO: add sanity checks
             String newAmazon = amazon_url.getText().toString().trim();

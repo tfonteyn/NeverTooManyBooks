@@ -23,18 +23,15 @@ import java.net.UnknownHostException;
 */
 public class SearchLibraryThingTask extends SearchTask {
 
-    public SearchLibraryThingTask(@NonNull final TaskManager manager,
-                                  @NonNull final String /* ignored */ author,
-                                  @NonNull final String /* ignored */  title,
-                                  @NonNull final String isbn,
-                                  final boolean fetchThumbnail) {
-        super("SearchLibraryThingTask isbn=" + isbn, manager, author, title, isbn, fetchThumbnail);
+    public SearchLibraryThingTask(final @NonNull String name,
+                                  final @NonNull TaskManager manager) {
+        super(name, manager);
     }
 
     @Override
     protected void runTask() {
         if (IsbnUtils.isValid(mIsbn)) {
-            @StringRes final int R_ID_SEARCHING = R.string.searching_library_thing;
+            final @StringRes int R_ID_SEARCHING = R.string.searching_library_thing;
             doProgress(getString(R_ID_SEARCHING), 0);
             LibraryThingManager ltm = new LibraryThingManager();
             // do we have a dev kev ?

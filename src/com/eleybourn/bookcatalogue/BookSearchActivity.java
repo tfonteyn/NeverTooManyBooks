@@ -82,11 +82,14 @@ public class BookSearchActivity extends BaseActivityWithTasks {
     public static final int REQUEST_CODE_SEARCH = UniqueId.ACTIVITY_REQUEST_CODE_ADD_BOOK_BY_SEARCH;
     public static final int REQUEST_CODE_SCAN = UniqueId.ACTIVITY_REQUEST_CODE_ADD_BOOK_BY_SCAN;
 
-    public static final String REQUEST_KEY_BY = "by";
+    public static final String REQUEST_BKEY_BY = "by";
     public static final String BY_ISBN = "isbn";
     public static final String BY_TEXT = "text";
     public static final String BY_SCAN = "scan";
 
+    /** optionally limit the sites to search on. By default uses {@link SearchManager#SEARCH_ALL} */
+    public static final String REQUEST_BKEY_SEARCH_SITES = "SearchSites";
+    /** */
     private static final String SEARCH_MANAGER_ID = "SearchManagerId";
     private static final String SCANNER_STARTED = "ScannerStarted";
     private static final String LAST_BOOK_INTENT = "LastBookIntent";
@@ -119,7 +122,7 @@ public class BookSearchActivity extends BaseActivityWithTasks {
     private long mSearchManagerId = 0;
     private final SearchManager.SearchListener mSearchHandler = new SearchManager.SearchListener() {
         @Override
-        public boolean onSearchFinished(@NonNull final Bundle bookData, final boolean cancelled) {
+        public boolean onSearchFinished(final @NonNull Bundle bookData, final boolean cancelled) {
             return BookSearchActivity.this.onSearchFinished(bookData, cancelled);
         }
 
@@ -129,6 +132,7 @@ public class BookSearchActivity extends BaseActivityWithTasks {
     };
     private String mBy;
 
+    private int mSearchSites = SearchManager.SEARCH_ALL;
     /**
      * Return the layout to use for this subclass
      */
@@ -151,7 +155,7 @@ public class BookSearchActivity extends BaseActivityWithTasks {
 
     @Override
     @CallSuper
-    protected void onCreate(@Nullable final Bundle savedInstanceState) {
+    protected void onCreate(final @Nullable Bundle savedInstanceState) {
         Tracker.enterOnCreate(this);
         try {
             boolean network_available = Utils.isNetworkAvailable(this);
@@ -166,10 +170,12 @@ public class BookSearchActivity extends BaseActivityWithTasks {
             Bundle extras = getIntent().getExtras();
             Objects.requireNonNull(extras);
             mIsbn = extras.getString(UniqueId.KEY_BOOK_ISBN);
-            mBy = extras.getString(REQUEST_KEY_BY);
+            mBy = extras.getString(REQUEST_BKEY_BY);
 
             super.onCreate(savedInstanceState);
             this.setTitle(R.string.title_isbn_search);
+
+            mSearchSites = extras.getInt(REQUEST_BKEY_SEARCH_SITES, SearchManager.SEARCH_ALL);
 
             LibraryThingManager.showLtAlertIfNecessary(this, false, "search");
 
@@ -188,7 +194,7 @@ public class BookSearchActivity extends BaseActivityWithTasks {
              *
              * There is a bizarre bug that seems to only affect some users in which this activity
              * is called AFTER the user has finished and the passed Intent has neither a ISBN nor a
-             * "REQUEST_KEY_BY" in the Extras. Following all the code that starts this activity suggests that
+             * "REQUEST_BKEY_BY" in the Extras. Following all the code that starts this activity suggests that
              * the activity is ALWAYS started with the intent data. The problems always occur AFTER
              * adding a book, which confirms that the activity has been started correctly.
              *
@@ -205,8 +211,8 @@ public class BookSearchActivity extends BaseActivityWithTasks {
                     if (mIsbn == null && savedInstanceState.containsKey(UniqueId.KEY_BOOK_ISBN)) {
                         mIsbn = savedInstanceState.getString(UniqueId.KEY_BOOK_ISBN);
                     }
-                    if (savedInstanceState.containsKey(REQUEST_KEY_BY)) {
-                        mBy = savedInstanceState.getString(REQUEST_KEY_BY);
+                    if (savedInstanceState.containsKey(REQUEST_BKEY_BY)) {
+                        mBy = savedInstanceState.getString(REQUEST_BKEY_BY);
                     }
                 }
                 // If they are still null, we can't proceed.
@@ -244,7 +250,7 @@ public class BookSearchActivity extends BaseActivityWithTasks {
      */
     @Override
     @CallSuper
-    public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
+    public boolean onCreateOptionsMenu(final @NonNull Menu menu) {
         menu.add(Menu.NONE, R.id.MENU_PREFS_SEARCH_SITES, 0, R.string.search_sites)
                 .setIcon(R.drawable.ic_search)
                 .setShowAsAction(MenuItem.SHOW_AS_ACTION_WITH_TEXT);
@@ -253,11 +259,12 @@ public class BookSearchActivity extends BaseActivityWithTasks {
     }
 
     @Override
-    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+    public boolean onOptionsItemSelected(final @NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.MENU_PREFS_SEARCH_SITES:
                 Intent intent = new Intent(this, SearchAdminActivity.class);
-                startActivity(intent);
+                intent.putExtra(SearchAdminActivity.REQUEST_BKEY_TAB, SearchAdminActivity.TAB_SEARCH_COVER_ORDER);
+                startActivityForResult(intent, SearchAdminActivity.REQUEST_CODE); /* 1b923299-d966-4ed5-8230-c5a7c491053b */
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -370,7 +377,7 @@ public class BookSearchActivity extends BaseActivityWithTasks {
         });
     }
 
-    private void initKeypadButton(@IdRes final int id, @NonNull final String text) {
+    private void initKeypadButton(final @IdRes int id, final @NonNull String text) {
         findViewById(id).setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 handleIsbnKey(text);
@@ -381,14 +388,14 @@ public class BookSearchActivity extends BaseActivityWithTasks {
     /*
      * Handle character insertion at cursor position in EditText
      */
-    private void handleIsbnKey(@NonNull final String key) {
+    private void handleIsbnKey(final @NonNull String key) {
         int start = mIsbnText.getSelectionStart();
         int end = mIsbnText.getSelectionEnd();
         mIsbnText.getText().replace(start, end, key);
         mIsbnText.setSelection(start + 1, start + 1);
     }
 
-    private void onCreateByScan(@Nullable final Bundle savedInstanceState) {
+    private void onCreateByScan(final @Nullable Bundle savedInstanceState) {
         mMode = Mode.Scan;
         mIsbnText = findViewById(R.id.isbn);
 
@@ -548,7 +555,7 @@ public class BookSearchActivity extends BaseActivityWithTasks {
      *
      * Either the isbn or the author/title needs to be specified.
      */
-    private void go(@NonNull final String isbn, @NonNull final String author, @NonNull final String title) {
+    private void go(final @NonNull String isbn, final @NonNull String author, final @NonNull String title) {
         if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
             Logger.info(this, " go: isbn=" + isbn + ", author=" + author + ", title=" + title);
         }
@@ -659,7 +666,7 @@ public class BookSearchActivity extends BaseActivityWithTasks {
                 }
 
                 getTaskManager().doProgress(getString(R.string.searching_ellipsis));
-                searchManager.search(mAuthor, mTitle, mIsbn, true, SearchManager.SEARCH_ALL);
+                searchManager.search(mSearchSites, mAuthor, mTitle, mIsbn, true);
                 // reset the details so we don't restart the search unnecessarily
                 mAuthor = "";
                 mTitle = "";
@@ -678,7 +685,7 @@ public class BookSearchActivity extends BaseActivityWithTasks {
     }
 
     @SuppressWarnings("SameReturnValue")
-    private boolean onSearchFinished(@NonNull final Bundle bookData, final boolean cancelled) {
+    private boolean onSearchFinished(final @NonNull Bundle bookData, final boolean cancelled) {
         Tracker.handleEvent(this, "onSearchFinished" + mSearchManagerId, Tracker.States.Running);
         try {
             if (cancelled) {
@@ -737,12 +744,12 @@ public class BookSearchActivity extends BaseActivityWithTasks {
 
     @Override
     @CallSuper
-    protected void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent data) {
+    protected void onActivityResult(final int requestCode, final int resultCode, final @Nullable Intent data) {
         if (BuildConfig.DEBUG) {
             Logger.info(this, "onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
         }
         switch (requestCode) {
-            case Scanner.REQUEST_CODE: /* 4f410d34-dc9c-4ee2-903e-79d69a328517, c2c28575-5327-40c6-827a-c7973bd24d12*/
+            case Scanner.REQUEST_CODE: {/* 4f410d34-dc9c-4ee2-903e-79d69a328517, c2c28575-5327-40c6-827a-c7973bd24d12*/
                 mScannerStarted = false;
                 if (resultCode == Activity.RESULT_OK) {
                     /* there *has* to be 'data' */
@@ -762,8 +769,8 @@ public class BookSearchActivity extends BaseActivityWithTasks {
 
                 initAuthorList();
                 return;
-
-            case EditBookActivity.REQUEST_CODE: /* 341ace23-c2c8-42d6-a71e-909a3a19ba99, 9e2c0b04-8217-4b49-9937-96d160104265 */
+            }
+            case EditBookActivity.REQUEST_CODE: {/* 341ace23-c2c8-42d6-a71e-909a3a19ba99, 9e2c0b04-8217-4b49-9937-96d160104265 */
                 if (data != null) {
                     mLastBookIntent = data;
                 }
@@ -778,6 +785,13 @@ public class BookSearchActivity extends BaseActivityWithTasks {
 
                 initAuthorList();
                 return;
+            }
+            case SearchAdminActivity.REQUEST_CODE: { /* 1b923299-d966-4ed5-8230-c5a7c491053b */
+                if (resultCode == Activity.RESULT_OK && data != null) {
+                    mSearchSites = data.getIntExtra(SearchAdminActivity.RESULT_SEARCH_SITES, mSearchSites);
+                }
+                return;
+            }
         }
 
         // No matter what the activity was, rebuild the author list in case a new author was added.
@@ -849,8 +863,8 @@ public class BookSearchActivity extends BaseActivityWithTasks {
             if (extras.containsKey(UniqueId.KEY_BOOK_ISBN)) {
                 outState.putString(UniqueId.KEY_BOOK_ISBN, extras.getString(UniqueId.KEY_BOOK_ISBN));
             }
-            if (extras.containsKey(REQUEST_KEY_BY)) {
-                outState.putString(REQUEST_KEY_BY, extras.getString(REQUEST_KEY_BY));
+            if (extras.containsKey(REQUEST_BKEY_BY)) {
+                outState.putString(REQUEST_BKEY_BY, extras.getString(REQUEST_BKEY_BY));
             }
         }
 

@@ -23,7 +23,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -73,7 +72,7 @@ public class Utils {
      * TODO: unify with {@link #getInputStreamWithTerminator}
      */
     @NonNull
-    static InputStream getInputStream(@NonNull final String urlText) throws IOException, URISyntaxException {
+    static InputStream getInputStream(final @NonNull String urlText) throws IOException, URISyntaxException {
         final URL url = new URL(urlText);
         final HttpGet httpRequest = new HttpGet(url.toURI());
         final HttpClient httpclient = new DefaultHttpClient();
@@ -106,7 +105,7 @@ public class Utils {
      * @return InputStream
      */
     @Nullable
-    public static InputStream getInputStreamWithTerminator(@NonNull final URL url) throws UnknownHostException {
+    public static InputStream getInputStreamWithTerminator(final @NonNull URL url) throws UnknownHostException {
 
         synchronized (lock) {
 
@@ -164,7 +163,7 @@ public class Utils {
                     connInfo.connection.setConnectTimeout(30000);
                     connInfo.connection.setReadTimeout(30000);
 
-                    // start the connection as a background task, so that we can onCancel any runaway timeouts.
+                    // start the connection as a background task, so that we can onPartialDatePickerCancel any runaway timeouts.
                     Terminator.enqueue(new Runnable() {
                         @Override
                         public void run() {
@@ -212,9 +211,9 @@ public class Utils {
     }
 
     /**
-     *@return boolean return true if the application can access the internet
+     * @return boolean return true if the application can access the internet
      */
-    public static boolean isNetworkAvailable(@NonNull final Context context) {
+    public static boolean isNetworkAvailable(final @NonNull Context context) {
         ConnectivityManager connectivity = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         if (connectivity != null) {
             NetworkInfo[] info = connectivity.getAllNetworkInfo();
@@ -229,19 +228,6 @@ public class Utils {
         return false;
     }
 
-    /**
-     * Check if passed bundle contains a non-blank string at key k.
-     *
-     * @param bundle Bundle to check
-     * @param key    Key to check for
-     *
-     * @return Present/absent
-     */
-    public static boolean isNonBlankString(@NonNull final Bundle bundle,
-                                           @NonNull final String key) {
-        String s = bundle.getString(key);
-        return (s != null && !s.trim().isEmpty());
-    }
 
     /**
      * Passed a list of Objects, remove duplicates based on the toString result.
@@ -252,8 +238,8 @@ public class Utils {
      * @param db   Database connection to lookup IDs
      * @param list List to clean up
      */
-    public static <T extends ItemWithIdFixup> boolean pruneList(@NonNull final CatalogueDBAdapter db,
-                                                                @Nullable final List<T> list) {
+    public static <T extends ItemWithIdFixup> boolean pruneList(final @NonNull CatalogueDBAdapter db,
+                                                                final @Nullable List<T> list) {
         Objects.requireNonNull(list);
 
         Map<String, Boolean> names = new HashMap<>();
@@ -300,7 +286,7 @@ public class Utils {
      * @return Spannable with all links
      */
     @NonNull
-    public static Spannable linkifyHtml(@NonNull final String html, final int linkifyMask) {
+    public static Spannable linkifyHtml(final @NonNull String html, final int linkifyMask) {
         // Get the spannable HTML
         Spanned text = Html.fromHtml(html);
         // Save the span details for later restoration
@@ -330,7 +316,7 @@ public class Utils {
      * @return The joined strings
      */
     @NonNull
-    public static String join(@NonNull final String delim, @NonNull final String[] sa) {
+    public static String join(final @NonNull String delim, final @NonNull String[] sa) {
         // Simple case, return empty string
         if (sa.length <= 0)
             return "";
@@ -349,30 +335,6 @@ public class Utils {
         return sb.toString();
     }
 
-    /**
-     * Get a value from a bundle and convert to a long.
-     *
-     * @param bundle Bundle
-     * @param key    Key in bundle
-     *
-     * @return Result
-     *
-     * @throws NumberFormatException if it was a string with an invalid format
-     */
-    public static long getLongFromBundle(@NonNull final Bundle bundle, @Nullable final String key)
-            throws NumberFormatException {
-        Object value = bundle.get(key);
-
-        if (value instanceof Long) {
-            return (Long) value;
-        } else if (value instanceof String) {
-            return Long.parseLong((String) value);
-        } else if (value instanceof Integer) {
-            return ((Integer) value).longValue();
-        } else {
-            throw new NumberFormatException("Not a long value: " + value);
-        }
-    }
 
     /**
      * Format a number of bytes in a human readable form
@@ -392,8 +354,47 @@ public class Utils {
         return String.format(sizeFmt, space);
     }
 
+    //ENHANCE: surely this can be done more intelligently ?
+    private static Map<String,String> CURRENCY_MAP = new HashMap<>();
+    static {
+        CURRENCY_MAP.put("","");
+        CURRENCY_MAP.put("€","EUR");
+        // english
+        CURRENCY_MAP.put("$","USD");
+        CURRENCY_MAP.put("£","GBP"); // British Pound
+        CURRENCY_MAP.put("ir£","IEP"); // Irish Punt
+        CURRENCY_MAP.put("c$","CAD"); // Canadian Dollar
+        CURRENCY_MAP.put("a$","AUD"); // Australian Dollar
+
+        // supported locales (including pre-euro)
+        CURRENCY_MAP.put("kč","CZK "); // Czech Koruna
+        CURRENCY_MAP.put("kc","CZK "); // Czech Koruna
+        CURRENCY_MAP.put("dm","DEM"); //german marks
+        CURRENCY_MAP.put("Δρ","GRD"); // Greek Drachma
+        CURRENCY_MAP.put("pta","ESP"); // Spanish Peseta
+        CURRENCY_MAP.put("f","FRF"); // French Franc
+        CURRENCY_MAP.put("ff","FRF"); // French Franc
+        CURRENCY_MAP.put("fr","BEF"); // Belgian Franc
+        CURRENCY_MAP.put("fr.","BEF"); // Belgian Franc
+        CURRENCY_MAP.put("L","ITL"); // Italian Lira
+        CURRENCY_MAP.put("ƒ","NLG"); // Dutch Guilder
+        CURRENCY_MAP.put("zł","PLN"); // Polish Zloty
+        CURRENCY_MAP.put("r$","BRL"); // Brazilian Real
+        CURRENCY_MAP.put("br","RUB"); // Russian Rouble
+        CURRENCY_MAP.put("₺","TRY "); // Turkish Lira
+
+
+        CURRENCY_MAP.put("kr","DKK"); // Denmark Krone
+        CURRENCY_MAP.put("Ft","HUF"); // Hungarian Forint
+    }
+    public static String currencyToISO(@NonNull String datum) {
+        datum = datum.trim().toLowerCase();
+        return CURRENCY_MAP.get(datum);
+    }
+
+
     public interface ItemWithIdFixup {
-        long fixupId(@NonNull final CatalogueDBAdapter db);
+        long fixupId(final @NonNull CatalogueDBAdapter db);
 
         boolean isUniqueById();
     }
@@ -408,7 +409,7 @@ public class Utils {
     public static class StatefulBufferedInputStream extends BufferedInputStream implements Closeable {
         private boolean mIsOpen = true;
 
-        StatefulBufferedInputStream(@NonNull final InputStream in) {
+        StatefulBufferedInputStream(final @NonNull InputStream in) {
             super(in);
         }
 

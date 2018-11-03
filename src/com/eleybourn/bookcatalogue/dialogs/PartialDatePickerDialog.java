@@ -75,14 +75,14 @@ class PartialDatePickerDialog extends AlertDialog {
     @Nullable
     private Integer mDay;
     /** Listener to be called when date is set or dialog cancelled */
-    private OnDateSetListener mListener;
+    private OnPartialDatePickerResultsListener mListener;
 
     /**
      * Constructor
      *
      * @param activity Calling context
      */
-    PartialDatePickerDialog(@NonNull final Activity activity) {
+    PartialDatePickerDialog(final @NonNull Activity activity) {
         this(activity, null, null, null);
     }
 
@@ -95,10 +95,10 @@ class PartialDatePickerDialog extends AlertDialog {
      * @param day      Starting day
      */
     @SuppressWarnings("SameParameterValue")
-    private PartialDatePickerDialog(@NonNull final Activity activity,
-                                    @Nullable final Integer year,
-                                    @Nullable final Integer month,
-                                    @Nullable final Integer day) {
+    private PartialDatePickerDialog(final @NonNull Activity activity,
+                                    final @Nullable Integer year,
+                                    final @Nullable Integer month,
+                                    final @Nullable Integer day) {
         super(activity);
 
         mActivity = activity;
@@ -109,7 +109,7 @@ class PartialDatePickerDialog extends AlertDialog {
 
         // Get the layout
         LayoutInflater inf = this.getLayoutInflater();
-        @SuppressLint("InflateParams") // we're a Dialog, no root
+        @SuppressLint("InflateParams") // root==null as it's a dialog
         View root = inf.inflate(R.layout.dialog_partial_date_picker, null);
 
         // Ensure components match current locale order
@@ -304,7 +304,7 @@ class PartialDatePickerDialog extends AlertDialog {
                                     StandardDialogs.showUserMessage(mActivity, R.string.if_month_is_specified_year_must_be);
                                 } else {
                                     if (mListener != null)
-                                        mListener.onDateSet(PartialDatePickerDialog.this, mYear, mMonth, mDay);
+                                        mListener.onPartialDatePickerSave(PartialDatePickerDialog.this, mYear, mMonth, mDay);
                                 }
                             }
                         }
@@ -316,7 +316,7 @@ class PartialDatePickerDialog extends AlertDialog {
                     @Override
                     public void onClick(final View v) {
                         if (mListener != null)
-                            mListener.onCancel(PartialDatePickerDialog.this);
+                            mListener.onPartialDatePickerCancel(PartialDatePickerDialog.this);
                     }
                 }
         );
@@ -332,7 +332,7 @@ class PartialDatePickerDialog extends AlertDialog {
      * @param month Month (or null)
      * @param day   Day (or null)
      */
-    public void setDate(@Nullable final Integer year, @Nullable final Integer month, @Nullable final Integer day) {
+    public void setDate(final @Nullable Integer year, final @Nullable Integer month, final @Nullable Integer day) {
         mYear = year;
         mMonth = month;
         mDay = day;
@@ -422,7 +422,7 @@ class PartialDatePickerDialog extends AlertDialog {
     /**
      * Handle changes to the MONTH field
      */
-    private void handleMonth(@Nullable final Integer pos) {
+    private void handleMonth(final @Nullable Integer pos) {
         // See if we got a valid month
         boolean isMonth = (pos != null && pos > 0);
 
@@ -444,7 +444,7 @@ class PartialDatePickerDialog extends AlertDialog {
     /**
      * Handle changes to the DAY spinner
      */
-    private void handleDay(@Nullable final Integer pos) {
+    private void handleDay(final @Nullable Integer pos) {
         boolean isSelected = (pos != null && pos > 0);
         if (!isSelected) {
             mDay = null;
@@ -506,7 +506,7 @@ class PartialDatePickerDialog extends AlertDialog {
      *
      * @param root Root view
      */
-    private void reorderPickers(@NonNull final View root) {
+    private void reorderPickers(final @NonNull View root) {
         char[] order;
         try {
             // This actually throws exception in some versions of Android, specifically when
@@ -550,7 +550,7 @@ class PartialDatePickerDialog extends AlertDialog {
         }
     }
 
-    public void setOnDateSetListener(@NonNull final OnDateSetListener listener) {
+    public void setResultsListener(final @NonNull OnPartialDatePickerResultsListener listener) {
         mListener = listener;
     }
 
@@ -559,13 +559,13 @@ class PartialDatePickerDialog extends AlertDialog {
      *
      * @author pjw
      */
-    protected interface OnDateSetListener {
-        void onDateSet(@NonNull final PartialDatePickerDialog dialog,
-                       @Nullable final Integer year,
-                       @Nullable final Integer month,
-                       @Nullable final Integer day);
+    protected interface OnPartialDatePickerResultsListener {
+        void onPartialDatePickerSave(final @NonNull PartialDatePickerDialog dialog,
+                                     final @Nullable Integer year,
+                                     final @Nullable Integer month,
+                                     final @Nullable Integer day);
 
-        void onCancel(@NonNull final PartialDatePickerDialog dialog);
+        void onPartialDatePickerCancel(final @NonNull PartialDatePickerDialog dialog);
     }
 
 }

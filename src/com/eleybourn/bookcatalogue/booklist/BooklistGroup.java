@@ -108,7 +108,7 @@ public class BooklistGroup implements Serializable {
         mRowKindNames.put(ROW_KIND_RATING, BookCatalogueApp.getResourceString(R.string.rating));
         mRowKindNames.put(ROW_KIND_BOOKSHELF, BookCatalogueApp.getResourceString(R.string.bookshelf));
         mRowKindNames.put(ROW_KIND_BOOK, BookCatalogueApp.getResourceString(R.string.book));
-        // NEWKIND: Add new kinds here
+        // NEWKIND: ROW_KIND_x
 
         // Sanity check
         for (int i = 0; i <= ROW_KIND_MAX; i++) {
@@ -180,7 +180,7 @@ public class BooklistGroup implements Serializable {
     }
 
     /** Setter for compound key */
-    void setKeyComponents(@NonNull final String prefix, @NonNull final DomainDefinition... domains) {
+    void setKeyComponents(final @NonNull String prefix, final @NonNull DomainDefinition... domains) {
         mCompoundKey = new CompoundKey(prefix, domains);
     }
 
@@ -195,7 +195,7 @@ public class BooklistGroup implements Serializable {
         return mRowKindNames.get(kind);
     }
 
-    public void getStyleProperties(@NonNull final Properties list) {
+    public void getStyleProperties(final @NonNull Properties list) {
     }
 
     /**
@@ -248,7 +248,7 @@ public class BooklistGroup implements Serializable {
         public static final int ROW_KIND_UPDATE_DAY = 21;       // Supported
         public static final int ROW_KIND_RATING = 22;           // Supported
         public static final int ROW_KIND_BOOKSHELF = 23;        // Supported
-        // NEWKIND: Add new kinds here
+        // NEWKIND: ROW_KIND_x
         public static final int ROW_KIND_MAX = 23;                // **** NOTE **** ALWAYS update after adding a row kind...
     }
 
@@ -272,7 +272,7 @@ public class BooklistGroup implements Serializable {
         @Override
         @NonNull
         @CallSuper
-        public V put(@NonNull final K key, @NonNull final V value) {
+        public V put(final @NonNull K key, final @NonNull V value) {
             if (super.put(key, value) != null) {
                 throw new IllegalArgumentException("Map already contains key value" + key);
             }
@@ -344,7 +344,7 @@ public class BooklistGroup implements Serializable {
 
         @Override
         @CallSuper
-        public void getStyleProperties(@NonNull final Properties list) {
+        public void getStyleProperties(final @NonNull Properties list) {
             super.getStyleProperties(list);
             list.add(mAllSeries);
         }
@@ -439,7 +439,7 @@ public class BooklistGroup implements Serializable {
          */
         @Override
         @CallSuper
-        public void getStyleProperties(@NonNull final Properties list) {
+        public void getStyleProperties(final @NonNull Properties list) {
             super.getStyleProperties(list);
 
             list.add(mAllAuthors);

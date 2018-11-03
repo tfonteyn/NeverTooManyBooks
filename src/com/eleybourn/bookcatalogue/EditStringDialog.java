@@ -26,7 +26,7 @@ abstract class EditStringDialog {
     /**
      * EditText
      */
-    EditStringDialog(@NonNull final Activity activity, @NonNull final CatalogueDBAdapter db, @NonNull final Runnable onChanged) {
+    EditStringDialog(final @NonNull Activity activity, final @NonNull CatalogueDBAdapter db, final @NonNull Runnable onChanged) {
         this.mActivity = activity;
         mOnChanged = onChanged;
         mDb = db;
@@ -35,18 +35,18 @@ abstract class EditStringDialog {
     /**
      * AutoCompleteTextView
      */
-    EditStringDialog(@NonNull final Activity activity,
-                     @NonNull final CatalogueDBAdapter db,
-                     @NonNull final Runnable onChanged,
+    EditStringDialog(final @NonNull Activity activity,
+                     final @NonNull CatalogueDBAdapter db,
+                     final @NonNull Runnable onChanged,
                      @SuppressWarnings("SameParameterValue") @LayoutRes final int adapterResId,
-                     @NonNull final List<String> list) {
+                     final @NonNull List<String> list) {
         this.mActivity = activity;
         mOnChanged = onChanged;
         mDb = db;
         mAdapter = new ArrayAdapter<>(activity, adapterResId, list);
     }
 
-    protected void edit(@NonNull final String s, @LayoutRes final int layout, final int title) {
+    protected void edit(final @NonNull String s, @LayoutRes final int layout, final int title) {
         final Dialog dialog = new StandardDialogs.BasicDialog(mActivity);
         dialog.setContentView(layout);
         dialog.setTitle(title);
@@ -82,5 +82,5 @@ abstract class EditStringDialog {
         dialog.show();
     }
 
-    abstract protected void confirmEdit(@NonNull final String from, @NonNull final String to);
+    abstract protected void confirmEdit(final @NonNull String from, final @NonNull String to);
 }

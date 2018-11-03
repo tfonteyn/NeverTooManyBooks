@@ -50,9 +50,11 @@ import java.util.ArrayList;
  * This class is called by {@link EditBookActivity} and displays the Loaned Tab
  *
  * Users can select a book and, from this activity, select a friend to "loan" the book to.
+ * * This will then be saved in the database.
  *
- * This will then be saved in the database.
- * So this fragment does NOT participate in the {@link #onLoadBookDetails} and {@link #onSaveBookDetails}
+ *  So this fragment does NOT participate in
+ *      {@link #initFields()}
+ *      {@link #onLoadBookDetails} and {@link #onSaveBookDetails}
  */
 public class EditBookLoanedFragment extends BookAbstractFragment {
 
@@ -65,21 +67,18 @@ public class EditBookLoanedFragment extends BookAbstractFragment {
     private TextView mLoanedTo;
 
     @Override
-    public View onCreateView(@NonNull final LayoutInflater inflater,
-                             @Nullable final ViewGroup container,
-                             @Nullable final Bundle savedInstanceState) {
+    public View onCreateView(final @NonNull LayoutInflater inflater,
+                             final @Nullable ViewGroup container,
+                             final @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_edit_book_loan_base, container, false);
     }
 
     /**
-     * Called when the activity is first created. This function will check whether
-     * a book has been loaned and display the appropriate page as required.
-     *
-     * @param savedInstanceState The saved bundle (from pausing). Can be null.
+     * has no specific Arguments or savedInstanceState as all is done via {@link #getBook()}
      */
     @Override
     @CallSuper
-    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
+    public void onActivityCreated(final @Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
         String friend = mDb.getLoanByBookId(getBook().getBookId());
@@ -96,7 +95,7 @@ public class EditBookLoanedFragment extends BookAbstractFragment {
     private void showLoanTo() {
         ScrollView sv = loadFragmentIntoScrollView(R.layout.fragment_edit_book_loan_to);
         mLoanedTo = sv.findViewById(R.id.loaned_to);
-        setAdapter();
+        setPhoneContactsAdapter();
 
         sv.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
@@ -112,10 +111,9 @@ public class EditBookLoanedFragment extends BookAbstractFragment {
      *
      * @param user The user the book was loaned to
      */
-    private void showLoaned(@NonNull final String user) {
+    private void showLoaned(final @NonNull String user) {
         ScrollView sv = loadFragmentIntoScrollView(R.layout.fragment_edit_book_loaned);
         mLoanedTo = sv.findViewById(R.id.loaned_to);
-
         mLoanedTo.setText(user);
 
         sv.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
@@ -135,7 +133,7 @@ public class EditBookLoanedFragment extends BookAbstractFragment {
         return sv;
     }
 
-    private void saveLoan(@NonNull final String friend) {
+    private void saveLoan(final @NonNull String friend) {
         Book book = getBook();
         book.putString(UniqueId.KEY_LOAN_LOANED_TO, friend);
         mDb.insertLoan(book, true);
@@ -148,7 +146,7 @@ public class EditBookLoanedFragment extends BookAbstractFragment {
     /**
      * Auto complete list comes from your Contacts
      */
-    private void setAdapter() {
+    private void setPhoneContactsAdapter() {
         // check security
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.READ_CONTACTS}, UniqueId.ACTIVITY_REQUEST_CODE_ANDROID_PERMISSIONS_REQUEST);
@@ -201,12 +199,14 @@ public class EditBookLoanedFragment extends BookAbstractFragment {
      */
     @Override
     @PermissionChecker.PermissionResult
-    public void onRequestPermissionsResult(final int requestCode, @NonNull final String permissions[], @NonNull final int[] grantResults) {
+    public void onRequestPermissionsResult(final int requestCode,
+                                           final @NonNull String permissions[],
+                                           final @NonNull int[] grantResults) {
         //ENHANCE: when/if we request more permissions, then the permissions[] and grantResults[] must be checked in parallel
         switch (requestCode) {
             case UniqueId.ACTIVITY_REQUEST_CODE_ANDROID_PERMISSIONS_REQUEST: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    setAdapter();
+                    setPhoneContactsAdapter();
                 }
             }
         }

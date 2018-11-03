@@ -18,7 +18,7 @@ import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.backup.Exporter;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.ExportTypeSelectionDialogFragment.ExportSettings;
-import com.eleybourn.bookcatalogue.dialogs.ExportTypeSelectionDialogFragment.OnExportTypeSelectionDialogResultListener;
+import com.eleybourn.bookcatalogue.dialogs.ExportTypeSelectionDialogFragment.OnExportTypeSelectionDialogResultsListener;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.RTE;
 
@@ -26,7 +26,7 @@ import java.io.File;
 import java.util.Objects;
 
 public class ExportAdvancedDialogFragment extends DialogFragment {
-    private int mDialogId;
+    private int mCallerId;
     private File mFile;
 
     /**
@@ -38,7 +38,7 @@ public class ExportAdvancedDialogFragment extends DialogFragment {
      * @return Created fragment
      */
     @NonNull
-    public static ExportAdvancedDialogFragment newInstance(final int callerId, @NonNull final File file) {
+    public static ExportAdvancedDialogFragment newInstance(final int callerId, final @NonNull File file) {
         final ExportAdvancedDialogFragment frag = new ExportAdvancedDialogFragment();
         final Bundle args = new Bundle();
         args.putInt(UniqueId.BKEY_CALLER_ID, callerId);
@@ -52,28 +52,11 @@ public class ExportAdvancedDialogFragment extends DialogFragment {
      */
     @Override
     @CallSuper
-    public void onAttach(@NonNull final Context context) {
+    public void onAttach(final @NonNull Context context) {
         super.onAttach(context);
-        if (!(context instanceof OnExportTypeSelectionDialogResultListener)) {
-            throw new RTE.MustImplementException(context, OnExportTypeSelectionDialogResultListener.class);
+        if (!(context instanceof OnExportTypeSelectionDialogResultsListener)) {
+            throw new RTE.MustImplementException(context, OnExportTypeSelectionDialogResultsListener.class);
         }
-    }
-
-    /**
-     * Utility routine to set the OnClickListener for a given view to change a checkbox.
-     *
-     * @param cbId  Checkable view id
-     * @param relId Related view id
-     */
-    private void setRelatedView(@NonNull final View root, @IdRes final int cbId, @IdRes final int relId) {
-        final Checkable cb = root.findViewById(cbId);
-        final View rel = root.findViewById(relId);
-        rel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                cb.setChecked(!cb.isChecked());
-            }
-        });
     }
 
     /**
@@ -81,20 +64,22 @@ public class ExportAdvancedDialogFragment extends DialogFragment {
      */
     @NonNull
     @Override
-    public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-        //noinspection ConstantConditions
-        mDialogId = getArguments().getInt(UniqueId.BKEY_CALLER_ID);
-        mFile = new File(Objects.requireNonNull(getArguments().getString(UniqueId.BKEY_FILE_SPEC)));
+    public Dialog onCreateDialog(final @Nullable Bundle savedInstanceState) {
+        // savedInstanceState not used.
+        Bundle args = getArguments();
+        Objects.requireNonNull(args);
+
+        mCallerId = args.getInt(UniqueId.BKEY_CALLER_ID);
+        mFile = new File(Objects.requireNonNull(args.getString(UniqueId.BKEY_FILE_SPEC)));
 
         View v = requireActivity().getLayoutInflater().inflate(R.layout.dialog_export_advanced_options, null);
 
         v.findViewById(R.id.confirm).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                handleClick(v);
+                confirm();
             }
         });
-
         v.findViewById(R.id.cancel).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -114,30 +99,13 @@ public class ExportAdvancedDialogFragment extends DialogFragment {
         return dialog;
     }
 
-//	private OnClickListener mRowClickListener = new OnClickListener() {
-//		@Override
-//		public void onClick(View v) {
-//			handleClick(v);
-//		}};
-//
-//	/**
-//	 * Utility routine to set the OnClickListener for a given view item.
-//	 * 
-//	 * @param id		Sub-View ID
-//	 */
-//	private void setOnClickListener(View root, @IdRes int id) {
-//		View v = root.findViewById(id);
-//		v.setOnClickListener(mRowClickListener);
-//		v.setBackgroundResource(android.R.drawable.list_selector_background);
-//	}
-
-    private void handleClick(@SuppressWarnings("unused") @NonNull final View view) {
+    private void confirm() {
         try {
-            OnExportTypeSelectionDialogResultListener listenerActivity = (OnExportTypeSelectionDialogResultListener) getActivity();
+            OnExportTypeSelectionDialogResultsListener listenerActivity = (OnExportTypeSelectionDialogResultsListener) getActivity();
             if (listenerActivity != null) {
                 ExportSettings settings = createSettings();
                 if (settings != null) {
-                    listenerActivity.onExportTypeSelectionDialogResult(this, mDialogId, settings);
+                    listenerActivity.onExportTypeSelectionDialogResult(this, mCallerId, settings);
                     dismiss();
                 }
             } else {
@@ -146,6 +114,23 @@ public class ExportAdvancedDialogFragment extends DialogFragment {
         } catch (Exception e) {
             Logger.error(e);
         }
+    }
+
+    /**
+     * Utility routine to set the OnClickListener for a given view to change a checkbox.
+     *
+     * @param cbId  Checkable view id
+     * @param relId Related view id
+     */
+    private void setRelatedView(final @NonNull View root, final @IdRes int cbId, final @IdRes int relId) {
+        final Checkable cb = root.findViewById(cbId);
+        final View rel = root.findViewById(relId);
+        rel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cb.setChecked(!cb.isChecked());
+            }
+        });
     }
 
     @Nullable
@@ -191,10 +176,10 @@ public class ExportAdvancedDialogFragment extends DialogFragment {
      * @author pjw
      */
     @SuppressWarnings("unused")
-    public interface OnExportAdvancedDialogResultListener {
-        void onExportAdvancedDialogResult(@NonNull final ExportAdvancedDialogFragment dialog,
+    public interface OnExportAdvancedDialogResultsListener {
+        void onExportAdvancedDialogResult(final @NonNull ExportAdvancedDialogFragment dialog,
                                           final int callerId,
                                           final int rowId,
-                                          @NonNull final File file);
+                                          final @NonNull File file);
     }
 }

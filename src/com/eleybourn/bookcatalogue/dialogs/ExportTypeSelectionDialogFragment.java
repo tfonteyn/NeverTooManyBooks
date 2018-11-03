@@ -22,7 +22,7 @@ import java.util.Date;
 import java.util.Objects;
 
 public class ExportTypeSelectionDialogFragment extends DialogFragment {
-    private int mDialogId;
+    private int mCallerId;
     private File mFile;
     private final OnClickListener mRowClickListener = new OnClickListener() {
         @Override
@@ -40,7 +40,7 @@ public class ExportTypeSelectionDialogFragment extends DialogFragment {
      * @return Created fragment
      */
     @NonNull
-    public static ExportTypeSelectionDialogFragment newInstance(final int callerId, @NonNull final File file) {
+    public static ExportTypeSelectionDialogFragment newInstance(final int callerId, final @NonNull File file) {
         ExportTypeSelectionDialogFragment frag = new ExportTypeSelectionDialogFragment();
         Bundle args = new Bundle();
         args.putInt(UniqueId.BKEY_CALLER_ID, callerId);
@@ -54,22 +54,10 @@ public class ExportTypeSelectionDialogFragment extends DialogFragment {
      */
     @Override
     @CallSuper
-    public void onAttach(@NonNull final Context context) {
+    public void onAttach(final @NonNull Context context) {
         super.onAttach(context);
-        if (!(context instanceof OnExportTypeSelectionDialogResultListener))
-            throw new RTE.MustImplementException(context, OnExportTypeSelectionDialogResultListener.class);
-    }
-
-    /**
-     * Utility routine to set the OnClickListener for a given view item.
-     *
-     * @param root root view
-     * @param id   Sub-View ID
-     */
-    private void setOnClickListener(@NonNull final View root, @IdRes final int id) {
-        View v = root.findViewById(id);
-        v.setOnClickListener(mRowClickListener);
-        v.setBackgroundResource(android.R.drawable.list_selector_background);
+        if (!(context instanceof OnExportTypeSelectionDialogResultsListener))
+            throw new RTE.MustImplementException(context, OnExportTypeSelectionDialogResultsListener.class);
     }
 
     /**
@@ -77,10 +65,13 @@ public class ExportTypeSelectionDialogFragment extends DialogFragment {
      */
     @NonNull
     @Override
-    public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-        //noinspection ConstantConditions
-        mDialogId = getArguments().getInt(UniqueId.BKEY_CALLER_ID);
-        mFile = new File(Objects.requireNonNull(getArguments().getString(UniqueId.BKEY_FILE_SPEC)));
+    public Dialog onCreateDialog(final @Nullable Bundle savedInstanceState) {
+        // savedInstanceState not used.
+        Bundle args = getArguments();
+        Objects.requireNonNull(args);
+
+        mCallerId = args.getInt(UniqueId.BKEY_CALLER_ID);
+        mFile = new File(Objects.requireNonNull(args.getString(UniqueId.BKEY_FILE_SPEC)));
 
         View v = requireActivity().getLayoutInflater().inflate(R.layout.dialog_export_type_selection, null);
 
@@ -96,30 +87,41 @@ public class ExportTypeSelectionDialogFragment extends DialogFragment {
         return dialog;
     }
 
-    private void handleClick(@NonNull final View v) {
+    private void handleClick(final @NonNull View v) {
         if (v.getId() == R.id.row_advanced_options) {
-            ExportAdvancedDialogFragment.newInstance(mDialogId, mFile)
+            ExportAdvancedDialogFragment.newInstance(mCallerId, mFile)
                     .show(requireActivity().getSupportFragmentManager(), null);
         } else {
             ExportSettings settings = new ExportSettings();
             settings.file = mFile;
             settings.options = Exporter.EXPORT_ALL;
 
-            OnExportTypeSelectionDialogResultListener activity = (OnExportTypeSelectionDialogResultListener) requireActivity();
-            activity.onExportTypeSelectionDialogResult(this, mDialogId, settings);
+            OnExportTypeSelectionDialogResultsListener activity = (OnExportTypeSelectionDialogResultsListener) requireActivity();
+            activity.onExportTypeSelectionDialogResult(this, mCallerId, settings);
         }
         dismiss();
     }
 
     /**
+     * Utility routine to set the OnClickListener for a given view item.
+     *
+     * @param root root view
+     * @param id   Sub-View ID
+     */
+    private void setOnClickListener(final @NonNull View root, final @IdRes int id) {
+        View v = root.findViewById(id);
+        v.setOnClickListener(mRowClickListener);
+        v.setBackgroundResource(android.R.drawable.list_selector_background);
+    }
+    /**
      * Listener interface to receive notifications when dialog is closed by any means.
      *
      * @author pjw
      */
-    public interface OnExportTypeSelectionDialogResultListener {
-        void onExportTypeSelectionDialogResult(@NonNull final DialogFragment dialog,
+    public interface OnExportTypeSelectionDialogResultsListener {
+        void onExportTypeSelectionDialogResult(final @NonNull DialogFragment dialog,
                                                final int callerId,
-                                               @NonNull final ExportSettings settings);
+                                               final @NonNull ExportSettings settings);
     }
 
     public static class ExportSettings {

@@ -15,12 +15,9 @@ import java.net.UnknownHostException;
 
 public class SearchGoogleBooksTask extends SearchTask {
 
-    public SearchGoogleBooksTask(@NonNull final TaskManager manager,
-                                 @NonNull final String author,
-                                 @NonNull final String title,
-                                 @NonNull final String isbn,
-                                 final boolean fetchThumbnail) {
-        super("SearchGoogleBooksTask isbn=" + isbn, manager, author, title, isbn, fetchThumbnail);
+    public SearchGoogleBooksTask(final @NonNull String name,
+                                 final @NonNull TaskManager manager) {
+        super(name, manager);
     }
 
     @Override

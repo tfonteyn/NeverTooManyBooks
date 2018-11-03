@@ -46,12 +46,8 @@
 
             <TextView
                 android:id="@+id/lbl_notes"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentTop="true"
-                android:text="@string/edit_book_notes"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                style="@style/editorFieldHeader"
+                android:text="@string/edit_book_notes" />
 
             <EditText
                 android:id="@+id/notes"
@@ -66,14 +62,86 @@
 
         </RelativeLayout>
 
+        <View style="@style/listDividerHorizontal" />
+
+        <RelativeLayout
+            android:id="@+id/row_date_purchased"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/lbl_date_purchased"
+                style="@style/editorFieldHeader"
+                android:text="@string/date_purchased"/>
+
+            <Button
+                android:id="@+id/date_purchased"
+                style="@style/dataEntryButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@id/lbl_date_purchased" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/row_price_paid"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/lbl_price_paid"
+                style="@style/editorFieldHeader"
+                android:labelFor="@id/price_paid"
+                android:text="@string/price_paid" />
+
+            <EditText
+                android:id="@+id/price_paid"
+                style="@style/editorFieldText"
+                android:layout_width="wrap_content"
+                android:layout_below="@id/lbl_price_paid"
+                android:layout_toStartOf="@id/price_paid_currency"
+                android:layout_centerVertical="true"
+                android:inputType="numberDecimal"
+                tools:ignore="Autofill"
+                tools:text="14.99" />
+
+            <AutoCompleteTextView
+                android:id="@+id/price_paid_currency"
+                style="@style/editorFieldText"
+                android:layout_width="wrap_content"
+                android:layout_below="@id/lbl_price_paid"
+                android:layout_alignParentStart="false"
+                android:layout_toStartOf="@id/btn_price_paid_currency"
+                android:layout_centerVertical="true"
+                android:textAlignment="viewEnd"
+                android:hint="..."
+                android:inputType="text|textCapCharacters"
+                android:minEms="3"
+                android:paddingStart="@dimen/padding_border_double"
+                android:paddingEnd="@dimen/padding_border_double"
+                android:completionThreshold="1"
+                android:singleLine="true"
+                tools:ignore="Autofill,HardcodedText"
+                tools:text="" />
+
+            <ImageButton
+                android:id="@+id/btn_price_paid_currency"
+                style="@style/dropDownMenuButton"
+                android:layout_alignBottom="@id/price_paid"
+                app:srcCompat="@drawable/ic_arrow_drop_down"
+                tools:ignore="ContentDescription" />
+        </RelativeLayout>
+
+        <View style="@style/listDividerHorizontal" />
+
         <CheckBox
             android:id="@+id/signed"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/signed" />
-
-        <View style="@style/listDividerHorizontal" />
 
         <RelativeLayout
             android:id="@+id/row_edition"
@@ -83,12 +151,8 @@
 
             <TextView
                 android:id="@+id/lbl_edition"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentTop="true"
-                android:text="@string/edition"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                style="@style/editorFieldHeader"
+                android:text="@string/edition" />
 
             <Button
                 android:id="@+id/edition"
@@ -110,12 +174,8 @@
 
             <TextView
                 android:id="@+id/lbl_read_start"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentTop="true"
-                android:text="@string/read_start"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                style="@style/editorFieldHeader"
+                android:text="@string/read_start" />
 
             <Button
                 android:id="@+id/read_start"
@@ -137,12 +197,8 @@
 
             <TextView
                 android:id="@+id/lbl_read_end"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentTop="true"
-                android:text="@string/read_end"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                style="@style/editorFieldHeader"
+                android:text="@string/read_end" />
 
             <Button
                 android:id="@+id/read_end"
@@ -165,12 +221,8 @@
 
             <TextView
                 android:id="@+id/lbl_location"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentTop="true"
+                style="@style/editorFieldHeader"
                 android:text="@string/location_of_book"
-                android:textAppearance="?android:attr/textAppearanceSmall"
                 android:labelFor="@id/location"/>
 
             <AutoCompleteTextView

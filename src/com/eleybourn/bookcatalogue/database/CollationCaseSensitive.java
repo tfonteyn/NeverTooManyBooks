@@ -17,10 +17,10 @@ import android.support.annotation.NonNull;
  * @author Philip Warner
  */
 public class CollationCaseSensitive {
-	public static boolean isCaseSensitive(@NonNull final SQLiteDatabase db) {
+	public static boolean isCaseSensitive(final @NonNull SQLiteDatabase db) {
 		// Drop and create table
 		db.execSQL("DROP TABLE If Exists collation_cs_check");
-		db.execSQL("CREATE TABLE collation_cs_check (t text, i int)");
+		db.execSQL("CREATE TABLE collation_cs_check (t text, i integer)");
 		try {
 			// Row that *should* be returned first assuming 'a' <=> 'A' 
 			db.execSQL("INSERT INTO collation_cs_check VALUES('a', 1)");

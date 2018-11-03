@@ -8,12 +8,12 @@ import android.widget.ArrayAdapter;
 
 public class TouchListViewWithDropListener<T> extends TouchListView implements TouchListView.DropListener{
 
-    public TouchListViewWithDropListener(@NonNull final Context context, @NonNull final AttributeSet attrs) {
+    public TouchListViewWithDropListener(final @NonNull Context context, final @NonNull AttributeSet attrs) {
         super(context, attrs);
         setDropListener(this);
     }
 
-    public TouchListViewWithDropListener(@NonNull final Context context, @NonNull final AttributeSet attrs, final int defStyle) {
+    public TouchListViewWithDropListener(final @NonNull Context context, final @NonNull AttributeSet attrs, final int defStyle) {
         super(context, attrs, defStyle);
         setDropListener(this);
     }

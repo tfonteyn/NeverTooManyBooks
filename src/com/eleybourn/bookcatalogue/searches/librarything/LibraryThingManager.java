@@ -34,6 +34,7 @@ import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
+import com.eleybourn.bookcatalogue.utils.BundleUtils;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.IsbnUtils;
 import com.eleybourn.bookcatalogue.utils.RTE;
@@ -149,9 +150,11 @@ public class LibraryThingManager {
 
     /**
      * Search for edition data.
+     *
+     * @return a list of isbn's of alternative editions of our original isbn
      */
     @NonNull
-    public static List<String> searchEditions(@NonNull final String isbn) {
+    public static List<String> searchEditions(final @NonNull String isbn) {
         // Base path for an ISBN search
         String path = String.format(EDITIONS_URL, isbn);
         // static publicEntry point to LT, so check
@@ -160,6 +163,8 @@ public class LibraryThingManager {
         }
 
         List<String> editions = new ArrayList<>();
+        // add the original isbn, as there might be more images at the time this search is done.
+        editions.add(isbn);
 
         // Setup the parser
         SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -181,7 +186,7 @@ public class LibraryThingManager {
         return editions;
     }
 
-    public static void showLtAlertIfNecessary(@NonNull final Context context, final boolean always, @NonNull final String suffix) {
+    public static void showLtAlertIfNecessary(final @NonNull Context context, final boolean always, final @NonNull String suffix) {
         LibraryThingManager ltm = new LibraryThingManager();
         if (!ltm.isAvailable()) {
             StandardDialogs.needLibraryThingAlert(context, always, suffix);
@@ -482,8 +487,8 @@ public class LibraryThingManager {
      *
      *             call {@link #isAvailable()} before calling this method
      */
-    void search(@NonNull final String isbn,
-                @NonNull final Bundle /* out */ book,
+    void search(final @NonNull String isbn,
+                final @NonNull Bundle /* out */ book,
                 final boolean fetchThumbnail) throws IOException {
 
         String devKey = getDevKey();
@@ -531,7 +536,7 @@ public class LibraryThingManager {
      * call {@link #isAvailable()} before calling this method
      */
     @NonNull
-    private String getCoverImageUrl(@NonNull final String isbn, @NonNull final ImageSizes size) {
+    private String getCoverImageUrl(final @NonNull String isbn, final @NonNull ImageSizes size) {
         String devKey = getDevKey();
         if (devKey.isEmpty()) {
             throw new RTE.DeveloperKeyMissingException();
@@ -562,7 +567,7 @@ public class LibraryThingManager {
      * @return the file
      **/
     @Nullable
-    public File getCoverImage(@NonNull final String isbn, @Nullable final Bundle book, @NonNull final ImageSizes size) {
+    public File getCoverImage(final @NonNull String isbn, final @Nullable Bundle book, final @NonNull ImageSizes size) {
         String url = getCoverImageUrl(isbn, size);
         if (DEBUG_SWITCHES.LIBRARY_THING_MANAGER && BuildConfig.DEBUG) {
             Logger.info(this,url + " " + isbn + " " + size);
@@ -629,7 +634,7 @@ public class LibraryThingManager {
         @NonNull
         private final List<String> mEditions;
 
-        SearchLibraryThingEditionHandler(@NonNull final List<String> editions) {
+        SearchLibraryThingEditionHandler(final @NonNull List<String> editions) {
             mEditions = editions;
         }
 
@@ -642,7 +647,7 @@ public class LibraryThingManager {
 
         @Override
         @CallSuper
-        public void endElement(final String uri, @NonNull final String localName, final String name) throws SAXException {
+        public void endElement(final String uri, final @NonNull String localName, final String name) throws SAXException {
             super.endElement(uri, localName, name);
 
             if (localName.equalsIgnoreCase(XML_ISBN)) {
@@ -673,7 +678,7 @@ public class LibraryThingManager {
         @NonNull
         private FieldTypes mFieldType = FieldTypes.OTHER;
 
-        SearchLibraryThingEntryHandler(@NonNull final Bundle bookData) {
+        SearchLibraryThingEntryHandler(final @NonNull Bundle bookData) {
             mBookData = bookData;
         }
 
@@ -686,7 +691,7 @@ public class LibraryThingManager {
 
         @Override
         @CallSuper
-        public void startElement(final String uri, @NonNull final String localName, final String name, @NonNull final Attributes attributes) throws SAXException {
+        public void startElement(final String uri, final @NonNull String localName, final String name, final @NonNull Attributes attributes) throws SAXException {
             super.startElement(uri, localName, name, attributes);
 
             // reset the string. See note in endElement() for a discussion.
@@ -722,7 +727,7 @@ public class LibraryThingManager {
 
         @Override
         @CallSuper
-        public void endElement(final String uri, @NonNull final String localName, final String name) throws SAXException {
+        public void endElement(final String uri, final @NonNull String localName, final String name) throws SAXException {
             super.endElement(uri, localName, name);
 
             if (localName.equalsIgnoreCase(XML_FIELD)) {
@@ -738,7 +743,7 @@ public class LibraryThingManager {
                 switch (mFieldType) {
 
                     case TITLE:
-                        ArrayUtils.addIfNotPresent(mBookData, UniqueId.KEY_TITLE, mBuilder.toString());
+                        BundleUtils.addIfNotPresent(mBookData, UniqueId.KEY_TITLE, mBuilder.toString());
                         break;
 
                     case SERIES:

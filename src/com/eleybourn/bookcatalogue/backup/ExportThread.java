@@ -21,7 +21,7 @@ public class ExportThread extends ManagedTask {
 
     private final Exporter.ExportListener mOnExportListener = new Exporter.ExportListener() {
         @Override
-        public void onProgress(@NonNull final String message, final int position) {
+        public void onProgress(final @NonNull String message, final int position) {
             if (position > 0) {
                 mTaskManager.doProgress(ExportThread.this, message, position);
             } else {
@@ -44,7 +44,7 @@ public class ExportThread extends ManagedTask {
     @NonNull
     private final CsvExporter mExporter;
 
-    public ExportThread(@NonNull final TaskManager manager) {
+    public ExportThread(final @NonNull TaskManager manager) {
         super("ExportThread", manager);
         mExporter = new CsvExporter();
     }
@@ -70,7 +70,7 @@ public class ExportThread extends ManagedTask {
     /**
      * Backup the current file
      */
-    private void renameFiles(@NonNull final File temp) {
+    private void renameFiles(final @NonNull File temp) {
         if (isCancelled()) {
             StorageUtils.deleteFile(temp);
         } else {

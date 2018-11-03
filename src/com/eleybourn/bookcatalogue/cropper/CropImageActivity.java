@@ -21,6 +21,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Path;
 import android.graphics.PointF;
@@ -245,7 +246,7 @@ public class CropImageActivity extends CropMonitoredActivity {
     };
     private CropIImage mImage;
 
-    private static void showUserMessage(@NonNull final Activity activity) {
+    private static void showUserMessage(final @NonNull Activity activity) {
         int remaining = calculatePicturesRemaining();
         @StringRes
         int msgId = 0;
@@ -283,7 +284,7 @@ public class CropImageActivity extends CropMonitoredActivity {
 
     @Override
     @CallSuper
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
+    public void onCreate(final @Nullable Bundle savedInstanceState) {
         // Do this first to avoid 'must be first errors'
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
@@ -349,12 +350,12 @@ public class CropImageActivity extends CropMonitoredActivity {
     }
 
     @NonNull
-    private Uri getImageUri(@NonNull final String path) {
+    private Uri getImageUri(final @NonNull String path) {
         return Uri.fromFile(new File(path));
     }
 
     @Nullable
-    private Bitmap getBitmap(@NonNull final String path) {
+    private Bitmap getBitmap(final @NonNull String path) {
         Uri uri = getImageUri(path);
         InputStream in;
         try {
@@ -442,7 +443,7 @@ public class CropImageActivity extends CropMonitoredActivity {
             Path path = new Path();
             path.addCircle(width / 2F, height / 2F, width / 2F, Path.Direction.CW);
             canvas.clipPath(path, Region.Op.DIFFERENCE);
-            canvas.drawColor(0x00000000, PorterDuff.Mode.CLEAR);
+            canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
         }
 
         /* If the output is required to a specific size then SCALE or fill */
@@ -495,9 +496,9 @@ public class CropImageActivity extends CropMonitoredActivity {
 
             Bundle extras = new Bundle();
             extras.putParcelable(CropIImage.BKEY_DATA, croppedImage);
-            Intent intent = new Intent("inline-data");
-            intent.putExtras(extras);
-            setResult(Activity.RESULT_OK, intent); /* 31c90366-d352-496f-9b7d-3237dd199a77 */
+            Intent data = new Intent("inline-data");
+            data.putExtras(extras);
+            setResult(Activity.RESULT_OK, data); /* 31c90366-d352-496f-9b7d-3237dd199a77 */
             finish();
         } else {
             final Bitmap bitmap = croppedImage;
@@ -510,7 +511,7 @@ public class CropImageActivity extends CropMonitoredActivity {
         }
     }
 
-    private void saveOutput(@NonNull final Bitmap croppedImage) {
+    private void saveOutput(final @NonNull Bitmap croppedImage) {
         Bundle extras = new Bundle();
         if (mOptionSaveUri != null) {
             Intent intent = new Intent(mOptionSaveUri.toString());

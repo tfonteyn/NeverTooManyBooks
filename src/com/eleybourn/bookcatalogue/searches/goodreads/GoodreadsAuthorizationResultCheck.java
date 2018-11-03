@@ -48,7 +48,7 @@ class GoodreadsAuthorizationResultCheck extends GenericTask {
     }
 
     @Override
-    public boolean run(@NonNull final QueueManager manager, @NonNull final Context context) {
+    public boolean run(final @NonNull QueueManager manager, final @NonNull Context context) {
         GoodreadsManager grMgr = new GoodreadsManager();
         try {
             grMgr.handleAuthentication(context);

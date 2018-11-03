@@ -55,20 +55,20 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
     @NonNull
     private final ItemEntries<T> mList;
 
-    ListProperty(@NonNull final ItemEntries<T> list,
-                 @NonNull final String uniqueId,
-                 @NonNull final PropertyGroup group,
-                 @StringRes final int nameResourceId) {
+    ListProperty(final @NonNull ItemEntries<T> list,
+                 final @NonNull String uniqueId,
+                 final @NonNull PropertyGroup group,
+                 final @StringRes int nameResourceId) {
         super(uniqueId, group, nameResourceId);
         mList = list;
     }
 
-    ListProperty(@NonNull final ItemEntries<T> list,
-                 @NonNull final String uniqueId,
-                 @NonNull final PropertyGroup group,
-                 @StringRes final int nameResourceId,
-                 @SuppressWarnings("SameParameterValue") @Nullable final T defaultValue,
-                 @SuppressWarnings("SameParameterValue") @Nullable final T value) {
+    ListProperty(final @NonNull ItemEntries<T> list,
+                 final @NonNull String uniqueId,
+                 final @NonNull PropertyGroup group,
+                 final @StringRes int nameResourceId,
+                 @SuppressWarnings("SameParameterValue") final @Nullable T defaultValue,
+                 @SuppressWarnings("SameParameterValue") final @Nullable T value) {
         super(uniqueId, group, nameResourceId, defaultValue, value);
         mList = list;
     }
@@ -76,7 +76,7 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
     /** Return the default list editor view with associated event handlers. */
     @NonNull
     @Override
-    public View getView(@NonNull final LayoutInflater inflater) {
+    public View getView(final @NonNull LayoutInflater inflater) {
         final ViewGroup root = (ViewGroup) inflater.inflate(R.layout.property_value_list, null);
         ViewTagger.setTag(root, R.id.TAG_PROPERTY, this);// value: ListProperty
         // Display the list of values when clicked.
@@ -110,7 +110,7 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
         return root;
     }
 
-    private void handleClick(@NonNull final View base, @NonNull final LayoutInflater inflater) {
+    private void handleClick(final @NonNull View base, final @NonNull LayoutInflater inflater) {
         final ItemEntries<T> items = mList;
         if (this.hasHint()) {
             HintManager.displayHint(base.getContext(), this.getHint(), new Runnable() {
@@ -125,7 +125,7 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
     }
 
     /** Set the 'value' field in the passed view to match the passed item. */
-    private void setValueInView(@NonNull final View baseView, @Nullable final ItemEntry<T> item) {
+    private void setValueInView(final @NonNull View baseView, final @Nullable ItemEntry<T> item) {
         TextView text = baseView.findViewById(R.id.value);
 
         if (item == null) {
@@ -147,15 +147,15 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
      * @param inflater LayoutInflater
      * @param items    All list items
      */
-    private void displayList(@NonNull final View baseView,
-                             @NonNull final LayoutInflater inflater,
-                             @NonNull final ItemEntries<T> items) {
+    private void displayList(final @NonNull View baseView,
+                             final @NonNull LayoutInflater inflater,
+                             final @NonNull ItemEntries<T> items) {
 
         T currentValue = this.get();
 
         // Get the view and the radio group
-        @SuppressLint("InflateParams") // dialog, no root
-                View root = inflater.inflate(R.layout.property_value_list_list, null);
+        @SuppressLint("InflateParams") // root==null as it's a dialog
+        View root = inflater.inflate(R.layout.property_value_list_list, null);
         final AlertDialog dialog = new AlertDialog.Builder(inflater.getContext())
                 .setView(root)
                 .create();
@@ -234,7 +234,7 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
         Object[] textArgs;
 
         /** Constructor. Instantiates string. */
-        ItemEntry(@Nullable final T value, @StringRes final int stringId, final Object... args) {
+        ItemEntry(final @Nullable T value, final @StringRes int stringId, final Object... args) {
             this.value = value;
             this.stringId = stringId;
             this.textArgs = args;
@@ -281,7 +281,7 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
          * @return this for chaining
          */
         @NonNull
-        public ItemEntries<T> add(@Nullable final T value, @StringRes final int stringId, @NonNull final Object... args) {
+        public ItemEntries<T> add(final @Nullable T value, final @StringRes int stringId, final @NonNull Object... args) {
             mList.add(new ItemEntry<>(value, stringId, args));
             return this;
         }
@@ -306,7 +306,7 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
         @NonNull
         final View baseView;
 
-        Holder(@NonNull final ItemEntry<T> item, @NonNull final View baseView) {
+        Holder(final @NonNull ItemEntry<T> item, final @NonNull View baseView) {
             this.item = item;
             this.baseView = baseView;
         }

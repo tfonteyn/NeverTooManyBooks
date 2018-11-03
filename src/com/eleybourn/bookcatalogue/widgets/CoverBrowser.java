@@ -29,6 +29,8 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.ColorInt;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.PagerAdapter;
@@ -78,8 +80,12 @@ public class CoverBrowser {
     /** Calling context */
     @NonNull
     private final Activity mActivity;
+
     private final int mPreviewSizeWidth;
     private final int mPreviewSizeHeight;
+    @ColorInt
+    private final int mImageBackgroundColor;
+
     /** The Dialog */
     @NonNull
     private final Dialog mDialog;
@@ -88,7 +94,7 @@ public class CoverBrowser {
     /** Task queue for images */
     private SimpleTaskQueue mImageFetcher = null;
     /** List of all editions for the given ISBN */
-    private List<String> mEditions;
+    private List<String> mAlternativeEditions;
     /** Object to ensure files are cleaned up. */
     private FileManager mFileManager;
     /** Indicates a 'shutdown()' has been requested */
@@ -102,9 +108,9 @@ public class CoverBrowser {
      * @param isbn                    ISBN of book
      * @param onImageSelectedListener Handler to call when book selected
      */
-    public CoverBrowser(@NonNull final Activity a,
-                        @NonNull final String isbn,
-                        @NonNull final OnImageSelectedListener onImageSelectedListener) {
+    public CoverBrowser(final @NonNull Activity a,
+                        final @NonNull String isbn,
+                        final @NonNull OnImageSelectedListener onImageSelectedListener) {
         mActivity = a;
         mIsbn = isbn;
         mOnImageSelectedListener = onImageSelectedListener;
@@ -116,6 +122,8 @@ public class CoverBrowser {
         // for code clarity kept as two variable names.
         mPreviewSizeWidth = previewSize;
         mPreviewSizeHeight = previewSize;
+        mImageBackgroundColor = mActivity.getResources().getColor(R.color.CoverBrowser_background);
+
         // Create an object to manage the downloaded files
         mFileManager = new FileManager();
 
@@ -177,7 +185,7 @@ public class CoverBrowser {
         mDialog.show();
     }
 
-    private void showDialogDetails() {
+    private void showGallery() {
         mDialog.setTitle(R.string.select_cover);
 
         // Setup the Gallery.
@@ -228,7 +236,7 @@ public class CoverBrowser {
             @Override
             public View makeView() {
                 ImageView view = new ImageView(mActivity);
-                view.setBackgroundColor(0xFF000000);
+                view.setBackgroundColor(mImageBackgroundColor);
                 view.setScaleType(ImageView.ScaleType.FIT_CENTER);
                 view.setLayoutParams(new ImageSwitcher.LayoutParams(
                         ImageSwitcher.LayoutParams.WRAP_CONTENT,
@@ -253,34 +261,32 @@ public class CoverBrowser {
      * @author Philip Warner
      */
     public interface OnImageSelectedListener {
-        void onImageSelected(@NonNull final String fileSpec);
+        void onImageSelected(final @NonNull String fileSpec);
     }
 
     /**
      * //ENHANCE: use RecyclerView ? to research....
      *
-     * ImageAdapter for gallery. Queues image requests.
-     *
-     * @author Philip Warner
+     * PagerAdapter for gallery. Queues image requests.
      */
     private class CoverImagePagerAdapter extends PagerAdapter {
+        @DrawableRes
         private final int mGalleryItemBackground;
         @NonNull
         private final ImageSwitcher mSwitcher;
 
-        CoverImagePagerAdapter(@NonNull final ImageSwitcher switcher) {
+        CoverImagePagerAdapter(final @NonNull ImageSwitcher switcher) {
             mSwitcher = switcher;
             // Setup the background
-            TypedArray a = mActivity.obtainStyledAttributes(R.styleable.CoverGallery);
-            mGalleryItemBackground = a.getResourceId(R.styleable.CoverGallery_android_galleryItemBackground, 0);
-            a.recycle();
+            TypedArray ta = mActivity.obtainStyledAttributes(R.styleable.CoverGallery);
+            mGalleryItemBackground = ta.getResourceId(R.styleable.CoverGallery_android_galleryItemBackground, 0);
+            ta.recycle();
         }
 
         @NonNull
         @Override
-        public Object instantiateItem(@NonNull final ViewGroup collection, final int position) {
+        public Object instantiateItem(final @NonNull ViewGroup collection, final int position) {
             ImageView coverImage = new ImageView(mActivity);
-
             // If we are shutdown, just return a view
             if (mShutdown) {
                 return coverImage;
@@ -291,7 +297,7 @@ public class CoverBrowser {
             coverImage.setBackgroundResource(mGalleryItemBackground);
 
             // now go fetch an image based on the isbn
-            String isbn = mEditions.get(position);
+            final String isbn = mAlternativeEditions.get(position);
 
             // See if file is present
             File file = null;
@@ -321,7 +327,7 @@ public class CoverBrowser {
                     msgVw.setText(R.string.loading);
                     msgVw.setVisibility(View.VISIBLE);
 
-                    GetFullImageTask task = new GetFullImageTask(position, mSwitcher);
+                    GetFullImageTask task = new GetFullImageTask(isbn, mSwitcher);
                     mImageFetcher.enqueue(task);
                 }
             });
@@ -330,23 +336,23 @@ public class CoverBrowser {
         }
 
         @Override
-        public void destroyItem(@NonNull final ViewGroup collection, final int position, @NonNull final Object view) {
+        public void destroyItem(final @NonNull ViewGroup collection, final int position, final @NonNull Object view) {
             collection.removeView((ImageView) view);
         }
 
         @Override
         public int getCount() {
-            return mEditions.size();
+            return mAlternativeEditions.size();
         }
 
         @Override
-        public boolean isViewFromObject(@NonNull final View view, @NonNull final Object object) {
+        public boolean isViewFromObject(final @NonNull View view, final @NonNull Object object) {
             return view == object;
         }
     }
 
     /**
-     * SimpleTask to fetch a thumbnail image and apply it to an ImageView
+     * SimpleTask to fetch all alternative edition isbn's from LibraryThing
      *
      * @author Philip Warner
      */
@@ -357,33 +363,32 @@ public class CoverBrowser {
         /**
          * Constructor
          */
-        GetEditionsTask(@NonNull final String isbn) {
+        GetEditionsTask(final @NonNull String isbn) {
             this.isbn = isbn;
         }
 
         @Override
-        public void run(@NonNull final SimpleTaskContext taskContext) {
+        public void run(final @NonNull SimpleTaskContext taskContext) {
             // Get some editions
-            // ENHANCE: the list of editions should be expanded to somehow include Amazon and Google. As well
-            // as the alternate user-contributed images from LibraryThing. The latter are often the best
-            // source but at present could only be obtained by HTML scraping.
+            // ENHANCE: the list of editions should be expanded to somehow include other sites.
+            // As well as the alternate user-contributed images from LibraryThing. The latter are
+            // often the best source but at present could only be obtained by HTML scraping.
             try {
-                mEditions = LibraryThingManager.searchEditions(isbn);
+                mAlternativeEditions = LibraryThingManager.searchEditions(isbn);
             } catch (Exception e) {
-                mEditions = null;
+                mAlternativeEditions = null;
             }
         }
 
         @Override
-        public void onFinish(@Nullable final Exception e) {
-            if (mEditions.isEmpty()) {
+        public void onFinish(final @Nullable Exception e) {
+            if (mAlternativeEditions == null || mAlternativeEditions.isEmpty()) {
                 StandardDialogs.showUserMessage(mActivity, R.string.no_editions);
                 shutdown();
                 return;
             }
-            showDialogDetails();
+            showGallery();
         }
-
     }
 
     /**
@@ -393,45 +398,57 @@ public class CoverBrowser {
      */
     private class GetThumbnailTask implements SimpleTask {
         @NonNull
-        private final ImageView mImageView;
-        private final int mMaxWidth;
-        private final int mMaxHeight;
+        private final ImageView imageView;
+        private final int maxWidth;
+        private final int maxHeight;
         @NonNull
-        private final String mIsbn;
-        private String mFilename;
+        private final String isbn;
+        @Nullable
+        private String fileSpec;
 
         /**
-         * @param isbn ISBN on requested cover.
+         * @param isbn for requested cover.
          * @param view to update
          */
-        GetThumbnailTask(@NonNull final String isbn,
-                         @NonNull final ImageView view,
+        GetThumbnailTask(final @NonNull String isbn,
+                         final @NonNull ImageView view,
                          final int maxWidth,
                          final int maxHeight) {
-            mImageView = view;
-            mMaxWidth = maxWidth;
-            mMaxHeight = maxHeight;
-            mIsbn = isbn;
+            imageView = view;
+            this.maxWidth = maxWidth;
+            this.maxHeight = maxHeight;
+            this.isbn = isbn;
         }
 
         @Override
-        public void run(@NonNull final SimpleTaskContext taskContext) {
+        public void run(final @NonNull SimpleTaskContext taskContext) {
+            // If we are shutdown, just return
+            if (mShutdown) {
+                taskContext.setRequiresFinish(false);
+                return;
+            }
+
             // Try SMALL
-            mFilename = mFileManager.download(mIsbn, ImageSizes.SMALL);
-            if (new File(mFilename).length() >= 50) {
+            fileSpec = mFileManager.download(isbn, ImageSizes.SMALL);
+            if (fileSpec != null && new File(fileSpec).length() >= 50) {
                 return;
             }
 
             // Try LARGE (or silently give up)
-            mFilename = mFileManager.download(mIsbn, ImageSizes.LARGE);
+            fileSpec = mFileManager.download(isbn, ImageSizes.LARGE);
         }
 
         @Override
-        public void onFinish(@Nullable final Exception e) {
+        public void onFinish(final @Nullable Exception e) {
+            if (mShutdown || fileSpec == null || fileSpec.isEmpty()) {
+                return;
+            }
+
             // Load the file and apply to view
-            File file = new File(mFilename);
+            File file = new File(fileSpec);
             file.deleteOnExit();
-            ImageUtils.fetchFileIntoImageView(mImageView, file, mMaxWidth, mMaxHeight, true);
+            ImageUtils.fetchFileIntoImageView(imageView, file, maxWidth, maxHeight, true);
+
         }
     }
 
@@ -443,25 +460,26 @@ public class CoverBrowser {
     private class GetFullImageTask implements SimpleTask {
         // Switcher to use
         @NonNull
-        private final ImageSwitcher mSwitcher;
+        private final ImageSwitcher switcher;
         // ISBN
-        private final String mIsbn;
+        private final String isbn;
         // Resulting file
-        private String mFileSpec;
+        @Nullable
+        private String fileSpec;
 
         /**
          * Constructor
          *
-         * @param position Position f ISBN
+         * @param isbn in the editions list for the ISBN to use
          * @param switcher ImageSwitcher to update
          */
-        GetFullImageTask(final int position, @NonNull final ImageSwitcher switcher) {
-            mSwitcher = switcher;
-            mIsbn = mEditions.get(position);
+        GetFullImageTask(final @NonNull String isbn, final @NonNull ImageSwitcher switcher) {
+            this.switcher = switcher;
+            this.isbn = isbn;
         }
 
         @Override
-        public void run(@NonNull final SimpleTaskContext taskContext) {
+        public void run(final @NonNull SimpleTaskContext taskContext) {
             // If we are shutdown, just return
             if (mShutdown) {
                 taskContext.setRequiresFinish(false);
@@ -469,33 +487,34 @@ public class CoverBrowser {
             }
 
             // Download the file, try LARGE first
-            mFileSpec = mFileManager.download(mIsbn, ImageSizes.LARGE);
-            if (new File(mFileSpec).length() >= 50) {
+            fileSpec = mFileManager.download(isbn, ImageSizes.LARGE);
+            if (fileSpec != null && new File(fileSpec).length() >= 50) {
                 return;
             }
             // Try SMALL (or silently give up)
-            mFileSpec = mFileManager.download(mIsbn, ImageSizes.SMALL);
+            fileSpec = mFileManager.download(isbn, ImageSizes.SMALL);
         }
 
         @Override
-        public void onFinish(@Nullable final Exception e) {
-            if (mShutdown) {
+        public void onFinish(final @Nullable Exception e) {
+            if (mShutdown || fileSpec == null || fileSpec.isEmpty()) {
                 return;
             }
+
             // Update the ImageSwitcher
-            File file = new File(mFileSpec);
+            File file = new File(fileSpec);
             TextView msgVw = mDialog.findViewById(R.id.switcherStatus);
             if (file.exists() && file.length() > 100) {
                 Drawable image = new BitmapDrawable(mActivity.getResources(),
                         ImageUtils.fetchFileIntoImageView(null, file,
                                 mPreviewSizeWidth * 4, mPreviewSizeHeight * 4, true));
-                mSwitcher.setImageDrawable(image);
-                ViewTagger.setTag(mSwitcher, file.getAbsolutePath());
+                switcher.setImageDrawable(image);
+                ViewTagger.setTag(switcher, file.getAbsolutePath());
                 msgVw.setVisibility(View.GONE);
-                mSwitcher.setVisibility(View.VISIBLE);
+                switcher.setVisibility(View.VISIBLE);
             } else {
                 msgVw.setVisibility(View.VISIBLE);
-                mSwitcher.setVisibility(View.GONE);
+                switcher.setVisibility(View.GONE);
                 msgVw.setText(R.string.image_not_found);
             }
         }
@@ -507,10 +526,10 @@ public class CoverBrowser {
      * @author Philip Warner
      */
     private class FileManager {
-        final LibraryThingManager mLibraryThing = new LibraryThingManager();
-        private final Bundle mFiles = new Bundle();
+        final LibraryThingManager libraryThingManager = new LibraryThingManager();
+        private final Bundle files = new Bundle();
 
-        private boolean isGood(@NonNull final File file) {
+        private boolean isGood(final @NonNull File file) {
             boolean ok = false;
 
             if (file.exists() && file.length() != 0) {
@@ -542,77 +561,66 @@ public class CoverBrowser {
          *
          * @return the fileSpec, or null when not found
          */
-        @NonNull
-        public String download(@NonNull final String isbn, @NonNull final ImageSizes size) {
+        @Nullable
+        public String download(final @NonNull String isbn, final @NonNull ImageSizes size) {
             String fileSpec;
             String key = isbn + "_" + size;
 
-            synchronized (mFiles) {
-                fileSpec = mFiles.getString(key);
+            synchronized (files) {
+                fileSpec = files.getString(key);
             }
 
             // Is the file present && good ?
             if ((fileSpec != null) && !fileSpec.isEmpty() && isGood(new File(fileSpec))) {
                 return fileSpec;
             } else {
-                mFiles.remove(key);
+                files.remove(key);
             }
 
-            // allow the user to prioritize the order
+            // ENHANCE: allow the user to prioritize the order on the fly.
             for (SearchManager.SearchSite site : SearchManager.getSiteCoverSearchOrder()) {
                 if (site.enabled) {
+                    File file = null;
                     switch (site.id) {
                         case SearchManager.SEARCH_LIBRARY_THING: {
-                            File file = mLibraryThing.getCoverImage(isbn, null, size);
-                            if (file != null && isGood(file)) {
-                                fileSpec = file.getAbsolutePath();
-                                synchronized (mFiles) {
-                                    mFiles.putString(key, fileSpec);
-                                    return fileSpec;
-                                }
-                            }
+                            file = libraryThingManager.getCoverImage(isbn, null, size);
                             break;
                         }
                         case SearchManager.SEARCH_GOOGLE: {
-                            File file = GoogleBooksManager.getCoverImage(isbn);
-                            if (file != null && isGood(file)) {
-                                fileSpec = file.getAbsolutePath();
-                                synchronized (mFiles) {
-                                    mFiles.putString(key, fileSpec);
-                                    return fileSpec;
-                                }
-                            }
+                            file = GoogleBooksManager.getCoverImage(isbn);
                             break;
                         }
                         case SearchManager.SEARCH_ISFDB: {
-                            File file = ISFDBManager.getCoverImage(isbn);
-                            if (file != null && isGood(file)) {
-                                fileSpec = file.getAbsolutePath();
-                                synchronized (mFiles) {
-                                    mFiles.putString(key, fileSpec);
-                                    return fileSpec;
-                                }
-                            }
+                            file = ISFDBManager.getCoverImage(isbn);
                             break;
                         }
                     }
+
+                    if (file != null && isGood(file)) {
+                        fileSpec = file.getAbsolutePath();
+                        synchronized (files) {
+                            files.putString(key, fileSpec);
+                            return fileSpec;
+                        }
+                    }
+
                 }
             }
 
             // give up
-            mFiles.remove(key);
-            return ""; //don't return null.
+            files.remove(key);
+            return null;
         }
 
         /**
          * Get the requested file, if available, otherwise return null.
          */
         @Nullable
-        public File getFile(@NonNull final String isbn, @NonNull final ImageSizes size) {
+        public File getFile(final @NonNull String isbn, final @NonNull ImageSizes size) {
             String key = isbn + "_" + size;
             String fileSpec;
-            synchronized (mFiles) {
-                fileSpec = mFiles.getString(key);
+            synchronized (files) {
+                fileSpec = files.getString(key);
             }
 
             if (fileSpec == null || fileSpec.isEmpty()) {
@@ -627,13 +635,13 @@ public class CoverBrowser {
          */
         void purge() {
             try {
-                for (String k : mFiles.keySet()) {
-                    String fileSpec = mFiles.getString(k);
+                for (String k : files.keySet()) {
+                    String fileSpec = files.getString(k);
                     if (fileSpec != null) {
                         StorageUtils.deleteFile(new File(fileSpec));
                     }
                 }
-                mFiles.clear();
+                files.clear();
             } catch (Exception e) {
                 Logger.error(e);
             }

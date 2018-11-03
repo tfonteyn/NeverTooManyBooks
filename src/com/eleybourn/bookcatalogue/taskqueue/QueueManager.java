@@ -82,7 +82,7 @@ public abstract class QueueManager {
     private MessageHandler mMessageHandler;
 
 
-    protected QueueManager(@NonNull final Context applicationContext) {
+    protected QueueManager(final @NonNull Context applicationContext) {
         super();
         if (mQueueManager != null) {
             /* This is an essential requirement because (a) synchronization will not work with
@@ -109,7 +109,7 @@ public abstract class QueueManager {
         return mQueueManager;
     }
 
-    public void registerEventListener(@NonNull final OnEventChangeListener listener) {
+    public void registerEventListener(final @NonNull OnEventChangeListener listener) {
         synchronized (mEventChangeListeners) {
             for (WeakReference<OnEventChangeListener> lr : mEventChangeListeners) {
                 OnEventChangeListener l = lr.get();
@@ -120,7 +120,7 @@ public abstract class QueueManager {
         }
     }
 
-    public void unregisterEventListener(@NonNull final OnEventChangeListener listener) {
+    public void unregisterEventListener(final @NonNull OnEventChangeListener listener) {
         synchronized (mEventChangeListeners) {
             List<WeakReference<OnEventChangeListener>> ll = new ArrayList<>();
             for (WeakReference<OnEventChangeListener> l : mEventChangeListeners) {
@@ -133,7 +133,7 @@ public abstract class QueueManager {
         }
     }
 
-    public void registerTaskListener(@NonNull final OnTaskChangeListener listener) {
+    public void registerTaskListener(final @NonNull OnTaskChangeListener listener) {
         synchronized (mTaskChangeListeners) {
             for (WeakReference<OnTaskChangeListener> lr : mTaskChangeListeners) {
                 OnTaskChangeListener l = lr.get();
@@ -144,7 +144,7 @@ public abstract class QueueManager {
         }
     }
 
-    public void unregisterTaskListener(@NonNull final OnTaskChangeListener listener) {
+    public void unregisterTaskListener(final @NonNull OnTaskChangeListener listener) {
         synchronized (mTaskChangeListeners) {
             List<WeakReference<OnTaskChangeListener>> ll = new ArrayList<>();
             for (WeakReference<OnTaskChangeListener> l : mTaskChangeListeners) {
@@ -157,7 +157,7 @@ public abstract class QueueManager {
         }
     }
 
-    void notifyTaskChange(@Nullable final Task task, @NonNull final TaskActions action) {
+    void notifyTaskChange(final @Nullable Task task, final @NonNull TaskActions action) {
         // Make a copy of the list so we can cull dead elements from the original
         List<WeakReference<OnTaskChangeListener>> list;
         synchronized (mTaskChangeListeners) {
@@ -186,7 +186,7 @@ public abstract class QueueManager {
         }
     }
 
-    private void notifyEventChange(@Nullable final Event event, @NonNull final EventActions action) {
+    private void notifyEventChange(final @Nullable Event event, final @NonNull EventActions action) {
         // Make a copy of the list so we can cull dead elements from the original
         List<WeakReference<OnEventChangeListener>> list;
         synchronized (mEventChangeListeners) {
@@ -220,7 +220,7 @@ public abstract class QueueManager {
      * @param task      task to queue
      * @param queueName Name of queue
      */
-    public void enqueueTask(@NonNull final Task task, @NonNull final String queueName) {
+    public void enqueueTask(final @NonNull Task task, final @NonNull String queueName) {
         synchronized (this) {
             // Save it
             mDb.enqueueTask(task, queueName);
@@ -242,7 +242,7 @@ public abstract class QueueManager {
      *
      * @param name Name of the queue
      */
-    protected void initializeQueue(@NonNull final String name) {
+    protected void initializeQueue(final @NonNull String name) {
         mDb.createQueue(name);
     }
 
@@ -251,7 +251,7 @@ public abstract class QueueManager {
      *
      * @param queue New queue object
      */
-    void queueStarting(@NonNull final Queue queue) {
+    void queueStarting(final @NonNull Queue queue) {
         synchronized (this) {
             mActiveQueues.put(queue.getQueueName(), queue);
         }
@@ -262,7 +262,7 @@ public abstract class QueueManager {
      *
      * @param queue Queue that is stopping
      */
-    void queueTerminating(@NonNull final Queue queue) {
+    void queueTerminating(final @NonNull Queue queue) {
         synchronized (this) {
             try {
                 // It's possible that a queue terminated and another started; make sure we are removing
@@ -284,7 +284,7 @@ public abstract class QueueManager {
      *
      * @return Result from run(...) method
      */
-    boolean runOneTask(@NonNull final Task task) {
+    boolean runOneTask(final @NonNull Task task) {
         if (task instanceof RunnableTask) {
             return ((RunnableTask) task).run(this, this.getApplicationContext());
         } else {
@@ -299,7 +299,7 @@ public abstract class QueueManager {
      *
      * @param task The task to be saved. Must exist in database.
      */
-    public void saveTask(@NonNull final Task task) {
+    public void saveTask(final @NonNull Task task) {
         mDb.updateTask(task);
         this.notifyTaskChange(task, TaskActions.updated);
     }
@@ -307,7 +307,7 @@ public abstract class QueueManager {
     /**
      * Make a toast message for the caller. Queue in UI thread if necessary.
      */
-    private void doToast(@Nullable final String message) {
+    private void doToast(final @Nullable String message) {
         if (Thread.currentThread() == mUIThread.get()) {
             synchronized (this) {
                 if (DEBUG_SWITCHES.MESSAGING && BuildConfig.DEBUG) {
@@ -334,7 +334,7 @@ public abstract class QueueManager {
      * @param t Related task
      * @param e Exception (usually subclassed)
      */
-    void storeTaskEvent(@NonNull final Task t, @NonNull final Event e) {
+    void storeTaskEvent(final @NonNull Task t, final @NonNull Event e) {
         mDb.storeTaskEvent(t, e);
         this.notifyEventChange(e, EventActions.created);
     }
@@ -369,7 +369,7 @@ public abstract class QueueManager {
      * @return Cursor of exceptions
      */
     @NonNull
-    public TasksCursor getTasks(@NonNull final TaskCursorSubtype type) {
+    public TasksCursor getTasks(final @NonNull TaskCursorSubtype type) {
         return mDb.getTasks(type);
     }
 
@@ -492,7 +492,7 @@ public abstract class QueueManager {
             mQueueManager = queueManager;
         }
 
-        public void handleMessage(@NonNull final Message msg) {
+        public void handleMessage(final @NonNull Message msg) {
             Bundle bundle = msg.getData();
             if (bundle.containsKey(INTERNAL)) {
                 String kind = bundle.getString(INTERNAL);

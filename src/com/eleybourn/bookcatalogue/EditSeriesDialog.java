@@ -41,14 +41,14 @@ public class EditSeriesDialog {
     @NonNull
     private final Runnable mOnChanged;
 
-    EditSeriesDialog(@NonNull final Activity activity, @NonNull final CatalogueDBAdapter db, @NonNull final  Runnable onChanged) {
+    EditSeriesDialog(final @NonNull Activity activity, final @NonNull CatalogueDBAdapter db, final @NonNull  Runnable onChanged) {
         mDb = db;
         mContext = activity;
         mSeriesAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_dropdown_item_1line, mDb.getAllSeries());
         mOnChanged = onChanged;
     }
 
-    public void edit(@NonNull final Series series) {
+    public void edit(final @NonNull Series series) {
         final Dialog dialog = new StandardDialogs.BasicDialog(mContext);
         dialog.setContentView(R.layout.dialog_edit_series);
         dialog.setTitle(R.string.edit_series);
@@ -83,7 +83,7 @@ public class EditSeriesDialog {
         dialog.show();
     }
 
-    private void confirmEdit(@NonNull final Series from, @NonNull final Series to) {
+    private void confirmEdit(final @NonNull Series from, final @NonNull Series to) {
         // case sensitive equality
         if (to.equals(from)) {
             return;

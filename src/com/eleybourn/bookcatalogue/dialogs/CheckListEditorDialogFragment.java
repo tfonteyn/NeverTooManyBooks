@@ -28,12 +28,14 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v4.app.DialogFragment;
 
+import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.RTE;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Fragment wrapper for {@link CheckListEditorDialog}
@@ -41,50 +43,49 @@ import java.util.List;
  * @param <T> type to use for {@link CheckListItem}
  */
 public class CheckListEditorDialogFragment<T> extends DialogFragment {
-    /** Dialog title */
-    private static final String BKEY_TITLE = "title";
-    private static final String BKEY_LIST = "list";
+
+    public static final String BKEY_CHECK_LIST = "list";
 
     @StringRes
     private int mTitleId;
     @IdRes
     private int mDestinationFieldId;
+    /**
+     * Object to handle changes
+     */
+    private final CheckListEditorDialog.OnCheckListEditorResultsListener mEditListener =
+            new CheckListEditorDialog.OnCheckListEditorResultsListener() {
+                /**
+                 * @param <T2>  type to use for {@link CheckListItem}
+                 */
+                @Override
+                public <T2> void onCheckListEditorSave(final @NonNull CheckListEditorDialog dialog,
+                                                       final @NonNull List<CheckListItem<T2>> list) {
+                    dialog.dismiss();
+                    ((OnCheckListEditorResultsListener) requireActivity()).onCheckListEditorSave(CheckListEditorDialogFragment.this,
+                            mDestinationFieldId, list);
+                }
 
+                @Override
+                public void onCheckListEditorCancel(final @NonNull CheckListEditorDialog dialog) {
+                    dialog.dismiss();
+                    ((OnCheckListEditorResultsListener) requireActivity()).onCheckListEditorCancel(CheckListEditorDialogFragment.this,
+                            mDestinationFieldId);
+                }
+            };
     @Nullable
     private ArrayList<CheckListItem<T>> mList;
-
-    /**
-     * Object to handle changes.
-     */
-    private final CheckListEditorDialog.OnEditListener mEditListener = new CheckListEditorDialog.OnEditListener() {
-        /**
-         * @param <T2>  type to use for {@link CheckListItem}
-         */
-        @Override
-        public <T2> void onCheckListSave(@NonNull final CheckListEditorDialog dialog,
-                                        @NonNull final List<CheckListItem<T2>> list) {
-            dialog.dismiss();
-            ((OnCheckListChangedListener) requireActivity()).onCheckListSave(CheckListEditorDialogFragment.this,
-                    mDestinationFieldId, list);
-        }
-
-        @Override
-        public void onCheckListCancel(@NonNull final CheckListEditorDialog dialog) {
-            dialog.dismiss();
-            ((OnCheckListChangedListener) requireActivity()).onCheckListCancel(CheckListEditorDialogFragment.this,
-                    mDestinationFieldId);
-        }
-    };
 
     /**
      * Ensure activity supports interface
      */
     @Override
     @CallSuper
-    public void onAttach(@NonNull final Context context) {
+    public void onAttach(final @NonNull Context context) {
         super.onAttach(context);
-        if (!(context instanceof OnCheckListChangedListener))
-            throw new RTE.MustImplementException(context, OnCheckListChangedListener.class);
+        if (!(context instanceof CheckListEditorDialogFragment.OnCheckListEditorResultsListener)) {
+            throw new RTE.MustImplementException(context, OnCheckListEditorResultsListener.class);
+        }
     }
 
     /**
@@ -92,16 +93,25 @@ public class CheckListEditorDialogFragment<T> extends DialogFragment {
      */
     @NonNull
     @Override
-    public CheckListEditorDialog<T> onCreateDialog(@Nullable final Bundle savedInstanceState) {
+    public CheckListEditorDialog<T> onCreateDialog(final @Nullable Bundle savedInstanceState) {
         // Restore saved state info
         if (savedInstanceState != null) {
-            if (savedInstanceState.containsKey(BKEY_LIST)) {
-                mList = ArrayUtils.getListFromBundle(savedInstanceState, BKEY_LIST);
-            }
-            mTitleId = savedInstanceState.getInt(BKEY_TITLE);
+            mTitleId = savedInstanceState.getInt(UniqueId.BKEY_DIALOG_TITLE);
             mDestinationFieldId = savedInstanceState.getInt(UniqueId.BKEY_FIELD_ID);
+            // data to edit
+            if (savedInstanceState.containsKey(BKEY_CHECK_LIST)) {
+                mList = ArrayUtils.getListFromBundle(savedInstanceState, BKEY_CHECK_LIST);
+            }
+        } else {
+            Bundle args = getArguments();
+            Objects.requireNonNull(args);
+            mTitleId = args.getInt(UniqueId.BKEY_DIALOG_TITLE, R.string.edit);
+            mDestinationFieldId = args.getInt(UniqueId.BKEY_FIELD_ID);
+            // data to edit
+            if (args.containsKey(BKEY_CHECK_LIST)) {
+                mList = ArrayUtils.getListFromBundle(args, BKEY_CHECK_LIST);
+            }
         }
-
 
         CheckListEditorDialog<T> editor = new CheckListEditorDialog<>(requireActivity());
         if (mTitleId != 0) {
@@ -110,50 +120,17 @@ public class CheckListEditorDialogFragment<T> extends DialogFragment {
         if (mList != null) {
             editor.setList(mList);
         }
-        editor.setOnEditListener(mEditListener);
+        editor.setResultsListener(mEditListener);
         return editor;
-    }
-
-    @SuppressWarnings("UnusedReturnValue")
-    @NonNull
-    public CheckListEditorDialogFragment setDestinationFieldId(@IdRes final int id) {
-        mDestinationFieldId = id;
-        return this;
-    }
-
-    /**
-     * Accessor. Update dialog if available.
-     */
-    @NonNull
-    public CheckListEditorDialogFragment setTitle(@StringRes final int title) {
-        mTitleId = title;
-        CheckListEditorDialog d = (CheckListEditorDialog) getDialog();
-        if (d != null) {
-            d.setTitle(mTitleId);
-        }
-        return this;
-    }
-
-    /**
-     * Accessor. Update dialog if available.
-     */
-    @NonNull
-    public CheckListEditorDialogFragment setList(@NonNull final ArrayList<CheckListItem<T>> list) {
-        mList = list;
-        CheckListEditorDialog<T> d = (CheckListEditorDialog<T>) getDialog();
-        if (d != null) {
-            d.setList(mList);
-        }
-        return this;
     }
 
     @Override
     @CallSuper
-    public void onSaveInstanceState(@NonNull final Bundle outState) {
-        outState.putInt(BKEY_TITLE, mTitleId);
+    public void onSaveInstanceState(final @NonNull Bundle outState) {
+        outState.putInt(UniqueId.BKEY_DIALOG_TITLE, mTitleId);
         outState.putInt(UniqueId.BKEY_FIELD_ID, mDestinationFieldId);
         if (mList != null) {
-            outState.putSerializable(BKEY_LIST, mList);
+            outState.putSerializable(BKEY_CHECK_LIST, mList);
         }
         super.onSaveInstanceState(outState);
     }
@@ -172,16 +149,15 @@ public class CheckListEditorDialogFragment<T> extends DialogFragment {
         super.onPause();
     }
 
-
     /**
      * Listener interface to receive notifications when dialog is closed by any means.
      */
-    public interface OnCheckListChangedListener {
-        <T2> void onCheckListSave(@NonNull final CheckListEditorDialogFragment dialog,
-                             final int destinationFieldId,
-                             @NonNull final List<CheckListItem<T2>> list);
+    public interface OnCheckListEditorResultsListener {
+        <T2> void onCheckListEditorSave(final @NonNull CheckListEditorDialogFragment dialog,
+                                        final int destinationFieldId,
+                                        final @NonNull List<CheckListItem<T2>> list);
 
-        void onCheckListCancel(@NonNull final CheckListEditorDialogFragment dialog,
-                               final int destinationFieldId);
+        void onCheckListEditorCancel(final @NonNull CheckListEditorDialogFragment dialog,
+                                     final int destinationFieldId);
     }
 }

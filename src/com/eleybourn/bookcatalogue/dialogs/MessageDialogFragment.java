@@ -16,16 +16,17 @@ import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.RTE;
 
+import java.util.Objects;
+
 /**
  * A plain AlertDialog but nicer
  */
 public class MessageDialogFragment extends DialogFragment {
-    private static final String TITLE_ID = "titleId";
     private static final String MESSAGE = "message";
     private static final String BUTTON_POSITIVE_TEXT_ID = "buttonPositiveTextId";
     private static final String BUTTON_NEGATIVE_TEXT_ID = "buttonNegativeTextId";
     private static final String BUTTON_NEUTRAL_TEXT_ID = "buttonNeutralTextId";
-    private int mDialogId;
+    private int mCallerId;
 
     /**
      * A plain title/message/OK dialog
@@ -38,8 +39,8 @@ public class MessageDialogFragment extends DialogFragment {
      */
     @NonNull
     public static MessageDialogFragment newInstance(final int callerId,
-                                                    @StringRes final int titleId,
-                                                    @NonNull final String message) {
+                                                    final @StringRes int titleId,
+                                                    final @NonNull String message) {
         return MessageDialogFragment.newInstance(callerId, titleId, message, android.R.string.ok, 0, 0);
     }
 
@@ -54,15 +55,15 @@ public class MessageDialogFragment extends DialogFragment {
     @NonNull
     @SuppressWarnings("WeakerAccess")
     public static MessageDialogFragment newInstance(final int callerId,
-                                                    @StringRes final int titleId,
-                                                    @NonNull final String message,
-                                                    @StringRes final int buttonPositiveTextId,
-                                                    @StringRes final int buttonNegativeTextId,
-                                                    @StringRes final int buttonNeutralTextId) {
+                                                    final @StringRes int titleId,
+                                                    final @NonNull String message,
+                                                    final @StringRes int buttonPositiveTextId,
+                                                    final @StringRes int buttonNegativeTextId,
+                                                    final @StringRes int buttonNeutralTextId) {
         MessageDialogFragment frag = new MessageDialogFragment();
         Bundle args = new Bundle();
         args.putInt(UniqueId.BKEY_CALLER_ID, callerId);
-        args.putInt(TITLE_ID, titleId);
+        args.putInt(UniqueId.BKEY_DIALOG_TITLE, titleId);
         args.putString(MESSAGE, message);
         args.putInt(BUTTON_POSITIVE_TEXT_ID, buttonPositiveTextId);
         args.putInt(BUTTON_NEGATIVE_TEXT_ID, buttonNegativeTextId);
@@ -76,10 +77,10 @@ public class MessageDialogFragment extends DialogFragment {
      */
     @Override
     @CallSuper
-    public void onAttach(@NonNull final Context context) {
+    public void onAttach(final @NonNull Context context) {
         super.onAttach(context);
-        if (!(context instanceof OnMessageDialogResultListener))
-            throw new RTE.MustImplementException(context, OnMessageDialogResultListener.class);
+        if (!(context instanceof OnMessageDialogResultsListener))
+            throw new RTE.MustImplementException(context, OnMessageDialogResultsListener.class);
     }
 
     /**
@@ -87,14 +88,20 @@ public class MessageDialogFragment extends DialogFragment {
      */
     @NonNull
     @Override
-    public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-        //noinspection ConstantConditions
-        mDialogId = getArguments().getInt(UniqueId.BKEY_CALLER_ID);
-        int title = getArguments().getInt(TITLE_ID);
-        String msg = getArguments().getString(MESSAGE);
-        int btnPos = getArguments().getInt(BUTTON_POSITIVE_TEXT_ID);
-        int btnNeg = getArguments().getInt(BUTTON_NEGATIVE_TEXT_ID);
-        int btnNeut = getArguments().getInt(BUTTON_NEUTRAL_TEXT_ID);
+    public Dialog onCreateDialog(final @Nullable Bundle savedInstanceState) {
+        Bundle args = getArguments();
+        Objects.requireNonNull(args);
+        mCallerId = args.getInt(UniqueId.BKEY_CALLER_ID);
+        @StringRes
+        int title = args.getInt(UniqueId.BKEY_DIALOG_TITLE);
+        @StringRes
+        int btnPos = args.getInt(BUTTON_POSITIVE_TEXT_ID, android.R.string.ok);
+        @StringRes
+        int btnNeg = args.getInt(BUTTON_NEGATIVE_TEXT_ID);
+        @StringRes
+        int btnNeut = args.getInt(BUTTON_NEUTRAL_TEXT_ID);
+
+        String msg = args.getString(MESSAGE);
 
         AlertDialog dialog = new AlertDialog.Builder(requireActivity()).setMessage(msg)
                 .setTitle(title)
@@ -133,9 +140,9 @@ public class MessageDialogFragment extends DialogFragment {
 
     private void handleButton(final int button) {
         try {
-            OnMessageDialogResultListener listenerActivity = (OnMessageDialogResultListener) getActivity();
+            OnMessageDialogResultsListener listenerActivity = (OnMessageDialogResultsListener) getActivity();
             if (listenerActivity != null)
-                listenerActivity.onMessageDialogResult(mDialogId, button);
+                listenerActivity.onMessageDialogResult(mCallerId, button);
         } catch (Exception e) {
             Logger.error(e);
         }
@@ -147,7 +154,7 @@ public class MessageDialogFragment extends DialogFragment {
      *
      * @author pjw
      */
-    public interface OnMessageDialogResultListener {
+    public interface OnMessageDialogResultsListener {
         void onMessageDialogResult(final int callerId, final int button);
     }
 }

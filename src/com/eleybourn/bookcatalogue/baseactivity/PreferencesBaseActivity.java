@@ -38,11 +38,11 @@ import com.eleybourn.bookcatalogue.properties.Properties;
 abstract public class PreferencesBaseActivity extends BaseActivity {
 
     /** Setup the views in the layout */
-    abstract protected void initViews(@NonNull final Properties globalProps);
+    abstract protected void initViews(final @NonNull Properties globalProps);
 
     @Override
     @CallSuper
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
+    public void onCreate(final @Nullable Bundle savedInstanceState) {
         try {
             super.onCreate(savedInstanceState);
 

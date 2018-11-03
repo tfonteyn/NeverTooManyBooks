@@ -27,17 +27,17 @@ import android.support.annotation.NonNull;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 
 public class EditLocationDialog extends EditStringDialog {
-    EditLocationDialog(@NonNull final Activity activity, @NonNull final CatalogueDBAdapter db, @NonNull final Runnable onChanged) {
+    EditLocationDialog(final @NonNull Activity activity, final @NonNull CatalogueDBAdapter db, final @NonNull Runnable onChanged) {
         super(activity, db, onChanged);
     }
 
     @CallSuper
-    public void edit(@NonNull final String s) {
+    public void edit(final @NonNull String s) {
         super.edit(s, R.layout.dialog_edit_location, R.string.edit_location_details);
     }
 
     @Override
-    protected void confirmEdit(@NonNull final String from, @NonNull final String to) {
+    protected void confirmEdit(final @NonNull String from, final @NonNull String to) {
         // case sensitive equality
         if (to.equals(from)) {
             return;

@@ -201,7 +201,8 @@ public class BooklistStyles extends ArrayList<BooklistStyle> {
         list.add(style);
         style.addGroups(ROW_KIND_UPDATE_YEAR, ROW_KIND_UPDATE_MONTH, ROW_KIND_UPDATE_DAY);
         style.setShowAuthor(true);
-        // NEWKIND: Add new kinds to this list so the user sees them (Optional)
+
+        // NEWKIND: BooklistStyle.
 
         return list;
     }
@@ -212,7 +213,7 @@ public class BooklistStyles extends ArrayList<BooklistStyle> {
      * @return the ordered set of preferred styles.
      */
     @NonNull
-    private static BooklistStyles filterPreferredStyles(@NonNull final BooklistStyles allStyles) {
+    private static BooklistStyles filterPreferredStyles(final @NonNull BooklistStyles allStyles) {
         BooklistStyles styles = new BooklistStyles();
 
         // Get the user preference
@@ -240,7 +241,7 @@ public class BooklistStyles extends ArrayList<BooklistStyle> {
      * Get the preferred styles using system and user-defined styles.
      */
     @NonNull
-    public static BooklistStyles getPreferredStyles(@NonNull final CatalogueDBAdapter db) {
+    public static BooklistStyles getPreferredStyles(final @NonNull CatalogueDBAdapter db) {
         BooklistStyles allStyles = new BooklistStyles();
 
         // Get all styles: user & builtin
@@ -255,7 +256,7 @@ public class BooklistStyles extends ArrayList<BooklistStyle> {
      * Return all styles, with the preferred styles move to front of list.
      */
     @NonNull
-    public static BooklistStyles getAllStyles(@NonNull final CatalogueDBAdapter db) {
+    public static BooklistStyles getAllStyles(final @NonNull CatalogueDBAdapter db) {
         BooklistStyles allStyles = new BooklistStyles();
 
         // Get all styles and preferred styles.
@@ -277,7 +278,7 @@ public class BooklistStyles extends ArrayList<BooklistStyle> {
     /**
      * Save the preferred style menu list.
      */
-    static void saveMenuOrder(@Nullable final List<BooklistStyle> list) {
+    static void saveMenuOrder(final @Nullable List<BooklistStyle> list) {
         Objects.requireNonNull(list);
 
         StringBuilder items = new StringBuilder();
@@ -301,7 +302,7 @@ public class BooklistStyles extends ArrayList<BooklistStyle> {
      */
     @CallSuper
     @Override
-    public boolean add(@NonNull final BooklistStyle style) {
+    public boolean add(final @NonNull BooklistStyle style) {
         style.setPreferred(mPreferredStyleNames.contains(style.getCanonicalName()));
         return super.add(style);
     }
@@ -314,7 +315,7 @@ public class BooklistStyles extends ArrayList<BooklistStyle> {
      * @return Named style, or null
      */
     @Nullable
-    public BooklistStyle findCanonical(@NonNull final String name) {
+    public BooklistStyle findCanonical(final @NonNull String name) {
         for (BooklistStyle style : this) {
             if (style.getCanonicalName().equalsIgnoreCase(name)) {
                 return style;

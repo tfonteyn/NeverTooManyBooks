@@ -174,7 +174,7 @@ public class BooklistPreferencesActivity extends PreferencesBaseActivity {
      */
     @Override
     @CallSuper
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
+    public void onCreate(final @Nullable Bundle savedInstanceState) {
         try {
             super.onCreate(savedInstanceState);
             setTitle(R.string.booklist_preferences);
@@ -190,7 +190,7 @@ public class BooklistPreferencesActivity extends PreferencesBaseActivity {
      * Setup each component of the layout using the passed preferences
      */
     @Override
-    protected void initViews(@NonNull final Properties globalProperties) {
+    protected void initViews(final @NonNull Properties globalProperties) {
         // Create a dummy style and add one group of each kind
         BooklistStyle style = new BooklistStyle("");
         for (int kind : BooklistGroup.getRowKinds()) {

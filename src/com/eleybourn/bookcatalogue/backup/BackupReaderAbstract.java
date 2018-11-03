@@ -59,7 +59,7 @@ public abstract class BackupReaderAbstract implements BackupReader {
      * Do a full restore, sending progress to the listener
      */
     @Override
-    public void restore(@NonNull final BackupReaderListener listener,
+    public void restore(final @NonNull BackupReaderListener listener,
                         final int importFlags) throws IOException {
         // Just a stat for progress
         int coverCount = 0;
@@ -119,15 +119,15 @@ public abstract class BackupReaderAbstract implements BackupReader {
     /**
      * Restore the books from the export file.
      */
-    private void restoreBooks(@NonNull final BackupReaderListener listener,
-                              @NonNull final ReaderEntity entity,
+    private void restoreBooks(final @NonNull BackupReaderListener listener,
+                              final @NonNull ReaderEntity entity,
                               final int importFlags) throws IOException {
         // Make a listener for the 'export' function that just passes on the progress to out listener
         Importer.OnImporterListener importListener = new Importer.OnImporterListener() {
             private int mLastPos = 0;
 
             @Override
-            public void onProgress(@NonNull final String message, final int position) {
+            public void onProgress(final @NonNull String message, final int position) {
                 // The progress is sent periodically and has jumps, so we calculate deltas
                 listener.step(message, position - mLastPos);
                 mLastPos = position;
@@ -153,8 +153,8 @@ public abstract class BackupReaderAbstract implements BackupReader {
     /**
      * Restore a cover file.
      */
-    private void restoreCover(@NonNull final BackupReaderListener listener,
-                              @NonNull final ReaderEntity cover,
+    private void restoreCover(final @NonNull BackupReaderListener listener,
+                              final @NonNull ReaderEntity cover,
                               final int flags) throws IOException {
         listener.step("Processing Covers...", 1);
 
@@ -177,8 +177,8 @@ public abstract class BackupReaderAbstract implements BackupReader {
     /**
      * Restore the app preferences
      */
-    private void restorePreferences(@NonNull final BackupReaderListener listener,
-                                    @NonNull final ReaderEntity entity) throws IOException {
+    private void restorePreferences(final @NonNull BackupReaderListener listener,
+                                    final @NonNull ReaderEntity entity) throws IOException {
         listener.step("Preferences...", 1);
         SharedPreferences prefs = BookCatalogueApp.getSharedPreferences();
         entity.getPreferences(prefs);
@@ -187,8 +187,8 @@ public abstract class BackupReaderAbstract implements BackupReader {
     /**
      * Restore a booklist style
      */
-    private void restoreStyle(@NonNull final BackupReaderListener listener,
-                              @NonNull final ReaderEntity entity) throws IOException {
+    private void restoreStyle(final @NonNull BackupReaderListener listener,
+                              final @NonNull ReaderEntity entity) throws IOException {
         listener.step("Booklist Styles...", 1);
         BooklistStyle booklistStyle = null;
         try {

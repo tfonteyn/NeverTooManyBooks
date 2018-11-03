@@ -59,7 +59,7 @@ public class Queue extends Thread {
      *
      * @author Philip Warner
      */
-    public Queue(@NonNull final Context context, @NonNull final QueueManager manager, @NonNull final String queueName) {
+    public Queue(final @NonNull Context context, final @NonNull QueueManager manager, final @NonNull String queueName) {
         mApplicationContext = context.getApplicationContext();
         mName = queueName;
         mManager = manager;
@@ -153,7 +153,7 @@ public class Queue extends Thread {
     /**
      * Run the task then save the results.
      */
-    private void handleTask(@NonNull final Task task) {
+    private void handleTask(final @NonNull Task task) {
         boolean result = false;
         boolean requeue = false;
         try {
@@ -176,10 +176,10 @@ public class Queue extends Thread {
      * Update the related database record to process the task correctly.
      *
      * @param task    Task object
-     * @param result  true on onConfirm, false on onCancel
+     * @param result  true on onTextFieldEditorSave, false on onPartialDatePickerCancel
      * @param requeue true if requeue needed
      */
-    private void handleResult(@NonNull final Task task, final boolean result, final boolean requeue) {
+    private void handleResult(final @NonNull Task task, final boolean result, final boolean requeue) {
         TaskActions message;
         synchronized (mManager) {
             if (task.isAborting()) {

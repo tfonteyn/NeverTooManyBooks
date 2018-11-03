@@ -16,7 +16,7 @@ class ISFDBEditionsTask implements SimpleTaskQueue.SimpleTask {
     private String isbn;
     private HandlesISFDB callback;
 
-    ISFDBEditionsTask(@NonNull final String isbn, HandlesISFDB callback) {
+    ISFDBEditionsTask(final @NonNull String isbn, HandlesISFDB callback) {
         if (!IsbnUtils.isValid(isbn)) {
             throw new RTE.IsbnInvalidException(isbn);
         }
@@ -25,13 +25,13 @@ class ISFDBEditionsTask implements SimpleTaskQueue.SimpleTask {
     }
 
     @Override
-    public void run(@NonNull final SimpleTaskQueue.SimpleTaskContext taskContext) throws SocketTimeoutException {
+    public void run(final @NonNull SimpleTaskQueue.SimpleTaskContext taskContext) throws SocketTimeoutException {
         Editions bookEditions = new Editions(isbn);
         editions = bookEditions.fetch();
     }
 
     @Override
-    public void onFinish(@Nullable final Exception e) {
+    public void onFinish(final @Nullable Exception e) {
         callback.onGotISFDBEditions(editions);
     }
 }

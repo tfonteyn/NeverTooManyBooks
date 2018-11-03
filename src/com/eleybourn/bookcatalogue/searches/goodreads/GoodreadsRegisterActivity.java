@@ -52,7 +52,7 @@ public class GoodreadsRegisterActivity extends BaseActivity {
     /**
      * Called by button click to start a non-UI-thread task to do the work.
      */
-    public static void requestAuthorizationInBackground(@NonNull final FragmentActivity activity) {
+    public static void requestAuthorizationInBackground(final @NonNull FragmentActivity activity) {
         FragmentTask task = new FragmentTask() {
             private int mMessage = 0;
 
@@ -60,7 +60,7 @@ public class GoodreadsRegisterActivity extends BaseActivity {
              * Call the static method to start the web page; this can take a few seconds
              */
             @Override
-            public void run(@NonNull final SimpleTaskQueueProgressDialogFragment fragment, @NonNull final SimpleTaskContext taskContext) {
+            public void run(final @NonNull SimpleTaskQueueProgressDialogFragment fragment, final @NonNull SimpleTaskContext taskContext) {
                 mMessage = requestAuthorizationImmediate(activity);
             }
 
@@ -68,7 +68,7 @@ public class GoodreadsRegisterActivity extends BaseActivity {
              * Display any error message
              */
             @Override
-            public void onFinish(@NonNull final SimpleTaskQueueProgressDialogFragment fragment, @Nullable final Exception exception) {
+            public void onFinish(final @NonNull SimpleTaskQueueProgressDialogFragment fragment, final @Nullable Exception exception) {
                 if (mMessage != 0)
                     fragment.showUserMessage(fragment.getString(mMessage));
             }
@@ -82,7 +82,7 @@ public class GoodreadsRegisterActivity extends BaseActivity {
     /**
      * Static method to request authorization from goodreads.
      */
-    private static int requestAuthorizationImmediate(@NonNull final Context context) {
+    private static int requestAuthorizationImmediate(final @NonNull Context context) {
         GoodreadsManager grMgr = new GoodreadsManager();
         // This next step can take several seconds....
         if (!grMgr.hasValidCredentials()) {
@@ -105,7 +105,7 @@ public class GoodreadsRegisterActivity extends BaseActivity {
 
     @Override
     @CallSuper
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
+    public void onCreate(final @Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTitle(R.string.goodreads);
 

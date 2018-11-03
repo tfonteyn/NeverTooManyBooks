@@ -46,7 +46,7 @@ import oauth.signpost.exception.OAuthMessageSignerException;
 public class ShowBookByIsbnApiHandler extends ShowBookApiHandler {
 
 	
-	public ShowBookByIsbnApiHandler(@NonNull final GoodreadsManager manager) {
+	public ShowBookByIsbnApiHandler(final @NonNull GoodreadsManager manager) {
 		// TODO: If goodreads fix signed book.show_by_isbn requests, change false to true...
 		super(manager, true);
 	}
@@ -57,7 +57,7 @@ public class ShowBookByIsbnApiHandler extends ShowBookApiHandler {
 	 * @return	the array of GoodreadsWork objects.
 	 */
 	@NonNull
-	public Bundle get(@NonNull final String isbn, final boolean fetchThumbnail) throws
+	public Bundle get(final @NonNull String isbn, final boolean fetchThumbnail) throws
 			OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException,
 			NotAuthorizedException, BookNotFoundException, IOException, NetworkException {
 		if (!IsbnUtils.isValid(isbn)) {

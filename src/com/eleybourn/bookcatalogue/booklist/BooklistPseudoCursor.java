@@ -101,7 +101,7 @@ public class BooklistPseudoCursor extends AbstractCursor implements BooklistSupp
      *
      * @param builder The BooklistBuilder that created the table to which this cursor refers
      */
-    BooklistPseudoCursor(@NonNull final BooklistBuilder builder) {
+    BooklistPseudoCursor(final @NonNull BooklistBuilder builder) {
         mBuilder = builder;
         mCursors = new Hashtable<>();
         mMruList = new int[MRU_LIST_SIZE];
@@ -248,7 +248,7 @@ public class BooklistPseudoCursor extends AbstractCursor implements BooklistSupp
     /**
      * Check if the passed cursor ID is in the MRU list
      */
-    private boolean checkMru(@NonNull final Integer id) {
+    private boolean checkMru(final @NonNull Integer id) {
         for (int i : mMruList) {
             if (id == i) {
                 return true;

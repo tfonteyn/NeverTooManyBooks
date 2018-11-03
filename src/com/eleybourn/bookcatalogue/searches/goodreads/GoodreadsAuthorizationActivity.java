@@ -43,7 +43,7 @@ import com.eleybourn.bookcatalogue.tasks.BCQueueManager;
 public class GoodreadsAuthorizationActivity extends BaseActivity {
     @Override
     @CallSuper
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
+    public void onCreate(final @Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         // Get the payload and make sure it is what we expect

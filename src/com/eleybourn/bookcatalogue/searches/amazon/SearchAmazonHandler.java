@@ -29,11 +29,14 @@ import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
+import com.eleybourn.bookcatalogue.utils.BundleUtils;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
+
+import java.util.Currency;
 
 /**
  * An XML handler for the Amazon return
@@ -154,11 +157,15 @@ import org.xml.sax.helpers.DefaultHandler;
  * <Title>TRIGGER</Title>
  * </ItemAttributes>
  * <OfferSummary>
+ *
+ *
  * <LowestUsedPrice>
  * <Amount>1</Amount>
  * <CurrencyCode>USD</CurrencyCode>
  * <FormattedPrice>$0.01</FormattedPrice>
  * </LowestUsedPrice>
+ *
+ *
  * <TotalNew>0</TotalNew>
  * <TotalUsed>43</TotalUsed>
  * <TotalCollectible>0</TotalCollectible>
@@ -216,9 +223,27 @@ public class SearchAmazonHandler extends DefaultHandler {
     private boolean image = false;
     private boolean done = false;
 
-    SearchAmazonHandler(@NonNull final Bundle bookData, final boolean fetchThumbnail) {
+    SearchAmazonHandler(final @NonNull Bundle bookData, final boolean fetchThumbnail) {
         mBookData = bookData;
         mFetchThumbnail = fetchThumbnail;
+    }
+
+    /**
+     * Amount is in the lowest denomination, so for USD, cents, GBP pennies.. etc.
+     * <Amount>1234</Amount>
+     * <CurrencyCode>USD</CurrencyCode>
+     * is $12.34
+     */
+    private void handleListPrice() {
+        try {
+            int decDigits = Currency.getInstance(mCurrencyCode).getDefaultFractionDigits();
+            // move the decimal point 'digits' up
+            double price = ((double)Integer.parseInt(mCurrencyAmount)) / Math.pow(10,decDigits);
+            // and format with 'digits' decimal places
+            BundleUtils.addIfNotPresent(mBookData, UniqueId.KEY_BOOK_PRICE_LISTED, String.format("%." + decDigits + "f", price));
+            BundleUtils.addIfNotPresent(mBookData, UniqueId.KEY_BOOK_PRICE_LISTED_CURRENCY, mCurrencyCode);
+        } catch (Exception ignore) {
+        }
     }
 
     @Override
@@ -233,23 +258,10 @@ public class SearchAmazonHandler extends DefaultHandler {
      *
      * @param key Key for data to add
      */
-    private void addIfNotPresent(@NonNull final String key) {
+    private void addIfNotPresent(final @NonNull String key) {
         String test = mBookData.getString(key);
         if (test == null || test.isEmpty()) {
             mBookData.putString(key, mBuilder.toString());
-        }
-    }
-
-    /**
-     * Add the passed characters to the book collection if not already present.
-     *
-     * @param key Key for data to add
-     */
-    private void addIfNotPresent(@SuppressWarnings("SameParameterValue") @NonNull final String key,
-                                 @NonNull final String value) {
-        String test = mBookData.getString(key);
-        if (test == null || test.isEmpty()) {
-            mBookData.putString(key, value);
         }
     }
 
@@ -259,8 +271,8 @@ public class SearchAmazonHandler extends DefaultHandler {
      * @param key   Key for data to add
      * @param value Value to compare to; if present but equal to this, it will be overwritten
      */
-    private void addIfNotPresentOrEqual(@SuppressWarnings("SameParameterValue") @NonNull final String key,
-                                        @SuppressWarnings("SameParameterValue") @NonNull final String value) {
+    private void addIfNotPresentOrEqual(@SuppressWarnings("SameParameterValue") final @NonNull String key,
+                                        @SuppressWarnings("SameParameterValue") final @NonNull String value) {
         String test = mBookData.getString(key);
         if (test == null || test.isEmpty() || value.equals(test)) {
             mBookData.putString(key, mBuilder.toString());
@@ -280,8 +292,9 @@ public class SearchAmazonHandler extends DefaultHandler {
         }
     }
 
-    /*
+    /**
      * (non-Javadoc)
+     *
      * @see org.xml.sax.helpers.DefaultHandler#endElement(java.lang.String, java.lang.String, java.lang.String)
      *
      * Populate the class variables for each appropriate element.
@@ -289,7 +302,9 @@ public class SearchAmazonHandler extends DefaultHandler {
      */
     @Override
     @CallSuper
-    public void endElement(final String uri, @NonNull final String localName, final String name) throws SAXException {
+    public void endElement(final String uri,
+                           final @NonNull String localName,
+                           final String name) throws SAXException {
         super.endElement(uri, localName, name);
         try {
             if (localName.equalsIgnoreCase(XML_THUMBNAIL)) {
@@ -303,13 +318,7 @@ public class SearchAmazonHandler extends DefaultHandler {
             } else if (localName.equalsIgnoreCase(XML_LANGUAGE)) {
                 mInLanguage = false;
             } else if (localName.equalsIgnoreCase(XML_LIST_PRICE)) {
-                if ("usd".equalsIgnoreCase(mCurrencyCode) && !mCurrencyAmount.isEmpty()) {
-                    try {
-                        Float price = Float.parseFloat(mCurrencyAmount) / 100;
-                        addIfNotPresent(UniqueId.KEY_BOOK_LIST_PRICE, String.format("%.2f", price));
-                    } catch (Exception ignore) {
-                    }
-                }
+                handleListPrice();
                 mCurrencyCode = "";
                 mCurrencyAmount = "";
                 mInListPrice = false;
@@ -345,7 +354,7 @@ public class SearchAmazonHandler extends DefaultHandler {
                 } else {
                     if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
                         // see what we are missing.
-                        Logger.info(this,localName + "->'" + mBuilder + "'");
+                        Logger.info(this, localName + "->'" + mBuilder + "'");
                     }
                 }
             } //else if (localName.equalsIgnoreCase(TOTAL_RESULTS)){
@@ -358,8 +367,9 @@ public class SearchAmazonHandler extends DefaultHandler {
         }
     }
 
-    /*
+    /**
      * (non-Javadoc)
+     *
      * @see org.xml.sax.helpers.DefaultHandler#startDocument()
      *
      * Start the XML document and the StringBuilder object
@@ -371,15 +381,19 @@ public class SearchAmazonHandler extends DefaultHandler {
         mBuilder = new StringBuilder();
     }
 
-    /*
+    /**
      * (non-Javadoc)
+     *
      * @see org.xml.sax.helpers.DefaultHandler#startElement(java.lang.String, java.lang.String, java.lang.String, org.xml.sax.Attributes)
      *
      * Start each XML element. Specifically identify when we are in the item element and set the appropriate flag.
      */
     @Override
     @CallSuper
-    public void startElement(final String uri, @NonNull final String localName, final String name, final Attributes attributes) throws SAXException {
+    public void startElement(final String uri,
+                             final @NonNull String localName,
+                             final String name,
+                             final Attributes attributes) throws SAXException {
         super.startElement(uri, localName, name, attributes);
         if (!done && localName.equalsIgnoreCase(XML_ENTRY)) {
             entry = true;

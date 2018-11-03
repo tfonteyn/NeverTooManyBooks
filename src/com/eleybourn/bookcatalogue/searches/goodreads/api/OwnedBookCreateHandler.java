@@ -57,7 +57,7 @@ public class OwnedBookCreateHandler extends ApiHandler {
 	//	BRAND_NEW, LIKE_NEW, VERY_GOOD, GOOD, ACCEPTABLE, POOR
 	//}
 
-	public OwnedBookCreateHandler(@NonNull final GoodreadsManager manager) {
+	public OwnedBookCreateHandler(final @NonNull GoodreadsManager manager) {
 		super(manager);
 	}
 
@@ -95,7 +95,7 @@ public class OwnedBookCreateHandler extends ApiHandler {
 
 		@Override
 		@CallSuper
-		public void characters(@NonNull final char[] ch, final int start, final int length) throws SAXException {
+		public void characters(final @NonNull char[] ch, final int start, final int length) throws SAXException {
 			super.characters(ch, start, length);
 			mBuilder.append(ch, start, length);
 		}
@@ -114,7 +114,7 @@ public class OwnedBookCreateHandler extends ApiHandler {
 
 		@Override
 		@CallSuper
-		public void startElement(@NonNull final String uri, @NonNull final String localName, @NonNull final String name, @NonNull final Attributes attributes) throws SAXException {
+		public void startElement(final @NonNull String uri, final @NonNull String localName, final @NonNull String name, final @NonNull Attributes attributes) throws SAXException {
 			super.startElement(uri, localName, name, attributes);
 
 			// reset the string. See note in endElement() for a discussion.
@@ -124,7 +124,7 @@ public class OwnedBookCreateHandler extends ApiHandler {
 
 		@Override
 		@CallSuper
-		public void endElement(@NonNull final String uri, @NonNull final String localName, @NonNull final String name) throws SAXException {
+		public void endElement(final @NonNull String uri, final @NonNull String localName, final @NonNull String name) throws SAXException {
 			super.endElement(uri, localName, name);
 
 			if (localName.equalsIgnoreCase(BOOK_ID)) {
@@ -157,7 +157,7 @@ public class OwnedBookCreateHandler extends ApiHandler {
 	 *	    owned_book[condition_description]: description of book's condition
 	 *	    owned_book[available_for_swap]: true or false, if book is available for swap
 	 */
-	public void create(@NonNull final String isbn, @NonNull final List<String> shelves)
+	public void create(final @NonNull String isbn, final @NonNull List<String> shelves)
 			throws OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException, IOException, 
 					NotAuthorizedException, NetworkException, BookNotFoundException 
 	{
@@ -186,7 +186,7 @@ public class OwnedBookCreateHandler extends ApiHandler {
         }
 	}
 
-	public void create(@NonNull final String isbn, @NonNull final String shelf)
+	public void create(final @NonNull String isbn, final @NonNull String shelf)
 			throws OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException, IOException, 
 					NotAuthorizedException, NetworkException, BookNotFoundException {
 		List<String> shelves = new ArrayList<>();

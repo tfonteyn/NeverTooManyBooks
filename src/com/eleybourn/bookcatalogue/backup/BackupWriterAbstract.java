@@ -62,7 +62,7 @@ public abstract class BackupWriterAbstract implements BackupWriter {
      * Do a full backup, sending progress to the listener
      */
     @Override
-    public void backup(@NonNull final BackupWriterListener listener, final int backupFlags, @Nullable Date since) throws IOException {
+    public void backup(final @NonNull BackupWriterListener listener, final int backupFlags, @Nullable Date since) throws IOException {
         try {
             // Estimate the total steps
             int estTotal = 1;
@@ -125,7 +125,7 @@ public abstract class BackupWriterAbstract implements BackupWriter {
     /**
      * Generate a bundle containing the INFO block, and send it to the archive
      */
-    private void writeInfo(@NonNull final BackupWriterListener listener, final int bookCount, final int coverCount) throws IOException {
+    private void writeInfo(final @NonNull BackupWriterListener listener, final int bookCount, final int coverCount) throws IOException {
         final BackupInfo info = BackupInfo.createInfo(getContainer(), BookCatalogueApp.getAppContext(), bookCount, coverCount);
         putInfo(info);
         listener.step(null, 1);
@@ -143,9 +143,9 @@ public abstract class BackupWriterAbstract implements BackupWriter {
      * have writer.putBooks(exporter, listener) as the method.
      */
     @NonNull
-    private File generateBooks(@NonNull final BackupWriterListener listener,
+    private File generateBooks(final @NonNull BackupWriterListener listener,
                                final int backupFlags,
-                               @Nullable final Date since,
+                               final @Nullable Date since,
                                final int numCovers) throws IOException {
         // This is an estimate only; we actually don't know how many covers there are in the backup.
         listener.setMax((mDb.countBooks() * 2 + 1));
@@ -195,7 +195,7 @@ public abstract class BackupWriterAbstract implements BackupWriter {
     /**
      * @param exportFile the file containing the exported books in CSV format
      */
-    private void writeBooks(@NonNull final File exportFile) throws IOException {
+    private void writeBooks(final @NonNull File exportFile) throws IOException {
         try {
             putBooks(exportFile);
         } finally {
@@ -206,8 +206,8 @@ public abstract class BackupWriterAbstract implements BackupWriter {
     /**
      * Write each cover file corresponding to a book to the archive
      */
-    private int writeCovers(@NonNull final BackupWriterListener listener, final int backupFlags,
-                            @Nullable final Date since, boolean dryRun) throws IOException {
+    private int writeCovers(final @NonNull BackupWriterListener listener, final int backupFlags,
+                            final @Nullable Date since, boolean dryRun) throws IOException {
         long sinceTime = 0;
         if (since != null && (backupFlags & Exporter.EXPORT_SINCE) != 0) {
             try {
@@ -262,7 +262,7 @@ public abstract class BackupWriterAbstract implements BackupWriter {
     /**
      * Get the preferences and save them
      */
-    private void writePreferences(@NonNull final BackupWriterListener listener) throws IOException {
+    private void writePreferences(final @NonNull BackupWriterListener listener) throws IOException {
         SharedPreferences prefs = BookCatalogueApp.getSharedPreferences();
         putPreferences(prefs);
         listener.step(null, 1);
@@ -271,7 +271,7 @@ public abstract class BackupWriterAbstract implements BackupWriter {
     /**
      * Save all USER styles
      */
-    private void writeStyles(@NonNull final BackupWriterListener listener) throws IOException {
+    private void writeStyles(final @NonNull BackupWriterListener listener) throws IOException {
         BooklistStyles styles = BooklistStyles.getAllStyles(mDb);
         for (BooklistStyle style : styles) {
             if (style.isUserDefined()) {

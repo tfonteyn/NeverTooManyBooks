@@ -31,6 +31,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.database.cursors.BindableItemCursor;
 import com.eleybourn.bookcatalogue.dialogs.ContextDialogItem;
 
 import java.util.List;
@@ -52,10 +53,10 @@ public class LegacyEvent extends Event {
 
     @NonNull
     @Override
-    public View newListItemView(@NonNull final LayoutInflater inflater,
-                                @NonNull final Context context,
-                                @NonNull final BindableItemCursor cursor,
-                                @NonNull final ViewGroup parent) {
+    public View newListItemView(final @NonNull LayoutInflater inflater,
+                                final @NonNull Context context,
+                                final @NonNull BindableItemCursor cursor,
+                                final @NonNull ViewGroup parent) {
         LinearLayout root = new LinearLayout(context);
         root.setOrientation(LinearLayout.VERTICAL);
         LinearLayout.LayoutParams margins = new LinearLayout.LayoutParams(ViewGroup.MarginLayoutParams.MATCH_PARENT, ViewGroup.MarginLayoutParams.WRAP_CONTENT);
@@ -73,10 +74,10 @@ public class LegacyEvent extends Event {
 
     @SuppressLint("SetTextI18n")
     @Override
-    public void bindView(@NonNull final View view,
-                         @NonNull final Context context,
-                         @NonNull final BindableItemCursor cursor,
-                         @NonNull final Object appInfo) {
+    public void bindView(final @NonNull View view,
+                         final @NonNull Context context,
+                         final @NonNull BindableItemCursor cursor,
+                         final @NonNull Object appInfo) {
         ((TextView) view.findViewById(TEXT_FIELD_1))
                 .setText("Legacy Event Placeholder for Event #" + this.getId());
         ((TextView) view.findViewById(TEXT_FIELD_2))
@@ -84,11 +85,11 @@ public class LegacyEvent extends Event {
     }
 
     @Override
-    public void addContextMenuItems(@NonNull final Context ctx,
-                                    @NonNull final AdapterView<?> parent,
-                                    @NonNull final View v, final int position, final long id,
-                                    @NonNull final List<ContextDialogItem> items,
-                                    @NonNull final Object appInfo) {
+    public void addContextMenuItems(final @NonNull Context ctx,
+                                    final @NonNull AdapterView<?> parent,
+                                    final @NonNull View v, final int position, final long id,
+                                    final @NonNull List<ContextDialogItem> items,
+                                    final @NonNull Object appInfo) {
 
         items.add(new ContextDialogItem(ctx.getString(R.string.delete_event), new Runnable() {
             @Override

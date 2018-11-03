@@ -33,10 +33,10 @@ public abstract class RunnableTask extends Task {
 
     private static final long serialVersionUID = 5399775565316896935L;
 
-    protected RunnableTask(@NonNull final String description) {
+    protected RunnableTask(final @NonNull String description) {
         super(description);
     }
 
-    public abstract boolean run(@NonNull final QueueManager manager, @NonNull final Context context);
+    public abstract boolean run(final @NonNull QueueManager manager, final @NonNull Context context);
 
 }

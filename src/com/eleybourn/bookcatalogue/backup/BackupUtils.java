@@ -70,8 +70,8 @@ public class BackupUtils {
     /**
      * Write preferences to an XML stream.
      */
-    public static void preferencesToXml(@NonNull final BufferedWriter out,
-                                        @NonNull final SharedPreferences prefs) throws IOException {
+    public static void preferencesToXml(final @NonNull BufferedWriter out,
+                                        final @NonNull SharedPreferences prefs) throws IOException {
         final PreferencesAccessor a = new PreferencesAccessor(prefs);
         collectionToXml(out, a);
     }
@@ -79,8 +79,8 @@ public class BackupUtils {
     /**
      * Read preferences from an XML stream.
      */
-    public static void preferencesFromXml(@NonNull final BufferedReader in,
-                                          @NonNull final SharedPreferences prefs) throws IOException {
+    public static void preferencesFromXml(final @NonNull BufferedReader in,
+                                          final @NonNull SharedPreferences prefs) throws IOException {
         final PreferencesAccessor a = new PreferencesAccessor(prefs);
         a.beginEdit();
         collectionFromXml(in, a);
@@ -90,8 +90,8 @@ public class BackupUtils {
     /**
      * Write Bundle to an XML stream.
      */
-    public static void bundleToXml(@NonNull final BufferedWriter out,
-                                   @NonNull final Bundle bundle) throws IOException {
+    public static void bundleToXml(final @NonNull BufferedWriter out,
+                                   final @NonNull Bundle bundle) throws IOException {
         final BundleAccessor a = new BundleAccessor(bundle);
         collectionToXml(out, a);
     }
@@ -100,7 +100,7 @@ public class BackupUtils {
      * Read Bundle from an XML stream.
      */
     @NonNull
-    public static Bundle bundleFromXml(@NonNull final BufferedReader in) throws IOException {
+    public static Bundle bundleFromXml(final @NonNull BufferedReader in) throws IOException {
         final Bundle bundle = new Bundle();
         final BundleAccessor a = new BundleAccessor(bundle);
         collectionFromXml(in, a);
@@ -110,8 +110,8 @@ public class BackupUtils {
     /**
      * Internal routine to send the passed CollectionAccessor data to an XML file.
      */
-    private static void collectionToXml(@NonNull final BufferedWriter out,
-                                        @NonNull final CollectionAccessor<String> col) throws IOException {
+    private static void collectionToXml(final @NonNull BufferedWriter out,
+                                        final @NonNull CollectionAccessor<String> col) throws IOException {
         out.append("<" + COLLECTION + ">\n");
         for (String key : col.keySet()) {
             final String type;
@@ -154,7 +154,7 @@ public class BackupUtils {
     /**
      * Internal routine to update the passed CollectionAccessor from an XML file.
      */
-    private static void collectionFromXml(@NonNull final BufferedReader in, @NonNull final CollectionAccessor<String> accessor) throws IOException {
+    private static void collectionFromXml(final @NonNull BufferedReader in, final @NonNull CollectionAccessor<String> accessor) throws IOException {
         final Bundle bundle = new Bundle();
         final XmlFilter rootFilter = new XmlFilter("");
         final ItemInfo info = new ItemInfo();
@@ -216,11 +216,11 @@ public class BackupUtils {
 
         /** Get the object for the specified key */
         @Nullable
-        Object get(@NonNull final T key);
+        Object get(final @NonNull T key);
 
         /** Process the passed item to store in the collection */
-        void putItem(@NonNull final Bundle bundle, @NonNull final String key,
-                     @NonNull final String type, @NonNull final String value) throws IOException;
+        void putItem(final @NonNull Bundle bundle, final @NonNull String key,
+                     final @NonNull String type, final @NonNull String value) throws IOException;
     }
 
     /**
@@ -232,7 +232,7 @@ public class BackupUtils {
         @NonNull
         private final Bundle mBundle;
 
-        BundleAccessor(@NonNull final Bundle b) {
+        BundleAccessor(final @NonNull Bundle b) {
             mBundle = b;
         }
 
@@ -243,15 +243,15 @@ public class BackupUtils {
 
         @Override
         @Nullable
-        public Object get(@NonNull final String key) {
+        public Object get(final @NonNull String key) {
             return mBundle.get(key);
         }
 
         @Override
-        public void putItem(@NonNull final Bundle bundle,
-                            @NonNull final String key,
-                            @NonNull final String type,
-                            @NonNull final String value) throws IOException {
+        public void putItem(final @NonNull Bundle bundle,
+                            final @NonNull String key,
+                            final @NonNull String type,
+                            final @NonNull String value) throws IOException {
             switch (type) {
                 case TYPE_INTEGER:
                     mBundle.putInt(key, Integer.parseInt(value));
@@ -293,7 +293,7 @@ public class BackupUtils {
         final Map<String, ?> mMap;
         Editor mEditor;
 
-        PreferencesAccessor(@NonNull final SharedPreferences prefs) {
+        PreferencesAccessor(final @NonNull SharedPreferences prefs) {
             mPrefs = prefs;
             mMap = prefs.getAll();
         }
@@ -316,13 +316,13 @@ public class BackupUtils {
 
         @Override
         @Nullable
-        public Object get(@NonNull final String key) {
+        public Object get(final @NonNull String key) {
             return mMap.get(key);
         }
 
         @Override
-        public void putItem(@NonNull final Bundle bundle, @NonNull final String key,
-                            @NonNull final String type, @NonNull final String value) {
+        public void putItem(final @NonNull Bundle bundle, final @NonNull String key,
+                            final @NonNull String type, final @NonNull String value) {
             switch (type) {
                 case TYPE_INTEGER:
                     mEditor.putInt(key, Integer.parseInt(value));

@@ -33,61 +33,61 @@ public class Tracker {
     private static final Event[] mEventBuffer = new Event[K_MAX_EVENTS];
     private static int mNextEventBufferPos = 0;
 
-    public static void enterOnActivityCreated(@NonNull final Object a) {
+    public static void enterOnActivityCreated(final @NonNull Object a) {
         handleEvent(a, "OnActivityCreated (" + a + ")", States.Enter);
     }
 
-    public static void exitOnActivityCreated(@NonNull final Object a) {
+    public static void exitOnActivityCreated(final @NonNull Object a) {
         handleEvent(a, "OnActivityCreated (" + a + ")", States.Exit);
     }
 
-    public static void enterOnActivityResult(@NonNull final Object a, final int requestCode, final int resultCode) {
+    public static void enterOnActivityResult(final @NonNull Object a, final int requestCode, final int resultCode) {
         handleEvent(a, "OnActivityResult[" + requestCode + "," + resultCode + "] (" + a + ")", States.Enter);
     }
 
-    public static void exitOnActivityResult(@NonNull final Object a, final int requestCode, final int resultCode) {
+    public static void exitOnActivityResult(final @NonNull Object a, final int requestCode, final int resultCode) {
         handleEvent(a, "OnActivityResult[" + requestCode + "," + resultCode + "] (" + a + ")", States.Exit);
     }
 
-    public static void enterOnCreate(@NonNull final Object a) {
+    public static void enterOnCreate(final @NonNull Object a) {
         handleEvent(a, "OnCreate (" + a + ")", States.Enter);
     }
 
-    public static void exitOnCreate(@NonNull final Object a) {
+    public static void exitOnCreate(final @NonNull Object a) {
         handleEvent(a, "OnCreate (" + a + ")", States.Exit);
     }
 
     @SuppressWarnings("unused")
-    public static void enterOnCreateView(@NonNull final Object a) {
+    public static void enterOnCreateView(final @NonNull Object a) {
         handleEvent(a, "OnCreateView (" + a + ")", States.Enter);
     }
 
     @SuppressWarnings("unused")
-    public static void exitOnCreateView(@NonNull final Object a) {
+    public static void exitOnCreateView(final @NonNull Object a) {
         handleEvent(a, "OnCreateView (" + a + ")", States.Exit);
     }
 
-    public static void enterOnDestroy(@NonNull final Object a) {
+    public static void enterOnDestroy(final @NonNull Object a) {
         handleEvent(a, "OnDestroy", States.Enter);
     }
 
-    public static void exitOnDestroy(@NonNull final Object a) {
+    public static void exitOnDestroy(final @NonNull Object a) {
         handleEvent(a, "OnDestroy", States.Exit);
     }
 
-    public static void enterOnPause(@NonNull final Object a) {
+    public static void enterOnPause(final @NonNull Object a) {
         handleEvent(a, "OnPause (" + a + ")", States.Enter);
     }
 
-    public static void exitOnPause(@NonNull final Object a) {
+    public static void exitOnPause(final @NonNull Object a) {
         handleEvent(a, "OnPause (" + a + ")", States.Exit);
     }
 
-    public static void enterOnResume(@NonNull final Object a) {
+    public static void enterOnResume(final @NonNull Object a) {
         handleEvent(a, "OnResume (" + a + ")", States.Enter);
     }
 
-    public static void exitOnResume(@NonNull final Object a) {
+    public static void exitOnResume(final @NonNull Object a) {
         handleEvent(a, "OnResume (" + a + ")", States.Exit);
     }
 
@@ -99,7 +99,7 @@ public class Tracker {
         handleEvent(a, "OnSaveInstanceState", States.Exit);
     }
 
-    public static void enterFunction(@NonNull final Object a, @NonNull final String name, @NonNull final Object... params) {
+    public static void enterFunction(final @NonNull Object a, final @NonNull String name, final @NonNull Object... params) {
         StringBuilder fullName = new StringBuilder(name + "(");
         for (Object parameter : params) {
             fullName.append(parameter).append(",");
@@ -109,11 +109,11 @@ public class Tracker {
         handleEvent(a, fullName.toString(), States.Enter);
     }
 
-    public static void exitFunction(@NonNull final Object a, @NonNull final String name) {
+    public static void exitFunction(final @NonNull Object a, final @NonNull String name) {
         handleEvent(a, name, States.Exit);
     }
 
-    public static void handleEvent(@NonNull final Object o, @NonNull final String name, @NonNull final States type) {
+    public static void handleEvent(final @NonNull Object o, final @NonNull String name, final @NonNull States type) {
         Event e = new Event(o, name, type);
         mEventBuffer[mNextEventBufferPos] = e;
         ACRA.getErrorReporter().putCustomData("History-" + mNextEventBufferPos, e.getInfo());
@@ -147,7 +147,7 @@ public class Tracker {
         public final Date date;
         final String activityClass;
 
-        public Event(@NonNull final Object a, @NonNull final String action, @NonNull final States state) {
+        public Event(final @NonNull Object a, final @NonNull String action, final @NonNull States state) {
             activityClass = a.getClass().getCanonicalName();
             this.action = action;
             this.state = state;

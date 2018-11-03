@@ -48,7 +48,7 @@ abstract public class BaseActivity extends AppCompatActivity
     private boolean mReloadOnResume = false;
 
     /** universal flag used to indicate something was changed */
-    private boolean mIsDirty;
+    private boolean mIsDirty = false;
 
     public boolean isDirty() {
         return mIsDirty;
@@ -64,7 +64,7 @@ abstract public class BaseActivity extends AppCompatActivity
 
     @Override
     @CallSuper
-    protected void onCreate(@Nullable final Bundle savedInstanceState) {
+    protected void onCreate(final @Nullable Bundle savedInstanceState) {
         // call setTheme before super.onCreate
         setTheme(BookCatalogueApp.getThemeResId());
         super.onCreate(savedInstanceState);
@@ -119,7 +119,7 @@ abstract public class BaseActivity extends AppCompatActivity
         return mNavigationView;
     }
 
-    private void setNavigationView(@Nullable final NavigationView navigationView) {
+    private void setNavigationView(final @Nullable NavigationView navigationView) {
         mNavigationView = navigationView;
         if (mNavigationView != null) {
             mNavigationView.setNavigationItemSelectedListener(this);
@@ -134,7 +134,7 @@ abstract public class BaseActivity extends AppCompatActivity
 
     @Override
     @CallSuper
-    public boolean onNavigationItemSelected(@NonNull final MenuItem menuItem) {
+    public boolean onNavigationItemSelected(final @NonNull MenuItem menuItem) {
         closeNavigationDrawer();
 
         Intent intent;
@@ -178,7 +178,7 @@ abstract public class BaseActivity extends AppCompatActivity
     /**
      * @param drawerLayout your custom one
      */
-    private void setDrawerLayout(@Nullable final DrawerLayout drawerLayout) {
+    private void setDrawerLayout(final @Nullable DrawerLayout drawerLayout) {
         this.mDrawerLayout = drawerLayout;
     }
 
@@ -191,7 +191,7 @@ abstract public class BaseActivity extends AppCompatActivity
      */
     @Override
     @CallSuper
-    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+    public boolean onOptionsItemSelected(final @NonNull MenuItem item) {
         switch (item.getItemId()) {
             // Default handler for home icon
             case android.R.id.home:
@@ -217,7 +217,7 @@ abstract public class BaseActivity extends AppCompatActivity
     @Override
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         if (BuildConfig.DEBUG) {
-            // lowest level of our Activities, see what's left if any
+            // lowest level of our Activities, see if we missed anything
             Logger.info(this, "onActivityResult: BaseActivity - requestCode=" + requestCode + ", resultCode=" + resultCode);
         }
 
@@ -286,7 +286,7 @@ abstract public class BaseActivity extends AppCompatActivity
         /**
          * get a key/value pair either from the savedInstanceState or the extras.
          */
-    protected long getLongFromBundles(@NonNull final String key, @Nullable final Bundle savedInstanceState, @Nullable final Bundle extras) {
+    protected long getLongFromBundles(final @NonNull String key, final @Nullable Bundle savedInstanceState, final @Nullable Bundle extras) {
         long value = 0;
         if (savedInstanceState != null) {
             value = savedInstanceState.getLong(key);

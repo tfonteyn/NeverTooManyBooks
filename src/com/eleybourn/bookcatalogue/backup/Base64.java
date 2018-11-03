@@ -1347,7 +1347,7 @@ public class Base64
      */
     @Nullable
     public static Object decodeToObject(
-            String encodedObject, int options, @Nullable final ClassLoader loader )
+            String encodedObject, int options, final @Nullable ClassLoader loader )
     throws java.io.IOException, java.lang.ClassNotFoundException {
         
         // Decode and gunzip if necessary

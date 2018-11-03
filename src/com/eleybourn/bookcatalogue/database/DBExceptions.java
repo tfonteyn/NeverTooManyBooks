@@ -7,10 +7,10 @@ public class DBExceptions {
 
     /**
      * Should NOT be used when the a search MAY fail.
-     * Only use when the Search MUST NOT fail as this would indicate an integrity onCancel
+     * Only use when the Search MUST NOT fail as this would indicate an integrity onPartialDatePickerCancel
      */
     static class NotFoundException extends RuntimeException {
-        NotFoundException(@Nullable final String msg) {
+        NotFoundException(final @Nullable String msg) {
             super(msg);
         }
     }
@@ -18,7 +18,7 @@ public class DBExceptions {
 
     /** should only be used from INSIDE a transaction so the caller can rollback */
     static class InsertException extends RuntimeException {
-        InsertException(@Nullable final String msg, @Nullable final Exception inner) {
+        InsertException(final @Nullable String msg, final @Nullable Exception inner) {
             super(msg, inner);
         }
     }
@@ -28,10 +28,10 @@ public class DBExceptions {
         UpdateException() {
             super();
         }
-        UpdateException(@Nullable final Exception inner) {
+        UpdateException(final @Nullable Exception inner) {
             super(inner);
         }
-        UpdateException(@Nullable final String msg, @Nullable final Exception inner) {
+        UpdateException(final @Nullable String msg, final @Nullable Exception inner) {
             super(msg, inner);
         }
     }
@@ -41,7 +41,7 @@ public class DBExceptions {
 //    }
 
     public static class ColumnNotPresent extends RuntimeException {
-        public ColumnNotPresent(@NonNull final String columnName) {
+        public ColumnNotPresent(final @NonNull String columnName) {
             super("Column " + columnName + " not present in cursor");
         }
 
@@ -54,19 +54,19 @@ public class DBExceptions {
         TransactionException() {
             super();
         }
-        TransactionException(@Nullable final String msg) {
+        TransactionException(final @Nullable String msg) {
             super(msg);
         }
-        TransactionException(@Nullable final String msg, @Nullable final Exception inner) {
+        TransactionException(final @Nullable String msg, final @Nullable Exception inner) {
             super(msg, inner);
         }
     }
     static class LockException extends RuntimeException {
-        LockException(@Nullable final String msg) {
+        LockException(final @Nullable String msg) {
             super(msg);
         }
-        LockException(@SuppressWarnings("SameParameterValue") @Nullable final String msg,
-                      @Nullable final Exception inner) {
+        LockException(@SuppressWarnings("SameParameterValue") final @Nullable String msg,
+                      final @Nullable Exception inner) {
             super(msg, inner);
         }
     }

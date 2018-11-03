@@ -87,18 +87,18 @@ abstract class CropImageViewTouchBase extends AppCompatImageView {
     @Nullable
     private Runnable mOnLayoutRunnable = null;
 
-    public CropImageViewTouchBase(@NonNull final Context context) {
+    public CropImageViewTouchBase(final @NonNull Context context) {
         super(context);
         init();
     }
 
-    public CropImageViewTouchBase(@NonNull final Context context, @NonNull final AttributeSet attrs) {
+    public CropImageViewTouchBase(final @NonNull Context context, final @NonNull AttributeSet attrs) {
         super(context, attrs);
         init();
     }
 
     @SuppressWarnings("unused")
-    public void setRecycler(@NonNull final Recycler r) {
+    public void setRecycler(final @NonNull Recycler r) {
         mRecycler = r;
     }
 
@@ -137,12 +137,12 @@ abstract class CropImageViewTouchBase extends AppCompatImageView {
     }
 
     @Override
-    public void setImageBitmap(@Nullable final Bitmap bitmap) {
+    public void setImageBitmap(final @Nullable Bitmap bitmap) {
         setImageBitmap(bitmap, 0);
     }
 
     @CallSuper
-    private void setImageBitmap(@Nullable final Bitmap bitmap, final int rotation) {
+    private void setImageBitmap(final @Nullable Bitmap bitmap, final int rotation) {
         super.setImageBitmap(bitmap);
         Drawable d = getDrawable();
         if (d != null) {
@@ -166,11 +166,11 @@ abstract class CropImageViewTouchBase extends AppCompatImageView {
      * This function changes bitmap, reset base matrix according to the size
      * of the bitmap, and optionally reset the supplementary matrix.
      */
-    public void setImageBitmapResetBase(@Nullable final Bitmap bitmap, final boolean resetSupp) {
+    public void setImageBitmapResetBase(final @Nullable Bitmap bitmap, final boolean resetSupp) {
         setImageRotateBitmapResetBase(new CropRotateBitmap(bitmap), resetSupp);
     }
 
-    public void setImageRotateBitmapResetBase(@NonNull final CropRotateBitmap bitmap, final boolean resetSupp) {
+    public void setImageRotateBitmapResetBase(final @NonNull CropRotateBitmap bitmap, final boolean resetSupp) {
         final int viewWidth = getWidth();
 
         if (viewWidth <= 0) {
@@ -263,13 +263,13 @@ abstract class CropImageViewTouchBase extends AppCompatImageView {
         this.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
     }
 
-    protected float getValue(@NonNull final Matrix matrix, @SuppressWarnings("SameParameterValue") final int whichValue) {
+    protected float getValue(final @NonNull Matrix matrix, @SuppressWarnings("SameParameterValue") final int whichValue) {
         matrix.getValues(mMatrixValues);
         return mMatrixValues[whichValue];
     }
 
     // Get the SCALE factor out of the matrix.
-    protected float getScale(@NonNull final Matrix matrix) {
+    protected float getScale(final @NonNull Matrix matrix) {
         return getValue(matrix, Matrix.MSCALE_X);
     }
 
@@ -278,7 +278,7 @@ abstract class CropImageViewTouchBase extends AppCompatImageView {
     }
 
     /** Setup the base matrix so that the image is centered and scaled properly. */
-    private void getProperBaseMatrix(@NonNull final CropRotateBitmap bitmap, @NonNull final Matrix matrix) {
+    private void getProperBaseMatrix(final @NonNull CropRotateBitmap bitmap, final @NonNull Matrix matrix) {
         float viewWidth = getWidth();
         float viewHeight = getHeight();
 
@@ -431,6 +431,6 @@ abstract class CropImageViewTouchBase extends AppCompatImageView {
      * its use of that Bitmap.
      */
     public interface Recycler {
-        void recycle(@NonNull final Bitmap b);
+        void recycle(final @NonNull Bitmap b);
     }
 }

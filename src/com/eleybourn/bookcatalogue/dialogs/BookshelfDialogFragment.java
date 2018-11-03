@@ -40,7 +40,6 @@ import com.eleybourn.bookcatalogue.utils.RTE;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Fragment wrapper for the Bookshelf list
@@ -74,16 +73,16 @@ public class BookshelfDialogFragment extends DialogFragment {
      */
     @Override
     @CallSuper
-    public void onAttach(@NonNull final Context context) {
+    public void onAttach(final @NonNull Context context) {
         super.onAttach(context);
-        if (!(context instanceof OnBookshelfSelectionDialogResultListener))
-            throw new RTE.MustImplementException(context, OnBookshelfSelectionDialogResultListener.class);
+        if (!(context instanceof OnBookshelfSelectionDialogResultsListener))
+            throw new RTE.MustImplementException(context, OnBookshelfSelectionDialogResultsListener.class);
     }
 
     @Override
-    public View onCreateView(@NonNull final LayoutInflater inflater,
-                             @Nullable final ViewGroup container,
-                             @Nullable final Bundle savedInstanceState) {
+    public View onCreateView(final @NonNull LayoutInflater inflater,
+                             final @Nullable ViewGroup container,
+                             final @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.dialog_edit_base, null);
     }
 
@@ -92,14 +91,14 @@ public class BookshelfDialogFragment extends DialogFragment {
      */
     @Override
     @CallSuper
-    public void onSaveInstanceState(@NonNull final Bundle outState) {
+    public void onSaveInstanceState(final @NonNull Bundle outState) {
         outState.putLong(UniqueId.KEY_ID, mBookId);
         super.onSaveInstanceState(outState);
     }
 
     @Override
     @CallSuper
-    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
+    public void onActivityCreated(final @Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
         if (savedInstanceState != null && savedInstanceState.containsKey(UniqueId.KEY_ID)) {
@@ -113,8 +112,9 @@ public class BookshelfDialogFragment extends DialogFragment {
 
         CatalogueDBAdapter db = new CatalogueDBAdapter(requireContext())
                 .open();
-        Book book = db.getBookById(mBookId);
-        Objects.requireNonNull(book);
+
+        // load from database
+        Book book = new Book(mBookId, null);
         // get the list of all shelves the book is currently on.
         List<Bookshelf> currentShelves = book.getBookshelfList();
 
@@ -135,7 +135,7 @@ public class BookshelfDialogFragment extends DialogFragment {
                             }
                         }
                         // and send back to the Activity
-                        ((OnBookshelfSelectionDialogResultListener) requireActivity())
+                        ((OnBookshelfSelectionDialogResultsListener) requireActivity())
                                 .OnBookshelfSelectionDialogResult(list);
 
                         // and that's all folks, close
@@ -190,15 +190,15 @@ public class BookshelfDialogFragment extends DialogFragment {
      *
      * @author pjw
      */
-    public interface OnBookshelfSelectionDialogResultListener {
-        void OnBookshelfSelectionDialogResult(@NonNull final ArrayList<Bookshelf> list);
+    public interface OnBookshelfSelectionDialogResultsListener {
+        void OnBookshelfSelectionDialogResult(final @NonNull ArrayList<Bookshelf> list);
     }
 
     private class SelectedBookshelf {
         Bookshelf bookshelf;
         boolean selected;
 
-        SelectedBookshelf(@NonNull final Bookshelf bookshelf, final boolean selected) {
+        SelectedBookshelf(final @NonNull Bookshelf bookshelf, final boolean selected) {
             this.bookshelf = bookshelf;
             this.selected = selected;
         }

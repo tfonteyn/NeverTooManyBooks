@@ -32,7 +32,7 @@ import android.widget.AdapterView;
 import android.widget.CursorAdapter;
 
 import com.eleybourn.bookcatalogue.dialogs.ContextDialogItem;
-import com.eleybourn.bookcatalogue.taskqueue.BindableItemCursor;
+import com.eleybourn.bookcatalogue.database.cursors.BindableItemCursor;
 
 import java.util.Hashtable;
 import java.util.List;
@@ -63,9 +63,9 @@ public class BindableItemCursorAdapter extends CursorAdapter {
      * @param context Context of call
      * @param cursor  Cursor to use as source
      */
-    public BindableItemCursorAdapter(@NonNull final BindableItemBinder binder,
-                                     @NonNull final Context context,
-                                     @NonNull final Cursor cursor) {
+    public BindableItemCursorAdapter(final @NonNull BindableItemBinder binder,
+                                     final @NonNull Context context,
+                                     final @NonNull Cursor cursor) {
         super(context, cursor);
         //noinspection ConstantConditions
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -158,7 +158,7 @@ public class BindableItemCursorAdapter extends CursorAdapter {
 
     @Nullable
     @Override
-    public View getView(final int position, @Nullable View convertView, @NonNull final ViewGroup parent) {
+    public View getView(final int position, @Nullable View convertView, final @NonNull ViewGroup parent) {
         BindableItemCursor cursor = (BindableItemCursor) this.getCursor();
         cursor.moveToPosition(position);
 
@@ -199,10 +199,10 @@ public class BindableItemCursorAdapter extends CursorAdapter {
          * @param convertView View to populate
          * @param cursor      Cursor, positions at the relevant row
          */
-        void bindViewToItem(@NonNull final Context context,
-                            @NonNull final View convertView,
-                            @NonNull final BindableItemCursor cursor,
-                            @NonNull final BindableItem bindable);
+        void bindViewToItem(final @NonNull Context context,
+                            final @NonNull View convertView,
+                            final @NonNull BindableItemCursor cursor,
+                            final @NonNull BindableItem bindable);
     }
 
     public interface BindableItem {
@@ -219,10 +219,10 @@ public class BindableItemCursorAdapter extends CursorAdapter {
          *
          * @return a new view
          */
-        View newListItemView(@NonNull final LayoutInflater inflater,
-                             @NonNull final Context context,
-                             @NonNull final BindableItemCursor cursor,
-                             @NonNull final ViewGroup parent);
+        View newListItemView(final @NonNull LayoutInflater inflater,
+                             final @NonNull Context context,
+                             final @NonNull BindableItemCursor cursor,
+                             final @NonNull ViewGroup parent);
 
         /**
          * Bind this Event to the passed view. The view will be one created by a call to newListItemView(...).
@@ -232,10 +232,10 @@ public class BindableItemCursorAdapter extends CursorAdapter {
          * @param cursor  EventsCursor for this event, positioned at its row.
          * @param appInfo Any application-specific object the caller chooses to send. eg. a database adapter.
          */
-        void bindView(@NonNull final View view,
-                      @NonNull final Context context,
-                      @NonNull final BindableItemCursor cursor,
-                      @NonNull final Object appInfo);
+        void bindView(final @NonNull View view,
+                      final @NonNull Context context,
+                      final @NonNull BindableItemCursor cursor,
+                      final @NonNull Object appInfo);
 
         /**
          * Called when an item in a list has been clicked, this method should populate the passed 'items' parameter with
@@ -249,12 +249,12 @@ public class BindableItemCursorAdapter extends CursorAdapter {
          * @param items    items collection to fill
          * @param appInfo  Any application-specific object the caller chooses to send. eg. a database adapter.
          */
-        void addContextMenuItems(@NonNull final Context ctx,
+        void addContextMenuItems(final @NonNull Context ctx,
                                  @NonNull AdapterView<?> parent,
-                                 @NonNull final View v,
+                                 final @NonNull View v,
                                  final int position,
                                  final long id,
-                                 @NonNull final List<ContextDialogItem> items,
-                                 @NonNull final Object appInfo);
+                                 final @NonNull List<ContextDialogItem> items,
+                                 final @NonNull Object appInfo);
     }
 }

@@ -51,7 +51,7 @@ public class Help extends BaseActivity {
 
     @Override
     @CallSuper
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
+    public void onCreate(final @Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         try {
             setTitle(R.string.app_name);

@@ -4,14 +4,17 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.entities.AnthologyTitle;
 import com.eleybourn.bookcatalogue.entities.Author;
+import com.eleybourn.bookcatalogue.entities.TOCEntry;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
+import com.eleybourn.bookcatalogue.utils.Utils;
 
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
@@ -19,6 +22,7 @@ import org.jsoup.select.Elements;
 
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
+import java.util.Currency;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -28,16 +32,25 @@ import java.util.regex.Pattern;
 public class ISFDBBook extends AbstractBase {
 
     /** ISFDB extra fields in the results for potential future usage */
-    private static final String ISFDB_BOOK_TYPE = "__ISFDB_BOOK_TYPE";
+    private static final String ISFDB_PUB_RECORD = "__ISFDB_PUB_RECORD"; // the unique ISFDB identifier.
+
+    private static final String ISFDB_AUTHOR_LIST_ID = "__ISFDB_AUTHORS_ID"; // the unique ISFDB identifier.
+    private static final String ISFDB_AUTHOR_LIST = "__ISFDB_AUTHORS";
+
+    private static final String ISFDB_SERIES_ID = "__ISFDB_SERIES_ID"; // the unique ISFDB identifier.
+
+    private static final String ISFDB_PUBLISHER_ID = "__ISFDB_PUBLISHER_ID"; // the unique ISFDB identifier.
+
+    private static final String ISFDB_EDITORS_ID = "__ISFDB_EDITORS_ID"; // the unique ISFDB identifier.
+    private static final String ISFDB_EDITORS = "__ISFDB_EDITORS";
+
+    private static final String ISFDB_BOOK_COVER_ARTIST_ID = "__ISFDB_BOOK_COVER_ARTIST_ID"; // the unique ISFDB identifier.
+    private static final String ISFDB_BOOK_COVER_ARTIST = "__ISFDB_BOOK_COVER_ARTIST";
     private static final String ISFDB_BOOK_COVER_ART_URL = "__ISFDB_BOOK_COVER_ART_URL";
     private static final String ISFDB_BOOK_COVER_ART_TXT = "__ISFDB_BOOK_COVER_ART_TXT";
-    private static final String ISFDB_BOOK_COVER_ARTIST_ID = "__ISFDB_BOOK_COVER_ARTIST_ID";
-    private static final String ISFDB_PUB_RECORD = "__ISFDB_PUB_RECORD";
-    private static final String ISFDB_AUTHOR_ID = "__ISFDB_AUTHOR_ID";
+
+    private static final String ISFDB_BOOK_TYPE = "__ISFDB_BOOK_TYPE";
     private static final String ISFDB_ISBN_2 = "__ISFDB_ISBN2";
-    private static final String ISFDB_PUBLISHER_ID = "__ISFDB_PUBLISHER_ID";
-    private static final String ISFDB_SERIES_ID = "__ISFDB_SERIES_ID";
-    private static final String ISFDB_EDITORS_ID = "__ISFDB_EDITORS_ID";
 
     /** maps to translate ISFDB terminology with our own */
     private static final Map<String, String> FORMAT_MAP = new HashMap<>();
@@ -54,6 +67,8 @@ public class ISFDBBook extends AbstractBase {
         FORMAT_MAP.put("ebook", UniqueId.BVAL_FORMAT_EBOOK);
         FORMAT_MAP.put("digest", "Digest");
         FORMAT_MAP.put("unknown", "Unknown");
+        FORMAT_MAP.put("audio cassette", UniqueId.BVAL_FORMAT_AUDIO);
+        FORMAT_MAP.put("audio CD", UniqueId.BVAL_FORMAT_AUDIO);
     }
 
     static {
@@ -98,7 +113,7 @@ public class ISFDBBook extends AbstractBase {
     /**
      * @param path example: "http://www.isfdb.org/cgi-bin/pl.cgi?230949"
      */
-    ISFDBBook(@NonNull final String path) {
+    ISFDBBook(final @NonNull String path) {
         mPublicationRecord = stripNumber(path);
         mPath = path;
     }
@@ -146,7 +161,7 @@ public class ISFDBBook extends AbstractBase {
         </div>
      */
 
-    public void fetch(@NonNull final Bundle /* out */ bookData, final boolean withThumbnail) throws SocketTimeoutException {
+    public void fetch(final @NonNull Bundle /* out */ bookData, final boolean withThumbnail) throws SocketTimeoutException {
         if (!loadPage()) {
             return;
         }
@@ -156,16 +171,25 @@ public class ISFDBBook extends AbstractBase {
         String tmp;
 
         for (Element li : lis) {
+            if (DEBUG_SWITCHES.ISFDB_SEARCH && BuildConfig.DEBUG) {
+                Logger.info(this, li.toString());
+            }
             try {
+                Elements children = li.children();
+
                 String fieldName = null;
-                if (li.childNodeSize() > 0) {
-                    Node b = li.childNode(0);
-                    if (b != null && b.childNodeSize() > 0) {
-                        fieldName = b.childNode(0).toString();
-                    }
+
+                Element fieldLabelElement = children.first();
+                if (fieldLabelElement != null && fieldLabelElement.childNodeSize() > 0) {
+                    fieldName = fieldLabelElement.childNode(0).toString();
                 }
+
                 if (fieldName == null) {
                     continue;
+                }
+
+                if (DEBUG_SWITCHES.ISFDB_SEARCH && BuildConfig.DEBUG) {
+                    Logger.info(this, "fieldName=`" + fieldName + "`");
                 }
 
                 if ("Publication:".equalsIgnoreCase(fieldName)) {
@@ -180,7 +204,7 @@ public class ISFDBBook extends AbstractBase {
                     if (as != null) {
                         for (Element a : as) {
                             ArrayUtils.addOrAppend(bookData, UniqueId.BKEY_AUTHOR_STRING_LIST, a.text());
-                            ArrayUtils.addOrAppend(bookData, ISFDB_AUTHOR_ID, Long.toString(stripNumber(a.attr("href"))));
+                            ArrayUtils.addOrAppend(bookData, ISFDB_AUTHOR_LIST_ID, Long.toString(stripNumber(a.attr("href"))));
                         }
                     }
                 } else if ("Date:".equalsIgnoreCase(fieldName)) {
@@ -220,7 +244,34 @@ public class ISFDBBook extends AbstractBase {
 
                 } else if ("Price:".equalsIgnoreCase(fieldName)) {
                     tmp = li.childNode(2).toString().trim();
-                    bookData.putString(UniqueId.KEY_BOOK_LIST_PRICE, tmp);
+                    // split on first digit, but leave it in the second part
+                    String[] data = tmp.split("(?=\\d)", 2);
+                    if (data.length == 1) {
+                        bookData.putString(UniqueId.KEY_BOOK_PRICE_LISTED, tmp);
+                        bookData.putString(UniqueId.KEY_BOOK_PRICE_LISTED_CURRENCY, "");
+                        // I don't think the Shilling/Pence from the UK ever had an international code.
+//                        if (tmp.contains("/")) {
+//                            // UK Shilling was written as "1/-", for example: three shillings and six pence => 3/6
+//                            bookData.putString(UniqueId.KEY_BOOK_PRICE_LISTED_CURRENCY, "???");
+//                        }
+                    } else {
+                        String currencyCode = Utils.currencyToISO(data[0]);
+                        try {
+                            Currency currency = Currency.getInstance(currencyCode);
+                            int decDigits = currency.getDefaultFractionDigits();
+                            // format with 'digits' decimal places
+                            Float price = Float.parseFloat(data[1]);
+                            String priceStr = String.format("%." + decDigits + "f", price);
+
+                            bookData.putString(UniqueId.KEY_BOOK_PRICE_LISTED, priceStr);
+                            // re-get the code just in case ISFDB/Utils uses a recognised but non-standard one
+                            bookData.putString(UniqueId.KEY_BOOK_PRICE_LISTED_CURRENCY, currency.getCurrencyCode());
+
+                        } catch (Exception e) {
+                            bookData.putString(UniqueId.KEY_BOOK_PRICE_LISTED, data[1]);
+                            bookData.putString(UniqueId.KEY_BOOK_PRICE_LISTED_CURRENCY, currencyCode);
+                        }
+                    }
 
                 } else if ("Pages:".equalsIgnoreCase(fieldName)) {
                     tmp = li.childNode(2).toString().trim();
@@ -238,40 +289,39 @@ public class ISFDBBook extends AbstractBase {
 
                     if ("a1".equals(TYPE_MAP.get(tmp))) {
                         bookData.putInt(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK,
-                                DatabaseDefinitions.DOM_ANTHOLOGY);
+                                DatabaseDefinitions.DOM_IS_ANTHOLOGY);
                     } else if ("a2".equals(TYPE_MAP.get(tmp))) {
                         bookData.putInt(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK,
-                                DatabaseDefinitions.DOM_ANTHOLOGY |
-                                        DatabaseDefinitions.DOM_ANTHOLOGY_MULTIPLE_AUTHORS);
+                                DatabaseDefinitions.DOM_IS_ANTHOLOGY |
+                                        DatabaseDefinitions.DOM_BOOK_WITH_MULTIPLE_AUTHORS);
                     }
-
-                } else if ("Cover:".equalsIgnoreCase(fieldName)) {
-                    //TODO: if there are multiple art/artists... will this barf ?
-                    tmp = li.childNode(2).attr("href");
-                    bookData.putString(ISFDB_BOOK_COVER_ART_URL, tmp);
-
-                    tmp = li.childNode(2).childNode(0).toString().trim();
-                    bookData.putString(ISFDB_BOOK_COVER_ART_TXT, tmp);
-
-                    // Cover artist, handle as author
-                    Node node_a = li.childNode(4);
-                    ArrayUtils.addOrAppend(bookData, UniqueId.BKEY_AUTHOR_STRING_LIST, node_a.childNode(0).toString().trim());
-                    ArrayUtils.addOrAppend(bookData, ISFDB_BOOK_COVER_ARTIST_ID, Long.toString(stripNumber(node_a.attr("href"))));
 
                 } else if ("Notes:".equalsIgnoreCase(fieldName)) {
                     tmp = li.childNode(1).childNode(1).toString().trim();
                     bookData.putString(UniqueId.KEY_DESCRIPTION, tmp);
 
-                } else if ("Editors:".equalsIgnoreCase(fieldName)) {
-                    // handle as authors
-                    Elements as = li.select("a");
-                    if (as != null) {
-                        for (Element a : as) {
-                            ArrayUtils.addOrAppend(bookData, UniqueId.BKEY_AUTHOR_STRING_LIST, a.text());
-                            ArrayUtils.addOrAppend(bookData, ISFDB_EDITORS_ID, Long.toString(stripNumber(a.attr("href"))));
-                        }
-                    }
 
+//                } else if ("Cover:".equalsIgnoreCase(fieldName)) {
+//                    //TODO: if there are multiple art/artists... will this barf ?
+//                    tmp = li.childNode(2).attr("href");
+//                    bookData.putString(ISFDB_BOOK_COVER_ART_URL, tmp);
+//
+//                    tmp = li.childNode(2).childNode(0).toString().trim();
+//                    bookData.putString(ISFDB_BOOK_COVER_ART_TXT, tmp);
+//
+//                    // Cover artist
+//                    Node node_a = li.childNode(4);
+//                    ArrayUtils.addOrAppend(bookData, ISFDB_BOOK_COVER_ARTIST_ID, Long.toString(stripNumber(node_a.attr("href"))));
+//                    ArrayUtils.addOrAppend(bookData, ISFDB_BOOK_COVER_ARTIST, node_a.childNode(0).toString().trim());
+//
+//                } else if ("Editors:".equalsIgnoreCase(fieldName)) {
+//                    Elements as = li.select("a");
+//                    if (as != null) {
+//                        for (Element a : as) {
+//                            ArrayUtils.addOrAppend(bookData, ISFDB_EDITORS_ID, Long.toString(stripNumber(a.attr("href"))));
+//                            ArrayUtils.addOrAppend(bookData, ISFDB_EDITORS, a.text());
+//                        }
+//                    }
                 }
             } catch (IndexOutOfBoundsException e) {
                 // does not happen now, but could happen if we come about non-standard entries, or if ISFDB website changes
@@ -284,16 +334,16 @@ public class ISFDBBook extends AbstractBase {
         bookData.putString(UniqueId.KEY_BOOK_LANGUAGE, Locale.ENGLISH.getDisplayName());
 
         // the content for some local processing. The actual entries are already added to the book data bundle
-        ArrayList<AnthologyTitle> toc = getTableOfContentList(bookData);
+        ArrayList<TOCEntry> toc = getTableOfContentList(bookData);
 
         // check Anthology type
         if (toc.size() > 0) {
-            boolean sameAuthor = AnthologyTitle.isSingleAuthor(toc);
+            boolean sameAuthor = TOCEntry.isSingleAuthor(toc);
             int type;
             if (sameAuthor) {
-                type = DatabaseDefinitions.DOM_ANTHOLOGY;
+                type = DatabaseDefinitions.DOM_IS_ANTHOLOGY;
             } else {
-                type = DatabaseDefinitions.DOM_ANTHOLOGY_MULTIPLE_AUTHORS;
+                type = DatabaseDefinitions.DOM_BOOK_WITH_MULTIPLE_AUTHORS;
             }
             bookData.putInt(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK, type | bookData.getInt(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK));
         }
@@ -323,8 +373,11 @@ public class ISFDBBook extends AbstractBase {
         }
     }
 
+    /**
+     * Filter a string of all non-digits. Used to clean isbn strings.
+     */
     @Nullable
-    private String digits(@Nullable final String s) {
+    private String digits(final @Nullable String s) {
         if (s == null) {
             return null;
         }
@@ -338,7 +391,7 @@ public class ISFDBBook extends AbstractBase {
         return sb.toString();
     }
 
-    public void fetchCover(@NonNull final Bundle /* out */ bookData) throws SocketTimeoutException {
+    public void fetchCover(final @NonNull Bundle /* out */ bookData) throws SocketTimeoutException {
         if (!loadPage()) {
             return;
         }
@@ -355,12 +408,14 @@ public class ISFDBBook extends AbstractBase {
         <img src="http://www.isfdb.org/wiki/images/e/e6/THDSFPRKPT1991.jpg" alt="picture" class="scan"></a>
     </td>
     */
-    private void fetchCover(@NonNull final Bundle /* out */ bookData, @NonNull final Element contentBox) {
+    private void fetchCover(final @NonNull Bundle /* out */ bookData, final @NonNull Element contentBox) {
         Element img = contentBox.selectFirst("img");
-        String thumbnail = img.attr("src");
-        String fileSpec = ImageUtils.saveThumbnailFromUrl(thumbnail, "_ISFDB");
-        if (!fileSpec.isEmpty()) {
-            ArrayUtils.addOrAppend(bookData, UniqueId.BKEY_THUMBNAIL_FILES_SPEC, fileSpec);
+        if (img != null) {
+            String thumbnail = img.attr("src");
+            String fileSpec = ImageUtils.saveThumbnailFromUrl(thumbnail, "_ISFDB");
+            if (!fileSpec.isEmpty()) {
+                ArrayUtils.addOrAppend(bookData, UniqueId.BKEY_THUMBNAIL_FILES_SPEC, fileSpec);
+            }
         }
     }
 
@@ -378,9 +433,9 @@ public class ISFDBBook extends AbstractBase {
         This method returns the list for easy use, but ALSO adds the data to the book bundle !
      */
     @NonNull
-    private ArrayList<AnthologyTitle> getTableOfContentList(@NonNull final Bundle /* out */ bookData) throws SocketTimeoutException {
+    private ArrayList<TOCEntry> getTableOfContentList(final @NonNull Bundle /* out */ bookData) throws SocketTimeoutException {
 
-        final ArrayList<AnthologyTitle> results = new ArrayList<>();
+        final ArrayList<TOCEntry> results = new ArrayList<>();
 
         if (!loadPage()) {
             return results;
@@ -469,13 +524,13 @@ public class ISFDBBook extends AbstractBase {
 
             // unlikely, but if so, then grab first book author
             if (author == null) {
-                author = ArrayUtils.getAuthorUtils().decodeList(bookData.getString(UniqueId.BKEY_AUTHOR_STRING_LIST),false).get(0);
-                Logger.info(this,"ISFDB search for content found no author for li=" + li);
+                author = ArrayUtils.getAuthorUtils().decodeList(bookData.getString(UniqueId.BKEY_AUTHOR_STRING_LIST), false).get(0);
+                Logger.info(this, "ISFDB search for content found no author for li=" + li);
             }
             // very unlikely
             if (title == null) {
                 title = "";
-                Logger.info(this,"ISFDB search for content found no title for li=" + li);
+                Logger.info(this, "ISFDB search for content found no title for li=" + li);
             }
 
             // scan for first occurrence of "&#x2022; (1234)"
@@ -486,10 +541,13 @@ public class ISFDBBook extends AbstractBase {
                 mFirstPublication = year;
             }
 
-            //TODO: bit annoying to use DETAILS string... as the SearchManager will reform it to ARRAY anyhow. So have SearchManager check on ARRAY first, and use that by preference
-            AnthologyTitle anthologyTitle = new AnthologyTitle(author, title, year);
-            results.add(anthologyTitle);
-            ArrayUtils.addOrAppend(bookData, UniqueId.BKEY_ANTHOLOGY_STRING_LIST, anthologyTitle.toString());
+            //TODO: bit annoying to use DETAILS string... as the SearchManager will reform it to ARRAY anyhow.
+            // {@link SearchManager#accumulateData} depends on String encoded, as theoretically *all* search engines
+            // return string encoded.
+            // {@link SearchManager#sendResults} then decodes the string, and creates the ARRAY.
+            TOCEntry tocEntry = new TOCEntry(author, title, year);
+            results.add(tocEntry);
+            ArrayUtils.addOrAppend(bookData, UniqueId.BKEY_TOC_STRING_LIST, tocEntry.toString());
         }
 
         return results;

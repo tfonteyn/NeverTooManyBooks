@@ -53,8 +53,8 @@ public class BooklistStyleGroupsActivity extends EditObjectListActivity<GroupWra
 
     private static final String TAG = "StyleEditor";
     /** Preferences setup */
-    public static final String REQUEST_KEY_STYLE = TAG + ".Style";
-    public static final String REQUEST_KEY_SAVE_TO_DATABASE = TAG + ".SaveToDb";
+    public static final String REQUEST_BKEY_STYLE = TAG + ".Style";
+    public static final String REQUEST_BKEY_SAVE_TO_DATABASE = TAG + ".SaveToDb";
 
     /** Copy of the style we are editing */
     private BooklistStyle mStyle;
@@ -70,14 +70,14 @@ public class BooklistStyleGroupsActivity extends EditObjectListActivity<GroupWra
 
     @Override
     @CallSuper
-    protected void onCreate(@Nullable final Bundle savedInstanceState) {
+    protected void onCreate(final @Nullable Bundle savedInstanceState) {
         try {
             // Get the intent and get the style and other settings
             Intent intent = this.getIntent();
-            mStyle = (BooklistStyle) intent.getSerializableExtra(REQUEST_KEY_STYLE);
+            mStyle = (BooklistStyle) intent.getSerializableExtra(REQUEST_BKEY_STYLE);
 
-            if (intent.hasExtra(REQUEST_KEY_SAVE_TO_DATABASE)) {
-                mSaveToDb = intent.getBooleanExtra(REQUEST_KEY_SAVE_TO_DATABASE, true);
+            if (intent.hasExtra(REQUEST_BKEY_SAVE_TO_DATABASE)) {
+                mSaveToDb = intent.getBooleanExtra(REQUEST_BKEY_SAVE_TO_DATABASE, true);
             }
 
             /* Indicated this activity was called without an existing style */
@@ -125,7 +125,7 @@ public class BooklistStyleGroupsActivity extends EditObjectListActivity<GroupWra
      * Set up the view for a passed wrapper.
      */
     @Override
-    protected void onSetupView(@NonNull final View target, @NonNull final GroupWrapper wrapper) {
+    protected void onSetupView(final @NonNull View target, final @NonNull GroupWrapper wrapper) {
         Holder holder = ViewTagger.getTag(target, R.id.TAG_HOLDER);// value BooklistStyleGroupsActivity.Holder
         if (holder == null) {
             // New view, so build the Holder
@@ -157,7 +157,7 @@ public class BooklistStyleGroupsActivity extends EditObjectListActivity<GroupWra
      * Save the style in the resulting Intent
      */
     @Override
-    protected boolean onSave(@NonNull final Intent intent) {
+    protected boolean onSave(final @NonNull Intent intent) {
         // Save the properties of this style
         Properties props = mStyle.getProperties();
         // Loop through ALL groups
@@ -175,7 +175,7 @@ public class BooklistStyleGroupsActivity extends EditObjectListActivity<GroupWra
         mStyle.setProperties(props);
 
         // Store in resulting Intent
-        intent.putExtra(REQUEST_KEY_STYLE, mStyle); /* 06ed8d0e-7120-47aa-b47e-c0cd46361dcb */
+        intent.putExtra(REQUEST_BKEY_STYLE, mStyle); /* 06ed8d0e-7120-47aa-b47e-c0cd46361dcb */
 
         // Save to DB if necessary
         if (mSaveToDb) {
@@ -200,7 +200,7 @@ public class BooklistStyleGroupsActivity extends EditObjectListActivity<GroupWra
         boolean present;
 
         /** Constructor */
-        GroupWrapper(@NonNull final BooklistGroup group, final boolean present) {
+        GroupWrapper(final @NonNull BooklistGroup group, final boolean present) {
             this.group = group;
             this.present = present;
         }

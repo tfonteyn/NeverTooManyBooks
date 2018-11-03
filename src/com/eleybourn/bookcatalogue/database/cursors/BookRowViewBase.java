@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.database.DBExceptions;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
+import com.eleybourn.bookcatalogue.entities.Book;
 
 /**
  * Convenience class to avoid having to write the same code in more than one place. This
@@ -41,6 +42,9 @@ public class BookRowViewBase {
     private int mReadEndCol = -2;
     private int mSignedCol = -2;
     private int mListPriceCol = -2;
+    private int mListPriceCurrencyCol = -2;
+    private int mPricePaidCol = -2;
+    private int mPricePaidCurrencyCol = -2;
     private int mDescriptionCol = -2;
     private int mFirstPublicationCol = -2;
     private int mGoodreadsBookIdCol = -2;
@@ -51,13 +55,13 @@ public class BookRowViewBase {
     private int mDateLastSyncedWithGoodReadsCol = -2;
     private int mDatePublishedCol = -2;
 
-    protected BookRowViewBase(@NonNull final Cursor cursor) {
+    protected BookRowViewBase(final @NonNull Cursor cursor) {
         mCursor = cursor;
     }
 
     @Nullable
     @Deprecated
-    public String getString(@NonNull final String columnName) {
+    public String getString(final @NonNull String columnName) {
         final int position = mCursor.getColumnIndex(columnName);
         if (position < 0) {
             throw new DBExceptions.ColumnNotPresent(columnName);
@@ -68,7 +72,7 @@ public class BookRowViewBase {
     /**
      * Query underlying cursor for column index.
      */
-    public int getColumnIndex(@NonNull final String columnName) {
+    public int getColumnIndex(final @NonNull String columnName) {
         return mCursor.getColumnIndex(columnName);
     }
 
@@ -295,12 +299,42 @@ public class BookRowViewBase {
 
     public final String getListPrice() {
         if (mListPriceCol < 0) {
-            mListPriceCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_LIST_PRICE.name);
+            mListPriceCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_PRICE_LISTED.name);
             if (mListPriceCol < 0) {
-                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_BOOK_LIST_PRICE.name);
+                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_BOOK_PRICE_LISTED.name);
             }
         }
         return mCursor.getString(mListPriceCol);
+    }
+
+    public final String getListPriceCurrency() {
+        if (mListPriceCurrencyCol < 0) {
+            mListPriceCurrencyCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_PRICE_LISTED_CURRENCY.name);
+            if (mListPriceCurrencyCol < 0) {
+                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_BOOK_PRICE_LISTED_CURRENCY.name);
+            }
+        }
+        return mCursor.getString(mListPriceCurrencyCol);
+    }
+
+    public final String getPricePaid() {
+        if (mPricePaidCol < 0) {
+            mPricePaidCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_PRICE_PAID.name);
+            if (mPricePaidCol < 0) {
+                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_BOOK_PRICE_PAID.name);
+            }
+        }
+        return mCursor.getString(mPricePaidCol);
+    }
+
+    public final String getPricePaidCurrency() {
+        if (mPricePaidCurrencyCol < 0) {
+            mPricePaidCurrencyCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_PRICE_PAID_CURRENCY.name);
+            if (mPricePaidCurrencyCol < 0) {
+                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_BOOK_PRICE_PAID_CURRENCY.name);
+            }
+        }
+        return mCursor.getString(mPricePaidCurrencyCol);
     }
 
     public int getSigned() {

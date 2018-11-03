@@ -216,7 +216,7 @@ public class PreferencesActivity extends PreferencesBaseActivity {
 
     @Override
     @CallSuper
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
+    public void onCreate(final @Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // Make sure the names are correct
         updateLocalesListItems();

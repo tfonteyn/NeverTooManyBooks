@@ -44,7 +44,7 @@ import oauth.signpost.exception.OAuthMessageSignerException;
  */
 public class IsbnToId extends ApiHandler {
 
-	public IsbnToId(@NonNull final GoodreadsManager manager) {
+	public IsbnToId(final @NonNull GoodreadsManager manager) {
 		super(manager);
 	}
 
@@ -56,7 +56,7 @@ public class IsbnToId extends ApiHandler {
 	 *	    isbn: The ISBN of the book to lookup.
 	 *	    key: Developer key (required).
 	 */
-	public long isbnToId(@NonNull final String isbn)
+	public long isbnToId(final @NonNull String isbn)
 			throws OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException, IOException,
 					NotAuthorizedException, BookNotFoundException, NetworkException 
 	{

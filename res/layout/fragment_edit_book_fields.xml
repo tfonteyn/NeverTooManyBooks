@@ -16,6 +16,7 @@
         android:focusableInTouchMode="true"
         android:orientation="vertical"
         android:padding="@dimen/padding_border_double">
+
         <ImageView
             android:id="@+id/coverImage"
             style="@style/coverImage"
@@ -42,9 +43,9 @@
                 style="@style/dataEntryButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
+                android:layout_below="@id/lbl_author"
                 android:layout_alignParentStart="true"
-                android:layout_below="@id/lbl_author">
+                android:layout_alignParentEnd="true">
 
                 <requestFocus />
             </Button>
@@ -91,7 +92,7 @@
         </RelativeLayout>
 
         <CheckBox
-            android:id="@+id/anthology"
+            android:id="@+id/is_anthology"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
@@ -112,9 +113,9 @@
                 style="@style/dataEntryButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
+                android:layout_below="@id/lbl_series"
                 android:layout_alignParentStart="true"
-                android:layout_below="@id/lbl_series" />
+                android:layout_alignParentEnd="true" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -139,8 +140,6 @@
             <ImageButton
                 android:id="@+id/btn_publisher"
                 style="@style/dropDownMenuButton"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
                 android:layout_alignBottom="@id/publisher"
                 app:srcCompat="@drawable/ic_arrow_drop_down"
                 tools:ignore="ContentDescription" />
@@ -161,9 +160,9 @@
                 style="@style/dataEntryButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
+                android:layout_below="@id/lbl_date_published"
                 android:layout_alignParentStart="true"
-                android:layout_below="@id/lbl_date_published" />
+                android:layout_alignParentEnd="true" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -174,7 +173,6 @@
             <TextView
                 android:id="@+id/lbl_first_publication"
                 style="@style/editorFieldHeader"
-                android:labelFor="@id/first_publication"
                 android:text="@string/first_publication" />
 
             <Button
@@ -182,9 +180,9 @@
                 style="@style/dataEntryButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
+                android:layout_below="@id/lbl_first_publication"
                 android:layout_alignParentStart="true"
-                android:layout_below="@id/lbl_first_publication" />
+                android:layout_alignParentEnd="true" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -202,9 +200,9 @@
                 style="@style/dataEntryButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
+                android:layout_below="@id/lbl_bookshelves"
                 android:layout_alignParentStart="true"
-                android:layout_below="@id/lbl_bookshelves" />
+                android:layout_alignParentEnd="true" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -224,27 +222,57 @@
                 android:layout_below="@id/lbl_pages"
                 android:layout_centerVertical="true"
                 android:inputType="number"
+                tools:text="999"
                 tools:ignore="Autofill" />
         </RelativeLayout>
 
         <RelativeLayout
-            android:id="@+id/row_list_price"
+            android:id="@+id/row_price_listed"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <TextView
-                android:id="@+id/lbl_list_price"
+                android:id="@+id/lbl_price_listed"
                 style="@style/editorFieldHeader"
-                android:labelFor="@id/list_price"
-                android:text="@string/list_price" />
+                android:labelFor="@id/price_listed"
+                android:text="@string/price_listed" />
 
             <EditText
-                android:id="@+id/list_price"
+                android:id="@+id/price_listed"
                 style="@style/editorFieldText"
-                android:layout_below="@id/lbl_list_price"
+                android:layout_width="wrap_content"
+                android:layout_below="@id/lbl_price_listed"
+                android:layout_toStartOf="@id/price_listed_currency"
                 android:layout_centerVertical="true"
                 android:inputType="numberDecimal"
-                tools:ignore="Autofill" />
+                tools:ignore="Autofill"
+                tools:text="14.99" />
+
+            <AutoCompleteTextView
+                android:id="@+id/price_listed_currency"
+                style="@style/editorFieldText"
+                android:layout_width="wrap_content"
+                android:layout_below="@id/lbl_price_listed"
+                android:layout_alignParentStart="false"
+                android:layout_toStartOf="@id/btn_price_listed_currency"
+                android:layout_centerVertical="true"
+                android:textAlignment="viewEnd"
+                android:hint="..."
+                android:inputType="text|textCapCharacters"
+                android:minEms="3"
+                android:paddingStart="@dimen/padding_border_double"
+                android:paddingEnd="@dimen/padding_border_double"
+                android:completionThreshold="1"
+                android:singleLine="true"
+                tools:ignore="Autofill,HardcodedText"
+                tools:text="" />
+
+            <ImageButton
+                android:id="@+id/btn_price_listed_currency"
+                style="@style/dropDownMenuButton"
+                android:layout_alignBottom="@id/price_listed"
+                app:srcCompat="@drawable/ic_arrow_drop_down"
+                tools:ignore="ContentDescription" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -353,7 +381,8 @@
                 tools:ignore="ContentDescription" />
         </RelativeLayout>
 
-        <View android:id="@+id/description_divider"
+        <View
+            android:id="@+id/description_divider"
             style="@style/listDividerHorizontal" />
 
         <TextView

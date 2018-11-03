@@ -64,7 +64,7 @@
     <string name="lbl_contacts">Contacts:</string>
     <string name="lbl_donate">Donate</string>
     <string name="lbl_about">About this App</string>
-    <string name="list_price">List Price</string>
+    <string name="price_listed">List Price</string>
     <string name="update_fields">Automatically Update Fields</string>
     <string name="select_fields_to_update">Select Fields to Update</string>
     <string name="select_fields_to_update_help">Selected fields will be updated from the internet. Unselected fields will remain unchanged.</string>
@@ -79,13 +79,13 @@
     <string name="manage_fields_help">Selected fields are visible in the add/edit book screens. Unselected fields are hidden.</string>
     <string name="anthology_titles">Anthology Titles</string>
     <string name="amazon_wish_list">Amazon Wishlist</string>
-    <string name="same_author">All stories in this anthology are written by the same author</string>
-    <string name="menu_delete_anthology">Delete Title from Anthology</string>
+    <string name="toc_same_author">All stories in this anthology are written by the same author</string>
+    <string name="menu_delete_toc_entry">Delete Title from Anthology</string>
     <string name="is_anthology">Is this book an Anthology?</string>
-    <string name="populate_anthology_titles">Automatically Populate Titles (EXPERIMENTAL)</string>
-    <string name="error_anthology_automatic_population_failed">Automatic Population of Titles Failed</string>
+    <string name="populate_toc">Automatically Populate Titles (EXPERIMENTAL)</string>
+    <string name="error_automatic_toc_population_failed">Automatic Population of Titles Failed</string>
     <string name="anthology">Anthology</string>
-    <string name="anthology_confirm">Please confirm that these anthology titles are (mostly) correct</string>
+    <string name="toc_confirm">Please confirm that these anthology titles are (mostly) correct</string>
     <string name="anthology_save">Save</string>
     <string name="anthology_add">Add</string>
     <string name="menu_add_thumb_photo">From Câmera&#8230;</string>

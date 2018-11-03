@@ -51,10 +51,13 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_GOODREADS_LAST_SYNC_DATE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ISBN;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LANGUAGE;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LIST_PRICE;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PRICE_LISTED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LOCATION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_NOTES;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PAGES;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PRICE_LISTED_CURRENCY;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PRICE_PAID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PRICE_PAID_CURRENCY;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PUBLISHER;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_RATING;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_READ;
@@ -102,13 +105,20 @@ public class CsvExporter implements Exporter {
                     '"' + DOM_FIRST_PUBLICATION + "\"," +
                     '"' + DOM_BOOK_EDITION_BITMASK + "\"," +
                     '"' + DOM_BOOK_RATING + "\"," +
-                    '"' + "bookshelf_id\"," + // == UniqueId.DOM_BOOKSHELF_ID but it was misnamed originally
+                    // this should be UniqueId.DOM_BOOKSHELF_ID but it was misnamed originally
+                    // but in fact, FIXME? it's not actually used during import anyway
+                    '"' + "bookshelf_id\"," +
                     '"' + DOM_BOOKSHELF + "\"," +
                     '"' + DOM_BOOK_READ + "\"," +
                     '"' + UniqueId.BKEY_SERIES_STRING_LIST + "\"," +
                     '"' + DOM_BOOK_PAGES + "\"," +
                     '"' + DOM_BOOK_NOTES + "\"," +
-                    '"' + DOM_BOOK_LIST_PRICE + "\"," +
+
+                    '"' + DOM_BOOK_PRICE_LISTED + "\"," +
+                    '"' + DOM_BOOK_PRICE_LISTED_CURRENCY + "\"," +
+                    '"' + DOM_BOOK_PRICE_PAID + "\"," +
+                    '"' + DOM_BOOK_PRICE_PAID_CURRENCY + "\"," +
+
                     '"' + DOM_BOOK_ANTHOLOGY_BITMASK + "\"," +
                     '"' + DOM_BOOK_LOCATION + "\"," +
                     '"' + DOM_BOOK_READ_START + "\"," +
@@ -116,7 +126,7 @@ public class CsvExporter implements Exporter {
                     '"' + DOM_BOOK_FORMAT + "\"," +
                     '"' + DOM_BOOK_SIGNED + "\"," +
                     '"' + DOM_LOANED_TO + "\"," +
-                    '"' + UniqueId.BKEY_ANTHOLOGY_STRING_LIST + "\"," +
+                    '"' + UniqueId.BKEY_TOC_STRING_LIST + "\"," +
                     '"' + DOM_DESCRIPTION + "\"," +
                     '"' + DOM_BOOK_GENRE + "\"," +
                     '"' + DOM_BOOK_LANGUAGE + "\"," +
@@ -150,8 +160,8 @@ public class CsvExporter implements Exporter {
         StorageUtils.renameFile(temp, export);
     }
 
-    public boolean export(@NonNull final OutputStream outputStream,
-                          @NonNull final Exporter.ExportListener listener,
+    public boolean export(final @NonNull OutputStream outputStream,
+                          final @NonNull Exporter.ExportListener listener,
                           final int backupFlags,
                           @Nullable Date since) throws IOException {
         final String UNKNOWN = BookCatalogueApp.getResourceString(R.string.unknown);
@@ -236,6 +246,7 @@ public class CsvExporter implements Exporter {
                         .append(formatCell(bookRowView.getPublisherName()))
                         .append(formatCell(bookRowView.getDatePublished()))
                         .append(formatCell(bookRowView.getFirstPublication()))
+                        .append(formatCell(bookRowView.getEditionBitMask()))
                         .append(formatCell(bookRowView.getRating()))
                         .append(formatCell(bookshelves_id_stringList.toString()))
                         .append(formatCell(bookshelves_name_stringList.toString()))
@@ -243,7 +254,12 @@ public class CsvExporter implements Exporter {
                         .append(formatCell(ArrayUtils.getSeriesUtils().encodeList(mDb.getBookSeriesList(bookId))))
                         .append(formatCell(bookRowView.getPages()))
                         .append(formatCell(bookRowView.getNotes()))
+
                         .append(formatCell(bookRowView.getListPrice()))
+                        .append(formatCell(bookRowView.getListPriceCurrency()))
+                        .append(formatCell(bookRowView.getPricePaid()))
+                        .append(formatCell(bookRowView.getPricePaidCurrency()))
+
                         .append(formatCell(bookRowView.getAnthologyBitMask()))
                         .append(formatCell(bookRowView.getLocation()))
                         .append(formatCell(bookRowView.getReadStart()))
@@ -251,7 +267,7 @@ public class CsvExporter implements Exporter {
                         .append(formatCell(bookRowView.getFormat()))
                         .append(formatCell(bookRowView.getSigned()))
                         .append(formatCell(bookRowView.getLoanedTo()))
-                        .append(formatCell(ArrayUtils.getTOCUtils().encodeList( mDb.getAnthologyTitleListByBook(bookId))))
+                        .append(formatCell(ArrayUtils.getTOCUtils().encodeList( mDb.getTOCEntriesByBook(bookId))))
                         .append(formatCell(bookRowView.getDescription()))
                         .append(formatCell(bookRowView.getGenre()))
                         .append(formatCell(bookRowView.getLanguage()))
@@ -304,7 +320,7 @@ public class CsvExporter implements Exporter {
      * @return The formatted cell enclosed in escaped quotes and a trailing ','
      */
     @NonNull
-    private String formatCell(@Nullable final String cell) {
+    private String formatCell(final @Nullable String cell) {
         try {
             if (cell == null || "null".equalsIgnoreCase(cell) || cell.trim().isEmpty()) {
                 return "\"\",";

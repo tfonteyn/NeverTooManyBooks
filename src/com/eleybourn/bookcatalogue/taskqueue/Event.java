@@ -47,7 +47,7 @@ public abstract class Event implements Serializable, BindableItemCursorAdapter.B
     private final String mDescription;
     private long mId = 0;
 
-    protected Event(@NonNull final String description) {
+    protected Event(final @NonNull String description) {
         mDescription = description;
     }
 

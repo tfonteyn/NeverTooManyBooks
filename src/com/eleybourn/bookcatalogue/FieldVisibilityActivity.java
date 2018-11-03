@@ -76,15 +76,16 @@ public class FieldVisibilityActivity extends BaseActivity {
         mFields.add(new FieldInfo(UniqueId.KEY_BOOK_GENRE, R.string.genre, false));
         mFields.add(new FieldInfo(UniqueId.KEY_BOOK_LANGUAGE, R.string.lbl_language, false));
         mFields.add(new FieldInfo(UniqueId.KEY_BOOK_PAGES, R.string.pages, false));
-        mFields.add(new FieldInfo(UniqueId.KEY_BOOK_LIST_PRICE, R.string.list_price, false));
+        mFields.add(new FieldInfo(UniqueId.KEY_BOOK_PRICE_LISTED, R.string.price_listed, false));
 
-        mFields.add(new FieldInfo(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK, R.string.anthology, false));
+        mFields.add(new FieldInfo(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK, R.string.table_of_content, false));
 
         // **** PERSONAL FIELDS ****
         mFields.add(new FieldInfo(UniqueId.KEY_BOOKSHELF_NAME, R.string.bookshelf, false));
         mFields.add(new FieldInfo(UniqueId.KEY_LOAN_LOANED_TO, R.string.loan, false));
         mFields.add(new FieldInfo(UniqueId.KEY_NOTES, R.string.notes, false));
         mFields.add(new FieldInfo(UniqueId.KEY_BOOK_LOCATION, R.string.location_of_book, false));
+        mFields.add(new FieldInfo(UniqueId.KEY_BOOK_PRICE_PAID, R.string.price_paid, false));
         mFields.add(new FieldInfo(UniqueId.KEY_BOOK_READ, R.string.read, false));
         mFields.add(new FieldInfo(UniqueId.KEY_BOOK_READ_START, R.string.read_start, false));
         mFields.add(new FieldInfo(UniqueId.KEY_BOOK_READ_END, R.string.read_end, false));
@@ -92,7 +93,7 @@ public class FieldVisibilityActivity extends BaseActivity {
         mFields.add(new FieldInfo(UniqueId.KEY_BOOK_SIGNED, R.string.signed, false));
         mFields.add(new FieldInfo(UniqueId.KEY_BOOK_RATING, R.string.rating, false));
 
-        //NEWKIND: when adding fields that can be invisible, add them here
+        //NEWKIND: new fields
     }
 
     @Override
@@ -102,7 +103,7 @@ public class FieldVisibilityActivity extends BaseActivity {
 
     @Override
     @CallSuper
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
+    public void onCreate(final @Nullable Bundle savedInstanceState) {
         try {
             super.onCreate(savedInstanceState);
             setTitle(R.string.menu_manage_fields);
@@ -168,7 +169,7 @@ public class FieldVisibilityActivity extends BaseActivity {
         final int stringId;
         final boolean compulsory;
 
-        FieldInfo(@NonNull final String name, @StringRes final int stringId, final boolean compulsory) {
+        FieldInfo(final @NonNull String name, final @StringRes int stringId, final boolean compulsory) {
             this.name = name;
             this.stringId = stringId;
             this.compulsory = compulsory;

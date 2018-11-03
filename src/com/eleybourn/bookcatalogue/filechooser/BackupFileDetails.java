@@ -35,7 +35,7 @@ public class BackupFileDetails implements FileDetails {
      * Need a CREATOR
      */
     public static final Parcelable.Creator<BackupFileDetails> CREATOR = new Parcelable.Creator<BackupFileDetails>() {
-        public BackupFileDetails createFromParcel(@NonNull final Parcel in) {
+        public BackupFileDetails createFromParcel(final @NonNull Parcel in) {
             return new BackupFileDetails(in);
         }
 
@@ -58,7 +58,7 @@ public class BackupFileDetails implements FileDetails {
     /**
      * Constructor
      */
-    BackupFileDetails(@NonNull final File file) {
+    BackupFileDetails(final @NonNull File file) {
         mFile = file;
     }
 
@@ -67,7 +67,7 @@ public class BackupFileDetails implements FileDetails {
      *
      * Constructor, using a Parcel as source.
      */
-    private BackupFileDetails(@NonNull final Parcel in) {
+    private BackupFileDetails(final @NonNull Parcel in) {
         mFile = (File) in.readSerializable();
         byte infoFlag = in.readByte();
         if (infoFlag != (byte) 0) {
@@ -84,7 +84,7 @@ public class BackupFileDetails implements FileDetails {
     /**
      * Accessor
      */
-    public void setInfo(@NonNull final BackupInfo info) {
+    public void setInfo(final @NonNull BackupInfo info) {
         mInfo = info;
     }
 
@@ -108,7 +108,7 @@ public class BackupFileDetails implements FileDetails {
      * Fill in the details for the view we returned above.
      */
     @Override
-    public void onSetupView(@NonNull final View convertView, @NonNull final Context context) {
+    public void onSetupView(final @NonNull View convertView, final @NonNull Context context) {
 
         // Set the basic data
         TextView name = convertView.findViewById(R.id.name);
@@ -163,7 +163,7 @@ public class BackupFileDetails implements FileDetails {
      * Save all fields that must be persisted.
      */
     @Override
-    public void writeToParcel(@NonNull final Parcel dest, final int flags) {
+    public void writeToParcel(final @NonNull Parcel dest, final int flags) {
         dest.writeSerializable(mFile);
         if (mInfo != null) {
             dest.writeByte((byte) 1);

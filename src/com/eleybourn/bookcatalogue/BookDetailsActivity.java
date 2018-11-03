@@ -26,36 +26,27 @@ import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBar;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 
-import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.booklist.FlattenedBooklist;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
-import com.eleybourn.bookcatalogue.datamanager.DataEditor;
-import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
-import com.eleybourn.bookcatalogue.entities.Book;
 
 /**
  * @author Evan Leybourn
  */
-public class BookDetailsActivity extends BaseActivity implements BookAbstractFragment.HasBook {
+public class BookDetailsActivity extends BookBaseActivity {
 
     public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_VIEW_BOOK;
 
-    public static final String REQUEST_KEY_FLATTENED_BOOKLIST_POSITION = "FBLP";
-    public static final String REQUEST_KEY_FLATTENED_BOOKLIST = "FBL";
+    public static final String REQUEST_BKEY_FLATTENED_BOOKLIST_POSITION = "FBLP";
+    public static final String REQUEST_BKEY_FLATTENED_BOOKLIST = "FBL";
 
-    private CatalogueDBAdapter mDb;
     @Nullable
     private FlattenedBooklist mList = null;
     @Nullable
     private GestureDetector mGestureDetector;
-
-    private Book mBook;
 
     @Override
     protected int getLayoutId() {
@@ -64,7 +55,7 @@ public class BookDetailsActivity extends BaseActivity implements BookAbstractFra
 
     @Override
     @CallSuper
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
+    public void onCreate(final @Nullable Bundle savedInstanceState) {
         Tracker.enterOnCreate(this);
         super.onCreate(savedInstanceState);
 
@@ -74,57 +65,28 @@ public class BookDetailsActivity extends BaseActivity implements BookAbstractFra
         Bundle extras = getIntent().getExtras();
 
         long bookId = getLongFromBundles(UniqueId.KEY_ID, savedInstanceState, extras);
-        loadBook(bookId, savedInstanceState == null ? extras : savedInstanceState);
+        mBook = loadBook(bookId, savedInstanceState == null ? extras : savedInstanceState);
 
-        BookDetailsFragment details = new BookDetailsFragment();
-        details.setArguments(extras);
+        BookDetailsFragment frag = new BookDetailsFragment();
+        frag.setArguments(extras);
 
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.fragment, details)
+                .replace(R.id.fragment, frag)
                 .commit();
 
         initBooklist(extras, savedInstanceState);
 
-        // Must come after book data and list retrieved.
-        initActivityTitle();
-
         Tracker.exitOnCreate(this);
-    }
-
-    //<editor-fold desc="HasBook interface">
-    @NonNull
-    @Override
-    public Book getBook() {
-        return mBook;
-    }
-
-    @Override
-    public void reload(final long bookId) {
-        mBook = mDb.getBookById(bookId);
-        DataEditor frag = (DataEditor) getSupportFragmentManager().findFragmentById(R.id.fragment);
-        frag.transferDataFrom(mBook);
-        initActivityTitle();
-    }
-    //</editor-fold>
-
-    private void loadBook(final long bookId, @Nullable final Bundle bundle) {
-        if (bundle != null && bundle.containsKey(UniqueId.BKEY_BOOK_DATA)) {
-            // If we have saved book data, use it
-            mBook = new Book(bookId, bundle.getBundle(UniqueId.BKEY_BOOK_DATA));
-        } else {
-            // Just load from the database
-            mBook = mDb.getBookById(bookId);
-        }
     }
 
     /**
      * If we are passed a flat book list, get it and validate it
      */
-    private void initBooklist(@Nullable final Bundle extras,
-                              @Nullable final Bundle savedInstanceState) {
+    private void initBooklist(final @Nullable Bundle extras,
+                              final @Nullable Bundle savedInstanceState) {
         if (extras != null) {
-            String list = extras.getString(REQUEST_KEY_FLATTENED_BOOKLIST);
+            String list = extras.getString(REQUEST_BKEY_FLATTENED_BOOKLIST);
             if (list != null && !list.isEmpty()) {
                 mList = new FlattenedBooklist(mDb, list);
                 // Check to see it really exists. The underlying table disappeared once in testing
@@ -132,10 +94,10 @@ public class BookDetailsActivity extends BaseActivity implements BookAbstractFra
                 // the database or if the activity pauses with 'isFinishing()' returning true.
                 if (mList.exists()) {
                     int pos;
-                    if (savedInstanceState != null && savedInstanceState.containsKey(REQUEST_KEY_FLATTENED_BOOKLIST_POSITION)) {
-                        pos = savedInstanceState.getInt(REQUEST_KEY_FLATTENED_BOOKLIST_POSITION);
-                    } else if (extras.containsKey(REQUEST_KEY_FLATTENED_BOOKLIST_POSITION)) {
-                        pos = extras.getInt(REQUEST_KEY_FLATTENED_BOOKLIST_POSITION);
+                    if (savedInstanceState != null && savedInstanceState.containsKey(REQUEST_BKEY_FLATTENED_BOOKLIST_POSITION)) {
+                        pos = savedInstanceState.getInt(REQUEST_BKEY_FLATTENED_BOOKLIST_POSITION);
+                    } else if (extras.containsKey(REQUEST_BKEY_FLATTENED_BOOKLIST_POSITION)) {
+                        pos = extras.getInt(REQUEST_BKEY_FLATTENED_BOOKLIST_POSITION);
                     } else {
                         pos = 0;
                     }
@@ -187,11 +149,9 @@ public class BookDetailsActivity extends BaseActivity implements BookAbstractFra
 
                     if (moved) {
                         long bookId = mList.getBookId();
+                        // only reload if it's a new book
                         if (bookId != mBook.getBookId()) {
-                            mBook = mDb.getBookById(bookId);
-                            Fragment frag = getSupportFragmentManager().findFragmentById(R.id.fragment);
-                            ((DataEditor) frag).transferDataFrom(mBook);
-                            initActivityTitle();
+                            reload(bookId);
                         }
                     }
                     return true;
@@ -200,17 +160,6 @@ public class BookDetailsActivity extends BaseActivity implements BookAbstractFra
                 }
             }
         });
-    }
-
-    private void initActivityTitle() {
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            if (mList != null) {
-                // display a book
-                actionBar.setTitle(R.string.book_details);
-                actionBar.setSubtitle(null);
-            }
-        }
     }
 
     /**
@@ -225,32 +174,6 @@ public class BookDetailsActivity extends BaseActivity implements BookAbstractFra
         super.dispatchTouchEvent(event);
         // Always return true; we want the events.
         return true;
-    }
-
-    /**
-     * Dispatch incoming result to the correct fragment.
-     */
-    @Override
-    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-        if (BuildConfig.DEBUG) {
-            Logger.info(this, "onActivityResult: forwarding to fragment - requestCode=" + requestCode + ", resultCode=" + resultCode);
-        }
-
-        Fragment frag = getSupportFragmentManager().findFragmentById(R.id.fragment);
-        frag.onActivityResult(requestCode,resultCode,data);
-
-        super.onActivityResult(requestCode, resultCode, data);
-    }
-
-    @Override
-    @CallSuper
-    protected void onDestroy() {
-        Tracker.enterOnDestroy(this);
-        if (mDb != null) {
-            mDb.close();
-        }
-        super.onDestroy();
-        Tracker.exitOnDestroy(this);
     }
 
     /**
@@ -284,13 +207,13 @@ public class BookDetailsActivity extends BaseActivity implements BookAbstractFra
 
     @Override
     @CallSuper
-    protected void onSaveInstanceState(@NonNull final Bundle outState) {
+    protected void onSaveInstanceState(final @NonNull Bundle outState) {
         Tracker.enterOnSaveInstanceState(this);
 
         outState.putLong(UniqueId.KEY_ID, mBook.getBookId());
         outState.putBundle(UniqueId.BKEY_BOOK_DATA, mBook.getRawData());
         if (mList != null) {
-            outState.putInt(REQUEST_KEY_FLATTENED_BOOKLIST_POSITION, (int) mList.getPosition());
+            outState.putInt(REQUEST_BKEY_FLATTENED_BOOKLIST_POSITION, (int) mList.getPosition());
         }
 
         super.onSaveInstanceState(outState);

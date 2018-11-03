@@ -126,7 +126,8 @@ public class BookCatalogueApp extends Application {
     public static final String PREF_LAST_BACKUP_FILE = "Backup.LastFile";
 
     /**
-     * NEWKIND: add new supported themes here and in R.array.supported_themes,
+     * NEWKIND: APP THEME
+     * Also add new themes in R.array.supported_themes,
      * the string-array order must match the APP_THEMES order
      * The preferences choice will be build according to the string-array list/order.
      */
@@ -242,7 +243,7 @@ public class BookCatalogueApp extends Application {
      *
      * @return true is a change was detected
      */
-    public synchronized static boolean hasLocalChanged(@NonNull final Resources res) {
+    public synchronized static boolean hasLocalChanged(final @NonNull Resources res) {
         Locale current = mPreferredLocale;
         if ((current != null && !current.equals(mLastLocale)) || (current == null && mLastLocale != null)) {
             mLastLocale = current;
@@ -261,7 +262,7 @@ public class BookCatalogueApp extends Application {
      * @return Locale corresponding to passed name
      */
     @NonNull
-    public static Locale localeFromName(@NonNull final String name) {
+    public static Locale localeFromName(final @NonNull String name) {
         String[] parts;
         if (name.contains("_")) {
             parts = name.split("_");
@@ -291,7 +292,7 @@ public class BookCatalogueApp extends Application {
     /**
      * Add a new OnLocaleChangedListener, and cleanup any dead references.
      */
-    public static void registerOnLocaleChangedListener(@NonNull final OnLocaleChangedListener listener) {
+    public static void registerOnLocaleChangedListener(final @NonNull OnLocaleChangedListener listener) {
         List<WeakReference<OnLocaleChangedListener>> toRemove = new ArrayList<>();
 
         boolean alreadyAdded = false;
@@ -316,7 +317,7 @@ public class BookCatalogueApp extends Application {
     /**
      * Remove the passed OnLocaleChangedListener, and cleanup any dead references.
      */
-    public static void unregisterOnLocaleChangedListener(@NonNull final OnLocaleChangedListener listener) {
+    public static void unregisterOnLocaleChangedListener(final @NonNull OnLocaleChangedListener listener) {
         List<WeakReference<OnLocaleChangedListener>> toRemove = new ArrayList<>();
 
         for (WeakReference<OnLocaleChangedListener> ref : mOnLocaleChangedListeners) {
@@ -347,7 +348,7 @@ public class BookCatalogueApp extends Application {
      *
      * @return Localized resource string
      */
-    public static String getResourceString(@StringRes final int resId) {
+    public static String getResourceString(final @StringRes int resId) {
         return mInstance.getApplicationContext().getString(resId).trim();
     }
 
@@ -370,7 +371,7 @@ public class BookCatalogueApp extends Application {
      * @return Localized resource string
      */
     @NonNull
-    public static String getResourceString(@StringRes final int resId, @Nullable final Object... objects) {
+    public static String getResourceString(final @StringRes int resId, final @Nullable Object... objects) {
         return mInstance.getApplicationContext().getString(resId, objects).trim();
     }
 
@@ -382,7 +383,7 @@ public class BookCatalogueApp extends Application {
      * @return value
      */
     @NonNull
-    public static String getManifestString(@Nullable final String name) {
+    public static String getManifestString(final @Nullable String name) {
         ApplicationInfo ai;
         try {
             ai = mInstance.getApplicationContext()
@@ -400,9 +401,9 @@ public class BookCatalogueApp extends Application {
     /**
      * Show a notification while this app is running.
      */
-    public static void showNotification(@NonNull final Context context,
-                                        @NonNull final String title,
-                                        @NonNull final String message) {
+    public static void showNotification(final @NonNull Context context,
+                                        final @NonNull String title,
+                                        final @NonNull String message) {
 
         Intent intent = new Intent(context, StartupActivity.class);
         intent.setAction("android.intent.action.MAIN");
@@ -426,7 +427,7 @@ public class BookCatalogueApp extends Application {
      *
      * @param res Resources to use
      */
-    private static void applyPreferredLocaleIfNecessary(@NonNull final Resources res) {
+    private static void applyPreferredLocaleIfNecessary(final @NonNull Resources res) {
         if (mPreferredLocale == null || (res.getConfiguration().locale.equals(mPreferredLocale))) {
             return;
         }
@@ -488,7 +489,7 @@ public class BookCatalogueApp extends Application {
      *
      * @return resolved attribute
      */
-    public static int getAttr(@NonNull final Resources.Theme theme, @IdRes final int attr) {
+    public static int getAttr(final @NonNull Resources.Theme theme, final @IdRes int attr) {
         TypedValue tv = new TypedValue();
         theme.resolveAttribute(attr, tv, true);
         return tv.resourceId;
@@ -526,7 +527,7 @@ public class BookCatalogueApp extends Application {
      */
     @Override
     @CallSuper
-    protected void attachBaseContext(@NonNull final Context base) {
+    protected void attachBaseContext(final @NonNull Context base) {
         super.attachBaseContext(base);
 
         ACRA.init(this);
@@ -601,7 +602,7 @@ public class BookCatalogueApp extends Application {
      */
     @Override
     @CallSuper
-    public void onConfigurationChanged(@NonNull final Configuration newConfig) {
+    public void onConfigurationChanged(final @NonNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         if (mPreferredLocale != null) {
             applyPreferredLocaleIfNecessary(getBaseContext().getResources());
@@ -626,7 +627,7 @@ public class BookCatalogueApp extends Application {
         }
 
         /** Get a named boolean preference */
-        public static boolean getBoolean(@NonNull final String name, final boolean defaultValue) {
+        public static boolean getBoolean(final @NonNull String name, final boolean defaultValue) {
             boolean result;
             try {
                 result = getSharedPreferences().getBoolean(name, defaultValue);
@@ -637,7 +638,7 @@ public class BookCatalogueApp extends Application {
         }
 
         /** Set a named boolean preference */
-        public static void putBoolean(@NonNull final String name, final boolean value) {
+        public static void putBoolean(final @NonNull String name, final boolean value) {
             SharedPreferences.Editor ed = edit();
             try {
                 ed.putBoolean(name, value);
@@ -654,7 +655,7 @@ public class BookCatalogueApp extends Application {
          * @return the found string, or the empty string when not found.
          */
         @NonNull
-        public static String getStringOrEmpty(@Nullable final String name) {
+        public static String getStringOrEmpty(final @Nullable String name) {
             String result;
             try {
                 result = getSharedPreferences().getString(name, "");
@@ -666,7 +667,7 @@ public class BookCatalogueApp extends Application {
 
         /** Get a named string preference */
         @Nullable
-        public static String getString(@Nullable final String name, @Nullable final String defaultValue) {
+        public static String getString(final @Nullable String name, final @Nullable String defaultValue) {
             String result;
             try {
                 result = getSharedPreferences().getString(name, defaultValue);
@@ -677,7 +678,7 @@ public class BookCatalogueApp extends Application {
         }
 
         /** Set a named string preference */
-        public static void putString(@NonNull final String name, @Nullable final String value) {
+        public static void putString(final @NonNull String name, final @Nullable String value) {
             SharedPreferences.Editor ed = edit();
             try {
                 ed.putString(name, value);
@@ -687,7 +688,7 @@ public class BookCatalogueApp extends Application {
         }
 
         /** Get a named string preference */
-        public static int getInt(@NonNull final String name, final int defaultValue) {
+        public static int getInt(final @NonNull String name, final int defaultValue) {
             int result;
             try {
                 result = getSharedPreferences().getInt(name, defaultValue);
@@ -698,7 +699,7 @@ public class BookCatalogueApp extends Application {
         }
 
         /** Set a named string preference */
-        public static void putInt(@NonNull final String name, final int value) {
+        public static void putInt(final @NonNull String name, final int value) {
             SharedPreferences.Editor ed = edit();
             try {
                 ed.putInt(name, value);
@@ -707,7 +708,7 @@ public class BookCatalogueApp extends Application {
             }
         }
 
-        public static void remove(@NonNull final String name) {
+        public static void remove(final @NonNull String name) {
             SharedPreferences.Editor ed = edit();
             try {
                 ed.remove(name);

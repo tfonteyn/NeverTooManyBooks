@@ -15,16 +15,15 @@
         android:layout_alignParentTop="true"
         android:focusableInTouchMode="true">
 
-        <ImageView
+        <ImageButton
             android:id="@+id/up"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
-            android:scaleX="1.25"
-            android:scaleY="1.25"
             android:padding="@dimen/padding_border_double"
             android:contentDescription="@string/up_folder"
+            android:background="?android:selectableItemBackground"
             android:text="@string/up_folder"
             app:srcCompat="@drawable/ic_folder_open" />
 

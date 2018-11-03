@@ -79,7 +79,7 @@ public class BackupTest {
                     }
 
                     @Override
-                    public void step(@Nullable final String message, final int delta) {
+                    public void step(final @Nullable String message, final int delta) {
                         if (message != null)
                             mMessage = message;
                         mPosition += delta;
@@ -132,7 +132,7 @@ public class BackupTest {
             }
 
             @Override
-            public void step(@Nullable final String message, final int delta) {
+            public void step(final @Nullable String message, final int delta) {
                 if (message != null) {
                     mMessage = message;
                 }

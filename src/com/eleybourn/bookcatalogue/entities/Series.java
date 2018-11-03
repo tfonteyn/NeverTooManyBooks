@@ -83,7 +83,7 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
     public String name;
     public String number;
 
-    public Series(@NonNull final String encodedName) {
+    public Series(final @NonNull String encodedName) {
         java.util.regex.Matcher m = PATTERN.matcher(encodedName);
         if (m.find()) {
             this.name = m.group(1).trim();
@@ -95,11 +95,11 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
         this.id = 0L;
     }
 
-    public Series(@NonNull final String name, @Nullable final String number) {
+    public Series(final @NonNull String name, final @Nullable String number) {
         this(0L, name, number);
     }
 
-    public Series(final long id, @NonNull final String name, @Nullable final String number) {
+    public Series(final long id, final @NonNull String name, final @Nullable String number) {
         this.id = id;
         this.name = name.trim();
         this.number = cleanupSeriesPosition(number);
@@ -125,7 +125,7 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
      * @param title Book title to parse
      */
     @Nullable
-    public static SeriesDetails findSeriesFromBookTitle(@Nullable final String title) {
+    public static SeriesDetails findSeriesFromBookTitle(final @Nullable String title) {
         if (title == null || title.isEmpty()) {
             return null;
         }
@@ -198,7 +198,7 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
      * bill(1)
      */
     @SuppressWarnings("UnusedReturnValue")
-    public static boolean pruneSeriesList(@Nullable final List<Series> list) {
+    public static boolean pruneSeriesList(final @Nullable List<Series> list) {
         Objects.requireNonNull(list);
 
         List<Series> toDelete = new ArrayList<>();
@@ -271,14 +271,14 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
      *
      * @param source Series to copy
      */
-    public void copyFrom(@NonNull final Series source) {
+    public void copyFrom(final @NonNull Series source) {
         name = source.name;
         number = source.number;
         id = source.id;
     }
 
     @Override
-    public long fixupId(@NonNull final CatalogueDBAdapter db) {
+    public long fixupId(final @NonNull CatalogueDBAdapter db) {
         this.id = db.getSeriesId(this);
         return this.id;
     }
@@ -300,7 +300,7 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
      * Compare is CASE SENSITIVE ! This allows correcting case mistakes.
      */
     @Override
-    public boolean equals(@Nullable final Object o) {
+    public boolean equals(final @Nullable Object o) {
         if (this == o) {
             return true;
         }

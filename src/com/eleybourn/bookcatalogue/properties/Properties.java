@@ -61,7 +61,7 @@ public class Properties implements Iterable<Property> {
     /**
      * @return the named property from this collection.
      */
-    public Property get(@NonNull final String name) {
+    public Property get(final @NonNull String name) {
         return mHash.get(name);
     }
 
@@ -69,7 +69,7 @@ public class Properties implements Iterable<Property> {
      * Passed a parent ViewGroup, build the property editors for all properties
      * inside the parent.
      */
-    public void buildView(@NonNull final LayoutInflater inflater, @NonNull final ViewGroup parent) {
+    public void buildView(final @NonNull LayoutInflater inflater, final @NonNull ViewGroup parent) {
         // Sort them correctly
         sort();
         // Record last group used, so we know when to output a header.

@@ -79,7 +79,7 @@ class DBHelper extends SQLiteOpenHelper {
     //
     static final String TBL_QUEUE = "queue";
     private static final String TBL_QUEUE_DEFN = DOM_ID + " integer primary key autoincrement,\n"
-            + DOM_NAME + " String";
+            + DOM_NAME + " text";
     private static final String[] TBL_QUEUE_IX1 = new String[] { TBL_QUEUE, "UNIQUE", DOM_ID };
     private static final String[] TBL_QUEUE_IX2 = new String[] { TBL_QUEUE, "UNIQUE", DOM_NAME};
 
@@ -88,11 +88,11 @@ class DBHelper extends SQLiteOpenHelper {
     private static final String TBL_TASK_DEFN = DOM_ID + " integer primary key autoincrement,\n"
             + DOM_QUEUE_ID + " integer not null references " + TBL_QUEUE + ",\n"
             + DOM_QUEUED_DATE + " datetime default current_timestamp,\n"
-            + DOM_PRIORITY + " long default 0,\n"
-            + DOM_STATUS_CODE + " char default 'Q',\n"
-            + DOM_CATEGORY + " int default 0 not null,\n"
+            + DOM_PRIORITY + " integer default 0,\n"
+            + DOM_STATUS_CODE + " text default 'Q',\n"
+            + DOM_CATEGORY + " integer default 0 not null,\n"
             + DOM_RETRY_DATE + " datetime default current_timestamp,\n"
-            + DOM_RETRY_COUNT + " int default 0,\n"
+            + DOM_RETRY_COUNT + " integer default 0,\n"
             + DOM_FAILURE_REASON + " text,\n"
             + DOM_EXCEPTION + " blob,\n"
             + DOM_TASK + " blob not null";
@@ -190,7 +190,7 @@ class DBHelper extends SQLiteOpenHelper {
      * Called to upgrade DB.
      */
     @Override
-    public void onUpgrade(@NonNull final SQLiteDatabase db, final int oldVersion, final int newVersion) {
+    public void onUpgrade(final @NonNull SQLiteDatabase db, final int oldVersion, final int newVersion) {
         Logger.info(this,"Upgrading database: " + db.getPath());
 
         int currVersion = oldVersion;
@@ -198,7 +198,7 @@ class DBHelper extends SQLiteOpenHelper {
         if (currVersion == 1) {
             //noinspection UnusedAssignment
             currVersion++;
-            String sql = "ALTER TABLE " + TBL_TASK + " Add " + DOM_CATEGORY + " int default 0";
+            String sql = "ALTER TABLE " + TBL_TASK + " Add " + DOM_CATEGORY + " integer default 0";
             db.execSQL(sql);
         }
 

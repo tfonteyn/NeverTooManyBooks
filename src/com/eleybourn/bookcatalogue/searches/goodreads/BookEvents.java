@@ -45,7 +45,7 @@ import com.eleybourn.bookcatalogue.database.cursors.BooksCursor;
 import com.eleybourn.bookcatalogue.dialogs.ContextDialogItem;
 import com.eleybourn.bookcatalogue.dialogs.HintManager.HintOwner;
 import com.eleybourn.bookcatalogue.entities.Author;
-import com.eleybourn.bookcatalogue.taskqueue.BindableItemCursor;
+import com.eleybourn.bookcatalogue.database.cursors.BindableItemCursor;
 import com.eleybourn.bookcatalogue.taskqueue.Event;
 import com.eleybourn.bookcatalogue.taskqueue.EventsCursor;
 import com.eleybourn.bookcatalogue.taskqueue.QueueManager;
@@ -101,7 +101,7 @@ public class BookEvents {
          * @param bookId      ID of related book.
          * @param description Description of this event.
          */
-        BookEvent(final long bookId, @NonNull final String description) {
+        BookEvent(final long bookId, final @NonNull String description) {
             super(description);
             mBookId = bookId;
         }
@@ -120,10 +120,10 @@ public class BookEvents {
          * This method also prepares the BookEventHolder object for the View.
          */
         @Override
-        public View newListItemView(@NonNull final LayoutInflater inflater,
-                                    @NonNull final Context context,
-                                    @NonNull final BindableItemCursor cursor,
-                                    @NonNull final ViewGroup parent) {
+        public View newListItemView(final @NonNull LayoutInflater inflater,
+                                    final @NonNull Context context,
+                                    final @NonNull BindableItemCursor cursor,
+                                    final @NonNull ViewGroup parent) {
             View view = inflater.inflate(R.layout.row_book_event_info, parent, false);
             ViewTagger.setTag(view, R.id.TAG_EVENT, this);
             BookEventHolder holder = new BookEventHolder();
@@ -148,10 +148,10 @@ public class BookEvents {
          * Display the related book details in the passed View object.
          */
         @Override
-        public void bindView(@NonNull final View view,
-                             @NonNull final Context context,
-                             @NonNull final BindableItemCursor bindableCursor,
-                             @NonNull final Object appInfo) {
+        public void bindView(final @NonNull View view,
+                             final @NonNull Context context,
+                             final @NonNull BindableItemCursor bindableCursor,
+                             final @NonNull Object appInfo) {
             final EventsCursor cursor = (EventsCursor) bindableCursor;
 
             // Update event info binding; the Views in the holder are unchanged, but when it is reused
@@ -202,13 +202,13 @@ public class BookEvents {
          * Subclass can override this and add items at end/start or just replace these completely.
          */
         @Override
-        public void addContextMenuItems(@NonNull final Context context,
-                                        @NonNull final AdapterView<?> parent,
-                                        @NonNull final View view,
+        public void addContextMenuItems(final @NonNull Context context,
+                                        final @NonNull AdapterView<?> parent,
+                                        final @NonNull View view,
                                         final int position,
                                         final long eventId,
-                                        @NonNull final List<ContextDialogItem> items,
-                                        @NonNull final Object appInfo) {
+                                        final @NonNull List<ContextDialogItem> items,
+                                        final @NonNull Object appInfo) {
 
             // EDIT BOOK
             items.add(new ContextDialogItem(context.getString(R.string.edit_book), new Runnable() {
@@ -218,7 +218,7 @@ public class BookEvents {
                         GrSendBookEvent event = ViewTagger.getTagOrThrow(view, R.id.TAG_EVENT);
                             Intent intent = new Intent(context, EditBookActivity.class);
                             intent.putExtra(UniqueId.KEY_ID, event.getBookId());
-                            intent.putExtra(EditBookActivity.REQUEST_KEY_TAB, EditBookActivity.TAB_EDIT);
+                            intent.putExtra(EditBookActivity.REQUEST_BKEY_TAB, EditBookActivity.TAB_EDIT);
                             context.startActivity(intent);
                     } catch (Exception ignore) {
                         // not a book event?
@@ -233,7 +233,7 @@ public class BookEvents {
 //            	public void run() {
 //            		BookEventHolder holder = ViewTagger.getTagOrThrow(view, R.id.TAG_BOOK_EVENT_HOLDER);
 //            		Intent intent = new Intent(context, GoodreadsSearchCriteriaActivity.class);
-//            		intent.putExtra(GoodreadsSearchCriteriaActivity.REQUEST_EXTRA_BOOK_ID, holder.event.getBookId());
+//            		intent.putExtra(GoodreadsSearchCriteriaActivity.REQUEST_BKEY_BOOK_ID, holder.event.getBookId());
 //            		context.startActivity(intent);
 //            	}}));
 
@@ -293,10 +293,10 @@ public class BookEvents {
          */
         @Override
         @CallSuper
-        public void bindView(@NonNull final View view,
-                             @NonNull final Context context,
-                             @NonNull final BindableItemCursor bindableCursor,
-                             @NonNull final Object appInfo) {
+        public void bindView(final @NonNull View view,
+                             final @NonNull Context context,
+                             final @NonNull BindableItemCursor bindableCursor,
+                             final @NonNull Object appInfo) {
             // Get the 'standard' view.
             super.bindView(view, context, bindableCursor, appInfo);
 
@@ -327,9 +327,9 @@ public class BookEvents {
          */
         @Override
         @CallSuper
-        public void addContextMenuItems(@NonNull final Context context,
-                                        @NonNull final AdapterView<?> parent,
-                                        @NonNull final View view,
+        public void addContextMenuItems(final @NonNull Context context,
+                                        final @NonNull AdapterView<?> parent,
+                                        final @NonNull View view,
                                         final int position, final long eventId,
                                         @NonNull List<ContextDialogItem> items,
                                         @NonNull Object appInfo) {

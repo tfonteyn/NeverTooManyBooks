@@ -22,7 +22,7 @@ public class JoinContext {
      *
      * @param table Table that starts join
      */
-    public JoinContext(@NonNull final TableDefinition table) {
+    public JoinContext(final @NonNull TableDefinition table) {
         mCurrentTable = table;
         mSql = new StringBuilder();
     }
@@ -35,7 +35,7 @@ public class JoinContext {
      * @return Join object (for chaining)
      */
     @NonNull
-    public JoinContext join(@NonNull final TableDefinition to) {
+    public JoinContext join(final @NonNull TableDefinition to) {
         mSql.append(mCurrentTable.join(to));
         mSql.append('\n');
         mCurrentTable = to;
@@ -51,7 +51,7 @@ public class JoinContext {
      * @return Join object (for chaining)
      */
     @NonNull
-    public JoinContext join(@NonNull final TableDefinition from, @NonNull final TableDefinition to) {
+    public JoinContext join(final @NonNull TableDefinition from, final @NonNull TableDefinition to) {
         mSql.append(from.join(to));
         mSql.append('\n');
         mCurrentTable = to;
@@ -67,7 +67,7 @@ public class JoinContext {
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    public JoinContext leftOuterJoin(@NonNull final TableDefinition to) {
+    public JoinContext leftOuterJoin(final @NonNull TableDefinition to) {
         mSql.append(" LEFT OUTER ");
         return join(to);
     }
@@ -82,7 +82,7 @@ public class JoinContext {
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    public JoinContext leftOuterJoin(@NonNull final TableDefinition from, @NonNull final TableDefinition to) {
+    public JoinContext leftOuterJoin(final @NonNull TableDefinition from, final @NonNull TableDefinition to) {
         mSql.append(" LEFT OUTER ");
         return join(from, to);
     }
@@ -108,7 +108,7 @@ public class JoinContext {
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    public JoinContext append(@NonNull final String sql) {
+    public JoinContext append(final @NonNull String sql) {
         mSql.append(sql);
         return this;
     }

@@ -49,8 +49,8 @@
     <item name="MENU_SERIES_DELETE" type="id"/>
     <item name="MENU_SERIES_EDIT" type="id"/>
 
-    <item name="MENU_DELETE_ANTHOLOGY" type="id"/>
-    <item name="MENU_POPULATE_ANTHOLOGY_ISFDB" type="id"/>
+    <item name="MENU_DELETE_TOC_ENTRY" type="id"/>
+    <item name="MENU_POPULATE_TOC_FROM_ISFDB" type="id"/>
 
     <item name="MENU_STYLE_DELETE" type="id"/>
     <item name="MENU_STYLE_EDIT" type="id"/>

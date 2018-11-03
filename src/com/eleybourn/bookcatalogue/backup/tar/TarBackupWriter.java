@@ -60,7 +60,7 @@ public class TarBackupWriter extends BackupWriterAbstract {
      *
      * @param container Parent
      */
-    TarBackupWriter(@NonNull final TarBackupContainer container) throws IOException {
+    TarBackupWriter(final @NonNull TarBackupContainer container) throws IOException {
         mContainer = container;
         // Open the archive for writing
         FileOutputStream out = new FileOutputStream(container.getFile());
@@ -78,7 +78,7 @@ public class TarBackupWriter extends BackupWriterAbstract {
      * Save the books export file
      */
     @Override
-    public void putBooks(@NonNull final File books) throws IOException {
+    public void putBooks(final @NonNull File books) throws IOException {
         TarArchiveEntry entry = new TarArchiveEntry(new File(TarBackupContainer.BOOKS_FILE));
         entry.setModTime(books.lastModified());
         entry.setSize(books.length());
@@ -91,7 +91,7 @@ public class TarBackupWriter extends BackupWriterAbstract {
      * Save a cover file
      */
     @Override
-    public void putCoverFile(@NonNull final File source) throws IOException {
+    public void putCoverFile(final @NonNull File source) throws IOException {
         final TarArchiveEntry entry = new TarArchiveEntry(source.getName());
         entry.setModTime(source.lastModified());
         entry.setSize(source.length());
@@ -104,7 +104,7 @@ public class TarBackupWriter extends BackupWriterAbstract {
      * Save the INFO data
      */
     @Override
-    public void putInfo(@NonNull final BackupInfo info) throws IOException {
+    public void putInfo(final @NonNull BackupInfo info) throws IOException {
         final ByteArrayOutputStream infoData = new ByteArrayOutputStream();
         final BufferedWriter infoOut = new BufferedWriter(new OutputStreamWriter(infoData, TarBackupContainer.UTF8), TarBackupContainer.BUFFER_SIZE);
         BackupUtils.bundleToXml(infoOut, info.getBundle());
@@ -116,7 +116,7 @@ public class TarBackupWriter extends BackupWriterAbstract {
      * Save a Booklist style. We save them with increasing suffix counters to ensure uniqueness
      */
     @Override
-    public void putBooklistStyle(@NonNull final BooklistStyle style) throws IOException {
+    public void putBooklistStyle(final @NonNull BooklistStyle style) throws IOException {
         mStyleCounter++;
         // Turn the object into a byte array
         final byte[] blob = SerializationUtils.serializeObject(style);
@@ -129,7 +129,7 @@ public class TarBackupWriter extends BackupWriterAbstract {
      * It would be nice to support groups (ie. more than one preference name), but ... we don't need it.
      */
     @Override
-    public void putPreferences(@NonNull final SharedPreferences prefs) throws IOException {
+    public void putPreferences(final @NonNull SharedPreferences prefs) throws IOException {
         // Turn the preferences into an XML file in a byte array
         final ByteArrayOutputStream infoData = new ByteArrayOutputStream();
         final BufferedWriter infoOut = new BufferedWriter(new OutputStreamWriter(infoData, TarBackupContainer.UTF8), TarBackupContainer.BUFFER_SIZE);
@@ -143,7 +143,7 @@ public class TarBackupWriter extends BackupWriterAbstract {
      *
      * @param in Stream to be saved
      */
-    private void streamToArchive(@NonNull final InputStream in) throws IOException {
+    private void streamToArchive(final @NonNull InputStream in) throws IOException {
         try {
             final byte[] buffer = new byte[TarBackupContainer.BUFFER_SIZE];
             while (true) {
@@ -164,7 +164,7 @@ public class TarBackupWriter extends BackupWriterAbstract {
      * @param name  name of "file" in archive
      * @param bytes bytes to write
      */
-    private void bytesToArchive(@NonNull final String name, @NonNull final byte[] bytes) throws IOException {
+    private void bytesToArchive(final @NonNull String name, final @NonNull byte[] bytes) throws IOException {
         final TarArchiveEntry entry = new TarArchiveEntry(name);
         entry.setSize(bytes.length);
         mOutput.putArchiveEntry(entry);

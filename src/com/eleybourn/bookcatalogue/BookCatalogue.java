@@ -21,7 +21,7 @@ public class BookCatalogue extends AppCompatActivity {
 
 	@CallSuper
 	@Override
-	public void onCreate(@Nullable final Bundle savedInstanceState) {
+	public void onCreate(final @Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		startActivity(new Intent(this, StartupActivity.class));
 		finish();

@@ -88,7 +88,7 @@
     <string name="error_file_must_contain_any_column">File must contain a column with one of the following names: %s</string>
     <string name="error_column_is_blank">Column %1$s is blank at row %2$s</string>
     <string name="error_columns_are_blank">Columns %1$s are all blank at row %2$d</string>
-    <string name="error_anthology_automatic_population_failed">Automatic Population of Titles Failed</string>
+    <string name="error_automatic_toc_population_failed">Automatic Population of Titles Failed</string>
     <string name="error_export_failed">Export failed - could not write to SD card</string>
     <string name="error_download_thumbnail_failed">Thumbnail Download Failed - Could not write to SDCard</string>
     <string name="error_no_internet_connection">No Internet connection is available.</string>
@@ -334,7 +334,7 @@
     <string name="menu_delete_bs">Delete Bookshelf</string>
     <string name="menu_delete_series">Delete Series&#8230;</string>
     <string name="menu_delete_thumb">Delete Thumbnail</string>
-    <string name="menu_delete_anthology">Delete Title from Anthology</string>
+    <string name="menu_delete_toc_entry">Delete Title from TOC</string>
 
     <string name="menu_expand_all">Expand All</string>
     <string name="menu_sort_by">Sort By</string>
@@ -388,6 +388,7 @@
     <string name="lbl_search">Search for Books</string>
 
 
+    <string name="anthology">Anthology</string>
     <string name="author">Author</string>
     <string name="title">Title</string>
     <string name="series">Series</string>
@@ -400,7 +401,7 @@
     <string name="format">Format</string>
     <string name="description">Description</string>
     <string name="genre">Genre</string>
-    <string name="list_price">List Price</string>
+    <string name="price_listed">List Price</string>
     <string name="notes">Notes</string>
     <string name="signed">Has this book been signed</string>
     <string name="read_start">Date started reading</string>
@@ -426,7 +427,7 @@
     <string name="title_manage_bs">Manage Bookshelves</string>
     <string name="title_edit_bs">Edit Bookshelf</string>
     <string name="search_hint">Search Author or Title</string>
-    <string name="book_not_found">The scanned book was not found. You can sometimes find the correct barcode on the inside front cover. Otherwise please enter the details manually.</string>
+    <string name="book_not_found">The book was not found. You can sometimes find the correct barcode on the inside front cover. Otherwise please enter the details manually.</string>
     <string name="import_data">Import Books</string>
     <string name="import_alert">Warning. Importing data may update existing book records with new information if the uuid column is not present and the id in the import file is the same as an existing id. This is usually fine if you changed a field in an exported file. If you created a new book record, or are importing someone else\'s books, ensure the uuid field is present or the id field is blank.</string>
     <string name="search_title">Book Catalogue: Search Results</string>
@@ -454,10 +455,9 @@
     <string name="help">Help</string>
     <string name="manage_fields_help">Selected fields are visible in the add/edit book screens. Unselected fields are hidden.</string>
     <string name="anthology_titles">Anthology Titles</string>
-    <string name="amazon_wish_list">Amazon Wishlist</string>
-    <string name="same_author">All stories in this anthology are written by the same author</string>
-    <string name="anthology">Anthology</string>
-    <string name="anthology_confirm">Please confirm that these anthology titles are (mostly) correct</string>
+    <string name="amazon_wish_list">Amazon wish list</string>
+    <string name="toc_same_author">All stories in this anthology are written by the same author</string>
+    <string name="toc_confirm">Please confirm that these titles are (mostly) correct</string>
 
     <string name="thumbnail">Cover Thumbnail</string>
 
@@ -951,9 +951,9 @@
     <string name="select_based_on_signed_status">Select based on \'Signed\' status</string>
     <string name="select_signed_yes">Select signed books only</string>
     <string name="select_signed_no">Select unsigned books only</string>
-    <string name="select_based_on_anthology_status">Select based on \'Anthology\' status</string>
-    <string name="select_anthology_yes">Select anthologies only</string>
-    <string name="select_anthology_no">Select non-anthologies only</string>
+    <string name="select_based_on_is_anthology_status">Select based on \'Anthology\' status</string>
+    <string name="select_is_anthology_yes">Select anthologies only</string>
+    <string name="select_is_anthology_no">Select non-anthologies only</string>
     <string name="select_based_on_loaned_status">Select based on \'Loaned\' status</string>
     <string name="select_loaned_yes">Select loaned books only</string>
     <string name="select_loaned_no">Select non-loaned only</string>
@@ -985,15 +985,23 @@
     <string name="initial_bookshelf">Default</string>
 
     <string name="try_again">Try again</string>
+
     <string name="table_of_content">Table Of Content</string>
-    <string name="content">Content</string>
-    <string name="populate_anthology_titles">Populate Titles (ISFDB only)</string>
+    <!-- "Table Of Content" abbreviation short enough to fit on a tab label -->
+    <string name="content_tab">TOC</string>
+
+    <string name="populate_toc">Populate Titles (ISFDB only)</string>
     <string name="first_publication">First Publication</string>
     <string name="usage_skip">Skip</string>
     <string name="edition">Edition</string>
     <string name="edition_first_edition">First Edition</string>
     <string name="edition_first_impression">First impression</string>
     <string name="edition_book_club_edition">Bookclub edition</string>
+    <string name="currency">Currency</string>
+    <string name="price_paid">Price paid</string>
+    <string name="date_purchased">Date Purchased</string>
+    <string name="edition_limited">Limited Edition</string>
+    <string name="use">Use</string>
 
 
     <!-- End: Added/Updated in  [Next Version]  -->

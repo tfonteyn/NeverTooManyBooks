@@ -59,7 +59,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
     }
 
     @Override
-    protected void onSetupView(@NonNull final View target, @NonNull final Series series) {
+    protected void onSetupView(final @NonNull View target, final @NonNull Series series) {
         TextView dt = target.findViewById(R.id.row_series);
         if (dt != null) {
             dt.setText(series.getDisplayName());
@@ -77,7 +77,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
 
     @Override
     @CallSuper
-    protected void onCreate(@Nullable final Bundle savedInstanceState) {
+    protected void onCreate(final @Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.setTitle(mBookTitle);
         try {
@@ -94,7 +94,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
     }
 
     @Override
-    protected void onAdd(@NonNull final View target) {
+    protected void onAdd(final @NonNull View target) {
         AutoCompleteTextView seriesField = EditSeriesListActivity.this.findViewById(R.id.series);
         String seriesTitle = seriesField.getText().toString().trim();
 
@@ -119,7 +119,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
     }
 
     @Override
-    protected void onRowClick(@NonNull final View target, @NonNull final Series series, final int position) {
+    protected void onRowClick(final @NonNull View target, final @NonNull Series series, final int position) {
         final Dialog dialog = new StandardDialogs.BasicDialog(this);
         dialog.setContentView(R.layout.dialog_edit_book_series);
         dialog.setTitle(R.string.edit_book_series);
@@ -161,7 +161,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
         dialog.show();
     }
 
-    private void confirmEdit(@NonNull final Series from, @NonNull final Series to) {
+    private void confirmEdit(final @NonNull Series from, final @NonNull Series to) {
         // case sensitive equality
         if (to.equals(from)) {
             return;
@@ -208,7 +208,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
                 .create();
 
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.this_book), new DialogInterface.OnClickListener() {
-            public void onClick(@NonNull final DialogInterface dialog, final int which) {
+            public void onClick(final @NonNull DialogInterface dialog, final int which) {
                 from.copyFrom(to);
                 Series.pruneSeriesList(mList);
                 Utils.pruneList(mDb, mList);
@@ -218,7 +218,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
         });
 
         dialog.setButton(DialogInterface.BUTTON_NEGATIVE, allBooks, new DialogInterface.OnClickListener() {
-            public void onClick(@NonNull final DialogInterface dialog, final int which) {
+            public void onClick(final @NonNull DialogInterface dialog, final int which) {
                 mDb.globalReplaceSeries(from, to);
                 from.copyFrom(to);
                 Series.pruneSeriesList(mList);
@@ -232,7 +232,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
     }
 
     @Override
-    protected boolean onSave(@NonNull final Intent intent) {
+    protected boolean onSave(final @NonNull Intent intent) {
         final AutoCompleteTextView view = findViewById(R.id.series);
         String s = view.getText().toString().trim();
         if (s.isEmpty()) {

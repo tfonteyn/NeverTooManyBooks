@@ -157,7 +157,7 @@ public abstract class BaseCancelable<T> implements Cancelable<T> {
     }
 
     /**
-     * Whether the task's has been requested for onCancel.
+     * Whether the task's has been requested for onPartialDatePickerCancel.
      */
     protected synchronized boolean isCanceling() {
         return mState == STATE_CANCELING;
@@ -173,7 +173,7 @@ public abstract class BaseCancelable<T> implements Cancelable<T> {
      *
      * @return the result of the sub task
      */
-    protected <X> X runSubTask(@NonNull final Cancelable<X> cancelable)
+    protected <X> X runSubTask(final @NonNull Cancelable<X> cancelable)
             throws InterruptedException, ExecutionException {
         synchronized (this) {
             if (mCurrentTask != null) {

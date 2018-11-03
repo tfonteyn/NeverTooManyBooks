@@ -77,7 +77,7 @@ public class BookCatalogueTest extends ActivityInstrumentationTestCase2 {
 		t.clickOnMenuItem("Add Book...");
 		t.clickOnText("Add by ISBN");
 		t.assertCurrentActivity("Expected BookISBNSearch activity", "BookISBNSearch");
-		assertFalse("Did not expect onCancel button", t.searchButton("Cancel"));
+		assertFalse("Did not expect onPartialDatePickerCancel button", t.searchButton("Cancel"));
 		t.goBack();
 		
 		//reset again
@@ -117,7 +117,7 @@ public class BookCatalogueTest extends ActivityInstrumentationTestCase2 {
 		t.clickOnMenuItem("Add Book...");
 		t.clickOnText("Add by ISBN");
 		t.assertCurrentActivity("Expected BookISBNSearch activity", "BookISBNSearch");
-		assertFalse("Did not expect onCancel button", t.searchButton("Cancel"));
+		assertFalse("Did not expect onPartialDatePickerCancel button", t.searchButton("Cancel"));
 		t.goBack();
 	}
 	
@@ -328,7 +328,7 @@ public class BookCatalogueTest extends ActivityInstrumentationTestCase2 {
 		assertFalse(t.searchText("Foobar"));
 		
 		
-		//search & onCancel
+		//search & onPartialDatePickerCancel
 		t.clickOnMenuItem("Automatically Populate Titles");
 		t.sleep(3000);
 		t.clickOnButton("Cancel");

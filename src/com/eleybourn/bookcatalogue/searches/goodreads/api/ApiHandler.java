@@ -40,7 +40,7 @@ abstract class ApiHandler {
 	/** XmlFilter root object. Used in extracting data file XML results. */
 	final XmlFilter mRootFilter = new XmlFilter("");
 
-	public ApiHandler(@NonNull final GoodreadsManager manager) {
+	public ApiHandler(final @NonNull GoodreadsManager manager) {
 		mManager = manager;
 	}
 }

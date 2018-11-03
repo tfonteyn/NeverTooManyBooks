@@ -29,25 +29,25 @@ import android.support.annotation.NonNull;
  */
 public interface DataAccessor {
     /**
-     * Get the specified {@link Datum} from the passed {@link DataManager} or Bundle
+     * Get the specified {@link Datum} from the passed {@link DataManager} or {@link Bundle}
      */
     @NonNull
-    Object get(@NonNull final DataManager data,
-               @NonNull final Datum datum,
-               @NonNull final Bundle rawData);
+    Object get(final @NonNull DataManager data,
+               final @NonNull Datum datum,
+               final @NonNull Bundle rawData);
 
     /**
      * Set the specified {@link Datum} in the passed Bundle
      */
-    void set(@NonNull final DataManager data,
-             @NonNull final Datum datum,
-             @NonNull final Bundle rawData,
-             @NonNull final Object value);
+    void set(final @NonNull DataManager data,
+             final @NonNull Datum datum,
+             final @NonNull Bundle rawData,
+             final @NonNull Object value);
 
     /**
      *  Check if the specified {@link Datum} is present in the passed Bundle
      */
-    boolean isPresent(@NonNull final DataManager data,
-                      @NonNull final Datum datum,
-                      @NonNull final Bundle rawData);
+    boolean isPresent(final @NonNull DataManager data,
+                      final @NonNull Datum datum,
+                      final @NonNull Bundle rawData);
 }

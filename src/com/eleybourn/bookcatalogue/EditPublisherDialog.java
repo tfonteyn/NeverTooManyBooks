@@ -38,13 +38,13 @@ public class EditPublisherDialog {
     @NonNull
     private final Runnable mOnChanged;
 
-    EditPublisherDialog(@NonNull final Activity activity, @NonNull final CatalogueDBAdapter db, @NonNull final Runnable onChanged) {
+    EditPublisherDialog(final @NonNull Activity activity, final @NonNull CatalogueDBAdapter db, final @NonNull Runnable onChanged) {
         mDb = db;
         mActivity = activity;
         mOnChanged = onChanged;
     }
 
-    public void edit(@NonNull final Publisher publisher) {
+    public void edit(final @NonNull Publisher publisher) {
         final Dialog dialog = new StandardDialogs.BasicDialog(mActivity);
         dialog.setContentView(R.layout.dialog_edit_publisher);
         dialog.setTitle(R.string.edit_publisher_details);
@@ -82,7 +82,7 @@ public class EditPublisherDialog {
     /**
      * ENHANCE: once {@link Publisher} use id's, use code from {@link EditSeriesDialog#confirmEdit}
      */
-    private void confirmEdit(@NonNull final Publisher from, @NonNull final Publisher to) {
+    private void confirmEdit(final @NonNull Publisher from, final @NonNull Publisher to) {
         // case sensitive equality
         if (to.equals(from)) {
             return;

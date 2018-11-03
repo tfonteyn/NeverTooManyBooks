@@ -78,7 +78,7 @@ public class Logger {
      *
      * For static callers
      */
-    public static void info(@NonNull final Class clazz, final String message) {
+    public static void info(final @NonNull Class clazz, final String message) {
         String msg = "INFO|" + clazz.getCanonicalName() + "|" + message;
         Log.e(TAG, msg);
         writeToErrorLog(msg);
@@ -89,7 +89,7 @@ public class Logger {
      *
      * For instance callers
      */
-    public static void info(@NonNull final Object object, final String message) {
+    public static void info(final @NonNull Object object, final String message) {
         Class clazz = object.getClass();
         String msg = "INFO|" + clazz.getCanonicalName() + "|" + message;
         if (clazz.isAnonymousClass()) {
@@ -104,11 +104,11 @@ public class Logger {
     /**
      * Generates stacktrace
      */
-    public static void error(@NonNull final String message) {
+    public static void error(final @NonNull String message) {
         error(new RuntimeException(), message);
     }
 
-    public static void error(@NonNull final Exception e) {
+    public static void error(final @NonNull Exception e) {
         error(e, "");
     }
 
@@ -117,7 +117,7 @@ public class Logger {
      *
      * Generates stacktrace
      */
-    public static void error(@NonNull final Error e) {
+    public static void error(final @NonNull Error e) {
         error(new RuntimeException(e), "");
     }
 
@@ -128,7 +128,7 @@ public class Logger {
      * @param e       The exception to log
      * @param message extra message
      */
-    public static void error(@Nullable final Exception e, @NonNull final String message) {
+    public static void error(final @Nullable Exception e, final @NonNull String message) {
         String now = dateFormat.format(new Date());
         String exMsg = null;
         StringWriter stacktrace = new StringWriter();
@@ -156,7 +156,7 @@ public class Logger {
         pw.close();
     }
 
-    private static void writeToErrorLog(@NonNull final String message) {
+    private static void writeToErrorLog(final @NonNull String message) {
         try {
             BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(StorageUtils.getErrorLog()), "utf8"), 8192);
             out.write(message);
@@ -178,7 +178,7 @@ public class Logger {
                     StorageUtils.renameFile(orig, backup);
                 }
             } catch (Exception ignore) {
-                // Ignore backup onCancel...
+                // Ignore backup onPartialDatePickerCancel...
             }
             BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(StorageUtils.getErrorLog()), "utf8"), 8192);
             out.write("");

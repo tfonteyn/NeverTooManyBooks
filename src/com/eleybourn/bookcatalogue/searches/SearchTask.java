@@ -37,13 +37,11 @@ import java.util.List;
 
 abstract public class SearchTask extends ManagedTask {
     protected static boolean mFetchThumbnail;
-    @NonNull
-    protected final String mAuthor;
-    @NonNull
-    protected final String mTitle;
-    @NonNull
-    protected final String mIsbn;
-    // Accumulated book info.
+    protected String mAuthor;
+    protected String mTitle;
+    protected String mIsbn;
+
+    /** Accumulated book info. */
     @NonNull
     protected Bundle mBookData = new Bundle();
 
@@ -53,21 +51,40 @@ abstract public class SearchTask extends ManagedTask {
      *
      * @param name    of this thread
      * @param manager TaskHandler implementation
-     * @param author  Author to search for
-     * @param title   Title to search for
-     * @param isbn    ISBN to search for.
      */
-    protected SearchTask(@NonNull final String name,
-                         @NonNull final TaskManager manager,
-                         @NonNull final String author,
-                         @NonNull final String title,
-                         @NonNull final String isbn,
-                         final boolean fetchThumbnail) {
+    protected SearchTask(final @NonNull String name,
+                         final @NonNull TaskManager manager) {
         super(name, manager);
+    }
+
+    /**
+     * @param isbn to search for
+     */
+    public void setIsbn(final @NonNull String isbn) {
+        // trims might not be needed, but heck.
+        mIsbn = isbn.trim();
+    }
+
+    /**
+     * @param author to search for
+     */
+    public void setAuthor(final @NonNull String author) {
         // trims might not be needed, but heck.
         mAuthor = author.trim();
+    }
+
+    /**
+     * @param title to search for
+     */
+    public void setTitle(final @NonNull String title) {
+        // trims might not be needed, but heck.
         mTitle = title.trim();
-        mIsbn = isbn.trim();
+    }
+
+    /**
+     * @param fetchThumbnail to search for
+     */
+    public void setFetchThumbnail(final boolean fetchThumbnail) {
         mFetchThumbnail = fetchThumbnail;
     }
 
@@ -106,7 +123,7 @@ abstract public class SearchTask extends ManagedTask {
     /**
      * Show an unexpected exception message
      */
-    protected void showException(@StringRes final int id, @NonNull final Exception e) {
+    protected void showException(final @StringRes int id, final @NonNull Exception e) {
         String s;
         try {
             s = e.getLocalizedMessage();
@@ -120,7 +137,7 @@ abstract public class SearchTask extends ManagedTask {
     /**
      * Show a 'known' error, without the dreaded exception message
      */
-    protected void showError(@StringRes final int id, @StringRes final int error) {
+    protected void showError(final @StringRes int id, final @StringRes int error) {
         String msg = String.format(getString(R.string.error_search_exception), getString(id), error);
         showUserMessage(msg);
     }

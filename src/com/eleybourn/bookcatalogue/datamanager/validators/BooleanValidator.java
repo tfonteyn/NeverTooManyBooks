@@ -36,13 +36,13 @@ public class BooleanValidator extends DefaultFieldValidator {
         super();
     }
 
-    public BooleanValidator(@NonNull final String defaultValue) {
+    public BooleanValidator(final @NonNull String defaultValue) {
         super(defaultValue);
     }
 
     @Override
     @CallSuper
-    public void validate(@NonNull final DataManager data, @NonNull final Datum datum, final boolean crossValidating)
+    public void validate(final @NonNull DataManager data, final @NonNull Datum datum, final boolean crossValidating)
             throws ValidatorException {
         if (datum.isHidden()) {
             // No validation required for invisible fields

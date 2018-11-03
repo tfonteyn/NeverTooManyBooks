@@ -27,7 +27,7 @@ import java.io.IOException;
 import java.util.Objects;
 
 public class ImportTypeSelectionDialogFragment extends DialogFragment {
-    private int mDialogId;
+    private int mCallerId;
     private File mFile;
     private boolean mArchiveHasValidDates;
     private final OnClickListener mRowClickListener = new OnClickListener() {
@@ -46,7 +46,7 @@ public class ImportTypeSelectionDialogFragment extends DialogFragment {
      * @return Created fragment
      */
     @NonNull
-    public static ImportTypeSelectionDialogFragment newInstance(final int callerId, @NonNull final File file) {
+    public static ImportTypeSelectionDialogFragment newInstance(final int callerId, final @NonNull File file) {
         ImportTypeSelectionDialogFragment frag = new ImportTypeSelectionDialogFragment();
         Bundle args = new Bundle();
         args.putInt(UniqueId.BKEY_CALLER_ID, callerId);
@@ -60,10 +60,10 @@ public class ImportTypeSelectionDialogFragment extends DialogFragment {
      */
     @Override
     @CallSuper
-    public void onAttach(@NonNull final Context context) {
+    public void onAttach(final @NonNull Context context) {
         super.onAttach(context);
-        if (!(context instanceof OnImportTypeSelectionDialogResultListener))
-            throw new RTE.MustImplementException(context, OnImportTypeSelectionDialogResultListener.class);
+        if (!(context instanceof OnImportTypeSelectionDialogResultsListener))
+            throw new RTE.MustImplementException(context, OnImportTypeSelectionDialogResultsListener.class);
     }
 
     /**
@@ -72,7 +72,7 @@ public class ImportTypeSelectionDialogFragment extends DialogFragment {
      * @param root root view
      * @param id   Sub-View ID
      */
-    private void setOnClickListener(@NonNull final View root, @IdRes final int id) {
+    private void setOnClickListener(final @NonNull View root, final @IdRes int id) {
         View view = root.findViewById(id);
         view.setOnClickListener(mRowClickListener);
         view.setBackgroundResource(android.R.drawable.list_selector_background);
@@ -83,10 +83,13 @@ public class ImportTypeSelectionDialogFragment extends DialogFragment {
      */
     @NonNull
     @Override
-    public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-        //noinspection ConstantConditions
-        mDialogId = getArguments().getInt(UniqueId.BKEY_CALLER_ID);
-        mFile = new File(Objects.requireNonNull(getArguments().getString(UniqueId.BKEY_FILE_SPEC)));
+    public Dialog onCreateDialog(final @Nullable Bundle savedInstanceState) {
+        // savedInstanceState not used.
+        Bundle args = getArguments();
+        Objects.requireNonNull(args);
+
+        mCallerId = args.getInt(UniqueId.BKEY_CALLER_ID);
+        mFile = new File(Objects.requireNonNull(args.getString(UniqueId.BKEY_FILE_SPEC)));
 
         try {
             BackupReader reader = BackupManager.readFrom(mFile);
@@ -116,7 +119,7 @@ public class ImportTypeSelectionDialogFragment extends DialogFragment {
         return dialog;
     }
 
-    private void handleClick(@NonNull final View v) {
+    private void handleClick(final @NonNull View v) {
         if (!mArchiveHasValidDates && v.getId() == R.id.row_new_and_changed_books) {
             StandardDialogs.showUserMessage(requireActivity(), R.string.old_archive_blurb);
             //Snackbar.make(v, R.string.old_archive_blurb, Snackbar.LENGTH_LONG).show();
@@ -128,8 +131,8 @@ public class ImportTypeSelectionDialogFragment extends DialogFragment {
             settings.file = mFile;
             settings.options = Importer.IMPORT_ALL;
 
-            OnImportTypeSelectionDialogResultListener activity = (OnImportTypeSelectionDialogResultListener) requireActivity();
-            activity.onImportTypeSelectionDialogResult(this, mDialogId, settings);
+            OnImportTypeSelectionDialogResultsListener activity = (OnImportTypeSelectionDialogResultsListener) requireActivity();
+            activity.onImportTypeSelectionDialogResult(this, mCallerId, settings);
         } catch (Exception e) {
             Logger.error(e);
         }
@@ -141,10 +144,10 @@ public class ImportTypeSelectionDialogFragment extends DialogFragment {
      *
      * @author pjw
      */
-    public interface OnImportTypeSelectionDialogResultListener {
-        void onImportTypeSelectionDialogResult(@NonNull final DialogFragment dialog,
+    public interface OnImportTypeSelectionDialogResultsListener {
+        void onImportTypeSelectionDialogResult(final @NonNull DialogFragment dialog,
                                                final int callerId,
-                                               @NonNull final ImportSettings settings);
+                                               final @NonNull ImportSettings settings);
     }
 
     public static class ImportSettings {

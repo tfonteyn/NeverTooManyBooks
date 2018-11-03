@@ -25,7 +25,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.UniqueId;
-import com.eleybourn.bookcatalogue.entities.AnthologyTitle;
+import com.eleybourn.bookcatalogue.entities.TOCEntry;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.entities.Series;
@@ -45,14 +45,14 @@ public class ArrayUtils<T> {
     @Nullable
     private static ArrayUtils<Series> mSeriesUtils = null;
     @Nullable
-    private static ArrayUtils<AnthologyTitle> mTOCUtils = null;
+    private static ArrayUtils<TOCEntry> mTOCUtils = null;
 
     private Factory<T> mFactory;
 
     public ArrayUtils() {
     }
 
-    public ArrayUtils(@NonNull final Factory<T> factory) {
+    public ArrayUtils(final @NonNull Factory<T> factory) {
         mFactory = factory;
     }
 
@@ -63,7 +63,7 @@ public class ArrayUtils<T> {
             mBookshelfUtils = new ArrayUtils<>(new Factory<Bookshelf>() {
                 @Override
                 @NonNull
-                public Bookshelf get(@NonNull final String stringEncodedList) {
+                public Bookshelf get(final @NonNull String stringEncodedList) {
                     return new Bookshelf(stringEncodedList);
                 }
             });
@@ -79,7 +79,7 @@ public class ArrayUtils<T> {
             mAuthorUtils = new ArrayUtils<>(new Factory<Author>() {
                 @Override
                 @NonNull
-                public Author get(@NonNull final String stringEncodedList) {
+                public Author get(final @NonNull String stringEncodedList) {
                     return new Author(stringEncodedList);
                 }
             });
@@ -93,7 +93,7 @@ public class ArrayUtils<T> {
      * @return List of authors
      */
     @Nullable
-    public static ArrayList<Author> getAuthorListFromBundle(@NonNull final Bundle bundle) {
+    public static ArrayList<Author> getAuthorListFromBundle(final @NonNull Bundle bundle) {
         return getListFromBundle(bundle, UniqueId.BKEY_AUTHOR_ARRAY);
     }
 
@@ -103,7 +103,7 @@ public class ArrayUtils<T> {
      * @return List of authors, can be empty
      */
     @NonNull
-    public static ArrayList<Author> getAuthorListFromIntentExtras(@NonNull final Intent intent) {
+    public static ArrayList<Author> getAuthorListFromIntentExtras(final @NonNull Intent intent) {
         ArrayList<Author> list = getListFromIntentExtras(intent, UniqueId.BKEY_AUTHOR_ARRAY);
         return list != null ? list : new ArrayList<Author>();
     }
@@ -116,7 +116,7 @@ public class ArrayUtils<T> {
             mSeriesUtils = new ArrayUtils<>(new Factory<Series>() {
                 @Override
                 @NonNull
-                public Series get(@NonNull final String stringEncodedList) {
+                public Series get(final @NonNull String stringEncodedList) {
                     return new Series(stringEncodedList);
                 }
             });
@@ -130,7 +130,7 @@ public class ArrayUtils<T> {
      * @return List of series
      */
     @Nullable
-    public static ArrayList<Series> getSeriesListFromBundle(@NonNull final Bundle bundle) {
+    public static ArrayList<Series> getSeriesListFromBundle(final @NonNull Bundle bundle) {
         return getListFromBundle(bundle, UniqueId.BKEY_SERIES_ARRAY);
     }
 
@@ -140,7 +140,7 @@ public class ArrayUtils<T> {
      * @return List of series, can be empty
      */
     @NonNull
-    public static ArrayList<Series> getSeriesListFromIntentExtras(@NonNull final Intent intent) {
+    public static ArrayList<Series> getSeriesListFromIntentExtras(final @NonNull Intent intent) {
         ArrayList<Series> list = getListFromIntentExtras(intent, UniqueId.BKEY_SERIES_ARRAY);
         return list != null ? list : new ArrayList<Series>();
     }
@@ -148,13 +148,13 @@ public class ArrayUtils<T> {
 
     //<editor-fold desc="TOC">
     @NonNull
-    public static ArrayUtils<AnthologyTitle> getTOCUtils() {
+    public static ArrayUtils<TOCEntry> getTOCUtils() {
         if (mTOCUtils == null) {
-            mTOCUtils = new ArrayUtils<>(new Factory<AnthologyTitle>() {
+            mTOCUtils = new ArrayUtils<>(new Factory<TOCEntry>() {
                 @Override
                 @NonNull
-                public AnthologyTitle get(@NonNull final String stringEncodedList) {
-                    return new AnthologyTitle(stringEncodedList);
+                public TOCEntry get(final @NonNull String stringEncodedList) {
+                    return new TOCEntry(stringEncodedList);
                 }
             });
         }
@@ -164,11 +164,11 @@ public class ArrayUtils<T> {
     /**
      * @param bundle containing encoded list
      *
-     * @return List of AnthologyTitle
+     * @return List of TOCEntry
      */
     @Nullable
-    public static ArrayList<AnthologyTitle> getTOCFromBundle(@NonNull final Bundle bundle) {
-        return getListFromBundle(bundle, UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY);
+    public static ArrayList<TOCEntry> getTOCFromBundle(final @NonNull Bundle bundle) {
+        return getListFromBundle(bundle, UniqueId.BKEY_TOC_TITLES_ARRAY);
     }
 
     //</editor-fold>
@@ -183,7 +183,7 @@ public class ArrayUtils<T> {
      */
     @SuppressWarnings("unchecked")
     @Nullable
-    public static <T> ArrayList<T> getListFromBundle(@NonNull final Bundle bundle, @Nullable final String key) {
+    public static <T> ArrayList<T> getListFromBundle(final @NonNull Bundle bundle, final @Nullable String key) {
         return (ArrayList<T>) bundle.getSerializable(key);
     }
 
@@ -197,7 +197,7 @@ public class ArrayUtils<T> {
      */
     @SuppressWarnings("unchecked")
     @Nullable
-    public static <T> ArrayList<T> getListFromIntentExtras(@NonNull final Intent intent, @Nullable final String key) {
+    public static <T> ArrayList<T> getListFromIntentExtras(final @NonNull Intent intent, final @Nullable String key) {
         return (ArrayList<T>) intent.getSerializableExtra(key);
     }
 
@@ -209,7 +209,7 @@ public class ArrayUtils<T> {
      * @return Array of strings resulting from list
      */
     @NonNull
-    public static ArrayList<String> decodeList(@NonNull final String stringList) {
+    public static ArrayList<String> decodeList(final @NonNull String stringList) {
         return decodeList(MULTI_STRING_SEPARATOR, stringList);
     }
 
@@ -222,7 +222,7 @@ public class ArrayUtils<T> {
      * @return Array of strings(trimmed) resulting from list
      */
     @NonNull
-    public static ArrayList<String> decodeList(final char delim, @NonNull final String stringList) {
+    public static ArrayList<String> decodeList(final char delim, final @NonNull String stringList) {
         StringBuilder ns = new StringBuilder();
         ArrayList<String> list = new ArrayList<>();
         boolean inEsc = false;
@@ -273,7 +273,7 @@ public class ArrayUtils<T> {
      * @see #encodeListItem(char, String)
      */
     @NonNull
-    public static String encodeListItem(@NonNull final String s) {
+    public static String encodeListItem(final @NonNull String s) {
         return encodeListItem(MULTI_STRING_SEPARATOR, s);
     }
 
@@ -289,7 +289,7 @@ public class ArrayUtils<T> {
      * @return Converted string(trimmed)
      */
     @NonNull
-    public static String encodeListItem(final char delim, @NonNull final String s) {
+    public static String encodeListItem(final char delim, final @NonNull String s) {
         StringBuilder ns = new StringBuilder();
         for (int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);
@@ -321,7 +321,7 @@ public class ArrayUtils<T> {
      * @return Resulting string
      */
     @NonNull
-    public static <T> String toDisplayString(@NonNull final List<T> list) {
+    public static <T> String toDisplayString(final @NonNull List<T> list) {
         if (list.isEmpty()) {
             return "";
         }
@@ -340,9 +340,9 @@ public class ArrayUtils<T> {
      * @param key    for value to add
      * @param value  to add
      */
-    public static void addOrAppend(@NonNull final Bundle bundle,
-                                   @Nullable final String key,
-                                   @NonNull final String value) {
+    public static void addOrAppend(final @NonNull Bundle bundle,
+                                   final @Nullable String key,
+                                   final @NonNull String value) {
         String s = encodeListItem(value);
         if (!bundle.containsKey(key) || bundle.getString(key, "").isEmpty()) {
             bundle.putString(key, s);
@@ -353,27 +353,12 @@ public class ArrayUtils<T> {
     }
 
     /**
-     * Add the value to the collection if not present
-     *
-     * @param bundle to add to
-     * @param key    for value to add
-     * @param value  to add
-     */
-    public static void addIfNotPresent(@NonNull final Bundle bundle,
-                                       @Nullable final String key,
-                                       @NonNull final String value) {
-        if (!bundle.containsKey(key) || bundle.getString(key, "").isEmpty()) {
-            bundle.putString(key, value.trim());
-        }
-    }
-
-    /**
      * Add the value to the list if the value is actually 'real'
      *
      * @param list  to add to
      * @param value to add
      */
-    public static void addIfHasValue(@NonNull final List<String> list,
+    public static void addIfHasValue(final @NonNull List<String> list,
                                      @Nullable String value) {
         if (value != null) {
             value = value.trim();
@@ -384,7 +369,7 @@ public class ArrayUtils<T> {
     }
 
     @NonNull
-    private T get(@NonNull final String source) {
+    private T get(final @NonNull String source) {
         return mFactory.get(source);
     }
 
@@ -399,7 +384,7 @@ public class ArrayUtils<T> {
      * @return Converted string
      */
     @NonNull
-    public String encodeList(@NonNull final List<T> list) {
+    public String encodeList(final @NonNull List<T> list) {
         return encodeList(MULTI_STRING_SEPARATOR, list);
     }
 
@@ -415,7 +400,7 @@ public class ArrayUtils<T> {
      */
     @SuppressWarnings("SameParameterValue")
     @NonNull
-    public String encodeList(final char delim, @NonNull final List<T> list) {
+    public String encodeList(final char delim, final @NonNull List<T> list) {
         StringBuilder ns = new StringBuilder();
         Iterator<T> si = list.iterator();
         if (si.hasNext()) {
@@ -436,7 +421,7 @@ public class ArrayUtils<T> {
      * @return Array of strings resulting from list
      */
     @NonNull
-    public ArrayList<T> decodeList(@Nullable final String stringList, final boolean allowBlank) {
+    public ArrayList<T> decodeList(final @Nullable String stringList, final boolean allowBlank) {
         return decodeList(MULTI_STRING_SEPARATOR, stringList, allowBlank);
     }
 
@@ -449,7 +434,7 @@ public class ArrayUtils<T> {
      */
     @SuppressWarnings("SameParameterValue")
     @NonNull
-    public ArrayList<T> decodeList(final char delim, @Nullable final String stringList, final boolean allowBlank) {
+    public ArrayList<T> decodeList(final char delim, final @Nullable String stringList, final boolean allowBlank) {
         StringBuilder ns = new StringBuilder();
         ArrayList<T> list = new ArrayList<>();
         if (stringList == null) {
@@ -508,6 +493,6 @@ public class ArrayUtils<T> {
 
     public interface Factory<T> {
         @NonNull
-        T get(@NonNull final String source);
+        T get(final @NonNull String source);
     }
 }

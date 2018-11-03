@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/title"
-        android:text="@string/same_author" />
+        android:text="@string/toc_same_author" />
 
     <AutoCompleteTextView
         android:id="@+id/add_author"
@@ -21,8 +21,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/same_author"
-        android:hint="@string/author"
-        tools:text="add new author here" />
+        android:hint="@string/author" />
 
     <EditText
         android:id="@+id/add_title"
@@ -31,7 +30,6 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/add_author"
         android:hint="@string/title"
-        tools:text="add new title here"
         tools:ignore="Autofill" />
     <EditText
         android:id="@+id/add_year"
@@ -42,7 +40,7 @@
         android:layout_toStartOf="@id/add_button"
         android:inputType="number"
         android:maxLength="4"
-        android:hint="@string/year"
+        android:hint="@string/first_publication"
         tools:ignore="Autofill" />
     <Button
         android:id="@+id/add_button"

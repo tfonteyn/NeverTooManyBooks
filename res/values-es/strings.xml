@@ -64,7 +64,7 @@
     <string name="lbl_contacts">Contacto</string>
     <string name="lbl_donate">Contribuir</string>
     <string name="lbl_about">Acerca de esta App</string>
-    <string name="list_price">Precio</string>
+    <string name="price_listed">Precio</string>
     <string name="update_fields">Actualización automática de campos</string>
     <string name="select_fields_to_update">Seleccione campos para actualizar</string>
     <string name="select_fields_to_update_help">Los campos seleccionados se actualizarán con datos de internet. Los campos no marcados no se modificarán.</string>
@@ -79,13 +79,13 @@
     <string name="manage_fields_help">Los campos marcados serán visibles en las pantallas de Añadir y Editar libros. Los no marcados no se mostrarán.</string>
     <string name="anthology_titles">Antologías</string>
     <string name="amazon_wish_list">Amazon Wishlist</string>
-    <string name="same_author">Todos los libros de esta antología son del mismo autor</string>
-    <string name="menu_delete_anthology">Eliminar título de una antología</string>
+    <string name="toc_same_author">Todos los libros de esta antología son del mismo autor</string>
+    <string name="menu_delete_toc_entry">Eliminar título de una antología</string>
     <string name="is_anthology">¿Se trata de una antología?</string>
-    <string name="populate_anthology_titles">Actualización automática de títulos (EXPERIMENTAL)</string>
-    <string name="error_anthology_automatic_population_failed">La actualización automática de títulos ha fallado</string>
+    <string name="populate_toc">Actualización automática de títulos (EXPERIMENTAL)</string>
+    <string name="error_automatic_toc_population_failed">La actualización automática de títulos ha fallado</string>
     <string name="anthology">Antología</string>
-    <string name="anthology_confirm">Por favor, confirme que los títulos de la antología son (en su mayoría) correctos</string>
+    <string name="toc_confirm">Por favor, confirme que los títulos de la antología son (en su mayoría) correctos</string>
     <string name="anthology_save">Guardar</string>
     <string name="anthology_add">Añadir</string>
     <string name="menu_add_thumb_photo">Desde la cámara&#8230;</string>
@@ -740,6 +740,7 @@ y puede editar el libro utilizando el menú de opciones.
     </plurals>
 
     <string name="title_reorder">a|A|an|An|the|The</string>
+    <string name="content_tab">Contenido</string>
 
     <!-- End: Added/Updated in 5.1.1 -->
 

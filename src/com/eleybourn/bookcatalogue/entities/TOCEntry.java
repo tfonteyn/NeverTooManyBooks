@@ -34,26 +34,25 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Class to represent a single title within an anthology
+ * Class to represent a single title within an TOC(Anthology)
  *
  * Note:
  * these are always insert/update'd ONLY when a book is insert/update'd
- * Hence writes are always a List<AnthologyTitle> in one go. This circumvents the 'position' column
+ * Hence writes are always a List<TOCEntry> in one go. This circumvents the 'position' column
  * as the update will simply insert in-order and auto increment position.
+ * Retrieving by bookId is always done ordered by position.
  *
- * The table has some limitations right now
- * 1. can only exist in ONE book
- * 2. can only have one author
  *
  * @author pjw
  */
-public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
+public class TOCEntry implements Serializable, Utils.ItemWithIdFixup {
     /**
      * import/export etc...
      *
-     * "anthology title * author "
+     * "anthology title (year) * author ","anthology title (year) * author ",...
      */
-    public static final char TITLE_AUTHOR_DELIM = '*';
+    private static final char TITLE_AUTHOR_DELIM = '*';
+    private static final char SEPARATOR = ',';
 
     /**
      * Used by:
@@ -65,7 +64,6 @@ public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
      * pattern finds (1960), group 1 will then contain the pure 1960
      */
     private static final Pattern YEAR_FROM_STRING = Pattern.compile("\\(([1|2]\\d\\d\\d)\\)");
-    public static final char SEPARATOR = ',';
 
     /**
      * V82:
@@ -81,15 +79,10 @@ public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
     @NonNull
     private String mFirstPublicationDate = "";
 
-    @Deprecated
-    private long mBookId = 0;
-    @Deprecated
-    private long mPosition = 0;     // order in the book, [1..x]
-
     /**
-     * Constructor that will attempt to parse a single string into an AnthologyTitle.
+     * Constructor that will attempt to parse a single string into an TOCEntry.
      */
-    public AnthologyTitle(@NonNull final String fromString) {
+    public TOCEntry(final @NonNull String fromString) {
         fromString(fromString);
     }
 
@@ -99,9 +92,9 @@ public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
      * @param author Author of title
      * @param title  Title
      */
-    public AnthologyTitle(@NonNull final Author author,
-                          @NonNull final String title,
-                          @NonNull final String publicationDate) {
+    public TOCEntry(final @NonNull Author author,
+                    final @NonNull String title,
+                    final @NonNull String publicationDate) {
         mAuthor = author;
         mTitle = title.trim();
         mFirstPublicationDate = publicationDate;
@@ -110,12 +103,12 @@ public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
     /**
      * Helper to check if all titles in a list have the same author.
      */
-    public static boolean isSingleAuthor(@NonNull final List<AnthologyTitle> results) {
+    public static boolean isSingleAuthor(final @NonNull List<TOCEntry> results) {
         // check if its all the same author or not
         boolean sameAuthor = true;
         if (results.size() > 1) {
             Author author = results.get(0).getAuthor();
-            for (AnthologyTitle t : results) { // yes, we check 0 twice.. oh well.
+            for (TOCEntry t : results) { // yes, we check 0 twice.. oh well.
                 sameAuthor = author.equals(t.getAuthor());
                 if (!sameAuthor) {
                     break;
@@ -128,7 +121,7 @@ public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
     /**
      * Support for decoding from a text file
      */
-    private void fromString(@NonNull final String encodedString) {
+    private void fromString(final @NonNull String encodedString) {
         // V82: Giants In The Sky * Blish, James
         // V83: Giants In The Sky (1952) * Blish, James
 
@@ -137,7 +130,7 @@ public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
         String title = list.get(0);
 
         //TOMF FIXME: fine for now, but should be made foolproof for full dates (via DateUtils) instead of just the 4 digit year
-        Matcher matcher = AnthologyTitle.YEAR_FROM_STRING.matcher(title);
+        Matcher matcher = TOCEntry.YEAR_FROM_STRING.matcher(title);
         if (matcher.find()) {
             mFirstPublicationDate = matcher.group(1);
             mTitle = title.replace(matcher.group(0), "").trim();
@@ -175,7 +168,7 @@ public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
         return mTitle;
     }
 
-    public void setTitle(@NonNull final String title) {
+    public void setTitle(final @NonNull String title) {
         mTitle = title;
     }
 
@@ -184,28 +177,8 @@ public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
         return mAuthor;
     }
 
-    public void setAuthor(@NonNull final Author author) {
+    public void setAuthor(final @NonNull Author author) {
         mAuthor = author;
-    }
-
-    @Deprecated
-    public long getBookId() {
-        return mBookId;
-    }
-
-    @Deprecated
-    public void setBookId(final long mBookId) {
-        this.mBookId = mBookId;
-    }
-
-    @Deprecated
-    public long getPosition() {
-        return mPosition;
-    }
-
-    @Deprecated
-    public void setPosition(final long mPosition) {
-        this.mPosition = mPosition;
     }
 
     @NonNull
@@ -213,19 +186,19 @@ public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
         return mFirstPublicationDate;
     }
 
-    public void setFirstPublication(@NonNull final String publicationDate) {
+    public void setFirstPublication(final @NonNull String publicationDate) {
         mFirstPublicationDate = publicationDate;
     }
 
     @Override
-    public long fixupId(@NonNull final CatalogueDBAdapter db) {
+    public long fixupId(final @NonNull CatalogueDBAdapter db) {
         this.mAuthor.id = db.getAuthorIdByName(mAuthor.familyName, mAuthor.givenNames);
-        this.id = db.getAnthologyTitleId(mAuthor.id, mTitle);
+        this.id = db.getTOCEntryId(mAuthor.id, mTitle);
         return this.id;
     }
 
     /**
-     * Each AnthologyTitle is defined exactly by a unique ID.
+     * Each TOCEntry is defined exactly by a unique ID.
      */
     @Override
     public boolean isUniqueById() {
@@ -238,14 +211,14 @@ public class AnthologyTitle implements Serializable, Utils.ItemWithIdFixup {
      * - their id's are the same
      */
     @Override
-    public boolean equals(@Nullable final Object o) {
+    public boolean equals(final @Nullable Object o) {
         if (this == o) {
             return true;
         }
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        AnthologyTitle that = (AnthologyTitle) o;
+        TOCEntry that = (TOCEntry) o;
         if (id == 0 || that.id == 0) {
             return Objects.equals(mAuthor, that.mAuthor) && Objects.equals(mTitle, that.mTitle);
         }

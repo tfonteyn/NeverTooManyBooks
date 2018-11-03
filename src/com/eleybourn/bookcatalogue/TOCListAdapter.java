@@ -7,28 +7,28 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter;
-import com.eleybourn.bookcatalogue.entities.AnthologyTitle;
+import com.eleybourn.bookcatalogue.entities.TOCEntry;
 
 import java.util.ArrayList;
 
 /**
  * code sharing between edit and showing anthology titles, editing extends this class
  */
-public class AnthologyTitleListAdapter extends SimpleListAdapter<AnthologyTitle> {
+public class TOCListAdapter extends SimpleListAdapter<TOCEntry> {
 
     @NonNull
     private final Context mContext;
 
-    public AnthologyTitleListAdapter(@NonNull final Context context,
-                                     @LayoutRes final int rowViewId,
-                                     @NonNull final ArrayList<AnthologyTitle> items) {
+    public TOCListAdapter(final @NonNull Context context,
+                          @LayoutRes final int rowViewId,
+                          final @NonNull ArrayList<TOCEntry> items) {
         super(context, rowViewId, items);
         mContext = context;
     }
 
     @Override
-    protected void onSetupView(@NonNull final View convertView,
-                               @NonNull final AnthologyTitle item) {
+    protected void onSetupView(final @NonNull View convertView,
+                               final @NonNull TOCEntry item) {
 
         TextView vTitle = convertView.findViewById(R.id.title);
         vTitle.setText(item.getTitle());
@@ -59,7 +59,7 @@ public class AnthologyTitleListAdapter extends SimpleListAdapter<AnthologyTitle>
      * @param item   The object associated with this row
      */
     @Override
-    protected void onRowClick(@NonNull final View target, @NonNull final AnthologyTitle item, final int position) {
+    protected void onRowClick(final @NonNull View target, final @NonNull TOCEntry item, final int position) {
         //TODO: navigate to new Activity where we show the Anthology title + a list of all books it appears in
     }
 

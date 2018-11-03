@@ -42,7 +42,7 @@ public class BookRowView extends BookRowViewBase {
     private int mPrimarySeriesCol = -2;
     private int mLoanedToCol = -2;
 
-    public BookRowView(@NonNull final Cursor cursor) {
+    public BookRowView(final @NonNull Cursor cursor) {
         super(cursor);
     }
 

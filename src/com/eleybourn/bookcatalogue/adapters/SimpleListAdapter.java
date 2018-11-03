@@ -130,7 +130,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
                     onListChanged();
                 }
             } catch (Exception e) {
-                // TODO: Allow a specific exception to onCancel the action
+                // TODO: Allow a specific exception to onPartialDatePickerCancel the action
                 Logger.error(e);
             }
         }
@@ -154,7 +154,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
                 notifyDataSetChanged();
                 onListChanged();
             } catch (Exception e) {
-                // TODO: Allow a specific exception to onCancel the action
+                // TODO: Allow a specific exception to onPartialDatePickerCancel the action
                 Logger.error(e);
             }
         }
@@ -178,7 +178,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
                 notifyDataSetChanged();
                 onListChanged();
             } catch (Exception e) {
-                // TODO: Allow a specific exception to onCancel the action
+                // TODO: Allow a specific exception to onPartialDatePickerCancel the action
                 Logger.error(e);
             }
 
@@ -192,7 +192,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
     private boolean mHasDown = false;
     private boolean mHasDelete = false;
 
-    protected SimpleListAdapter(@NonNull final Context context, @LayoutRes final int rowViewId, @NonNull final List<T> items) {
+    protected SimpleListAdapter(final @NonNull Context context, @LayoutRes final int rowViewId, final @NonNull List<T> items) {
         super(context, rowViewId, items);
         mRowViewId = rowViewId;
         mItems = items;
@@ -207,7 +207,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
      * @param target The view clicked
      * @param item   The object associated with this row
      */
-    protected void onRowClick(@NonNull final View target, @NonNull final T item, final int position) {
+    protected void onRowClick(final @NonNull View target, final @NonNull T item, final int position) {
     }
 
     /**
@@ -219,7 +219,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
      * @return <tt>true</tt>if handled
      */
     @CallSuper
-    protected boolean onRowLongClick(@NonNull final View target, @NonNull final T item, final int position) {
+    protected boolean onRowLongClick(final @NonNull View target, final @NonNull T item, final int position) {
         return true;
     }
 
@@ -227,14 +227,14 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
      * @return <tt>true</tt>if delete is allowed to happen
      */
     @CallSuper
-    protected boolean onRowDelete(@NonNull final View target, @NonNull final T item, final int position) {
+    protected boolean onRowDelete(final @NonNull View target, final @NonNull T item, final int position) {
         return true;
     }
 
-    protected void onRowDown(@NonNull final View target, @NonNull final T item, final int position) {
+    protected void onRowDown(final @NonNull View target, final @NonNull T item, final int position) {
     }
 
-    protected void onRowUp(@NonNull final View target, @NonNull final T item, final int position) {
+    protected void onRowUp(final @NonNull View target, final @NonNull T item, final int position) {
     }
 
     /**
@@ -243,11 +243,11 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
      * @param convertView The target row view object
      * @param item        The object (or type T) from which to draw values.
      */
-    abstract protected void onSetupView(@NonNull final View convertView, @NonNull final T item);
+    abstract protected void onSetupView(final @NonNull View convertView, final @NonNull T item);
 
     @NonNull
     @Override
-    public View getView(final int position, @Nullable View convertView, @NonNull final ViewGroup parent) {
+    public View getView(final int position, @Nullable View convertView, final @NonNull ViewGroup parent) {
         final T item = this.getItem(position);
 
         // Get the view; if not defined, load it.
@@ -295,7 +295,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
 
             // Try to set the UP handler
             if (mHasUp || !mCheckedFields) {
-                ImageView up = convertView.findViewById(R.id.ROW_UP);
+                View up = convertView.findViewById(R.id.ROW_UP);
                 if (up != null) {
                     up.setOnClickListener(mRowUpListener);
                     mHasUp = true;
@@ -304,7 +304,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
 
             // Try to set the DOWN handler
             if (mHasDown || !mCheckedFields) {
-                ImageView dn = convertView.findViewById(R.id.ROW_DOWN);
+                View dn = convertView.findViewById(R.id.ROW_DOWN);
                 if (dn != null) {
                     dn.setOnClickListener(mRowDownListener);
                     mHasDown = true;
@@ -313,7 +313,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
 
             // Try to set the DELETE handler
             if (mHasDelete || !mCheckedFields) {
-                ImageView del = convertView.findViewById(R.id.ROW_DELETE);
+                View del = convertView.findViewById(R.id.ROW_DELETE);
                 if (del != null) {
                     del.setOnClickListener(mRowDeleteListener);
                     mHasDelete = true;

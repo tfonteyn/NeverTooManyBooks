@@ -45,10 +45,10 @@ public class FlattenedBooklist implements AutoCloseable {
      * @param db    Database connection
      * @param table Table definition
      */
-    FlattenedBooklist(@NonNull final SynchronizedDb db, @NonNull final TableDefinition table) {
-        Tracker.enterFunction(this, "FlattenedBooklist(@NonNull final SynchronizedDb db [not logged], @NonNull final TableDefinition table)", table);
+    FlattenedBooklist(final @NonNull SynchronizedDb db, final @NonNull TableDefinition table) {
+        Tracker.enterFunction(this, "FlattenedBooklist(final @NonNull SynchronizedDb db [not logged], final @NonNull TableDefinition table)", table);
         init(db, table.clone());
-        Tracker.exitFunction(this, "FlattenedBooklist(@NonNull final SynchronizedDb db, @NonNull final TableDefinition table)");
+        Tracker.exitFunction(this, "FlattenedBooklist(final @NonNull SynchronizedDb db, final @NonNull TableDefinition table)");
     }
 
     /**
@@ -57,15 +57,15 @@ public class FlattenedBooklist implements AutoCloseable {
      * @param db        Database connection
      * @param tableName Name of underlying table
      */
-    public FlattenedBooklist(@NonNull final CatalogueDBAdapter db, @NonNull final String tableName) {
-        Tracker.enterFunction(this, "FlattenedBooklist(@NonNull final CatalogueDBAdapter db [not logged], @NonNull final String tableName)", tableName);
+    public FlattenedBooklist(final @NonNull CatalogueDBAdapter db, final @NonNull String tableName) {
+        Tracker.enterFunction(this, "FlattenedBooklist(final @NonNull CatalogueDBAdapter db [not logged], final @NonNull String tableName)", tableName);
 
         TableDefinition flat = DatabaseDefinitions.TBL_ROW_NAVIGATOR_FLATTENED.clone();
         flat.setName(tableName);
         flat.setType(TableTypes.Temporary); //RELEASE Make sure is TEMPORARY
 
         init(db.getUnderlyingDatabaseIfYouAreSureWhatYouAreDoing(), flat);
-        Tracker.exitFunction(this, "FlattenedBooklist(@NonNull final CatalogueDBAdapter db, @NonNull final String tableName)");
+        Tracker.exitFunction(this, "FlattenedBooklist(final @NonNull CatalogueDBAdapter db, final @NonNull String tableName)");
     }
 
     /**
@@ -74,7 +74,7 @@ public class FlattenedBooklist implements AutoCloseable {
      * @param db    Database connection
      * @param table Table definition
      */
-    private void init(@NonNull final SynchronizedDb db, @NonNull final TableDefinition table) {
+    private void init(final @NonNull SynchronizedDb db, final @NonNull TableDefinition table) {
         mSyncedDb = db;
         mTable = table;
         mStatements = new SqlStatementManager(mSyncedDb);
@@ -108,7 +108,7 @@ public class FlattenedBooklist implements AutoCloseable {
     /**
      * Passed a statement update the 'current' row details based on the columns returned
      */
-    private boolean fetchBookIdAndPosition(@NonNull final SynchronizedStatement stmt) {
+    private boolean fetchBookIdAndPosition(final @NonNull SynchronizedStatement stmt) {
         // Get a pair of ID's separated by a '/'
         try {
             final String[] data = stmt.simpleQueryForString().split("/");

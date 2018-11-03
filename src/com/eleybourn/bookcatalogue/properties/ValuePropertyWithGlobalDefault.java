@@ -54,9 +54,9 @@ public abstract class ValuePropertyWithGlobalDefault<T> extends Property {
      * @param group          PropertyGroup it belongs to
      * @param nameResourceId Resource ID for name string
      */
-    ValuePropertyWithGlobalDefault(@NonNull final String uniqueId,
-                                   @NonNull final PropertyGroup group,
-                                   @StringRes final int nameResourceId) {
+    ValuePropertyWithGlobalDefault(final @NonNull String uniqueId,
+                                   final @NonNull PropertyGroup group,
+                                   final @StringRes int nameResourceId) {
         super(uniqueId, group, nameResourceId);
     }
 
@@ -69,10 +69,10 @@ public abstract class ValuePropertyWithGlobalDefault<T> extends Property {
      * @param nameResourceId Resource ID for name string
      * @param defaultValue   Default value used in case preferences is null, or returns null
      */
-    ValuePropertyWithGlobalDefault(@NonNull final String uniqueId,
-                                   @NonNull final PropertyGroup group,
-                                   @StringRes final int nameResourceId,
-                                   @NonNull final T defaultValue) {
+    ValuePropertyWithGlobalDefault(final @NonNull String uniqueId,
+                                   final @NonNull PropertyGroup group,
+                                   final @StringRes int nameResourceId,
+                                   final @NonNull T defaultValue) {
         super(uniqueId, group, nameResourceId);
         mDefaultValue = defaultValue;
     }
@@ -86,11 +86,11 @@ public abstract class ValuePropertyWithGlobalDefault<T> extends Property {
      * @param defaultValue   Default value used in case preferences is null, or returns null
      * @param value          Current value (may be null)
      */
-    ValuePropertyWithGlobalDefault(@NonNull final String uniqueId,
-                                   @NonNull final PropertyGroup group,
-                                   @StringRes final int nameResourceId,
-                                   @Nullable final T defaultValue,
-                                   @Nullable final T value) {
+    ValuePropertyWithGlobalDefault(final @NonNull String uniqueId,
+                                   final @NonNull PropertyGroup group,
+                                   final @StringRes int nameResourceId,
+                                   final @Nullable T defaultValue,
+                                   final @Nullable T value) {
         super(uniqueId, group, nameResourceId);
         mDefaultValue = defaultValue;
         mValue = value;
@@ -103,7 +103,7 @@ public abstract class ValuePropertyWithGlobalDefault<T> extends Property {
     /** Children must implement accessor for global default */
     @Nullable
     @SuppressWarnings("UnusedReturnValue")
-    protected abstract ValuePropertyWithGlobalDefault<T> setGlobalDefault(@Nullable final T value);
+    protected abstract ValuePropertyWithGlobalDefault<T> setGlobalDefault(final @Nullable T value);
 
     /** Accessor for underlying (or global) value */
     @Nullable
@@ -118,7 +118,7 @@ public abstract class ValuePropertyWithGlobalDefault<T> extends Property {
     /** Accessor for underlying (or global) value */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    public ValuePropertyWithGlobalDefault<T> set(@Nullable final T value) {
+    public ValuePropertyWithGlobalDefault<T> set(final @Nullable T value) {
         mValue = value;
         if (mIsGlobal) {
             setGlobalDefault(value);
@@ -166,7 +166,7 @@ public abstract class ValuePropertyWithGlobalDefault<T> extends Property {
     }
 
     @NonNull
-    public ValuePropertyWithGlobalDefault<T> setDefaultValue(@Nullable final T value) {
+    public ValuePropertyWithGlobalDefault<T> setDefaultValue(final @Nullable T value) {
         mDefaultValue = value;
         return this;
     }
@@ -177,7 +177,7 @@ public abstract class ValuePropertyWithGlobalDefault<T> extends Property {
     }
 
     @NonNull
-    public ValuePropertyWithGlobalDefault<T> setPreferenceKey(@NonNull final String key) {
+    public ValuePropertyWithGlobalDefault<T> setPreferenceKey(final @NonNull String key) {
         mDefaultPrefKey = key;
         return this;
     }
@@ -188,7 +188,7 @@ public abstract class ValuePropertyWithGlobalDefault<T> extends Property {
     }
 
     /** Utility to check if the current value IS the default value */
-    boolean isDefault(@Nullable final T value) {
+    boolean isDefault(final @Nullable T value) {
         if (hasGlobalDefault() && !isGlobal()) {
             return (value == null);
         }

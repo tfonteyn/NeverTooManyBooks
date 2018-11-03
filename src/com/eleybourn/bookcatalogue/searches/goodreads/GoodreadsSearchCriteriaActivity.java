@@ -52,7 +52,6 @@ import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 public class GoodreadsSearchCriteriaActivity extends BaseActivity {
 
     public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_GOODREADS_SEARCH_CRITERIA;
-    public static final String REQUEST_EXTRA_BOOK_ID = "bookId";
 
     private CatalogueDBAdapter mDb;
     private long mBookId = 0;
@@ -64,7 +63,7 @@ public class GoodreadsSearchCriteriaActivity extends BaseActivity {
 
     @Override
     @CallSuper
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
+    public void onCreate(final @Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         // Setup DB and layout.
@@ -74,8 +73,8 @@ public class GoodreadsSearchCriteriaActivity extends BaseActivity {
         Bundle extras = this.getIntent().getExtras();
 
         // Look for a book ID
-        if (extras != null && extras.containsKey(REQUEST_EXTRA_BOOK_ID)) {
-            mBookId = extras.getLong(REQUEST_EXTRA_BOOK_ID);
+        if (extras != null && extras.containsKey(UniqueId.KEY_ID)) {
+            mBookId = extras.getLong(UniqueId.KEY_ID);
         }
 
         // If we have a book, fill in criteria AND try a search
@@ -127,28 +126,28 @@ public class GoodreadsSearchCriteriaActivity extends BaseActivity {
     /**
      * Set the visibility of the passed view.
      */
-    private void setViewVisibility(@SuppressWarnings("SameParameterValue") @IdRes final int id, final boolean visible) {
+    private void setViewVisibility(@SuppressWarnings("SameParameterValue") final @IdRes int id, final boolean visible) {
         this.findViewById(id).setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
     /**
      * Set the text of the passed view
      */
-    private void setViewText(@IdRes final int id, @NonNull final String s) {
+    private void setViewText(final @IdRes int id, final @NonNull String s) {
         ((TextView) this.findViewById(id)).setText(s);
     }
 
     /**
      * Get the text of the passed view
      */
-    private String getViewText(@SuppressWarnings("SameParameterValue") @IdRes final int id) {
+    private String getViewText(@SuppressWarnings("SameParameterValue") final @IdRes int id) {
         return ((TextView) this.findViewById(id)).getText().toString().trim();
     }
 
     /**
      * Set the OnClickListener for the passed view
      */
-    private void setClickListener(@SuppressWarnings("SameParameterValue") @IdRes final int id, @NonNull final OnClickListener listener) {
+    private void setClickListener(@SuppressWarnings("SameParameterValue") final @IdRes int id, final @NonNull OnClickListener listener) {
         this.findViewById(id).setOnClickListener(listener);
     }
 

@@ -42,7 +42,7 @@ public interface MultiTypeListHandler {
      *
      * @return view type
      */
-    int getItemViewType(@NonNull final Cursor cursor);
+    int getItemViewType(final @NonNull Cursor cursor);
 
     /**
      * Get the total number of view types that can be returned.
@@ -61,10 +61,10 @@ public interface MultiTypeListHandler {
      * @return Filled-in view to use.
      */
     @NonNull
-    View getView(@NonNull final Cursor cursor,
-                 @NonNull final LayoutInflater inflater,
-                 @Nullable final View convertView,
-                 @NonNull final ViewGroup parent);
+    View getView(final @NonNull Cursor cursor,
+                 final @NonNull LayoutInflater inflater,
+                 final @Nullable View convertView,
+                 final @NonNull ViewGroup parent);
 
     /**
      * Get the text to display in ListView for row at current cursor position
@@ -73,7 +73,7 @@ public interface MultiTypeListHandler {
      *
      * @return text to display
      */
-    String[] getSectionText(@NonNull final Cursor cursor);
+    String[] getSectionText(final @NonNull Cursor cursor);
 
     /**
      * Abstract base class for 'holder' objects in a multi-type list view.
@@ -89,20 +89,20 @@ public interface MultiTypeListHandler {
          * associated with a reusable view that will always be used for rows of the current
          * kind. We avoid having to call findViewById() by doing it once at creation time.
          */
-        public abstract void map(@NonNull final T rowContext, @NonNull final View v);
+        public abstract void map(final @NonNull T rowContext, final @NonNull View v);
 
         /**
          * Use the passed rowContext to fill in the actual details for the current row.
          */
-        public abstract void set(@NonNull final T rowContext, @NonNull final View v, final int level);
+        public abstract void set(final @NonNull T rowContext, final @NonNull View v, final int level);
 
         /**
          * Use  the passed rowContext to determine the kind of View that is required
          * and return a new view.
          */
-        public abstract View newView(@NonNull final T rowContext,
-                                     @NonNull final LayoutInflater inflater,
-                                     @NonNull final ViewGroup parent,
+        public abstract View newView(final @NonNull T rowContext,
+                                     final @NonNull LayoutInflater inflater,
+                                     final @NonNull ViewGroup parent,
                                      final int level);
     }
 }

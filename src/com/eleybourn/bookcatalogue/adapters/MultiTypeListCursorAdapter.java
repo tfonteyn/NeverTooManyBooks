@@ -53,9 +53,9 @@ public class MultiTypeListCursorAdapter extends CursorAdapter implements FastScr
 
     //FIXME: https://www.androiddesignpatterns.com/2012/07/loaders-and-loadermanager-background.html
 
-    public MultiTypeListCursorAdapter(@NonNull final Activity activity,
-                                      @NonNull final Cursor cursor,
-                                      @NonNull final MultiTypeListHandler handler) {
+    public MultiTypeListCursorAdapter(final @NonNull Activity activity,
+                                      final @NonNull Cursor cursor,
+                                      final @NonNull MultiTypeListHandler handler) {
         super(activity, cursor);
         //noinspection ConstantConditions
         mInflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -106,7 +106,7 @@ public class MultiTypeListCursorAdapter extends CursorAdapter implements FastScr
 
     @NonNull
     @Override
-    public View getView(final int position, final View convertView, @NonNull final ViewGroup parent) {
+    public View getView(final int position, final View convertView, final @NonNull ViewGroup parent) {
         Cursor cursor = this.getCursor();
         cursor.moveToPosition(position);
 

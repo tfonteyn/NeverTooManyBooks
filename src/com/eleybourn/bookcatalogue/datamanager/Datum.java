@@ -56,7 +56,7 @@ public class Datum {
      * @param key       Key of this datum
      * @param visible   True if data should be visible
      */
-    public Datum(@NonNull final String key, final boolean visible) {
+    public Datum(final @NonNull String key, final boolean visible) {
         mKey = key;
         mIsVisible = visible;
     }
@@ -68,7 +68,7 @@ public class Datum {
      *
      * @return Resulting value (null or empty becomes 0)
      */
-    public static long toLong(@Nullable final Object o) {
+    public static long toLong(final @Nullable Object o) {
         if (o == null) {
             return 0;
         }
@@ -94,7 +94,7 @@ public class Datum {
      *
      * @return Resulting value (null or empty becomes 0)
      */
-    private static double toDouble(@Nullable final Object o) {
+    private static double toDouble(final @Nullable Object o) {
         if (o == null) {
             return 0;
         }
@@ -118,7 +118,7 @@ public class Datum {
      * @return Formatted string
      */
     @NonNull
-    public static String toString(@NonNull final Bundle bundle) {
+    public static String toString(final @NonNull Bundle bundle) {
         StringBuilder sb = new StringBuilder();
         for (String k : bundle.keySet()) {
             sb.append(k).append("->");
@@ -143,7 +143,7 @@ public class Datum {
      * @return Resulting value (null becomes empty)
      */
     @NonNull
-    public static String toString(@Nullable final Object o) {
+    public static String toString(final @Nullable Object o) {
         return o == null ? "" : o.toString().trim();
     }
 
@@ -155,12 +155,12 @@ public class Datum {
      *
      * @return Boolean value
      */
-    public static boolean toBoolean(@Nullable final String s, final boolean emptyIsFalse) {
+    public static boolean toBoolean(final @Nullable String s, final boolean emptyIsFalse) {
         if (s == null || s.trim().isEmpty()) {
             if (emptyIsFalse) {
                 return false;
             } else {
-                throw new RTE.IllegalTypeException("Not a valid boolean value");
+                throw new RTE.IllegalTypeException("Not a valid boolean value, s=`" + s + "`");
             }
         } else {
             switch (s.trim().toLowerCase()) {
@@ -180,7 +180,7 @@ public class Datum {
                     try {
                         return Integer.parseInt(s) != 0;
                     } catch (NumberFormatException e) {
-                        throw new RTE.IllegalTypeException("Not a valid boolean value");
+                        throw new RTE.IllegalTypeException("Not a valid boolean value, s=`" + s + "`");
                     }
             }
         }
@@ -193,7 +193,7 @@ public class Datum {
      *
      * @return Resulting value
      */
-    public static boolean toBoolean(@NonNull final Object o) {
+    public static boolean toBoolean(final @NonNull Object o) {
         if (o instanceof Boolean) {
             return (Boolean) o;
         }
@@ -226,7 +226,7 @@ public class Datum {
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    public Datum addValidator(@NonNull final DataValidator validator) {
+    public Datum addValidator(final @NonNull DataValidator validator) {
         if (mValidator != null && validator != mValidator) {
             throw new IllegalStateException("Datum '" + mKey + "' already has a validator");
         }
@@ -249,7 +249,7 @@ public class Datum {
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    public Datum addAccessor(@NonNull final DataAccessor accessor) {
+    public Datum addAccessor(final @NonNull DataAccessor accessor) {
         if (mAccessor != null && accessor != mAccessor) {
             throw new IllegalStateException("Datum '" + mKey + "' already has an Accessor");
         }
@@ -266,7 +266,7 @@ public class Datum {
      * @return The object data
      */
     @Nullable
-    public Object get(@NonNull final DataManager data, @NonNull final Bundle bundle) {
+    public Object get(final @NonNull DataManager data, final @NonNull Bundle bundle) {
         if (mAccessor == null) {
             return bundle.get(mKey);
         } else {
@@ -282,7 +282,7 @@ public class Datum {
      *
      * @return Value of the data
      */
-    public boolean getBoolean(@NonNull final DataManager data, @NonNull final Bundle bundle) {
+    public boolean getBoolean(final @NonNull DataManager data, final @NonNull Bundle bundle) {
         Object o;
         if (mAccessor == null) {
             o = bundle.getBoolean(mKey);
@@ -302,7 +302,7 @@ public class Datum {
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    public Datum putBoolean(@NonNull final DataManager data, @NonNull final Bundle bundle, final boolean value) {
+    public Datum putBoolean(final @NonNull DataManager data, final @NonNull Bundle bundle, final boolean value) {
         if (mAccessor == null) {
             bundle.putBoolean(mKey, value);
         } else {
@@ -319,7 +319,7 @@ public class Datum {
      *
      * @return Value of the data
      */
-    public int getInt(@NonNull final DataManager data, @NonNull final Bundle bundle) {
+    public int getInt(final @NonNull DataManager data, final @NonNull Bundle bundle) {
         Object o;
         if (mAccessor == null) {
             o = bundle.get(mKey);
@@ -339,7 +339,7 @@ public class Datum {
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    public Datum putInt(@NonNull final DataManager data, @NonNull final Bundle bundle, final int value) {
+    public Datum putInt(final @NonNull DataManager data, final @NonNull Bundle bundle, final int value) {
         if (mAccessor == null) {
             bundle.putInt(mKey, value);
         } else {
@@ -356,7 +356,7 @@ public class Datum {
      *
      * @return Value of the data
      */
-    public long getLong(@NonNull final DataManager data, @NonNull final Bundle bundle) {
+    public long getLong(final @NonNull DataManager data, final @NonNull Bundle bundle) {
         Object o;
         if (mAccessor == null) {
             o = bundle.get(mKey);
@@ -376,7 +376,7 @@ public class Datum {
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    public Datum putLong(@NonNull final DataManager data, @NonNull final Bundle bundle, final long value) {
+    public Datum putLong(final @NonNull DataManager data, final @NonNull Bundle bundle, final long value) {
         if (mAccessor == null) {
             bundle.putLong(mKey, value);
         } else {
@@ -393,7 +393,7 @@ public class Datum {
      *
      * @return Value of the data
      */
-    double getDouble(@NonNull final DataManager data, @NonNull final Bundle bundle) {
+    double getDouble(final @NonNull DataManager data, final @NonNull Bundle bundle) {
         Object o;
         if (mAccessor == null) {
             o = bundle.get(mKey);
@@ -413,7 +413,7 @@ public class Datum {
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    Datum putDouble(@NonNull final DataManager data, @NonNull final Bundle bundle, final double value) {
+    Datum putDouble(final @NonNull DataManager data, final @NonNull Bundle bundle, final double value) {
         if (mAccessor == null) {
             bundle.putDouble(mKey, value);
         } else {
@@ -430,7 +430,7 @@ public class Datum {
      *
      * @return Value of the data
      */
-    float getFloat(@NonNull final DataManager data, @NonNull final Bundle bundle) {
+    float getFloat(final @NonNull DataManager data, final @NonNull Bundle bundle) {
         Object o;
         if (mAccessor == null) {
             o = bundle.get(mKey);
@@ -450,7 +450,7 @@ public class Datum {
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    Datum putFloat(@NonNull final DataManager data, @NonNull final Bundle bundle, final float value) {
+    Datum putFloat(final @NonNull DataManager data, final @NonNull Bundle bundle, final float value) {
         if (mAccessor == null) {
             bundle.putFloat(mKey, value);
         } else {
@@ -468,7 +468,7 @@ public class Datum {
      * @return Value of the data, can be empty, but never null
      */
     @NonNull
-    public String getString(@NonNull final DataManager data, @NonNull final Bundle bundle) {
+    public String getString(final @NonNull DataManager data, final @NonNull Bundle bundle) {
         Object o;
         if (mAccessor == null) {
             o = bundle.get(mKey);
@@ -490,7 +490,7 @@ public class Datum {
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    public Datum putString(@NonNull final DataManager data, @NonNull final Bundle bundle, @NonNull final String value) {
+    public Datum putString(final @NonNull DataManager data, final @NonNull Bundle bundle, final @NonNull String value) {
         if (mAccessor == null) {
             bundle.putString(mKey, value.trim());
         } else {
@@ -511,7 +511,7 @@ public class Datum {
      */
     @SuppressWarnings("unchecked")
     @Nullable
-    <T extends Serializable> T getSerializable(@SuppressWarnings("unused") @NonNull final DataManager data, @NonNull final Bundle bundle) {
+    <T extends Serializable> T getSerializable(@SuppressWarnings("unused") final @NonNull DataManager data, final @NonNull Bundle bundle) {
         if (mAccessor == null) {
             return (T) bundle.getSerializable(mKey);
         } else {
@@ -531,7 +531,7 @@ public class Datum {
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    Datum putSerializable(@NonNull final Bundle bundle, @NonNull final Serializable value) {
+    Datum putSerializable(final @NonNull Bundle bundle, final @NonNull Serializable value) {
         if (mAccessor == null) {
             bundle.putSerializable(mKey, value);
         } else {
@@ -552,7 +552,7 @@ public class Datum {
      */
     @SuppressWarnings("unused")
     @Nullable
-    ArrayList<String> getStringArrayList(@SuppressWarnings("unused") @NonNull final DataManager data, @NonNull final Bundle bundle) {
+    ArrayList<String> getStringArrayList(@SuppressWarnings("unused") final @NonNull DataManager data, final @NonNull Bundle bundle) {
         if (mAccessor == null) {
             return bundle.getStringArrayList(mKey);
         } else {
@@ -572,7 +572,7 @@ public class Datum {
      */
     @SuppressWarnings("unused")
     @NonNull
-    Datum putStringArrayList(@NonNull final Bundle bundle, @NonNull final ArrayList<String> value) {
+    Datum putStringArrayList(final @NonNull Bundle bundle, final @NonNull ArrayList<String> value) {
         if (mAccessor == null) {
             bundle.putStringArrayList(mKey, value);
         } else {

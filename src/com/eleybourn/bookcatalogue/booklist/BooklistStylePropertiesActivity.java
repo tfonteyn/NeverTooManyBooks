@@ -58,7 +58,7 @@ public class BooklistStylePropertiesActivity extends BaseActivity {
 
     private static final String TAG = "BooklistStyleProperties";
     /** Parameter used to pass data to this activity */
-    public static final String REQUEST_KEY_STYLE = TAG + ".Style";
+    public static final String REQUEST_BKEY_STYLE = TAG + ".Style";
     /** Parameter used to pass data to this activity */
     private static final String BKEY_SAVE_TO_DATABASE = TAG + ".SaveToDb";
 
@@ -80,7 +80,7 @@ public class BooklistStylePropertiesActivity extends BaseActivity {
 
     @Override
     @CallSuper
-    protected void onCreate(@Nullable final Bundle savedInstanceState) {
+    protected void onCreate(final @Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         findViewById(R.id.confirm).setOnClickListener(new OnClickListener() {
@@ -96,9 +96,9 @@ public class BooklistStylePropertiesActivity extends BaseActivity {
                 if (mSaveToDb) {
                     getDb().insertOrUpdateBooklistStyle(mStyle);
                 }
-                Intent intent = new Intent();
-                intent.putExtra(REQUEST_KEY_STYLE, mStyle);
-                setResult(Activity.RESULT_OK, intent);  /* fadd7b9a-7eaf-4af9-90ce-6ffb7b93afe6 */
+                Intent data = new Intent();
+                data.putExtra(REQUEST_BKEY_STYLE, mStyle);
+                setResult(Activity.RESULT_OK, data);  /* fadd7b9a-7eaf-4af9-90ce-6ffb7b93afe6 */
                 finish();
             }
         });
@@ -112,7 +112,7 @@ public class BooklistStylePropertiesActivity extends BaseActivity {
 
         // Get the intent and get the style and other details
         Intent intent = this.getIntent();
-        mStyle = (BooklistStyle) intent.getSerializableExtra(REQUEST_KEY_STYLE);
+        mStyle = (BooklistStyle) intent.getSerializableExtra(REQUEST_BKEY_STYLE);
 
         if (intent.hasExtra(BKEY_SAVE_TO_DATABASE)) {
             mSaveToDb = intent.getBooleanExtra(BKEY_SAVE_TO_DATABASE, true);
@@ -156,14 +156,14 @@ public class BooklistStylePropertiesActivity extends BaseActivity {
      */
     private void startGroupsActivity() {
         Intent intent = new Intent(this, BooklistStyleGroupsActivity.class);
-        intent.putExtra(BooklistStyleGroupsActivity.REQUEST_KEY_STYLE, mStyle);
-        intent.putExtra(BooklistStyleGroupsActivity.REQUEST_KEY_SAVE_TO_DATABASE, false);
+        intent.putExtra(BooklistStyleGroupsActivity.REQUEST_BKEY_STYLE, mStyle);
+        intent.putExtra(BooklistStyleGroupsActivity.REQUEST_BKEY_SAVE_TO_DATABASE, false);
         startActivityForResult(intent, BooklistStyleGroupsActivity.REQUEST_CODE); /* 06ed8d0e-7120-47aa-b47e-c0cd46361dcb */
     }
 
     @Override
     @CallSuper
-    protected void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent data) {
+    protected void onActivityResult(final int requestCode, final int resultCode, final @Nullable Intent data) {
         if (BuildConfig.DEBUG) {
             Logger.info(this,"onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
         }
@@ -171,11 +171,11 @@ public class BooklistStylePropertiesActivity extends BaseActivity {
             case BooklistStyleGroupsActivity.REQUEST_CODE: /* 06ed8d0e-7120-47aa-b47e-c0cd46361dcb */
                 if (resultCode == Activity.RESULT_OK) {
                     // having a result is optional
-                    if (data != null && data.hasExtra(BooklistStyleGroupsActivity.REQUEST_KEY_STYLE)) {
+                    if (data != null && data.hasExtra(BooklistStyleGroupsActivity.REQUEST_BKEY_STYLE)) {
                         // When groups have been edited, copy them to this style.
                         BooklistStyle editedStyle = null;
                         try {
-                            editedStyle = (BooklistStyle) data.getSerializableExtra(BooklistStyleGroupsActivity.REQUEST_KEY_STYLE);
+                            editedStyle = (BooklistStyle) data.getSerializableExtra(BooklistStyleGroupsActivity.REQUEST_BKEY_STYLE);
                         } catch (Exception e) {
                             Logger.error(e);
                         }
@@ -243,7 +243,7 @@ public class BooklistStylePropertiesActivity extends BaseActivity {
          */
         @Override
         @NonNull
-        public GroupsProperty set(@Nullable final String value) {
+        public GroupsProperty set(final @Nullable String value) {
             throw new UnsupportedOperationException("Attempt to set read-only property string");
         }
 
@@ -252,7 +252,7 @@ public class BooklistStylePropertiesActivity extends BaseActivity {
          */
         @NonNull
         @Override
-        public View getView(@NonNull final LayoutInflater inflater) {
+        public View getView(final @NonNull LayoutInflater inflater) {
             View v = inflater.inflate(R.layout.property_value_string_button, null);
             ViewTagger.setTag(v, R.id.TAG_PROPERTY, this); // value: GroupsProperty
 

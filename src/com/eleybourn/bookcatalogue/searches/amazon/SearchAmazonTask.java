@@ -15,17 +15,14 @@ import java.net.UnknownHostException;
 
 public class SearchAmazonTask extends SearchTask {
 
-    public SearchAmazonTask(@NonNull final TaskManager manager,
-                            @NonNull final String author,
-                            @NonNull final String title,
-                            @NonNull final String isbn,
-                            final boolean fetchThumbnail) {
-        super("SearchAmazonTask isbn=" + isbn, manager, author, title, isbn, fetchThumbnail);
+    public SearchAmazonTask(final @NonNull String name,
+                            final @NonNull TaskManager manager) {
+        super(name, manager);
     }
 
     @Override
     protected void runTask() {
-        @StringRes final int R_ID_SEARCHING = R.string.searching_amazon_books;
+        final @StringRes int R_ID_SEARCHING = R.string.searching_amazon_books;
         doProgress(getString(R_ID_SEARCHING), 0);
         try {
             AmazonManager.search(mIsbn, mAuthor, mTitle, mBookData, mFetchThumbnail);

@@ -29,6 +29,7 @@ import android.database.sqlite.SQLiteQuery;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.eleybourn.bookcatalogue.database.cursors.BindableItemCursor;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.RTE;
 import com.eleybourn.bookcatalogue.utils.SerializationUtils;
@@ -100,9 +101,9 @@ public class TasksCursor extends SQLiteCursor implements BindableItemCursor {
     /**
      * Constructor, based on SQLiteCursor constructor
      */
-    private TasksCursor(@NonNull final SQLiteCursorDriver driver,
-                        @NonNull final String editTable,
-                        @NonNull final SQLiteQuery query) {
+    private TasksCursor(final @NonNull SQLiteCursorDriver driver,
+                        final @NonNull String editTable,
+                        final @NonNull SQLiteQuery query) {
         super(driver, editTable, query);
     }
 
@@ -112,9 +113,9 @@ public class TasksCursor extends SQLiteCursor implements BindableItemCursor {
      * @return A new TaskExceptionsCursor
      */
     @NonNull
-    static TasksCursor fetchTasks(@NonNull final SQLiteDatabase db,
+    static TasksCursor fetchTasks(final @NonNull SQLiteDatabase db,
                                   final long category,
-                                  @NonNull final TaskCursorSubtype type) {
+                                  final @NonNull TaskCursorSubtype type) {
         String query;
         switch (type) {
             case all:
@@ -138,7 +139,7 @@ public class TasksCursor extends SQLiteCursor implements BindableItemCursor {
     }
 
     @NonNull
-    static TasksCursor fetchTasks(@NonNull final SQLiteDatabase db, @NonNull final TaskCursorSubtype type) {
+    static TasksCursor fetchTasks(final @NonNull SQLiteDatabase db, final @NonNull TaskCursorSubtype type) {
         String query;
         switch (type) {
             case all:

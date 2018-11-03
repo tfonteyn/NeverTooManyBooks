@@ -38,7 +38,7 @@ public class Publisher implements Serializable {
     private static final long serialVersionUID = 1L;
     public String name;
 
-    public Publisher(@NonNull final String name) {
+    public Publisher(final @NonNull String name) {
         this.name = name.trim();
     }
 
@@ -60,7 +60,7 @@ public class Publisher implements Serializable {
      *
      * @param source publisher to copy
      */
-    public void copyFrom(@NonNull final Publisher source) {
+    public void copyFrom(final @NonNull Publisher source) {
         name = source.name;
     }
 
@@ -73,7 +73,7 @@ public class Publisher implements Serializable {
      * Compare is CASE SENSITIVE ! This allows correcting case mistakes.
      */
     @Override
-    public boolean equals(@Nullable final Object o) {
+    public boolean equals(final @Nullable Object o) {
         if (this == o) {
             return true;
         }

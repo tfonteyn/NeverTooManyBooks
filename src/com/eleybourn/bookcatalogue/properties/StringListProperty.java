@@ -34,10 +34,10 @@ import com.eleybourn.bookcatalogue.utils.RTE;
  */
 public class StringListProperty extends ListProperty<String> implements Property.StringValue {
 
-    public StringListProperty(@NonNull final ItemEntries<String> list,
-                              @NonNull final String uniqueId,
-                              @NonNull final PropertyGroup group,
-                              @StringRes final int nameResourceId) {
+    public StringListProperty(final @NonNull ItemEntries<String> list,
+                              final @NonNull String uniqueId,
+                              final @NonNull PropertyGroup group,
+                              final @StringRes int nameResourceId) {
         super(list, uniqueId, group, nameResourceId);
     }
 
@@ -48,14 +48,14 @@ public class StringListProperty extends ListProperty<String> implements Property
 
     @NonNull
     @Override
-    protected StringListProperty setGlobalDefault(@Nullable final String value) {
+    protected StringListProperty setGlobalDefault(final @Nullable String value) {
         BookCatalogueApp.Prefs.putString(getPreferenceKey(), value);
         return this;
     }
 
     @NonNull
     @Override
-    public StringListProperty set(@NonNull final Property p) {
+    public StringListProperty set(final @NonNull Property p) {
         if (!(p instanceof StringValue)) {
             throw new RTE.IllegalTypeException(p.getClass().getCanonicalName());
         }

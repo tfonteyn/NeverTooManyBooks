@@ -28,7 +28,7 @@ class CropRotateBitmap {
     CropRotateBitmap() {
     }
 
-    CropRotateBitmap(@Nullable final Bitmap bitmap) {
+    CropRotateBitmap(final @Nullable Bitmap bitmap) {
         mBitmap = bitmap;
         mRotation = 0;
     }
@@ -50,7 +50,7 @@ class CropRotateBitmap {
         return mBitmap;
     }
 
-    public void setBitmap(@Nullable final Bitmap bitmap) {
+    public void setBitmap(final @Nullable Bitmap bitmap) {
         mBitmap = bitmap;
     }
 

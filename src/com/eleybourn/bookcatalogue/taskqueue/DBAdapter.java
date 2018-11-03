@@ -89,7 +89,7 @@ class DBAdapter {
     /**
      * Constructor
      */
-    DBAdapter(@NonNull final Context context) {
+    DBAdapter(final @NonNull Context context) {
         mApplicationContext = context.getApplicationContext();
         mDBHelper = new DBHelper(mApplicationContext);
     }
@@ -111,7 +111,7 @@ class DBAdapter {
      *
      * @return The ID of the queue, 0 if no match
      */
-    private long getQueueId(@NonNull final String name) {
+    private long getQueueId(final @NonNull String name) {
         final String sql = "SELECT " + DOM_ID + " FROM " + TBL_QUEUE + " WHERE " + DOM_NAME + "=?";
 
         try (Cursor cursor =  getDb().rawQuery(sql, new String[]{name})) {
@@ -131,7 +131,7 @@ class DBAdapter {
      *
      * @param manager Owner of the created Queue objects
      */
-    void getAllQueues(@NonNull final QueueManager manager) {
+    void getAllQueues(final @NonNull QueueManager manager) {
         String sql = "SELECT " + DOM_NAME + " FROM " + TBL_QUEUE + " ORDER BY " + DOM_NAME;
 
         try (Cursor cursor = getDb().rawQuery(sql, null)) {
@@ -154,7 +154,7 @@ class DBAdapter {
      * @return ScheduledTask object containing details of task
      */
     @Nullable
-    ScheduledTask getNextTask(@NonNull final String queueName) {
+    ScheduledTask getNextTask(final @NonNull String queueName) {
         Date currentTime = new Date();
         String currTimeStr = DateUtils.toSqlDateTime(currentTime);
 
@@ -218,7 +218,7 @@ class DBAdapter {
      *
      * @param queueName Name of the queue
      */
-    void createQueue(@NonNull final String queueName) {
+    void createQueue(final @NonNull String queueName) {
         long id = getQueueId(queueName);
         if (id == 0) {
             ContentValues cv = new ContentValues();
@@ -235,7 +235,7 @@ class DBAdapter {
      *
      * @param task The task to be saved. Must exist in database.
      */
-    void updateTask(@NonNull final Task task) {
+    void updateTask(final @NonNull Task task) {
         ContentValues cv = new ContentValues();
         cv.put(DOM_TASK, SerializationUtils.serializeObject(task));
         cv.put(DOM_CATEGORY, task.getCategory());
@@ -248,7 +248,7 @@ class DBAdapter {
      * @param task      Task instance to save and run
      * @param queueName Queue name
      */
-    void enqueueTask(@NonNull final Task task, @NonNull final String queueName) {
+    void enqueueTask(final @NonNull Task task, final @NonNull String queueName) {
         long queueId = getQueueId(queueName);
         if (queueId == 0) {
             throw new IllegalArgumentException("Queue '" + queueName + "' does not exist");
@@ -270,7 +270,7 @@ class DBAdapter {
      *
      * @param task Task object
      */
-    void setTaskOk(@NonNull final Task task) {
+    void setTaskOk(final @NonNull Task task) {
         SQLiteDatabase db = getDb();
 
         // See if the task has any Events recorded
@@ -354,7 +354,7 @@ class DBAdapter {
      *
      * @param task task object to requeue.
      */
-    void setTaskRequeue(@NonNull final Task task) {
+    void setTaskRequeue(final @NonNull Task task) {
         if (!task.canRetry()) {
             // We have waited a lot already; just give up.
             setTaskFail(task, "Retry limit exceeded");
@@ -380,7 +380,7 @@ class DBAdapter {
      * @param task    Task that failed.
      * @param message Final message to store. Task can also contain an Exception object.
      */
-    void setTaskFail(@NonNull final Task task, @NonNull final String message) {
+    void setTaskFail(final @NonNull Task task, final @NonNull String message) {
         task.setState(TaskState.failed);
 
         ContentValues cv = new ContentValues();
@@ -401,7 +401,7 @@ class DBAdapter {
      *
      * NOTE: this code must not assume the task exists. IT MAY HAVE BEEN DELETED BY THE QUEUE MANAGER.
      */
-    void storeTaskEvent(@NonNull final Task task, @NonNull final Event event) {
+    void storeTaskEvent(final @NonNull Task task, final @NonNull Event event) {
         SQLiteDatabase db = getDb();
 
         // Setup parameters for insert
@@ -465,7 +465,7 @@ class DBAdapter {
      * @return Cursor of exceptions
      */
     @NonNull
-    TasksCursor getTasks(@NonNull final TaskCursorSubtype type) {
+    TasksCursor getTasks(final @NonNull TaskCursorSubtype type) {
         return TasksCursor.fetchTasks(getDb(), type);
     }
 
@@ -478,7 +478,7 @@ class DBAdapter {
      * @return Cursor of exceptions
      */
     @NonNull
-    TasksCursor getTasks(final long category, @SuppressWarnings("SameParameterValue") @NonNull final TaskCursorSubtype type) {
+    TasksCursor getTasks(final long category, @SuppressWarnings("SameParameterValue") final @NonNull TaskCursorSubtype type) {
         return TasksCursor.fetchTasks(getDb(), category, type);
     }
 
@@ -548,7 +548,7 @@ class DBAdapter {
          * @param timeUntilRunnable Milliseconds until task should be run
          * @param cursor            Cursor positioned at task details
          */
-        ScheduledTask(final long timeUntilRunnable, @NonNull final Cursor cursor) {
+        ScheduledTask(final long timeUntilRunnable, final @NonNull Cursor cursor) {
             this.timeUntilRunnable = timeUntilRunnable;
             mRetries = cursor.getInt(cursor.getColumnIndex(DOM_RETRY_COUNT));
             this.id = cursor.getInt(cursor.getColumnIndex(DOM_ID));

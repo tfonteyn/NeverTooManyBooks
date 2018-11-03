@@ -50,14 +50,14 @@ public interface ReaderEntity {
     InputStream getStream();
 
     /** Save the data to a directory, using the original file name */
-    void saveToDirectory(@NonNull final File dir) throws IOException;
+    void saveToDirectory(final @NonNull File dir) throws IOException;
 
     /** Read the data into a bundle */
     @NonNull
     Bundle getBundle() throws IOException;
 
     /** Read the data into preferences */
-    void getPreferences(@NonNull final SharedPreferences prefs) throws IOException;
+    void getPreferences(final @NonNull SharedPreferences prefs) throws IOException;
 
     /** Read the data as a Serializable object */
     @NonNull

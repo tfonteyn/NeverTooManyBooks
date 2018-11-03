@@ -46,17 +46,14 @@ import oauth.signpost.exception.OAuthMessageSignerException;
  */
 public class SearchGoodreadsTask extends SearchTask {
 
-    public SearchGoodreadsTask(@NonNull final TaskManager manager,
-                               @NonNull final String author,
-                               @NonNull final String title,
-                               @NonNull final String isbn,
-                               final boolean fetchThumbnail) {
-        super("SearchGoodreadsTask isbn=" + isbn, manager, author, title, isbn, fetchThumbnail);
+    public SearchGoodreadsTask(final @NonNull String name,
+                               final @NonNull TaskManager manager) {
+        super(name, manager);
     }
 
     @Override
     protected void runTask() {
-        @StringRes final int R_ID_SEARCHING = R.string.searching_goodreads;
+        final @StringRes int R_ID_SEARCHING = R.string.searching_goodreads;
 
         doProgress(getString(R_ID_SEARCHING), 0);
 

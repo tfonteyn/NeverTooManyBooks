@@ -40,10 +40,10 @@ public interface DataValidator {
      * @param datum           The Datum to validate
      * @param crossValidating Options indicating if this is the cross-validation pass.
      *
-     * @throws ValidatorException For any validation onCancel.
+     * @throws ValidatorException For any validation onPartialDatePickerCancel.
      */
-    void validate(@NonNull final DataManager data,
-                  @NonNull final Datum datum,
+    void validate(final @NonNull DataManager data,
+                  final @NonNull Datum datum,
                   final boolean crossValidating)
             throws ValidatorException;
 }

@@ -12,6 +12,16 @@
         android:orientation="vertical"
         android:padding="@dimen/padding_border">
 
+        <TextView
+            android:id="@+id/loaned_to"
+            style="@style/bookDetailText"
+            android:background="?android:attr/colorForeground"
+            android:gravity="center"
+            android:textAppearance="?android:attr/textAppearanceLargeInverse"
+            android:visibility="gone"
+            tools:text="On Loan to Alvin"
+            tools:visibility="visible" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -154,7 +164,7 @@
             android:textIsSelectable="true"
             tools:text="Series name (1)\nSeries name (2)" />
 
-        <!-- Table Of Content (TOC, Anthology) -->
+        <!-- Table Of Content -->
         <LinearLayout
             android:id="@+id/row_toc"
             android:layout_width="match_parent"
@@ -275,20 +285,20 @@
             </TableRow>
             <!-- List price -->
             <TableRow
-                android:id="@+id/row_list_price"
+                android:id="@+id/row_price_listed"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
                 <TextView
                     style="@style/bookDetailLabel"
-                    android:text="@string/list_price" />
+                    android:text="@string/price_listed" />
 
                 <TextView
-                    android:id="@+id/list_price"
+                    android:id="@+id/price_listed"
                     style="@style/bookDetailText"
                     android:layout_weight="1"
                     android:textIsSelectable="true"
-                    tools:text="45" />
+                    tools:text="$45" />
             </TableRow>
         </TableLayout>
 
@@ -335,6 +345,7 @@
                     android:id="@+id/edition"
                     style="@style/bookDetailText"
                     android:layout_weight="1"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
                     tools:text="special one with a very special cover" />
 
             </TableRow>
@@ -355,6 +366,42 @@
                     style="@style/bookDetailText"
                     tools:text="Yes" />
 
+            </TableRow>
+
+            <!-- Date added == Date purchased -->
+            <TableRow
+                android:id="@+id/row_date_purchased"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    style="@style/bookDetailLabel"
+                    android:text="@string/date_purchased" />
+
+                <TextView
+                    android:id="@+id/date_purchased"
+                    style="@style/bookDetailText"
+                    android:layout_weight="1"
+                    android:textIsSelectable="true"
+                    tools:text="Nov 10, 2011" />
+            </TableRow>
+
+            <!-- Paid price -->
+            <TableRow
+                android:id="@+id/row_price_paid"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    style="@style/bookDetailLabel"
+                    android:text="@string/price_paid" />
+
+                <TextView
+                    android:id="@+id/price_paid"
+                    style="@style/bookDetailText"
+                    android:layout_weight="1"
+                    android:textIsSelectable="true"
+                    tools:text="$45" />
             </TableRow>
 
             <!-- Start and end of reading -->
@@ -411,12 +458,6 @@
                     tools:text="Library" />
             </TableRow>
         </TableLayout>
-
-        <TextView
-            android:id="@+id/loaned_to"
-            style="@style/bookDetailText"
-            android:hint="@string/not_set"
-            android:visibility="gone" />
 
         <!-- Description -->
         <TextView

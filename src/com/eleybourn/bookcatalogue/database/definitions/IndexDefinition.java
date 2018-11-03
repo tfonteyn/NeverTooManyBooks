@@ -30,10 +30,10 @@ public class IndexDefinition {
      * @param table   Table to which index applies
      * @param domains Domains in index
      */
-    IndexDefinition(@NonNull final String name,
+    IndexDefinition(final @NonNull String name,
                     final boolean unique,
-                    @NonNull final TableDefinition table,
-                    @NonNull final DomainDefinition... domains) {
+                    final @NonNull TableDefinition table,
+                    final @NonNull DomainDefinition... domains) {
         this.mName = name;
         this.mIsUnique = unique;
         this.mTable = table;
@@ -63,7 +63,7 @@ public class IndexDefinition {
      * @return IndexDefinition (for chaining)
      */
     @NonNull
-    public IndexDefinition drop(@NonNull final DbSync.SynchronizedDb db) {
+    public IndexDefinition drop(final @NonNull DbSync.SynchronizedDb db) {
         db.execSQL("DROP INDEX If Exists " + mName);
         return this;
     }
@@ -76,7 +76,7 @@ public class IndexDefinition {
      * @return IndexDefinition (for chaining)
      */
     @NonNull
-    public IndexDefinition create(@NonNull final DbSync.SynchronizedDb db) {
+    public IndexDefinition create(final @NonNull DbSync.SynchronizedDb db) {
         db.execSQL(this.getSql());
         return this;
     }

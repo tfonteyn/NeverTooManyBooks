@@ -30,19 +30,19 @@ abstract class CropMonitoredActivity extends BaseActivity {
 
     private final List<LifeCycleListener> mListeners = new ArrayList<>();
 
-    public void addLifeCycleListener(@NonNull final LifeCycleListener listener) {
+    public void addLifeCycleListener(final @NonNull LifeCycleListener listener) {
         if (mListeners.contains(listener))
             return;
         mListeners.add(listener);
     }
 
-    public void removeLifeCycleListener(@NonNull final LifeCycleListener listener) {
+    public void removeLifeCycleListener(final @NonNull LifeCycleListener listener) {
         mListeners.remove(listener);
     }
 
     @Override
     @CallSuper
-    protected void onCreate(@Nullable final Bundle savedInstanceState) {
+    protected void onCreate(final @Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         for (LifeCycleListener listener : mListeners) {
             listener.onActivityCreated(this);
@@ -78,26 +78,26 @@ abstract class CropMonitoredActivity extends BaseActivity {
 
     @SuppressWarnings({"EmptyMethod", "unused"})
     interface LifeCycleListener {
-        void onActivityCreated(@NonNull final CropMonitoredActivity activity);
-        void onActivityDestroyed(@NonNull final CropMonitoredActivity activity);
-        void onActivityPaused(@NonNull final CropMonitoredActivity activity);
-        void onActivityResumed(@NonNull final CropMonitoredActivity activity);
-        void onActivityStarted(@NonNull final CropMonitoredActivity activity);
-        void onActivityStopped(@NonNull final CropMonitoredActivity activity);
+        void onActivityCreated(final @NonNull CropMonitoredActivity activity);
+        void onActivityDestroyed(final @NonNull CropMonitoredActivity activity);
+        void onActivityPaused(final @NonNull CropMonitoredActivity activity);
+        void onActivityResumed(final @NonNull CropMonitoredActivity activity);
+        void onActivityStarted(final @NonNull CropMonitoredActivity activity);
+        void onActivityStopped(final @NonNull CropMonitoredActivity activity);
     }
 
     public static class LifeCycleAdapter implements LifeCycleListener {
-        public void onActivityCreated(@NonNull final CropMonitoredActivity activity) {
+        public void onActivityCreated(final @NonNull CropMonitoredActivity activity) {
         }
-        public void onActivityDestroyed(@NonNull final CropMonitoredActivity activity) {
+        public void onActivityDestroyed(final @NonNull CropMonitoredActivity activity) {
         }
-        public void onActivityPaused(@NonNull final CropMonitoredActivity activity) {
+        public void onActivityPaused(final @NonNull CropMonitoredActivity activity) {
         }
-        public void onActivityResumed(@NonNull final CropMonitoredActivity activity) {
+        public void onActivityResumed(final @NonNull CropMonitoredActivity activity) {
         }
-        public void onActivityStarted(@NonNull final CropMonitoredActivity activity) {
+        public void onActivityStarted(final @NonNull CropMonitoredActivity activity) {
         }
-        public void onActivityStopped(@NonNull final CropMonitoredActivity activity) {
+        public void onActivityStopped(final @NonNull CropMonitoredActivity activity) {
         }
     }
 }

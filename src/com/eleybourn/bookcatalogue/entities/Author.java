@@ -46,7 +46,7 @@ public class Author implements Serializable, Utils.ItemWithIdFixup {
     /**
      * Constructor that will attempt to parse a single string into an author name.
      */
-    public Author(@NonNull final String name) {
+    public Author(final @NonNull String name) {
         fromString(name);
     }
 
@@ -56,7 +56,7 @@ public class Author implements Serializable, Utils.ItemWithIdFixup {
      * @param family Family name
      * @param given  Given names
      */
-    public Author(@NonNull final String family, @NonNull final String given) {
+    public Author(final @NonNull String family, final @NonNull String given) {
         this(0L, family, given);
     }
 
@@ -67,7 +67,7 @@ public class Author implements Serializable, Utils.ItemWithIdFixup {
      * @param family Family name
      * @param given  Given names
      */
-    public Author(long id, @NonNull final String family, @NonNull final String given) {
+    public Author(long id, final @NonNull String family, final @NonNull String given) {
         this.id = id;
         familyName = family.trim();
         givenNames = given.trim();
@@ -81,7 +81,7 @@ public class Author implements Serializable, Utils.ItemWithIdFixup {
      *
      * @return a String array containing the family and given names. e.g. ['Asimov', 'Isaac']
      */
-    public static Author toAuthor(@NonNull final String name) {
+    public static Author toAuthor(final @NonNull String name) {
         int commaIndex = name.indexOf(",");
         if (commaIndex > 0) {
             // we have a comma
@@ -158,7 +158,7 @@ public class Author implements Serializable, Utils.ItemWithIdFixup {
         return ArrayUtils.encodeListItem(SEPARATOR, familyName) + SEPARATOR + " " + ArrayUtils.encodeListItem(SEPARATOR, givenNames);
     }
 
-    private void fromString(@NonNull final String name) {
+    private void fromString(final @NonNull String name) {
         ArrayList<String> list = ArrayUtils.decodeList(SEPARATOR, name);
         if (list.size() > 0) {
             if (list.size() < 2) {
@@ -178,14 +178,14 @@ public class Author implements Serializable, Utils.ItemWithIdFixup {
      *
      * @param source Author to copy
      */
-    public void copyFrom(@NonNull final Author source) {
+    public void copyFrom(final @NonNull Author source) {
         familyName = source.familyName;
         givenNames = source.givenNames;
         id = source.id;
     }
 
     @Override
-    public long fixupId(@NonNull final CatalogueDBAdapter db) {
+    public long fixupId(final @NonNull CatalogueDBAdapter db) {
         this.id = db.getAuthorIdByName(this.familyName, this.givenNames);
         return this.id;
     }
@@ -207,7 +207,7 @@ public class Author implements Serializable, Utils.ItemWithIdFixup {
      * Compare is CASE SENSITIVE ! This allows correcting case mistakes.
      */
     @Override
-    public boolean equals(@Nullable final Object o) {
+    public boolean equals(final @Nullable Object o) {
         if (this == o) {
             return true;
         }

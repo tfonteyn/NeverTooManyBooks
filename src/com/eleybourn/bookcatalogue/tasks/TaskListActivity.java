@@ -39,7 +39,7 @@ import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.ContextDialogItem;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsExportFailuresActivity;
-import com.eleybourn.bookcatalogue.taskqueue.BindableItemCursor;
+import com.eleybourn.bookcatalogue.database.cursors.BindableItemCursor;
 import com.eleybourn.bookcatalogue.taskqueue.Listeners.OnTaskChangeListener;
 import com.eleybourn.bookcatalogue.taskqueue.Listeners.TaskActions;
 import com.eleybourn.bookcatalogue.taskqueue.QueueManager;
@@ -63,7 +63,7 @@ public class TaskListActivity extends BindableItemListActivity {
      */
     private final OnTaskChangeListener m_OnTaskChangeListener = new OnTaskChangeListener() {
         @Override
-        public void onTaskChange(@Nullable final Task task, @NonNull final TaskActions action) {
+        public void onTaskChange(final @Nullable Task task, final @NonNull TaskActions action) {
             TaskListActivity.this.refreshData();
         }
     };
@@ -78,7 +78,7 @@ public class TaskListActivity extends BindableItemListActivity {
 
     @Override
     @CallSuper
-    protected void onCreate(@Nullable final Bundle savedInstanceState) {
+    protected void onCreate(final @Nullable Bundle savedInstanceState) {
         try {
             super.onCreate(savedInstanceState);
             this.setTitle(R.string.background_tasks);
@@ -120,7 +120,7 @@ public class TaskListActivity extends BindableItemListActivity {
      * Build a context menu dialogue when an item is clicked.
      */
     @Override
-    public void onListItemClick(@NonNull AdapterView<?> parent, @NonNull final View v, final int position, final long id) {
+    public void onListItemClick(@NonNull AdapterView<?> parent, final @NonNull View v, final int position, final long id) {
         Task task = ViewTagger.getTagOrThrow(v, R.id.TAG_TASK);
         List<ContextDialogItem> items = new ArrayList<>();
 
@@ -140,7 +140,7 @@ public class TaskListActivity extends BindableItemListActivity {
 
     private void doShowTaskEvents(final long taskId) {
         Intent intent = new Intent(this, GoodreadsExportFailuresActivity.class);
-        intent.putExtra(GoodreadsExportFailuresActivity.REQUEST_KEY_TASK_ID, taskId);
+        intent.putExtra(GoodreadsExportFailuresActivity.REQUEST_BKEY_TASK_ID, taskId);
         startActivity(intent);
     }
 
@@ -157,10 +157,10 @@ public class TaskListActivity extends BindableItemListActivity {
      * Pass binding off to the task object.
      */
     @Override
-    public void bindViewToItem(@NonNull final Context context,
-                               @NonNull final View view,
-                               @NonNull final BindableItemCursor cursor,
-                               @NonNull final BindableItemCursorAdapter.BindableItem bindable) {
+    public void bindViewToItem(final @NonNull Context context,
+                               final @NonNull View view,
+                               final @NonNull BindableItemCursor cursor,
+                               final @NonNull BindableItemCursorAdapter.BindableItem bindable) {
         ViewTagger.setTag(view, R.id.TAG_TASK, bindable);
         bindable.bindView(view, context, cursor, mDb);
     }
@@ -170,7 +170,7 @@ public class TaskListActivity extends BindableItemListActivity {
      */
     @NonNull
     @Override
-    protected BindableItemCursor getBindableItemCursor(@Nullable final Bundle savedInstanceState) {
+    protected BindableItemCursor getBindableItemCursor(final @Nullable Bundle savedInstanceState) {
         mCursor = QueueManager.getQueueManager().getTasks(TaskCursorSubtype.all);
         return mCursor;
     }

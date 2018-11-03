@@ -25,6 +25,7 @@ import android.database.sqlite.SQLiteCursorDriver;
 import android.database.sqlite.SQLiteQuery;
 import android.support.annotation.NonNull;
 
+import com.eleybourn.bookcatalogue.database.cursors.BindableItemCursor;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.RTE;
 import com.eleybourn.bookcatalogue.utils.SerializationUtils;
@@ -58,7 +59,7 @@ public class EventsCursor extends SQLiteCursor implements BindableItemCursor {
     /**
      * Constructor, based on SQLiteCursor constructor
      */
-    EventsCursor(@NonNull final SQLiteCursorDriver driver, @NonNull final String editTable, @NonNull final SQLiteQuery query) {
+    EventsCursor(final @NonNull SQLiteCursorDriver driver, final @NonNull String editTable, final @NonNull SQLiteQuery query) {
         super(driver, editTable, query);
     }
 

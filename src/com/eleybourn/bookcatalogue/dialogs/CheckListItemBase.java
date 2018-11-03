@@ -8,16 +8,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * The main reason that you need to extend this is because each type of encapsulated item
+ * will have its own way of storing a label (to display next to the checkbox).
+ * Using .toString is not really a nice solution, hence... extends this class
+ * and implement: String {@link CheckListItem#getLabel()}
+ *
+ * BUT.. not abstract, so the {@link #extractList(List)} method can be used
+ *
  * @param <T> type of encapsulated item
  */
-public abstract class CheckListItemBase<T> implements CheckListItem<T> {
+public class CheckListItemBase<T> implements CheckListItem<T> {
     private boolean selected;
     private T item;
 
-    protected CheckListItemBase() {
+    public CheckListItemBase() {
     }
 
-    public CheckListItemBase(@NonNull final T item, final boolean selected) {
+    public CheckListItemBase(final @NonNull T item, final boolean selected) {
         this.item = item;
         this.selected = selected;
     }
@@ -26,6 +33,12 @@ public abstract class CheckListItemBase<T> implements CheckListItem<T> {
     @Override
     public T getItem() {
         return item;
+    }
+
+    /** label to use in a {@link CheckListEditorDialog} */
+    @Override
+    public String getLabel() {
+        throw new java.lang.UnsupportedOperationException("must be overridden");
     }
 
     @Override
@@ -38,17 +51,13 @@ public abstract class CheckListItemBase<T> implements CheckListItem<T> {
         this.selected = selected;
     }
 
-    /**
-     * extract a List with the *selected* items from a List with the encapsulated items
-     */
-    @Override
     @NonNull
-    public ArrayList<T> extractList(@NonNull final List<? extends CheckListItem> list) {
-        ArrayList<T> result = new ArrayList<>();
+    public static <Z> ArrayList<Z> extractList(final @NonNull List<? extends CheckListItem> list) {
+        ArrayList<Z> result = new ArrayList<>();
         for (CheckListItem<?> entry : list) {
             if (entry.getSelected()) {
                 //noinspection unchecked
-                result.add((T) entry.getItem());
+                result.add((Z) entry.getItem());
             }
         }
         return result;

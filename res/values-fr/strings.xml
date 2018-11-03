@@ -69,7 +69,7 @@
     <string name="lbl_sourcecode">Code source :</string>
     <string name="lbl_donate">Don</string>
     <string name="lbl_about">À propos de cette application</string>
-    <string name="list_price">Liste de prix</string>
+    <string name="price_listed">Liste de prix</string>
     <string name="update_fields">Mise à jour automatique des champs</string>
     <string name="select_fields_to_update">Sélection des champs à mettre à jour</string>
     <string name="select_fields_to_update_help">Les champs sélectionnés vont être mis à jour à partir d\'Internet. Les champs non sélectionnés ne seront pas modifiés.</string>
@@ -84,13 +84,13 @@
     <string name="manage_fields_help">Les champs sélectionnés sont visibles dans les écrans d\'ajout et d\'édition des livres. Les champs non sélectionnés sont cachés.</string>
     <string name="anthology_titles">Titres de l\'anthologie</string>
     <string name="amazon_wish_list">Idées cadeaux Amazon</string>
-    <string name="same_author">Toutes les histoires de cette anthologie sont écrites par le même auteur.</string>
-    <string name="menu_delete_anthology">Supprimer ce titre de l\'anthologie</string>
+    <string name="toc_same_author">Toutes les histoires de cette anthologie sont écrites par le même auteur.</string>
+    <string name="menu_delete_toc_entry">Supprimer ce titre de l\'anthologie</string>
     <string name="is_anthology">Ce livre est-il une anthologie ?</string>
-    <string name="populate_anthology_titles">Renseigner les titres automatiquement (expérimental)</string>
-    <string name="error_anthology_automatic_population_failed">La recherche automatique des titres a échoué.</string>
+    <string name="populate_toc">Renseigner les titres automatiquement (expérimental)</string>
+    <string name="error_automatic_toc_population_failed">La recherche automatique des titres a échoué.</string>
     <string name="anthology">Anthologie</string>
-    <string name="anthology_confirm">Merci de confirmer que les titres de cette anthologie sont corrects.</string>
+    <string name="toc_confirm">Merci de confirmer que les titres de cette anthologie sont corrects.</string>
     <string name="anthology_save">Sauvegarder</string>
     <string name="anthology_add">Ajouter</string>
     <string name="menu_add_thumb_photo">À partir de l\'appareil photo&#8230;</string>
@@ -734,6 +734,7 @@
     <string name="title_reorder">le|Le|la|La|les|Les</string>
     <string name="set_as_read">Marqué comme lu</string>
     <string name="set_as_unread">Maqué comme non lu</string>
+    <string name="content_tab">Contenu</string>
 
     <!-- End: Added/Updated in [Next Version] -->
 

@@ -38,13 +38,13 @@ public class ValidatorException extends RuntimeException {
     @NonNull
     private final Object[] mArgs;
 
-    public ValidatorException(@StringRes final int stringId, @NonNull final Object[] args) {
+    public ValidatorException(final @StringRes int stringId, final @NonNull Object[] args) {
         mStringId = stringId;
         mArgs = args;
     }
 
     @NonNull
-    public String getFormattedMessage(@NonNull final Resources res) {
+    public String getFormattedMessage(final @NonNull Resources res) {
         return res.getString(mStringId, mArgs);
     }
 }

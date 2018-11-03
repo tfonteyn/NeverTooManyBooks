@@ -62,7 +62,7 @@
     <string name="lbl_contacts">Contatti:</string>
     <string name="lbl_donate">Dona</string>
     <string name="lbl_about">Riguardo questa app</string>
-    <string name="list_price">Prezzo di listino</string>
+    <string name="price_listed">Prezzo di listino</string>
     <string name="update_fields">Aggiorna i campi automaticamente</string>
     <string name="select_fields_to_update">Seleziona i campi da aggiornare</string>
     <string name="select_fields_to_update_help">I campi selezionati verranno aggiornato da Internet. Gli altri rimarranno invariati.</string>
@@ -77,13 +77,13 @@
     <string name="manage_fields_help">I campi selezionati sono visibili nella schermata aggiungi/modifica libro. Gli altri rimangono nascosti.</string>
     <string name="anthology_titles">Antologia titoli</string>
     <string name="amazon_wish_list">Amazon Wishlist</string>
-    <string name="same_author">Tutte le storie in questa antologia sono scritte dallo stesso autore</string>
-    <string name="menu_delete_anthology">Cancella titolo dall\'antologia</string>
+    <string name="toc_same_author">Tutte le storie in questa antologia sono scritte dallo stesso autore</string>
+    <string name="menu_delete_toc_entry">Cancella titolo dall\'antologia</string>
     <string name="is_anthology">Questo libro è una antologia?</string>
-    <string name="populate_anthology_titles">Inserisci titoli automaticamente (SPERIMENTALE)</string>
-    <string name="error_anthology_automatic_population_failed">Inserimento titoli in automatico fallito</string>
+    <string name="populate_toc">Inserisci titoli automaticamente (SPERIMENTALE)</string>
+    <string name="error_automatic_toc_population_failed">Inserimento titoli in automatico fallito</string>
     <string name="anthology">Antologia</string>
-    <string name="anthology_confirm">Conferma che i titoli di queste antologie sono in genere corretti</string>
+    <string name="toc_confirm">Conferma che i titoli di queste antologie sono in genere corretti</string>
     <string name="anthology_save">Salva</string>
     <string name="anthology_add">Aggiungi</string>
     <string name="menu_add_thumb_photo">Dalla fotocamera&#8230;</string>
@@ -734,6 +734,7 @@
 
     <string name="loaned_to_2">→</string>
     <string name="title_reorder">a|A|an|An|the|The</string>
+    <string name="content_tab">Contenuto</string>
 
     <!-- End: Added/Updated in 5.2.0 -->
 

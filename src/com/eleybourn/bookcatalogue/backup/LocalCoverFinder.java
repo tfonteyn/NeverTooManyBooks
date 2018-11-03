@@ -42,7 +42,7 @@ public class LocalCoverFinder implements Importer.CoverFinder {
     @NonNull
     private final CatalogueDBAdapter mDb;
 
-    LocalCoverFinder(@NonNull final String srcPath, @NonNull final String dstPath) {
+    LocalCoverFinder(final @NonNull String srcPath, final @NonNull String dstPath) {
         mSrc = srcPath;
         mIsForeign = !mSrc.equals(dstPath);
         mDb = new CatalogueDBAdapter(BookCatalogueApp.getAppContext())
@@ -54,7 +54,7 @@ public class LocalCoverFinder implements Importer.CoverFinder {
         mDb.close();
     }
 
-    public void copyOrRenameCoverFile(@Nullable final String srcUuid, final long srcId, final long dstId) throws IOException {
+    public void copyOrRenameCoverFile(final @Nullable String srcUuid, final long srcId, final long dstId) throws IOException {
         if (srcUuid != null && !srcUuid.isEmpty()) {
             // Only copy UUID files if they are foreign...since they already exists, otherwise.
             if (mIsForeign) {
@@ -79,7 +79,7 @@ public class LocalCoverFinder implements Importer.CoverFinder {
     }
 
     @Nullable
-    private File findExternalCover(@NonNull final String name) {
+    private File findExternalCover(final @NonNull String name) {
         // Find the original, if present.
         File orig = new File(mSrc + File.separator + name + ".jpg");
         if (!orig.exists()) {
@@ -99,7 +99,7 @@ public class LocalCoverFinder implements Importer.CoverFinder {
      * @return Existing file (if length > 0), or new file object
      */
     @NonNull
-    private File getNewCoverFile(@NonNull final String newUuid) {
+    private File getNewCoverFile(final @NonNull String newUuid) {
         // Check for ANY current image; delete empty ones and retry
         File newFile = StorageUtils.getCoverFile(newUuid);
         while (newFile.exists()) {
@@ -118,7 +118,7 @@ public class LocalCoverFinder implements Importer.CoverFinder {
      * Copy a specified source file into the default cover location for a new file.
      * DO NO OVERWRITE EXISTING FILES.
      */
-    private void copyFileToCoverImageIfMissing(@Nullable final File orig, @NonNull final String newUuid) throws IOException {
+    private void copyFileToCoverImageIfMissing(final @Nullable File orig, final @NonNull String newUuid) throws IOException {
         // Nothing to copy?
         if (orig == null || !orig.exists() || orig.length() == 0) {
             return;
@@ -137,7 +137,7 @@ public class LocalCoverFinder implements Importer.CoverFinder {
      * Rename/move a specified source file into the default cover location for a new file.
      * DO NO OVERWRITE EXISTING FILES.
      */
-    private void renameFileToCoverImageIfMissing(@Nullable final File orig, @NonNull final String newUuid) {
+    private void renameFileToCoverImageIfMissing(final @Nullable File orig, final @NonNull String newUuid) {
         // Nothing to copy?
         if (orig == null || !orig.exists() || orig.length() == 0) {
             return;
@@ -190,7 +190,7 @@ public class LocalCoverFinder implements Importer.CoverFinder {
      * Copy the UUID-based cover from its current location to the correct location in shared
      * storage, if it exists.
      */
-    private void copyCoverImageIfMissing(@NonNull final String uuid) throws IOException {
+    private void copyCoverImageIfMissing(final @NonNull String uuid) throws IOException {
         File orig = findExternalCover(uuid);
         // Nothing to copy?
         if (orig == null || !orig.exists()) {

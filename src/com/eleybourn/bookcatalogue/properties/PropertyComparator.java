@@ -31,7 +31,7 @@ import java.util.Comparator;
  */
 public class PropertyComparator implements Comparator<Property> {
     @Override
-    public int compare(@NonNull final Property lhs, @NonNull final Property rhs) {
+    public int compare(final @NonNull Property lhs, final @NonNull Property rhs) {
         // First compare their groups
         int gCmp = PropertyGroup.compare(lhs.getGroup(), rhs.getGroup());
         if (gCmp != 0)

@@ -72,7 +72,7 @@ public abstract class Property {
      * @param group          PropertyGroup in which this property belongs
      * @param nameResourceId Resource ID for name of this property
      */
-    public Property(@NonNull final String uniqueId, @NonNull final PropertyGroup group, @StringRes final int nameResourceId) {
+    public Property(final @NonNull String uniqueId, final @NonNull PropertyGroup group, final @StringRes int nameResourceId) {
         mUniqueId = uniqueId;
         mGroup = group;
         mNameResourceId = nameResourceId;
@@ -112,7 +112,7 @@ public abstract class Property {
     }
 
     @NonNull
-    public Property setGroup(@NonNull final PropertyGroup group) {
+    public Property setGroup(final @NonNull PropertyGroup group) {
         mGroup = group;
         return this;
     }
@@ -144,11 +144,11 @@ public abstract class Property {
     /** Children must implement set(Property) */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    public abstract Property set(@NonNull final Property p);
+    public abstract Property set(final @NonNull Property p);
 
     /** Children must implement getView to return an editor for this object */
     @NonNull
-    public abstract View getView(@NonNull final LayoutInflater inflater);
+    public abstract View getView(final @NonNull LayoutInflater inflater);
 
     /**
      * Interface used to help setting one property based on another property value.
@@ -190,7 +190,7 @@ public abstract class Property {
     public static class ValidationException extends IllegalStateException {
         private static final long serialVersionUID = -1086124703257379812L;
 
-        ValidationException(@NonNull final String message) {
+        ValidationException(final @NonNull String message) {
             super(message);
         }
     }

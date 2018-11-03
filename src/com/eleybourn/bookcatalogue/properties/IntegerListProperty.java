@@ -38,10 +38,10 @@ import java.util.Objects;
  */
 public class IntegerListProperty extends ListProperty<Integer> implements IntegerValue {
 
-    public IntegerListProperty(@NonNull final ItemEntries<Integer> list,
-                               @NonNull final String uniqueId,
-                               @NonNull final PropertyGroup group,
-                               @StringRes final int nameResourceId) {
+    public IntegerListProperty(final @NonNull ItemEntries<Integer> list,
+                               final @NonNull String uniqueId,
+                               final @NonNull PropertyGroup group,
+                               final @StringRes int nameResourceId) {
         super(list, uniqueId, group, nameResourceId);
     }
 
@@ -53,7 +53,7 @@ public class IntegerListProperty extends ListProperty<Integer> implements Intege
 
     @Override
     @NonNull
-    protected IntegerListProperty setGlobalDefault(@Nullable final Integer value) {
+    protected IntegerListProperty setGlobalDefault(final @Nullable Integer value) {
         Objects.requireNonNull(value);
         BookCatalogueApp.Prefs.putInt(getPreferenceKey(), value);
         return this;
@@ -85,14 +85,14 @@ public class IntegerListProperty extends ListProperty<Integer> implements Intege
     @NonNull
     @Override
     @CallSuper
-    public IntegerListProperty setPreferenceKey(@NonNull final String key) {
+    public IntegerListProperty setPreferenceKey(final @NonNull String key) {
         super.setPreferenceKey(key);
         return this;
     }
 
     @NonNull
     @Override
-    public IntegerListProperty set(@NonNull final Property p) {
+    public IntegerListProperty set(final @NonNull Property p) {
         if (!(p instanceof IntegerValue)) {
             throw new RTE.IllegalTypeException(p.getClass().getCanonicalName());
         }

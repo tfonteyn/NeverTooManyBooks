@@ -136,6 +136,7 @@
             <ImageButton
                 android:id="@+id/isbn_del"
                 style="@style/isbnSearchKey"
+                android:background="?android:selectableItemBackground"
                 app:srcCompat="@drawable/ic_backspace"
                 tools:ignore="ContentDescription" />
         </LinearLayout>
@@ -146,7 +147,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/padding_border_double"
             android:gravity="center|start"
-            android:text="@string/allow_asin" />
+            android:text="@string/allow_asin"
+            android:visibility="gone"/>
 
     </LinearLayout>
 

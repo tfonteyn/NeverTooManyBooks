@@ -62,7 +62,7 @@
     <string name="lbl_contacts">Kontakt:</string>
     <string name="lbl_donate">Spenden</string>
     <string name="lbl_about">Über diese App</string>
-    <string name="list_price">Preis</string>
+    <string name="price_listed">Preis</string>
     <string name="update_fields">Automatische Aktualisierung der Felder</string>
     <string name="select_fields_to_update">Felder für Aktualisierung auswählen</string>
     <string name="select_fields_to_update_help">Die ausgewählten Felder werden aus dem Internet aktualisiert. Nicht ausgewählte Felder werden nicht geändert.</string>
@@ -77,13 +77,13 @@
     <string name="manage_fields_help">Die ausgewählten Felder werden im Bildschirm Buch hinzufügen/bearbeiten angezeigt. Nicht ausgewählte Felder werden nicht angezeigt.</string>
     <string name="anthology_titles">Anthologie-Titel</string>
     <string name="amazon_wish_list">Amazon-Wunschliste</string>
-    <string name="same_author">Alle Geschichten in dieser Anthologie wurden vom gleichen Autor geschrieben.</string>
-    <string name="menu_delete_anthology">Titel von Anthologie löschen</string>
+    <string name="toc_same_author">Alle Geschichten in dieser Anthologie wurden vom gleichen Autor geschrieben.</string>
+    <string name="menu_delete_toc_entry">Titel von Anthologie löschen</string>
     <string name="is_anthology">Ist dieses Buch eine Anthologie?</string>
-    <string name="populate_anthology_titles">Automatisches Ausfüllen der Anthologie-Titel (EXPERIMENTELL)</string>
-    <string name="error_anthology_automatic_population_failed">Das automatische Ausfüllen der Anthologie-Titel ist fehlgeschlagen</string>
+    <string name="populate_toc">Automatisches Ausfüllen der Anthologie-Titel (EXPERIMENTELL)</string>
+    <string name="error_automatic_toc_population_failed">Das automatische Ausfüllen der Anthologie-Titel ist fehlgeschlagen</string>
     <string name="anthology">Anthologie</string>
-    <string name="anthology_confirm">Bitte bestätigen Sie dass diese Anthologie-Titel korrekt sind.</string>
+    <string name="toc_confirm">Bitte bestätigen Sie dass diese Anthologie-Titel korrekt sind.</string>
     <string name="anthology_save">Speichern</string>
     <string name="anthology_add">Hinzufügen</string>
     <string name="menu_add_thumb_photo">Von Kamera…</string>
@@ -713,6 +713,7 @@ Entweder sind die Daten des Buchs falsch (Sie sollten die ISBN überprüfen) ode
 
 
     <string name="loaned_to_2">→</string>
+    <string name="content_tab">Inhalt</string>
 
     <!-- End: Added/Updated in 5.2.0 -->
 

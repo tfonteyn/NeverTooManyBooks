@@ -28,7 +28,7 @@ import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer.SyncLock;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.entities.AnthologyTitle;
+import com.eleybourn.bookcatalogue.entities.TOCEntry;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
@@ -75,9 +75,9 @@ public class CsvImporter implements Importer {
     }
 
     @SuppressWarnings("UnusedReturnValue")
-    public boolean importBooks(@NonNull final InputStream exportStream,
-                               @Nullable final Importer.CoverFinder coverFinder,
-                               @NonNull final Importer.OnImporterListener listener,
+    public boolean importBooks(final @NonNull InputStream exportStream,
+                               final @Nullable Importer.CoverFinder coverFinder,
+                               final @NonNull Importer.OnImporterListener listener,
                                final int importFlags) throws IOException {
 
         final List<String> importedList = new ArrayList<>();
@@ -194,7 +194,7 @@ public class CsvImporter implements Importer {
                 // storing the book data does all that
                 handleAuthors(mDb, book);
                 handleSeries(mDb, book);
-                if (book.containsKey(UniqueId.BKEY_ANTHOLOGY_STRING_LIST)) {
+                if (book.containsKey(UniqueId.BKEY_TOC_STRING_LIST)) {
                     // ignore the actual value of the UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK! it will be
                     // 'reset' to mirror what we actually have when storing the book data
                     handleAnthology(mDb, book);
@@ -242,6 +242,7 @@ public class CsvImporter implements Importer {
                 mDb.endTransaction(txLock);
             }
             try {
+                // purging is justified here... or not ?
                 mDb.purgeAuthors();
                 mDb.purgeSeries();
                 mDb.analyzeDb();
@@ -263,9 +264,9 @@ public class CsvImporter implements Importer {
      */
     private long importBook(long bookId,
                             final boolean hasNumericId,
-                            @NonNull final String uuidVal,
+                            final @NonNull String uuidVal,
                             final boolean hasUuid,
-                            @NonNull final Book book,
+                            final @NonNull Book book,
                             final boolean updateOnlyIfNewer) {
         if (!hasUuid && !hasNumericId) {
             // Always import empty IDs...even if they are duplicates.
@@ -315,8 +316,8 @@ public class CsvImporter implements Importer {
     }
 
 
-    private boolean updateOnlyIfNewer(@NonNull final CatalogueDBAdapter db,
-                                      @NonNull final Book book,
+    private boolean updateOnlyIfNewer(final @NonNull CatalogueDBAdapter db,
+                                      final @NonNull Book book,
                                       final long bookId) {
         String bookDateStr = db.getBookLastUpdateDate(bookId);
 
@@ -345,8 +346,8 @@ public class CsvImporter implements Importer {
     /**
      * The "bookshelf_id" column is not used at all (similar to how author etc is done)
      */
-    private void handleBookshelves(@NonNull final CatalogueDBAdapter db,
-                                   @NonNull final Book book) {
+    private void handleBookshelves(final @NonNull CatalogueDBAdapter db,
+                                   final @NonNull Book book) {
         String encodedList = book.getString(UniqueId.KEY_BOOKSHELF_NAME);
 
         book.putBookshelfList(ArrayUtils.getBookshelfUtils().decodeList(Bookshelf.SEPARATOR, encodedList, false));
@@ -356,26 +357,24 @@ public class CsvImporter implements Importer {
 
     /**
      * Database access is strictly limited to fetching id's
-     * TODO:  can we use ? ArrayUtils.getTOCUtils().decodeList(anthologyTitlesAsStringList, false);
+     * TODO:  can we use ? ArrayUtils.getTOCUtils().decodeList(tocEntriesAsStringList, false);
      */
-    private void handleAnthology(@NonNull final CatalogueDBAdapter db,
-                                 @NonNull final Book book) {
+    private void handleAnthology(final @NonNull CatalogueDBAdapter db,
+                                 final @NonNull Book book) {
 
-        String encodedList = book.getString(UniqueId.BKEY_ANTHOLOGY_STRING_LIST);
+        String encodedList = book.getString(UniqueId.BKEY_TOC_STRING_LIST);
         if (!encodedList.isEmpty()) {
             ArrayList<String> list = ArrayUtils.decodeList(encodedList);
             // There is *always* one; but it will be empty if no titles present
             if (!list.get(0).isEmpty()) {
-                ArrayList<AnthologyTitle> ata = new ArrayList<>();
+                ArrayList<TOCEntry> ata = new ArrayList<>();
                 long bookId = book.getLong(UniqueId.KEY_ID);
                 for (String title : list) {
                     // as titles are saved as a repeated "title|", the 'last' one is also an empty one.
                     // "Islands In The Sky * Clarke, Arthur C.|The Sands Of Mars * Clarke, Arthur C.|Earth light * Clarke, Arthur C.|"
                     //  But let's not assume and keep this general
                     if (!title.isEmpty()) {
-                        AnthologyTitle ant = new AnthologyTitle(title);
-                        ant.setBookId(bookId);
-                        ata.add(ant);
+                        ata.add(new TOCEntry(title));
                     }
                 }
                 // fixup the id's
@@ -385,7 +384,7 @@ public class CsvImporter implements Importer {
         }
 
         // remove the unneeded string encoded set
-        book.remove(UniqueId.BKEY_ANTHOLOGY_STRING_LIST);
+        book.remove(UniqueId.BKEY_TOC_STRING_LIST);
     }
 
     /**
@@ -393,8 +392,8 @@ public class CsvImporter implements Importer {
      *
      * Get the list of series from whatever source is available.
      */
-    private void handleSeries(@NonNull final CatalogueDBAdapter db,
-                              @NonNull final Book book) {
+    private void handleSeries(final @NonNull CatalogueDBAdapter db,
+                              final @NonNull Book book) {
         String encodedList = book.getString(UniqueId.BKEY_SERIES_STRING_LIST);
         if (encodedList.isEmpty()) {
             // Try to build from SERIES_NAME and SERIES_NUM. It may all be blank
@@ -421,8 +420,8 @@ public class CsvImporter implements Importer {
      *
      * Get the list of authors from whatever source is available.
      */
-    private void handleAuthors(@NonNull final CatalogueDBAdapter db,
-                               @NonNull final Book book) {
+    private void handleAuthors(final @NonNull CatalogueDBAdapter db,
+                               final @NonNull Book book) {
         String encodedList = book.getString(UniqueId.BKEY_AUTHOR_STRING_LIST);
         if (encodedList.isEmpty()) {
             // Need to build it from other fields.
@@ -463,7 +462,7 @@ public class CsvImporter implements Importer {
     // and import to allow for escape('\') chars so that cr/lf can be preserved.
     //
     @NonNull
-    private String[] returnRow(@NonNull final String row, final boolean fullEscaping) {
+    private String[] returnRow(final @NonNull String row, final boolean fullEscaping) {
         // Need to handle double quotes etc
 
         // Current position
@@ -577,7 +576,7 @@ public class CsvImporter implements Importer {
     }
 
     /** Require a column */
-    private void requireColumnOrThrow(@NonNull final Book book,
+    private void requireColumnOrThrow(final @NonNull Book book,
                                       String... names) throws ImportException {
         for (String name : names) {
             if (book.containsKey(name)) {
@@ -589,9 +588,9 @@ public class CsvImporter implements Importer {
                 Utils.join(",", names)));
     }
 
-    private void requireNonBlankOrThrow(@NonNull final Book book,
+    private void requireNonBlankOrThrow(final @NonNull Book book,
                                         final int row,
-                                        @SuppressWarnings("SameParameterValue") @NonNull final String name)
+                                        @SuppressWarnings("SameParameterValue") final @NonNull String name)
             throws ImportException {
         if (!book.getString(name).isEmpty()) {
             return;
@@ -600,9 +599,9 @@ public class CsvImporter implements Importer {
     }
 
     @SuppressWarnings("unused")
-    private void requireAnyNonBlankOrThrow(@NonNull final Book book,
+    private void requireAnyNonBlankOrThrow(final @NonNull Book book,
                                            final int row,
-                                           @NonNull final String... names) throws ImportException {
+                                           final @NonNull String... names) throws ImportException {
         for (String name : names) {
             if (book.containsKey(name) && !book.getString(name).isEmpty()) {
                 return;

@@ -56,7 +56,7 @@ public class LibraryThingAdminActivity extends BaseActivity {
 
     @Override
     @CallSuper
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
+    public void onCreate(final @Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTitle(R.string.library_thing);
 
@@ -97,8 +97,7 @@ public class LibraryThingAdminActivity extends BaseActivity {
                          * Validate the key by getting a known cover
                          */
                         @Override
-                        public void run(@NonNull final SimpleTaskQueueProgressDialogFragment fragment, @NonNull final SimpleTaskContext taskContext) {
-                            //TEST Library Thing
+                        public void run(final @NonNull SimpleTaskQueueProgressDialogFragment fragment, final @NonNull SimpleTaskContext taskContext) {
                             Bundle tmp = new Bundle();
                             LibraryThingManager ltm = new LibraryThingManager();
                             File tmpFile = ltm.getCoverImage("0451451783", tmp, LibraryThingManager.ImageSizes.SMALL);
@@ -117,7 +116,7 @@ public class LibraryThingAdminActivity extends BaseActivity {
                         }
 
                         @Override
-                        public void onFinish(@NonNull final SimpleTaskQueueProgressDialogFragment fragment, @Nullable final Exception exception) {
+                        public void onFinish(final @NonNull SimpleTaskQueueProgressDialogFragment fragment, final @Nullable Exception exception) {
                         }
 
                     };

@@ -40,7 +40,7 @@ public interface BackupReader extends Closeable {
      *
      * @param listener Listener to receive progress information.
      */
-    void restore(@NonNull final BackupReaderListener listener, final int importFlags) throws IOException;
+    void restore(final @NonNull BackupReaderListener listener, final int importFlags) throws IOException;
 
     /**
      * Read the next ReaderEntity from the backup.
@@ -78,7 +78,7 @@ public interface BackupReader extends Closeable {
         /**
          * Advance progress by 'delta'
          */
-        void step(@NonNull final String message, final int delta);
+        void step(final @NonNull String message, final int delta);
 
         /**
          * Check if operation is cancelled

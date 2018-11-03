@@ -22,13 +22,18 @@ package com.eleybourn.bookcatalogue.datamanager;
 import android.support.annotation.NonNull;
 
 /**
- * Interface supported by an editor object (typically an activity)
- * 
+ * Interface supported by an editor object
+ *
+ * Note that the interface itself is not generic, but only the methods are.
+ * This avoids lint complaining when we cast... ok, not a very good reason I admit. FIXME
+ *
  * @author pjw
  */
 public interface DataEditor {
 	/** Save current data TO the passed DataManager */
-    <T extends DataManager>  void transferDataTo(@NonNull final T /* in/out */ data);
+    <T extends DataManager>  void saveTo(final @NonNull T /* in/out */ data);
 	/** Load current data FROM passed DataManager */
-    <T extends DataManager> void transferDataFrom(@NonNull final T /* in/out */ data);
+    <T extends DataManager> void loadFrom(final @NonNull T /* in/out */ data);
+
+//    <T extends DataManager> T getDataManager();
 }

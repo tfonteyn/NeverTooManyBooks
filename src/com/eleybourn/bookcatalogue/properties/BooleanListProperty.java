@@ -39,10 +39,10 @@ import java.util.Objects;
  */
 public class BooleanListProperty extends ListProperty<Boolean> implements BooleanValue {
 
-    public BooleanListProperty(@NonNull final ItemEntries<Boolean> list,
-                               @NonNull final String uniqueId,
-                               @NonNull final PropertyGroup group,
-                               @StringRes final int nameResourceId) {
+    public BooleanListProperty(final @NonNull ItemEntries<Boolean> list,
+                               final @NonNull String uniqueId,
+                               final @NonNull PropertyGroup group,
+                               final @StringRes int nameResourceId) {
         super(list, uniqueId, group, nameResourceId, false, false);
     }
 
@@ -94,14 +94,14 @@ public class BooleanListProperty extends ListProperty<Boolean> implements Boolea
     @NonNull
     @Override
     @CallSuper
-    public BooleanListProperty setPreferenceKey(@NonNull final String key) {
+    public BooleanListProperty setPreferenceKey(final @NonNull String key) {
         super.setPreferenceKey(key);
         return this;
     }
 
     @NonNull
     @Override
-    public BooleanListProperty set(@NonNull final Property p) {
+    public BooleanListProperty set(final @NonNull Property p) {
         if (!(p instanceof BooleanValue))
             throw new RTE.IllegalTypeException(p.getClass().getCanonicalName());
         BooleanValue v = (BooleanValue) p;

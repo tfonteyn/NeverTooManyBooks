@@ -108,7 +108,7 @@ public class SimpleTaskQueue {
      *
      * @author Philip Warner
      */
-    public SimpleTaskQueue(@NonNull final String name) {
+    public SimpleTaskQueue(final @NonNull String name) {
         mName = name;
         mMaxTasks = 5;
     }
@@ -118,7 +118,7 @@ public class SimpleTaskQueue {
      *
      * @author Philip Warner
      */
-    public SimpleTaskQueue(@NonNull final String name, @IntRange(from = 1, to = 10) final int maxTasks) {
+    public SimpleTaskQueue(final @NonNull String name, @IntRange(from = 1, to = 10) final int maxTasks) {
         mName = name;
         mMaxTasks = maxTasks;
         if (maxTasks < 1 || maxTasks > 10) {
@@ -164,7 +164,7 @@ public class SimpleTaskQueue {
      *
      * @param task Task to run.
      */
-    public void enqueue(@NonNull final SimpleTask task) {
+    public void enqueue(final @NonNull SimpleTask task) {
         SimpleTaskWrapper wrapper = new SimpleTaskWrapper(this, task);
 
         synchronized (this) {
@@ -206,7 +206,7 @@ public class SimpleTaskQueue {
     /**
      * Remove a previously requested task, if present
      */
-    public void remove(@NonNull final SimpleTask task) {
+    public void remove(final @NonNull SimpleTask task) {
         for (SimpleTaskWrapper w : mExecutionStack) {
             if (w.task.equals(task)) {
                 synchronized (this) {
@@ -222,8 +222,8 @@ public class SimpleTaskQueue {
     /**
      * Run the task then queue the results.
      */
-    private void handleRequest(@NonNull final SimpleTaskQueueThread thread,
-                               @NonNull final SimpleTaskWrapper taskWrapper) {
+    private void handleRequest(final @NonNull SimpleTaskQueueThread thread,
+                               final @NonNull SimpleTaskWrapper taskWrapper) {
         final SimpleTask task = taskWrapper.task;
 
         if (mTaskStartListener != null) {
@@ -323,7 +323,7 @@ public class SimpleTaskQueue {
      * Accessor.
      */
     @SuppressWarnings("unused")
-    public void setTaskStartListener(@NonNull final OnTaskStartListener listener) {
+    public void setTaskStartListener(final @NonNull OnTaskStartListener listener) {
         mTaskStartListener = listener;
     }
 
@@ -339,7 +339,7 @@ public class SimpleTaskQueue {
     /**
      * Accessor.
      */
-    public void setTaskFinishListener(@NonNull final OnTaskFinishListener listener) {
+    public void setTaskFinishListener(final @NonNull OnTaskFinishListener listener) {
         mTaskFinishListener = listener;
     }
 
@@ -367,12 +367,12 @@ public class SimpleTaskQueue {
          * The alternative was to change the argument to being a {@link SimpleTaskWrapper}
          * and access the {@link SimpleTaskWrapper#exception}
          */
-        void run(@NonNull final SimpleTaskContext taskContext) throws Exception;
+        void run(final @NonNull SimpleTaskContext taskContext) throws Exception;
 
         /**
          * Method called in UI thread after the background task has finished.
          */
-        void onFinish(@Nullable final Exception e);
+        void onFinish(final @Nullable Exception e);
     }
 
     /**
@@ -381,7 +381,7 @@ public class SimpleTaskQueue {
      * @author Philip Warner
      */
     public interface OnTaskStartListener {
-        void onTaskStart(@NonNull final SimpleTask task);
+        void onTaskStart(final @NonNull SimpleTask task);
     }
 
     /**
@@ -390,7 +390,7 @@ public class SimpleTaskQueue {
      * @author Philip Warner
      */
     public interface OnTaskFinishListener {
-        void onTaskFinish(@NonNull final SimpleTask task, @Nullable final Exception e);
+        void onTaskFinish(final @NonNull SimpleTask task, final @Nullable Exception e);
     }
 
     public interface SimpleTaskContext {
@@ -421,7 +421,7 @@ public class SimpleTaskQueue {
         @Nullable
         SimpleTaskQueueThread activeThread = null;
 
-        SimpleTaskWrapper(@NonNull final SimpleTaskQueue owner, @NonNull final SimpleTask task) {
+        SimpleTaskWrapper(final @NonNull SimpleTaskQueue owner, final @NonNull SimpleTask task) {
             mOwner = owner;
             this.task = task;
             synchronized (mCounter) {

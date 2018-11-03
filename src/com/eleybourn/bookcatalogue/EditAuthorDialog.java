@@ -38,17 +38,16 @@ public class EditAuthorDialog {
     @NonNull
     private final Runnable mOnChanged;
 
-    EditAuthorDialog(@NonNull final Activity activity, @NonNull final CatalogueDBAdapter db, @NonNull final Runnable onChanged) {
+    EditAuthorDialog(final @NonNull Activity activity, final @NonNull CatalogueDBAdapter db, final @NonNull Runnable onChanged) {
         mDb = db;
         this.mActivity = activity;
         mOnChanged = onChanged;
     }
 
-    public void edit(@NonNull final Author author) {
+    public void edit(final @NonNull Author author) {
         final Dialog dialog = new StandardDialogs.BasicDialog(mActivity);
         dialog.setContentView(R.layout.dialog_edit_author);
         dialog.setTitle(R.string.edit_author_details);
-
 
         final EditText familyView = dialog.findViewById(R.id.family_name);
         //noinspection ConstantConditions
@@ -85,7 +84,7 @@ public class EditAuthorDialog {
         dialog.show();
     }
 
-    private void confirmEdit(@NonNull final Author from, @NonNull final Author to) {
+    private void confirmEdit(final @NonNull Author from, final @NonNull Author to) {
         // case sensitive equality
         if (to.equals(from)) {
             return;

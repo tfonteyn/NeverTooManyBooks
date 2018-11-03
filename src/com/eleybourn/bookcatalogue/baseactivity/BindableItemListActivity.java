@@ -34,7 +34,7 @@ import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
 
 import com.eleybourn.bookcatalogue.dialogs.ContextDialogItem;
-import com.eleybourn.bookcatalogue.taskqueue.BindableItemCursor;
+import com.eleybourn.bookcatalogue.database.cursors.BindableItemCursor;
 import com.eleybourn.bookcatalogue.adapters.BindableItemCursorAdapter;
 import com.eleybourn.bookcatalogue.adapters.BindableItemCursorAdapter.BindableItemBinder;
 
@@ -58,11 +58,11 @@ abstract public class BindableItemListActivity extends BaseListActivity implemen
      * @return TaskNotesCursor to use
      */
     @NonNull
-    protected abstract BindableItemCursor getBindableItemCursor(@Nullable final Bundle savedInstanceState);
+    protected abstract BindableItemCursor getBindableItemCursor(final @Nullable Bundle savedInstanceState);
 
     @Override
     @CallSuper
-    protected void onCreate(@Nullable final Bundle savedInstanceState) {
+    protected void onCreate(final @Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         mBindableItems = getBindableItemCursor(savedInstanceState);
@@ -76,14 +76,14 @@ abstract public class BindableItemListActivity extends BaseListActivity implemen
 
         lv.setOnItemClickListener(new OnItemClickListener() {
             @Override
-            public void onItemClick(@NonNull final AdapterView<?> parent, @NonNull final View v, final int position, final long id) {
+            public void onItemClick(final @NonNull AdapterView<?> parent, final @NonNull View v, final int position, final long id) {
                 BindableItemListActivity.this.onListItemClick(parent, v, position, id);
             }
         });
         lv.setOnItemLongClickListener(new OnItemLongClickListener() {
 
             @Override
-            public boolean onItemLongClick(@NonNull final AdapterView<?> parent, @NonNull final View v, final int position, final long id) {
+            public boolean onItemLongClick(final @NonNull AdapterView<?> parent, final @NonNull View v, final int position, final long id) {
                 return BindableItemListActivity.this.onListItemLongClick(parent, v, position, id);
             }
         });
@@ -106,13 +106,13 @@ abstract public class BindableItemListActivity extends BaseListActivity implemen
         super.onDestroy();
     }
 
-    protected void onListItemClick(@NonNull final AdapterView<?> parent, @NonNull final View v, final int position, final long id) {
+    protected void onListItemClick(final @NonNull AdapterView<?> parent, final @NonNull View v, final int position, final long id) {
     }
 
     @SuppressWarnings("SameReturnValue")
     @CallSuper
-    private boolean onListItemLongClick(@SuppressWarnings("unused") @NonNull final AdapterView<?> parent,
-                                        @SuppressWarnings("unused") @NonNull final View v,
+    private boolean onListItemLongClick(@SuppressWarnings("unused") final @NonNull AdapterView<?> parent,
+                                        @SuppressWarnings("unused") final @NonNull View v,
                                         @SuppressWarnings("unused") final int position,
                                         @SuppressWarnings("unused") final long id) {
         return false;
@@ -124,8 +124,8 @@ abstract public class BindableItemListActivity extends BaseListActivity implemen
      * @param title Title of Alert
      * @param items Items to display
      */
-    protected void showContextDialogue(@SuppressWarnings("SameParameterValue") @StringRes final int title,
-                                       @NonNull final List<ContextDialogItem> items) {
+    protected void showContextDialogue(@SuppressWarnings("SameParameterValue") final @StringRes int title,
+                                       final @NonNull List<ContextDialogItem> items) {
         if (items.size() > 0) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this)
                     .setTitle(title)

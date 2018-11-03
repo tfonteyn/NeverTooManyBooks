@@ -105,7 +105,7 @@ public class TaskManager implements AutoCloseable {
     /**
      * Constructor.
      */
-    public TaskManager(@NonNull final Context context) {
+    public TaskManager(final @NonNull Context context) {
         mContext = context;
     }
 
@@ -128,7 +128,7 @@ public class TaskManager implements AutoCloseable {
      *
      * @param task to add
      */
-    public void addTask(@NonNull final ManagedTask task) {
+    public void addTask(final @NonNull ManagedTask task) {
         if (mIsClosing) {
             throw new IllegalStateException("Can not add a task when closing down");
         }
@@ -154,7 +154,7 @@ public class TaskManager implements AutoCloseable {
      * Called when the {@link ManagedTask.TaskListener#onTaskFinished} message is received
      * by the listener object.
      */
-    private void onTaskFinished(@NonNull final ManagedTask task) {
+    private void onTaskFinished(final @NonNull ManagedTask task) {
         boolean doClose;
 
         // Remove from the list of tasks. From now on, it should
@@ -182,7 +182,7 @@ public class TaskManager implements AutoCloseable {
     }
 
     /**
-     * Utility routine to onCancel all tasks.
+     * Utility routine to onPartialDatePickerCancel all tasks.
      */
     public void cancelAllTasks() {
         synchronized (mTasks) {
@@ -198,7 +198,7 @@ public class TaskManager implements AutoCloseable {
      * display some text above the task info. Set to null to ensure ProgressDialog will
      * be removed.
      */
-    public void doProgress(@Nullable final String message) {
+    public void doProgress(final @Nullable String message) {
         mBaseMessage = message;
         updateProgressDialog();
     }
@@ -210,7 +210,7 @@ public class TaskManager implements AutoCloseable {
      * @param message Message text
      * @param count   Counter for progress
      */
-    public void doProgress(@NonNull final ManagedTask task, @Nullable final String message, final int count) {
+    public void doProgress(final @NonNull ManagedTask task, final @Nullable String message, final int count) {
         TaskInfo taskInfo = getTaskInfo(task);
         if (taskInfo != null) {
             taskInfo.progressMessage = message;
@@ -287,7 +287,7 @@ public class TaskManager implements AutoCloseable {
      *
      * @param message Message to send
      */
-    public void showUserMessage(@NonNull final String message) {
+    public void showUserMessage(final @NonNull String message) {
         mMessageSwitch.send(mMessageSenderId, new OnShowUserMessage(message));
     }
 
@@ -299,7 +299,7 @@ public class TaskManager implements AutoCloseable {
      * @return TaskInfo associated with task.
      */
     @Nullable
-    private TaskInfo getTaskInfo(@NonNull final ManagedTask task) {
+    private TaskInfo getTaskInfo(final @NonNull ManagedTask task) {
         synchronized (mTasks) {
             for (TaskInfo taskInfo : mTasks) {
                 if (taskInfo.task == task) {
@@ -313,7 +313,7 @@ public class TaskManager implements AutoCloseable {
     /**
      * Set the maximum value for progress for the passed task.
      */
-    public void setMax(@NonNull final ManagedTask task, final int max) {
+    public void setMax(final @NonNull ManagedTask task, final int max) {
         TaskInfo taskInfo = getTaskInfo(task);
         if (taskInfo != null) {
             taskInfo.progressMax = max;
@@ -356,11 +356,11 @@ public class TaskManager implements AutoCloseable {
      * @author Philip Warner
      */
     public interface TaskManagerListener {
-        void onTaskEnded(@NonNull final TaskManager manager, @NonNull final ManagedTask task);
+        void onTaskEnded(final @NonNull TaskManager manager, final @NonNull ManagedTask task);
 
-        void onProgress(final int count, final int max, @NonNull final String message);
+        void onProgress(final int count, final int max, final @NonNull String message);
 
-        void onShowUserMessage(@NonNull final String message);
+        void onShowUserMessage(final @NonNull String message);
 
         void onFinished();
     }
@@ -378,18 +378,19 @@ public class TaskManager implements AutoCloseable {
         @NonNull
         private final ManagedTask mTask;
 
-        OnTaskEndedMessage(@NonNull final TaskManager manager, @NonNull final ManagedTask task) {
+        OnTaskEndedMessage(final @NonNull TaskManager manager, final @NonNull ManagedTask task) {
             mManager = manager;
             mTask = task;
         }
 
         @Override
-        public boolean deliver(@NonNull final TaskManagerListener listener) {
+        public boolean deliver(final @NonNull TaskManagerListener listener) {
+            if (DEBUG_SWITCHES.MESSAGING && BuildConfig.DEBUG) {
+                Logger.info(this,"Delivering 'onTaskEnded' to listener: " + listener +
+                        "\n mTask=`" + mTask + "`");
+            }
             listener.onTaskEnded(mManager, mTask);
             return false;
-        }
-        public String toString() {
-            return "\nOnTaskEndedMessage task: " + mTask;
         }
     }
 
@@ -399,20 +400,20 @@ public class TaskManager implements AutoCloseable {
         @NonNull
         private final String mMessage;
 
-        OnProgressMessage(final int count, final int max, @NonNull final String message) {
+        OnProgressMessage(final int count, final int max, final @NonNull String message) {
             mCount = count;
             mMax = max;
             mMessage = message;
         }
 
         @Override
-        public boolean deliver(@NonNull final TaskManagerListener listener) {
+        public boolean deliver(final @NonNull TaskManagerListener listener) {
+            if (DEBUG_SWITCHES.MESSAGING && BuildConfig.DEBUG) {
+                Logger.info(this,"Delivering 'onProgress' to listener: " + listener +
+                "\n mMessage=`" + mMessage + "`");
+            }
             listener.onProgress(mCount, mMax, mMessage);
             return false;
-        }
-
-        public String toString() {
-            return "\nOnProgressMessage: " + mMessage;
         }
     }
 
@@ -420,12 +421,16 @@ public class TaskManager implements AutoCloseable {
         @NonNull
         private final String mMessage;
 
-        OnShowUserMessage(@NonNull final String message) {
+        OnShowUserMessage(final @NonNull String message) {
             mMessage = message;
         }
 
         @Override
-        public boolean deliver(@NonNull final TaskManagerListener listener) {
+        public boolean deliver(final @NonNull TaskManagerListener listener) {
+            if (DEBUG_SWITCHES.MESSAGING && BuildConfig.DEBUG) {
+                Logger.info(this,"Delivering 'onShowUserMessage' to listener: " + listener +
+                        "\n mMessage=`" + mMessage + "`");
+            }
             listener.onShowUserMessage(mMessage);
             return false;
         }
@@ -436,12 +441,12 @@ public class TaskManager implements AutoCloseable {
 
     public static class OnFinishedMessage implements Message<TaskManagerListener> {
         @Override
-        public boolean deliver(@NonNull final TaskManagerListener listener) {
+        public boolean deliver(final @NonNull TaskManagerListener listener) {
+            if (DEBUG_SWITCHES.MESSAGING && BuildConfig.DEBUG) {
+                Logger.info(this,"Delivering 'OnFinishedMessage' to listener: " + listener);
+            }
             listener.onFinished();
             return false;
-        }
-        public String toString() {
-            return "\nOnFinishedMessage";
         }
     }
 
@@ -454,12 +459,12 @@ public class TaskManager implements AutoCloseable {
         int progressMax;
         int progressCurrent;
 
-        TaskInfo(@NonNull final ManagedTask task) {
+        TaskInfo(final @NonNull ManagedTask task) {
             this(task, 0, 0, "");
         }
 
         @SuppressWarnings("SameParameterValue")
-        TaskInfo(@NonNull final ManagedTask task, final int max, final int curr, @NonNull final String message) {
+        TaskInfo(final @NonNull ManagedTask task, final int max, final int curr, final @NonNull String message) {
             this.task = task;
             progressMax = max;
             progressCurrent = curr;

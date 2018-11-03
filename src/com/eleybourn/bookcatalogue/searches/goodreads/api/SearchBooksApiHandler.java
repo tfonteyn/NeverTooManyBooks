@@ -335,7 +335,7 @@ public class SearchBooksApiHandler extends ApiHandler {
      * @return the array of GoodreadsWork objects.
      */
     @NonNull
-    public List<GoodreadsWork> search(@NonNull final String query) throws
+    public List<GoodreadsWork> search(final @NonNull String query) throws
             OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException,
             NotAuthorizedException, BookNotFoundException, IOException, NetworkException {
 

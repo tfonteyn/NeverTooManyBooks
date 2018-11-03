@@ -62,7 +62,7 @@ public class SendOneBookTask extends GenericTask {
      * Run the task, log exceptions.
      */
     @Override
-    public boolean run(@NonNull final QueueManager manager, @NonNull final Context context) {
+    public boolean run(final @NonNull QueueManager manager, final @NonNull Context context) {
         boolean result = false;
         try {
             result = sendBook(manager, context);
@@ -75,8 +75,8 @@ public class SendOneBookTask extends GenericTask {
     /**
      * Perform the main task
      */
-    private boolean sendBook(@NonNull final QueueManager queueManager,
-                             @NonNull final Context context) throws NotAuthorizedException {
+    private boolean sendBook(final @NonNull QueueManager queueManager,
+                             final @NonNull Context context) throws NotAuthorizedException {
 
         // ENHANCE: Work out a way of checking if GR site is up
         //if (!Utils.hostIsAvailable(context, "www.goodreads.com"))

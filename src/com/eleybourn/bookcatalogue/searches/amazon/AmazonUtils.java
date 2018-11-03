@@ -39,7 +39,7 @@ public class AmazonUtils {
     /** key into the Manifest meta-data */
     private static final String AMAZON_KEY = "amazon.app_key";
 
-    private static void openLink(@NonNull final Context context, @Nullable String author, @Nullable String series) {
+    private static void openLink(final @NonNull Context context, @Nullable String author, @Nullable String series) {
         // Build the URL and args
         String url = AmazonManager.getBaseURL() + SUFFIX_BASE_URL;
         author = cleanupSearchString(author);
@@ -75,7 +75,7 @@ public class AmazonUtils {
 
     @Nullable
     private static String buildSearchArgs(@Nullable String author, @Nullable String series) {
-        // This code works, but Amazon have a nasty tendency to onCancel Associate IDs...
+        // This code works, but Amazon have a nasty tendency to onPartialDatePickerCancel Associate IDs...
         //String baseUrl = "http://www.amazon.com/gp/search?index=books&tag=philipwarneri-20&tracking_id=philipwarner-20";
         String extra = "";
         // http://www.amazon.com/gp/search?index=books&field-author=steven+a.+mckay&field-keywords=the+forest+lord
@@ -104,7 +104,7 @@ public class AmazonUtils {
         return extra.trim();
     }
 
-    private static String cleanupSearchString(@Nullable final String search) {
+    private static String cleanupSearchString(final @Nullable String search) {
         if (search == null)
             return "";
 
@@ -124,16 +124,16 @@ public class AmazonUtils {
         return out.toString().trim();
     }
 
-    public static void openSearchPage(@NonNull final Activity activity,
-                                      @Nullable final String author,
-                                      @Nullable final String series) {
+    public static void openSearchPage(final @NonNull Activity activity,
+                                      final @Nullable String author,
+                                      final @Nullable String series) {
         try {
             openLink(activity, author, series);
         } catch (Exception e) {
             // An Amazon error should not crash the app
             Logger.error(e, "Unable to call the Amazon API");
             StandardDialogs.showUserMessage(activity, R.string.error_unexpected_error);
-            /* This code works, but Amazon have a nasty tendency to onCancel Associate IDs... */
+            /* This code works, but Amazon have a nasty tendency to onPartialDatePickerCancel Associate IDs... */
 //            String baseUrl = "http://www.amazon.com/gp/search?index=books&tag=philipwarneri-20&tracking_id=philipwarner-20";
 //            String extra = buildSearchArgs(author, series);
 //            if (extra != null && !extra.isEmpty()) {

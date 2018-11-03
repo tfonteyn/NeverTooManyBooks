@@ -34,13 +34,13 @@ public class Listeners {
          *
          * @param event can be null if action is 'deleted'
          */
-        void onEventChange(@Nullable final Event event, @NonNull final EventActions action);
+        void onEventChange(final @Nullable Event event, final @NonNull EventActions action);
     }
 
     public interface OnTaskChangeListener {
         /**
          * @param task can be null if action is 'deleted'
          */
-        void onTaskChange(@Nullable final Task task, @NonNull final TaskActions action);
+        void onTaskChange(final @Nullable Task task, final @NonNull TaskActions action);
     }
 }

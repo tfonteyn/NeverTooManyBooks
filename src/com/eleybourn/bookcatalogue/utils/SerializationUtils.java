@@ -50,7 +50,7 @@ public class SerializationUtils {
      * @return Resulting byte array.
      */
     @NonNull
-    public static byte[] serializeObject(@NonNull final Serializable o) {
+    public static byte[] serializeObject(final @NonNull Serializable o) {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try (ObjectOutput out = new ObjectOutputStream(bos)) {
             out.writeObject(o);
@@ -66,7 +66,7 @@ public class SerializationUtils {
      */
     @SuppressWarnings("unchecked")
     @NonNull
-    public static <T> T deserializeObject(@NonNull final byte[] o) throws RTE.DeserializationException {
+    public static <T> T deserializeObject(final @NonNull byte[] o) throws RTE.DeserializationException {
         try (ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(o))) {
             return (T) in.readObject();
         } catch (@NonNull ClassCastException | ClassNotFoundException | IOException e) {
@@ -78,7 +78,7 @@ public class SerializationUtils {
      * Serialize then de-serialize to create a deep clone.
      */
     @NonNull
-    public static <T extends Serializable> T cloneObject(@NonNull final T o) throws RTE.DeserializationException {
+    public static <T extends Serializable> T cloneObject(final @NonNull T o) throws RTE.DeserializationException {
         return deserializeObject(serializeObject(o));
     }
 

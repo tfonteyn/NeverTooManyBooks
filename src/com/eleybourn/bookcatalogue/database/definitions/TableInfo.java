@@ -18,54 +18,32 @@ import java.util.Map;
  */
 public class TableInfo implements Iterable<TableInfo.ColumnInfo> {
 
-    public enum ColumnTypeClass {
-        Integer, Text, Real;
-
-        public static ColumnTypeClass newInstance(@NonNull final String columnType) {
-            switch (columnType.toLowerCase()) {
-                case TYPE_INT:
-                case TYPE_INTEGER:
-                    return ColumnTypeClass.Integer;
-                case TYPE_TEXT:
-                case TYPE_CHAR:
-                    return ColumnTypeClass.Text;
-                case TYPE_FLOAT:
-                case "real":
-                case "double":
-                    return ColumnTypeClass.Real;
-                case TYPE_DATE:
-                case "datetime":
-                    return ColumnTypeClass.Text;
-                case TYPE_BOOLEAN:
-                    return ColumnTypeClass.Integer;
-                default:
-                    throw new RTE.IllegalTypeException(columnType);
-            }
-        }
-    }
-
-    public static final String TYPE_BOOLEAN = "boolean";
-    public static final String TYPE_BLOB = "blob";
-    public static final String TYPE_CHAR = "char";
-    public static final String TYPE_DATE = "date";
-    public static final String TYPE_DATETIME = "datetime";
-    public static final String TYPE_FLOAT = "float";
-    public static final String TYPE_INT = "int";
+    /** @see StorageClass */
     public static final String TYPE_INTEGER = "integer";
     public static final String TYPE_TEXT = "text";
+    public static final String TYPE_REAL = "real";
+    public static final String TYPE_BLOB = "blob";
+
+    /** https://sqlite.org/datatype3.html#boolean_datatype */
+    public static final String TYPE_BOOLEAN = "boolean"; // same as Integer(storing 0,1) , but kept for clarity.
+
+    /** https://sqlite.org/datatype3.html#date_and_time_datatype */
+    public static final String TYPE_DATE = "date";
+    public static final String TYPE_DATETIME = "datetime";// kept for clarity.
+
 
     @NonNull
     private final Map<String, ColumnInfo> mColumns;
     @NonNull
     private final DbSync.SynchronizedDb mSyncedDb;
 
-    public TableInfo(@NonNull final DbSync.SynchronizedDb db, @NonNull final String tableName) {
+    public TableInfo(final @NonNull DbSync.SynchronizedDb db, final @NonNull String tableName) {
         mSyncedDb = db;
         mColumns = describeTable(tableName);
     }
 
     @Nullable
-    public ColumnInfo getColumn(@NonNull final String name) {
+    public ColumnInfo getColumn(final @NonNull String name) {
         String lcName = name.toLowerCase();
         if (!mColumns.containsKey(lcName)) {
             return null;
@@ -87,7 +65,7 @@ public class TableInfo implements Iterable<TableInfo.ColumnInfo> {
      * @return A collection of ColumnInfo objects.
      */
     @NonNull
-    private Map<String, ColumnInfo> describeTable(@NonNull final String tableName) {
+    private Map<String, ColumnInfo> describeTable(final @NonNull String tableName) {
         String sql = "PRAGMA table_info(" + tableName + ")";
 
         Map<String, ColumnInfo> allColumns = new HashMap<>();
@@ -106,7 +84,7 @@ public class TableInfo implements Iterable<TableInfo.ColumnInfo> {
                 col.defaultValue = colCsr.getString(4);
                 col.isPrimaryKey = colCsr.getInt(5) == 1;
 
-                col.columnTypeClass = ColumnTypeClass.newInstance(col.typeName);
+                col.storageClass = StorageClass.newInstance(col.typeName);
 
                 allColumns.put(col.name.toLowerCase(), col);
                 if (colCsr.isLast()) {
@@ -118,6 +96,37 @@ public class TableInfo implements Iterable<TableInfo.ColumnInfo> {
         return allColumns;
     }
 
+    /** https://sqlite.org/datatype3.html#storage_classes_and_datatypes */
+    public enum StorageClass {
+        Integer, Real, Text, Blob;
+
+        public static StorageClass newInstance(final @NonNull String columnType) {
+            // hardcoded strings are for backwards compatibility
+            switch (columnType.toLowerCase()) {
+                case TYPE_INTEGER:
+                case "int":
+                    return StorageClass.Integer;
+                case TYPE_TEXT:
+                case "char":
+                    return StorageClass.Text;
+                case TYPE_REAL:
+                case "float":
+                case "double":
+                    return StorageClass.Real;
+                case TYPE_BLOB:
+                    return StorageClass.Blob;
+
+                case TYPE_BOOLEAN:
+                    return StorageClass.Integer;
+
+                case TYPE_DATE:
+                case TYPE_DATETIME:
+                    return StorageClass.Text;
+                default:
+                    throw new RTE.IllegalTypeException(columnType);
+            }
+        }
+    }
 
     /**
      * Column info support. This is useful for auto-building queries from maps that have
@@ -132,6 +141,6 @@ public class TableInfo implements Iterable<TableInfo.ColumnInfo> {
         public boolean allowNull;
         public boolean isPrimaryKey;
         public String defaultValue;
-        public ColumnTypeClass columnTypeClass;
+        public StorageClass storageClass;
     }
 }

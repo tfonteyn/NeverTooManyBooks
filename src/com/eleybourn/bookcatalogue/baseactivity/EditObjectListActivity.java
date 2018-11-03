@@ -53,7 +53,7 @@ import java.util.Objects;
  * which will be automatically handled. Optional IDs are noted:
  *
  * Main View:
- * - onCancel
+ * - onPartialDatePickerCancel
  * - confirm
  * - add (OPTIONAL)
  *
@@ -131,10 +131,10 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Bas
     private final OnClickListener mSaveListener = new OnClickListener() {
         @Override
         public void onClick(View v) {
-            Intent intent = new Intent();
-            intent.putExtra(mBKey, mList);
-            if (onSave(intent)) {
-                setResult(Activity.RESULT_OK, intent); /* bca659b6-dfb9-4a97-b651-5b05ad102400,
+            Intent data = new Intent();
+            data.putExtra(mBKey, mList);
+            if (onSave(data)) {
+                setResult(Activity.RESULT_OK, data); /* bca659b6-dfb9-4a97-b651-5b05ad102400,
                  dd74343a-50ff-4ce9-a2e4-a75f7bcf9e36, 3f210502-91ab-4b11-b165-605e09bb0c17
                  13854efe-e8fd-447a-a195-47678c0d87e7 */
                 finish();
@@ -155,7 +155,7 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Bas
      * @param rowViewId  Resource id of row view
      * @param bkey       The key to use in the Bundle to get the array
      */
-    protected EditObjectListActivity(final int baseViewId, final int rowViewId, @Nullable final String bkey) {
+    protected EditObjectListActivity(final int baseViewId, final int rowViewId, final @Nullable String bkey) {
         mBKey = bkey;
         mBaseViewId = baseViewId;
         mRowViewId = rowViewId;
@@ -166,7 +166,7 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Bas
      *
      * @param target The view that was clicked ('add' button).
      */
-    protected void onAdd(@NonNull final View target) {
+    protected void onAdd(final @NonNull View target) {
         throw new UnsupportedOperationException("Unexpected call to 'onAdd'");
     }
 
@@ -176,7 +176,7 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Bas
      * @param target The target row view object
      * @param object The object (or type T) from which to draw values.
      */
-    abstract protected void onSetupView(@NonNull final View target, @NonNull final T object);
+    abstract protected void onSetupView(final @NonNull View target, final @NonNull T object);
 
     protected void onListChanged() {
     }
@@ -188,7 +188,7 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Bas
      * @param target The view clicked
      * @param object The object associated with this row
      */
-    protected void onRowClick(@NonNull final View target, @NonNull final T object, final int position) {
+    protected void onRowClick(final @NonNull View target, final @NonNull T object, final int position) {
     }
 
     /**
@@ -201,7 +201,7 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Bas
      */
     @SuppressWarnings({"unused", "SameReturnValue"})
     @CallSuper
-    protected boolean onRowLongClick(@NonNull final View target, @NonNull final T object, final int position) {
+    protected boolean onRowLongClick(final @NonNull View target, final @NonNull T object, final int position) {
         return true;
     }
 
@@ -210,16 +210,16 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Bas
      */
     @SuppressWarnings({"unused", "SameReturnValue"})
     @CallSuper
-    protected boolean onRowDelete(@NonNull final View target, @NonNull final T object, final int position) {
+    protected boolean onRowDelete(final @NonNull View target, final @NonNull T object, final int position) {
         return true;
     }
 
     @SuppressWarnings({"unused", "EmptyMethod"})
-    protected void onRowDown(@NonNull final View target, @NonNull final T object, final int position) {
+    protected void onRowDown(final @NonNull View target, final @NonNull T object, final int position) {
     }
 
     @SuppressWarnings({"unused", "EmptyMethod"})
-    protected void onRowUp(@NonNull final View target, @NonNull final T object, final int position) {
+    protected void onRowUp(final @NonNull View target, final @NonNull T object, final int position) {
     }
 
     /**
@@ -232,7 +232,7 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Bas
      *
      * @return <tt>true</tt>if activity should exit, false to abort exit.
      */
-    protected boolean onSave(@NonNull final Intent intent) {
+    protected boolean onSave(final @NonNull Intent intent) {
         return true;
     }
 
@@ -285,7 +285,7 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Bas
 
     @Override
     @CallSuper
-    protected void onCreate(@Nullable final Bundle savedInstanceState) {
+    protected void onCreate(final @Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         try {
             // Setup the DB
@@ -338,7 +338,7 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Bas
      * @param viewId   Resource ID
      * @param listener Listener
      */
-    private void setOnClickListener(@IdRes final int viewId, @NonNull final OnClickListener listener) {
+    private void setOnClickListener(final @IdRes int viewId, final @NonNull OnClickListener listener) {
         View v = this.findViewById(viewId);
         if (v != null) {
             v.setOnClickListener(listener);
@@ -351,7 +351,7 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Bas
      * @param viewId View ID
      * @param value  String to set
      */
-    protected void setTextOrHideView(@SuppressWarnings("SameParameterValue") @IdRes final int viewId, @Nullable final String value) {
+    protected void setTextOrHideView(@SuppressWarnings("SameParameterValue") final @IdRes int viewId, final @Nullable String value) {
         TextView textView = this.findViewById(viewId);
         if (textView == null) {
             return;
@@ -368,7 +368,7 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Bas
      */
     @Override
     @CallSuper
-    protected void onSaveInstanceState(@NonNull final Bundle outState) {
+    protected void onSaveInstanceState(final @NonNull Bundle outState) {
         outState.putSerializable(mBKey, mList);
 
         super.onSaveInstanceState(outState);
@@ -411,23 +411,23 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Bas
      * probably needs an interface
      */
     protected class EditObjectListAdapter extends SimpleListAdapter<T> {
-        EditObjectListAdapter(@NonNull final Context context, final int rowViewId, @NonNull final ArrayList<T> items) {
+        EditObjectListAdapter(final @NonNull Context context, final int rowViewId, final @NonNull ArrayList<T> items) {
             super(context, rowViewId, items);
         }
 
         @Override
-        protected void onSetupView(@NonNull final View convertView, @NonNull final T item) {
+        protected void onSetupView(final @NonNull View convertView, final @NonNull T item) {
             EditObjectListActivity.this.onSetupView(convertView, item);
         }
 
         @Override
-        protected void onRowClick(@NonNull final View target, @NonNull final T item, final int position) {
+        protected void onRowClick(final @NonNull View target, final @NonNull T item, final int position) {
             EditObjectListActivity.this.onRowClick(target, item, position);
         }
 
         @Override
         @CallSuper
-        protected boolean onRowLongClick(@NonNull final View target, @NonNull final T item, final int position) {
+        protected boolean onRowLongClick(final @NonNull View target, final @NonNull T item, final int position) {
             super.onRowLongClick(target, item, position);
             return EditObjectListActivity.this.onRowLongClick(target, item, position);
         }
@@ -439,18 +439,18 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Bas
 
         @Override
         @CallSuper
-        protected boolean onRowDelete(@NonNull final View target, @NonNull final T item, final int position) {
+        protected boolean onRowDelete(final @NonNull View target, final @NonNull T item, final int position) {
             super.onRowDelete(target, item, position);
             return EditObjectListActivity.this.onRowDelete(target, item, position);
         }
 
         @Override
-        protected void onRowDown(@NonNull final View target, @NonNull final T item, final int position) {
+        protected void onRowDown(final @NonNull View target, final @NonNull T item, final int position) {
             EditObjectListActivity.this.onRowDown(target, item, position);
         }
 
         @Override
-        protected void onRowUp(@NonNull final View target, @NonNull final T item, final int position) {
+        protected void onRowUp(final @NonNull View target, final @NonNull T item, final int position) {
             EditObjectListActivity.this.onRowUp(target, item, position);
         }
     }

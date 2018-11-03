@@ -63,7 +63,7 @@
     <string name="lbl_contacts">Kontakt:</string>
     <string name="lbl_donate">Podpořit</string>
     <string name="lbl_about">O této aplikaci</string>
-    <string name="list_price">Seznam cen</string>
+    <string name="price_listed">Seznam cen</string>
     <string name="update_fields">Automaticky aktualizovat pole</string>
     <string name="select_fields_to_update">Zvolit pole k aktualizaci</string>
     <string name="select_fields_to_update_help">Vybraná pole budou aktualizována automaticky z internetu. Nevybraná pole zůstanou beze změny.</string>
@@ -78,13 +78,13 @@
     <string name="manage_fields_help">Vybraná pole jsou viditelná na obrazovce pro přidání/úpravu knihy. Nevybraná pole jsou skryta.</string>
     <string name="anthology_titles">Antologické tituly</string>
     <string name="amazon_wish_list">Amazon Wishlist</string>
-    <string name="same_author">Všechny příběhy v této antologii jsou napsány stejným autorem</string>
-    <string name="menu_delete_anthology">Odstranit tento titul z antologií</string>
+    <string name="toc_same_author">Všechny příběhy v této antologii jsou napsány stejným autorem</string>
+    <string name="menu_delete_toc_entry">Odstranit tento titul z antologií</string>
     <string name="is_anthology">Je tato kniha antologií?</string>
-    <string name="populate_anthology_titles">Automaticky naplnit tituly (EXPERIMENTÁLNÍ FUNKCE)</string>
-    <string name="error_anthology_automatic_population_failed">Automatické naplnění titulů selhalo</string>
+    <string name="populate_toc">Automaticky naplnit tituly (EXPERIMENTÁLNÍ FUNKCE)</string>
+    <string name="error_automatic_toc_population_failed">Automatické naplnění titulů selhalo</string>
     <string name="anthology">Antologie</string>
-    <string name="anthology_confirm">Prosím zkontrolujte, zda jsou tyto antologie v pořádku</string>
+    <string name="toc_confirm">Prosím zkontrolujte, zda jsou tyto antologie v pořádku</string>
     <string name="anthology_save">Uložit</string>
     <string name="anthology_add">Přidat</string>
     <string name="menu_add_thumb_photo">Z fotoaparátu&#8230;</string>
@@ -446,4 +446,5 @@
     <string name="edit_format_name">Upravit jméno formátu</string>
     <string name="name_can_not_be_blank">Jméno nesmí být prázdné</string>
     <string name="title_reorder">a|A|an|An|the|The</string>
+    <string name="content_tab">Obsah</string>
 </resources>

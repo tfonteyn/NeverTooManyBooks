@@ -56,7 +56,7 @@ public class EditBookshelfActivity extends BaseActivity {
 
     @Override
     @CallSuper
-    protected void onCreate(@Nullable final Bundle savedInstanceState) {
+    protected void onCreate(final @Nullable Bundle savedInstanceState) {
         try {
             super.onCreate(savedInstanceState);
             this.setTitle(R.string.title_edit_bs);

@@ -25,7 +25,8 @@
                 android:id="@+id/allow_asin"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/allow_asin" />
+                android:text="@string/allow_asin"
+                android:visibility="gone"/>
 
             <EditText
                 android:id="@+id/isbn"
@@ -132,6 +133,7 @@
             <ImageButton
                 android:id="@+id/isbn_del"
                 style="@style/isbnSearchKey"
+                android:background="?android:selectableItemBackground"
                 app:srcCompat="@drawable/ic_backspace"
                 tools:ignore="ContentDescription" />
         </LinearLayout>

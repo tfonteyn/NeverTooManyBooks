@@ -26,7 +26,7 @@ public class GoodreadsUtils {
     /**
      * Show the goodreads options list
      */
-    public static void showGoodreadsOptions(@NonNull final BaseActivity activity) {
+    public static void showGoodreadsOptions(final @NonNull BaseActivity activity) {
         LayoutInflater inf = activity.getLayoutInflater();
         @SuppressLint("InflateParams") // root==null as it's a dialog
         View root = inf.inflate(R.layout.goodreads_options_list, null);
@@ -86,12 +86,12 @@ public class GoodreadsUtils {
      *
      * We use a FragmentTask so that network access does not occur in the UI thread.
      */
-    public static void importAllFromGoodreads(@NonNull final BaseActivity context, final boolean isSync) {
+    public static void importAllFromGoodreads(final @NonNull BaseActivity context, final boolean isSync) {
 
         FragmentTask task = new FragmentTaskAbstract() {
             @Override
-            public void run(@NonNull final SimpleTaskQueueProgressDialogFragment fragment,
-                            @NonNull final SimpleTaskContext taskContext) {
+            public void run(final @NonNull SimpleTaskQueueProgressDialogFragment fragment,
+                            final @NonNull SimpleTaskContext taskContext) {
 
                 if (BCQueueManager.getQueueManager().hasActiveTasks(BCQueueManager.CAT_GOODREADS_IMPORT_ALL)) {
                     fragment.showUserMessage(fragment.getString(R.string.requested_task_is_already_queued));
@@ -165,10 +165,10 @@ public class GoodreadsUtils {
     /**
      * Start a background task that exports all books to goodreads.
      */
-    private static void sendToGoodreads(@NonNull final FragmentActivity context, final boolean updatesOnly) {
+    private static void sendToGoodreads(final @NonNull FragmentActivity context, final boolean updatesOnly) {
         FragmentTask task = new FragmentTaskAbstract() {
             @Override
-            public void run(@NonNull final SimpleTaskQueueProgressDialogFragment fragment, @NonNull final SimpleTaskContext taskContext) {
+            public void run(final @NonNull SimpleTaskQueueProgressDialogFragment fragment, final @NonNull SimpleTaskContext taskContext) {
                 int msg = checkCanSendToGoodreads();
                 if (msg == 0) {
                     QueueManager.getQueueManager().enqueueTask(new SendAllBooksTask(updatesOnly), BCQueueManager.QUEUE_MAIN);
@@ -178,8 +178,8 @@ public class GoodreadsUtils {
             }
 
             @Override
-            public void onFinish(@NonNull final SimpleTaskQueueProgressDialogFragment fragment,
-                                 @Nullable final Exception e) {
+            public void onFinish(final @NonNull SimpleTaskQueueProgressDialogFragment fragment,
+                                 final @Nullable Exception e) {
                 final int msg = getState();
                 if (msg == -1) {
                     fragment.post(new Runnable() {
@@ -202,24 +202,24 @@ public class GoodreadsUtils {
      * Ask the user which books to send, then send them.
      *
      * Optionally, display a dialog warning the user that goodreads authentication is required; gives them
-     * the options: 'request now', 'more info' or 'onCancel'.
+     * the options: 'request now', 'more info' or 'onPartialDatePickerCancel'.
      */
-    public static void sendBooksToGoodreads(@NonNull final BaseActivity ctx) {
+    public static void sendBooksToGoodreads(final @NonNull BaseActivity ctx) {
 
         FragmentTaskAbstract task = new FragmentTaskAbstract() {
             /**
              * Just check we can send. If so, onFinish() will be called.
              */
             @Override
-            public void run(@NonNull final SimpleTaskQueueProgressDialogFragment fragment,
-                            @NonNull final SimpleTaskContext taskContext) {
+            public void run(final @NonNull SimpleTaskQueueProgressDialogFragment fragment,
+                            final @NonNull SimpleTaskContext taskContext) {
                 int msg = GoodreadsUtils.checkCanSendToGoodreads();
                 setState(msg);
             }
 
             @Override
-            public void onFinish(@NonNull final SimpleTaskQueueProgressDialogFragment fragment,
-                                 @Nullable final Exception e) {
+            public void onFinish(final @NonNull SimpleTaskQueueProgressDialogFragment fragment,
+                                 final @Nullable Exception e) {
                 final FragmentActivity context = fragment.getActivity();
                 switch (getState()) {
                     case 0:
@@ -234,7 +234,7 @@ public class GoodreadsUtils {
                             dialog.setButton(DialogInterface.BUTTON_POSITIVE,
                                     context.getString(R.string.send_updated),
                                     new DialogInterface.OnClickListener() {
-                                        public void onClick(@NonNull final DialogInterface dialog, final int which) {
+                                        public void onClick(final @NonNull DialogInterface dialog, final int which) {
                                             dialog.dismiss();
                                             GoodreadsUtils.sendToGoodreads(context, true);
                                         }
@@ -243,7 +243,7 @@ public class GoodreadsUtils {
                             dialog.setButton(DialogInterface.BUTTON_NEUTRAL,
                                     context.getString(R.string.send_all),
                                     new DialogInterface.OnClickListener() {
-                                        public void onClick(@NonNull final DialogInterface dialog, final int which) {
+                                        public void onClick(final @NonNull DialogInterface dialog, final int which) {
                                             dialog.dismiss();
                                             GoodreadsUtils.sendToGoodreads(context, false);
                                         }
@@ -252,7 +252,7 @@ public class GoodreadsUtils {
                             dialog.setButton(DialogInterface.BUTTON_NEGATIVE,
                                     context.getString(android.R.string.cancel),
                                     new DialogInterface.OnClickListener() {
-                                        public void onClick(@NonNull final DialogInterface dialog, final int which) {
+                                        public void onClick(final @NonNull DialogInterface dialog, final int which) {
                                             dialog.dismiss();
                                         }
                                     });

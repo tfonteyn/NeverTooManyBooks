@@ -39,12 +39,12 @@ public interface Importer {
      * @param coverFinder  (Optional) object to find a file on the local device
      * @param listener     Progress and cancellation provider
      *
-     * @return <tt>true</tt>on onConfirm
+     * @return <tt>true</tt>on onTextFieldEditorSave
      */
     @SuppressWarnings("UnusedReturnValue")
-    boolean importBooks(@NonNull final InputStream importStream,
-                        @Nullable final Importer.CoverFinder coverFinder,
-                        @NonNull final Importer.OnImporterListener listener,
+    boolean importBooks(final @NonNull InputStream importStream,
+                        final @Nullable Importer.CoverFinder coverFinder,
+                        final @NonNull Importer.OnImporterListener listener,
                         final int importFlags) throws IOException;
 
     /**
@@ -53,7 +53,7 @@ public interface Importer {
      * @author pjw
      */
     interface OnImporterListener {
-        void onProgress(@NonNull final String message, final int position);
+        void onProgress(final @NonNull String message, final int position);
 
         boolean isActive();
 
@@ -67,6 +67,6 @@ public interface Importer {
      * @author pjw
      */
     interface CoverFinder extends AutoCloseable {
-        void copyOrRenameCoverFile(@NonNull final String srcUuid, final long srcId, final long dstId) throws IOException;
+        void copyOrRenameCoverFile(final @NonNull String srcUuid, final long srcId, final long dstId) throws IOException;
     }
 }

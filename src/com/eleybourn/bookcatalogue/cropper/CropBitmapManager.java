@@ -25,15 +25,15 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 /**
- * This class provides several utilities to onCancel bitmap decoding.
+ * This class provides several utilities to onPartialDatePickerCancel bitmap decoding.
  *
  * The function decodeFileDescriptor() is used to decode a bitmap. During
- * decoding if another thread wants to onCancel it, it calls the function
+ * decoding if another thread wants to onPartialDatePickerCancel it, it calls the function
  * cancelThreadDecoding() specifying the Thread which is in decoding.
  *
  * cancelThreadDecoding() is sticky until allowThreadDecoding() is called.
  *
- * You can also onCancel decoding for a set of threads using ThreadSet as the
+ * You can also onPartialDatePickerCancel decoding for a set of threads using ThreadSet as the
  * parameter for cancelThreadDecoding. To put a thread into a ThreadSet, use the
  * add() method. A ThreadSet holds (weak) references to the threads, so you
  * don't need to remove Thread from it if some thread dies.
@@ -58,7 +58,7 @@ class CropBitmapManager {
      * Get thread status and create one if specified.
      */
     @NonNull
-    private synchronized ThreadStatus getOrCreateThreadStatus(@NonNull final Thread t) {
+    private synchronized ThreadStatus getOrCreateThreadStatus(final @NonNull Thread t) {
         ThreadStatus status = mThreadStatus.get(t);
         if (status == null) {
             status = new ThreadStatus();
@@ -72,36 +72,36 @@ class CropBitmapManager {
      * BitmapFaction.Options used for decoding and cancelling.
      */
     @SuppressWarnings("unused")
-    private synchronized void setDecodingOptions(@NonNull final Thread t,
-                                                 @NonNull final BitmapFactory.Options options) {
+    private synchronized void setDecodingOptions(final @NonNull Thread t,
+                                                 final @NonNull BitmapFactory.Options options) {
         getOrCreateThreadStatus(t).mOptions = options;
     }
 
     @SuppressWarnings("unused")
     @Nullable
-    synchronized BitmapFactory.Options getDecodingOptions(@NonNull final Thread t) {
+    synchronized BitmapFactory.Options getDecodingOptions(final @NonNull Thread t) {
         ThreadStatus status = mThreadStatus.get(t);
         return status != null ? status.mOptions : null;
     }
 
     @SuppressWarnings("unused")
-    private synchronized void removeDecodingOptions(@NonNull final Thread t) {
+    private synchronized void removeDecodingOptions(final @NonNull Thread t) {
         ThreadStatus status = mThreadStatus.get(t);
         status.mOptions = null;
     }
 
     /**
-     * The following two methods are used to allow/onCancel a set of threads for
+     * The following two methods are used to allow/onPartialDatePickerCancel a set of threads for
      * bitmap decoding.
      */
     @SuppressWarnings("unused")
-    public synchronized void allowThreadDecoding(@NonNull final ThreadSet threads) {
+    public synchronized void allowThreadDecoding(final @NonNull ThreadSet threads) {
         for (Thread t : threads) {
             allowThreadDecoding(t);
         }
     }
 
-    synchronized void cancelThreadDecoding(@NonNull final ThreadSet threads) {
+    synchronized void cancelThreadDecoding(final @NonNull ThreadSet threads) {
         for (Thread t : threads) {
             cancelThreadDecoding(t);
         }
@@ -112,18 +112,18 @@ class CropBitmapManager {
      * being disabled for bitmap decoding.
      */
     @SuppressWarnings("unused")
-    private synchronized boolean canThreadDecoding(@NonNull final Thread t) {
+    private synchronized boolean canThreadDecoding(final @NonNull Thread t) {
         ThreadStatus status = mThreadStatus.get(t);
         // allow decoding by default
         return status == null || (status.mState != State.CANCEL);
 
     }
 
-    private synchronized void allowThreadDecoding(@NonNull final Thread t) {
+    private synchronized void allowThreadDecoding(final @NonNull Thread t) {
         getOrCreateThreadStatus(t).mState = State.ALLOW;
     }
 
-    private synchronized void cancelThreadDecoding(@NonNull final Thread t) {
+    private synchronized void cancelThreadDecoding(final @NonNull Thread t) {
         ThreadStatus status = getOrCreateThreadStatus(t);
         status.mState = State.CANCEL;
         if (status.mOptions != null) {
@@ -178,11 +178,11 @@ class CropBitmapManager {
     public static class ThreadSet implements Iterable<Thread> {
         private final Map<Thread, Object> mWeakCollection = new WeakHashMap<>();
 
-        public void add(@NonNull final Thread t) {
+        public void add(final @NonNull Thread t) {
             mWeakCollection.put(t, null);
         }
 
-        public void remove(@NonNull final Thread t) {
+        public void remove(final @NonNull Thread t) {
             mWeakCollection.remove(t);
         }
 
@@ -196,7 +196,7 @@ class CropBitmapManager {
 //	 * The real place to delegate bitmap decoding to BitmapFactory.
 //	 */
 //	@Nullable
-//	public Bitmap decodeFileDescriptor(@NonNull final FileDescriptor fd,
+//	public Bitmap decodeFileDescriptor(final @NonNull FileDescriptor fd,
 //			BitmapFactory.Options options) {
 //		if (options.mCancel) {
 //			return null;

@@ -3,7 +3,7 @@ package com.eleybourn.bookcatalogue.searches.isfdb;
 import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
-import com.eleybourn.bookcatalogue.EditBookAnthologyFragment;
+import com.eleybourn.bookcatalogue.EditBookTOCFragment;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
 import org.jsoup.Connection;
@@ -19,7 +19,7 @@ abstract class AbstractBase {
     /**
      * Trim extraneous punctuation and whitespace from the titles and authors
      *
-     * Original code in {@link EditBookAnthologyFragment} had:
+     * Original code in {@link EditBookTOCFragment} had:
      * CLEANUP_REGEX = "[\\,\\.\\'\\:\\;\\`\\~\\@\\#\\$\\%\\^\\&\\*\\(\\)\\-\\=\\_\\+]*$";
      *
      * Android Studio:
@@ -104,14 +104,14 @@ abstract class AbstractBase {
     }
 
     @NonNull
-    String cleanUpName(@NonNull final String s) {
+    String cleanUpName(final @NonNull String s) {
         return s.trim()
                 .replace("\n", " ")
                 .replaceAll(CLEANUP_TITLE_REGEX, "")
                 .trim();
     }
 
-    long stripNumber(@NonNull final String url) {
+    long stripNumber(final @NonNull String url) {
         return Long.parseLong(url.split("\\?")[1]);
     }
 }

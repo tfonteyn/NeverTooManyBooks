@@ -284,7 +284,7 @@ public class BooklistBuilder implements AutoCloseable {
      * @param db    Database Adapter to use
      * @param style Book list style to use
      */
-    public BooklistBuilder(@NonNull final CatalogueDBAdapter db, @NonNull final BooklistStyle style) {
+    public BooklistBuilder(final @NonNull CatalogueDBAdapter db, final @NonNull BooklistStyle style) {
         if (DEBUG_SWITCHES.BOOKLIST_BUILDER && BuildConfig.DEBUG) {
             synchronized (mDebugInstanceCount) {
                 mDebugInstanceCount++;
@@ -355,8 +355,8 @@ public class BooklistBuilder implements AutoCloseable {
      */
     @NonNull
     @SuppressWarnings("UnusedReturnValue")
-    public BooklistBuilder requireDomain(@NonNull final DomainDefinition domain,
-                                         @NonNull final String sourceExpression,
+    public BooklistBuilder requireDomain(final @NonNull DomainDefinition domain,
+                                         final @NonNull String sourceExpression,
                                          final boolean isSorted) {
         // Save the details
         ExtraDomainDetails info = new ExtraDomainDetails();
@@ -410,7 +410,7 @@ public class BooklistBuilder implements AutoCloseable {
      * The logic being that IF they had a time part then it would be UTC.
      * Without a time part, we assume the zone is local (or irrelevant).
      */
-    private String localDateExpression(@NonNull final String fieldSpec) {
+    private String localDateExpression(final @NonNull String fieldSpec) {
         return "Case" +
                 " When " + fieldSpec +
                 " glob '*-*-* *' " +
@@ -497,14 +497,14 @@ public class BooklistBuilder implements AutoCloseable {
     /**
      * @param criteria Search criteria: additional conditions that apply to book table
      */
-    public void setCriteriaBook(@Nullable final String criteria) {
+    public void setCriteriaBook(final @Nullable String criteria) {
         this.mBookCriteria = criteria;
     }
 
     /**
      * @param personName Search criteria: only books loaned to named person (exact name)
      */
-    public void setCriteriaLoanedTo(@Nullable final String personName) {
+    public void setCriteriaLoanedTo(final @Nullable String personName) {
         this.mLoanedToCriteria = personName;
     }
 
@@ -514,11 +514,11 @@ public class BooklistBuilder implements AutoCloseable {
      *
      * @param name Search criteria: only books with named author (with added wildcards)
      */
-    public void setCriteriaAuthorName(@Nullable final String name) {
+    public void setCriteriaAuthorName(final @Nullable String name) {
         this.mAuthorNameCriteria = name;
     }
 
-    public void setCriteriaTitle(@Nullable final String title) {
+    public void setCriteriaTitle(final @Nullable String title) {
         this.mTitleCriteria = title;
     }
     /**
@@ -526,7 +526,7 @@ public class BooklistBuilder implements AutoCloseable {
      *
      * @param seriesName Search criteria: only books in named series (with added wildcards)
      */
-    public void setCriteriaSeriesName(@Nullable final String seriesName) {
+    public void setCriteriaSeriesName(final @Nullable String seriesName) {
         this.mSeriesNameCriteria = seriesName;
     }
 
@@ -543,7 +543,7 @@ public class BooklistBuilder implements AutoCloseable {
      *
      * @param criteria Search criteria: book details must in some way contain the passed text
      */
-    public void setCriteriaText(@Nullable final String criteria) {
+    public void setCriteriaText(final @Nullable String criteria) {
         // Cleanup searchText
         // Because FTS does not understand locales in all android up to 4.2,
         // we do case folding here using the default locale.
@@ -558,7 +558,7 @@ public class BooklistBuilder implements AutoCloseable {
      *
      * @param list Search criteria: a list of book id's.
      */
-    public void setCriteriaBookIdList(@Nullable final List<Integer> list) {
+    public void setCriteriaBookIdList(final @Nullable List<Integer> list) {
         if (list != null) {
             ArrayUtils<Integer> au = new ArrayUtils<>();
             this.mBookIdListCriteria = au.encodeList(list);
@@ -636,9 +636,9 @@ public class BooklistBuilder implements AutoCloseable {
                 // We want the series number in the base data in sorted order
 
                 // Allow for the possibility of 3.1, or even "3.1|Omnibus 3-10" as a series number.
-                // so we convert it to a float.
+                // so we convert it to a real (aka float).
                 summary.addDomain(DOM_SERIES_NUM_FLOAT,
-                        "cast(" + TBL_BOOK_SERIES.dot(DOM_BOOK_SERIES_NUM) + " AS float)",
+                        "cast(" + TBL_BOOK_SERIES.dot(DOM_BOOK_SERIES_NUM) + " AS REAL)",
                         SummaryBuilder.FLAG_SORTED);
                 // We also add the base name as a sorted field for display purposes and in case of non-numeric data.
                 summary.addDomain(DOM_BOOK_SERIES_NUM,
@@ -1022,9 +1022,9 @@ public class BooklistBuilder implements AutoCloseable {
         }
     }
 
-    private void baseBuildWithoutTriggers(@NonNull final SqlComponents sqlCmp,
+    private void baseBuildWithoutTriggers(final @NonNull SqlComponents sqlCmp,
                                           final boolean collationIsCs,
-                                          @NonNull final String ix1Sql,
+                                          final @NonNull String ix1Sql,
                                           final long t9) {
         final long t_style[] = new long[mStyle.size()];
         t_style[0] = System.currentTimeMillis();
@@ -1099,14 +1099,14 @@ public class BooklistBuilder implements AutoCloseable {
      * that will be displayed and that level in the UI.
      * ****************************************************************************************
      */
-    private void build_processEachGroupInTheStyle(@NonNull final SummaryBuilder /* in/out */ summary,
-                                                  @NonNull final StyleInfo /* in/ou */ styleInfo,
-                                                  @NonNull final BooklistGroup /* in/out */ booklistGroup,
+    private void build_processEachGroupInTheStyle(final @NonNull SummaryBuilder /* in/out */ summary,
+                                                  final @NonNull StyleInfo /* in/ou */ styleInfo,
+                                                  final @NonNull BooklistGroup /* in/out */ booklistGroup,
                                                   final int sortDescendingMask) {
 
         switch (booklistGroup.kind) {
 
-            // NEWKIND: Add new kinds to this list
+            // NEWKIND: ROW_KIND_x
 
             case ROW_KIND_SERIES:
                 booklistGroup.displayDomain = DOM_SERIES_NAME;
@@ -1414,7 +1414,7 @@ public class BooklistBuilder implements AutoCloseable {
      * Build the 'join' statement based on the groups and extra criteria
      */
     @NonNull
-    private String build_join(@NonNull final StyleInfo styleInfo) {
+    private String build_join(final @NonNull StyleInfo styleInfo) {
 
         JoinContext join;
 
@@ -1457,7 +1457,7 @@ public class BooklistBuilder implements AutoCloseable {
         return join.toString();
     }
 
-    private boolean isNonBlank(@Nullable final String s) {
+    private boolean isNonBlank(final @Nullable String s) {
         return (s != null && !s.trim().isEmpty());
     }
 
@@ -1561,7 +1561,7 @@ public class BooklistBuilder implements AutoCloseable {
     /**
      * Add all possible/enabled Filters
      */
-    private void build_whereClause_addFilters(@NonNull final StringBuilder /* in/out */ where) {
+    private void build_whereClause_addFilters(final @NonNull StringBuilder /* in/out */ where) {
         // Add support for book filter: READ
         {
             String extra = null;
@@ -1671,7 +1671,7 @@ public class BooklistBuilder implements AutoCloseable {
      * This approach means to allow DESCENDING sort orders.
      */
     @NonNull
-    private String makeTriggers(@NonNull final SummaryBuilder summary, final boolean nestedTriggers) {
+    private String makeTriggers(final @NonNull SummaryBuilder summary, final boolean nestedTriggers) {
         if (nestedTriggers) {
             // Nested triggers are compatible with Android 2.2+ and fast
             // (or at least relatively fast when there are a 'reasonable'
@@ -1692,7 +1692,7 @@ public class BooklistBuilder implements AutoCloseable {
      * manually generated lists.
      */
     @NonNull
-    private String makeSingleTrigger(@NonNull final SummaryBuilder summary) {
+    private String makeSingleTrigger(final @NonNull SummaryBuilder summary) {
         // Name of a table to store the snapshot of the most recent/current row headings
         final String currTblName = mListTable + "_curr";
         final String viewTblName = mListTable + "_view";
@@ -1814,7 +1814,7 @@ public class BooklistBuilder implements AutoCloseable {
      * It is the preferred option in Android 2.2+, but there is a chance that some vendor implemented
      * a broken or old SQLite version.
      */
-    private void makeNestedTriggers(@NonNull final SummaryBuilder summary) {
+    private void makeNestedTriggers(final @NonNull SummaryBuilder summary) {
         // Name of a table to store the snapshot of the most recent/current row headings
         final String currTblName = mListTable + "_curr";
         // List of cols we sort by
@@ -2101,7 +2101,7 @@ public class BooklistBuilder implements AutoCloseable {
     /**
      * Utility routine to perform a single count query.
      */
-    private int pseudoCount(@NonNull final String name, @NonNull final String countSql) {
+    private int pseudoCount(final @NonNull String name, final @NonNull String countSql) {
         @SuppressWarnings("UnusedAssignment")
         final long t0 = System.currentTimeMillis();
         int cnt;
@@ -2380,7 +2380,7 @@ public class BooklistBuilder implements AutoCloseable {
         final DomainDefinition domain;
         final boolean isDescending;
 
-        SortedDomainInfo(@NonNull final DomainDefinition domain, final boolean isDescending) {
+        SortedDomainInfo(final @NonNull DomainDefinition domain, final boolean isDescending) {
             this.domain = domain;
             this.isDescending = isDescending;
         }
@@ -2502,7 +2502,7 @@ public class BooklistBuilder implements AutoCloseable {
          * @param expression Source Expression
          * @param flags      Flags indicating attributes of new domain
          */
-        void addDomain(@NonNull final DomainDefinition domain, @Nullable final String expression, final int flags) {
+        void addDomain(final @NonNull DomainDefinition domain, final @Nullable String expression, final int flags) {
             // Add to various collections. We use a map to improve lookups and ArrayLists
             // so we can preserve order. Order preservation makes reading the SQL easier
             // but is unimportant for code correctness.
@@ -2584,7 +2584,7 @@ public class BooklistBuilder implements AutoCloseable {
          * @return SqlComponents structure
          */
         @NonNull
-        SqlComponents buildSqlComponents(@NonNull final CompoundKey rootKey) {
+        SqlComponents buildSqlComponents(final @NonNull CompoundKey rootKey) {
             // Rebuild the data table
             recreateTable();
             // List of column names for the INSERT... part

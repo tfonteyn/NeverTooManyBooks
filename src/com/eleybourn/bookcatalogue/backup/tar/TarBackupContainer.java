@@ -72,7 +72,7 @@ public class TarBackupContainer implements BackupContainer {
     /**
      * Constructor
      */
-    public TarBackupContainer(@NonNull final File file) {
+    public TarBackupContainer(final @NonNull File file) {
         mFile = file;
     }
 

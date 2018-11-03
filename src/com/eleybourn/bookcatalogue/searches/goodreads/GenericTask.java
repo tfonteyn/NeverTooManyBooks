@@ -33,7 +33,7 @@ import android.widget.TextView;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.dialogs.ContextDialogItem;
-import com.eleybourn.bookcatalogue.taskqueue.BindableItemCursor;
+import com.eleybourn.bookcatalogue.database.cursors.BindableItemCursor;
 import com.eleybourn.bookcatalogue.taskqueue.QueueManager;
 import com.eleybourn.bookcatalogue.taskqueue.RunnableTask;
 import com.eleybourn.bookcatalogue.taskqueue.TasksCursor;
@@ -55,7 +55,7 @@ public abstract class GenericTask extends RunnableTask {
     private static final String STATUS_FAILED = "F";
     private static final String STATUS_QUEUED = "Q";
 
-    GenericTask(@NonNull final String description) {
+    GenericTask(final @NonNull String description) {
         super(description);
     }
 
@@ -63,10 +63,10 @@ public abstract class GenericTask extends RunnableTask {
      * Create a new View
      */
     @Override
-    public View newListItemView(@NonNull final LayoutInflater inflater,
-                                @NonNull final Context context,
-                                @NonNull final BindableItemCursor cursor,
-                                @NonNull final ViewGroup parent) {
+    public View newListItemView(final @NonNull LayoutInflater inflater,
+                                final @NonNull Context context,
+                                final @NonNull BindableItemCursor cursor,
+                                final @NonNull ViewGroup parent) {
         View view = inflater.inflate(R.layout.task_info, parent, false);
         ViewTagger.setTag(view, R.id.TAG_TASK, this);
 
@@ -90,10 +90,10 @@ public abstract class GenericTask extends RunnableTask {
      * Bind task details to passed View
      */
     @Override
-    public void bindView(@NonNull final View view,
-                         @NonNull final Context context,
-                         @NonNull final BindableItemCursor bindAbleCursor,
-                         @NonNull final Object appInfo) {
+    public void bindView(final @NonNull View view,
+                         final @NonNull Context context,
+                         final @NonNull BindableItemCursor bindAbleCursor,
+                         final @NonNull Object appInfo) {
         TaskHolder holder = ViewTagger.getTagOrThrow(view, R.id.TAG_TASK_HOLDER);
         TasksCursor cursor = (TasksCursor) bindAbleCursor;
 
@@ -151,13 +151,13 @@ public abstract class GenericTask extends RunnableTask {
      * - Allow task deletion
      */
     @Override
-    public void addContextMenuItems(@NonNull final Context context,
-                                    @NonNull final AdapterView<?> parent,
-                                    @NonNull final View view,
+    public void addContextMenuItems(final @NonNull Context context,
+                                    final @NonNull AdapterView<?> parent,
+                                    final @NonNull View view,
                                     final int position,
                                     final long id,
-                                    @NonNull final List<ContextDialogItem> items,
-                                    @NonNull final Object appInfo) {
+                                    final @NonNull List<ContextDialogItem> items,
+                                    final @NonNull Object appInfo) {
 
         items.add(new ContextDialogItem(context.getString(R.string.delete_task), new Runnable() {
                     @Override

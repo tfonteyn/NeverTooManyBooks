@@ -45,7 +45,7 @@ import java.io.Serializable;
 public abstract class ReaderEntityAbstract implements ReaderEntity {
 
     @Override
-    public void saveToDirectory(@NonNull final File dir) throws IOException {
+    public void saveToDirectory(final @NonNull File dir) throws IOException {
         if (!dir.isDirectory()) {
             throw new IllegalArgumentException("Not a directory");
         }
@@ -75,7 +75,7 @@ public abstract class ReaderEntityAbstract implements ReaderEntity {
     /**
      * Read the input as XML and put it into a SharedPreferences
      */
-    public void getPreferences(@NonNull final SharedPreferences prefs) throws IOException {
+    public void getPreferences(final @NonNull SharedPreferences prefs) throws IOException {
         final BufferedReader in = new BufferedReaderNoClose(new InputStreamReader(getStream(),
                 TarBackupContainer.UTF8), TarBackupContainer.BUFFER_SIZE);
         BackupUtils.preferencesFromXml(in, prefs);
@@ -106,7 +106,7 @@ public abstract class ReaderEntityAbstract implements ReaderEntity {
      * @author pjw
      */
     private static class BufferedReaderNoClose extends BufferedReader {
-        BufferedReaderNoClose(@NonNull final Reader in, @SuppressWarnings("SameParameterValue") final int flags) {
+        BufferedReaderNoClose(final @NonNull Reader in, @SuppressWarnings("SameParameterValue") final int flags) {
             super(in, flags);
         }
 

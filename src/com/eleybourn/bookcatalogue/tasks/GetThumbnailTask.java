@@ -100,9 +100,9 @@ public class GetThumbnailTask implements SimpleTask {
     /**
      * Constructor. Clean the view and save the details of what we want.
      */
-    private GetThumbnailTask(@NonNull final Context context,
-                             @NonNull final String hash,
-                             @NonNull final ImageView v,
+    private GetThumbnailTask(final @NonNull Context context,
+                             final @NonNull String hash,
+                             final @NonNull ImageView v,
                              final int maxWidth,
                              final int maxHeight,
                              final boolean cacheWasChecked) {
@@ -130,9 +130,9 @@ public class GetThumbnailTask implements SimpleTask {
      * thread checks the cache only if there are no background cache-related tasks
      * currently running.
      */
-    public static void getThumbnail(@NonNull final Context context,
-                                    @NonNull final String hash,
-                                    @NonNull final ImageView view,
+    public static void getThumbnail(final @NonNull Context context,
+                                    final @NonNull String hash,
+                                    final @NonNull ImageView view,
                                     final int maxWidth,
                                     final int maxHeight,
                                     final boolean cacheWasChecked) {
@@ -145,7 +145,7 @@ public class GetThumbnailTask implements SimpleTask {
      *
      * @param t Task to put in queue
      */
-    public static void enqueue(@NonNull final SimpleTask t) {
+    public static void enqueue(final @NonNull SimpleTask t) {
         mQueue.enqueue(t);
     }
 
@@ -159,7 +159,7 @@ public class GetThumbnailTask implements SimpleTask {
      * Used internally and from Utils.fetchFileIntoImageView to ensure that nothing
      * overwrites the view.
      */
-    public static void clearOldTaskFromView(@NonNull final ImageView v) {
+    public static void clearOldTaskFromView(final @NonNull ImageView v) {
         final GetThumbnailTask oldTask = ViewTagger.getTag(v, R.id.TAG_GET_THUMBNAIL_TASK);
         if (oldTask != null) {
             ViewTagger.setTag(v, R.id.TAG_GET_THUMBNAIL_TASK, null);
@@ -175,7 +175,7 @@ public class GetThumbnailTask implements SimpleTask {
      * TODO: fetchBookCoverIntoImageView is an expensive operation. Make sure its still needed.
      */
     @Override
-    public void run(@NonNull final SimpleTaskContext taskContext) {
+    public void run(final @NonNull SimpleTaskContext taskContext) {
 			/*
 			try {
 				Thread.sleep(10); // Let the UI have a chance to do something if we are racking up images!

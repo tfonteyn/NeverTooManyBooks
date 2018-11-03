@@ -168,7 +168,6 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
 
     private Spinner mBookshelfSpinner;
     private ArrayAdapter<String> mBookshelfAdapter;
-    private MenuHandler mMenuHandler;
 
     @Override
     protected int getLayoutId() {
@@ -177,7 +176,7 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
 
     @Override
     @CallSuper
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
+    public void onCreate(final @Nullable Bundle savedInstanceState) {
         Tracker.enterOnCreate(this);
         try {
             super.onCreate(savedInstanceState);
@@ -357,7 +356,7 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
      */
     @Override
     @CallSuper
-    public boolean onContextItemSelected(@NonNull final MenuItem item) {
+    public boolean onContextItemSelected(final @NonNull MenuItem item) {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         mList.moveToPosition(info.position);
 
@@ -375,38 +374,22 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
      */
     @Override
     @CallSuper
-    public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
-        mMenuHandler = new MenuHandler(menu);
-        mMenuHandler.addCreateBookSubMenu(menu);
+    public boolean onCreateOptionsMenu(final @NonNull Menu menu) {
 
-        mMenuHandler.addItem(menu, R.id.MENU_SORT, R.string.menu_sort_and_style_ellipsis, R.drawable.ic_sort_by_alpha)
+        MenuHandler.addCreateBookSubMenu(menu);
+
+        menu.add(Menu.NONE, R.id.MENU_SORT, 0, R.string.menu_sort_and_style_ellipsis)
+                .setIcon(R.drawable.ic_sort_by_alpha)
                 .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 
-        mMenuHandler.addItem(menu, R.id.MENU_EXPAND, R.string.menu_expand_all, R.drawable.ic_expand_more);
+        menu.add(Menu.NONE, R.id.MENU_EXPAND, 0, R.string.menu_expand_all)
+                .setIcon(R.drawable.ic_expand_more);
 
-        mMenuHandler.addItem(menu, R.id.MENU_COLLAPSE, R.string.menu_collapse_all, R.drawable.ic_expand_less);
+        menu.add(Menu.NONE, R.id.MENU_COLLAPSE, 0, R.string.menu_collapse_all)
+                .setIcon(R.drawable.ic_expand_less);
 
         return super.onCreateOptionsMenu(menu);
     }
-
-//    /**
-//     * Runs each time the menu button is pressed. This will setup the options menu
-//     */
-//    @Override
-//    @CallSuper
-//    public boolean onPrepareOptionsMenu(@NonNull final Menu menu) {
-//        mMenuHandler = new MenuHandler(menu);
-//        mMenuHandler.addCreateBookSubMenu(menu);
-//
-//        mMenuHandler.addItem(menu, R.id.MENU_SORT, R.string.sort_and_style_ellipsis, R.drawable.ic_sort_by_alpha)
-//                .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-//
-//        mMenuHandler.addItem(menu, R.id.MENU_EXPAND, R.string.menu_expand_all, R.drawable.ic_expand_more);
-//
-//        mMenuHandler.addItem(menu, R.id.MENU_COLLAPSE, R.string.menu_collapse_all, R.drawable.ic_expand_less);
-//
-//        return super.onPrepareOptionsMenu(menu);
-//    }
 
     /**
      * This will be called when a menu item is selected. A large switch
@@ -418,7 +401,7 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
      */
     @Override
     @CallSuper
-    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+    public boolean onOptionsItemSelected(final @NonNull MenuItem item) {
         switch (item.getItemId()) {
 
             case R.id.MENU_SORT:
@@ -454,14 +437,7 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
             }
         }
 
-        if (mMenuHandler != null) {
-            boolean handled = mMenuHandler.onOptionsItemSelected(this, item);
-            if (handled) {
-                return true;
-            }
-        }
-
-        return super.onOptionsItemSelected(item);
+        return MenuHandler.onOptionsItemSelected(this, item) || super.onOptionsItemSelected(item);
     }
 
     /**
@@ -470,7 +446,7 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
      */
     @Override
     @CallSuper
-    protected void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent data) {
+    protected void onActivityResult(final int requestCode, final int resultCode, final @Nullable Intent data) {
         if (BuildConfig.DEBUG) {
             Logger.info(this, "onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
         }
@@ -493,7 +469,7 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
 
                 // Always rebuild, even after a cancelled edit because there might have been global edits
                 // ENHANCE: Allow detection of global changes to avoid unnecessary rebuilds
-                savePosition();
+//                savePosition();
                 initBookList(false);
                 return;
 
@@ -505,7 +481,7 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
                     mAuthorSearchText = initSearchField(data.getStringExtra(UniqueId.KEY_AUTHOR_NAME));
                     mTitleSearchText = initSearchField(data.getStringExtra(UniqueId.KEY_TITLE));
                     mSearchBookIdList = data.getIntegerArrayListExtra(UniqueId.BKEY_BOOK_ID_LIST);
-                    savePosition();
+//                    savePosition();
                     initBookList(true);
                 }
                 return;
@@ -514,8 +490,8 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
                 Logger.error("onActivityResult: BooklistStylePropertiesActivity.REQUEST_CODE was supposed to be unused?");
 
                 if (resultCode == Activity.RESULT_OK) {
-                    if (data != null && data.hasExtra(BooklistStylePropertiesActivity.REQUEST_KEY_STYLE)) {
-                        BooklistStyle style = (BooklistStyle) data.getSerializableExtra(BooklistStylePropertiesActivity.REQUEST_KEY_STYLE);
+                    if (data != null && data.hasExtra(BooklistStylePropertiesActivity.REQUEST_BKEY_STYLE)) {
+                        BooklistStyle style = (BooklistStyle) data.getSerializableExtra(BooklistStylePropertiesActivity.REQUEST_BKEY_STYLE);
                         if (style != null) {
                             mCurrentStyle = style;
                             saveBookShelfAndStyle(mCurrentBookshelf, mCurrentStyle);
@@ -566,8 +542,8 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
      * @param newList    New cursor to use
      * @param targetRows if set, change the position to targetRow.
      */
-    private void displayList(@NonNull final BooklistPseudoCursor newList,
-                             @Nullable final ArrayList<BookRowInfo> targetRows) {
+    private void displayList(final @NonNull BooklistPseudoCursor newList,
+                             final @Nullable ArrayList<BookRowInfo> targetRows) {
 
         final int showHeaderFlags = (mCurrentStyle == null ? BooklistStyle.SUMMARY_SHOW_ALL : mCurrentStyle.getShowHeaderInfo());
 
@@ -644,7 +620,7 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
         listView.setOnScrollListener(
                 new OnScrollListener() {
                     @Override
-                    public void onScroll(@NonNull final AbsListView view, final int firstVisibleItem, final int visibleItemCount, final int totalItemCount) {
+                    public void onScroll(final @NonNull AbsListView view, final int firstVisibleItem, final int visibleItemCount, final int totalItemCount) {
                         // TODO: Investigate why BooklistPseudoCursor causes a scroll even when it is closed!
                         // Need to check isDead because BooklistPseudoCursor misbehaves when activity
                         // terminates and closes cursor
@@ -700,7 +676,7 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
      *
      * called from {@link #displayList}
      */
-    private void fixPositionWhenDrawn(@NonNull final ListView lv, @NonNull final ArrayList<BookRowInfo> targetRows) {
+    private void fixPositionWhenDrawn(final @NonNull ListView lv, final @NonNull ArrayList<BookRowInfo> targetRows) {
         getListView().post(new Runnable() {
             @Override
             public void run() {
@@ -739,7 +715,7 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
                     // - put phone in portrait mode
                     // - edit a book near bottom of list
                     // - turn phone to landscape
-                    // - save the book (don't onCancel)
+                    // - save the book (don't onPartialDatePickerCancel)
                     // Book will be off bottom of screen without the smoothScroll in the second Runnable.
                     //
                     lv.setSelectionFromTop(best.listPosition, 0);
@@ -773,7 +749,7 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
      * @param hasLevel1 flag indicating level 1 is present
      * @param hasLevel2 flag indicating level 2 is present
      */
-    private void updateListHeader(@NonNull final ListViewHolder holder,
+    private void updateListHeader(final @NonNull ListViewHolder holder,
                                   int topItem,
                                   final boolean hasLevel1,
                                   final boolean hasLevel2,
@@ -867,8 +843,8 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
                         String listTable = mList.getBuilder().createFlattenedBooklist().getTable().getName();
                         Intent intent = new Intent(BooksOnBookshelf.this, BookDetailsActivity.class);
                         intent.putExtra(UniqueId.KEY_ID, bookId);
-                        intent.putExtra(BookDetailsActivity.REQUEST_KEY_FLATTENED_BOOKLIST, listTable);
-                        intent.putExtra(BookDetailsActivity.REQUEST_KEY_FLATTENED_BOOKLIST_POSITION, position);
+                        intent.putExtra(BookDetailsActivity.REQUEST_BKEY_FLATTENED_BOOKLIST, listTable);
+                        intent.putExtra(BookDetailsActivity.REQUEST_BKEY_FLATTENED_BOOKLIST_POSITION, position);
                         startActivityForResult(intent, BookDetailsActivity.REQUEST_CODE); /* e63944b6-b63a-42b1-897a-a0e8e0dabf8a */
 
                     } else {
@@ -886,9 +862,10 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
             }
         });
 
+        //TOMF: redo this with a standard context menu
         getListView().setOnItemLongClickListener(new OnItemLongClickListener() {
             @Override
-            public boolean onItemLongClick(final AdapterView<?> parent, @NonNull final View view, final int position, final long id) {
+            public boolean onItemLongClick(final AdapterView<?> parent, final @NonNull View view, final int position, final long id) {
                 mList.moveToPosition(position);
                 List<SimpleDialogItem> menu = new ArrayList<>();
                 mListHandler.buildContextMenu(mList.getRowView(), menu);
@@ -898,7 +875,7 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
                             null, menu, null,
                             new SimpleDialogOnClickListener() {
                                 @Override
-                                public void onClick(@NonNull final SimpleDialogItem item) {
+                                public void onClick(final @NonNull SimpleDialogItem item) {
                                     mList.moveToPosition(position);
                                     int id = ((SimpleDialogMenuItem) item).getItemId();
 
@@ -1036,7 +1013,7 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
     /**
      * Save the bookshelf + it's style + the style as the new default.
      */
-    private void saveBookShelfAndStyle(@NonNull final Bookshelf bookshelf, @NonNull final BooklistStyle style) {
+    private void saveBookShelfAndStyle(final @NonNull Bookshelf bookshelf, final @NonNull BooklistStyle style) {
         SharedPreferences.Editor ed = getPrefs().edit();
         // current bookshelf
         ed.putString(PREF_BOOKSHELF, bookshelf.name);
@@ -1053,7 +1030,7 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
      * @see #getBookshelfStyle(Bookshelf, BooklistStyles)
      */
     @NonNull
-    private BooklistStyle getBookshelfStyle(@NonNull final Bookshelf bookshelf) {
+    private BooklistStyle getBookshelfStyle(final @NonNull Bookshelf bookshelf) {
         return getBookshelfStyle(bookshelf, BooklistStyles.getAllStyles(mDb));
     }
 
@@ -1066,8 +1043,8 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
      * @see #getBookshelfStyle(Bookshelf)
      */
     @NonNull
-    private BooklistStyle getBookshelfStyle(@NonNull final Bookshelf bookshelf, @NonNull final BooklistStyles styles) {
-        String globalDefaultStyle = BookCatalogueApp.Prefs.getString(PREF_LIST_STYLE, getString(DEFAULT_STYLE));
+    private BooklistStyle getBookshelfStyle(final @NonNull Bookshelf bookshelf, final @NonNull BooklistStyles styles) {
+        String globalDefaultStyle = getPrefs().getString(PREF_LIST_STYLE, getString(DEFAULT_STYLE));
         String key = PREF_LIST_STYLE_FOR_BOOKSHELF + bookshelf.name;
         String styleName = getPrefs().getString(key, globalDefaultStyle);
 
@@ -1150,10 +1127,10 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
     /**
      * Add a radio box to the sort options dialogue.
      */
-    private void addStyleButtonMenuItem(@NonNull final AlertDialog dialog,
-                                        @NonNull final LayoutInflater inf,
-                                        @NonNull final ViewGroup parent,
-                                        @NonNull final BooklistStyle style) {
+    private void addStyleButtonMenuItem(final @NonNull AlertDialog dialog,
+                                        final @NonNull LayoutInflater inf,
+                                        final @NonNull ViewGroup parent,
+                                        final @NonNull BooklistStyle style) {
         CompoundButton btn = (CompoundButton) inf.inflate(R.layout.booklist_style_menu_radio, dialog.getListView());
         btn.setText(style.getDisplayName());
         btn.setChecked(mCurrentStyle.getCanonicalName().equalsIgnoreCase(style.getCanonicalName()));
@@ -1172,18 +1149,18 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
     /**
      * Add a text box to the sort options dialogue.
      */
-    private void addStyleTextMenuItem(@NonNull final ViewGroup parent,
-                                      @NonNull final LayoutInflater inf,
-                                      @StringRes final int stringId,
-                                      @NonNull final OnClickListener listener) {
-        @SuppressLint("InflateParams") // it's a dialog -> root==null
-                TextView view = (TextView) inf.inflate(R.layout.booklist_style_menu_text, null);
+    private void addStyleTextMenuItem(final @NonNull ViewGroup parent,
+                                      final @NonNull LayoutInflater inf,
+                                      final @StringRes int stringId,
+                                      final @NonNull OnClickListener listener) {
+        @SuppressLint("InflateParams") // root==null as it's a dialog
+                TextView textView = (TextView) inf.inflate(R.layout.booklist_style_menu_text, null);
 
-        Typeface tf = view.getTypeface();
-        view.setTypeface(tf, Typeface.ITALIC);
-        view.setText(stringId);
-        view.setOnClickListener(listener);
-        parent.addView(view);
+        Typeface tf = textView.getTypeface();
+        textView.setTypeface(tf, Typeface.ITALIC);
+        textView.setText(stringId);
+        textView.setOnClickListener(listener);
+        parent.addView(textView);
     }
 
     /**
@@ -1191,7 +1168,7 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
      *
      * @param name Name of the selected style
      */
-    private void onStyleSelected(@NonNull final String name) {
+    private void onStyleSelected(final @NonNull String name) {
         // Find the style, if no match warn user and exit
         BooklistStyles styles = BooklistStyles.getAllStyles(mDb);
         BooklistStyle style = styles.findCanonical(name);
@@ -1300,10 +1277,10 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
          */
         GetBookListTask(final boolean isFullRebuild,
                         final long currentBookshelfId,
-                        @Nullable final String searchText,
-                        @Nullable final String searchAuthor,
-                        @Nullable final String searchTitle,
-                        @Nullable final List<Integer> searchBookIdList) {
+                        final @Nullable String searchText,
+                        final @Nullable String searchAuthor,
+                        final @Nullable String searchTitle,
+                        final @Nullable List<Integer> searchBookIdList) {
 
             if (!isFullRebuild && BuildConfig.DEBUG) {
                 Logger.info(this, " constructor, isFullRebuild=false");
@@ -1328,7 +1305,7 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
         }
 
         @Override
-        public void run(@NonNull final SimpleTaskContext taskContext) {
+        public void run(final @NonNull SimpleTaskContext taskContext) {
             try {
                 long t0;
                 if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {

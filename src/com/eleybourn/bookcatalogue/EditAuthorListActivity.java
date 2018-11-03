@@ -56,7 +56,7 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
     }
 
     @Override
-    protected void onSetupView(@NonNull final View target, @NonNull final Author object) {
+    protected void onSetupView(final @NonNull View target, final @NonNull Author object) {
         TextView at = target.findViewById(R.id.row_author);
         if (at != null) {
             at.setText(object.getDisplayName());
@@ -69,7 +69,7 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
 
     @Override
     @CallSuper
-    protected void onCreate(@Nullable final Bundle savedInstanceState) {
+    protected void onCreate(final @Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.setTitle(mBookTitle);
 
@@ -84,7 +84,7 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
     /**
      * Do the work of the onClickListener for the 'Add' button.
      */
-    protected void onAdd(@NonNull final View target) {
+    protected void onAdd(final @NonNull View target) {
         AutoCompleteTextView authorField = findViewById(R.id.author);
         String authorName = authorField.getText().toString().trim();
         if (!authorName.isEmpty()) {
@@ -108,7 +108,7 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
     }
 
     @Override
-    protected void onRowClick(@NonNull final View target, @NonNull final Author author, final int position) {
+    protected void onRowClick(final @NonNull View target, final @NonNull Author author, final int position) {
         final Dialog dialog = new StandardDialogs.BasicDialog(this);
         dialog.setContentView(R.layout.dialog_edit_author);
         dialog.setTitle(R.string.edit_author_details);
@@ -147,7 +147,7 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
         dialog.show();
     }
 
-    private void confirmEdit(@NonNull final Author from, @NonNull final Author to) {
+    private void confirmEdit(final @NonNull Author from, final @NonNull Author to) {
         // case sensitive equality
         if (to.equals(from)) {
             return;
@@ -184,7 +184,7 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
                 .create();
 
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.this_book), new DialogInterface.OnClickListener() {
-            public void onClick(@NonNull final DialogInterface dialog, final int which) {
+            public void onClick(final @NonNull DialogInterface dialog, final int which) {
                 from.copyFrom(to);
                 Utils.pruneList(mDb, mList);
                 mAdapter.notifyDataSetChanged();
@@ -193,7 +193,7 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
         });
 
         dialog.setButton(DialogInterface.BUTTON_NEGATIVE, allBooks, new DialogInterface.OnClickListener() {
-            public void onClick(@NonNull final DialogInterface dialog, final int which) {
+            public void onClick(final @NonNull DialogInterface dialog, final int which) {
                 mDb.globalReplaceAuthor(from, to);
                 from.copyFrom(to);
                 Utils.pruneList(mDb, mList);
@@ -206,7 +206,7 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
     }
 
     @Override
-    protected boolean onSave(@NonNull final Intent intent) {
+    protected boolean onSave(final @NonNull Intent intent) {
         final AutoCompleteTextView view = findViewById(R.id.author);
         String str = view.getText().toString().trim();
         if (str.isEmpty()) {

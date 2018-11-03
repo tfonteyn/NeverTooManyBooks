@@ -63,7 +63,7 @@
     <string name="lbl_contacts">Kontakt:</string>
     <string name="lbl_donate">Wesprzyj</string>
     <string name="lbl_about">O programie</string>
-    <string name="list_price">Cena</string>
+    <string name="price_listed">Cena</string>
     <string name="update_fields">Automatycznie aktualizuj pola wg danych z sieci</string>
     <string name="select_fields_to_update">Wybierz pola do aktualizacji</string>
     <string name="select_fields_to_update_help">Wybrane pola będą zaktualizowane wg danych z sieci. Pozostałe nie zostaną zmienione.</string>
@@ -78,13 +78,13 @@
     <string name="manage_fields_help">Wybrane pola są widoczne na ekranach dodawania i edycji książki. Pozostałe są ukryte.</string>
     <string name="anthology_titles">Tytuły antologii</string>
     <string name="amazon_wish_list">Amazon Wishlist</string>
-    <string name="same_author">Wszystkie ksiązki w tej antologii są napisane przez tego samego autora</string>
-    <string name="menu_delete_anthology">Usuń pozycję z antologii</string>
+    <string name="toc_same_author">Wszystkie ksiązki w tej antologii są napisane przez tego samego autora</string>
+    <string name="menu_delete_toc_entry">Usuń pozycję z antologii</string>
     <string name="is_anthology">Czy ta książka jest antologią?</string>
-    <string name="populate_anthology_titles">Automatycznie obsadź pozycje antologii(EKSPERYMENTALNIE)</string>
-    <string name="error_anthology_automatic_population_failed">Automatyczne obsadzanie pozycji antologii nie powiodło się</string>
+    <string name="populate_toc">Automatycznie obsadź pozycje antologii(EKSPERYMENTALNIE)</string>
+    <string name="error_automatic_toc_population_failed">Automatyczne obsadzanie pozycji antologii nie powiodło się</string>
     <string name="anthology">Antologia</string>
-    <string name="anthology_confirm">Potwierdź, czy te pozycje antologii są (zasadniczo) poprawne</string>
+    <string name="toc_confirm">Potwierdź, czy te pozycje antologii są (zasadniczo) poprawne</string>
     <string name="anthology_save">Zapisz</string>
     <string name="anthology_add">Dodaj</string>
     <string name="menu_add_thumb_photo">Z aparatu…</string>

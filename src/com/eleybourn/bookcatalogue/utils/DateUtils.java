@@ -97,18 +97,18 @@ public class DateUtils {
      * @param format        date format to add
      * @param needEnglish   if set, also add the localized english version
      */
-    private static void addParseDateFormat(@NonNull final String format, final boolean needEnglish) {
+    private static void addParseDateFormat(final @NonNull String format, final boolean needEnglish) {
         mParseDateFormats.add(new SimpleDateFormat(format));
         if (needEnglish) {
             mParseDateFormats.add(new SimpleDateFormat(format, Locale.ENGLISH));
         }
     }
     @NonNull
-    public static String toLocalSqlDateOnly(@NonNull final Date d) {
+    public static String toLocalSqlDateOnly(final @NonNull Date d) {
         return LOCAL_DATE_SQL.format(d);
     }
     @NonNull
-    public static String toSqlDateOnly(@NonNull final Date d) {
+    public static String toSqlDateOnly(final @NonNull Date d) {
         return DATE_SQL.format(d);
     }
     @NonNull
@@ -116,15 +116,15 @@ public class DateUtils {
         return DATE_SQL.format(new Date());
     }
     @NonNull
-    public static String toSqlDateTime(@NonNull final Date d) {
+    public static String toSqlDateTime(final @NonNull Date d) {
         return DATE_FULL_HMSS_SQL.format(d);
     }
     @NonNull
-    public static String toPrettyDate(@NonNull final Date d) {
+    public static String toPrettyDate(final @NonNull Date d) {
         return DATE_DISPLAY.format(d);
     }
     @NonNull
-    public static String toPrettyDateTime(@NonNull final Date d) {
+    public static String toPrettyDateTime(final @NonNull Date d) {
         return DateFormat.getDateTimeInstance().format(d);
     }
 
@@ -135,7 +135,7 @@ public class DateUtils {
      * @return	Resulting date if parsed, otherwise null
      */
     @Nullable
-    public static Date parseDate(@Nullable final String dateString) {
+    public static Date parseDate(final @Nullable String dateString) {
         if (dateString == null) {
             return null;
         }
@@ -160,7 +160,7 @@ public class DateUtils {
      * @return				Resulting date if parsed, otherwise null
      */
     @Nullable
-    private static Date parseDate(@Nullable final String dateString, final boolean lenient) {
+    private static Date parseDate(final @Nullable String dateString, final boolean lenient) {
         if (dateString == null) {
             return null;
         }
@@ -211,7 +211,7 @@ public class DateUtils {
      */
     @SuppressLint("DefaultLocale")
     @NonNull
-    public static String buildPartialDate(@Nullable final Integer year, @Nullable final Integer month, @Nullable final Integer day) {
+    public static String buildPartialDate(final @Nullable Integer year, final @Nullable Integer month, final @Nullable Integer day) {
         if (year == null) {
             return "";
         } else {
@@ -236,7 +236,7 @@ public class DateUtils {
         }
     }
 
-//    public String convertDate(@NonNull final String date) {
+//    public String convertDate(final @NonNull String date) {
 //        switch (date.length()) {
 //            case 2:
 //                //assume yy

@@ -56,7 +56,7 @@ public class BackupManager {
      * Ensure the file name extension is what we want
      */
     @NonNull
-    private static File cleanupFile(@NonNull final File requestedFile) {
+    private static File cleanupFile(final @NonNull File requestedFile) {
         if (!BackupFileDetails.isArchive(requestedFile)) {
             return new File(requestedFile.getAbsoluteFile() + BackupFileDetails.ARCHIVE_EXTENSION);
         } else {
@@ -71,11 +71,11 @@ public class BackupManager {
      * We use a FragmentTask so that long actions do not occur in the UI thread.
      */
     @NonNull
-    public static File backup(@NonNull final FragmentActivity context,
-                              @NonNull final File requestedFile,
+    public static File backup(final @NonNull FragmentActivity context,
+                              final @NonNull File requestedFile,
                               final int taskId,
                               final int backupFlags,
-                              @Nullable final Date since) {
+                              final @Nullable Date since) {
         final int flags = backupFlags & Exporter.EXPORT_MASK;
         if (flags == 0) {
             throw new IllegalArgumentException("Backup flags must be specified");
@@ -92,7 +92,7 @@ public class BackupManager {
             private boolean mBackupOk = false;
 
             @Override
-            public void run(@NonNull final SimpleTaskQueueProgressDialogFragment fragment, @NonNull final SimpleTaskContext taskContext) {
+            public void run(final @NonNull SimpleTaskQueueProgressDialogFragment fragment, final @NonNull SimpleTaskContext taskContext) {
 
                 TarBackupContainer bkp = new TarBackupContainer(tempFile);
                 if (DEBUG_SWITCHES.BACKUP && BuildConfig.DEBUG) {
@@ -109,7 +109,7 @@ public class BackupManager {
                         }
 
                         @Override
-                        public void step(@Nullable final String message, final int delta) {
+                        public void step(final @Nullable String message, final int delta) {
                             fragment.step(message, delta);
                         }
 
@@ -151,7 +151,7 @@ public class BackupManager {
 
             @Override
             @CallSuper
-            public void onFinish(@NonNull final SimpleTaskQueueProgressDialogFragment fragment, @Nullable final Exception e) {
+            public void onFinish(final @NonNull SimpleTaskQueueProgressDialogFragment fragment, final @Nullable Exception e) {
                 super.onFinish(fragment, e);
                 if (e != null) {
                     StorageUtils.deleteFile(tempFile);
@@ -177,14 +177,14 @@ public class BackupManager {
      *
      * We use a FragmentTask so that long actions do not occur in the UI thread.
      */
-    public static void restore(@NonNull final FragmentActivity context,
-                               @NonNull final File inputFile,
+    public static void restore(final @NonNull FragmentActivity context,
+                               final @NonNull File inputFile,
                                final int taskId,
                                final int importFlags) {
 
         final FragmentTask task = new FragmentTaskAbstract() {
             @Override
-            public void run(@NonNull final SimpleTaskQueueProgressDialogFragment fragment, @NonNull final SimpleTaskContext taskContext) {
+            public void run(final @NonNull SimpleTaskQueueProgressDialogFragment fragment, final @NonNull SimpleTaskContext taskContext) {
                 try {
                     if (DEBUG_SWITCHES.BACKUP && BuildConfig.DEBUG) {
                         Logger.info(this, " Importing " + inputFile.getAbsolutePath());
@@ -196,7 +196,7 @@ public class BackupManager {
                         }
 
                         @Override
-                        public void step(@NonNull final String message, final int delta) {
+                        public void step(final @NonNull String message, final int delta) {
                             fragment.step(message, delta);
                         }
 
@@ -227,7 +227,7 @@ public class BackupManager {
      *
      * @throws IOException (inaccessible, invalid other other errors)
      */
-    public static BackupReader readFrom(@NonNull final File file) throws IOException {
+    public static BackupReader readFrom(final @NonNull File file) throws IOException {
         if (!file.exists()) {
             throw new FileNotFoundException("Attempt to open non-existent backup file");
         }

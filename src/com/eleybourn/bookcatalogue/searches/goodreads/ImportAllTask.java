@@ -115,7 +115,7 @@ class ImportAllTask extends GenericTask {
      * Do the actual work.
      */
     @Override
-    public boolean run(@NonNull final QueueManager qMgr, @NonNull final Context context) {
+    public boolean run(final @NonNull QueueManager qMgr, final @NonNull Context context) {
         CatalogueDBAdapter db = new CatalogueDBAdapter(context);
         db.open();
 
@@ -139,8 +139,8 @@ class ImportAllTask extends GenericTask {
     /**
      * Repeatedly request review pages until we are done.
      */
-    private boolean processReviews(@NonNull final QueueManager qMgr,
-                                   @NonNull final CatalogueDBAdapter db) throws GoodreadsManager.Exceptions.NotAuthorizedException {
+    private boolean processReviews(final @NonNull QueueManager qMgr,
+                                   final @NonNull CatalogueDBAdapter db) throws GoodreadsManager.Exceptions.NotAuthorizedException {
         GoodreadsManager gr = new GoodreadsManager();
         ListReviewsApiHandler api = new ListReviewsApiHandler(gr);
 
@@ -227,7 +227,7 @@ class ImportAllTask extends GenericTask {
     /**
      * Process one review (book).
      */
-    private void processReview(@NonNull final CatalogueDBAdapter db, @NonNull final Bundle review) {
+    private void processReview(final @NonNull CatalogueDBAdapter db, final @NonNull Bundle review) {
         long grId = review.getLong(ListReviewsFieldNames.GR_BOOK_ID);
 
         // Find the books in our database - NOTE: may be more than one!
@@ -278,7 +278,7 @@ class ImportAllTask extends GenericTask {
      * @return Local name, or goodreads name if no match
      */
     @Nullable
-    private String translateBookshelf(@NonNull final CatalogueDBAdapter db, @Nullable final String grShelfName) {
+    private String translateBookshelf(final @NonNull CatalogueDBAdapter db, final @Nullable String grShelfName) {
         if (grShelfName == null) {
             return null;
         }
@@ -296,7 +296,7 @@ class ImportAllTask extends GenericTask {
      * Extract a list of ISBNs from the bundle
      */
     @NonNull
-    private List<String> extractIsbnList(@NonNull final Bundle review) {
+    private List<String> extractIsbnList(final @NonNull Bundle review) {
         List<String> list = new ArrayList<>();
         ArrayUtils.addIfHasValue(list, review.getString(ListReviewsFieldNames.ISBN13));
         ArrayUtils.addIfHasValue(list, review.getString(UniqueId.KEY_BOOK_ISBN));
@@ -306,9 +306,9 @@ class ImportAllTask extends GenericTask {
     /**
      * Update the book using the GR data
      */
-    private void updateBook(@NonNull final CatalogueDBAdapter db,
-                            @NonNull final BookRowView bookRowView,
-                            @NonNull final Bundle review) {
+    private void updateBook(final @NonNull CatalogueDBAdapter db,
+                            final @NonNull BookRowView bookRowView,
+                            final @NonNull Bundle review) {
         // Get last date book was sent to GR (may be null)
         final String lastGrSync = bookRowView.getDateLastSyncedWithGoodReads();
         // If the review has an 'updated' date, then see if we can compare to book
@@ -331,7 +331,7 @@ class ImportAllTask extends GenericTask {
     /**
      * Create a new book
      */
-    private void insertBook(@NonNull final CatalogueDBAdapter db, @NonNull final Bundle review) {
+    private void insertBook(final @NonNull CatalogueDBAdapter db, final @NonNull Bundle review) {
         Book book = buildBundle(db, null, review);
         long id = db.insertBook(book);
         if (id > 0) {
@@ -350,9 +350,9 @@ class ImportAllTask extends GenericTask {
      * while other data is processed (eg. dates) and other are combined (authors & series).
      */
     @NonNull
-    private Book buildBundle(@NonNull final CatalogueDBAdapter db,
-                             @Nullable final BookRowView bookRowView,
-                             @NonNull final Bundle review) {
+    private Book buildBundle(final @NonNull CatalogueDBAdapter db,
+                             final @Nullable BookRowView bookRowView,
+                             final @NonNull Bundle review) {
         Book book = new Book();
 
         addStringIfNonBlank(review, ListReviewsFieldNames.DB_TITLE, book, ListReviewsFieldNames.DB_TITLE);
@@ -509,10 +509,10 @@ class ImportAllTask extends GenericTask {
      * @return reformatted sql date, or null if not able to parse
      */
     @Nullable
-    private String addDateIfValid(@NonNull final Bundle source,
-                                  @NonNull final String sourceField,
-                                  @NonNull final Book book,
-                                  @NonNull final String destField) {
+    private String addDateIfValid(final @NonNull Bundle source,
+                                  final @NonNull String sourceField,
+                                  final @NonNull Book book,
+                                  final @NonNull String destField) {
         if (!source.containsKey(sourceField)) {
             return null;
         }
@@ -535,10 +535,10 @@ class ImportAllTask extends GenericTask {
     /**
      * Utility to copy a non-blank string to the book bundle.
      */
-    private void addStringIfNonBlank(@NonNull final Bundle source,
-                                     @NonNull final String sourceField,
-                                     @NonNull final Book dest,
-                                     @NonNull final String destField) {
+    private void addStringIfNonBlank(final @NonNull Bundle source,
+                                     final @NonNull String sourceField,
+                                     final @NonNull Book dest,
+                                     final @NonNull String destField) {
         if (source.containsKey(sourceField)) {
             String val = source.getString(sourceField);
             if (val != null && !val.isEmpty()) {
@@ -550,10 +550,10 @@ class ImportAllTask extends GenericTask {
     /**
      * Utility to copy a Long value to the book bundle.
      */
-    private void addLongIfPresent(@NonNull final Bundle source,
-                                  @NonNull final String sourceField,
-                                  @NonNull final Book book,
-                                  @NonNull final String destField) {
+    private void addLongIfPresent(final @NonNull Bundle source,
+                                  final @NonNull String sourceField,
+                                  final @NonNull Book book,
+                                  final @NonNull String destField) {
         if (source.containsKey(sourceField)) {
             long val = source.getLong(sourceField);
             book.putLong(destField, val);
@@ -564,10 +564,10 @@ class ImportAllTask extends GenericTask {
      * Utility to copy a Double value to the book bundle.
      */
     @Nullable
-    private Double addDoubleIfPresent(@NonNull final Bundle source,
-                                      @SuppressWarnings("SameParameterValue") @NonNull final String sourceField,
-                                      @NonNull final Book book,
-                                      @SuppressWarnings("SameParameterValue") @NonNull final String destField) {
+    private Double addDoubleIfPresent(final @NonNull Bundle source,
+                                      @SuppressWarnings("SameParameterValue") final @NonNull String sourceField,
+                                      final @NonNull Book book,
+                                      @SuppressWarnings("SameParameterValue") final @NonNull String destField) {
         if (source.containsKey(sourceField)) {
             double val = source.getDouble(sourceField);
             book.putDouble(destField, val);

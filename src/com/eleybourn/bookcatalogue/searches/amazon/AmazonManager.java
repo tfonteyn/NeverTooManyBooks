@@ -27,7 +27,7 @@ public class AmazonManager {
         return BookCatalogueApp.Prefs.getString(PREFS_HOST_URL, "http://www.amazon.com");
     }
 
-    public static void setBaseURL(@NonNull final String url) {
+    public static void setBaseURL(final @NonNull String url) {
         BookCatalogueApp.Prefs.putString(PREFS_HOST_URL, url);
     }
 
@@ -37,10 +37,10 @@ public class AmazonManager {
      *
      * @param isbn The ISBN to search for
      */
-    public static void search(@NonNull final String isbn,
+    public static void search(final @NonNull String isbn,
                               @NonNull String author,
                               @NonNull String title,
-                              @NonNull final Bundle book,
+                              final @NonNull Bundle book,
                               final boolean fetchThumbnail) throws IOException {
 
         String path = "https://bc.theagiledirector.com/getRest_v3.php";

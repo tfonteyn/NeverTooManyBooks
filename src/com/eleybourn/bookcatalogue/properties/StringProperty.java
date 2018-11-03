@@ -46,16 +46,16 @@ public class StringProperty extends ValuePropertyWithGlobalDefault<String> imple
     /** Options indicating value must be non-blank */
     private boolean mRequireNonBlank = false;
 
-    public StringProperty(@NonNull final String uniqueId,
-                          @NonNull final PropertyGroup group,
-                          @StringRes final int nameResourceId) {
+    public StringProperty(final @NonNull String uniqueId,
+                          final @NonNull PropertyGroup group,
+                          final @StringRes int nameResourceId) {
         super(uniqueId, group, nameResourceId, "");
     }
 
     /** Build the editor for this property */
     @Override
     @NonNull
-    public View getView(@NonNull final LayoutInflater inflater) {
+    public View getView(final @NonNull LayoutInflater inflater) {
         // Get base view and components. Tag them.
         View view = inflater.inflate(R.layout.property_value_string, null);
 
@@ -71,7 +71,7 @@ public class StringProperty extends ValuePropertyWithGlobalDefault<String> imple
         // Reflect all changes in underlying data
         value.addTextChangedListener(new TextWatcher() {
             @Override
-            public void afterTextChanged(@NonNull final Editable s) {
+            public void afterTextChanged(final @NonNull Editable s) {
                 set(s.toString());
             }
 
@@ -103,7 +103,7 @@ public class StringProperty extends ValuePropertyWithGlobalDefault<String> imple
     /** Set underlying preferences value */
     @Override
     @NonNull
-    protected StringProperty setGlobalDefault(@Nullable final String value) {
+    protected StringProperty setGlobalDefault(final @Nullable String value) {
         BookCatalogueApp.Prefs.putString(getPreferenceKey(), value);
         return this;
     }
@@ -111,7 +111,7 @@ public class StringProperty extends ValuePropertyWithGlobalDefault<String> imple
     @Override
     @NonNull
     @CallSuper
-    public StringProperty setDefaultValue(@Nullable final String value) {
+    public StringProperty setDefaultValue(final @Nullable String value) {
         super.setDefaultValue(value);
         return this;
     }
@@ -127,14 +127,14 @@ public class StringProperty extends ValuePropertyWithGlobalDefault<String> imple
     @Override
     @NonNull
     @CallSuper
-    public StringProperty setGroup(@NonNull final PropertyGroup group) {
+    public StringProperty setGroup(final @NonNull PropertyGroup group) {
         super.setGroup(group);
         return this;
     }
 
     @Override
     @NonNull
-    public StringProperty set(@NonNull final Property p) {
+    public StringProperty set(final @NonNull Property p) {
         if (!(p instanceof StringValue)) {
             throw new RTE.IllegalTypeException(p.getClass().getCanonicalName());
         }

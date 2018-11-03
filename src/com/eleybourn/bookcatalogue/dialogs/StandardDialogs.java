@@ -71,7 +71,6 @@ import java.util.List;
  *
  * Reminder: we still have {@link QueueManager#doToast(String)} which operate without access to 'anything'
  * If in doubt, search for "Toast.makeText"
- *
  */
 public class StandardDialogs {
 
@@ -80,7 +79,7 @@ public class StandardDialogs {
     /**
      * Shielding the actual implementation of Toast/Snackbar or whatever is next.
      */
-    public static void showUserMessage(@NonNull final Activity activity, @StringRes final int message) {
+    public static void showUserMessage(final @NonNull Activity activity, final @StringRes int message) {
         if (0 == BookCatalogueApp.Prefs.getInt(BookCatalogueApp.PREF_APP_USER_MESSAGE, 0)) {
             Toast.makeText(activity, message, Toast.LENGTH_LONG).show();
         } else {
@@ -91,7 +90,7 @@ public class StandardDialogs {
     /**
      * Shielding the actual implementation of Toast/Snackbar or whatever is next.
      */
-    public static void showUserMessage(@NonNull final Activity activity, @NonNull final String message) {
+    public static void showUserMessage(final @NonNull Activity activity, final @NonNull String message) {
         if (0 == BookCatalogueApp.Prefs.getInt(BookCatalogueApp.PREF_APP_USER_MESSAGE, 0)) {
             Toast.makeText(activity, message, Toast.LENGTH_LONG).show();
         } else {
@@ -104,8 +103,8 @@ public class StandardDialogs {
     /**
      * Show a dialog asking if unsaved edits should be ignored. Finish activity if so.
      */
-    public static void showConfirmUnsavedEditsDialog(@NonNull final Activity activity,
-                                                     @Nullable final Runnable onConfirm) {
+    public static void showConfirmUnsavedEditsDialog(final @NonNull Activity activity,
+                                                     final @Nullable Runnable onConfirm) {
         AlertDialog dialog = new AlertDialog.Builder(activity)
                 .setTitle(R.string.details_have_changed)
                 .setMessage(R.string.you_have_unsaved_changes)
@@ -116,7 +115,7 @@ public class StandardDialogs {
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, activity.getString(R.string.exit),
                 new AlertDialog.OnClickListener() {
                     @Override
-                    public void onClick(@NonNull final DialogInterface dialog, final int which) {
+                    public void onClick(final @NonNull DialogInterface dialog, final int which) {
                         dialog.dismiss();
                         if (onConfirm != null) {
                             onConfirm.run();
@@ -130,7 +129,7 @@ public class StandardDialogs {
         dialog.setButton(DialogInterface.BUTTON_NEUTRAL, activity.getString(R.string.continue_editing),
                 new AlertDialog.OnClickListener() {
                     @Override
-                    public void onClick(@NonNull final DialogInterface dialog, final int which) {
+                    public void onClick(final @NonNull DialogInterface dialog, final int which) {
                         dialog.dismiss();
                     }
                 });
@@ -138,9 +137,9 @@ public class StandardDialogs {
         dialog.show();
     }
 
-    public static void needLibraryThingAlert(@NonNull final Context context,
+    public static void needLibraryThingAlert(final @NonNull Context context,
                                              final boolean required,
-                                             @NonNull final String prefSuffix) {
+                                             final @NonNull String prefSuffix) {
 
         final SharedPreferences prefs = BookCatalogueApp.getSharedPreferences();
 
@@ -166,7 +165,7 @@ public class StandardDialogs {
 
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getString(R.string.more_info),
                 new DialogInterface.OnClickListener() {
-                    public void onClick(@NonNull final DialogInterface dialog, final int which) {
+                    public void onClick(final @NonNull DialogInterface dialog, final int which) {
                         Intent i = new Intent(context, LibraryThingAdminActivity.class);
                         context.startActivity(i);
                         dialog.dismiss();
@@ -176,7 +175,7 @@ public class StandardDialogs {
         if (!required) {
             dialog.setButton(DialogInterface.BUTTON_NEUTRAL, context.getString(R.string.disable_dialogue),
                     new DialogInterface.OnClickListener() {
-                        public void onClick(@NonNull final DialogInterface dialog, final int which) {
+                        public void onClick(final @NonNull DialogInterface dialog, final int which) {
                             SharedPreferences.Editor ed = prefs.edit();
                             ed.putBoolean(prefName, true);
                             ed.apply();
@@ -187,7 +186,7 @@ public class StandardDialogs {
 
         dialog.setButton(DialogInterface.BUTTON_NEGATIVE, context.getString(android.R.string.cancel),
                 new DialogInterface.OnClickListener() {
-                    public void onClick(@NonNull final DialogInterface dialog, final int which) {
+                    public void onClick(final @NonNull DialogInterface dialog, final int which) {
                         dialog.dismiss();
                     }
                 });
@@ -195,10 +194,10 @@ public class StandardDialogs {
         dialog.show();
     }
 
-    public static void deleteSeriesAlert(@NonNull final Context context,
-                                         @NonNull final CatalogueDBAdapter db,
-                                         @NonNull final Series series,
-                                         @NonNull final Runnable onDeleted) {
+    public static void deleteSeriesAlert(final @NonNull Context context,
+                                         final @NonNull CatalogueDBAdapter db,
+                                         final @NonNull Series series,
+                                         final @NonNull Runnable onDeleted) {
 
         final AlertDialog dialog = new AlertDialog.Builder(context)
                 .setMessage(String.format(context.getString(R.string.really_delete_series), series.name))
@@ -208,7 +207,7 @@ public class StandardDialogs {
 
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getString(android.R.string.ok),
                 new DialogInterface.OnClickListener() {
-                    public void onClick(@NonNull final DialogInterface dialog, final int which) {
+                    public void onClick(final @NonNull DialogInterface dialog, final int which) {
                         db.deleteSeries(series.id);
                         dialog.dismiss();
                         onDeleted.run();
@@ -217,7 +216,7 @@ public class StandardDialogs {
 
         dialog.setButton(DialogInterface.BUTTON_NEGATIVE, context.getString(android.R.string.cancel),
                 new DialogInterface.OnClickListener() {
-                    public void onClick(@NonNull final DialogInterface dialog, final int which) {
+                    public void onClick(final @NonNull DialogInterface dialog, final int which) {
                         dialog.dismiss();
                     }
                 });
@@ -228,10 +227,10 @@ public class StandardDialogs {
     /**
      * @return the resource id for a string in case of error, 0 for ok
      */
-    public static int deleteBookAlert(@NonNull final Context context,
-                                      @NonNull final CatalogueDBAdapter db,
+    public static int deleteBookAlert(final @NonNull Context context,
+                                      final @NonNull CatalogueDBAdapter db,
                                       final long bookId,
-                                      @NonNull final Runnable onDeleted) {
+                                      final @NonNull Runnable onDeleted) {
 
         List<Author> authorList = db.getBookAuthorList(bookId);
 
@@ -270,7 +269,7 @@ public class StandardDialogs {
 
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getString(android.R.string.ok),
                 new DialogInterface.OnClickListener() {
-                    public void onClick(@NonNull final DialogInterface dialog, final int which) {
+                    public void onClick(final @NonNull DialogInterface dialog, final int which) {
                         db.deleteBook(bookId);
                         dialog.dismiss();
                         onDeleted.run();
@@ -279,7 +278,7 @@ public class StandardDialogs {
 
         dialog.setButton(DialogInterface.BUTTON_NEGATIVE, context.getString(android.R.string.cancel),
                 new DialogInterface.OnClickListener() {
-                    public void onClick(@NonNull final DialogInterface dialog, final int which) {
+                    public void onClick(final @NonNull DialogInterface dialog, final int which) {
                         dialog.dismiss();
                     }
                 });
@@ -290,9 +289,9 @@ public class StandardDialogs {
 
     /**
      * Display a dialog warning the user that goodreads authentication is required;
-     * gives the options: 'request now', 'more info' or 'onCancel'.
+     * gives the options: 'request now', 'more info' or 'onPartialDatePickerCancel'.
      */
-    public static void goodreadsAuthAlert(@NonNull final FragmentActivity context) {
+    public static void goodreadsAuthAlert(final @NonNull FragmentActivity context) {
         final AlertDialog dialog = new AlertDialog.Builder(context)
                 .setTitle(R.string.gr_auth_access)
                 .setMessage(R.string.gr_action_cannot_blah_blah)
@@ -301,7 +300,7 @@ public class StandardDialogs {
 
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getString(android.R.string.ok),
                 new DialogInterface.OnClickListener() {
-                    public void onClick(@NonNull final DialogInterface dialog, final int which) {
+                    public void onClick(final @NonNull DialogInterface dialog, final int which) {
                         dialog.dismiss();
                         GoodreadsRegisterActivity.requestAuthorizationInBackground(context);
                     }
@@ -309,7 +308,7 @@ public class StandardDialogs {
 
         dialog.setButton(DialogInterface.BUTTON_NEUTRAL, context.getString(R.string.tell_me_more),
                 new DialogInterface.OnClickListener() {
-                    public void onClick(@NonNull final DialogInterface dialog, final int which) {
+                    public void onClick(final @NonNull DialogInterface dialog, final int which) {
                         dialog.dismiss();
                         Intent i = new Intent(context, GoodreadsRegisterActivity.class);
                         context.startActivity(i);
@@ -318,7 +317,7 @@ public class StandardDialogs {
 
         dialog.setButton(DialogInterface.BUTTON_NEGATIVE, context.getString(android.R.string.cancel),
                 new DialogInterface.OnClickListener() {
-                    public void onClick(@NonNull final DialogInterface dialog, final int which) {
+                    public void onClick(final @NonNull DialogInterface dialog, final int which) {
                         dialog.dismiss();
                     }
                 });
@@ -332,11 +331,11 @@ public class StandardDialogs {
     /**
      * Select a custom item from a list, and call handler when/if item is selected.
      */
-    public static void selectItemDialog(@NonNull final LayoutInflater inflater,
-                                        @Nullable final String message,
-                                        @NonNull final List<SimpleDialogItem> items,
-                                        @Nullable final SimpleDialogItem selectedItem,
-                                        @NonNull final SimpleDialogOnClickListener handler) {
+    public static void selectItemDialog(final @NonNull LayoutInflater inflater,
+                                        final @Nullable String message,
+                                        final @NonNull List<SimpleDialogItem> items,
+                                        final @Nullable SimpleDialogItem selectedItem,
+                                        final @NonNull SimpleDialogOnClickListener handler) {
 
         // Build the base dialog
         final View root = inflater.inflate(R.layout.dialog_select_one_from_list, null);
@@ -356,7 +355,7 @@ public class StandardDialogs {
         // Create the listener for each item
         OnClickListener listener = new OnClickListener() {
             @Override
-            public void onClick(@NonNull final View v) {
+            public void onClick(final @NonNull View v) {
                 SimpleDialogItem item = ViewTagger.getTag(v, R.id.TAG_DIALOG_ITEM);
                 // For a consistent UI, make sure the selector is checked as well.
                 // NOT mandatory from a functional point of view, just consistent
@@ -382,7 +381,6 @@ public class StandardDialogs {
             view.setBackgroundResource(android.R.drawable.list_selector_background);
 
             ViewTagger.setTag(view, R.id.TAG_DIALOG_ITEM, item);
-            list.addView(view);
 
             CompoundButton btn = item.getSelector(view);
             if (btn != null) {
@@ -390,6 +388,7 @@ public class StandardDialogs {
                 btn.setChecked(item == selectedItem);
                 btn.setOnClickListener(listener);
             }
+            list.addView(view);
         }
         dialog.show();
     }
@@ -397,10 +396,10 @@ public class StandardDialogs {
     /**
      * Wrapper class to present a list of files for selection
      */
-    public static void selectFileDialog(@NonNull final LayoutInflater inflater,
-                                        @Nullable final String title,
-                                        @NonNull final List<File> files,
-                                        @NonNull final SimpleDialogOnClickListener handler) {
+    public static void selectFileDialog(final @NonNull LayoutInflater inflater,
+                                        final @Nullable String title,
+                                        final @NonNull List<File> files,
+                                        final @NonNull SimpleDialogOnClickListener handler) {
         List<SimpleDialogItem> items = new ArrayList<>();
         for (File file : files) {
             items.add(new SimpleDialogFileItem(file));
@@ -412,11 +411,11 @@ public class StandardDialogs {
      * Wrapper class to present a list of arbitrary objects for selection; it uses
      * the toString() method to display a simple list.
      */
-    public static <T> void selectStringDialog(@NonNull final LayoutInflater inflater,
-                                              @Nullable final String title,
-                                              @NonNull final List<T> objects,
-                                              @Nullable final String current,
-                                              @NonNull final SimpleDialogOnClickListener handler) {
+    public static <T> void selectStringDialog(final @NonNull LayoutInflater inflater,
+                                              final @Nullable String title,
+                                              final @NonNull List<T> objects,
+                                              final @Nullable String current,
+                                              final @NonNull SimpleDialogOnClickListener handler) {
         List<SimpleDialogItem> items = new ArrayList<>();
         SimpleDialogItem selectedItem = null;
         for (T object : objects) {
@@ -433,7 +432,7 @@ public class StandardDialogs {
      */
     public interface SimpleDialogItem {
         @NonNull
-        View getView(@NonNull final LayoutInflater inflater);
+        View getView(final @NonNull LayoutInflater inflater);
 
         @Nullable
         CompoundButton getSelector(View v);
@@ -443,7 +442,7 @@ public class StandardDialogs {
      * Interface to listen for item selection in a custom dialog list
      */
     public interface SimpleDialogOnClickListener {
-        void onClick(@NonNull final SimpleDialogItem item);
+        void onClick(final @NonNull SimpleDialogItem item);
     }
 
     /**
@@ -453,7 +452,7 @@ public class StandardDialogs {
         @NonNull
         private final File mFile;
 
-        SimpleDialogFileItem(@NonNull final File file) {
+        SimpleDialogFileItem(final @NonNull File file) {
             mFile = file;
         }
 
@@ -473,23 +472,23 @@ public class StandardDialogs {
          */
         @Override
         @NonNull
-        public View getView(@NonNull final LayoutInflater inflater) {
+        public View getView(final @NonNull LayoutInflater inflater) {
             // Create the view
-            View view = inflater.inflate(R.layout.dialog_file_list_item, null);
+            View root = inflater.inflate(R.layout.dialog_file_list_item, null);
             // Set the file name
-            TextView name = view.findViewById(R.id.name);
+            TextView name = root.findViewById(R.id.name);
             name.setText(mFile.getName());
             // Set the path
-            TextView location = view.findViewById(R.id.path);
+            TextView location = root.findViewById(R.id.path);
             location.setText(mFile.getParent());
             // Set the size
-            TextView size = view.findViewById(R.id.size);
+            TextView size = root.findViewById(R.id.size);
             size.setText(Utils.formatFileSize(mFile.length()));
             // Set the last modified date
-            TextView update = view.findViewById(R.id.updated);
+            TextView update = root.findViewById(R.id.updated);
             update.setText(DateUtils.toPrettyDateTime(new Date(mFile.lastModified())));
             // Return it
-            return view;
+            return root;
         }
     }
 
@@ -500,7 +499,7 @@ public class StandardDialogs {
         @NonNull
         private final Object mObject;
 
-        SimpleDialogObjectItem(@NonNull final Object object) {
+        SimpleDialogObjectItem(final @NonNull Object object) {
             mObject = object;
         }
 
@@ -509,16 +508,16 @@ public class StandardDialogs {
          */
         @Override
         @NonNull
-        public View getView(@NonNull final LayoutInflater inflater) {
+        public View getView(final @NonNull LayoutInflater inflater) {
             @SuppressLint("InflateParams") // root==null as it's a dialog
-            View view = inflater.inflate(R.layout.row_string_list_item, null);
-            TextView name = view.findViewById(R.id.name);
+            View root = inflater.inflate(R.layout.row_string_list_item, null);
+            TextView name = root.findViewById(R.id.name);
             name.setText(mObject.toString());
-            return view;
+            return root;
         }
 
         @NonNull
-        public CompoundButton getSelector(@NonNull final View view) {
+        public CompoundButton getSelector(final @NonNull View view) {
             return (CompoundButton) view.findViewById(R.id.selector);
         }
 
@@ -535,7 +534,9 @@ public class StandardDialogs {
         final int mItemId;
         final int mDrawableId;
 
-        public SimpleDialogMenuItem(@NonNull final Object object, final int itemId, @DrawableRes final int icon) {
+        public SimpleDialogMenuItem(final @NonNull Object object,
+                                    final int itemId,
+                                    final @DrawableRes int icon) {
             super(object);
             mItemId = itemId;
             mDrawableId = icon;
@@ -547,13 +548,13 @@ public class StandardDialogs {
 
         @Override
         @NonNull
-        public View getView(@NonNull final LayoutInflater inflater) {
-            View view = super.getView(inflater);
-            TextView name = view.findViewById(R.id.name);
+        public View getView(final @NonNull LayoutInflater inflater) {
+            View root = super.getView(inflater);
+            TextView name = root.findViewById(R.id.name);
             name.setCompoundDrawablesWithIntrinsicBounds(mDrawableId, 0, 0, 0);
             // Now make the actual CompoundButton gone
-            getSelector(view).setVisibility(View.GONE);
-            return view;
+            getSelector(root).setVisibility(View.GONE);
+            return root;
         }
     }
 
@@ -566,10 +567,11 @@ public class StandardDialogs {
      */
     public static class BasicDialog extends AppCompatDialog {
 
-        public BasicDialog(@NonNull final Context context) {
+        public BasicDialog(final @NonNull Context context) {
             this(context, BookCatalogueApp.getDialogThemeResId());
         }
-        public BasicDialog(@NonNull final Context context, @StyleRes final int theme) {
+
+        public BasicDialog(final @NonNull Context context, @StyleRes final int theme) {
             super(context, theme);
 
             Button closeButton = findViewById(android.R.id.closeButton);

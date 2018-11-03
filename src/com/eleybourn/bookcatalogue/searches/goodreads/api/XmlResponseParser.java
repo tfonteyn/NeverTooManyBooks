@@ -51,7 +51,7 @@ public class XmlResponseParser extends DefaultHandler {
      *
      * @param rootFilter Filter tree to use
      */
-    public XmlResponseParser(@NonNull final XmlFilter rootFilter) {
+    public XmlResponseParser(final @NonNull XmlFilter rootFilter) {
         // Build the root context and add to hierarchy.
         ElementContext ctx = new ElementContext();
         ctx.filter = rootFilter;
@@ -63,7 +63,7 @@ public class XmlResponseParser extends DefaultHandler {
      */
     @Override
     @CallSuper
-    public void characters(@NonNull final char[] ch, final int start, final int length) throws SAXException {
+    public void characters(final @NonNull char[] ch, final int start, final int length) throws SAXException {
         super.characters(ch, start, length);
         mBuilder.append(ch, start, length);
     }
@@ -73,10 +73,10 @@ public class XmlResponseParser extends DefaultHandler {
      */
     @Override
     @CallSuper
-    public void startElement(@NonNull final String uri,
-                             @NonNull final String localName,
-                             @NonNull final String name,
-                             @NonNull final Attributes attributes) throws SAXException {
+    public void startElement(final @NonNull String uri,
+                             final @NonNull String localName,
+                             final @NonNull String name,
+                             final @NonNull Attributes attributes) throws SAXException {
         super.startElement(uri, localName, name, attributes);
 
         // Get the current context (ie. the enclosing tag)
@@ -108,7 +108,7 @@ public class XmlResponseParser extends DefaultHandler {
      */
     @Override
     @CallSuper
-    public void endElement(@NonNull final String uri, @NonNull final String localName, @NonNull final String name) throws SAXException {
+    public void endElement(final @NonNull String uri, final @NonNull String localName, final @NonNull String name) throws SAXException {
         super.endElement(uri, localName, name);
 
         // Get out current context from the hierarchy and pop from stack

@@ -23,11 +23,13 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -35,6 +37,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -48,15 +52,21 @@ import com.eleybourn.bookcatalogue.datamanager.DataEditor;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
-import com.eleybourn.bookcatalogue.entities.Author;
+import com.eleybourn.bookcatalogue.dialogs.CheckListEditorDialogFragment;
+import com.eleybourn.bookcatalogue.dialogs.CheckListItem;
+import com.eleybourn.bookcatalogue.dialogs.PartialDatePickerDialogFragment;
+import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
+import com.eleybourn.bookcatalogue.dialogs.TextFieldEditorDialogFragment;
 import com.eleybourn.bookcatalogue.entities.Book;
-import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.searches.amazon.AmazonUtils;
 import com.eleybourn.bookcatalogue.utils.BookUtils;
+import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.RTE;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -68,7 +78,7 @@ import java.util.Objects;
  * {@link EditBookFieldsFragment} extends {@link BookAbstractFragmentWithCoverImage}
  * {@link EditBookNotesFragment}
  * {@link EditBookLoanedFragment}
- * {@link EditBookAnthologyFragment}
+ * {@link EditBookTOCFragment}
  *
  * @author pjw
  */
@@ -85,7 +95,7 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
     protected CatalogueDBAdapter mDb;
 
     /** A link to the Activity, cached to avoid requireActivity() all over the place */
-    private Activity mActivity;
+    protected Activity mActivity;
 
     /*  the casting is a kludge... ever since pulling edit/show book apart. Needs redoing */
     protected boolean isDirty() {
@@ -123,7 +133,7 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
      */
     @Override
     @CallSuper
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
+    public void onCreate(final @Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         // make sure {@link #onCreateOptionsMenu} is called
@@ -138,7 +148,7 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
      */
     @Override
     @CallSuper
-    public void onAttach(@NonNull final Context context) {
+    public void onAttach(final @NonNull Context context) {
         super.onAttach(context);
         if (!(context instanceof HasBook)) {
             throw new RTE.MustImplementException(context, HasBook.class);
@@ -164,7 +174,7 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
      */
     @Override
     @CallSuper
-    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
+    public void onActivityCreated(final @Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
         // cache to avoid multiple calls to requireActivity()
@@ -178,6 +188,13 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
 
     /**
      * Add any {@link Field} we need to {@link Fields}
+     *
+     * Set corresponding validators/formatters (if any)
+     * Set onClickListener etc...
+     *
+     * Note this is NOT where we set values.
+     *
+     * Override as needed, but call super first
      */
     @CallSuper
     protected void initFields() {
@@ -185,31 +202,132 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
     }
 
     /**
-     * Gets all bookshelves for the book from database and populate corresponding field with them.
+     * The 'drop-down' menu button next to an AutoCompleteTextView field.
+     * Allows us to show a {@link StandardDialogs#selectStringDialog} with a list of strings
+     * to choose from.
      *
-     * @param field to populate with the shelves
-     * @param book  from which the shelves will be taken
-     *
-     * @return <tt>true</tt>if populated, false otherwise
+     * @param field         {@link Field} to edit
+     * @param dialogTitleId title of the dialog box.
+     * @param fieldButtonId field/button to bind the OnClickListener to (can be same as fieldId)
+     * @param list          list of strings to choose from.
      */
-    protected boolean populateBookshelves(@NonNull final Field field, @NonNull final Book book) {
-        String bookshelfText = book.getBookshelfListAsText();
-        field.setValue(bookshelfText);
-        return !bookshelfText.isEmpty();
+    protected void initValuePicker(final @NonNull Field field,
+                                   final @StringRes int dialogTitleId,
+                                   final @IdRes int fieldButtonId,
+                                   final @NonNull List<String> list) {
+        // only bother when visible
+        if (!field.visible) {
+            return;
+        }
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(requireActivity(),
+                android.R.layout.simple_dropdown_item_1line, list);
+        mFields.setAdapter(field.id, adapter);
+
+        // Get the list to use in the AutoComplete stuff
+        AutoCompleteTextView textView = field.getView();
+        textView.setAdapter(new ArrayAdapter<>(requireActivity(),
+                android.R.layout.simple_dropdown_item_1line, list));
+
+        // Get the drop-down button for the list and setup dialog
+        //noinspection ConstantConditions
+        getView().findViewById(fieldButtonId).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                StandardDialogs.selectStringDialog(requireActivity().getLayoutInflater(),
+                        getString(dialogTitleId),
+                        list, field.getValue().toString(),
+                        new StandardDialogs.SimpleDialogOnClickListener() {
+                            @Override
+                            public void onClick(final @NonNull StandardDialogs.SimpleDialogItem item) {
+                                field.setValue(item.toString());
+                            }
+                        });
+            }
+        });
     }
 
     /**
-     * Gets all editions for the book from database and populate corresponding field with them.
+     * bind a field (button) to bring up a text editor in an overlapping dialog.
      *
-     * @param field to populate with the editions
-     * @param book  from which the editions will be taken
-     *
-     * @return <tt>true</tt>if populated, false otherwise
+     * @param field         {@link Field} to edit
+     * @param dialogTitleId title of the dialog box.
+     * @param fieldButtonId field/button to bind the OnClickListener to (can be same as field.id)
+     * @param multiLine     true if the dialog box should offer a multi-line input.
      */
-    protected boolean populateEditions(@NonNull final Field field, final Book book) {
-        String editionsText = book.getEditionListAsText();
-        field.setValue(editionsText);
-        return !editionsText.isEmpty();
+    protected void initTextFieldEditor(final @NonNull Field field,
+                                       final @StringRes int dialogTitleId,
+                                       final @IdRes int fieldButtonId,
+                                       final boolean multiLine) {
+        // only bother when visible
+        if (!field.visible) {
+            return;
+        }
+
+        //noinspection ConstantConditions
+        getView().findViewById(fieldButtonId).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                TextFieldEditorDialogFragment frag = new TextFieldEditorDialogFragment();
+                Bundle args = new Bundle();
+                args.putInt(UniqueId.BKEY_DIALOG_TITLE, dialogTitleId);
+                args.putInt(UniqueId.BKEY_FIELD_ID, field.id);
+                args.putString(TextFieldEditorDialogFragment.BKEY_TEXT, field.getValue().toString());
+                args.putBoolean(TextFieldEditorDialogFragment.BKEY_MULTI_LINE, multiLine);
+                frag.setArguments(args);
+                frag.show(requireFragmentManager(), null);
+            }
+        });
+    }
+
+    protected void initPartialDatePicker(final @NonNull Field field,
+                                         final @StringRes int dialogTitleId,
+                                         final boolean todayIfNone) {
+        // only bother when visible
+        if (!field.visible) {
+            return;
+        }
+
+        field.getView().setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                Object value = field.getValue();
+                String date;
+                if (todayIfNone && value.toString().isEmpty()) {
+                    date = DateUtils.toSqlDateTime(new Date());
+                } else {
+                    date = value.toString();
+                }
+
+                PartialDatePickerDialogFragment frag = new PartialDatePickerDialogFragment();
+                Bundle args = new Bundle();
+                args.putInt(UniqueId.BKEY_DIALOG_TITLE, dialogTitleId);
+                args.putInt(UniqueId.BKEY_FIELD_ID, field.id);
+                args.putString(PartialDatePickerDialogFragment.BKEY_DATE, date);
+                frag.setArguments(args);
+                frag.show(requireFragmentManager(), null);
+            }
+        });
+    }
+
+    protected <T> void initCheckListEditor(final @NonNull Field field,
+                                           final @StringRes int dialogTitleId,
+                                           final @NonNull ArrayList<CheckListItem<T>> list) {
+        // only bother when visible
+        if (!field.visible) {
+            return;
+        }
+
+        field.getView().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                CheckListEditorDialogFragment<T> frag = new CheckListEditorDialogFragment<>();
+                Bundle args = new Bundle();
+                args.putInt(UniqueId.BKEY_DIALOG_TITLE, dialogTitleId);
+                args.putInt(UniqueId.BKEY_FIELD_ID, field.id);
+                args.putSerializable(CheckListEditorDialogFragment.BKEY_CHECK_LIST, list);
+                frag.show(requireFragmentManager(), null);
+            }
+        });
     }
 
     /**
@@ -221,7 +339,8 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
      */
     @Override
     @CallSuper
-    public void onCreateOptionsMenu(@NonNull final Menu menu, @NonNull final MenuInflater inflater) {
+    public void onCreateOptionsMenu(final @NonNull Menu menu,
+                                    final @NonNull MenuInflater inflater) {
 
         menu.add(MENU_GROUP_BOOK, R.id.MENU_BOOK_DELETE, 0, R.string.menu_delete)
                 .setVisible(false)
@@ -286,7 +405,7 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
      */
     @Override
     @CallSuper
-    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+    public boolean onOptionsItemSelected(final @NonNull MenuItem item) {
         final long bookId = getBook().getBookId();
 
         switch (item.getItemId()) {
@@ -322,15 +441,15 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
 
 
             case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR:
-                AmazonUtils.openSearchPage(mActivity, getAuthorFromBook(), null);
+                AmazonUtils.openSearchPage(mActivity, getBook().getPrimaryAuthor(), null);
                 return true;
 
             case R.id.MENU_AMAZON_BOOKS_IN_SERIES:
-                AmazonUtils.openSearchPage(mActivity, null, getSeriesFromBook());
+                AmazonUtils.openSearchPage(mActivity, null, getBook().getPrimarySeries());
                 return true;
 
             case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES:
-                AmazonUtils.openSearchPage(mActivity, getAuthorFromBook(), getSeriesFromBook());
+                AmazonUtils.openSearchPage(mActivity, getBook().getPrimaryAuthor(), getBook().getPrimarySeries());
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -341,7 +460,7 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
     public void onPause() {
         Tracker.enterOnPause(this);
         // This is now done in onPause() since the view may have been deleted when this is called
-        onSaveBookDetails(getBook());
+        saveTo(getBook());
         super.onPause();
         Tracker.exitOnPause(this);
     }
@@ -351,16 +470,12 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
     public void onResume() {
         super.onResume();
 
-        // Load the data while preserving the isDirty() status
+        // load the book, while disabling the AfterFieldChangeListener
         mFields.setAfterFieldChangeListener(null);
-        final boolean wasDirty = isDirty();
-        onLoadBookDetails(getBook(), false);
-        setDirty(wasDirty);
-
-        // Set the listener to monitor edits
+        loadFrom(getBook());
         mFields.setAfterFieldChangeListener(new AfterFieldChangeListener() {
             @Override
-            public void afterFieldChange(@NonNull Field field, @Nullable final String newValue) {
+            public void afterFieldChange(@NonNull Field field, final @Nullable String newValue) {
                 setDirty(true);
             }
         });
@@ -375,7 +490,7 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
         super.onDestroy();
     }
 
-    private void updateFromInternet(@NonNull final Book book) {
+    private void updateFromInternet(final @NonNull Book book) {
         Intent intent = new Intent(requireActivity(), UpdateFromInternetActivity.class);
         // bookId to update
         intent.putExtra(UniqueId.KEY_ID, book.getBookId());
@@ -388,9 +503,9 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
 
     @Override
     @CallSuper
-    public void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent data) {
+    public void onActivityResult(final int requestCode, final int resultCode, final @Nullable Intent data) {
         if (BuildConfig.DEBUG) {
-            Logger.info(this,"onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
+            Logger.info(this, "onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
         }
         switch (requestCode) {
             case UpdateFromInternetActivity.REQUEST_CODE: /* 98a6d1eb-4df5-4893-9aaf-fac0ce0fee01 */
@@ -408,7 +523,7 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
 
             default:
                 if (BuildConfig.DEBUG) {
-                    // lowest level of our Fragments, see what's left if any
+                    // lowest level of our Fragments, see if we missed anything
                     Logger.info(this, "onActivityResult: BookAbstractFragment requestCode=" + requestCode + ", resultCode=" + resultCode);
                 }
                 break;
@@ -417,51 +532,47 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    /**
-     * Used for the Amazon buying links
-     *
-     * @return the first author in the list of authors for this book
-     */
-    @Nullable
-    private String getAuthorFromBook() {
-        ArrayList<Author> list = getBook().getAuthorList();
-        return list.size() > 0 ? list.get(0).getDisplayName() : null;
-    }
+    //<editor-fold desc="DataEditor interface">
 
     /**
-     * Used for the Amazon buying links
+     * This is 'final' because we want inheritors to implement {@link #onLoadBookDetails}
      *
-     * @return the first series in the list of series for this book
+     * Load the data while preserving the isDirty() status
      */
-    @Nullable
-    private String getSeriesFromBook() {
-        ArrayList<Series> list = getBook().getSeriesList();
-        return list.size() > 0 ? list.get(0).name : null;
+    @Override
+    public final <T extends DataManager> void loadFrom(final @NonNull T dataManager) {
+        final boolean wasDirty = isDirty();
+        onLoadBookDetails((Book) dataManager, false);
+        setDirty(wasDirty);
     }
 
     /**
      * Default implementation of code to load the Book object
      * Override as needed, calling super as the first step
      *
+     * This is where you should populate all the fields with the values coming from the book.
+     * This base class manages all the actual fields, but 'special' fields can/should be handled
+     * in overrides.
+     *
      * @param book       to load from
      * @param setAllFrom flag indicating {@link Fields#setAllFrom} has already been called or not
      */
     @CallSuper
-    protected void onLoadBookDetails(@NonNull final Book book, final boolean setAllFrom) {
+    protected void onLoadBookDetails(final @NonNull Book book, final boolean setAllFrom) {
         if (!setAllFrom) {
             mFields.setAllFrom(book);
+        }
+        if (BuildConfig.DEBUG) {
+            Logger.info(this, "onLoadBookDetails done");
         }
     }
 
     /**
-     * This is 'final' because we want inheritors to implement {@link #onLoadBookDetails}
+     * This is 'final' because we want inheritors to implement {@link #onSaveBookDetails}
      */
     @Override
-    public final <T extends DataManager> void transferDataFrom(@NonNull final T dataManager) {
-        // Load the data while preserving the isDirty() status
-        final boolean wasDirty = isDirty();
-        onLoadBookDetails((Book) dataManager, false);
-        setDirty(wasDirty);
+    public final <T extends DataManager> void saveTo(final @NonNull T dataManager) {
+        onSaveBookDetails((Book) dataManager);
     }
 
     /**
@@ -469,66 +580,66 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
      * We simply copy all {@link Field} into the {@link DataManager} e.g. the {@link Book}
      *
      * Override as needed, calling super if needed
-     *
-     * We could do an instanceof {@link BookDetailsFragment} here but that's not 'clean'
-     * So we override this method there, and make it a nop.
      */
-    protected void onSaveBookDetails(@NonNull final Book book) {
+    protected void onSaveBookDetails(final @NonNull Book book) {
         mFields.putAllInto(book);
+        if (BuildConfig.DEBUG) {
+            Logger.info(this, "onSaveBookDetails done");
+        }
     }
+    //</editor-fold>
+
 
     /**
-     * This is 'final' because we want inheritors to implement {@link #onSaveBookDetails}
-     */
-    @Override
-    public final <T extends DataManager> void transferDataTo(@NonNull final T dataManager) {
-        onSaveBookDetails((Book) dataManager);
-    }
-
-    /**
-     * Hides unused fields if they have not any useful data.
-     * Checks all text fields except of author, series, loaned.
+     * Hides unused fields if they have no useful data.
      *
-     * The latter and non-text fields are handled in
-     * {@link EditBookFieldsFragment} or {@link BookDetailsFragment}
-     * - bookshelf
-     * - anthology/toc
+     * Authors & Title are always visible as they are required fields.
+     *
+     * Series is done in:
+     * {@link EditBookFieldsFragment#populateSeriesListField}
+     * {@link BookDetailsFragment#populateSeriesListField}
+     *
+     * Special fields not checked here:
+     * - toc
      * - read status
-     * - rating
-     * - edition
      *
      * @see FieldVisibilityActivity
      */
     protected void showHideFields(final boolean hideIfEmpty) {
         mFields.resetVisibility();
 
+        // actual book
         showHideField(hideIfEmpty, R.id.coverImage, R.id.row_image);
         showHideField(hideIfEmpty, R.id.isbn, R.id.row_isbn, R.id.lbl_isbn);
-        //showHideField(hideIfEmpty, R.id.series, R.id.row_series, R.id.lbl_series);
-        //showHideField(hideIfEmpty, R.id.bookshelves, R.id.lbl_bookshelves);
         showHideField(hideIfEmpty, R.id.description, R.id.lbl_description, R.id.description_divider);
         showHideField(hideIfEmpty, R.id.publisher, R.id.row_publisher, R.id.lbl_publishing);
         showHideField(hideIfEmpty, R.id.date_published, R.id.row_date_published, R.id.lbl_publishing);
-
         showHideField(hideIfEmpty, R.id.first_publication, R.id.row_first_publication);
         showHideField(hideIfEmpty, R.id.pages, R.id.row_pages, R.id.lbl_pages);
-        showHideField(hideIfEmpty, R.id.list_price, R.id.row_list_price, R.id.lbl_list_price);
+        showHideField(hideIfEmpty, R.id.price_listed, R.id.row_price_listed, R.id.lbl_price_listed);
         showHideField(hideIfEmpty, R.id.format, R.id.row_format, R.id.lbl_format);
         showHideField(hideIfEmpty, R.id.genre, R.id.row_genre, R.id.lbl_genre);
         showHideField(hideIfEmpty, R.id.language, R.id.row_language, R.id.lbl_language);
-        //showHideField(hideIfEmpty, R.id.toc, R.id.row_toc);
-        //showHideField(hideIfEmpty, R.id.loaned_to);
+//        showHideField(hideIfEmpty, R.id.toc, R.id.row_toc);
+
+        // personal fields
+        showHideField(hideIfEmpty, R.id.bookshelves, R.id.row_bookshelves, R.id.lbl_bookshelves);
+//        showHideField(hideIfEmpty, R.id.read, R.id.row_read, R.id.lbl_read);
+
+        showHideField(hideIfEmpty, R.id.edition, R.id.row_edition, R.id.lbl_edition);
         showHideField(hideIfEmpty, R.id.notes, R.id.row_notes, R.id.lbl_notes);
         showHideField(hideIfEmpty, R.id.location, R.id.row_location, R.id.lbl_location);
-        //showHideField(hideIfEmpty, R.id.read, R.id.row_read, R.id.lbl_read);
+        showHideField(hideIfEmpty, R.id.date_purchased, R.id.row_date_purchased);
+        showHideField(hideIfEmpty, R.id.price_paid, R.id.row_price_paid, R.id.lbl_price_paid);
         showHideField(hideIfEmpty, R.id.read_start, R.id.row_read_start, R.id.lbl_read_start);
         showHideField(hideIfEmpty, R.id.read_end, R.id.row_read_end, R.id.lbl_read_end);
         showHideField(hideIfEmpty, R.id.signed, R.id.row_signed);
         showHideField(hideIfEmpty, R.id.rating, R.id.row_rating, R.id.lbl_rating);
-        //showHideField(hideIfEmpty, R.id.edition, R.id.row_edition, R.id.lbl_edition);
 
+        // other
+        showHideField(hideIfEmpty, R.id.loaned_to);
 
-        //NEWKIND: when adding fields that can be invisible, add them here
+        //NEWKIND: new fields
     }
 
     /**
@@ -543,9 +654,9 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
      * @param fieldId       layout resource id of the field
      * @param relatedFields list of fields whose visibility will also be set based on the first field
      */
-    protected void showHideField(final boolean hideIfEmpty,
-                                 @IdRes final int fieldId,
-                                 @NonNull @IdRes final int... relatedFields) {
+    private void showHideField(final boolean hideIfEmpty,
+                               final @IdRes int fieldId,
+                               @NonNull final @IdRes int... relatedFields) {
         //noinspection ConstantConditions
         final View view = getView().findViewById(fieldId);
         if (view != null) {
@@ -553,12 +664,10 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
             if (hideIfEmpty) {
                 if (visibility != View.GONE) {
                     // Determine if we should hide it
-                    if (view instanceof ImageView) {
-                        visibility = view.getVisibility(); //TOMF ??
-                    } else {
-                        final String value = mFields.getField(fieldId).putValueInto().toString();
-                        final boolean isExist = value != null && !value.isEmpty();
-                        visibility = isExist ? View.VISIBLE : View.GONE;
+                    if (!(view instanceof ImageView)) {
+                        final String value = mFields.getField(fieldId).getValue().toString();
+                        final boolean hasValue = value != null && !value.isEmpty();
+                        visibility = hasValue ? View.VISIBLE : View.GONE;
                         view.setVisibility(visibility);
                     }
                 }
@@ -572,6 +681,11 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
                 }
             }
         }
+    }
+
+    /** saving on some typing */
+    protected SharedPreferences getPrefs() {
+        return requireActivity().getSharedPreferences(BookCatalogueApp.APP_SHARED_PREFERENCES, Context.MODE_PRIVATE);
     }
 
     public interface HasBook {
@@ -591,7 +705,7 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
          *
          * Does nothing if the adapter is null, or if the view is not visible
          */
-        static void justifyListViewHeightBasedOnChildren(@NonNull final ListView listView) {
+        static void justifyListViewHeightBasedOnChildren(final @NonNull ListView listView) {
             ListAdapter adapter = listView.getAdapter();
             if (adapter == null || listView.getVisibility() != View.VISIBLE) {
                 return;
@@ -613,48 +727,48 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
         /**
          * Ensure that next up/down/left/right View is visible for all sub-views of the passed view.
          */
-        static void fixFocusSettings(@NonNull final View root) {
+        static void fixFocusSettings(final @NonNull View root) {
             final INextView getDown = new INextView() {
                 @Override
-                public int getNext(@NonNull final View v) {
+                public int getNext(final @NonNull View v) {
                     return v.getNextFocusDownId();
                 }
 
                 @Override
-                public void setNext(@NonNull final View v, @IdRes final int id) {
+                public void setNext(final @NonNull View v, final @IdRes int id) {
                     v.setNextFocusDownId(id);
                 }
             };
             final INextView getUp = new INextView() {
                 @Override
-                public int getNext(@NonNull final View v) {
+                public int getNext(final @NonNull View v) {
                     return v.getNextFocusUpId();
                 }
 
                 @Override
-                public void setNext(@NonNull final View v, @IdRes final int id) {
+                public void setNext(final @NonNull View v, final @IdRes int id) {
                     v.setNextFocusUpId(id);
                 }
             };
             final INextView getLeft = new INextView() {
                 @Override
-                public int getNext(@NonNull final View v) {
+                public int getNext(final @NonNull View v) {
                     return v.getNextFocusLeftId();
                 }
 
                 @Override
-                public void setNext(@NonNull final View v, @IdRes final int id) {
+                public void setNext(final @NonNull View v, final @IdRes int id) {
                     v.setNextFocusLeftId(id);
                 }
             };
             final INextView getRight = new INextView() {
                 @Override
-                public int getNext(@NonNull final View v) {
+                public int getNext(final @NonNull View v) {
                     return v.getNextFocusRightId();
                 }
 
                 @Override
-                public void setNext(@NonNull final View v, @IdRes final int id) {
+                public void setNext(final @NonNull View v, final @IdRes int id) {
                     v.setNextFocusRightId(id);
                 }
             };
@@ -682,9 +796,9 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
          * @param view   View to check
          * @param getter Methods to get/set 'next' view
          */
-        private static void fixNextView(@NonNull final Map<Integer, View> list,
-                                        @NonNull final View view,
-                                        @NonNull final INextView getter) {
+        private static void fixNextView(final @NonNull Map<Integer, View> list,
+                                        final @NonNull View view,
+                                        final @NonNull INextView getter) {
             int nextId = getter.getNext(view);
             if (nextId != View.NO_ID) {
                 int actualNextId = getNextView(list, nextId, getter);
@@ -704,9 +818,9 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
          *
          * @return ID if first visible 'next' view
          */
-        private static int getNextView(@NonNull final Map<Integer, View> list,
+        private static int getNextView(final @NonNull Map<Integer, View> list,
                                        final int nextId,
-                                       @NonNull final INextView getter) {
+                                       final @NonNull INextView getter) {
             final View v = list.get(nextId);
             if (v == null) {
                 return View.NO_ID;
@@ -725,10 +839,10 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
          * @param parent Parent View
          * @param list   Collection
          */
-        private static void getViews(@NonNull final View parent,
-                                     @NonNull final Map<Integer, View> list) {
+        private static void getViews(final @NonNull View parent,
+                                     final @NonNull Map<Integer, View> list) {
             // Get the view ID and add it to collection if not already present.
-            @IdRes final int id = parent.getId();
+            final @IdRes int id = parent.getId();
             if (id != View.NO_ID && !list.containsKey(id)) {
                 list.put(id, parent);
             }
@@ -746,7 +860,7 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
          * Debug utility to dump an entire view hierarchy to the output.
          */
         @SuppressWarnings("unused")
-        static void debugDumpViewTree(final int depth, @NonNull final View view) {
+        static void debugDumpViewTree(final int depth, final @NonNull View view) {
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < depth * 4; i++) {
                 sb.append(" ");
@@ -771,9 +885,9 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
         }
 
         private interface INextView {
-            int getNext(@NonNull final View v);
+            int getNext(final @NonNull View v);
 
-            void setNext(@NonNull final View v, @IdRes final int id);
+            void setNext(final @NonNull View v, final @IdRes int id);
         }
     }
 

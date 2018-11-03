@@ -14,8 +14,8 @@
         android:layout_centerVertical="true"
         android:paddingEnd="@dimen/padding_border"
         android:paddingStart="@dimen/padding_border">
-
-        <ImageButton
+        <!-- keep this as ImageView. a button would need an extra listener -->
+        <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:focusable="true"
@@ -33,7 +33,7 @@
         android:singleLine="false"
         android:textAppearance="?android:attr/textAppearanceMedium"
         tools:text="Name"
-        android:textIsSelectable="true" />
+        android:textIsSelectable="false" />
 
     <TextView
         android:id="@+id/value"
@@ -45,7 +45,7 @@
         android:singleLine="false"
         android:textAppearance="?android:attr/textAppearanceSmall"
         tools:text="Value"
-        android:textIsSelectable="true" />
+        android:textIsSelectable="false" />
 
     <View style="@style/listDividerHorizontal"/>
 

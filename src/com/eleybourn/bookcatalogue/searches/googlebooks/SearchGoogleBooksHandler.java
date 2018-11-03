@@ -156,16 +156,16 @@ class SearchGoogleBooksHandler extends DefaultHandler {
 
     @Override
     @CallSuper
-    public void characters(@NonNull final char[] ch, final int start, final int length) throws SAXException {
+    public void characters(final @NonNull char[] ch, final int start, final int length) throws SAXException {
         super.characters(ch, start, length);
         builder.append(ch, start, length);
     }
 
     @Override
     @CallSuper
-    public void endElement(@NonNull final String uri,
-                           @NonNull final String localName,
-                           @NonNull final String name) throws SAXException {
+    public void endElement(final @NonNull String uri,
+                           final @NonNull String localName,
+                           final @NonNull String name) throws SAXException {
         super.endElement(uri, localName, name);
         if (localName.equalsIgnoreCase(XML_TOTAL_RESULTS)) {
             count = Integer.parseInt(builder.toString());
@@ -191,10 +191,10 @@ class SearchGoogleBooksHandler extends DefaultHandler {
 
     @Override
     @CallSuper
-    public void startElement(@NonNull final String uri,
-                             @NonNull final String localName,
-                             @NonNull final String name,
-                             @NonNull final Attributes attributes) throws SAXException {
+    public void startElement(final @NonNull String uri,
+                             final @NonNull String localName,
+                             final @NonNull String name,
+                             final @NonNull Attributes attributes) throws SAXException {
         super.startElement(uri, localName, name, attributes);
         if (!done && localName.equalsIgnoreCase(XML_ENTRY)) {
             entry = true;

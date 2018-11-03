@@ -44,8 +44,8 @@ public class ImageUtils {
      * @return The bitmap, or null
      */
     @Nullable
-    public static Bitmap fetchFileIntoImageView(@Nullable final ImageView destView,
-                                                @NonNull final File file,
+    public static Bitmap fetchFileIntoImageView(final @Nullable ImageView destView,
+                                                final @NonNull File file,
                                                 final int maxWidth, final int maxHeight, final boolean exact) {
         // Get the file, if it exists. Otherwise set 'broken image' icon and exit.
         if (!file.exists()) {
@@ -61,8 +61,8 @@ public class ImageUtils {
      * If the view is non-null, the image is also placed in the view.
      */
     @Nullable
-    public static Bitmap fetchFileIntoImageView(@Nullable final ImageView destView,
-                                                @NonNull final String fileSpec,
+    public static Bitmap fetchFileIntoImageView(final @Nullable ImageView destView,
+                                                final @NonNull String fileSpec,
                                                 final int maxWidth, final int maxHeight, final boolean exact) {
 
         // Read the file to get file size
@@ -174,8 +174,8 @@ public class ImageUtils {
      * @return Bitmap (if cached) or null (if done in background)
      */
     @Nullable
-    public static Bitmap fetchBookCoverIntoImageView(@Nullable final ImageView destView,
-                                                     @NonNull final String coverUUID,
+    public static Bitmap fetchBookCoverIntoImageView(final @Nullable ImageView destView,
+                                                     final @NonNull String coverUUID,
                                                      final int maxWidth, final int maxHeight, final boolean exact,
                                                      final boolean checkCache, final boolean allowBackground) {
 
@@ -213,10 +213,10 @@ public class ImageUtils {
      * @param urlText            Image file URL
      * @param filenameSuffix    Suffix to add
      *
-     * @return Downloaded fileSpec, or blank "" on onCancel
+     * @return Downloaded fileSpec, or blank "" on onPartialDatePickerCancel
      */
     @NonNull
-    public static String saveThumbnailFromUrl(@NonNull final String urlText, @NonNull final String filenameSuffix) {
+    public static String saveThumbnailFromUrl(final @NonNull String urlText, final @NonNull String filenameSuffix) {
 
         final File file = StorageUtils.getTempCoverFile(filenameSuffix);
 
@@ -237,7 +237,7 @@ public class ImageUtils {
      * @return bitmap
      */
     @Nullable
-    public static Bitmap getBitmapFromBytes(@NonNull final byte[] bytes) {
+    public static Bitmap getBitmapFromBytes(final @NonNull byte[] bytes) {
         if (bytes.length == 0)
             return null;
 
@@ -255,10 +255,10 @@ public class ImageUtils {
      *
      * @param urlText Image file URL
      *
-     * @return Downloaded byte[] or null upon onCancel
+     * @return Downloaded byte[] or null upon onPartialDatePickerCancel
      */
     @Nullable
-    public static byte[] getBytesFromUrl(@NonNull final String urlText) {
+    public static byte[] getBytesFromUrl(final @NonNull String urlText) {
 
         try (InputStream in = Utils.getInputStream(urlText);
              ByteArrayOutputStream out = new ByteArrayOutputStream()) {
@@ -282,7 +282,7 @@ public class ImageUtils {
      * If there is a {@link UniqueId#BKEY_THUMBNAIL_FILES_SPEC} key, pick the largest image, rename it
      * and delete the others. Finally, remove the key. and set KEY_BOOK_THUMBNAIL to true
      */
-    public static void cleanupThumbnails(@Nullable final Bundle result) {
+    public static void cleanupThumbnails(final @Nullable Bundle result) {
         if (result == null || !result.containsKey(UniqueId.BKEY_THUMBNAIL_FILES_SPEC)) {
             return;
         }
@@ -338,7 +338,7 @@ public class ImageUtils {
     /**
      * Show zoomed thumbnail in dialog. Closed by click on image area.
      */
-    public static void showZoomedThumb(@NonNull final Activity activity, @Nullable final File thumbFile) {
+    public static void showZoomedThumb(final @NonNull Activity activity, final @Nullable File thumbFile) {
 
         final ThumbSize thumbSizes = getThumbSizes(activity);
 
@@ -386,7 +386,7 @@ public class ImageUtils {
      * zoomed:  Minimum of MAX_ZOOM_THUMBNAIL_SIZE and largest screen dimension.
      */
     @NonNull
-    public static ThumbSize getThumbSizes(@NonNull final Activity activity) {
+    public static ThumbSize getThumbSizes(final @NonNull Activity activity) {
         final DisplayMetrics metrics = getDisplayMetrics(activity);
 
         ThumbSize sizes = new ThumbSize();
@@ -396,7 +396,7 @@ public class ImageUtils {
     }
 
     @NonNull
-    public static DisplayMetrics getDisplayMetrics(@NonNull final Activity activity) {
+    public static DisplayMetrics getDisplayMetrics(final @NonNull Activity activity) {
         final DisplayMetrics metrics = new DisplayMetrics();
         activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
         return metrics;
@@ -417,7 +417,7 @@ public class ImageUtils {
 //     * @return The scaled bitmap for the file, or null if no file or bad file.
 //     */
 //    @Nullable
-//    public static Bitmap fetchThumbnailIntoImageView(@Nullable final ImageView destView, @NonNull final String uuid,
+//    public static Bitmap fetchThumbnailIntoImageView(final @Nullable ImageView destView, final @NonNull String uuid,
 //                                                     final int maxWidth, final int maxHeight, final boolean exact) {
 //        try {
 //            return fetchFileIntoImageView(destView, StorageUtils.getCoverFile(uuid), maxWidth, maxHeight, exact);

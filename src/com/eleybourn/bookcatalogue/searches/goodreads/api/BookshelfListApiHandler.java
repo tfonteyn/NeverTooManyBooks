@@ -54,7 +54,7 @@ public class BookshelfListApiHandler extends ApiHandler {
 
     private SimpleXmlFilter mFilters;
 
-    public BookshelfListApiHandler(@NonNull final GoodreadsManager manager) {
+    public BookshelfListApiHandler(final @NonNull GoodreadsManager manager) {
         super(manager);
         if (!manager.hasValidCredentials())
             throw new RuntimeException("Goodreads credentials not valid");

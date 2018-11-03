@@ -58,7 +58,7 @@ import oauth.signpost.exception.OAuthMessageSignerException;
  */
 public class ShelfAddBookHandler extends ApiHandler {
 
-	public ShelfAddBookHandler(@NonNull final GoodreadsManager manager) {
+	public ShelfAddBookHandler(final @NonNull GoodreadsManager manager) {
 		super(manager);
 		buildFilters();
 	}
@@ -79,7 +79,7 @@ public class ShelfAddBookHandler extends ApiHandler {
 	/**
 	 * Add the passed book to the passed shelf
 	 */
-	public long add(@NonNull final String shelfName, final long grBookId)
+	public long add(final @NonNull String shelfName, final long grBookId)
 			throws OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException, IOException,
 			NotAuthorizedException, BookNotFoundException, NetworkException
 	{
@@ -90,7 +90,7 @@ public class ShelfAddBookHandler extends ApiHandler {
 	 * Remove the passed book from the passed shelf
 	 */	
 	@SuppressWarnings("UnusedReturnValue")
-	public long remove(@NonNull final String shelfName, final long grBookId)
+	public long remove(final @NonNull String shelfName, final long grBookId)
 			throws OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException, IOException,
 			NotAuthorizedException, BookNotFoundException, NetworkException
 	{
@@ -100,7 +100,7 @@ public class ShelfAddBookHandler extends ApiHandler {
 	/**
 	 * Do the main work; same API call for add & remove
 	 */
-	private long doCall(@NonNull final String shelfName, final long grBookId, final boolean isRemove)
+	private long doCall(final @NonNull String shelfName, final long grBookId, final boolean isRemove)
 			throws OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException, IOException,
 			NotAuthorizedException, BookNotFoundException, NetworkException
 	{
@@ -143,7 +143,7 @@ public class ShelfAddBookHandler extends ApiHandler {
 
 	private final XmlHandler mHandleReviewId = new XmlHandler() {
 		@Override
-		public void process(@NonNull final ElementContext context) {
+		public void process(final @NonNull ElementContext context) {
 			try {
 				mReviewId = Long.parseLong(context.body.trim());
 			} catch (Exception ignore) {

@@ -230,13 +230,13 @@ public abstract class ShowBookApiHandler extends ApiHandler {
      */
     private final XmlHandler mHandleSeriesStart = new XmlHandler() {
         @Override
-        public void process(@NonNull final ElementContext context) {
+        public void process(final @NonNull ElementContext context) {
             //mCurrSeries = new Series();
         }
     };
     private final XmlHandler mHandleSeriesId = new XmlHandler() {
         @Override
-        public void process(@NonNull final ElementContext context) {
+        public void process(final @NonNull ElementContext context) {
 			/*
 			try {
 				mCurrSeriesId = Integer.parseInt(context.body.trim());
@@ -247,13 +247,13 @@ public abstract class ShowBookApiHandler extends ApiHandler {
     };
     private final XmlHandler mHandleAuthorStart = new XmlHandler() {
         @Override
-        public void process(@NonNull final ElementContext context) {
+        public void process(final @NonNull ElementContext context) {
             //mCurrAuthor = new Author();
         }
     };
     private final XmlHandler mHandleAuthorId = new XmlHandler() {
         @Override
-        public void process(@NonNull final ElementContext context) {
+        public void process(final @NonNull ElementContext context) {
 			/*
 			try {
 				mCurrAuthorId = Long.parseLong(context.body.trim());
@@ -284,7 +284,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
     private final XmlHandler mHandleText = new XmlHandler() {
 
         @Override
-        public void process(@NonNull final ElementContext context) {
+        public void process(final @NonNull ElementContext context) {
             final String name = (String) context.userArg;
             mBookData.putString(name, context.body.trim());
         }
@@ -292,7 +292,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
     private final XmlHandler mHandleLong = new XmlHandler() {
 
         @Override
-        public void process(@NonNull final ElementContext context) {
+        public void process(final @NonNull ElementContext context) {
             final String name = (String) context.userArg;
             try {
                 long l = Long.parseLong(context.body.trim());
@@ -307,7 +307,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
     private final XmlHandler mHandleFloat = new XmlHandler() {
 
         @Override
-        public void process(@NonNull final ElementContext context) {
+        public void process(final @NonNull ElementContext context) {
             final String name = (String) context.userArg;
             try {
                 double d = Double.parseDouble(context.body.trim());
@@ -320,7 +320,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
     private final XmlHandler mHandleBoolean = new XmlHandler() {
 
         @Override
-        public void process(@NonNull final ElementContext context) {
+        public void process(final @NonNull ElementContext context) {
             final String name = (String) context.userArg;
             try {
                 String s = context.body.trim();
@@ -351,7 +351,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
      */
     private final XmlHandler mHandleShelvesStart = new XmlHandler() {
         @Override
-        public void process(@NonNull final ElementContext context) {
+        public void process(final @NonNull ElementContext context) {
             mShelves = new ArrayList<>();
         }
     };
@@ -360,7 +360,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
      */
     private final XmlHandler mHandleShelf = new XmlHandler() {
         @Override
-        public void process(@NonNull final ElementContext context) {
+        public void process(final @NonNull ElementContext context) {
             if (context.attributes != null) {
                 String name = context.attributes.getValue("name");
                 mShelves.add(name);
@@ -372,7 +372,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
     private String mCurrAuthorName = null;
     private final XmlHandler mHandleAuthorEnd = new XmlHandler() {
         @Override
-        public void process(@NonNull final ElementContext context) {
+        public void process(final @NonNull ElementContext context) {
             if (mCurrAuthorName != null && !mCurrAuthorName.isEmpty()) {
                 if (mAuthors == null) {
                     mAuthors = new ArrayList<>();
@@ -384,7 +384,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
     };
     private final XmlHandler mHandleAuthorName = new XmlHandler() {
         @Override
-        public void process(@NonNull final ElementContext context) {
+        public void process(final @NonNull ElementContext context) {
             mCurrAuthorName = context.body.trim();
         }
     };
@@ -393,7 +393,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
     private String mCurrSeriesName = null;
     private final XmlHandler mHandleSeriesName = new XmlHandler() {
         @Override
-        public void process(@NonNull final ElementContext context) {
+        public void process(final @NonNull ElementContext context) {
             mCurrSeriesName = context.body.trim();
         }
     };
@@ -402,7 +402,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
     private Integer mCurrSeriesPosition = null;
     private final XmlHandler mHandleSeriesEnd = new XmlHandler() {
         @Override
-        public void process(@NonNull final ElementContext context) {
+        public void process(final @NonNull ElementContext context) {
             if (mCurrSeriesName != null && !mCurrSeriesName.isEmpty()) {
                 if (mSeries == null) {
                     mSeries = new ArrayList<>();
@@ -419,7 +419,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
     };
     private final XmlHandler mHandleSeriesPosition = new XmlHandler() {
         @Override
-        public void process(@NonNull final ElementContext context) {
+        public void process(final @NonNull ElementContext context) {
             try {
                 mCurrSeriesPosition = Integer.parseInt(context.body.trim());
             } catch (Exception ignore) {
@@ -427,7 +427,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
         }
     };
 
-    ShowBookApiHandler(@NonNull final GoodreadsManager manager, @SuppressWarnings("SameParameterValue") final boolean signRequest) {
+    ShowBookApiHandler(final @NonNull GoodreadsManager manager, @SuppressWarnings("SameParameterValue") final boolean signRequest) {
         super(manager);
         mSignRequest = signRequest;
         // Build the XML filters needed to get the data we're interested in.
@@ -443,7 +443,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
      * @return the Bundle of data.
      */
     @NonNull
-    Bundle sendRequest(@NonNull final HttpGet request, final boolean fetchThumbnail) throws
+    Bundle sendRequest(final @NonNull HttpGet request, final boolean fetchThumbnail) throws
             OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException,
             NotAuthorizedException,
             BookNotFoundException, IOException, NetworkException {

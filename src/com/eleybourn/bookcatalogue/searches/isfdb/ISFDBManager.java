@@ -5,7 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.EditBookAnthologyFragment;
+import com.eleybourn.bookcatalogue.EditBookTOCFragment;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue;
@@ -21,7 +21,7 @@ public class ISFDBManager {
     private static final String PREFS_HOST_URL = "ISFDBManager.hostUrl";
     /**
      * task queue for the searching/parsing of content (ant titles)
-     * specifically used for direct search calls from {@link EditBookAnthologyFragment}
+     * specifically used for direct search calls from {@link EditBookTOCFragment}
      *
      * Not used for 'normal' search
      */
@@ -34,12 +34,12 @@ public class ISFDBManager {
         return BookCatalogueApp.Prefs.getString(PREFS_HOST_URL, "http://www.isfdb.org");
     }
 
-    public static void setBaseURL(@NonNull final String url) {
+    public static void setBaseURL(final @NonNull String url) {
         BookCatalogueApp.Prefs.putString(PREFS_HOST_URL, url);
     }
 
     @Nullable
-    static public File getCoverImage(@NonNull final String isbn) {
+    static public File getCoverImage(final @NonNull String isbn) {
         Bundle bookData = new Bundle();
         try {
             search(isbn, "", "", bookData, true);
@@ -58,10 +58,10 @@ public class ISFDBManager {
         }
     }
 
-    public static void search(@NonNull final String isbn,
+    public static void search(final @NonNull String isbn,
                               @NonNull String author,
                               @NonNull String title,
-                              @NonNull final Bundle /* out */ book,
+                              final @NonNull Bundle /* out */ book,
                               final boolean fetchThumbnail) throws IOException {
         //replace spaces with %20
         author = author.replace(" ", "%20");
@@ -85,10 +85,10 @@ public class ISFDBManager {
     /**
      * FIXME this has been shoehorned in here. Need to redo this by using the SearchISFDBTask really
      *
-     * specifically used by {@link EditBookAnthologyFragment}
+     * specifically used by {@link EditBookTOCFragment}
      * First step, get all editions for the ISBN
      */
-    public static void searchEditions(@NonNull final String isbn, @NonNull final HandlesISFDB callback) {
+    public static void searchEditions(final @NonNull String isbn, final @NonNull HandlesISFDB callback) {
         // Setup the background fetcher
         if (taskQueue == null) {
             taskQueue = new SimpleTaskQueue("isfdb");
@@ -99,11 +99,11 @@ public class ISFDBManager {
     /**
      * FIXME this has been shoehorned in here. Need to redo this by using the SearchISFDBTask really
      *
-     * specifically used by {@link EditBookAnthologyFragment}
+     * specifically used by {@link EditBookTOCFragment}
      * First step, get all editions for the ISBN via {@link #searchEditions(String, HandlesISFDB)}
      * That will then call this one
      */
-    public static void search(@NonNull final String bookUrl, @NonNull final HandlesISFDB callback) {
+    public static void search(final @NonNull String bookUrl, final @NonNull HandlesISFDB callback) {
         // Setup the background fetcher
         if (taskQueue == null) {
             taskQueue = new SimpleTaskQueue("isfdb");

@@ -57,17 +57,21 @@ public final class DEBUG_SWITCHES {
     public static final boolean STORAGE_UTILS = false;
 
     /** {@link com.eleybourn.bookcatalogue.tasks.TaskManager} */
-    public static final boolean TASK_MANAGER = true;
+    public static final boolean TASK_MANAGER = false;
 
     /** {@link com.eleybourn.bookcatalogue.searches.SearchManager} and related */
     public static final boolean SEARCH_INTERNET = true;
 
+    /** {@link com.eleybourn.bookcatalogue.searches.isfdb.ISFDBBook} */
+    public static final boolean ISFDB_SEARCH = true;
+
     /** all things related to sending messages around */
-    public static final boolean MESSAGING = true;
+    public static final boolean MESSAGING = false;
 
     /** reading/writing a backup file */
     public static final boolean BACKUP = false;
 
     /** all things that can happen during startup only */
     public static final boolean STARTUP = false;
+
 }

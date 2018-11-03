@@ -15,9 +15,11 @@ import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter;
+import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class AdminSearchOrderFragment extends Fragment {
 
@@ -28,23 +30,20 @@ public class AdminSearchOrderFragment extends Fragment {
     private boolean isCreated;
 
     @Override
-    public void setArguments(@Nullable final Bundle args) {
-        //noinspection ConstantConditions,unchecked
-        mList = (ArrayList<SearchManager.SearchSite>)args.getSerializable(SearchManager.BKEY_SEARCH_SITES);
-    }
-
-    @Override
-    public View onCreateView(@NonNull final LayoutInflater inflater,
-                             @Nullable final ViewGroup container,
-                             @Nullable final Bundle savedInstanceState) {
+    public View onCreateView(final @NonNull LayoutInflater inflater,
+                             final @Nullable ViewGroup container,
+                             final @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_edit_search_order, container, false);
     }
 
-
     @Override
     @CallSuper
-    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
+    public void onActivityCreated(final @Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        Bundle args = getArguments();
+        Objects.requireNonNull(args);
+        //noinspection unchecked
+        mList = (ArrayList<SearchManager.SearchSite>) args.getSerializable(SearchManager.BKEY_SEARCH_SITES);
 
         mAdapter = new SearchSiteListAdapter(requireContext(), R.layout.row_edit_searchsite, mList);
         //noinspection ConstantConditions
@@ -73,14 +72,14 @@ public class AdminSearchOrderFragment extends Fragment {
 
     private class SearchSiteListAdapter extends SimpleListAdapter<SearchManager.SearchSite> {
 
-        SearchSiteListAdapter(@NonNull final Context context,
+        SearchSiteListAdapter(final @NonNull Context context,
                               final int rowViewId,
-                              @NonNull final List<SearchManager.SearchSite> list) {
+                              final @NonNull List<SearchManager.SearchSite> list) {
             super(context, rowViewId, list);
         }
 
         @Override
-        protected void onSetupView(@NonNull final View convertView, @NonNull final SearchManager.SearchSite item) {
+        protected void onSetupView(final @NonNull View convertView, final @NonNull SearchManager.SearchSite item) {
             final TextView name = convertView.findViewById(R.id.row_name);
             name.setText(item.name);
 

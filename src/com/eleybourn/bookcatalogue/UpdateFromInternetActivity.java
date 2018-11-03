@@ -42,6 +42,7 @@ import com.eleybourn.bookcatalogue.baseactivity.BaseActivityWithTasks;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.searches.SearchAdminActivity;
+import com.eleybourn.bookcatalogue.searches.SearchManager;
 import com.eleybourn.bookcatalogue.searches.UpdateFromInternetThread;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
 import com.eleybourn.bookcatalogue.tasks.ManagedTask;
@@ -58,8 +59,11 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
 
     public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_UPDATE_FROM_INTERNET;
 
+    /** optionally limit the sites to search on. By default uses {@link SearchManager#SEARCH_ALL} */
+    public static final String REQUEST_BKEY_SEARCH_SITES = "SearchSites";
+    /** */
     private final FieldUsages mFieldUsages = new FieldUsages();
-
+    private int mSearchSites = SearchManager.SEARCH_ALL;
     private long mBookId = 0;
 
     private ViewGroup mListContainer;
@@ -69,13 +73,20 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
     /** this is where the results can be 'consumed' before finishing this activity */
     private final ManagedTask.TaskListener mSearchTaskListener = new ManagedTask.TaskListener() {
         @Override
-        public void onTaskFinished(@NonNull final ManagedTask task) {
+        public void onTaskFinished(final @NonNull ManagedTask task) {
             mUpdateSenderId = 0;
             Intent data = new Intent();
+            data.putExtra(UniqueId.BKEY_CANCELED, task.isCancelled());
+
             // 0 if we did 'all books' or the id of the (hopefully) updated book.
             data.putExtra(UniqueId.KEY_ID, mBookId);
-            data.putExtra(UniqueId.BKEY_CANCELED, task.isCancelled());
-            setResult(Activity.RESULT_OK, data); /* 98a6d1eb-4df5-4893-9aaf-fac0ce0fee01 */
+            if (mBookId == 0) {
+                // task cancelled does not mean that nothing was done. Books *will* be updated until the cancelling happened
+                setResult(Activity.RESULT_OK, data); /* 98a6d1eb-4df5-4893-9aaf-fac0ce0fee01 */
+            } else {
+                // but if a single book was cancelled, flag that up
+                setResult(Activity.RESULT_CANCELED, data); /* 98a6d1eb-4df5-4893-9aaf-fac0ce0fee01 */
+            }
             finish();
         }
     };
@@ -87,7 +98,7 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
 
     @Override
     @CallSuper
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
+    public void onCreate(final @Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         Bundle extras = getIntent().getExtras();
@@ -102,8 +113,11 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
 
                 findViewById(R.id.row_book).setVisibility(View.VISIBLE);
             }
+
+            mSearchSites = extras.getInt(REQUEST_BKEY_SEARCH_SITES, SearchManager.SEARCH_ALL);
         }
-        this.setTitle(R.string.select_fields_to_update);
+
+        setTitle(R.string.select_fields_to_update);
         LibraryThingManager.showLtAlertIfNecessary(this, false, "update_from_internet");
 
         mListContainer = findViewById(R.id.manage_fields_scrollview);
@@ -129,8 +143,8 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
         addIfVisible(UniqueId.BKEY_SERIES_ARRAY, UniqueId.KEY_SERIES_NAME,
                 R.string.series, true,
                 FieldUsage.Usage.ADD_EXTRA);
-        addIfVisible(UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY, UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK,
-                R.string.anthology, true,
+        addIfVisible(UniqueId.BKEY_TOC_TITLES_ARRAY, UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK,
+                R.string.table_of_content, true,
                 FieldUsage.Usage.ADD_EXTRA);
         addIfVisible(UniqueId.KEY_BOOK_PUBLISHER, null,
                 R.string.publisher, false,
@@ -147,8 +161,8 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
         addIfVisible(UniqueId.KEY_BOOK_PAGES, null,
                 R.string.pages, false,
                 FieldUsage.Usage.COPY_IF_BLANK);
-        addIfVisible(UniqueId.KEY_BOOK_LIST_PRICE, null,
-                R.string.list_price, false,
+        addIfVisible(UniqueId.KEY_BOOK_PRICE_LISTED, null,
+                R.string.price_listed, false,
                 FieldUsage.Usage.COPY_IF_BLANK);
         addIfVisible(UniqueId.KEY_BOOK_FORMAT, null,
                 R.string.format, false,
@@ -170,11 +184,11 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
      * @param canAppend if the field is a list to which we can append to
      * @param usage     Usage to apply.
      */
-    private void addIfVisible(@NonNull final String field,
+    private void addIfVisible(final @NonNull String field,
                               @Nullable String visField,
-                              @StringRes final int stringId,
+                              final @StringRes int stringId,
                               final boolean canAppend,
-                              @NonNull final FieldUsage.Usage usage) {
+                              final @NonNull FieldUsage.Usage usage) {
 
         if (visField == null || visField.trim().isEmpty()) {
             visField = field;
@@ -228,7 +242,7 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
 
                 // If they have selected thumbnails, check if they want to download ALL
                 FieldUsage coversWanted = mFieldUsages.get(UniqueId.KEY_BOOK_THUMBNAIL);
-                // but don't ask if its a single book only
+                // but don't ask if its a single book only; just download it.
                 if (mBookId == 0 && coversWanted.isSelected()) {
                     // Verify - this can be a dangerous operation
                     AlertDialog dialog = new AlertDialog.Builder(UpdateFromInternetActivity.this)
@@ -288,7 +302,7 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
      */
     @Override
     @CallSuper
-    public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
+    public boolean onCreateOptionsMenu(final @NonNull Menu menu) {
         menu.add(Menu.NONE, R.id.MENU_PREFS_SEARCH_SITES, 0, R.string.search_sites)
                 .setIcon(R.drawable.ic_search)
                 .setShowAsAction(MenuItem.SHOW_AS_ACTION_WITH_TEXT);
@@ -298,14 +312,27 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
 
     @Override
     @CallSuper
-    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+    public boolean onOptionsItemSelected(final @NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.MENU_PREFS_SEARCH_SITES:
                 Intent intent = new Intent(this, SearchAdminActivity.class);
-                startActivity(intent);
+                intent.putExtra(SearchAdminActivity.REQUEST_BKEY_TAB, SearchAdminActivity.TAB_SEARCH_ORDER);
+                startActivityForResult(intent, SearchAdminActivity.REQUEST_CODE); /* 4266b81b-137b-4647-aa1c-8ec0fc8726e6 */
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+        switch (requestCode) {
+            case SearchAdminActivity.REQUEST_CODE: /* 4266b81b-137b-4647-aa1c-8ec0fc8726e6 */
+                if (resultCode == Activity.RESULT_OK && data != null) {
+                    mSearchSites = data.getIntExtra(SearchAdminActivity.RESULT_SEARCH_SITES, mSearchSites);
+                }
+                break;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     private int countUserSelections() {
@@ -328,7 +355,8 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
      * @param bookId 0 for all books, or a valid book id for one book
      */
     private void startUpdate(final long bookId) {
-        UpdateFromInternetThread updateThread = new UpdateFromInternetThread(getTaskManager(), mFieldUsages, mSearchTaskListener);
+        UpdateFromInternetThread updateThread = new UpdateFromInternetThread(getTaskManager(),
+                mFieldUsages, mSearchSites, mSearchTaskListener);
         if (bookId > 0) {
             updateThread.setBookId(bookId);
         }
@@ -369,7 +397,7 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
     public static class FieldUsages extends LinkedHashMap<String, FieldUsage> {
         private static final long serialVersionUID = 1L;
 
-        public void put(@NonNull final FieldUsage usage) {
+        public void put(final @NonNull FieldUsage usage) {
             this.put(usage.key, usage);
         }
     }
@@ -389,9 +417,9 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
         private final int labelId;
 
 
-        public FieldUsage(@NonNull final String name,
-                          @StringRes final int id,
-                          @NonNull final Usage usage,
+        public FieldUsage(final @NonNull String name,
+                          final @StringRes int id,
+                          final @NonNull Usage usage,
                           final boolean canAppend) {
             this.key = name;
             this.labelId = id;
@@ -403,11 +431,11 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
             return (usage != Usage.SKIP);
         }
 
-        public String getLabel(@NonNull final Context context) {
+        public String getLabel(final @NonNull Context context) {
             return context.getString(labelId);
         }
 
-        public String getUsageInfo(@NonNull final Context context) {
+        public String getUsageInfo(final @NonNull Context context) {
             return context.getString(usage.getStringId());
         }
 

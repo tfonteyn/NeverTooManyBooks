@@ -48,15 +48,15 @@ import java.util.Objects;
  */
 public class BooleanProperty extends ValuePropertyWithGlobalDefault<Boolean> implements BooleanValue {
 
-    public BooleanProperty(@NonNull final String uniqueId,
-                           @NonNull final PropertyGroup group,
-                           @StringRes final int nameResourceId) {
+    public BooleanProperty(final @NonNull String uniqueId,
+                           final @NonNull PropertyGroup group,
+                           final @StringRes int nameResourceId) {
         super(uniqueId, group, nameResourceId, false);
     }
 
     @NonNull
     @Override
-    public View getView(@NonNull final LayoutInflater inflater) {
+    public View getView(final @NonNull LayoutInflater inflater) {
         // Get the view and setup holder
         View view = inflater.inflate(R.layout.property_value_boolean, null);
         final Holder holder = new Holder();
@@ -95,7 +95,7 @@ public class BooleanProperty extends ValuePropertyWithGlobalDefault<Boolean> imp
         return view;
     }
 
-    private void handleClick(@NonNull final View view) {
+    private void handleClick(final @NonNull View view) {
         Holder holder = ViewTagger.getTagOrThrow(view, R.id.TAG_PROPERTY);// value BooleanProperty.Holder
         Boolean value = holder.property.get();
         // Cycle through three values: 'null', 'true', 'false'. If the value is 'global' omit 'null'.
@@ -115,7 +115,7 @@ public class BooleanProperty extends ValuePropertyWithGlobalDefault<Boolean> imp
     }
 
     /** Set the checkbox and text fields based on passed value */
-    private void setViewValues(@NonNull final Holder holder, @Nullable final Boolean value) {
+    private void setViewValues(final @NonNull Holder holder, final @Nullable Boolean value) {
         if (value != null) {
             // We have a value, so setup based on it
             holder.cb.setChecked(value);
@@ -139,7 +139,7 @@ public class BooleanProperty extends ValuePropertyWithGlobalDefault<Boolean> imp
 
     @Override
     @Nullable
-    protected BooleanProperty setGlobalDefault(@Nullable final Boolean value) {
+    protected BooleanProperty setGlobalDefault(final @Nullable Boolean value) {
         Objects.requireNonNull(value);
         BookCatalogueApp.Prefs.putBoolean(getPreferenceKey(), value);
         return this;
@@ -147,7 +147,7 @@ public class BooleanProperty extends ValuePropertyWithGlobalDefault<Boolean> imp
 
     @NonNull
     @Override
-    public BooleanProperty set(@NonNull final Property p) {
+    public BooleanProperty set(final @NonNull Property p) {
         if (!(p instanceof BooleanValue)) {
             throw new RTE.IllegalTypeException(p.getClass().getCanonicalName());
         }
@@ -173,7 +173,7 @@ public class BooleanProperty extends ValuePropertyWithGlobalDefault<Boolean> imp
     @NonNull
     @Override
     @CallSuper
-    public BooleanProperty setDefaultValue(@Nullable final Boolean value) {
+    public BooleanProperty setDefaultValue(final @Nullable Boolean value) {
         Objects.requireNonNull(value);
         super.setDefaultValue(value);
         return this;
@@ -182,7 +182,7 @@ public class BooleanProperty extends ValuePropertyWithGlobalDefault<Boolean> imp
     @NonNull
     @Override
     @CallSuper
-    public BooleanProperty setGroup(@NonNull final PropertyGroup group) {
+    public BooleanProperty setGroup(final @NonNull PropertyGroup group) {
         super.setGroup(group);
         return this;
     }
@@ -198,7 +198,7 @@ public class BooleanProperty extends ValuePropertyWithGlobalDefault<Boolean> imp
     @Override
     @NonNull
     @CallSuper
-    public BooleanProperty setPreferenceKey(@NonNull final String key) {
+    public BooleanProperty setPreferenceKey(final @NonNull String key) {
         super.setPreferenceKey(key);
         return this;
     }

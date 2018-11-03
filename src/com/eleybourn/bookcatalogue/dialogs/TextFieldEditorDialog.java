@@ -24,6 +24,7 @@ import android.content.DialogInterface;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
+import android.text.InputType;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
@@ -41,42 +42,49 @@ import com.eleybourn.bookcatalogue.R;
 class TextFieldEditorDialog extends AlertDialog {
     /** View which displays the text */
     private final EditText mTextView;
-    /** Listener for dialog exit/save/onCancel */
-    private OnEditListener mListener;
+    /** Listener for dialog exit/save/onPartialDatePickerCancel */
+    private OnTextFieldEditorResultsListener mListener;
 
     /**
      * Constructor
      *
      * @param context Calling context
      */
-    TextFieldEditorDialog(@NonNull final Context context) {
+    TextFieldEditorDialog(final @NonNull Context context, final boolean multiLine) {
         super(context);
 
         // Get the layout
         View root = this.getLayoutInflater().inflate(R.layout.dialog_edit_textfield, null);
 
-        // Setup the layout
-        setView(root);
-
-        // get the next view
+        // get the text view
         mTextView = root.findViewById(R.id.text);
+
+        // (re)set the bit for multiple lines allowed
+        int inputType = mTextView.getInputType();
+        if (multiLine) {
+            inputType = inputType | InputType.TYPE_TEXT_FLAG_MULTI_LINE;
+        } else {
+            inputType = inputType & ~InputType.TYPE_TEXT_FLAG_MULTI_LINE;
+        }
+        mTextView.setInputType(inputType);
 
         // Handle OK
         root.findViewById(R.id.confirm).setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(final View view) {
-                        mListener.onSaved(TextFieldEditorDialog.this, getText());
+                        mListener.onTextFieldEditorSave(TextFieldEditorDialog.this, getText());
                     }
                 }
         );
+
 
         // Handle Cancel
         root.findViewById(R.id.cancel).setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(final View view) {
-                        mListener.onCancel(TextFieldEditorDialog.this);
+                        mListener.onTextFieldEditorCancel(TextFieldEditorDialog.this);
                     }
                 }
         );
@@ -86,9 +94,12 @@ class TextFieldEditorDialog extends AlertDialog {
 
             @Override
             public void onCancel(final DialogInterface dialog) {
-                mListener.onCancel(TextFieldEditorDialog.this);
+                mListener.onTextFieldEditorCancel(TextFieldEditorDialog.this);
             }
         });
+
+        // Setup the layout
+        setView(root);
 
         // Make sure the buttons moves if the keyboard appears
         //noinspection ConstantConditions
@@ -96,12 +107,12 @@ class TextFieldEditorDialog extends AlertDialog {
     }
 
     /** Set the listener */
-    void setOnEditListener(@NonNull final OnEditListener listener) {
+    void setResultsListener(final @NonNull OnTextFieldEditorResultsListener listener) {
         mListener = listener;
     }
 
     /** Set the current text */
-    public void setText(@Nullable final String text) {
+    public void setText(final @Nullable String text) {
         mTextView.setText(text);
     }
 
@@ -113,11 +124,11 @@ class TextFieldEditorDialog extends AlertDialog {
      *
      * @author pjw
      */
-    protected interface OnEditListener {
-        void onSaved(@NonNull final TextFieldEditorDialog dialog,
-                     @NonNull final String newText);
+    protected interface OnTextFieldEditorResultsListener {
+        void onTextFieldEditorSave(final @NonNull TextFieldEditorDialog dialog,
+                                   final @NonNull String newText);
 
-        void onCancel(@NonNull final TextFieldEditorDialog dialog);
+        void onTextFieldEditorCancel(final @NonNull TextFieldEditorDialog dialog);
     }
 
 }

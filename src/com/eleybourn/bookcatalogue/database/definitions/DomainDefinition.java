@@ -19,13 +19,13 @@ public class DomainDefinition {
     @NonNull
     private final String constraint;
 
-    public DomainDefinition(@NonNull final String name,
-                            @NonNull final String type) {
+    public DomainDefinition(final @NonNull String name,
+                            final @NonNull String type) {
         this(name,type, "", "");
     }
-    public DomainDefinition(@NonNull final String name,
-                            @NonNull final String type,
-                            @NonNull final String extra) {
+    public DomainDefinition(final @NonNull String name,
+                            final @NonNull String type,
+                            final @NonNull String extra) {
         this(name,type, "", extra);
     }
 
@@ -35,10 +35,10 @@ public class DomainDefinition {
      * @param constraint    (optional but non null) for example "not null"
      * @param extra         (optional, but non null) for example "default 0'
      */
-    public DomainDefinition(@NonNull final String name,
-                            @NonNull final String type,
-                            @NonNull final String constraint,
-                            @NonNull final String extra) {
+    public DomainDefinition(final @NonNull String name,
+                            final @NonNull String type,
+                            final @NonNull String constraint,
+                            final @NonNull String extra) {
         this.name = name;
         this.type = type;
         this.extra = extra;

@@ -80,26 +80,14 @@ abstract public class BaseActivityWithTasks extends BaseActivity {
     private String mProgressMessage = "";
 
     /**
-     * Wait for the 'Back' key and onCancel all tasks on keyUp.
+     * When the user clicks 'back/up':
      */
-    private final OnKeyListener mDialogKeyListener = new OnKeyListener() {
-        @Override
-        public boolean onKey(final DialogInterface dialog, final int keyCode, final KeyEvent event) {
-            if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK) {
-                cancelAndUpdateProgress();
-                return true;
-            }
-            return false;
-        }
-    };
-    /**
-     * Handler for the user cancelling the progress dialog.
-     */
-    private final OnCancelListener mCancelHandler = new OnCancelListener() {
-        public void onCancel(DialogInterface i) {
-            cancelAndUpdateProgress();
-        }
-    };
+    @Override
+    public void onBackPressed() {
+        // clean up any running tasks.
+        cancelAndUpdateProgress();
+        super.onBackPressed();
+    }
 
     /**
      * Object to handle all TaskManager events
@@ -107,16 +95,20 @@ abstract public class BaseActivityWithTasks extends BaseActivity {
     @NonNull
     private final TaskManagerListener mTaskListener = new TaskManagerListener() {
         @Override
-        public void onTaskEnded(@NonNull final TaskManager manager, @NonNull final ManagedTask task) {
+        public void onTaskEnded(final @NonNull TaskManager manager, final @NonNull ManagedTask task) {
+            if (DEBUG_SWITCHES.MESSAGING && BuildConfig.DEBUG) {
+                Logger.info(BaseActivityWithTasks.this, "passthrough onTaskEnded with task=" + task.getName());
+            }
             // Just pass this one on
             BaseActivityWithTasks.this.onTaskEnded(task);
         }
 
         @Override
-        public void onProgress(final int count, final int max, @NonNull final String message) {
+        public void onProgress(final int count, final int max, final @NonNull String message) {
             if (DEBUG_SWITCHES.MESSAGING && BuildConfig.DEBUG) {
                 @SuppressWarnings("UnusedAssignment")
                 String dbgMsg = "onProgress: " + count + "/" + max + ", '" + message.replace("\n", "\\n") + "'";
+
                 Tracker.handleEvent(BaseActivityWithTasks.this, "SearchProgress " + dbgMsg, States.Running);
                 Logger.info(BaseActivityWithTasks.this, dbgMsg);
             }
@@ -145,7 +137,7 @@ abstract public class BaseActivityWithTasks extends BaseActivity {
          * Display a message
          */
         @Override
-        public void onShowUserMessage(@NonNull final String message) {
+        public void onShowUserMessage(final @NonNull String message) {
             StandardDialogs.showUserMessage(BaseActivityWithTasks.this, message);
         }
 
@@ -154,6 +146,10 @@ abstract public class BaseActivityWithTasks extends BaseActivity {
          */
         @Override
         public void onFinished() {
+            if (DEBUG_SWITCHES.MESSAGING && BuildConfig.DEBUG) {
+                Logger.info(BaseActivityWithTasks.this, "TaskManagerListener `" + mTaskManagerId + "` finishing for activity: " +
+                        BaseActivityWithTasks.this);
+            }
             mTaskManager.close();
             mTaskManager = null;
             mTaskManagerId = 0;
@@ -162,7 +158,7 @@ abstract public class BaseActivityWithTasks extends BaseActivity {
 
     @Override
     @CallSuper
-    protected void onCreate(@Nullable final Bundle savedInstanceState) {
+    protected void onCreate(final @Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         // Restore mTaskManagerId if present
@@ -228,8 +224,10 @@ abstract public class BaseActivityWithTasks extends BaseActivity {
 
     /**
      * Method to allow subclasses easy access to terminating tasks
+     *
+     * @see TaskManagerListener#onTaskEnded
      */
-    protected void onTaskEnded(@NonNull final ManagedTask task) {
+    protected void onTaskEnded(final @NonNull ManagedTask task) {
     }
 
     /**
@@ -242,7 +240,7 @@ abstract public class BaseActivityWithTasks extends BaseActivity {
 
         boolean wantInDeterminate = (mProgressMax == 0);
 
-        // if currently shown, but no longer suitable type due to a change of mProgressMax, dismiss it.
+        // if currently shown, but no longer a suitable type due to a change of mProgressMax, dismiss it.
         if (mProgressDialog != null) {
             if ((!wantInDeterminate && mProgressDialog.isIndeterminate())
                     || (wantInDeterminate && !mProgressDialog.isIndeterminate())) {
@@ -274,14 +272,15 @@ abstract public class BaseActivityWithTasks extends BaseActivity {
 
     private void createProgressDialog(final boolean wantInDeterminate) {
         mProgressDialog = new ProgressDialog(BaseActivityWithTasks.this);
-        mProgressDialog.setCancelable(false);
-        mProgressDialog.setCanceledOnTouchOutside(false);
-
         mProgressDialog.setIndeterminate(wantInDeterminate);
         mProgressDialog.setProgressStyle(wantInDeterminate ? ProgressDialog.STYLE_SPINNER : ProgressDialog.STYLE_HORIZONTAL);
 
-        mProgressDialog.setOnKeyListener(mDialogKeyListener);
-        mProgressDialog.setOnCancelListener(mCancelHandler);
+        mProgressDialog.setCanceledOnTouchOutside(false); // back button only
+        mProgressDialog.setOnCancelListener( new OnCancelListener() {
+            public void onCancel(DialogInterface i) {
+                cancelAndUpdateProgress();
+            }
+        });
     }
 
     private void closeProgressDialog() {

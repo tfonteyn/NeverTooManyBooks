@@ -170,7 +170,7 @@
         <activity android:name=".EditAuthorListActivity" />
         <activity android:name=".EditSeriesListActivity" />
 
-        <!-- view an Author and all of his stories (AnthologyTitles -->
+        <!-- view an Author and all of his TOCEntries -->
         <activity android:name=".AuthorActivity" />
 
         <!-- cropping an image, either from the cover of a book, or direct from a new scan -->

@@ -47,23 +47,23 @@ public class SqlStatementManager implements AutoCloseable {
         this(null);
     }
 
-    public SqlStatementManager(@Nullable final SynchronizedDb db) {
+    public SqlStatementManager(final @Nullable SynchronizedDb db) {
         mSyncedDb = db;
         mStatements = new Hashtable<>();
     }
 
-    public SynchronizedStatement get(@NonNull final String name) {
+    public SynchronizedStatement get(final @NonNull String name) {
         return mStatements.get(name);
     }
 
     @NonNull
-    public SynchronizedStatement add(@NonNull final String name, @NonNull final String sql) {
+    public SynchronizedStatement add(final @NonNull String name, final @NonNull String sql) {
         Objects.requireNonNull(mSyncedDb,"Database not set when SqlStatementManager created");
         return add(mSyncedDb, name, sql);
     }
 
     @NonNull
-    public SynchronizedStatement add(@NonNull final  SynchronizedDb db, @NonNull final  String name, @NonNull final  String sql) {
+    public SynchronizedStatement add(final @NonNull  SynchronizedDb db, final @NonNull  String name, final @NonNull  String sql) {
         SynchronizedStatement stmt = db.compileStatement(sql);
         SynchronizedStatement old = mStatements.get(name);
         mStatements.put(name, stmt);
@@ -73,13 +73,13 @@ public class SqlStatementManager implements AutoCloseable {
     }
 
 //    @NonNull
-//    public SynchronizedStatement addOrGet(@NonNull final String name, @NonNull final String sql) {
+//    public SynchronizedStatement addOrGet(final @NonNull String name, final @NonNull String sql) {
 //        Objects.requireNonNull(mSyncedDb, "Database not set when SqlStatementManager created");
 //        return addOrGet(mSyncedDb, name, sql);
 //    }
 //
 //    @NonNull
-//    private SynchronizedStatement addOrGet(@NonNull final  SynchronizedDb db, @NonNull final  String name, @NonNull final  String sql) {
+//    private SynchronizedStatement addOrGet(final @NonNull  SynchronizedDb db, final @NonNull  String name, final @NonNull  String sql) {
 //        SynchronizedStatement stmt = mStatements.get(name);
 //        if (stmt == null) {
 //            stmt = add(db, name, sql);

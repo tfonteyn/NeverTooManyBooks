@@ -141,7 +141,7 @@ public class FastScroller {
     private SectionIndexerV2 mSectionIndexerV2; // our own
     private boolean mChangedBounds;
 
-    FastScroller(@NonNull final Context context, @NonNull final AbsListView listView) {
+    FastScroller(final @NonNull Context context, final @NonNull AbsListView listView) {
         mList = listView;
         int overlaySize;
         // Determine the overlay size based on 3xLargeTextSize; if
@@ -159,6 +159,7 @@ public class FastScroller {
 
         // Get both the scrollbar states drawables
         final Resources res = context.getResources();
+//        mOverlayDrawable = res.getDrawable(R.drawable.border);
         mOverlayDrawable = res.getDrawable(R.drawable.bc_fastscroller_overlay_background);
         mThumbDrawable = res.getDrawable(R.drawable.scrollbar_handle_accelerated_anim2);
 
@@ -203,7 +204,7 @@ public class FastScroller {
         mThumbDrawable.setAlpha(ScrollFade.ALPHA_MAX);
     }
 
-    private void init(@NonNull final Context context) {
+    private void init(final @NonNull Context context) {
 
         // Can't use the view width yet, because it has probably not been set up so we just
         // use the native width. It will be set later when we come to actually draw it.
@@ -244,7 +245,7 @@ public class FastScroller {
     }
 
     @SuppressWarnings("WeakerAccess")
-    public void draw(@NonNull final Canvas canvas) {
+    public void draw(final @NonNull Canvas canvas) {
         if (mState == STATE_NONE) {
             return;
         }
@@ -348,8 +349,8 @@ public class FastScroller {
         pos.right = pos.left + w * 3 / 4;
         pos.top = h / 10; // 10% from top
         pos.bottom = pos.top + mOverlaySize;
-            mOverlayDrawable.setBounds((int) pos.left, (int) pos.top,
-                    (int) pos.right, (int) pos.bottom);
+        mOverlayDrawable.setBounds((int) pos.left, (int) pos.top,
+                (int) pos.right, (int) pos.bottom);
     }
 
     void onScroll(final int firstVisibleItem, final int visibleItemCount, final int totalItemCount) {
@@ -453,7 +454,7 @@ public class FastScroller {
         cancelFling.recycle();
     }
 
-    boolean onInterceptTouchEvent(@NonNull final MotionEvent ev) {
+    boolean onInterceptTouchEvent(final @NonNull MotionEvent ev) {
         if (mState > STATE_NONE && ev.getAction() == MotionEvent.ACTION_DOWN) {
             if (ev.getX() > mList.getWidth() - mThumbW && ev.getY() >= mThumbY &&
                     ev.getY() <= mThumbY + mThumbH) {
@@ -464,7 +465,7 @@ public class FastScroller {
         return false;
     }
 
-    boolean onTouchEvent(@NonNull final MotionEvent me) {
+    boolean onTouchEvent(final @NonNull MotionEvent me) {
         if (mState == STATE_NONE) {
             return false;
         }

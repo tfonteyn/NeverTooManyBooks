@@ -53,10 +53,10 @@ public interface Exporter {
      * @param outputStream Stream to send data
      * @param listener     Progress & cancellation interface
      *
-     * @return <tt>true</tt>on onConfirm
+     * @return <tt>true</tt>on onTextFieldEditorSave
      */
-    boolean export(@NonNull final OutputStream outputStream,
-                   @NonNull final ExportListener listener,
+    boolean export(final @NonNull OutputStream outputStream,
+                   final @NonNull ExportListener listener,
                    final int backupFlags,
                    final Date since) throws IOException;
 
@@ -68,7 +68,7 @@ public interface Exporter {
     interface ExportListener {
         void setMax(final int max);
 
-        void onProgress(@NonNull final String message, final int position);
+        void onProgress(final @NonNull String message, final int position);
 
         boolean isCancelled();
     }

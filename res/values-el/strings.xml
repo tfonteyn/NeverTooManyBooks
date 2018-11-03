@@ -64,7 +64,7 @@
     <string name="lbl_contacts">Επαφές:</string>
     <string name="lbl_donate">Δωρεά</string>
     <string name="lbl_about">Σχετικά με την εφαρμογή</string>
-    <string name="list_price">List Price</string>
+    <string name="price_listed">List Price</string>
     <string name="update_fields">Αυτόματη ενημέρωση πεδίων</string>
     <string name="select_fields_to_update">Επιλεγξτε πεδία για ενημέρωση</string>
     <string name="select_fields_to_update_help">Τα επιλεγμένα πεδία θα ενημερωθούν από το διαδίκτυο. Τα μη επιλεγμένα θα μείνουν ως έχει.</string>
@@ -79,13 +79,13 @@
     <string name="manage_fields_help">Τα επιλεγμένα πεδία είναι ορατά στις οθόνες προσθήκης/επεξεργασίας βιβλίου. Τα μη επιλεγμένα πεδία είναι κρυφά.</string>
     <string name="anthology_titles">Τίτλοι Ανθολογιών</string>
     <string name="amazon_wish_list">Amazon Wishlist</string>
-    <string name="same_author">Όλες οι ιστορίες σε αυτήν την ανθολογία είναι γραμμένες από τον ίδιο συγγραφέα.</string>
-    <string name="menu_delete_anthology">Διαγραφή τίτλου από Ανθολογία</string>
+    <string name="toc_same_author">Όλες οι ιστορίες σε αυτήν την ανθολογία είναι γραμμένες από τον ίδιο συγγραφέα.</string>
+    <string name="menu_delete_toc_entry">Διαγραφή τίτλου από Ανθολογία</string>
     <string name="is_anthology">Είναι αυτό το βιβλίο ανθολογία;</string>
-    <string name="populate_anthology_titles">Αυτόματη συμπλήρωση τίτλων (ΠΕΙΡΑΜΑΤΙΚΟ)</string>
-    <string name="error_anthology_automatic_population_failed">Η αυτόματη συμπλήρωση τίτλων απέτυχε</string>
+    <string name="populate_toc">Αυτόματη συμπλήρωση τίτλων (ΠΕΙΡΑΜΑΤΙΚΟ)</string>
+    <string name="error_automatic_toc_population_failed">Η αυτόματη συμπλήρωση τίτλων απέτυχε</string>
     <string name="anthology">Ανθολογία</string>
-    <string name="anthology_confirm">Παρακαλούμε επιβεβαιώστε ότι αυτοί οι τίτλοι ανθολογίας είναι (κυρίως) σωστοί</string>
+    <string name="toc_confirm">Παρακαλούμε επιβεβαιώστε ότι αυτοί οι τίτλοι ανθολογίας είναι (κυρίως) σωστοί</string>
     <string name="anthology_save">Αποθήκευση</string>
     <string name="anthology_add">Προσθήκη</string>
     <string name="menu_add_thumb_photo">Από κάμερα&#8230;</string>
@@ -745,6 +745,7 @@
     <!-- Preference name (fairly short) for preferred language -->
     <string name="user_interface_preferred_language">Προτιμώμενη Γλώσσα Διεπαφής</string>
     <string name="title_reorder">a|A|an|An|the|The</string>
+    <string name="content_tab">περιεχόμενο</string>
     <!-- Preference value for a specific language. First arg is name in it's own language, second arg is name in current locale -->
 
     <!-- WILL PROBABLY BE MORE! -->

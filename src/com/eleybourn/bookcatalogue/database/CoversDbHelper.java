@@ -42,6 +42,7 @@ import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer;
 import com.eleybourn.bookcatalogue.database.cursors.TrackedCursor;
 import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
 import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
+import com.eleybourn.bookcatalogue.database.definitions.TableInfo;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.tasks.GetThumbnailTask;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
@@ -84,14 +85,16 @@ public class CoversDbHelper implements AutoCloseable {
 
     // Domain definitions
     // TBL_IMAGE
-    private static final DomainDefinition DOM_ID = new DomainDefinition("_id", "integer", "", "primary key autoincrement");
-    private static final DomainDefinition DOM_DATE = new DomainDefinition("date", "datetime", "not null", "default current_timestamp");
-    private static final DomainDefinition DOM_TYPE = new DomainDefinition("type", "text", "not null", "");    // T = Thumbnail; C = cover?
-    private static final DomainDefinition DOM_IMAGE = new DomainDefinition("image", "blob", "not null", "");
-    private static final DomainDefinition DOM_WIDTH = new DomainDefinition("width", "integer", "not null", "");
-    private static final DomainDefinition DOM_HEIGHT = new DomainDefinition("height", "integer", "not null", "");
-    private static final DomainDefinition DOM_SIZE = new DomainDefinition("size", "integer", "not null", "");
-    private static final DomainDefinition DOM_FILENAME = new DomainDefinition("filename", "text", "", "");
+    private static final DomainDefinition DOM_ID = new DomainDefinition("_id", TableInfo.TYPE_INTEGER, "", "primary key autoincrement");
+
+    private static final DomainDefinition DOM_DATE = new DomainDefinition("date", TableInfo.TYPE_DATETIME, "not null", "default current_timestamp");
+    private static final DomainDefinition DOM_TYPE = new DomainDefinition("type", TableInfo.TYPE_TEXT, "not null", "");    // T = Thumbnail; C = cover?
+    private static final DomainDefinition DOM_IMAGE = new DomainDefinition("image", TableInfo.TYPE_BLOB, "not null", "");
+    private static final DomainDefinition DOM_WIDTH = new DomainDefinition("width", TableInfo.TYPE_INTEGER, "not null", "");
+    private static final DomainDefinition DOM_HEIGHT = new DomainDefinition("height", TableInfo.TYPE_INTEGER, "not null", "");
+    private static final DomainDefinition DOM_SIZE = new DomainDefinition("size", TableInfo.TYPE_INTEGER, "not null", "");
+
+    private static final DomainDefinition DOM_FILENAME = new DomainDefinition("filename", TableInfo.TYPE_TEXT, "", "");
 
     /** table definitions */
     private static final TableDefinition TBL_IMAGE = new TableDefinition("image",
@@ -131,7 +134,7 @@ public class CoversDbHelper implements AutoCloseable {
     /**
      * Constructor. Fill in required fields.
      */
-    private CoversDbHelper(@NonNull final Context context) {
+    private CoversDbHelper(final @NonNull Context context) {
         if (mSyncedDb == null) {
             final SQLiteOpenHelper mHelper = new CoversHelper(context,
                     StorageUtils.getFile(COVERS_DATABASE_NAME).getAbsolutePath(),
@@ -187,7 +190,7 @@ public class CoversDbHelper implements AutoCloseable {
      * * Open a new private SQLiteDatabase associated with this Context's
      * * application package. Create the database file if it doesn't exist.
      */
-    public static CoversDbHelper getInstance(@NonNull final Context context) {
+    public static CoversDbHelper getInstance(final @NonNull Context context) {
         if (mInstance == null) {
             mInstance = new CoversDbHelper(context);
         }
@@ -201,7 +204,7 @@ public class CoversDbHelper implements AutoCloseable {
      * NOTE: Any changes to the resulting name MUST be reflect in {@link #eraseCachedBookCover}
      */
     @NonNull
-    public static String getThumbnailCoverCacheId(@NonNull final String hash, final int maxWidth, final int maxHeight) {
+    public static String getThumbnailCoverCacheId(final @NonNull String hash, final int maxWidth, final int maxHeight) {
         return hash + ".thumb." + maxWidth + "x" + maxHeight + ".jpg";
     }
 
@@ -224,7 +227,7 @@ public class CoversDbHelper implements AutoCloseable {
     /**
      * Delete the cached covers associated with the passed hash
      */
-    public void deleteBookCover(@NonNull final String bookHash) {
+    public void deleteBookCover(final @NonNull String bookHash) {
         if (mSyncedDb == null) {
             return;
         }
@@ -237,7 +240,7 @@ public class CoversDbHelper implements AutoCloseable {
      * @return byte[] of image data
      */
     @Nullable
-    private byte[] getFile(@NonNull final String filename, @NonNull final Date lastModified) {
+    private byte[] getFile(final @NonNull String filename, final @NonNull Date lastModified) {
         if (mSyncedDb == null) {
             return null;
         }
@@ -262,7 +265,7 @@ public class CoversDbHelper implements AutoCloseable {
      * @return the row ID of the newly inserted row, or -1 if an error occurred, or 1 for a successful update
      */
     @SuppressWarnings("UnusedReturnValue")
-    public long saveFile(@NonNull final Bitmap bitmap, @NonNull final String filename) {
+    public long saveFile(final @NonNull Bitmap bitmap, final @NonNull String filename) {
         if (mSyncedDb == null) {
             return -1L;
         }
@@ -279,9 +282,9 @@ public class CoversDbHelper implements AutoCloseable {
      *
      * @return the row ID of the newly inserted row, or -1 if an error occurred, or 1 for a successful update
      */
-    private long saveFile(@NonNull final String filename,
+    private long saveFile(final @NonNull String filename,
                           final int height, final int width,
-                          @NonNull final byte[] bytes) {
+                          final @NonNull byte[] bytes) {
         if (mSyncedDb == null) {
             return -1L;
         }
@@ -331,9 +334,9 @@ public class CoversDbHelper implements AutoCloseable {
      * @return Bitmap (if cached) or null (if not cached)
      */
     @Nullable
-    public Bitmap fetchCachedImageIntoImageView(@NonNull final File originalFile,
-                                                @Nullable final ImageView destView,
-                                                @NonNull final String hash,
+    public Bitmap fetchCachedImageIntoImageView(final @NonNull File originalFile,
+                                                final @Nullable ImageView destView,
+                                                final @NonNull String hash,
                                                 final int maxWidth,
                                                 final int maxHeight) {
         return fetchCachedImageIntoImageView(originalFile, destView, getThumbnailCoverCacheId(hash, maxWidth, maxHeight));
@@ -349,9 +352,9 @@ public class CoversDbHelper implements AutoCloseable {
      * @return Bitmap (if cached) or null (if not cached, or no database)
      */
     @Nullable
-    private Bitmap fetchCachedImageIntoImageView(@Nullable final File originalFile,
-                                                 @Nullable final ImageView destView,
-                                                 @NonNull final String cacheId) {
+    private Bitmap fetchCachedImageIntoImageView(final @Nullable File originalFile,
+                                                 final @Nullable ImageView destView,
+                                                 final @NonNull String cacheId) {
         if (mSyncedDb == null) {
             return null;
         }
@@ -406,7 +409,7 @@ public class CoversDbHelper implements AutoCloseable {
      * @return the number of rows affected
      */
     @SuppressWarnings("UnusedReturnValue")
-    int eraseCachedBookCover(@NonNull final String uuid) {
+    int eraseCachedBookCover(final @NonNull String uuid) {
         if (mSyncedDb == null) {
             return 0;
         }
@@ -430,9 +433,9 @@ public class CoversDbHelper implements AutoCloseable {
 
     private static class CoversHelper extends SQLiteOpenHelper {
 
-        CoversHelper(@NonNull final Context context,
-                     @NonNull final String dbFilePath,
-                     @SuppressWarnings("SameParameterValue") @NonNull final CursorFactory factory) {
+        CoversHelper(final @NonNull Context context,
+                     final @NonNull String dbFilePath,
+                     @SuppressWarnings("SameParameterValue") final @NonNull CursorFactory factory) {
             super(context, dbFilePath, factory, COVERS_DATABASE_VERSION);
         }
 
@@ -441,7 +444,7 @@ public class CoversDbHelper implements AutoCloseable {
          */
         @Override
         @CallSuper
-        public void onCreate(@NonNull final SQLiteDatabase db) {
+        public void onCreate(final @NonNull SQLiteDatabase db) {
             Logger.info(this,"Creating database: " + db.getPath());
             TableDefinition.createTables(new SynchronizedDb(db, mSynchronizer), TABLES);
         }
@@ -451,7 +454,7 @@ public class CoversDbHelper implements AutoCloseable {
          */
         @Override
         @CallSuper
-        public void onUpgrade(@NonNull final SQLiteDatabase db, final int oldVersion, final int newVersion) {
+        public void onUpgrade(final @NonNull SQLiteDatabase db, final int oldVersion, final int newVersion) {
             Logger.info(this,"Upgrading database: " + db.getPath());
             throw new IllegalStateException("Upgrades not handled yet!");
         }

@@ -43,7 +43,7 @@ public interface BackupWriter extends Closeable {
      *
      * See BackupWriterAbstract for a default implementation.
      */
-    void backup(@NonNull final BackupWriterListener listener, final int backupFlags, @Nullable final Date since) throws IOException;
+    void backup(final @NonNull BackupWriterListener listener, final int backupFlags, final @Nullable Date since) throws IOException;
 
     /**
      * Get the containing archive
@@ -54,27 +54,27 @@ public interface BackupWriter extends Closeable {
     /**
      * Write an info block to the archive
      */
-    void putInfo(@NonNull final BackupInfo info) throws IOException;
+    void putInfo(final @NonNull BackupInfo info) throws IOException;
 
     /**
      * Write an export file to the archive
      */
-    void putBooks(@NonNull final File books) throws IOException;
+    void putBooks(final @NonNull File books) throws IOException;
 
     /**
      * Store a cover file
      */
-    void putCoverFile(@NonNull final File source) throws IOException;
+    void putCoverFile(final @NonNull File source) throws IOException;
 
     /**
      * Store a Booklist Style
      */
-    void putBooklistStyle(@NonNull final BooklistStyle style) throws IOException;
+    void putBooklistStyle(final @NonNull BooklistStyle style) throws IOException;
 
     /**
      * Store a SharedPreferences
      */
-    void putPreferences(@NonNull final SharedPreferences prefs) throws IOException;
+    void putPreferences(final @NonNull SharedPreferences prefs) throws IOException;
 
     /**
      * Close the writer
@@ -97,7 +97,7 @@ public interface BackupWriter extends Closeable {
         /**
          * Advance progress by 'delta'
          */
-        void step(@Nullable final String message, final int delta);
+        void step(final @Nullable String message, final int delta);
 
         /**
          * Check if operation is cancelled

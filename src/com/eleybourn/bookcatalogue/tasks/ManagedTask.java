@@ -61,7 +61,7 @@ abstract public class ManagedTask extends Thread {
     private final long mMessageSenderId;
     /** Options indicating the main runTask method has completed. Set in thread run */
     private boolean mFinished = false;
-    /** Indicates the user has requested a onCancel. Up to the subclass to decide what to do. */
+    /** Indicates the user has requested a onPartialDatePickerCancel. Up to the subclass to decide what to do. */
     private boolean mCancelFlg = false;
 
     /**
@@ -70,7 +70,7 @@ abstract public class ManagedTask extends Thread {
      * @param name    of this task(thread)
      * @param manager Associated task manager
      */
-    protected ManagedTask(@NonNull final String name, @NonNull final TaskManager manager) {
+    protected ManagedTask(final @NonNull String name, final @NonNull TaskManager manager) {
         /* Controller instance for this specific task */
         TaskController controller = new TaskController() {
             @Override
@@ -121,7 +121,7 @@ abstract public class ManagedTask extends Thread {
      * @return Result
      */
     @NonNull
-    protected String getString(@StringRes final int id) {
+    protected String getString(final @StringRes int id) {
         return mTaskManager.getContext().getString(id);
     }
 
@@ -131,7 +131,7 @@ abstract public class ManagedTask extends Thread {
      * @param message Message to display
      * @param count   Counter. 0 if Max not set.
      */
-    public void doProgress(@NonNull final String message, final int count) {
+    public void doProgress(final @NonNull String message, final int count) {
         mTaskManager.doProgress(this, message, count);
     }
 
@@ -140,7 +140,7 @@ abstract public class ManagedTask extends Thread {
      *
      * @param message Message to display
      */
-    protected void showUserMessage(@NonNull final String message) {
+    protected void showUserMessage(final @NonNull String message) {
         mTaskManager.showUserMessage(message);
     }
 
@@ -172,13 +172,13 @@ abstract public class ManagedTask extends Thread {
         mMessageSwitch.send(mMessageSenderId,
                 new MessageSwitch.Message<TaskListener>() {
                     @Override
-                    public boolean deliver(@NonNull final TaskListener listener) {
+                    public boolean deliver(final @NonNull TaskListener listener) {
+                        if (DEBUG_SWITCHES.MESSAGING && BuildConfig.DEBUG) {
+                            Logger.info(ManagedTask.this,"Delivering 'onTaskFinished' to listener: " + listener +
+                            "\ntask=" + ManagedTask.this.getName());
+                        }
                         listener.onTaskFinished(ManagedTask.this);
                         return false;
-                    }
-
-                    public String toString() {
-                        return "Queue the 'onTaskFinished' message for sender id: " + mMessageSenderId;
                     }
                 }
         );
@@ -219,7 +219,7 @@ abstract public class ManagedTask extends Thread {
      * @author Philip Warner
      */
     public interface TaskListener {
-        void onTaskFinished(@NonNull final ManagedTask task);
+        void onTaskFinished(final @NonNull ManagedTask task);
     }
 
     /**

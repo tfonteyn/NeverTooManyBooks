@@ -18,11 +18,11 @@ public class RTE {
     public static class IsbnInvalidException extends RuntimeException {
         private static final long serialVersionUID = 2652418388349622089L;
 
-        public IsbnInvalidException(@Nullable final String message) {
+        public IsbnInvalidException(final @Nullable String message) {
             super(message);
         }
 
-        public IsbnInvalidException(@Nullable final Exception inner) {
+        public IsbnInvalidException(final @Nullable Exception inner) {
             super(inner);
         }
     }
@@ -45,7 +45,7 @@ public class RTE {
     public static class IllegalTypeException extends IllegalStateException {
         private static final long serialVersionUID = 1L;
 
-        public IllegalTypeException(@NonNull final String message) {
+        public IllegalTypeException(final @NonNull String message) {
             super(message);
         }
     }
@@ -57,7 +57,7 @@ public class RTE {
     public static class MustImplementException extends IllegalStateException {
         private static final long serialVersionUID = 1L;
 
-        public MustImplementException(@NonNull final Context context, @NonNull final Class clazz) {
+        public MustImplementException(final @NonNull Context context, final @NonNull Class clazz) {
             super("Class " + context.getClass().getCanonicalName() + " must implement " + clazz.getCanonicalName());
         }
     }
@@ -70,7 +70,7 @@ public class RTE {
     public static class DeserializationException extends Exception {
         private static final long serialVersionUID = -2040548134317746620L;
 
-        DeserializationException(@Nullable final Exception e) {
+        DeserializationException(final @Nullable Exception e) {
             super();
             initCause(e);
         }

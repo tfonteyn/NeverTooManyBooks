@@ -57,7 +57,7 @@ public abstract class Task implements Serializable, BindableItemCursorAdapter.Bi
     /**
      * Constructor
      */
-    Task(@NonNull final String description) {
+    Task(final @NonNull String description) {
         mState = TaskState.created;
         mDescription = description;
     }
@@ -76,7 +76,7 @@ public abstract class Task implements Serializable, BindableItemCursorAdapter.Bi
         return mDescription;
     }
 
-    public void setState(@NonNull final TaskState state) {
+    public void setState(final @NonNull TaskState state) {
         mState = state;
     }
 
@@ -133,11 +133,11 @@ public abstract class Task implements Serializable, BindableItemCursorAdapter.Bi
         return mException;
     }
 
-    public void setException(@Nullable final Exception e) {
+    public void setException(final @Nullable Exception e) {
         mException = e;
     }
 
-    protected void storeEvent(@NonNull final Event e) {
+    protected void storeEvent(final @NonNull Event e) {
         QueueManager.getQueueManager().storeTaskEvent(this, e);
     }
 

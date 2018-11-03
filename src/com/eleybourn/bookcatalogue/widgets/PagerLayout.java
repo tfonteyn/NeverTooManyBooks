@@ -42,17 +42,17 @@ public class PagerLayout extends FrameLayout implements ViewPager.OnPageChangeLi
     private ViewPager mPager;
     private boolean mNeedsRedraw = false;
 
-    public PagerLayout(@NonNull final Context context) {
+    public PagerLayout(final @NonNull Context context) {
         super(context);
         init();
     }
 
-    public PagerLayout(@NonNull final Context context, @NonNull final AttributeSet attrs) {
+    public PagerLayout(final @NonNull Context context, final @NonNull AttributeSet attrs) {
         super(context, attrs);
         init();
     }
 
-    public PagerLayout(@NonNull final Context context, @NonNull final AttributeSet attrs, final int defStyle) {
+    public PagerLayout(final @NonNull Context context, final @NonNull AttributeSet attrs, final int defStyle) {
         super(context, attrs, defStyle);
         init();
     }
@@ -94,7 +94,7 @@ public class PagerLayout extends FrameLayout implements ViewPager.OnPageChangeLi
     }
 
     @Override
-    public boolean onTouchEvent(@NonNull final MotionEvent ev) {
+    public boolean onTouchEvent(final @NonNull MotionEvent ev) {
         //We capture any touches not already handled by the ViewPager
         // to implement scrolling from a touch outside the pager bounds.
         switch (ev.getAction()) {

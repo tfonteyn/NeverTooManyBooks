@@ -29,6 +29,7 @@ import android.support.v4.app.DialogFragment;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.backup.BackupManager;
 import com.eleybourn.bookcatalogue.backup.Exporter;
 import com.eleybourn.bookcatalogue.backup.Importer;
@@ -48,17 +49,14 @@ import java.util.Objects;
 import static com.eleybourn.bookcatalogue.BookCatalogueApp.PREF_LAST_BACKUP_FILE;
 
 /**
- * FileChooser activity to choose an archive file to open/save
+ * FileChooserBaseActivity activity to choose an archive file to open/save
  *
  * @author pjw
  */
-public class BackupChooserActivity extends FileChooser implements
-        MessageDialogFragment.OnMessageDialogResultListener,
-        ImportTypeSelectionDialogFragment.OnImportTypeSelectionDialogResultListener,
-        ExportTypeSelectionDialogFragment.OnExportTypeSelectionDialogResultListener {
-
-    /** Used when saving state */
-    private final static String BKEY_FILENAME = "BackupFileSpec";
+public class BackupChooserActivity extends FileChooserBaseActivity implements
+        MessageDialogFragment.OnMessageDialogResultsListener,
+        ImportTypeSelectionDialogFragment.OnImportTypeSelectionDialogResultsListener,
+        ExportTypeSelectionDialogFragment.OnExportTypeSelectionDialogResultsListener {
 
     /** saving or opening */
     private static final int IS_ERROR = 0;
@@ -70,15 +68,14 @@ public class BackupChooserActivity extends FileChooser implements
 
     @CallSuper
     @Override
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
+    public void onCreate(final @Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         // Set the correct title
         this.setTitle(isSaveDialog() ? R.string.backup_to_archive : R.string.import_from_archive);
 
-        if (savedInstanceState != null && savedInstanceState.containsKey(BKEY_FILENAME)) {
-            String fileSpec = savedInstanceState.getString(BKEY_FILENAME);
-            mBackupFile = new File(Objects.requireNonNull(fileSpec));
+        if (savedInstanceState != null && savedInstanceState.containsKey(UniqueId.BKEY_FILE_SPEC)) {
+            mBackupFile = new File(Objects.requireNonNull(savedInstanceState.getString(UniqueId.BKEY_FILE_SPEC)));
         }
     }
 
@@ -103,7 +100,7 @@ public class BackupChooserActivity extends FileChooser implements
     @NonNull
     @Override
     protected FileChooserFragment getChooserFragment() {
-        String lastBackupFile = BookCatalogueApp.Prefs.getString(PREF_LAST_BACKUP_FILE, StorageUtils.getSharedStorage().getAbsolutePath());
+        String lastBackupFile = getPrefs().getString(PREF_LAST_BACKUP_FILE, StorageUtils.getSharedStorage().getAbsolutePath());
         //TODO: what happens on very first backup ?
         return FileChooserFragment.newInstance(new File(Objects.requireNonNull(lastBackupFile)), getDefaultFileName());
     }
@@ -124,7 +121,7 @@ public class BackupChooserActivity extends FileChooser implements
     @CallSuper
     public void onSaveInstanceState(@NonNull Bundle outState) {
         if (mBackupFile != null) {
-            outState.putString(BKEY_FILENAME, mBackupFile.getAbsolutePath());
+            outState.putString(UniqueId.BKEY_FILE_SPEC, mBackupFile.getAbsolutePath());
         }
         super.onSaveInstanceState(outState);
     }
@@ -133,7 +130,7 @@ public class BackupChooserActivity extends FileChooser implements
      * If a file was selected, restore the archive.
      */
     @Override
-    public void onOpen(@NonNull final File file) {
+    public void onOpen(final @NonNull File file) {
         ImportTypeSelectionDialogFragment.newInstance(IS_OPEN, file)
                 .show(getSupportFragmentManager(), null);
     }
@@ -142,7 +139,7 @@ public class BackupChooserActivity extends FileChooser implements
      * If a file was selected, save the archive.
      */
     @Override
-    public void onSave(@NonNull final File file) {
+    public void onSave(final @NonNull File file) {
         ExportTypeSelectionDialogFragment.newInstance(IS_SAVE, file)
                 .show(getSupportFragmentManager(), null);
     }
@@ -150,11 +147,11 @@ public class BackupChooserActivity extends FileChooser implements
     private boolean mSuccess;
 
     @Override
-    public void onTaskFinished(@NonNull final SimpleTaskQueueProgressDialogFragment fragment,
+    public void onTaskFinished(final @NonNull SimpleTaskQueueProgressDialogFragment fragment,
                                final int taskId,
                                final boolean success,
                                final boolean cancelled,
-                               @NonNull final FragmentTask task) {
+                               final @NonNull FragmentTask task) {
 
         mSuccess = success;
         // Is it a task we care about?
@@ -213,7 +210,7 @@ public class BackupChooserActivity extends FileChooser implements
     }
 
     @Override
-    public void onAllTasksFinished(@NonNull final SimpleTaskQueueProgressDialogFragment fragment,
+    public void onAllTasksFinished(final @NonNull SimpleTaskQueueProgressDialogFragment fragment,
                                    final int taskId,
                                    final boolean success,
                                    final boolean cancelled) {
@@ -234,9 +231,9 @@ public class BackupChooserActivity extends FileChooser implements
     }
 
     @Override
-    public void onImportTypeSelectionDialogResult(@NonNull final DialogFragment dialog,
-                                                  @IdRes final int callerId,
-                                                  @NonNull final ImportTypeSelectionDialogFragment.ImportSettings settings) {
+    public void onImportTypeSelectionDialogResult(final @NonNull DialogFragment dialog,
+                                                  final @IdRes int callerId,
+                                                  final @NonNull ImportTypeSelectionDialogFragment.ImportSettings settings) {
         switch (settings.options) {
             case Importer.IMPORT_ALL:
                 BackupManager.restore(this, settings.file, IS_OPEN, Importer.IMPORT_ALL);
@@ -248,9 +245,9 @@ public class BackupChooserActivity extends FileChooser implements
     }
 
     @Override
-    public void onExportTypeSelectionDialogResult(@NonNull final DialogFragment dialog,
-                                                  @IdRes final int callerId,
-                                                  @NonNull final ExportTypeSelectionDialogFragment.ExportSettings settings) {
+    public void onExportTypeSelectionDialogResult(final @NonNull DialogFragment dialog,
+                                                  final @IdRes int callerId,
+                                                  final @NonNull ExportTypeSelectionDialogFragment.ExportSettings settings) {
         switch (settings.options) {
             case Exporter.EXPORT_ALL:
                 mBackupFile = BackupManager.backup(this, settings.file, IS_SAVE, Exporter.EXPORT_ALL, null);
@@ -261,7 +258,7 @@ public class BackupChooserActivity extends FileChooser implements
 
             default:
                 if (settings.dateFrom == null) {
-                    String lastBackup = BookCatalogueApp.Prefs.getString(BookCatalogueApp.PREF_LAST_BACKUP_DATE, null);
+                    String lastBackup = getPrefs().getString(BookCatalogueApp.PREF_LAST_BACKUP_DATE, null);
                     if (lastBackup != null && !lastBackup.isEmpty()) {
                         settings.dateFrom = DateUtils.parseDate(lastBackup);
                     } else {

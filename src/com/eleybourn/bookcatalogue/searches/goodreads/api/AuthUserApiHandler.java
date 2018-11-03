@@ -58,7 +58,7 @@ public class AuthUserApiHandler extends ApiHandler {
     /**
      * Constructor. Setup the filters.
      */
-    public AuthUserApiHandler(@NonNull final GoodreadsManager manager) {
+    public AuthUserApiHandler(final @NonNull GoodreadsManager manager) {
         super(manager);
         buildFilters();
     }

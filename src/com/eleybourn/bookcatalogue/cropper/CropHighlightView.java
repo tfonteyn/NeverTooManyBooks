@@ -25,6 +25,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Region;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.view.View;
 
@@ -67,11 +68,19 @@ class CropHighlightView {
     private boolean mMaintainAspectRatio = false;
     private float mInitialAspectRatio;
     private boolean mCircle = false;
+
     private Drawable mResizeDrawableWidth;
     private Drawable mResizeDrawableHeight;
     private Drawable mResizeDrawableDiagonal;
 
-    CropHighlightView(@NonNull final View ctx) {
+    @ColorInt
+    private int outlinePaintNoFocus;
+    @ColorInt
+    private int outlinePaintCircle;
+    @ColorInt
+    private int outlinePaintRectangle;
+
+    CropHighlightView(final @NonNull View ctx) {
         mContext = ctx;
     }
 
@@ -80,6 +89,10 @@ class CropHighlightView {
         mResizeDrawableWidth = resources.getDrawable(R.drawable.ic_adjust);
         mResizeDrawableHeight = resources.getDrawable(R.drawable.ic_adjust);
         mResizeDrawableDiagonal = resources.getDrawable(R.drawable.ic_crop);
+
+        outlinePaintNoFocus = resources.getColor(R.color.CropHighlightView_outlinePaint_noFocus);
+        outlinePaintCircle = resources.getColor(R.color.CropHighlightView_outlinePaint_circle);
+        outlinePaintRectangle = resources.getColor(R.color.CropHighlightView_outlinePaint_rectangle);
     }
 
     boolean hasFocus() {
@@ -94,14 +107,14 @@ class CropHighlightView {
         mHidden = hidden;
     }
 
-    void draw(@NonNull final Canvas canvas) {
+    void draw(final @NonNull Canvas canvas) {
         if (mHidden) {
             return;
         }
         canvas.save();
         Path path = new Path();
         if (!hasFocus()) {
-            mOutlinePaint.setColor(0xFF000000);
+            mOutlinePaint.setColor(outlinePaintNoFocus);
             canvas.drawRect(mDrawRect, mOutlinePaint);
         } else {
             Rect viewDrawingRect = new Rect();
@@ -111,10 +124,10 @@ class CropHighlightView {
                 float height = mDrawRect.height();
                 path.addCircle(mDrawRect.left + (width / 2), mDrawRect.top
                         + (height / 2), width / 2, Path.Direction.CW);
-                mOutlinePaint.setColor(0xFFEF04D6);
+                mOutlinePaint.setColor(outlinePaintCircle);
             } else {
                 path.addRect(new RectF(mDrawRect), Path.Direction.CW);
-                mOutlinePaint.setColor(0xFFFF8A00);
+                mOutlinePaint.setColor(outlinePaintRectangle);
             }
             canvas.clipPath(path, Region.Op.DIFFERENCE);
             canvas.drawRect(viewDrawingRect, hasFocus() ? mFocusPaint : mNoFocusPaint);
@@ -183,7 +196,7 @@ class CropHighlightView {
         return mMode;
     }
 
-    public void setMode(@NonNull final ModifyMode mode) {
+    public void setMode(final @NonNull ModifyMode mode) {
         if (mode != mMode) {
             mMode = mode;
             mContext.invalidate();
@@ -379,7 +392,7 @@ class CropHighlightView {
         mDrawRect = computeLayout();
     }
 
-    public void setup(@NonNull final Matrix m, @NonNull final Rect imageRect, @NonNull final RectF cropRect, final boolean circle,
+    public void setup(final @NonNull Matrix m, final @NonNull Rect imageRect, final @NonNull RectF cropRect, final boolean circle,
                       boolean maintainAspectRatio) {
         if (circle) {
             maintainAspectRatio = true;

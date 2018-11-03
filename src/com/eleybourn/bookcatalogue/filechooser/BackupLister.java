@@ -33,7 +33,7 @@ public class BackupLister extends FileLister {
     /**
      * Constructor
      */
-    BackupLister(@NonNull final File root) {
+    BackupLister(final @NonNull File root) {
         super(root);
     }
 
@@ -49,7 +49,7 @@ public class BackupLister extends FileLister {
      * Process an array of Files into an ArrayList of BackupFileDetails
      */
     @NonNull
-    protected ArrayList<FileDetails> processList(@Nullable final File[] files) {
+    protected ArrayList<FileDetails> processList(final @Nullable File[] files) {
         ArrayList<FileDetails> dirs = new ArrayList<>();
         if (files == null) {
             return dirs;

@@ -87,7 +87,7 @@ public class AdminActivity extends BaseActivityWithTasks {
 
     @Override
     @CallSuper
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
+    public void onCreate(final @Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.setTitle(R.string.lbl_administration);
 
@@ -408,7 +408,7 @@ public class AdminActivity extends BaseActivityWithTasks {
                         getString(R.string.more_than_one_export_file_blah),
                         files, new SimpleDialogOnClickListener() {
                             @Override
-                            public void onClick(@NonNull final SimpleDialogItem item) {
+                            public void onClick(final @NonNull SimpleDialogItem item) {
                                 SimpleDialogFileItem fileItem = (SimpleDialogFileItem) item;
                                 importFromCSV(fileItem.getFile().getAbsolutePath());
                             }
@@ -427,7 +427,7 @@ public class AdminActivity extends BaseActivityWithTasks {
 
     @Override
     @CallSuper
-    protected void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent data) {
+    protected void onActivityResult(final int requestCode, final int resultCode, final @Nullable Intent data) {
         if (BuildConfig.DEBUG) {
             Logger.info(this,"onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
         }
@@ -457,14 +457,14 @@ public class AdminActivity extends BaseActivityWithTasks {
      * Called when any background task completes
      */
     @Override
-    public void onTaskEnded(@NonNull final ManagedTask task) {
+    public void onTaskEnded(final @NonNull ManagedTask task) {
         // If it's an export, handle it
         if (task instanceof ExportThread) {
             onExportFinished((ExportThread) task);
         }
     }
 
-    private void onExportFinished(@NonNull final ExportThread task) {
+    private void onExportFinished(final @NonNull ExportThread task) {
         if (task.isCancelled()) {
             if (mFinishAfterExport)
                 setResult(Activity.RESULT_OK);
@@ -479,7 +479,7 @@ public class AdminActivity extends BaseActivityWithTasks {
         dialog.setButton(AlertDialog.BUTTON_POSITIVE,
                 getString(android.R.string.ok),
                 new DialogInterface.OnClickListener() {
-                    public void onClick(@NonNull final DialogInterface dialog, final int which) {
+                    public void onClick(final @NonNull DialogInterface dialog, final int which) {
                         // setup the mail message
                         String subject = "[" + getString(R.string.app_name) + "] " + getString(R.string.export_to_csv);
 
@@ -503,7 +503,7 @@ public class AdminActivity extends BaseActivityWithTasks {
         dialog.setButton(AlertDialog.BUTTON_NEGATIVE,
                 getString(android.R.string.cancel),
                 new DialogInterface.OnClickListener() {
-                    public void onClick(@NonNull final DialogInterface dialog, final int which) {
+                    public void onClick(final @NonNull DialogInterface dialog, final int which) {
                         //do nothing
                         dialog.dismiss();
                     }

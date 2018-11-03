@@ -43,16 +43,16 @@ public class Pic2ShopScanner implements Scanner {
                 || isProScannerAppInstalled(BookCatalogueApp.getAppContext());
     }
 
-    private static boolean isIntentAvailable(@NonNull final Context context, @NonNull final String action) {
+    private static boolean isIntentAvailable(final @NonNull Context context, final @NonNull String action) {
         Intent test = new Intent(action);
         return context.getPackageManager().resolveActivity(test, 0) != null;
     }
 
-    private static boolean isFreeScannerAppInstalled(@NonNull final Context context) {
+    private static boolean isFreeScannerAppInstalled(final @NonNull Context context) {
         return isIntentAvailable(context, Free.ACTION);
     }
 
-    private static boolean isProScannerAppInstalled(@NonNull final Context context) {
+    private static boolean isProScannerAppInstalled(final @NonNull Context context) {
         return isIntentAvailable(context, Pro.ACTION);
     }
 
@@ -63,7 +63,7 @@ public class Pic2ShopScanner implements Scanner {
      * one of the intents is valid, or catch the resulting errors.
      */
     @Override
-    public void startActivityForResult(@NonNull final  Activity activity, final int requestCode) {
+    public void startActivityForResult(final @NonNull  Activity activity, final int requestCode) {
         Intent intent;
         if (isFreeScannerAppInstalled(activity)) {
             intent = new Intent(Free.ACTION);
@@ -79,7 +79,7 @@ public class Pic2ShopScanner implements Scanner {
      */
     @Override
     @NonNull
-    public String getBarcode(@NonNull final Intent intent) {
+    public String getBarcode(final @NonNull Intent intent) {
         String barcode = intent.getStringExtra(BARCODE);
         // only for Pro:
         String barcodeFormat = intent.getStringExtra(Pro.FORMAT);
@@ -114,15 +114,15 @@ public class Pic2ShopScanner implements Scanner {
         String FORMAT = "format";
     }
 
-//    public static void launchMarketToInstallFreeScannerApp(@NonNull final Context context) {
+//    public static void launchMarketToInstallFreeScannerApp(final @NonNull Context context) {
 //        launchMarketToInstallApp(context, Free.PACKAGE);
 //    }
 //
-//    public static void launchMarketToInstallProScannerApp(@NonNull final Context context) {
+//    public static void launchMarketToInstallProScannerApp(final @NonNull Context context) {
 //        launchMarketToInstallApp(context, Pro.PACKAGE);
 //    }
 
-//    private static void launchMarketToInstallApp(@NonNull final Context context, @NonNull final String packageName) {
+//    private static void launchMarketToInstallApp(final @NonNull Context context, final @NonNull String packageName) {
 //        try {
 //            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + packageName));
 //            context.startActivity(intent);

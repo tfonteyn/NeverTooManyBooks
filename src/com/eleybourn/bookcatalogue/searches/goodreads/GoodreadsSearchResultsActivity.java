@@ -68,7 +68,7 @@ public class GoodreadsSearchResultsActivity extends BaseListActivity {
 
     @Override
     @CallSuper
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
+    public void onCreate(final @Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         mDb = new CatalogueDBAdapter(this);
@@ -90,7 +90,7 @@ public class GoodreadsSearchResultsActivity extends BaseListActivity {
     /**
      * Perform the search.
      */
-    private void doSearch(@NonNull final String criteria) {
+    private void doSearch(final @NonNull String criteria) {
         // Get the GR stuff we need
         GoodreadsManager grMgr = new GoodreadsManager();
         SearchBooksApiHandler searcher = new SearchBooksApiHandler(grMgr);
@@ -127,7 +127,7 @@ public class GoodreadsSearchResultsActivity extends BaseListActivity {
      *
      * @param view View that was clicked.
      */
-    private void doItemClick(@NonNull final View view) {
+    private void doItemClick(final @NonNull View view) {
         ListHolder holder = ViewTagger.getTag(view);
         Objects.requireNonNull(holder);
 
@@ -161,7 +161,7 @@ public class GoodreadsSearchResultsActivity extends BaseListActivity {
         GoodreadsWork work;
         TextView title;
         TextView author;
-        ListHolder(@NonNull final ImageView cover) {
+        ListHolder(final @NonNull ImageView cover) {
             this.cover = cover;
         }
     }
@@ -184,7 +184,7 @@ public class GoodreadsSearchResultsActivity extends BaseListActivity {
         }
 
         @NonNull
-        public View getView(final int position, @Nullable View convertView, @NonNull final ViewGroup parent) {
+        public View getView(final int position, @Nullable View convertView, final @NonNull ViewGroup parent) {
             ListHolder holder;
             if (convertView == null) {
                 // Not recycling

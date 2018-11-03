@@ -51,7 +51,7 @@ public class ZxingScanner implements Scanner {
      *
      * @return <tt>true</tt>if present
      */
-    private static boolean isIntentAvailable(@NonNull final Context context, @Nullable final String packageName) {
+    private static boolean isIntentAvailable(final @NonNull Context context, final @Nullable String packageName) {
         Intent intent = new Intent(ACTION);
         if (packageName != null && !packageName.isEmpty()) {
             intent.setPackage(packageName);
@@ -63,7 +63,7 @@ public class ZxingScanner implements Scanner {
      * Start the activity with the passed request code.
      */
     @Override
-    public void startActivityForResult(@NonNull final Activity activity, final int requestCode) {
+    public void startActivityForResult(final @NonNull Activity activity, final int requestCode) {
         Intent intent = new Intent(ACTION);
         if (mMustBeZxing) {
             intent.setPackage(PACKAGE);
@@ -77,7 +77,7 @@ public class ZxingScanner implements Scanner {
      */
     @NonNull
     @Override
-    public String getBarcode(@NonNull final Intent intent) {
+    public String getBarcode(final @NonNull Intent intent) {
         return intent.getStringExtra(Scanner.SCAN_RESULT);
     }
 

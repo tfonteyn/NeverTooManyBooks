@@ -72,7 +72,7 @@ public class SendAllBooksTask extends GenericTask {
      * Run the task, log exceptions.
      */
     @Override
-    public boolean run(@NonNull final QueueManager manager, @NonNull final Context context) {
+    public boolean run(final @NonNull QueueManager manager, final @NonNull Context context) {
         boolean result = false;
         try {
             result = sendAllBooks(manager, context);
@@ -85,7 +85,7 @@ public class SendAllBooksTask extends GenericTask {
     /**
      * Do the mean of the task. Deal with restarts by using mLastId as starting point.
      */
-    private boolean sendAllBooks(@NonNull final QueueManager queueManager, @NonNull final Context context) throws NotAuthorizedException {
+    private boolean sendAllBooks(final @NonNull QueueManager queueManager, final @NonNull Context context) throws NotAuthorizedException {
         //int lastSave = mCount;
         boolean needsRetryReset = true;
 

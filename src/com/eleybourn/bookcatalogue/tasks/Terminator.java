@@ -62,7 +62,7 @@ public class Terminator {
      * @param runnable      Runnable to execute
      * @param delay         Delay before execution
      */
-    public static void enqueue(@NonNull final Runnable runnable, final long delay) {
+    public static void enqueue(final @NonNull Runnable runnable, final long delay) {
         // Compute actual time
         long time = System.currentTimeMillis() + delay;
         // Create Event and add to queue.
@@ -88,7 +88,7 @@ public class Terminator {
         public final Runnable runnable;
         final long time;
 
-        public Event(@NonNull final Runnable runnable, final long time) {
+        public Event(final @NonNull Runnable runnable, final long time) {
             this.runnable = runnable;
             this.time = time;
         }
@@ -112,7 +112,7 @@ public class Terminator {
     private static class TerminatorTask implements SimpleTask {
 
         @Override
-        public void run(@NonNull final SimpleTaskContext taskContext) {
+        public void run(final @NonNull SimpleTaskContext taskContext) {
             Logger.info(this,"Terminator: Nice night for a walk.");
             do {
                 Event event;

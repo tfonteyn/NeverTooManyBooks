@@ -77,7 +77,7 @@ public class BooklistRowView extends BookRowViewBase {
      * @param cursor  Underlying Cursor
      * @param builder Underlying Builder
      */
-    public BooklistRowView(@NonNull final Cursor cursor, @NonNull final BooklistBuilder builder) {
+    public BooklistRowView(final @NonNull Cursor cursor, final @NonNull BooklistBuilder builder) {
         super(cursor);
         mBuilder = builder;
 
@@ -131,10 +131,10 @@ public class BooklistRowView extends BookRowViewBase {
      * @param level Level of the row group
      * @param s     Source value
      *
-     * @return Formatted string, or original string on any onCancel
+     * @return Formatted string, or original string on any onPartialDatePickerCancel
      */
     @Nullable
-    private String formatRowGroup(final int level, @Nullable final String s) {
+    private String formatRowGroup(final int level, final @Nullable String s) {
         switch (mBuilder.getStyle().getGroupAt(level).kind) {
             case RowKinds.ROW_KIND_MONTH_ADDED:
             case RowKinds.ROW_KIND_MONTH_PUBLISHED:

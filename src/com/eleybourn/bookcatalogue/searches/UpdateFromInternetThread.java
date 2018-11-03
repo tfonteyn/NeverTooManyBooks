@@ -34,16 +34,16 @@ import com.eleybourn.bookcatalogue.UpdateFromInternetActivity;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.entities.AnthologyTitle;
+import com.eleybourn.bookcatalogue.entities.TOCEntry;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.tasks.ManagedTask;
 import com.eleybourn.bookcatalogue.tasks.TaskManager;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
+import com.eleybourn.bookcatalogue.utils.BundleUtils;
 import com.eleybourn.bookcatalogue.utils.RTE;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
-import com.eleybourn.bookcatalogue.utils.Utils;
 
 import java.io.File;
 import java.io.Serializable;
@@ -71,6 +71,9 @@ public class UpdateFromInternetThread extends ManagedTask {
     /** Active search manager */
     @NonNull
     private final SearchManager mSearchManager;
+    /** Sites to search */
+    private int mSearchSites; // = SearchManager.SEARCH_ALL;
+
     /** message to display when all is said and done */
     private String mFinalMessage;
 
@@ -95,7 +98,7 @@ public class UpdateFromInternetThread extends ManagedTask {
     @SuppressWarnings("FieldCanBeLocal")
     private final SearchManager.SearchListener mSearchListener = new SearchManager.SearchListener() {
         @Override
-        public boolean onSearchFinished(@NonNull final Bundle bookData, final boolean cancelled) {
+        public boolean onSearchFinished(final @NonNull Bundle bookData, final boolean cancelled) {
             return UpdateFromInternetThread.this.onSearchFinished(bookData, cancelled);
         }
     };
@@ -113,9 +116,10 @@ public class UpdateFromInternetThread extends ManagedTask {
      * @param manager         Object to manage background tasks
      * @param requestedFields fields to update
      */
-    public UpdateFromInternetThread(@NonNull final TaskManager manager,
-                                    @NonNull final UpdateFromInternetActivity.FieldUsages requestedFields,
-                                    @NonNull final TaskListener listener) {
+    public UpdateFromInternetThread(final @NonNull TaskManager manager,
+                                    final @NonNull UpdateFromInternetActivity.FieldUsages requestedFields,
+                                    final int searchSites,
+                                    final @NonNull TaskListener listener) {
         super("UpdateFromInternetThread", manager);
 
         mDb = new CatalogueDBAdapter(BookCatalogueApp.getAppContext())
@@ -123,14 +127,15 @@ public class UpdateFromInternetThread extends ManagedTask {
 
         mRequestedFields = requestedFields;
 
+        mSearchSites = searchSites;
         mSearchManager = new SearchManager(mTaskManager, mSearchListener);
         mTaskManager.doProgress(BookCatalogueApp.getResourceString(R.string.starting_search));
         getMessageSwitch().addListener(getSenderId(), listener, false);
     }
 
-    private static <T extends Serializable> void combineArrays(@NonNull final String key,
-                                                               @NonNull final Bundle origData,
-                                                               @NonNull final Bundle newData) {
+    private static <T extends Serializable> void combineArrays(final @NonNull String key,
+                                                               final @NonNull Bundle origData,
+                                                               final @NonNull Bundle newData) {
         // Each of the lists to combine
         ArrayList<T> origList = null;
         ArrayList<T> newList = null;
@@ -196,13 +201,13 @@ public class UpdateFromInternetThread extends ManagedTask {
                 }
 
                 // Get the book ID
-                mCurrentBookId = Utils.getLongFromBundle(mOriginalBookData, UniqueId.KEY_ID);
+                mCurrentBookId = BundleUtils.getLongFromBundle(mOriginalBookData, UniqueId.KEY_ID);
                 // Get the book UUID
                 mCurrentBookUuid = mOriginalBookData.getString(UniqueId.KEY_BOOK_UUID);
                 // Get the extra data about the book
                 mOriginalBookData.putSerializable(UniqueId.BKEY_AUTHOR_ARRAY, mDb.getBookAuthorList(mCurrentBookId));
                 mOriginalBookData.putSerializable(UniqueId.BKEY_SERIES_ARRAY, mDb.getBookSeriesList(mCurrentBookId));
-                mOriginalBookData.putSerializable(UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY, mDb.getAnthologyTitleListByBook(mCurrentBookId));
+                mOriginalBookData.putSerializable(UniqueId.BKEY_TOC_TITLES_ARRAY, mDb.getTOCEntriesByBook(mCurrentBookId));
 
                 // Grab the searchable fields. Ideally we will have an ISBN but we may not.
 
@@ -243,9 +248,7 @@ public class UpdateFromInternetThread extends ManagedTask {
 
                 // Start searching if we need to, then wait...
                 if (wantSearch) {
-                    // TODO: Allow user-selection of search sources specific for this similar to 'normal' search order preferences.
-                    // Might be nice to select on the fly here ?
-                    mSearchManager.search(author, title, isbn, tmpThumbWanted, SearchManager.SEARCH_ALL);
+                    mSearchManager.search(mSearchSites, author, title, isbn, tmpThumbWanted);
                     // Wait for the search to complete. When the search has completed
                     // it uses class-level state data when processing the results.
                     // It will call "mSearchDone.signal()"  when it no longer needs any
@@ -317,9 +320,9 @@ public class UpdateFromInternetThread extends ManagedTask {
                                 }
                                 break;
 
-                            case UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY:
+                            case UniqueId.BKEY_TOC_TITLES_ARRAY:
                                 if (mOriginalBookData.containsKey(usage.key)) {
-                                    List<AnthologyTitle> list = ArrayUtils.getTOCFromBundle(mOriginalBookData);
+                                    List<TOCEntry> list = ArrayUtils.getTOCFromBundle(mOriginalBookData);
                                     if (list == null || list.size() == 0) {
                                         mCurrentBookFieldUsages.put(usage);
                                     }
@@ -353,7 +356,7 @@ public class UpdateFromInternetThread extends ManagedTask {
      * Called in the main thread for this object when a search has completed.
      */
     @SuppressWarnings("SameReturnValue")
-    private boolean onSearchFinished(@NonNull final Bundle newBookData, final boolean cancelled) {
+    private boolean onSearchFinished(final @NonNull Bundle newBookData, final boolean cancelled) {
         if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
             Logger.info(this, " onSearchFinished");
         }
@@ -396,10 +399,10 @@ public class UpdateFromInternetThread extends ManagedTask {
      * @param originalBookData Original data
      */
     private void processSearchResults(final long bookId,
-                                      @NonNull final String bookUuid,
-                                      @NonNull final UpdateFromInternetActivity.FieldUsages requestedFields,
-                                      @NonNull final Bundle newBookData,
-                                      @NonNull final Bundle originalBookData) {
+                                      final @NonNull String bookUuid,
+                                      final @NonNull UpdateFromInternetActivity.FieldUsages requestedFields,
+                                      final @NonNull Bundle newBookData,
+                                      final @NonNull Bundle originalBookData) {
         if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
             Logger.info(this, "processSearchResults bookId=" + bookId);
         }
@@ -457,9 +460,9 @@ public class UpdateFromInternetThread extends ManagedTask {
                                         }
                                     }
                                     break;
-                                case UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY:
+                                case UniqueId.BKEY_TOC_TITLES_ARRAY:
                                     if (originalBookData.containsKey(usage.key)) {
-                                        ArrayList<AnthologyTitle> list = ArrayUtils.getTOCFromBundle(originalBookData);
+                                        ArrayList<TOCEntry> list = ArrayUtils.getTOCFromBundle(originalBookData);
                                         if (list != null && list.size() > 0) {
                                             newBookData.remove(usage.key);
                                         }
@@ -484,8 +487,8 @@ public class UpdateFromInternetThread extends ManagedTask {
                                 case UniqueId.BKEY_SERIES_ARRAY:
                                     UpdateFromInternetThread.<Series>combineArrays(usage.key, originalBookData, newBookData);
                                     break;
-                                case UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY:
-                                    UpdateFromInternetThread.<AnthologyTitle>combineArrays(usage.key, originalBookData, newBookData);
+                                case UniqueId.BKEY_TOC_TITLES_ARRAY:
+                                    UpdateFromInternetThread.<TOCEntry>combineArrays(usage.key, originalBookData, newBookData);
                                     break;
                                 default:
                                     // No idea how to handle this for non-arrays

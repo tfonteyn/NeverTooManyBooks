@@ -89,7 +89,7 @@ public class PropertyGroup {
     private String mName = null;
 
     /** Constructor */
-    private PropertyGroup(final int id, @StringRes final int nameId, final int weight) {
+    private PropertyGroup(final int id, final @StringRes int nameId, final int weight) {
         this.id = id;
         this.nameId = nameId;
         this.weight = weight;
@@ -97,7 +97,7 @@ public class PropertyGroup {
     }
 
     /** Compare two groups for sorting purposes */
-    public static int compare(@NonNull final PropertyGroup lhs, @NonNull final PropertyGroup rhs) {
+    public static int compare(final @NonNull PropertyGroup lhs, final @NonNull PropertyGroup rhs) {
         // Compare weights
         final int wCmp = lhs.weight.compareTo(rhs.weight);
         if (wCmp != 0) {
@@ -137,7 +137,7 @@ public class PropertyGroup {
         /** Add the passed group */
         @NonNull
         @SuppressWarnings("UnusedReturnValue")
-        PropertyGroup addGroup(@NonNull final PropertyGroup g) {
+        PropertyGroup addGroup(final @NonNull PropertyGroup g) {
             if (this.containsKey(g.id) && (this.get(g.id) != g)) {
                 throw new IllegalArgumentException("Duplicate PropertyGroup ID " + g.id);
             }
@@ -148,7 +148,7 @@ public class PropertyGroup {
 
         /** Construct and add a group based on parameters */
         @NonNull
-        PropertyGroup addGroup(final int id, @StringRes final int nameId, final int weight) {
+        PropertyGroup addGroup(final int id, final @StringRes int nameId, final int weight) {
             PropertyGroup g = new PropertyGroup(id, nameId, weight);
             addGroup(g);
             return g;

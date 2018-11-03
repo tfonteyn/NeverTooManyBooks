@@ -26,6 +26,7 @@ import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
+import com.eleybourn.bookcatalogue.utils.BundleUtils;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 
 import org.xml.sax.Attributes;
@@ -126,19 +127,19 @@ class SearchGoogleBooksEntryHandler extends DefaultHandler {
     private final Bundle mValues;
     private StringBuilder builder;
 
-    SearchGoogleBooksEntryHandler(@NonNull final Bundle values, final boolean fetchThumbnail) {
+    SearchGoogleBooksEntryHandler(final @NonNull Bundle values, final boolean fetchThumbnail) {
         mValues = values;
         mFetchThumbnail = fetchThumbnail;
     }
 
     @Override
     @CallSuper
-    public void characters(@NonNull final char[] ch, final int start, final int length) throws SAXException {
+    public void characters(final @NonNull char[] ch, final int start, final int length) throws SAXException {
         super.characters(ch, start, length);
         builder.append(ch, start, length);
     }
 
-    private void addIfNotPresent(@NonNull final String key) {
+    private void addIfNotPresent(final @NonNull String key) {
         String test = mValues.getString(key);
         if (test == null || test.isEmpty()) {
             mValues.putString(key, builder.toString());
@@ -147,9 +148,9 @@ class SearchGoogleBooksEntryHandler extends DefaultHandler {
 
     @Override
     @CallSuper
-    public void endElement(@NonNull final String uri,
-                           @NonNull final String localName,
-                           @NonNull final String name) throws SAXException {
+    public void endElement(final @NonNull String uri,
+                           final @NonNull String localName,
+                           final @NonNull String name) throws SAXException {
         super.endElement(uri, localName, name);
 
         switch(localName.toLowerCase()) {
@@ -212,10 +213,10 @@ class SearchGoogleBooksEntryHandler extends DefaultHandler {
 
     @Override
     @CallSuper
-    public void startElement(@NonNull final String uri,
-                             @NonNull final String localName,
-                             @NonNull final String name,
-                             @NonNull final Attributes attributes) throws SAXException {
+    public void startElement(final @NonNull String uri,
+                             final @NonNull String localName,
+                             final @NonNull String name,
+                             final @NonNull Attributes attributes) throws SAXException {
         super.startElement(uri, localName, name, attributes);
         if (mFetchThumbnail && LINK.equalsIgnoreCase(localName)) {
             if (("http://schemas.google.com/books/2008/thumbnail").equals(attributes.getValue("", "rel"))) {

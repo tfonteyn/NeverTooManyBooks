@@ -98,7 +98,7 @@ public class StorageUtils {
         return EXTERNAL_FILE_PATH + File.separator + ERROR_LOG_FILE;
     }
 
-    private static void createDir(@NonNull final String name) throws SecurityException {
+    private static void createDir(final @NonNull String name) throws SecurityException {
         final File dir = new File(name);
         boolean ok = dir.mkdirs() || dir.isDirectory();
         if (!ok) {
@@ -109,7 +109,7 @@ public class StorageUtils {
     /**
      * Check if the external storage is writable
      *
-     * @return onConfirm or onCancel
+     * @return onTextFieldEditorSave or onPartialDatePickerCancel
      */
     static public boolean isWriteProtected() throws SecurityException {
         try {
@@ -167,7 +167,7 @@ public class StorageUtils {
      *
      * @return the file
      */
-    public static File getFile(@NonNull final String fileName) {
+    public static File getFile(final @NonNull String fileName) {
         return new File(EXTERNAL_FILE_PATH + File.separator + fileName);
     }
 
@@ -187,7 +187,7 @@ public class StorageUtils {
     /**
      * Get the 'standard' temp file name for new books, including a suffix
      */
-    static File getTempCoverFile(@NonNull final String name) {
+    static File getTempCoverFile(final @NonNull String name) {
         return getTempCoverFile("tmp", name);
     }
 
@@ -195,7 +195,7 @@ public class StorageUtils {
      * Get the 'standard' temp file name for new books, including a suffix
      * Located in the normal Covers directory
      */
-    public static File getTempCoverFile(@NonNull final String prefix, @NonNull final String name) {
+    public static File getTempCoverFile(final @NonNull String prefix, final @NonNull String name) {
         return new File(COVER_FILE_PATH + File.separator + prefix + name + ".jpg");
     }
 
@@ -207,7 +207,7 @@ public class StorageUtils {
      * @return The File object for existing files, or a new placeholder.
      */
     @NonNull
-    public static File getCoverFile(@NonNull final String uuid) {
+    public static File getCoverFile(final @NonNull String uuid) {
         final File jpg = new File(COVER_FILE_PATH + File.separator + uuid + ".jpg");
         if (jpg.exists()) {
             return jpg;
@@ -421,7 +421,7 @@ public class StorageUtils {
      *
      * @return <tt>true</tt>if successful
      */
-    public static boolean saveInputStreamToFile(@Nullable final InputStream in, @NonNull final File out) {
+    public static boolean saveInputStreamToFile(final @Nullable InputStream in, final @NonNull File out) {
         Objects.requireNonNull(in);
 
         File temp = null;
@@ -452,7 +452,7 @@ public class StorageUtils {
      *
      * @param file to delete
      */
-    public static void deleteFile(@Nullable final File file) {
+    public static void deleteFile(final @Nullable File file) {
         if (file != null && file.exists()) {
             try {
                 //noinspection ResultOfMethodCallIgnored
@@ -470,7 +470,7 @@ public class StorageUtils {
      * @return <tt>true</tt>if the rename worked, this is really a ".exists()" call.
      * and not relying on the OS renameTo call.
      */
-    public static boolean renameFile(@NonNull final File src, @NonNull final File dst) {
+    public static boolean renameFile(final @NonNull File src, final @NonNull File dst) {
         if (src.exists()) {
             try {
                 //noinspection ResultOfMethodCallIgnored
@@ -493,7 +493,7 @@ public class StorageUtils {
     /**
      * Create a copy of the database into the ExternalStorage location
      */
-    public static void backupDatabaseFile(@NonNull final String destFilename) {
+    public static void backupDatabaseFile(final @NonNull String destFilename) {
         try {
             //FIXME: really ? just to get the path ?
             CatalogueDBAdapter db = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
@@ -511,7 +511,7 @@ public class StorageUtils {
      * @param sourcePath file to backup
      * @param destPath   destination file name, will be stored in our directory on ExternalStorage
      */
-    public static void backupFile(@NonNull final String sourcePath, @NonNull final String destPath) {
+    public static void backupFile(final @NonNull String sourcePath, final @NonNull String destPath) {
         try {
             // rename the previously copied file
             StorageUtils.renameFile(getFile(destPath), getFile(destPath + ".bak"));
@@ -523,7 +523,7 @@ public class StorageUtils {
         }
     }
 
-    public static void copyFile(@NonNull final File src, @NonNull final File dst) throws IOException {
+    public static void copyFile(final @NonNull File src, final @NonNull File dst) throws IOException {
         // let any IOException escape for the caller to deal with
         InputStream in = new FileInputStream(src);
         copyFile(in, FILE_COPY_BUFFER_SIZE, dst);
@@ -537,9 +537,9 @@ public class StorageUtils {
      *
      * @throws IOException at failures
      */
-    public static void copyFile(@NonNull final InputStream in,
+    public static void copyFile(final @NonNull InputStream in,
                                 final int bufferSize,
-                                @NonNull final File destination) throws IOException {
+                                final @NonNull File destination) throws IOException {
         try (OutputStream out = new FileOutputStream(destination)) {
             byte[] buffer = new byte[bufferSize];
             int nRead;
@@ -557,7 +557,7 @@ public class StorageUtils {
      */
 
     @SuppressWarnings("unused")
-    private static void copyFile2(@NonNull final File src, @NonNull final File dst) throws IOException {
+    private static void copyFile2(final @NonNull File src, final @NonNull File dst) throws IOException {
         FileInputStream fis = new FileInputStream(src);
         FileOutputStream fos = new FileOutputStream(dst);
         FileChannel inChannel = fis.getChannel();
@@ -600,7 +600,7 @@ public class StorageUtils {
          * Compare based on modified date
          */
         @Override
-        public int compare(@NonNull final File lhs, @NonNull final File rhs) {
+        public int compare(final @NonNull File lhs, final @NonNull File rhs) {
             final long l = lhs.lastModified();
             final long r = rhs.lastModified();
             if (l < r) {

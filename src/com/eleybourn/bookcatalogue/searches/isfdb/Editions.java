@@ -18,7 +18,7 @@ class Editions extends AbstractBase {
     /**
      * We assume the isbn is already checked & valid!
      */
-    Editions(@NonNull final String isbn) {
+    Editions(final @NonNull String isbn) {
         mPath = ISFDBManager.getBaseURL() + String.format(EDITIONS_URL, isbn);
     }
 
@@ -62,7 +62,7 @@ class Editions extends AbstractBase {
         return mEditions;
     }
 
-    private void findEntries(@NonNull final Document doc, @NonNull final String... selectors) {
+    private void findEntries(final @NonNull Document doc, final @NonNull String... selectors) {
         for (String selector : selectors) {
             Elements entries = doc.select(selector);
             for (Element entry : entries) {

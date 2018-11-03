@@ -94,7 +94,7 @@ public class ListReviewsApiHandler extends ApiHandler {
     };
     private SimpleXmlFilter mFilters;
 
-    public ListReviewsApiHandler(@NonNull final GoodreadsManager manager) throws NotAuthorizedException {
+    public ListReviewsApiHandler(final @NonNull GoodreadsManager manager) throws NotAuthorizedException {
         super(manager);
         if (!manager.hasValidCredentials()) {
             throw new NotAuthorizedException();
@@ -397,7 +397,7 @@ public class ListReviewsApiHandler extends ApiHandler {
                 .done();
     }
 
-    private void date2Sql(@NonNull final Bundle b, @NonNull final String key) {
+    private void date2Sql(final @NonNull Bundle b, final @NonNull String key) {
         if (b.containsKey(key)) {
             String date = b.getString(key);
             try {

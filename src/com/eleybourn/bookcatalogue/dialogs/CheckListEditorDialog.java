@@ -44,19 +44,28 @@ import java.util.List;
  * @param <T> type to use for {@link CheckListItem}
  */
 public class CheckListEditorDialog<T> extends AlertDialog {
+    private final CompoundButton.OnCheckedChangeListener onCheckedChangeListener = new CompoundButton.OnCheckedChangeListener() {
+        @Override
+        public void onCheckedChanged(final CompoundButton buttonView, final boolean isChecked) {
+            CheckListItem item = ViewTagger.getTag(buttonView, R.id.TAG_DIALOG_ITEM);
+            //noinspection ConstantConditions
+            item.setSelected(isChecked);
+        }
+    };
     /** body of the dialog */
     private ViewGroup mContent;
     /** the list to display in the content view */
     private ArrayList<CheckListItem<T>> mList;
-    /** Listener for dialog exit/save/onCancel */
-    private OnEditListener mListener;
+    /** Listener for dialog exit/save/onPartialDatePickerCancel */
+    private OnCheckListEditorResultsListener mListener;
+
 
     /**
      * Constructor
      *
      * @param context Calling context
      */
-    CheckListEditorDialog(@NonNull final Context context) {
+    CheckListEditorDialog(final @NonNull Context context) {
         super(context);
 
         // Get the layout
@@ -71,7 +80,7 @@ public class CheckListEditorDialog<T> extends AlertDialog {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(final View view) {
-                        mListener.onCheckListSave(CheckListEditorDialog.this, mList);
+                        mListener.onCheckListEditorSave(CheckListEditorDialog.this, mList);
                     }
                 }
         );
@@ -81,7 +90,7 @@ public class CheckListEditorDialog<T> extends AlertDialog {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(final View view) {
-                        mListener.onCheckListCancel(CheckListEditorDialog.this);
+                        mListener.onCheckListEditorCancel(CheckListEditorDialog.this);
                     }
                 }
         );
@@ -91,7 +100,7 @@ public class CheckListEditorDialog<T> extends AlertDialog {
 
             @Override
             public void onCancel(final DialogInterface dialog) {
-                mListener.onCheckListCancel(CheckListEditorDialog.this);
+                mListener.onCheckListEditorCancel(CheckListEditorDialog.this);
             }
         });
 
@@ -100,22 +109,13 @@ public class CheckListEditorDialog<T> extends AlertDialog {
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
     }
 
-    /** Set the listener */
-    void setOnEditListener(@NonNull final OnEditListener listener) {
-        mListener = listener;
+    @NonNull
+    public ArrayList<CheckListItem<T>> getList() {
+        return mList;
     }
 
-    private final CompoundButton.OnCheckedChangeListener onCheckedChangeListener = new CompoundButton.OnCheckedChangeListener() {
-        @Override
-        public void onCheckedChanged(final CompoundButton buttonView, final boolean isChecked) {
-            CheckListItem item = ViewTagger.getTag(buttonView, R.id.TAG_DIALOG_ITEM);
-            //noinspection ConstantConditions
-            item.setSelected(isChecked);
-        }
-    };
-
     /** Set the current list */
-    public void setList(@NonNull final ArrayList<CheckListItem<T>> list) {
+    public void setList(final @NonNull ArrayList<CheckListItem<T>> list) {
         mList = list;
         for (CheckListItem item : mList) {
             CompoundButton btn = new CheckBox(getContext());
@@ -127,19 +127,19 @@ public class CheckListEditorDialog<T> extends AlertDialog {
         }
     }
 
-    @NonNull
-    public ArrayList<CheckListItem<T>> getList() {
-        return mList;
+    /** Set the listener */
+    void setResultsListener(final @NonNull OnCheckListEditorResultsListener listener) {
+        mListener = listener;
     }
 
     /**
      * Listener to receive notifications when dialog is closed by any means.
      */
-    protected interface OnEditListener {
-        <T> void onCheckListSave(@NonNull final CheckListEditorDialog dialog,
-                                    @NonNull final List<CheckListItem<T>> list);
+    protected interface OnCheckListEditorResultsListener {
+        <T> void onCheckListEditorSave(final @NonNull CheckListEditorDialog dialog,
+                                       final @NonNull List<CheckListItem<T>> list);
 
-        void onCheckListCancel(@NonNull final CheckListEditorDialog dialog);
+        void onCheckListEditorCancel(final @NonNull CheckListEditorDialog dialog);
     }
 
 }

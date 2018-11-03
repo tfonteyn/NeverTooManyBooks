@@ -33,16 +33,16 @@ import com.eleybourn.bookcatalogue.datamanager.Datum;
 public class OrValidator extends MetaValidator implements DataValidator {
     public static final long serialVersionUID = 1L;
 
-    public OrValidator(@NonNull final DataValidator v1, @NonNull final DataValidator v2) {
+    public OrValidator(final @NonNull DataValidator v1, final @NonNull DataValidator v2) {
         super(v1, v2);
     }
 
-    public OrValidator(@NonNull final DataValidator v1, @NonNull final DataValidator v2, @NonNull final DataValidator v3) {
+    public OrValidator(final @NonNull DataValidator v1, final @NonNull DataValidator v2, final @NonNull DataValidator v3) {
         super(v1, v2, v3);
     }
 
     @Override
-    public void validate(@NonNull final DataManager data, @NonNull final Datum datum, final boolean crossValidating)
+    public void validate(final @NonNull DataManager data, final @NonNull Datum datum, final boolean crossValidating)
             throws ValidatorException {
        ValidatorException lastException = null;
        for (DataValidator v : this) {

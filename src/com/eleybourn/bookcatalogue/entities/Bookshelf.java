@@ -28,14 +28,14 @@ public class Bookshelf implements Serializable, Utils.ItemWithIdFixup {
      * Constructor
      *
      */
-    public Bookshelf(@NonNull final String name) {
+    public Bookshelf(final @NonNull String name) {
         this.name = name.trim();
     }
 
     /**
      * Constructor
      */
-    public Bookshelf(final long id, @NonNull final String name) {
+    public Bookshelf(final long id, final @NonNull String name) {
         this.id = id;
         this.name = name.trim();
     }
@@ -54,7 +54,7 @@ public class Bookshelf implements Serializable, Utils.ItemWithIdFixup {
     }
 
     @Override
-    public long fixupId(@NonNull final CatalogueDBAdapter db) {
+    public long fixupId(final @NonNull CatalogueDBAdapter db) {
         this.id = db.getBookshelfId(this);
         return this.id;
     }
@@ -77,7 +77,7 @@ public class Bookshelf implements Serializable, Utils.ItemWithIdFixup {
      * Compare is CASE SENSITIVE ! This allows correcting case mistakes.
      */
     @Override
-    public boolean equals(@Nullable final Object o) {
+    public boolean equals(final @Nullable Object o) {
         if (this == o) {
             return true;
         }

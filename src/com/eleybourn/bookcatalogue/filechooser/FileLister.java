@@ -30,7 +30,7 @@ public abstract class FileLister implements FragmentTask {
     /**
      * Constructor
      */
-    FileLister(@NonNull final File root) {
+    FileLister(final @NonNull File root) {
         mRoot = root;
     }
 
@@ -40,10 +40,10 @@ public abstract class FileLister implements FragmentTask {
 
     /** Turn an array of Files into an ArrayList of FileDetails. */
     @NonNull
-    protected abstract ArrayList<FileDetails> processList(@Nullable final File[] files);
+    protected abstract ArrayList<FileDetails> processList(final @Nullable File[] files);
 
     @Override
-    public void run(@NonNull final SimpleTaskQueueProgressDialogFragment fragment, @NonNull final SimpleTaskContext taskContext) {
+    public void run(final @NonNull SimpleTaskQueueProgressDialogFragment fragment, final @NonNull SimpleTaskContext taskContext) {
         // Get a file list
         File[] files = mRoot.listFiles(getFilter());
         // Filter/fill-in using the subclass
@@ -53,7 +53,7 @@ public abstract class FileLister implements FragmentTask {
     }
 
     @Override
-    public void onFinish(@NonNull final SimpleTaskQueueProgressDialogFragment fragment, @Nullable final Exception exception) {
+    public void onFinish(final @NonNull SimpleTaskQueueProgressDialogFragment fragment, final @Nullable Exception exception) {
         // Display it in UI thread.
         Activity listenerActivity = fragment.getActivity();
         if (listenerActivity instanceof FileListerListener) {
@@ -67,14 +67,14 @@ public abstract class FileLister implements FragmentTask {
      * @author pjw
      */
     public interface FileListerListener {
-        void onGotFileList(@NonNull final File root, @NonNull final ArrayList<FileDetails> list);
+        void onGotFileList(final @NonNull File root, final @NonNull ArrayList<FileDetails> list);
     }
 
     /**
      * Perform case-insensitive sorting using default locale.
      */
     private static class FileDetailsComparator implements Comparator<FileDetails> {
-        public int compare(@NonNull final FileDetails f1, @NonNull final FileDetails f2) {
+        public int compare(final @NonNull FileDetails f1, final @NonNull FileDetails f2) {
             return f1.getFile().getName().toUpperCase().compareTo(f2.getFile().getName().toUpperCase());
         }
     }

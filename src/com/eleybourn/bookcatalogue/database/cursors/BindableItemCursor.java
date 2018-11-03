@@ -1,4 +1,4 @@
-package com.eleybourn.bookcatalogue.taskqueue;
+package com.eleybourn.bookcatalogue.database.cursors;
 
 import android.database.Cursor;
 import android.support.annotation.NonNull;

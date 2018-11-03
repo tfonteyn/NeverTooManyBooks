@@ -58,7 +58,7 @@ public class TableDefinition implements AutoCloseable, Cloneable {
      * @param name    Table name
      * @param domains List of domains in table
      */
-    public TableDefinition(@NonNull final String name, @NonNull final DomainDefinition... domains) {
+    public TableDefinition(final @NonNull String name, final @NonNull DomainDefinition... domains) {
         this.mName = name;
         this.mAlias = name;
         this.mDomains = new ArrayList<>();
@@ -76,7 +76,7 @@ public class TableDefinition implements AutoCloseable, Cloneable {
     /**
      * Static method to drop the passed table, if it exists.
      */
-    private static void drop(@NonNull final DbSync.SynchronizedDb db, @NonNull final String name) {
+    private static void drop(final @NonNull DbSync.SynchronizedDb db, final @NonNull String name) {
         if (DEBUG_SWITCHES.DB_ADAPTER && BuildConfig.DEBUG) {
             Logger.info(TableDefinition.class, "Dropping TABLE " + name);
         }
@@ -89,7 +89,7 @@ public class TableDefinition implements AutoCloseable, Cloneable {
      * @param db     Blank database
      * @param tables Table list
      */
-    public static void createTables(@NonNull final DbSync.SynchronizedDb db, @NonNull final TableDefinition... tables) {
+    public static void createTables(final @NonNull DbSync.SynchronizedDb db, final @NonNull TableDefinition... tables) {
         for (TableDefinition table : tables) {
             table.create(db, true);
             for (IndexDefinition index : table.getIndexes()) {
@@ -193,7 +193,7 @@ public class TableDefinition implements AutoCloseable, Cloneable {
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    public TableDefinition setName(@NonNull final String newName) {
+    public TableDefinition setName(final @NonNull String newName) {
         this.mName = newName;
         return this;
     }
@@ -220,7 +220,7 @@ public class TableDefinition implements AutoCloseable, Cloneable {
      * @return TableDefinition (for chaining)
      */
     @NonNull
-    public TableDefinition setAlias(@NonNull final String newAlias) {
+    public TableDefinition setAlias(final @NonNull String newAlias) {
         mAlias = newAlias;
         return this;
     }
@@ -233,7 +233,7 @@ public class TableDefinition implements AutoCloseable, Cloneable {
      * @return SQL fragment
      */
     @NonNull
-    public String dot(@NonNull final DomainDefinition d) {
+    public String dot(final @NonNull DomainDefinition d) {
         return getAlias() + "." + d.name;
     }
 
@@ -248,7 +248,7 @@ public class TableDefinition implements AutoCloseable, Cloneable {
      */
     @SuppressWarnings("unused")
     @NonNull
-    public String dotAs(@NonNull final DomainDefinition d) {
+    public String dotAs(final @NonNull DomainDefinition d) {
         return getAlias() + "." + d.name + " AS " + d.name;
     }
 
@@ -261,7 +261,7 @@ public class TableDefinition implements AutoCloseable, Cloneable {
      * @return SQL fragment
      */
     @NonNull
-    public String dotAs(@NonNull final DomainDefinition d, @NonNull final DomainDefinition asDomain) {
+    public String dotAs(final @NonNull DomainDefinition d, final @NonNull DomainDefinition asDomain) {
         return getAlias() + "." + d.name + " AS " + asDomain.name;
     }
 
@@ -273,7 +273,7 @@ public class TableDefinition implements AutoCloseable, Cloneable {
      * @return SQL fragment
      */
     @NonNull
-    public String dot(@NonNull final String s) {
+    public String dot(final @NonNull String s) {
         return getAlias() + "." + s;
     }
 
@@ -285,7 +285,7 @@ public class TableDefinition implements AutoCloseable, Cloneable {
      * @return TableDefinition (for chaining)
      */
     @NonNull
-    public TableDefinition setPrimaryKey(@NonNull final DomainDefinition... domains) {
+    public TableDefinition setPrimaryKey(final @NonNull DomainDefinition... domains) {
         mPrimaryKey.clear();
         Collections.addAll(mPrimaryKey, domains);
         return this;
@@ -299,7 +299,7 @@ public class TableDefinition implements AutoCloseable, Cloneable {
      * @return TableDefinition (for chaining)
      */
     @NonNull
-    private TableDefinition addReference(@NonNull final FkReference fk) {
+    private TableDefinition addReference(final @NonNull FkReference fk) {
         if (fk.child != this) {
             throw new IllegalArgumentException("Foreign key does not include this table as child");
         }
@@ -317,8 +317,8 @@ public class TableDefinition implements AutoCloseable, Cloneable {
      * @return TableDefinition (for chaining)
      */
     @NonNull
-    public TableDefinition addReference(@NonNull final TableDefinition parent,
-                                        @NonNull final DomainDefinition... domains) {
+    public TableDefinition addReference(final @NonNull TableDefinition parent,
+                                        final @NonNull DomainDefinition... domains) {
         FkReference fk = new FkReference(parent, this, domains);
         return addReference(fk);
     }
@@ -333,8 +333,8 @@ public class TableDefinition implements AutoCloseable, Cloneable {
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    private TableDefinition addReference(@NonNull final TableDefinition parent,
-                                         @NonNull final List<DomainDefinition> domains) {
+    private TableDefinition addReference(final @NonNull TableDefinition parent,
+                                         final @NonNull List<DomainDefinition> domains) {
         FkReference fk = new FkReference(parent, this, domains);
         return addReference(fk);
     }
@@ -348,7 +348,7 @@ public class TableDefinition implements AutoCloseable, Cloneable {
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    private TableDefinition removeReference(@NonNull final TableDefinition parent) {
+    private TableDefinition removeReference(final @NonNull TableDefinition parent) {
         mParents.remove(parent);
         parent.removeChild(this);
         return this;
@@ -364,8 +364,8 @@ public class TableDefinition implements AutoCloseable, Cloneable {
      */
     @NonNull
     @SuppressWarnings("UnusedReturnValue")
-    private TableDefinition addChild(@NonNull final TableDefinition child,
-                                     @NonNull final FkReference fk) {
+    private TableDefinition addChild(final @NonNull TableDefinition child,
+                                     final @NonNull FkReference fk) {
         if (!mChildren.containsKey(child)) {
             mChildren.put(child, fk);
         }
@@ -381,7 +381,7 @@ public class TableDefinition implements AutoCloseable, Cloneable {
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    private TableDefinition removeChild(@NonNull final TableDefinition child) {
+    private TableDefinition removeChild(final @NonNull TableDefinition child) {
         mChildren.remove(child);
         return this;
     }
@@ -395,7 +395,7 @@ public class TableDefinition implements AutoCloseable, Cloneable {
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    public TableDefinition addDomain(@NonNull final DomainDefinition domain) {
+    public TableDefinition addDomain(final @NonNull DomainDefinition domain) {
         // Make sure it's not already in the table
         if (mDomainCheck.contains(domain)) {
             return this;
@@ -419,7 +419,7 @@ public class TableDefinition implements AutoCloseable, Cloneable {
      * @return TableDefinition (for chaining)
      */
     @NonNull
-    public TableDefinition addDomains(@NonNull final DomainDefinition... domains) {
+    public TableDefinition addDomains(final @NonNull DomainDefinition... domains) {
         for (DomainDefinition d : domains) {
             addDomain(d);
         }
@@ -435,7 +435,7 @@ public class TableDefinition implements AutoCloseable, Cloneable {
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    private TableDefinition addDomains(@NonNull final List<DomainDefinition> domains) {
+    private TableDefinition addDomains(final @NonNull List<DomainDefinition> domains) {
         for (DomainDefinition d : domains) {
             addDomain(d);
         }
@@ -452,9 +452,9 @@ public class TableDefinition implements AutoCloseable, Cloneable {
      * @return TableDefinition (for chaining)
      */
     @NonNull
-    public TableDefinition addIndex(@NonNull final String localKey,
+    public TableDefinition addIndex(final @NonNull String localKey,
                                     final boolean unique,
-                                    @NonNull final DomainDefinition... domains) {
+                                    final @NonNull DomainDefinition... domains) {
         // Make sure not already defined
         if (mIndexes.containsKey(localKey)) {
             throw new IllegalStateException("Index with local name '" + localKey + "' already defined");
@@ -470,7 +470,7 @@ public class TableDefinition implements AutoCloseable, Cloneable {
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    public TableDefinition drop(@NonNull final DbSync.SynchronizedDb db) {
+    public TableDefinition drop(final @NonNull DbSync.SynchronizedDb db) {
         drop(db, mName);
         return this;
     }
@@ -485,7 +485,7 @@ public class TableDefinition implements AutoCloseable, Cloneable {
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    public TableDefinition create(@NonNull final DbSync.SynchronizedDb db,
+    public TableDefinition create(final @NonNull DbSync.SynchronizedDb db,
                                   final boolean withConstraints) {
         if (DEBUG_SWITCHES.DB_ADAPTER && BuildConfig.DEBUG) {
             @SuppressWarnings("UnusedAssignment")
@@ -510,7 +510,7 @@ public class TableDefinition implements AutoCloseable, Cloneable {
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    public TableDefinition createAll(@NonNull final DbSync.SynchronizedDb db,
+    public TableDefinition createAll(final @NonNull DbSync.SynchronizedDb db,
                                      final boolean withConstraints) {
         db.execSQL(this.getSql(mName, withConstraints, false));
         createIndices(db);
@@ -527,7 +527,7 @@ public class TableDefinition implements AutoCloseable, Cloneable {
      */
     @SuppressWarnings("unused")
     @NonNull
-    public TableDefinition createIfNecessary(@NonNull final DbSync.SynchronizedDb db,
+    public TableDefinition createIfNecessary(final @NonNull DbSync.SynchronizedDb db,
                                              final boolean withConstraints) {
         db.execSQL(this.getSql(mName, withConstraints, true));
         return this;
@@ -542,7 +542,7 @@ public class TableDefinition implements AutoCloseable, Cloneable {
      * @return SQL fragment
      */
     @NonNull
-    public String getInsert(@NonNull final DomainDefinition... domains) {
+    public String getInsert(final @NonNull DomainDefinition... domains) {
         StringBuilder s = new StringBuilder("INSERT INTO ");
         s.append(mName);
         s.append(" (");
@@ -587,7 +587,7 @@ public class TableDefinition implements AutoCloseable, Cloneable {
      * @return SQL fragment
      */
     @NonNull
-    public String ref(@Nullable final DomainDefinition... domains) {
+    public String ref(final @Nullable DomainDefinition... domains) {
         if (domains == null || domains.length == 0) {
             return "";
         }
@@ -613,7 +613,7 @@ public class TableDefinition implements AutoCloseable, Cloneable {
      * @return SQL fragment
      */
     @NonNull
-    public String getUpdate(@NonNull final DomainDefinition... domains) {
+    public String getUpdate(final @NonNull DomainDefinition... domains) {
         StringBuilder s = new StringBuilder("UPDATE ");
         s.append(mName);
         s.append(" SET ");
@@ -636,7 +636,7 @@ public class TableDefinition implements AutoCloseable, Cloneable {
      * @return SQL fragment
      */
     @NonNull
-    public String getInsertOrReplaceValues(@NonNull final DomainDefinition... domains) {
+    public String getInsertOrReplaceValues(final @NonNull DomainDefinition... domains) {
         StringBuilder s = new StringBuilder("INSERT OR REPLACE INTO ");
         StringBuilder sPlaceholders = new StringBuilder("?");
         s.append(mName);
@@ -663,7 +663,7 @@ public class TableDefinition implements AutoCloseable, Cloneable {
      * @return TableDefinition (for chaining)
      */
     @NonNull
-    public TableDefinition setType(@NonNull final TableTypes type) {
+    public TableDefinition setType(final @NonNull TableTypes type) {
         mType = type;
         return this;
     }
@@ -685,7 +685,7 @@ public class TableDefinition implements AutoCloseable, Cloneable {
      * @return SQL to create table
      */
     @NonNull
-    private String getSql(@NonNull final String name, final boolean withConstraints, final boolean ifNecessary) {
+    private String getSql(final @NonNull String name, final boolean withConstraints, final boolean ifNecessary) {
         StringBuilder sql = new StringBuilder("CREATE").append(mType.getCreateModifier()).append(" TABLE ");
         if (ifNecessary) {
             if (mType.isVirtual()) {
@@ -718,7 +718,7 @@ public class TableDefinition implements AutoCloseable, Cloneable {
      * @return SQL fragment (eg. 'join [to-name] [to-alias] On [pk/fk match]')
      */
     @NonNull
-    public String join(@NonNull final TableDefinition to) {
+    public String join(final @NonNull TableDefinition to) {
         return " JOIN " + to.ref() + " ON (" + fkMatch(to) + ")";
     }
 
@@ -730,7 +730,7 @@ public class TableDefinition implements AutoCloseable, Cloneable {
      * @return SQL fragment (eg. <to-alias>.<to-pk> = <from-alias>.<from-pk>').
      */
     @NonNull
-    public String fkMatch(@NonNull final TableDefinition to) {
+    public String fkMatch(final @NonNull TableDefinition to) {
         FkReference fk;
         if (mChildren.containsKey(to)) {
             fk = mChildren.get(to);
@@ -761,7 +761,7 @@ public class TableDefinition implements AutoCloseable, Cloneable {
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    private TableDefinition setPrimaryKey(@NonNull final List<DomainDefinition> domains) {
+    private TableDefinition setPrimaryKey(final @NonNull List<DomainDefinition> domains) {
         mPrimaryKey.clear();
         mPrimaryKey.addAll(domains);
         return this;
@@ -786,7 +786,7 @@ public class TableDefinition implements AutoCloseable, Cloneable {
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    public TableDefinition createIndices(@NonNull final DbSync.SynchronizedDb db) {
+    public TableDefinition createIndices(final @NonNull DbSync.SynchronizedDb db) {
         for (IndexDefinition i : getIndexes()) {
             db.execSQL(i.getSql());
         }
@@ -796,7 +796,7 @@ public class TableDefinition implements AutoCloseable, Cloneable {
     /**
      * Check if the table exists within the passed DB
      */
-    public boolean exists(@NonNull final DbSync.SynchronizedDb db) {
+    public boolean exists(final @NonNull DbSync.SynchronizedDb db) {
         try (DbSync.SynchronizedStatement stmt = db.compileStatement(mExistsSql)) {
             stmt.bindString(1, getName());
             stmt.bindString(2, getName());
@@ -858,9 +858,9 @@ public class TableDefinition implements AutoCloseable, Cloneable {
          * @param child   Child table (owner of the FK)
          * @param domains Domains in child table that reference PK in parent
          */
-        FkReference(@NonNull final TableDefinition parent,
-                    @NonNull final TableDefinition child,
-                    @NonNull final DomainDefinition... domains) {
+        FkReference(final @NonNull TableDefinition parent,
+                    final @NonNull TableDefinition child,
+                    final @NonNull DomainDefinition... domains) {
             this.domains = new ArrayList<>(Arrays.asList(domains));
             this.parent = parent;
             this.child = child;
@@ -873,9 +873,9 @@ public class TableDefinition implements AutoCloseable, Cloneable {
          * @param child   Child table (owner of the FK)
          * @param domains Domains in child table that reference PK in parent
          */
-        FkReference(@NonNull final TableDefinition parent,
-                    @NonNull final TableDefinition child,
-                    @NonNull final List<DomainDefinition> domains) {
+        FkReference(final @NonNull TableDefinition parent,
+                    final @NonNull TableDefinition child,
+                    final @NonNull List<DomainDefinition> domains) {
             this.domains = new ArrayList<>(domains);
             this.parent = parent;
             this.child = child;

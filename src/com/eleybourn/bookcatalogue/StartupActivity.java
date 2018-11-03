@@ -130,7 +130,7 @@ public class StartupActivity extends AppCompatActivity {
 
     @Override
     @CallSuper
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
+    public void onCreate(final @Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         // request Permissions (Android 6+)
@@ -235,14 +235,14 @@ public class StartupActivity extends AppCompatActivity {
     /**
      * Update the progress dialog, if it has not been dismissed.
      */
-    public void updateProgress(@StringRes final int stringId) {
+    public void updateProgress(final @StringRes int stringId) {
         updateProgress(getString(stringId));
     }
 
     /**
      * Update the progress dialog, if it has not been dismissed.
      */
-    private void updateProgress(@NonNull final String message) {
+    private void updateProgress(final @NonNull String message) {
         // If mProgress is null, it has been dismissed. Don't update.
         if (mProgress == null) {
             return;
@@ -302,7 +302,7 @@ public class StartupActivity extends AppCompatActivity {
             // Listen for task completions
             mTaskQueue.setTaskFinishListener(new OnTaskFinishListener() {
                 @Override
-                public void onTaskFinish(@NonNull final SimpleTask task, @Nullable final Exception e) {
+                public void onTaskFinish(final @NonNull SimpleTask task, final @Nullable Exception e) {
                     taskCompleted(task);
                 }
             });
@@ -352,14 +352,14 @@ public class StartupActivity extends AppCompatActivity {
             dialog.setButton(AlertDialog.BUTTON_NEGATIVE,
                     getString(android.R.string.cancel)
                     , new DialogInterface.OnClickListener() {
-                        public void onClick(@NonNull final DialogInterface dialog, final int which) {
+                        public void onClick(final @NonNull DialogInterface dialog, final int which) {
                             dialog.dismiss();
                         }
                     });
             dialog.setButton(AlertDialog.BUTTON_POSITIVE,
                     getString(android.R.string.ok),
                     new DialogInterface.OnClickListener() {
-                        public void onClick(@NonNull final DialogInterface dialog, final int which) {
+                        public void onClick(final @NonNull DialogInterface dialog, final int which) {
                             mBackupRequired = true;
                             dialog.dismiss();
                         }
@@ -444,7 +444,7 @@ public class StartupActivity extends AppCompatActivity {
      */
     @Override
     @PermissionChecker.PermissionResult
-    public void onRequestPermissionsResult(final int requestCode, @NonNull final String permissions[], @NonNull final int[] grantResults) {
+    public void onRequestPermissionsResult(final int requestCode, final @NonNull String permissions[], final @NonNull int[] grantResults) {
         //ENHANCE: when/if we request more permissions, then the permissions[] and grantResults[] must be checked in parallel
         switch (requestCode) {
             case UniqueId.ACTIVITY_REQUEST_CODE_ANDROID_PERMISSIONS_REQUEST: {
@@ -467,7 +467,7 @@ public class StartupActivity extends AppCompatActivity {
     public class RebuildFtsTask implements SimpleTask {
 
         @Override
-        public void run(@NonNull final SimpleTaskContext taskContext) {
+        public void run(final @NonNull SimpleTaskContext taskContext) {
             // Get a DB to make sure the FTS rebuild flag is set appropriately, do not close the database!
             CatalogueDBAdapter db = taskContext.getOpenDb();
             if (BookCatalogueApp.Prefs.getBoolean(PREF_FTS_REBUILD_REQUIRED, false)) {
@@ -486,7 +486,7 @@ public class StartupActivity extends AppCompatActivity {
     public class AnalyzeDbTask implements SimpleTask {
 
         @Override
-        public void run(@NonNull final SimpleTaskContext taskContext) {
+        public void run(final @NonNull SimpleTaskContext taskContext) {
             updateProgress(R.string.optimizing_databases);
 
             // Get a DB connection, do not close the database!

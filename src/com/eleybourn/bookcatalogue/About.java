@@ -54,7 +54,7 @@ public class About extends BaseActivity {
 
     @Override
     @CallSuper
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
+    public void onCreate(final @Nullable Bundle savedInstanceState) {
         try {
             super.onCreate(savedInstanceState);
             setTitle(R.string.app_name);
@@ -120,7 +120,7 @@ public class About extends BaseActivity {
 
     }
 
-    private void sendContactEmail(@StringRes final int stringId) {
+    private void sendContactEmail(final @StringRes int stringId) {
         try {
             Intent msg = new Intent(Intent.ACTION_SEND);
             msg.setType("text/plain");

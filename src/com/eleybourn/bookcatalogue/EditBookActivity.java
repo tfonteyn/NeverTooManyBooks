@@ -30,12 +30,10 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.Button;
 
-import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.datamanager.DataEditor;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -43,10 +41,8 @@ import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.CheckListEditorDialogFragment;
 import com.eleybourn.bookcatalogue.dialogs.CheckListItem;
 import com.eleybourn.bookcatalogue.dialogs.PartialDatePickerDialogFragment;
-import com.eleybourn.bookcatalogue.dialogs.PartialDatePickerDialogFragment.OnPartialDatePickerResultListener;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.dialogs.TextFieldEditorDialogFragment;
-import com.eleybourn.bookcatalogue.dialogs.TextFieldEditorDialogFragment.OnTextFieldEditorListener;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.utils.RTE;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
@@ -59,22 +55,22 @@ import java.util.List;
  * A tab host activity which holds the edit book tabs
  * 1. Details
  * 2. Notes
- * 3. Loan Book
- * 4. Anthology titles
+ * 3. Anthology titles
+ * 4. Loan Book -> ENHANCE: remove this from this activity into either its own, or into a DialogFragment
  *
  * @author Evan Leybourn
  */
-public class EditBookActivity extends BaseActivity implements BookAbstractFragment.HasBook,
-        OnPartialDatePickerResultListener,
-        OnTextFieldEditorListener,
-        CheckListEditorDialogFragment.OnCheckListChangedListener {
+public class EditBookActivity extends BookBaseActivity implements
+        CheckListEditorDialogFragment.OnCheckListEditorResultsListener,
+        PartialDatePickerDialogFragment.OnPartialDatePickerResultsListener,
+        TextFieldEditorDialogFragment.OnTextFieldEditorResultsListener {
 
     public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_EDIT_BOOK;
 
     /**
      * Tabs in order, see {@link #mTabClasses}
      */
-    public static final String REQUEST_KEY_TAB = "tab";
+    public static final String REQUEST_BKEY_TAB = "tab";
     public static final int TAB_EDIT = 0;
     public static final int TAB_EDIT_NOTES = 1;
     public static final int TAB_EDIT_LOANS = 2;
@@ -87,11 +83,9 @@ public class EditBookActivity extends BaseActivity implements BookAbstractFragme
             EditBookFieldsFragment.class,
             EditBookNotesFragment.class,
             EditBookLoanedFragment.class,
-            EditBookAnthologyFragment.class
+            EditBookTOCFragment.class
     };
-    private CatalogueDBAdapter mDb;
 
-    private Book mBook;
 
     private TabLayout mTabLayout;
     @Nullable
@@ -104,12 +98,12 @@ public class EditBookActivity extends BaseActivity implements BookAbstractFragme
      * @param id       The id of the book to edit
      * @param tab      Which tab to open first
      */
-    public static void startActivityForResult(@NonNull final Activity activity,
+    public static void startActivityForResult(final @NonNull Activity activity,
                                               final long id,
                                               final int tab) {
         Intent intent = new Intent(activity, EditBookActivity.class);
         intent.putExtra(UniqueId.KEY_ID, id);
-        intent.putExtra(EditBookActivity.REQUEST_KEY_TAB, tab);
+        intent.putExtra(EditBookActivity.REQUEST_BKEY_TAB, tab);
         activity.startActivityForResult(intent, EditBookActivity.REQUEST_CODE);
     }
 
@@ -120,7 +114,7 @@ public class EditBookActivity extends BaseActivity implements BookAbstractFragme
 
     @Override
     @CallSuper
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
+    public void onCreate(final @Nullable Bundle savedInstanceState) {
         Tracker.enterOnCreate(this);
         super.onCreate(savedInstanceState);
 
@@ -129,7 +123,7 @@ public class EditBookActivity extends BaseActivity implements BookAbstractFragme
         Bundle extras = getIntent().getExtras();
 
         long bookId = getLongFromBundles(UniqueId.KEY_ID, savedInstanceState, extras);
-        loadBook(bookId, savedInstanceState == null ? extras : savedInstanceState);
+        mBook = loadBook(bookId, savedInstanceState == null ? extras : savedInstanceState);
 
         mTabLayout = findViewById(R.id.tab_panel);
 
@@ -137,16 +131,13 @@ public class EditBookActivity extends BaseActivity implements BookAbstractFragme
         initTabs(extras, isExistingBook);
         initCancelConfirmButtons(isExistingBook);
 
-        // Must come after all book data and list retrieved.
-        initActivityTitle();
-
         Tracker.exitOnCreate(this);
     }
 
     /**
      * initial setup for editing
      */
-    private void initTabs(@Nullable final Bundle extras, final boolean isExistingBook) {
+    private void initTabs(final @Nullable Bundle extras, final boolean isExistingBook) {
 
         ArrayList<TabLayout.Tab> mAllTabs = new ArrayList<>();
         mTabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
@@ -163,7 +154,7 @@ public class EditBookActivity extends BaseActivity implements BookAbstractFragme
             mTabLayout.addTab(tab);
             mAllTabs.add(tab);
 
-            addAnthologyTab(mBook.isAnthology());
+            addTOCTab(mBook.getBoolean(Book.IS_ANTHOLOGY));
 
             // can't loan out a new book yet (or user does not like loaning)
             if (isExistingBook && Fields.isVisible(UniqueId.KEY_LOAN_LOANED_TO)) {
@@ -179,8 +170,8 @@ public class EditBookActivity extends BaseActivity implements BookAbstractFragme
 
         // any specific tab desired as 'selected' ?
         int showTab = TAB_EDIT;
-        if (extras != null && extras.containsKey(REQUEST_KEY_TAB)) {
-            int tabWanted = extras.getInt(REQUEST_KEY_TAB);
+        if (extras != null && extras.containsKey(REQUEST_BKEY_TAB)) {
+            int tabWanted = extras.getInt(REQUEST_BKEY_TAB);
             switch (tabWanted) {
                 case TAB_EDIT:
                 case TAB_EDIT_NOTES:
@@ -213,7 +204,7 @@ public class EditBookActivity extends BaseActivity implements BookAbstractFragme
         // finally hook up our listener.
         mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
-            public void onTabSelected(@NonNull final TabLayout.Tab tab) {
+            public void onTabSelected(final @NonNull TabLayout.Tab tab) {
                 //noinspection ConstantConditions
                 Fragment frag = ((Holder) tab.getTag()).fragment;
                 getSupportFragmentManager()
@@ -223,11 +214,11 @@ public class EditBookActivity extends BaseActivity implements BookAbstractFragme
             }
 
             @Override
-            public void onTabUnselected(@NonNull final TabLayout.Tab tab) {
+            public void onTabUnselected(final @NonNull TabLayout.Tab tab) {
             }
 
             @Override
-            public void onTabReselected(@NonNull final TabLayout.Tab tab) {
+            public void onTabReselected(final @NonNull TabLayout.Tab tab) {
             }
         });
     }
@@ -242,245 +233,20 @@ public class EditBookActivity extends BaseActivity implements BookAbstractFragme
 
         mConfirmButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                saveState(new PostSaveAction());
+                saveBook(new PostSaveAction());
             }
         });
 
         findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 // Cleanup because we may have made global changes
-                mDb.purgeAuthors();
-                mDb.purgeSeries();
+                // 2018-11-02: no longer doing this explicitly now... sooner or later a purge will happen anyhow
+//                mDb.purgeAuthors();
+//                mDb.purgeSeries();
                 // cancel == going 'up' => call onBackPressed as that will check the isDirty() status with a dialog
                 onBackPressed();
             }
         });
-    }
-
-    /**
-     * This function will populate the forms elements in three different ways
-     *
-     * 1. If a valid rowId exists it will populate the fields from the database
-     *
-     * 2. If fields have been passed from another activity (e.g. {@link BookSearchActivity}) it
-     * will populate the fields from the bundle
-     *
-     * 3. It will leave the fields blank for new books.
-     */
-    private void loadBook(final long bookId, @Nullable final Bundle bundle) {
-        if (bundle != null && bundle.containsKey(UniqueId.BKEY_BOOK_DATA)) {
-            // If we have saved book data, use it
-            mBook = new Book(bookId, bundle.getBundle(UniqueId.BKEY_BOOK_DATA));
-        } else {
-            // Just load from the database
-            mBook = mDb.getBookById(bookId);
-        }
-    }
-
-    /**
-     * Sets title of the activity depending on show/edit/new
-     */
-    private void initActivityTitle() {
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            if (mBook.getBookId() > 0) {
-                // editing an existing book
-                actionBar.setTitle(mBook.getString(UniqueId.KEY_TITLE));
-                actionBar.setSubtitle(mBook.getAuthorTextShort());
-            } else {
-                // new book
-                actionBar.setTitle(R.string.menu_insert);
-                actionBar.setSubtitle(null);
-            }
-        }
-    }
-
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-
-    /**
-     * Dispatch incoming result to the correct fragment.
-     */
-    @Override
-    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-        if (BuildConfig.DEBUG) {
-            Logger.info(this, "onActivityResult: forwarding to fragment - requestCode=" + requestCode + ", resultCode=" + resultCode);
-        }
-
-        Fragment frag = getSupportFragmentManager().findFragmentById(R.id.fragment);
-        frag.onActivityResult(requestCode, resultCode, data);
-
-        super.onActivityResult(requestCode, resultCode, data);
-    }
-
-    @Override
-    @CallSuper
-    protected void onDestroy() {
-        Tracker.enterOnDestroy(this);
-        if (mDb != null) {
-            mDb.close();
-        }
-        super.onDestroy();
-        Tracker.exitOnDestroy(this);
-    }
-
-    @Override
-    @CallSuper
-    protected void onSaveInstanceState(@NonNull final Bundle outState) {
-        Tracker.enterOnSaveInstanceState(this);
-
-        outState.putLong(UniqueId.KEY_ID, mBook.getBookId());
-        outState.putBundle(UniqueId.BKEY_BOOK_DATA, mBook.getRawData());
-        outState.putInt(EditBookActivity.REQUEST_KEY_TAB, mTabLayout.getSelectedTabPosition());
-
-        super.onSaveInstanceState(outState);
-        Tracker.exitOnSaveInstanceState(this);
-    }
-
-    /**
-     * setResult with the correct data set for this activity
-     */
-    @Override
-    protected void setActivityResult() {
-        Intent data = new Intent();
-        data.putExtra(UniqueId.KEY_ID, mBook.getBookId());
-        // TODO: detect POTENTIAL global changes, and if none, return Activity.RESULT_CANCELLED instead
-        setResult(Activity.RESULT_OK, data); /* many places */
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-
-    //<editor-fold desc="Callback handlers">
-
-    /**
-     * Dialog handler; pass results to relevant fragment
-     */
-    @Override
-    public void onPartialDatePickerSet(@NonNull final PartialDatePickerDialogFragment dialog,
-                                       @IdRes final int destinationFieldId,
-                                       @Nullable final Integer year,
-                                       @Nullable final Integer month,
-                                       @Nullable final Integer day) {
-        Fragment frag = getSupportFragmentManager().findFragmentById(R.id.fragment);
-        if (frag instanceof OnPartialDatePickerResultListener) {
-            ((OnPartialDatePickerResultListener) frag).onPartialDatePickerSet(dialog, destinationFieldId, year, month, day);
-        } else {
-            StandardDialogs.showUserMessage(this, R.string.error_unexpected_error);
-            Logger.error("Received date dialog result with no fragment to handle it");
-        }
-        // Make sure it's dismissed
-        if (dialog.isVisible()) {
-            dialog.dismiss();
-        }
-    }
-
-    /**
-     * Dialog handler; pass results to relevant fragment
-     */
-    @Override
-    public void onPartialDatePickerCancel(@NonNull final PartialDatePickerDialogFragment dialog,
-                                          @IdRes final int destinationFieldId) {
-        Fragment frag = getSupportFragmentManager().findFragmentById(R.id.fragment);
-        if (frag instanceof OnPartialDatePickerResultListener) {
-            ((OnPartialDatePickerResultListener) frag).onPartialDatePickerCancel(dialog, destinationFieldId);
-        } else {
-            StandardDialogs.showUserMessage(this, R.string.error_unexpected_error);
-            Logger.error("Received date dialog cancellation with no fragment to handle it");
-        }
-        // Make sure it's dismissed
-        if (dialog.isVisible()) {
-            dialog.dismiss();
-        }
-
-    }
-
-    /**
-     * Dialog handler; pass results to relevant fragment
-     */
-    @Override
-    public void onTextFieldEditorSave(@NonNull final TextFieldEditorDialogFragment dialog,
-                                      @IdRes final int callerId,
-                                      @NonNull final String newText) {
-        Fragment frag = getSupportFragmentManager().findFragmentById(R.id.fragment);
-        if (frag instanceof OnTextFieldEditorListener) {
-            ((OnTextFieldEditorListener) frag).onTextFieldEditorSave(dialog, callerId, newText);
-        } else {
-            StandardDialogs.showUserMessage(this, R.string.error_unexpected_error);
-            Logger.error("Received onTextFieldEditorSave result with no fragment to handle it");
-        }
-
-        // Make sure it's dismissed
-        if (dialog.isVisible()) {
-            dialog.dismiss();
-        }
-    }
-
-    /**
-     * Dialog handler; pass results to relevant fragment
-     */
-    @Override
-    public void onTextFieldEditorCancel(@NonNull final TextFieldEditorDialogFragment dialog,
-                                        @IdRes final int callerId) {
-        Fragment frag = getSupportFragmentManager().findFragmentById(R.id.fragment);
-        if (frag instanceof OnTextFieldEditorListener) {
-            ((OnTextFieldEditorListener) frag).onTextFieldEditorCancel(dialog, callerId);
-        } else {
-            StandardDialogs.showUserMessage(this, R.string.error_unexpected_error);
-            Logger.error("Received onTextFieldEditorCancel result with no fragment to handle it");
-        }
-        // Make sure it's dismissed
-        if (dialog.isVisible()) {
-            dialog.dismiss();
-        }
-    }
-
-    /**
-     * Dialog handler; pass results to relevant fragment
-     */
-    @Override
-    public <T> void onCheckListSave(@NonNull final CheckListEditorDialogFragment dialog,
-                                    final int destinationFieldId,
-                                    @NonNull final List<CheckListItem<T>> list) {
-
-        Fragment frag = getSupportFragmentManager().findFragmentById(R.id.fragment);
-        if (frag instanceof CheckListEditorDialogFragment.OnCheckListChangedListener) {
-            ((CheckListEditorDialogFragment.OnCheckListChangedListener) frag).onCheckListSave(dialog, destinationFieldId, list);
-        } else {
-            StandardDialogs.showUserMessage(this, R.string.error_unexpected_error);
-            Logger.error("Received onCheckListSave result with no fragment to handle it");
-        }
-        // Make sure it's dismissed
-        if (dialog.isVisible()) {
-            dialog.dismiss();
-        }
-    }
-
-    /**
-     * Dialog handler; pass results to relevant fragment
-     */
-    @Override
-    public void onCheckListCancel(@NonNull final CheckListEditorDialogFragment dialog,
-                                  final int destinationFieldId) {
-
-        Fragment frag = getSupportFragmentManager().findFragmentById(R.id.fragment);
-        if (frag instanceof CheckListEditorDialogFragment.OnCheckListChangedListener) {
-            ((CheckListEditorDialogFragment.OnCheckListChangedListener) frag).onCheckListCancel(dialog, destinationFieldId);
-        } else {
-            StandardDialogs.showUserMessage(this, R.string.error_unexpected_error);
-            Logger.error("Received onCheckListCancel result with no fragment to handle it");
-        }
-        // Make sure it's dismissed
-        if (dialog.isVisible()) {
-            dialog.dismiss();
-        }
-    }
-
-    //</editor-fold>
-
-    @NonNull
-    @Override
-    public Book getBook() {
-        return mBook;
     }
 
     /**
@@ -490,26 +256,23 @@ public class EditBookActivity extends BaseActivity implements BookAbstractFragme
      */
     @Override
     public void reload(final long bookId) {
-        // only load book when it's actually a new book.
+        // only reload if it's a new book
         if (bookId != mBook.getBookId()) {
-            mBook = mDb.getBookById(bookId);
-            DataEditor frag = (DataEditor) getSupportFragmentManager().findFragmentById(R.id.fragment);
-            frag.transferDataFrom(mBook);
-            initActivityTitle();
+            super.reload(bookId);
         }
     }
 
     /**
      * add or remove the anthology tab
      */
-    public void addAnthologyTab(final boolean show) {
+    public void addTOCTab(final boolean show) {
         if (show) {
             if (mAnthologyTab == null) {
                 Holder holder = new Holder();
                 try {
                     holder.fragment = (Fragment) mTabClasses[TAB_EDIT_ANTHOLOGY].newInstance();
                     mAnthologyTab = mTabLayout.newTab()
-                            .setText(R.string.anthology)
+                            .setText(R.string.content_tab)
                             .setTag(holder);
                 } catch (@NonNull InstantiationException | IllegalAccessException e) {
                     throw new IllegalStateException(e);
@@ -524,17 +287,6 @@ public class EditBookActivity extends BaseActivity implements BookAbstractFragme
         }
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-
-    /**
-     * Validate the current data in all fields that have validators. Display any errors.
-     */
-    private void validate() {
-        if (!mBook.validate()) {
-            StandardDialogs.showUserMessage(this, mBook.getValidationExceptionMessage(getResources()));
-        }
-    }
-
     /**
      * This will save a book into the database, by either updating or created a book.
      *
@@ -545,14 +297,17 @@ public class EditBookActivity extends BaseActivity implements BookAbstractFragme
      * passed nextStep parameter will be executed. Passing nextStep is necessary because
      * this method may return after displaying a dialogue.
      *
-     * @param nextStep The next step to be executed on onConfirm/onCancel.
+     * @param nextStep The next step to be executed on onTextFieldEditorSave/onPartialDatePickerCancel.
      */
-    private void saveState(@NonNull final PostConfirmOrCancelAction nextStep) {
-        Fragment frag = getSupportFragmentManager().findFragmentById(R.id.fragment);
-        ((DataEditor) frag).transferDataTo(mBook);
+    private void saveBook(final @NonNull PostConfirmOrCancelAction nextStep) {
+        DataEditor dataEditorFragment = (DataEditor) getSupportFragmentManager().findFragmentById(R.id.fragment);
+        dataEditorFragment.saveTo(mBook);
 
         // Ignore validation failures; but we still validate to get the current values.
-        validate();
+        mBook.validate();
+//        if (!mBook.validate()) {
+//            StandardDialogs.showUserMessage(this, mBook.getValidationExceptionMessage(getResources()));
+//        }
 
         // However, there is some data that we really do require...
         if (mBook.getAuthorList().size() == 0) {
@@ -582,7 +337,7 @@ public class EditBookActivity extends BaseActivity implements BookAbstractFragme
                         getString(android.R.string.ok),
                         new DialogInterface.OnClickListener() {
                             public void onClick(final DialogInterface dialog, final int which) {
-                                saveBook();
+                                doSaveBook();
                                 nextStep.onConfirm();
                             }
                         });
@@ -599,14 +354,14 @@ public class EditBookActivity extends BaseActivity implements BookAbstractFragme
         }
 
         // No special actions required...just do it.
-        saveBook();
+        doSaveBook();
         nextStep.onConfirm();
     }
 
     /**
      * Save the collected book details
      */
-    private void saveBook() {
+    private void doSaveBook() {
         if (mBook.getBookId() == 0) {
             long id = mDb.insertBook(mBook);
             if (id > 0) {
@@ -619,8 +374,159 @@ public class EditBookActivity extends BaseActivity implements BookAbstractFragme
         }
     }
 
+    @Override
+    @CallSuper
+    protected void onSaveInstanceState(final @NonNull Bundle outState) {
+        Tracker.enterOnSaveInstanceState(this);
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////
+        outState.putLong(UniqueId.KEY_ID, mBook.getBookId());
+        outState.putBundle(UniqueId.BKEY_BOOK_DATA, mBook.getRawData());
+        outState.putInt(EditBookActivity.REQUEST_BKEY_TAB, mTabLayout.getSelectedTabPosition());
+
+        super.onSaveInstanceState(outState);
+        Tracker.exitOnSaveInstanceState(this);
+    }
+
+    /**
+     * setResult with the correct data set for this activity
+     */
+    @Override
+    protected void setActivityResult() {
+        Intent data = new Intent();
+        data.putExtra(UniqueId.KEY_ID, mBook.getBookId());
+        // TODO: detect POTENTIAL global changes, and if none, return Activity.RESULT_CANCELLED instead
+        setResult(Activity.RESULT_OK, data); /* many places */
+    }
+
+    /**
+     * Dialog handler; pass results to relevant fragment
+     */
+    @Override
+    public <T> void onCheckListEditorSave(final @NonNull CheckListEditorDialogFragment dialog,
+                                          final int destinationFieldId,
+                                          final @NonNull List<CheckListItem<T>> list) {
+
+        Fragment frag = getSupportFragmentManager().findFragmentById(R.id.fragment);
+        if (frag instanceof CheckListEditorDialogFragment.OnCheckListEditorResultsListener) {
+            ((CheckListEditorDialogFragment.OnCheckListEditorResultsListener) frag)
+                    .onCheckListEditorSave(dialog, destinationFieldId, list);
+        } else {
+            StandardDialogs.showUserMessage(this, R.string.error_unexpected_error);
+            Logger.error("Received onCheckListEditorSave result with no fragment to handle it");
+        }
+        // Make sure it's dismissed
+        if (dialog.isVisible()) {
+            dialog.dismiss();
+        }
+    }
+
+    /**
+     * Dialog handler; pass results to relevant fragment
+     */
+    @Override
+    public void onCheckListEditorCancel(final @NonNull CheckListEditorDialogFragment dialog,
+                                        final int destinationFieldId) {
+
+        Fragment frag = getSupportFragmentManager().findFragmentById(R.id.fragment);
+        if (frag instanceof CheckListEditorDialogFragment.OnCheckListEditorResultsListener) {
+            ((CheckListEditorDialogFragment.OnCheckListEditorResultsListener) frag)
+                    .onCheckListEditorCancel(dialog, destinationFieldId);
+        } else {
+            StandardDialogs.showUserMessage(this, R.string.error_unexpected_error);
+            Logger.error("Received onCheckListEditorCancel result with no fragment to handle it");
+        }
+        // Make sure it's dismissed
+        if (dialog.isVisible()) {
+            dialog.dismiss();
+        }
+    }
+
+    /**
+     * Dialog handler; pass results to relevant fragment
+     */
+    @Override
+    public void onPartialDatePickerSave(final @NonNull PartialDatePickerDialogFragment dialog,
+                                             final @IdRes int destinationFieldId,
+                                             final @Nullable Integer year,
+                                             final @Nullable Integer month,
+                                             final @Nullable Integer day) {
+
+        Fragment frag = getSupportFragmentManager().findFragmentById(R.id.fragment);
+        if (frag instanceof PartialDatePickerDialogFragment.OnPartialDatePickerResultsListener) {
+            ((PartialDatePickerDialogFragment.OnPartialDatePickerResultsListener) frag)
+                    .onPartialDatePickerSave(dialog, destinationFieldId, year, month, day);
+        } else {
+            StandardDialogs.showUserMessage(this, R.string.error_unexpected_error);
+            Logger.error("Received onPartialDatePickerSave result with no fragment to handle it");
+        }
+        // Make sure it's dismissed
+        if (dialog.isVisible()) {
+            dialog.dismiss();
+        }
+    }
+
+    /**
+     * Dialog handler; pass results to relevant fragment
+     */
+    @Override
+    public void onPartialDatePickerCancel(final @NonNull PartialDatePickerDialogFragment dialog,
+                                          final @IdRes int destinationFieldId) {
+
+        Fragment frag = getSupportFragmentManager().findFragmentById(R.id.fragment);
+        if (frag instanceof PartialDatePickerDialogFragment.OnPartialDatePickerResultsListener) {
+            ((PartialDatePickerDialogFragment.OnPartialDatePickerResultsListener) frag)
+                    .onPartialDatePickerCancel(dialog, destinationFieldId);
+        } else {
+            StandardDialogs.showUserMessage(this, R.string.error_unexpected_error);
+            Logger.error("Received onPartialDatePickerCancel result with no fragment to handle it");
+        }
+        // Make sure it's dismissed
+        if (dialog.isVisible()) {
+            dialog.dismiss();
+        }
+    }
+    /**
+     * Dialog handler; pass results to relevant fragment
+     */
+    @Override
+    public void onTextFieldEditorSave(final @NonNull TextFieldEditorDialogFragment dialog,
+                                      final int destinationFieldId,
+                                      final @NonNull String newText) {
+
+        Fragment frag = getSupportFragmentManager().findFragmentById(R.id.fragment);
+        if (frag instanceof TextFieldEditorDialogFragment.OnTextFieldEditorResultsListener) {
+            ((TextFieldEditorDialogFragment.OnTextFieldEditorResultsListener) frag)
+                    .onTextFieldEditorSave(dialog, destinationFieldId, newText);
+        } else {
+            StandardDialogs.showUserMessage(this, R.string.error_unexpected_error);
+            Logger.error("Received onTextFieldEditorSave result with no fragment to handle it");
+        }
+        // Make sure it's dismissed
+        if (dialog.isVisible()) {
+            dialog.dismiss();
+        }
+    }
+
+    /**
+     * Dialog handler; pass results to relevant fragment
+     */
+    @Override
+    public void onTextFieldEditorCancel(final @NonNull TextFieldEditorDialogFragment dialog,
+                                        final int destinationFieldId) {
+
+        Fragment frag = getSupportFragmentManager().findFragmentById(R.id.fragment);
+        if (frag instanceof TextFieldEditorDialogFragment.OnTextFieldEditorResultsListener) {
+            ((TextFieldEditorDialogFragment.OnTextFieldEditorResultsListener) frag)
+                    .onTextFieldEditorCancel(dialog, destinationFieldId);
+        } else {
+            StandardDialogs.showUserMessage(this, R.string.error_unexpected_error);
+            Logger.error("Received onTextFieldEditorCancel result with no fragment to handle it");
+        }
+        // Make sure it's dismissed
+        if (dialog.isVisible()) {
+            dialog.dismiss();
+        }
+    }
 
     /**
      * TODO: nice idea, but underused.

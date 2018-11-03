@@ -43,7 +43,7 @@ import oauth.signpost.exception.OAuthMessageSignerException;
  */
 public class ShowBookByIdApiHandler extends ShowBookApiHandler {
 	
-	public ShowBookByIdApiHandler(@NonNull final GoodreadsManager manager) {
+	public ShowBookByIdApiHandler(final @NonNull GoodreadsManager manager) {
 		super(manager, true);
 	}
 

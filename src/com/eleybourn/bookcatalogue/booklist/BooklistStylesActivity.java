@@ -68,7 +68,7 @@ public class BooklistStylesActivity extends EditObjectListActivity<BooklistStyle
 
     @Override
     @CallSuper
-    protected void onCreate(@Nullable final Bundle savedInstanceState) {
+    protected void onCreate(final @Nullable Bundle savedInstanceState) {
         try {
             super.onCreate(savedInstanceState);
             this.setTitle(R.string.preferred_styles);
@@ -94,7 +94,7 @@ public class BooklistStylesActivity extends EditObjectListActivity<BooklistStyle
     }
 
     @Override
-    protected void onSetupView(@NonNull final View target, @NonNull final BooklistStyle style) {
+    protected void onSetupView(final @NonNull View target, final @NonNull BooklistStyle style) {
         Holder holder = ViewTagger.getTag(target, R.id.TAG_HOLDER);// value: BooklistStylesActivity.Holder
         if (holder == null) {
             holder = new Holder();
@@ -137,7 +137,7 @@ public class BooklistStylesActivity extends EditObjectListActivity<BooklistStyle
      * Use the RowClick to present a pseudo context menu.
      */
     @Override
-    protected void onRowClick(@NonNull final View target, @NonNull final BooklistStyle style, final int position) {
+    protected void onRowClick(final @NonNull View target, final @NonNull BooklistStyle style, final int position) {
         // Build the array of menu items based on the style we are editing
         final ArrayList<ContextItem> items = new ArrayList<>();
         if (style.isUserDefined()) {
@@ -153,7 +153,7 @@ public class BooklistStylesActivity extends EditObjectListActivity<BooklistStyle
         final AlertDialog dialog = new AlertDialog.Builder(getLayoutInflater().getContext())
                 .setItems(csa, new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(@NonNull final DialogInterface dialog, final int which) {
+                    public void onClick(final @NonNull DialogInterface dialog, final int which) {
                         switch (items.get(which).getId()) {
                             case R.id.MENU_STYLE_DELETE:
                                 style.delete(mDb);
@@ -200,7 +200,7 @@ public class BooklistStylesActivity extends EditObjectListActivity<BooklistStyle
         }
 
         Intent intent = new Intent(this, BooklistStylePropertiesActivity.class);
-        intent.putExtra(BooklistStylePropertiesActivity.REQUEST_KEY_STYLE, style);
+        intent.putExtra(BooklistStylePropertiesActivity.REQUEST_BKEY_STYLE, style);
         startActivityForResult(intent, BooklistStylePropertiesActivity.REQUEST_CODE); /* fadd7b9a-7eaf-4af9-90ce-6ffb7b93afe6 */
     }
 
@@ -211,7 +211,7 @@ public class BooklistStylesActivity extends EditObjectListActivity<BooklistStyle
 
     @Override
     @CallSuper
-    protected void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent data) {
+    protected void onActivityResult(final int requestCode, final int resultCode, final @Nullable Intent data) {
         if (BuildConfig.DEBUG) {
             Logger.info(this,"onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
         }
@@ -220,7 +220,7 @@ public class BooklistStylesActivity extends EditObjectListActivity<BooklistStyle
                 if (resultCode == Activity.RESULT_OK) {
                     /* there *has* to be 'data' */
                     Objects.requireNonNull(data);
-                    BooklistStyle style = (BooklistStyle) data.getSerializableExtra(BooklistStylePropertiesActivity.REQUEST_KEY_STYLE);
+                    BooklistStyle style = (BooklistStyle) data.getSerializableExtra(BooklistStylePropertiesActivity.REQUEST_BKEY_STYLE);
                     // style can be null (when it was deleted)
                     handleStyleResult(style);
                 }
@@ -235,7 +235,7 @@ public class BooklistStylesActivity extends EditObjectListActivity<BooklistStyle
      *
      * @param booklistStyle as received from onActivityResult
      */
-    private void handleStyleResult(@Nullable final BooklistStyle booklistStyle) {
+    private void handleStyleResult(final @Nullable BooklistStyle booklistStyle) {
         try {
             if (booklistStyle == null) {
                 // Style was deleted. Refresh.
@@ -312,7 +312,7 @@ public class BooklistStylesActivity extends EditObjectListActivity<BooklistStyle
          * @param stringId ID of String for this item
          * @param id       ID of this item
          */
-        ContextItem(@StringRes final int stringId, final int id) {
+        ContextItem(final @StringRes int stringId, final int id) {
             mString = getString(stringId);
             mId = id;
         }

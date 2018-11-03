@@ -8,7 +8,7 @@ import android.widget.ArrayAdapter;
 import com.eleybourn.bookcatalogue.baseactivity.BaseListActivity;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Tracker;
-import com.eleybourn.bookcatalogue.entities.AnthologyTitle;
+import com.eleybourn.bookcatalogue.entities.TOCEntry;
 import com.eleybourn.bookcatalogue.entities.Author;
 
 import java.util.ArrayList;
@@ -20,7 +20,7 @@ import java.util.Objects;
 public class AuthorActivity extends BaseListActivity {
 
     private CatalogueDBAdapter mDb;
-    private ArrayList<AnthologyTitle> mList;
+    private ArrayList<TOCEntry> mList;
 
     @Override
     protected int getLayoutId() {
@@ -29,7 +29,7 @@ public class AuthorActivity extends BaseListActivity {
 
     @Override
     @CallSuper
-    protected void onCreate(@Nullable final Bundle savedInstanceState) {
+    protected void onCreate(final @Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle extras = getIntent().getExtras();
         Objects.requireNonNull(extras);
@@ -41,9 +41,9 @@ public class AuthorActivity extends BaseListActivity {
         Objects.requireNonNull(author);
         setTitle(author.getDisplayName());
 
-        mList = mDb.getAnthologyTitlesByAuthor(author);
+        mList = mDb.getTOCEntriesByAuthor(author);
 
-        ArrayAdapter<AnthologyTitle> adapter = new AnthologyTitleListAdapter(this, R.layout.row_anthology, mList);
+        ArrayAdapter<TOCEntry> adapter = new TOCListAdapter(this, R.layout.row_anthology, mList);
         setListAdapter(adapter);
     }
 

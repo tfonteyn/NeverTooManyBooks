@@ -51,12 +51,12 @@ public class SoundManager {
         return player;
     }
 
-    private static void playFile(@NonNull final MediaPlayer player, @NonNull final AssetFileDescriptor file) throws
+    private static void playFile(final @NonNull MediaPlayer player, final @NonNull AssetFileDescriptor file) throws
             IllegalArgumentException, IllegalStateException, IOException {
         // When the beep has finished playing, rewind to queue up another one.
         player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
-            public void onCompletion(@NonNull final MediaPlayer player) {
+            public void onCompletion(final @NonNull MediaPlayer player) {
                 player.release();
             }
         });

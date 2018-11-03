@@ -41,7 +41,6 @@ import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.entities.Book;
 
 import java.io.File;
-import java.util.Objects;
 
 /**
  * Class to implement common Book functions
@@ -60,7 +59,7 @@ public class BookUtils {
      *
      * @return bundle with book data
      */
-    public static Bundle duplicateBook(@NonNull final CatalogueDBAdapter db,
+    public static Bundle duplicateBook(final @NonNull CatalogueDBAdapter db,
                                        final long bookId) {
         final Bundle bookData = new Bundle();
         try (BooksCursor cursor = db.fetchBookById(bookId)) {
@@ -75,24 +74,32 @@ public class BookUtils {
                 bookData.putSerializable(UniqueId.BKEY_SERIES_ARRAY, db.getBookSeriesList(bookId));
 
                 bookData.putInt(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK, bookRowView.getAnthologyBitMask());
-                bookData.putSerializable(UniqueId.BKEY_ANTHOLOGY_TITLES_ARRAY, db.getAnthologyTitleListByBook(bookId));
+                bookData.putSerializable(UniqueId.BKEY_TOC_TITLES_ARRAY, db.getTOCEntriesByBook(bookId));
 
                 bookData.putString(UniqueId.KEY_BOOK_PUBLISHER, bookRowView.getPublisherName());
                 bookData.putString(UniqueId.KEY_BOOK_DATE_PUBLISHED, bookRowView.getDatePublished());
+                bookData.putString(UniqueId.KEY_FIRST_PUBLICATION, bookRowView.getFirstPublication());
+
                 bookData.putString(UniqueId.KEY_BOOK_FORMAT, bookRowView.getFormat());
                 bookData.putString(UniqueId.KEY_BOOK_GENRE, bookRowView.getGenre());
-                bookData.putString(UniqueId.KEY_BOOK_LIST_PRICE, bookRowView.getListPrice());
                 bookData.putString(UniqueId.KEY_BOOK_LANGUAGE, bookRowView.getLanguage());
                 bookData.putString(UniqueId.KEY_BOOK_PAGES, bookRowView.getPages());
-                bookData.putDouble(UniqueId.KEY_BOOK_RATING, bookRowView.getRating());
-                bookData.putString(UniqueId.KEY_BOOK_LOCATION, bookRowView.getLocation());
+
+
+                bookData.putString(UniqueId.KEY_BOOK_PRICE_LISTED, bookRowView.getListPrice());
+                bookData.putString(UniqueId.KEY_BOOK_PRICE_LISTED_CURRENCY, bookRowView.getListPriceCurrency());
+                bookData.putString(UniqueId.KEY_BOOK_PRICE_PAID, bookRowView.getPricePaid());
+                bookData.putString(UniqueId.KEY_BOOK_PRICE_PAID_CURRENCY, bookRowView.getPricePaidCurrency());
+
+                bookData.putInt(UniqueId.KEY_BOOK_READ, bookRowView.getRead());
                 bookData.putString(UniqueId.KEY_BOOK_READ_END, bookRowView.getReadEnd());
                 bookData.putString(UniqueId.KEY_BOOK_READ_START, bookRowView.getReadStart());
-                bookData.putInt(UniqueId.KEY_BOOK_READ, bookRowView.getRead());
+
+                bookData.putString(UniqueId.KEY_NOTES, bookRowView.getNotes());
+                bookData.putDouble(UniqueId.KEY_BOOK_RATING, bookRowView.getRating());
+                bookData.putString(UniqueId.KEY_BOOK_LOCATION, bookRowView.getLocation());
                 bookData.putInt(UniqueId.KEY_BOOK_SIGNED, bookRowView.getSigned());
                 bookData.putInt(UniqueId.KEY_BOOK_EDITION_BITMASK, bookRowView.getEditionBitMask());
-                bookData.putString(UniqueId.KEY_FIRST_PUBLICATION, bookRowView.getFirstPublication());
-                bookData.putString(UniqueId.KEY_NOTES, bookRowView.getNotes());
             }
 
         } catch (DBExceptions.ColumnNotPresent e) {
@@ -111,16 +118,14 @@ public class BookUtils {
      *
      * @param bookId  the book to delete
      */
-    public static void deleteBook(@NonNull final Activity activity,
-                                  @NonNull final CatalogueDBAdapter db,
+    public static void deleteBook(final @NonNull Activity activity,
+                                  final @NonNull CatalogueDBAdapter db,
                                   final long bookId,
-                                  @Nullable final Runnable onDeleted) {
+                                  final @Nullable Runnable onDeleted) {
         @StringRes
         int errorMsgId = StandardDialogs.deleteBookAlert(activity, db, bookId, new Runnable() {
             @Override
             public void run() {
-                db.purgeAuthors();
-                db.purgeSeries();
                 if (onDeleted != null) {
                     onDeleted.run();
                 }
@@ -137,8 +142,8 @@ public class BookUtils {
      *
      * @param bookId to share
      */
-    public static void shareBook(@NonNull final Activity activity,
-                                 @NonNull final CatalogueDBAdapter db,
+    public static void shareBook(final @NonNull Activity activity,
+                                 final @NonNull CatalogueDBAdapter db,
                                  final long bookId) {
         String title;
         double rating;
@@ -204,11 +209,11 @@ public class BookUtils {
      * @param db       database
      * @param book to update
      *
-     * @return <tt>true</tt> if the update was successful, false on onCancel
+     * @return <tt>true</tt> if the update was successful, false on onPartialDatePickerCancel
      */
     @SuppressWarnings("UnusedReturnValue")
-    public static boolean setRead(@NonNull final CatalogueDBAdapter db,
-                                  @NonNull final Book book,
+    public static boolean setRead(final @NonNull CatalogueDBAdapter db,
+                                  final @NonNull Book book,
                                   final boolean read) {
         int prevRead = book.getInt(UniqueId.KEY_BOOK_READ);
         String prevReadEnd = book.getString(UniqueId.KEY_BOOK_READ_END);
@@ -225,11 +230,11 @@ public class BookUtils {
     }
 
     @SuppressWarnings("UnusedReturnValue")
-    public static boolean setRead(@NonNull final CatalogueDBAdapter db,
+    public static boolean setRead(final @NonNull CatalogueDBAdapter db,
                                   final long bookId,
                                   final boolean read) {
-        Book book = db.getBookById(bookId);
-        Objects.requireNonNull(book);
+        // load from database
+        Book book = new Book(bookId, null);
         book.putBoolean(UniqueId.KEY_BOOK_READ, read);
         book.putString(UniqueId.KEY_BOOK_READ_END, DateUtils.todaySqlDateOnly());
         return (db.updateBook(bookId, book, 0) == 1);

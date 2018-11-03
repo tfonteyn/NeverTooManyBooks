@@ -29,78 +29,63 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v4.app.DialogFragment;
 
+import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.utils.RTE;
+
+import java.util.Objects;
 
 /**
  * Fragment wrapper for {@link TextFieldEditorDialog}
  *
- * Calling Fragment does TextFieldEditorDialogFragment.newInstance
- * -> TextFieldEditorDialogFragment.onCreateDialog
- * -> TextFieldEditorDialog()
- * -> user
- * -> via listener/interface back to TextFieldEditorDialogFragment.OnTextFieldEditorListener
- * -> inner dialog is dismissed
- * -> via interface back to hosting Activity
- * -> Activity via interface back to Calling Fragment
- * - Calling Fragment uses data result + dismisses outer dialog
- * ---> if for some reason the Activity cannot forward, then outer dialog is closed by Activity
- *
  * @author pjw
  */
 public class TextFieldEditorDialogFragment extends DialogFragment {
-    /** Dialog title */
-    private static final String BKEY_TITLE = "title";
     /* Dialog text/message */
-    private static final String BKEY_TEXT = "text";
+    public static final String BKEY_TEXT = "text";
+    public static final String BKEY_MULTI_LINE = "multiLine";
 
     @StringRes
     private int mTitleId;
     @IdRes
     private int mDestinationFieldId;
 
+    /**
+     * Object to handle changes
+     */
+    private final TextFieldEditorDialog.OnTextFieldEditorResultsListener mEditListener =
+            new TextFieldEditorDialog.OnTextFieldEditorResultsListener() {
+                @Override
+                public void onTextFieldEditorSave(final @NonNull TextFieldEditorDialog dialog, final @NonNull String newText) {
+                    dialog.dismiss();
+
+                    ((OnTextFieldEditorResultsListener) requireActivity()).onTextFieldEditorSave(TextFieldEditorDialogFragment.this,
+                            mDestinationFieldId, newText);
+                }
+
+                @Override
+                public void onTextFieldEditorCancel(final @NonNull TextFieldEditorDialog dialog) {
+                    dialog.dismiss();
+
+                    ((OnTextFieldEditorResultsListener) requireActivity()).onTextFieldEditorCancel(TextFieldEditorDialogFragment.this,
+                            mDestinationFieldId);
+                }
+            };
     /** Currently displayed text; null if empty/invalid */
     @Nullable
     private String mText;
-
-    /**
-     * Object to handle changes to a description field.
-     */
-    private final TextFieldEditorDialog.OnEditListener mEditListener = new TextFieldEditorDialog.OnEditListener() {
-        @Override
-        public void onSaved(@NonNull final TextFieldEditorDialog dialog, @NonNull final String newText) {
-            dialog.dismiss();
-            ((OnTextFieldEditorListener) requireActivity()).onTextFieldEditorSave(TextFieldEditorDialogFragment.this,
-                    mDestinationFieldId, newText);
-        }
-
-        @Override
-        public void onCancel(@NonNull final TextFieldEditorDialog dialog) {
-            dialog.dismiss();
-            ((OnTextFieldEditorListener) requireActivity()).onTextFieldEditorCancel(TextFieldEditorDialogFragment.this,
-                    mDestinationFieldId);
-        }
-    };
-
-    /**
-     * Constructor
-     *
-     * @return Created fragment
-     */
-    @NonNull
-    public static TextFieldEditorDialogFragment newInstance() {
-        return new TextFieldEditorDialogFragment();
-    }
+    private boolean mMultiLine = false;
 
     /**
      * Ensure activity supports interface
      */
     @Override
     @CallSuper
-    public void onAttach(@NonNull final Context context) {
+    public void onAttach(final @NonNull Context context) {
         super.onAttach(context);
-        if (!(context instanceof OnTextFieldEditorListener))
-            throw new RTE.MustImplementException(context, OnTextFieldEditorListener.class);
+        if (!(context instanceof OnTextFieldEditorResultsListener)) {
+            throw new RTE.MustImplementException(context, OnTextFieldEditorResultsListener.class);
+        }
     }
 
     /**
@@ -108,66 +93,43 @@ public class TextFieldEditorDialogFragment extends DialogFragment {
      */
     @NonNull
     @Override
-    public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-        // Restore saved state info
+    public Dialog onCreateDialog(final @Nullable Bundle savedInstanceState) {
         if (savedInstanceState != null) {
-            if (savedInstanceState.containsKey(BKEY_TEXT)) {
-                mText = savedInstanceState.getString(BKEY_TEXT);
-            }
-            mTitleId = savedInstanceState.getInt(BKEY_TITLE);
+            mTitleId = savedInstanceState.getInt(UniqueId.BKEY_DIALOG_TITLE, R.string.edit);
             mDestinationFieldId = savedInstanceState.getInt(UniqueId.BKEY_FIELD_ID);
+            // data to edit
+            mText = savedInstanceState.getString(BKEY_TEXT, "");
+            mMultiLine = savedInstanceState.getBoolean(BKEY_MULTI_LINE);
+        } else {
+            Bundle args = getArguments();
+            Objects.requireNonNull(args);
+            mTitleId = args.getInt(UniqueId.BKEY_DIALOG_TITLE, R.string.edit);
+            mDestinationFieldId = args.getInt(UniqueId.BKEY_FIELD_ID);
+            // data to edit
+            mText = args.getString(BKEY_TEXT, "");
+            mMultiLine = args.getBoolean(BKEY_MULTI_LINE);
         }
 
         // Create the dialog and listen (locally) for its events
-        TextFieldEditorDialog editor = new TextFieldEditorDialog(requireActivity());
+        TextFieldEditorDialog editor = new TextFieldEditorDialog(requireActivity(), mMultiLine);
         if (mTitleId != 0) {
             editor.setTitle(mTitleId);
         }
         editor.setText(mText);
-        editor.setOnEditListener(mEditListener);
+        editor.setResultsListener(mEditListener);
         return editor;
-    }
-
-    @NonNull
-    public TextFieldEditorDialogFragment setDestinationFieldId(@IdRes final int id) {
-        mDestinationFieldId = id;
-        return this;
-    }
-
-    /**
-     * Accessor. Update dialog if available.
-     */
-    @NonNull
-    public TextFieldEditorDialogFragment setTitle(@StringRes final int title) {
-        mTitleId = title;
-        TextFieldEditorDialog d = (TextFieldEditorDialog) getDialog();
-        if (d != null) {
-            d.setTitle(mTitleId);
-        }
-        return this;
-    }
-
-    /**
-     * Accessor. Update dialog if available.
-     */
-    @NonNull
-    public TextFieldEditorDialogFragment setText(@NonNull final String text) {
-        mText = text;
-        TextFieldEditorDialog d = (TextFieldEditorDialog) getDialog();
-        if (d != null) {
-            d.setText(mText);
-        }
-        return this;
     }
 
     @Override
     @CallSuper
-    public void onSaveInstanceState(@NonNull final Bundle outState) {
-        outState.putInt(BKEY_TITLE, mTitleId);
+    public void onSaveInstanceState(final @NonNull Bundle outState) {
+        outState.putInt(UniqueId.BKEY_DIALOG_TITLE, mTitleId);
         outState.putInt(UniqueId.BKEY_FIELD_ID, mDestinationFieldId);
         if (mText != null) {
             outState.putString(BKEY_TEXT, mText);
         }
+        outState.putBoolean(BKEY_MULTI_LINE, mMultiLine);
+
         super.onSaveInstanceState(outState);
     }
 
@@ -189,12 +151,12 @@ public class TextFieldEditorDialogFragment extends DialogFragment {
      *
      * @author pjw
      */
-    public interface OnTextFieldEditorListener {
-        void onTextFieldEditorSave(@NonNull final TextFieldEditorDialogFragment dialog,
+    public interface OnTextFieldEditorResultsListener {
+        void onTextFieldEditorSave(final @NonNull TextFieldEditorDialogFragment dialog,
                                    final int callerId,
-                                   @NonNull final String newText);
+                                   final @NonNull String newText);
 
-        void onTextFieldEditorCancel(@NonNull final TextFieldEditorDialogFragment dialog,
+        void onTextFieldEditorCancel(final @NonNull TextFieldEditorDialogFragment dialog,
                                      final int callerId);
     }
 }

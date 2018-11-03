@@ -70,7 +70,7 @@ public class BackupInfo {
     private final Bundle mBundle;
 
 
-    public BackupInfo(@NonNull final Bundle b) {
+    public BackupInfo(final @NonNull Bundle b) {
         mBundle = b;
     }
 
@@ -83,8 +83,8 @@ public class BackupInfo {
      * @return a new BackupInfo object
      */
     @NonNull
-    static BackupInfo createInfo(@NonNull final BackupContainer container,
-                                 @NonNull final Context context,
+    static BackupInfo createInfo(final @NonNull BackupContainer container,
+                                 final @NonNull Context context,
                                  final int bookCount,
                                  final int coverCount) {
         Bundle info = new Bundle();

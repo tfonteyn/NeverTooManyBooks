@@ -48,14 +48,14 @@ import oauth.signpost.exception.OAuthMessageSignerException;
  */
 public class ReviewUpdateHandler extends ApiHandler {
 
-    public ReviewUpdateHandler(@NonNull final GoodreadsManager manager) {
+    public ReviewUpdateHandler(final @NonNull GoodreadsManager manager) {
         super(manager);
     }
 
     public void update(final long reviewId,
                        final boolean isRead,
-                       @Nullable final String readAt,
-                       @Nullable final String review,
+                       final @Nullable String readAt,
+                       final @Nullable String review,
                        final int rating)
             throws OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException, IOException,
             NotAuthorizedException, BookNotFoundException, NetworkException {

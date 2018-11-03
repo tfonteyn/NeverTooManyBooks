@@ -51,7 +51,7 @@ public class BCQueueManager extends QueueManager {
      * main: long-running tasks, or tasks that can just wait
      * small_jobs: trivial background tasks that will only take a few seconds.
      */
-    public BCQueueManager(@NonNull final Context applicationContext) {
+    public BCQueueManager(final @NonNull Context applicationContext) {
         super(applicationContext);
         initializeQueue(QUEUE_MAIN);
         initializeQueue(QUEUE_SMALL_JOBS);

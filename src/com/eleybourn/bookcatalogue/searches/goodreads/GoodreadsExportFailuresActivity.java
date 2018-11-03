@@ -40,7 +40,7 @@ import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.ContextDialogItem;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.dialogs.HintManager.HintOwner;
-import com.eleybourn.bookcatalogue.taskqueue.BindableItemCursor;
+import com.eleybourn.bookcatalogue.database.cursors.BindableItemCursor;
 import com.eleybourn.bookcatalogue.taskqueue.Event;
 import com.eleybourn.bookcatalogue.taskqueue.Listeners.EventActions;
 import com.eleybourn.bookcatalogue.taskqueue.Listeners.OnEventChangeListener;
@@ -60,7 +60,7 @@ import java.util.List;
 public class GoodreadsExportFailuresActivity extends BindableItemListActivity {
 
     /** Key to store optional task ID when activity is started */
-    public static final String REQUEST_KEY_TASK_ID = "GoodreadsExportFailuresActivity.TaskId";
+    public static final String REQUEST_BKEY_TASK_ID = "GoodreadsExportFailuresActivity.TaskId";
 
     /** DB connection */
     private CatalogueDBAdapter mDb = null;
@@ -86,14 +86,14 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity {
 
     @Override
     @CallSuper
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
+    public void onCreate(final @Nullable Bundle savedInstanceState) {
         // Get a DB adapter
         mDb = new CatalogueDBAdapter(this)
                 .open();
 
         Intent intent = getIntent();
         if (intent != null) {
-            mTaskId = intent.getLongExtra(REQUEST_KEY_TASK_ID, 0);
+            mTaskId = intent.getLongExtra(REQUEST_BKEY_TASK_ID, 0);
         }
         // Once the basic criteria have been setup, call the parent
         super.onCreate(savedInstanceState);
@@ -139,7 +139,7 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity {
      * Build a context menu dialogue when an item is clicked.
      */
     @Override
-    public void onListItemClick(@NonNull final AdapterView<?> parent, @NonNull final View v, final int position, final long id) {
+    public void onListItemClick(final @NonNull AdapterView<?> parent, final @NonNull View v, final int position, final long id) {
         // get the event object
         final Event event = ViewTagger.getTag(v, R.id.TAG_EVENT);
 
@@ -158,7 +158,7 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity {
         }
     }
 
-    private void doContextMenu(@NonNull final AdapterView<?> parent, @NonNull final View v, final int position, final long id) {
+    private void doContextMenu(final @NonNull AdapterView<?> parent, final @NonNull View v, final int position, final long id) {
         final Event event = ViewTagger.getTagOrThrow(v, R.id.TAG_EVENT);
         final List<ContextDialogItem> items = new ArrayList<>();
 
@@ -215,10 +215,10 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity {
      * Let the Event bind itself.
      */
     @Override
-    public void bindViewToItem(@NonNull final Context context,
-                               @NonNull final View view,
-                               @NonNull final BindableItemCursor cursor,
-                               @NonNull final BindableItemCursorAdapter.BindableItem item) {
+    public void bindViewToItem(final @NonNull Context context,
+                               final @NonNull View view,
+                               final @NonNull BindableItemCursor cursor,
+                               final @NonNull BindableItemCursorAdapter.BindableItem item) {
         ViewTagger.setTag(view, R.id.TAG_EVENT, item);
         item.bindView(view, context, cursor, mDb);
     }
@@ -228,7 +228,7 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity {
      */
     @NonNull
     @Override
-    protected BindableItemCursor getBindableItemCursor(@Nullable final Bundle savedInstanceState) {
+    protected BindableItemCursor getBindableItemCursor(final @Nullable Bundle savedInstanceState) {
         if (mTaskId == 0) {
             mCursor = BookCatalogueApp.getQueueManager().getAllEvents();
         } else {

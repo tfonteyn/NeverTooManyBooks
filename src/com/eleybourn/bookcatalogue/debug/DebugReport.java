@@ -37,7 +37,7 @@ public class DebugReport {
      *
      * No longer caching as only needed at a crash anyhow
      */
-    public static String signedBy(@NonNull final Context context) {
+    public static String signedBy(final @NonNull Context context) {
         StringBuilder signedBy = new StringBuilder();
 
         try {
@@ -94,7 +94,7 @@ public class DebugReport {
      *
      * THIS SHOULD NOT BE A PUBLICLY AVAILABLE MAILING LIST OR FORUM!
      */
-    public static void sendDebugInfo(@NonNull final Activity activity) {
+    public static void sendDebugInfo(final @NonNull Activity activity) {
         // Create a temp file, set to auto-delete at app close
         File tmpDbFile = StorageUtils.getFile("DbExport-tmp.db");
         tmpDbFile.deleteOnExit();
@@ -156,7 +156,7 @@ public class DebugReport {
             }
         } catch (Exception e) {
             // Don't lose the other debug info if scanner data dies for some reason
-            message.append("Scanner onCancel: ").append(e.getLocalizedMessage()).append("\n");
+            message.append("Scanner onPartialDatePickerCancel: ").append(e.getLocalizedMessage()).append("\n");
         }
         message.append("\n");
 
