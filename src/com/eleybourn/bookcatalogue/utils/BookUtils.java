@@ -34,8 +34,8 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.DBExceptions;
-import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
-import com.eleybourn.bookcatalogue.database.cursors.BooksCursor;
+import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
+import com.eleybourn.bookcatalogue.database.cursors.BookCursorRow;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.entities.Book;
@@ -62,44 +62,44 @@ public class BookUtils {
     public static Bundle duplicateBook(final @NonNull CatalogueDBAdapter db,
                                        final long bookId) {
         final Bundle bookData = new Bundle();
-        try (BooksCursor cursor = db.fetchBookById(bookId)) {
+        try (BookCursor cursor = db.fetchBookById(bookId)) {
             if (cursor.moveToFirst()) {
-                BookRowView bookRowView = cursor.getRowView();
+                BookCursorRow bookCursorRow = cursor.getCursorRow();
 
-                bookData.putString(UniqueId.KEY_TITLE, bookRowView.getTitle());
-                bookData.putString(UniqueId.KEY_BOOK_ISBN, bookRowView.getIsbn());
-                bookData.putString(UniqueId.KEY_DESCRIPTION, bookRowView.getDescription());
+                bookData.putString(UniqueId.KEY_TITLE, bookCursorRow.getTitle());
+                bookData.putString(UniqueId.KEY_BOOK_ISBN, bookCursorRow.getIsbn());
+                bookData.putString(UniqueId.KEY_DESCRIPTION, bookCursorRow.getDescription());
 
                 bookData.putSerializable(UniqueId.BKEY_AUTHOR_ARRAY, db.getBookAuthorList(bookId));
                 bookData.putSerializable(UniqueId.BKEY_SERIES_ARRAY, db.getBookSeriesList(bookId));
 
-                bookData.putInt(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK, bookRowView.getAnthologyBitMask());
+                bookData.putInt(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK, bookCursorRow.getAnthologyBitMask());
                 bookData.putSerializable(UniqueId.BKEY_TOC_TITLES_ARRAY, db.getTOCEntriesByBook(bookId));
 
-                bookData.putString(UniqueId.KEY_BOOK_PUBLISHER, bookRowView.getPublisherName());
-                bookData.putString(UniqueId.KEY_BOOK_DATE_PUBLISHED, bookRowView.getDatePublished());
-                bookData.putString(UniqueId.KEY_FIRST_PUBLICATION, bookRowView.getFirstPublication());
+                bookData.putString(UniqueId.KEY_BOOK_PUBLISHER, bookCursorRow.getPublisherName());
+                bookData.putString(UniqueId.KEY_BOOK_DATE_PUBLISHED, bookCursorRow.getDatePublished());
+                bookData.putString(UniqueId.KEY_FIRST_PUBLICATION, bookCursorRow.getFirstPublication());
 
-                bookData.putString(UniqueId.KEY_BOOK_FORMAT, bookRowView.getFormat());
-                bookData.putString(UniqueId.KEY_BOOK_GENRE, bookRowView.getGenre());
-                bookData.putString(UniqueId.KEY_BOOK_LANGUAGE, bookRowView.getLanguage());
-                bookData.putString(UniqueId.KEY_BOOK_PAGES, bookRowView.getPages());
+                bookData.putString(UniqueId.KEY_BOOK_FORMAT, bookCursorRow.getFormat());
+                bookData.putString(UniqueId.KEY_BOOK_GENRE, bookCursorRow.getGenre());
+                bookData.putString(UniqueId.KEY_BOOK_LANGUAGE, bookCursorRow.getLanguage());
+                bookData.putString(UniqueId.KEY_BOOK_PAGES, bookCursorRow.getPages());
 
 
-                bookData.putString(UniqueId.KEY_BOOK_PRICE_LISTED, bookRowView.getListPrice());
-                bookData.putString(UniqueId.KEY_BOOK_PRICE_LISTED_CURRENCY, bookRowView.getListPriceCurrency());
-                bookData.putString(UniqueId.KEY_BOOK_PRICE_PAID, bookRowView.getPricePaid());
-                bookData.putString(UniqueId.KEY_BOOK_PRICE_PAID_CURRENCY, bookRowView.getPricePaidCurrency());
+                bookData.putString(UniqueId.KEY_BOOK_PRICE_LISTED, bookCursorRow.getListPrice());
+                bookData.putString(UniqueId.KEY_BOOK_PRICE_LISTED_CURRENCY, bookCursorRow.getListPriceCurrency());
+                bookData.putString(UniqueId.KEY_BOOK_PRICE_PAID, bookCursorRow.getPricePaid());
+                bookData.putString(UniqueId.KEY_BOOK_PRICE_PAID_CURRENCY, bookCursorRow.getPricePaidCurrency());
 
-                bookData.putInt(UniqueId.KEY_BOOK_READ, bookRowView.getRead());
-                bookData.putString(UniqueId.KEY_BOOK_READ_END, bookRowView.getReadEnd());
-                bookData.putString(UniqueId.KEY_BOOK_READ_START, bookRowView.getReadStart());
+                bookData.putInt(UniqueId.KEY_BOOK_READ, bookCursorRow.getRead());
+                bookData.putString(UniqueId.KEY_BOOK_READ_END, bookCursorRow.getReadEnd());
+                bookData.putString(UniqueId.KEY_BOOK_READ_START, bookCursorRow.getReadStart());
 
-                bookData.putString(UniqueId.KEY_NOTES, bookRowView.getNotes());
-                bookData.putDouble(UniqueId.KEY_BOOK_RATING, bookRowView.getRating());
-                bookData.putString(UniqueId.KEY_BOOK_LOCATION, bookRowView.getLocation());
-                bookData.putInt(UniqueId.KEY_BOOK_SIGNED, bookRowView.getSigned());
-                bookData.putInt(UniqueId.KEY_BOOK_EDITION_BITMASK, bookRowView.getEditionBitMask());
+                bookData.putString(UniqueId.KEY_NOTES, bookCursorRow.getNotes());
+                bookData.putDouble(UniqueId.KEY_BOOK_RATING, bookCursorRow.getRating());
+                bookData.putString(UniqueId.KEY_BOOK_LOCATION, bookCursorRow.getLocation());
+                bookData.putInt(UniqueId.KEY_BOOK_SIGNED, bookCursorRow.getSigned());
+                bookData.putInt(UniqueId.KEY_BOOK_EDITION_BITMASK, bookCursorRow.getEditionBitMask());
             }
 
         } catch (DBExceptions.ColumnNotPresent e) {
@@ -116,7 +116,7 @@ public class BookUtils {
      *
      * TOMF: how about using {@link EditBookActivity.PostConfirmOrCancelAction}
      *
-     * @param bookId  the book to delete
+     * @param bookId the book to delete
      */
     public static void deleteBook(final @NonNull Activity activity,
                                   final @NonNull CatalogueDBAdapter db,
@@ -150,13 +150,13 @@ public class BookUtils {
         String author;
         String series;
 
-        try (BooksCursor cursor = db.fetchBookById(bookId)) {
+        try (BookCursor cursor = db.fetchBookById(bookId)) {
             if (cursor.moveToFirst()) {
-                BookRowView bookRowView = cursor.getRowView();
-                title = bookRowView.getTitle();
-                rating = bookRowView.getRating();
-                author = bookRowView.getPrimaryAuthorNameFormattedGivenFirst();
-                series = bookRowView.getPrimarySeriesFormatted();
+                BookCursorRow bookCursorRow = cursor.getCursorRow();
+                title = bookCursorRow.getTitle();
+                rating = bookCursorRow.getRating();
+                author = bookCursorRow.getPrimaryAuthorNameFormattedGivenFirst();
+                series = bookCursorRow.getPrimarySeriesFormatted();
             } else {
                 StandardDialogs.showUserMessage(activity, R.string.unable_to_find_book);
                 return;
@@ -206,10 +206,10 @@ public class BookUtils {
      * Update the 'read' status of a book in the database + sets the 'read end' to today
      * The book will have its 'read' status updated ONLY if the update went through.
      *
-     * @param db       database
+     * @param db   database
      * @param book to update
      *
-     * @return <tt>true</tt> if the update was successful, false on onPartialDatePickerCancel
+     * @return <tt>true</tt> if the update was successful, false on failure
      */
     @SuppressWarnings("UnusedReturnValue")
     public static boolean setRead(final @NonNull CatalogueDBAdapter db,

@@ -1,8 +1,6 @@
-package com.eleybourn.bookcatalogue.dialogs;
+package com.eleybourn.bookcatalogue.dialogs.picklist;
 
 import android.support.annotation.NonNull;
-
-import com.eleybourn.bookcatalogue.dialogs.CheckListItem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +19,7 @@ public class CheckListItemBase<T> implements CheckListItem<T> {
     private boolean selected;
     private T item;
 
-    public CheckListItemBase() {
+    protected CheckListItemBase() {
     }
 
     public CheckListItemBase(final @NonNull T item, final boolean selected) {

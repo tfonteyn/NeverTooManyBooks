@@ -42,9 +42,10 @@ import com.eleybourn.bookcatalogue.database.CoversDbHelper;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
-import com.eleybourn.bookcatalogue.dialogs.StandardDialogs.SimpleDialogFileItem;
-import com.eleybourn.bookcatalogue.dialogs.StandardDialogs.SimpleDialogItem;
-import com.eleybourn.bookcatalogue.dialogs.StandardDialogs.SimpleDialogOnClickListener;
+import com.eleybourn.bookcatalogue.dialogs.picklist.SelectOneDialog.SimpleDialogFileItem;
+import com.eleybourn.bookcatalogue.dialogs.picklist.SelectOneDialog.SimpleDialogItem;
+import com.eleybourn.bookcatalogue.dialogs.picklist.SelectOneDialog.SimpleDialogOnClickListener;
+import com.eleybourn.bookcatalogue.dialogs.picklist.SelectOneDialog;
 import com.eleybourn.bookcatalogue.filechooser.BackupChooserActivity;
 import com.eleybourn.bookcatalogue.searches.SearchAdminActivity;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsRegisterActivity;
@@ -89,7 +90,7 @@ public class AdminActivity extends BaseActivityWithTasks {
     @CallSuper
     public void onCreate(final @Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.setTitle(R.string.lbl_administration);
+        this.setTitle(R.string.menu_administration_long);
 
         Bundle extras = getIntent().getExtras();
         if (extras != null && extras.containsKey(BKEY_DO_AUTO)) {
@@ -404,7 +405,7 @@ public class AdminActivity extends BaseActivityWithTasks {
             } else {
                 // If more than one, ask user which file
                 // ENHANCE: Consider asking about importing cover images.
-                StandardDialogs.selectFileDialog(getLayoutInflater(),
+                SelectOneDialog.selectFileDialog(getLayoutInflater(),
                         getString(R.string.more_than_one_export_file_blah),
                         files, new SimpleDialogOnClickListener() {
                             @Override

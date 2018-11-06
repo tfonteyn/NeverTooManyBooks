@@ -182,7 +182,7 @@ public class TaskManager implements AutoCloseable {
     }
 
     /**
-     * Utility routine to onPartialDatePickerCancel all tasks.
+     * Utility routine to cancel all tasks.
      */
     public void cancelAllTasks() {
         synchronized (mTasks) {

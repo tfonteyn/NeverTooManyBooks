@@ -28,7 +28,7 @@ import android.support.annotation.Nullable;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.database.cursors.BooklistCursor;
-import com.eleybourn.bookcatalogue.database.cursors.BooklistRowView;
+import com.eleybourn.bookcatalogue.database.cursors.BooklistCursorRow;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 
@@ -87,7 +87,7 @@ public class BooklistPseudoCursor extends AbstractCursor implements BooklistSupp
     private final int[] mMruList;
     /** Cached RowView for this cursor */
     @Nullable
-    private BooklistRowView mRowView = null;
+    private BooklistCursorRow mRowView = null;
     /** The cursor to use for the last onMove() event */
     private BooklistCursor mActiveCursor = null;
     /** Current MRU ring buffer position */
@@ -120,17 +120,17 @@ public class BooklistPseudoCursor extends AbstractCursor implements BooklistSupp
     }
 
     /**
-     * Get a RowView for this cursor. Constructs one if necessary.
+     * Get a CursorRow for this cursor. Constructs one if necessary.
      */
     @NonNull
-    public BooklistRowView getRowView() {
+    public BooklistCursorRow getCursorRow() {
         if (mRowView == null)
-            mRowView = new BooklistRowView(this, mBuilder);
+            mRowView = new BooklistCursorRow(this, mBuilder);
         return mRowView;
     }
 
     /**
-     * Cursor AbstractCursor method
+     * {@link AbstractCursor} method
      */
     @Override
     @NonNull
@@ -258,7 +258,7 @@ public class BooklistPseudoCursor extends AbstractCursor implements BooklistSupp
     }
 
     /**
-     * Cursor AbstractCursor method
+     * {@link AbstractCursor} method
      */
     @Override
     public int getCount() {
@@ -282,57 +282,36 @@ public class BooklistPseudoCursor extends AbstractCursor implements BooklistSupp
         return mBuilder.getUniqueBookCount();
     }
 
-    /**
-     * Cursor AbstractCursor method
-     */
     @Override
     public double getDouble(final int column) {
         return mActiveCursor.getDouble(column);
     }
 
-    /**
-     * Cursor AbstractCursor method
-     */
     @Override
     public float getFloat(final int column) {
         return mActiveCursor.getFloat(column);
     }
 
-    /**
-     * Cursor AbstractCursor method
-     */
     @Override
     public int getInt(final int column) {
         return mActiveCursor.getInt(column);
     }
 
-    /**
-     * Cursor AbstractCursor method
-     */
     @Override
     public long getLong(final int column) {
         return mActiveCursor.getLong(column);
     }
 
-    /**
-     * Cursor AbstractCursor method
-     */
     @Override
     public short getShort(final int column) {
         return mActiveCursor.getShort(column);
     }
 
-    /**
-     * Cursor AbstractCursor method
-     */
     @Override
     public String getString(final int column) {
         return mActiveCursor.getString(column);
     }
 
-    /**
-     * Cursor AbstractCursor method
-     */
     @Override
     public boolean isNull(final int column) {
         return mActiveCursor.isNull(column);

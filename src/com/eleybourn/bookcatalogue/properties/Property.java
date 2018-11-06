@@ -72,7 +72,9 @@ public abstract class Property {
      * @param group          PropertyGroup in which this property belongs
      * @param nameResourceId Resource ID for name of this property
      */
-    public Property(final @NonNull String uniqueId, final @NonNull PropertyGroup group, final @StringRes int nameResourceId) {
+    public Property(final @NonNull String uniqueId,
+                    final @NonNull PropertyGroup group,
+                    final @StringRes int nameResourceId) {
         mUniqueId = uniqueId;
         mGroup = group;
         mNameResourceId = nameResourceId;
@@ -138,7 +140,7 @@ public abstract class Property {
     }
 
     /** Default validation method. Override to provide validation. */
-    public void validate() {
+    public void validate() throws ValidationException {
     }
 
     /** Children must implement set(Property) */

@@ -72,7 +72,7 @@ public class UpdateFromInternetThread extends ManagedTask {
     @NonNull
     private final SearchManager mSearchManager;
     /** Sites to search */
-    private int mSearchSites; // = SearchManager.SEARCH_ALL;
+    private final int mSearchSites; // = SearchManager.SEARCH_ALL;
 
     /** message to display when all is said and done */
     private String mFinalMessage;

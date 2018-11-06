@@ -52,11 +52,11 @@ import com.eleybourn.bookcatalogue.datamanager.DataEditor;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
-import com.eleybourn.bookcatalogue.dialogs.CheckListEditorDialogFragment;
-import com.eleybourn.bookcatalogue.dialogs.CheckListItem;
+import com.eleybourn.bookcatalogue.dialogs.picklist.CheckListEditorDialogFragment;
+import com.eleybourn.bookcatalogue.dialogs.picklist.CheckListItem;
 import com.eleybourn.bookcatalogue.dialogs.PartialDatePickerDialogFragment;
-import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.dialogs.TextFieldEditorDialogFragment;
+import com.eleybourn.bookcatalogue.dialogs.picklist.SelectOneDialog;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.searches.amazon.AmazonUtils;
 import com.eleybourn.bookcatalogue.utils.BookUtils;
@@ -95,7 +95,7 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
     protected CatalogueDBAdapter mDb;
 
     /** A link to the Activity, cached to avoid requireActivity() all over the place */
-    protected Activity mActivity;
+    private Activity mActivity;
 
     /*  the casting is a kludge... ever since pulling edit/show book apart. Needs redoing */
     protected boolean isDirty() {
@@ -203,7 +203,7 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
 
     /**
      * The 'drop-down' menu button next to an AutoCompleteTextView field.
-     * Allows us to show a {@link StandardDialogs#selectStringDialog} with a list of strings
+     * Allows us to show a {@link SelectOneDialog#selectObjectDialog} with a list of strings
      * to choose from.
      *
      * @param field         {@link Field} to edit
@@ -234,12 +234,13 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
         getView().findViewById(fieldButtonId).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                StandardDialogs.selectStringDialog(requireActivity().getLayoutInflater(),
+                SelectOneDialog.selectObjectDialog(requireActivity().getLayoutInflater(),
                         getString(dialogTitleId),
-                        list, field.getValue().toString(),
-                        new StandardDialogs.SimpleDialogOnClickListener() {
+                        list,
+                        field.getValue().toString(),
+                        new SelectOneDialog.SimpleDialogOnClickListener() {
                             @Override
-                            public void onClick(final @NonNull StandardDialogs.SimpleDialogItem item) {
+                            public void onClick(final @NonNull SelectOneDialog.SimpleDialogItem item) {
                                 field.setValue(item.toString());
                             }
                         });
@@ -325,6 +326,7 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
                 args.putInt(UniqueId.BKEY_DIALOG_TITLE, dialogTitleId);
                 args.putInt(UniqueId.BKEY_FIELD_ID, field.id);
                 args.putSerializable(CheckListEditorDialogFragment.BKEY_CHECK_LIST, list);
+                frag.setArguments(args);
                 frag.show(requireFragmentManager(), null);
             }
         });
@@ -342,11 +344,11 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
     public void onCreateOptionsMenu(final @NonNull Menu menu,
                                     final @NonNull MenuInflater inflater) {
 
-        menu.add(MENU_GROUP_BOOK, R.id.MENU_BOOK_DELETE, 0, R.string.menu_delete)
+        menu.add(MENU_GROUP_BOOK, R.id.MENU_BOOK_DELETE, 0, R.string.menu_delete_book)
                 .setVisible(false)
                 .setIcon(R.drawable.ic_delete);
 
-        menu.add(MENU_GROUP_BOOK, R.id.MENU_BOOK_DUPLICATE, 0, R.string.menu_duplicate)
+        menu.add(MENU_GROUP_BOOK, R.id.MENU_BOOK_DUPLICATE, 0, R.string.menu_duplicate_book)
                 .setVisible(false)
                 .setIcon(R.drawable.ic_content_copy);
 
@@ -656,7 +658,7 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
      */
     private void showHideField(final boolean hideIfEmpty,
                                final @IdRes int fieldId,
-                               @NonNull final @IdRes int... relatedFields) {
+                               final @NonNull @IdRes int... relatedFields) {
         //noinspection ConstantConditions
         final View view = getView().findViewById(fieldId);
         if (view != null) {

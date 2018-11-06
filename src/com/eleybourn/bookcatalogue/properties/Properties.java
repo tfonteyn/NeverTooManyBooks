@@ -74,18 +74,18 @@ public class Properties implements Iterable<Property> {
         sort();
         // Record last group used, so we know when to output a header.
         PropertyGroup lastGroup = null;
-        for (Property p : mList) {
+        for (Property property : mList) {
             // new header ?
-            PropertyGroup currGroup = p.getGroup();
+            PropertyGroup currGroup = property.getGroup();
             if (currGroup != lastGroup) {
                 // Add a new header
-                TextView v = (TextView) inflater.inflate(R.layout.property_group, null);
-                v.setText(currGroup.getNameId());
-                parent.addView(v);
+                TextView header = (TextView) inflater.inflate(R.layout.row_property_group_heading, null);
+                header.setText(currGroup.getNameId());
+                parent.addView(header);
             }
 
             // add the property editor
-            View pv = p.getView(inflater);
+            View pv = property.getView(inflater);
             parent.addView(pv);
             lastGroup = currGroup;
         }
@@ -97,7 +97,11 @@ public class Properties implements Iterable<Property> {
         return mList.iterator();
     }
 
-    /** Validate all properties. Errors will be thrown. */
+    /**
+     * Validate all properties.
+     *
+     * @throws ValidationException on error
+     */
     public void validate() throws ValidationException {
         for (Property p : mList) {
             p.validate();

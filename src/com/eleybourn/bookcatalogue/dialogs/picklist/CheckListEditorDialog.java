@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.eleybourn.bookcatalogue.dialogs;
+package com.eleybourn.bookcatalogue.dialogs.picklist;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -25,7 +25,6 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 
@@ -44,6 +43,7 @@ import java.util.List;
  * @param <T> type to use for {@link CheckListItem}
  */
 public class CheckListEditorDialog<T> extends AlertDialog {
+
     private final CompoundButton.OnCheckedChangeListener onCheckedChangeListener = new CompoundButton.OnCheckedChangeListener() {
         @Override
         public void onCheckedChanged(final CompoundButton buttonView, final boolean isChecked) {
@@ -53,12 +53,11 @@ public class CheckListEditorDialog<T> extends AlertDialog {
         }
     };
     /** body of the dialog */
-    private ViewGroup mContent;
+    private final ViewGroup mContent;
     /** the list to display in the content view */
     private ArrayList<CheckListItem<T>> mList;
-    /** Listener for dialog exit/save/onPartialDatePickerCancel */
+    /** Listener for dialog exit/save/cancel */
     private OnCheckListEditorResultsListener mListener;
-
 
     /**
      * Constructor
@@ -103,10 +102,6 @@ public class CheckListEditorDialog<T> extends AlertDialog {
                 mListener.onCheckListEditorCancel(CheckListEditorDialog.this);
             }
         });
-
-        // Make sure the buttons moves if the keyboard appears
-        //noinspection ConstantConditions
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
     }
 
     @NonNull

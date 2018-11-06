@@ -27,8 +27,8 @@ import android.support.annotation.NonNull;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
-import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
-import com.eleybourn.bookcatalogue.database.cursors.BooksCursor;
+import com.eleybourn.bookcatalogue.database.cursors.BookCursorRow;
+import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.searches.goodreads.BookEvents.GrNoIsbnEvent;
 import com.eleybourn.bookcatalogue.searches.goodreads.BookEvents.GrNoMatchEvent;
@@ -112,8 +112,8 @@ public class SendAllBooksTask extends GenericTask {
         CatalogueDBAdapter db = new CatalogueDBAdapter(ctx.getApplicationContext());
         db.open();
 
-        try (BooksCursor books = db.fetchBooksForGoodreadsCursor(mLastId, mUpdatesOnly)) {
-            final BookRowView bookRowView = books.getRowView();
+        try (BookCursor books = db.fetchBooksForGoodreadsCursor(mLastId, mUpdatesOnly)) {
+            final BookCursorRow bookCursorRow = books.getCursorRow();
             mTotalBooks = books.getCount() + mCount;
 
             while (books.moveToNext()) {
@@ -122,7 +122,7 @@ public class SendAllBooksTask extends GenericTask {
                 ExportDisposition disposition;
                 Exception exportException = null;
                 try {
-                    disposition = grManager.sendOneBook(db, bookRowView);
+                    disposition = grManager.sendOneBook(db, bookCursorRow);
                 } catch (Exception e) {
                     disposition = ExportDisposition.error;
                     exportException = e;
@@ -140,11 +140,11 @@ public class SendAllBooksTask extends GenericTask {
                         mSent++;
                         break;
                     case noIsbn:
-                        storeEvent(new GrNoIsbnEvent(bookRowView.getId()));
+                        storeEvent(new GrNoIsbnEvent(bookCursorRow.getId()));
                         mNoIsbn++;
                         break;
                     case notFound:
-                        storeEvent(new GrNoMatchEvent(bookRowView.getId()));
+                        storeEvent(new GrNoMatchEvent(bookCursorRow.getId()));
                         mNotFound++;
                         break;
                     case networkError:

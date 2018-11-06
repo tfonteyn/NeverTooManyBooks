@@ -147,28 +147,28 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
                 R.string.table_of_content, true,
                 FieldUsage.Usage.ADD_EXTRA);
         addIfVisible(UniqueId.KEY_BOOK_PUBLISHER, null,
-                R.string.publisher, false,
+                R.string.lbl_publisher, false,
                 FieldUsage.Usage.COPY_IF_BLANK);
         addIfVisible(UniqueId.KEY_BOOK_DATE_PUBLISHED, null,
-                R.string.date_published, false,
+                R.string.lbl_date_published, false,
                 FieldUsage.Usage.COPY_IF_BLANK);
         addIfVisible(UniqueId.KEY_FIRST_PUBLICATION, null,
-                R.string.first_publication, false,
+                R.string.lbl_first_publication, false,
                 FieldUsage.Usage.COPY_IF_BLANK);
         addIfVisible(UniqueId.KEY_DESCRIPTION, null,
-                R.string.description, false,
+                R.string.lbl_description, false,
                 FieldUsage.Usage.COPY_IF_BLANK);
         addIfVisible(UniqueId.KEY_BOOK_PAGES, null,
-                R.string.pages, false,
+                R.string.lbl_pages, false,
                 FieldUsage.Usage.COPY_IF_BLANK);
         addIfVisible(UniqueId.KEY_BOOK_PRICE_LISTED, null,
-                R.string.price_listed, false,
+                R.string.lbl_price_listed, false,
                 FieldUsage.Usage.COPY_IF_BLANK);
         addIfVisible(UniqueId.KEY_BOOK_FORMAT, null,
-                R.string.format, false,
+                R.string.lbl_format, false,
                 FieldUsage.Usage.COPY_IF_BLANK);
         addIfVisible(UniqueId.KEY_BOOK_GENRE, null,
-                R.string.genre, false,
+                R.string.lbl_genre, false,
                 FieldUsage.Usage.COPY_IF_BLANK);
         addIfVisible(UniqueId.KEY_BOOK_LANGUAGE, null,
                 R.string.lbl_language, false,

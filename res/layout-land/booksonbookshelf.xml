@@ -40,7 +40,7 @@
                 android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true"
                 android:paddingBottom="2dp"
-                tools:text="@string/bookshelf"/>
+                tools:text="@string/lbl_bookshelf"/>
 
             <TextView
                 android:id="@+id/search_text"
@@ -93,7 +93,7 @@
 
         <View
             android:id="@+id/header_divider"
-            style="@style/listDividerHorizontal"
+            style="@style/divider_horizontalList"
             android:layout_below="@id/header"
             android:paddingBottom="2dp" />
 

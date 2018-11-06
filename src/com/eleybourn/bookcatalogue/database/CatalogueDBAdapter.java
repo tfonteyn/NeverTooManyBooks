@@ -42,8 +42,8 @@ import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedDb;
 import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedStatement;
 import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer;
 import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer.SyncLock;
-import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
-import com.eleybourn.bookcatalogue.database.cursors.BooksCursor;
+import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
+import com.eleybourn.bookcatalogue.database.cursors.BookCursorRow;
 import com.eleybourn.bookcatalogue.database.cursors.TrackedCursor;
 import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
 import com.eleybourn.bookcatalogue.database.definitions.TableInfo;
@@ -200,7 +200,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
                 final @NonNull SQLiteCursorDriver masterQuery,
                 final @NonNull String editTable,
                 final @NonNull SQLiteQuery query) {
-            return new BooksCursor(masterQuery, editTable, query, mSynchronizer);
+            return new BookCursor(masterQuery, editTable, query, mSynchronizer);
         }
     };
 
@@ -272,12 +272,18 @@ public class CatalogueDBAdapter implements AutoCloseable {
             " Case When " + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES) + "='' Then " + TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME) +
                     " Else " + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES) + " || ' ' || " + TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME) + " End" +
                     " AS " + DOM_AUTHOR_FORMATTED_GIVEN_FIRST;
-    /** set of 4 'family', 'given', 'family, given', 'given family' */
+
+    /**
+     * set of 4:
+     * 'family',
+     * 'given',
+     * 'family, given',
+     * 'given family'
+     */
     private static final String SQL_FIELDS_FOR_AUTHOR =
             TBL_AUTHORS.dotAs(DOM_AUTHOR_FAMILY_NAME) + "," +
                     TBL_AUTHORS.dotAs(DOM_AUTHOR_GIVEN_NAMES) + "," +
-                    SQL_FIELDS_AUTHOR_FORMATTED + "," +
-                    SQL_FIELDS_AUTHOR_FORMATTED_GIVEN_FIRST;
+                    SQL_FIELDS_AUTHOR_FORMATTED;
 
     private static DatabaseHelper mDbHelper;
     private static SynchronizedDb mSyncedDb;
@@ -945,7 +951,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
     /**
      * @return the number of rows affected, should be 1
      *
-     * @throws DBExceptions.UpdateException() on onPartialDatePickerCancel
+     * @throws DBExceptions.UpdateException() on failure
      */
     private int updateAuthor(final @NonNull Author author) {
         ContentValues cv = new ContentValues();
@@ -1061,8 +1067,8 @@ public class CatalogueDBAdapter implements AutoCloseable {
     }
 
     /**
-     * @throws DBExceptions.UpdateException   on onPartialDatePickerCancel to insertOrUpdateAuthor(to) or on the global replace itself
-     * @throws DBExceptions.NotFoundException on onPartialDatePickerCancel to find old Author
+     * @throws DBExceptions.UpdateException   on failure to insertOrUpdateAuthor(to) or on the global replace itself
+     * @throws DBExceptions.NotFoundException on failure to find old Author
      */
     public void globalReplaceAuthor(final @NonNull Author from, final @NonNull Author to) {
         // Create or update the new author
@@ -1185,7 +1191,9 @@ public class CatalogueDBAdapter implements AutoCloseable {
                     TBL_AUTHORS.dotAs(DOM_AUTHOR_FAMILY_NAME) + "," +
                     TBL_AUTHORS.dotAs(DOM_AUTHOR_GIVEN_NAMES) + "," +
                     SQL_FIELDS_AUTHOR_FORMATTED + "," +
+
                     TBL_BOOK_AUTHOR.dot(DOM_AUTHOR_POSITION) +
+
                     " FROM " + TBL_BOOK_AUTHOR.ref() + TBL_BOOK_AUTHOR.join(TBL_AUTHORS) +
                     " WHERE " + TBL_BOOK_AUTHOR.dot(DOM_BOOK_ID) + "=?" +
                     " ORDER BY " +
@@ -1588,7 +1596,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
      *
      * @return the number of rows affected, should be 1 for onTextFieldEditorSave.
      *
-     * @throws DBExceptions.UpdateException on onPartialDatePickerCancel
+     * @throws DBExceptions.UpdateException on failure
      */
     public int updateBook(final long bookId, final @NonNull Book book, final int flags) {
 
@@ -1782,7 +1790,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
         // set all related books based on series as dirty
         if (mSetBooksDirtyByAuthor2Stmt == null) {
             mSetBooksDirtyByAuthor2Stmt = mStatements.add("mSetBooksDirtyByAuthor2Stmt",
-                    "UPDATE " + TBL_BOOKS +
+                    "UPDATE " + TBL_BOOKS.ref() +
                             " SET " + DOM_LAST_UPDATE_DATE + " = current_timestamp" +
                             " WHERE" +
                             " Exists(SELECT * FROM " + TBL_BOOK_AUTHOR.ref() +
@@ -1799,7 +1807,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
     private void setBooksDirtyBySeries(final long seriesId) {
         if (mSetBooksDirtyBySeriesStmt == null) {
             mSetBooksDirtyBySeriesStmt = mStatements.add("mSetBooksDirtyBySeriesStmt",
-                    "UPDATE " + TBL_BOOKS +
+                    "UPDATE " + TBL_BOOKS.ref() +
                             " SET " + DOM_LAST_UPDATE_DATE + " = current_timestamp" +
                             " WHERE" +
                             " Exists(SELECT * FROM " + TBL_BOOK_SERIES.ref() + " WHERE " + TBL_BOOK_SERIES.dot(DOM_SERIES_ID) + "=?" +
@@ -1815,7 +1823,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
     private void setBooksDirtyByBookshelf(final long bookshelfId) {
         if (mSetBooksDirtyByBookshelfStmt == null) {
             mSetBooksDirtyByBookshelfStmt = mStatements.add("mSetBooksDirtyByBookshelfStmt",
-                    "UPDATE " + TBL_BOOKS +
+                    "UPDATE " + TBL_BOOKS.ref() +
                             " SET " + DOM_LAST_UPDATE_DATE + " = current_timestamp" +
                             " WHERE" +
                             " Exists(SELECT * FROM " + TBL_BOOK_BOOKSHELF.ref() + " WHERE " + TBL_BOOK_BOOKSHELF.dot(DOM_BOOKSHELF_ID) + "=?" +
@@ -2351,6 +2359,8 @@ public class CatalogueDBAdapter implements AutoCloseable {
         // there is no 'real' FROM table set. The 'from' is a combo of three sub-selects
         String fullSql = "SELECT b.*, " +
                 SQL_FIELDS_FOR_AUTHOR + "," +
+                SQL_FIELDS_AUTHOR_FORMATTED_GIVEN_FIRST + "," +
+
                 "a." + DOM_AUTHOR_ID + "," +
                 "Coalesce(s." + DOM_SERIES_ID + ", 0) AS " + DOM_SERIES_ID + "," +
                 "Coalesce(s." + DOM_SERIES_NAME + ", '') AS " + DOM_SERIES_NAME + "," +
@@ -2374,8 +2384,10 @@ public class CatalogueDBAdapter implements AutoCloseable {
                 DOM_AUTHOR_ID + "," +
                 DOM_AUTHOR_FAMILY_NAME + "," +
                 DOM_AUTHOR_GIVEN_NAMES + "," +
-                TBL_BOOK_AUTHOR.dotAs(DOM_BOOK_ID) + "," +
-                SQL_FIELDS_AUTHOR_FORMATTED +
+                SQL_FIELDS_AUTHOR_FORMATTED + "," +
+
+                TBL_BOOK_AUTHOR.dotAs(DOM_BOOK_ID) +
+
                 " FROM " + TBL_BOOK_AUTHOR.ref() + TBL_BOOK_AUTHOR.join(TBL_AUTHORS) +
 
                 ") a  ON a." + DOM_BOOK_ID + " = b." + DOM_ID + " AND a." + DOM_AUTHOR_ID + " = b." + DOM_AUTHOR_ID +
@@ -2405,7 +2417,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
     }
 
     /**
-     * Return a {@link BooksCursor} for the given {@link Book} id.
+     * Return a {@link BookCursor} for the given {@link Book} id.
      * The caller can then retrieve columns as needed.
      *
      * @param bookId to retrieve
@@ -2413,7 +2425,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
      * @return @return {@link Cursor} containing all records, if any
      */
     @NonNull
-    public BooksCursor fetchBookById(final long bookId) throws DBExceptions.NotFoundException {
+    public BookCursor fetchBookById(final long bookId) throws DBExceptions.NotFoundException {
         return fetchBooksWhere(TBL_BOOKS.dot(DOM_ID) + "=?", new String[]{Long.toString(bookId)}, "");
     }
 
@@ -2422,25 +2434,25 @@ public class CatalogueDBAdapter implements AutoCloseable {
      * If a method call is made to retrieve a column that does not exists, an exception
      * will be thrown.
      *
-     * @return {@link BooksCursor} containing all records, if any
+     * @return {@link BookCursor} containing all records, if any
      */
     @NonNull
-    private BooksCursor fetchBooks(final @NonNull String sql, final @NonNull String[] selectionArgs) {
-        return (BooksCursor) mSyncedDb.rawQueryWithFactory(mBooksCursorFactory, sql, selectionArgs, "");
+    private BookCursor fetchBooks(final @NonNull String sql, final @NonNull String[] selectionArgs) {
+        return (BookCursor) mSyncedDb.rawQueryWithFactory(mBooksCursorFactory, sql, selectionArgs, "");
     }
 
     /**
-     * Return a {@link BooksCursor} for the given whereClause
+     * Return a {@link BookCursor} for the given whereClause
      *
      * @param whereClause to add to books search criteria (without the keyword 'WHERE')
      * @param order       What order to return the books in (without the keyword 'ORDER BY')
      *
-     * @return {@link BooksCursor} containing all records, if any
+     * @return {@link BookCursor} containing all records, if any
      */
     @NonNull
-    public BooksCursor fetchBooksWhere(final @NonNull String whereClause,
-                                       final @NonNull String[] selectionArgs,
-                                       final @NonNull String order) {
+    public BookCursor fetchBooksWhere(final @NonNull String whereClause,
+                                      final @NonNull String[] selectionArgs,
+                                      final @NonNull String order) {
         String sql = getAllBooksSql(whereClause);
         if (!order.isEmpty()) {
             sql += " ORDER BY " + order;
@@ -2449,15 +2461,15 @@ public class CatalogueDBAdapter implements AutoCloseable {
     }
 
     /**
-     * Return a {@link BooksCursor} for the given ISBN.
+     * Return a {@link BookCursor} for the given ISBN.
      * Note: CAN RETURN MORE THAN ONE BOOK
      *
      * @param isbnList list of ISBN(s) to retrieve
      *
-     * @return {@link BooksCursor} containing all records, if any
+     * @return {@link BookCursor} containing all records, if any
      */
     @NonNull
-    public BooksCursor fetchBooksByIsbnList(final @NonNull List<String> isbnList) {
+    public BookCursor fetchBooksByIsbnList(final @NonNull List<String> isbnList) {
         if (isbnList.size() == 0) {
             throw new IllegalArgumentException("isbnList was empty");
         }
@@ -2484,10 +2496,10 @@ public class CatalogueDBAdapter implements AutoCloseable {
     /**
      * A complete export of all tables (flattened) in the database
      *
-     * @return BooksCursor over all books, authors, etc
+     * @return BookCursor over all books, authors, etc
      */
     @NonNull
-    public BooksCursor exportBooks(final @Nullable Date sinceDate) {
+    public BookCursor exportBooks(final @Nullable Date sinceDate) {
         String whereClause;
         if (sinceDate == null) {
             whereClause = "";
@@ -2826,7 +2838,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
                     " SELECT \"BK\" || " + TBL_BOOKS.dotAs(DOM_ID) + "," +
                     TBL_BOOKS.dot(DOM_BOOK_ISBN) + " AS " + SearchManager.SUGGEST_COLUMN_TEXT_1 + "," +
                     TBL_BOOKS.dot(DOM_BOOK_ISBN) + " AS " + SearchManager.SUGGEST_COLUMN_INTENT_DATA +
-                    " FROM " + TBL_BOOKS + " WHERE " + TBL_BOOKS.dot(DOM_BOOK_ISBN) + " LIKE ?" +
+                    " FROM " + TBL_BOOKS.ref() + " WHERE " + TBL_BOOKS.dot(DOM_BOOK_ISBN) + " LIKE ?" +
                     " ) AS zzz " +
                     " ORDER BY Upper(" + SearchManager.SUGGEST_COLUMN_TEXT_1 + ") " + COLLATION;
             mSql.put("fetchSearchSuggestions", sql);
@@ -2842,7 +2854,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
      */
     @NonNull
     public ArrayList<String> getCurrencyCodes(final @NonNull String type) {
-        String column = null;
+        String column;
         if (UniqueId.KEY_BOOK_PRICE_LISTED_CURRENCY.equals(type)) {
             column = DOM_BOOK_PRICE_LISTED_CURRENCY.name;
 //        } else if (UniqueId.KEY_BOOK_PRICE_PAID_CURRENCY.equals(type)) {
@@ -3187,8 +3199,8 @@ public class CatalogueDBAdapter implements AutoCloseable {
     }
 
     /**
-     * @throws DBExceptions.UpdateException   on onPartialDatePickerCancel to insertOrUpdateSeries(to) or on the global replace itself
-     * @throws DBExceptions.NotFoundException on onPartialDatePickerCancel to find old series
+     * @throws DBExceptions.UpdateException   on failure to insertOrUpdateSeries(to) or on the global replace itself
+     * @throws DBExceptions.NotFoundException on failure to find old series
      */
     public void globalReplaceSeries(final @NonNull Series from, final @NonNull Series to)
             throws DBExceptions.UpdateException, DBExceptions.NotFoundException {
@@ -3354,15 +3366,15 @@ public class CatalogueDBAdapter implements AutoCloseable {
     }
 
     /**
-     * Return a {@link BooksCursor} for the given goodreads book Id.
+     * Return a {@link BookCursor} for the given goodreads book Id.
      * Note: MAY RETURN MORE THAN ONE BOOK
      *
      * @param grBookId to retrieve
      *
-     * @return {@link BooksCursor} containing all records, if any
+     * @return {@link BookCursor} containing all records, if any
      */
     @NonNull
-    public BooksCursor fetchBooksByGoodreadsBookId(long grBookId) {
+    public BookCursor fetchBooksByGoodreadsBookId(long grBookId) {
         return fetchBooksWhere(TBL_BOOKS.dot(DOM_BOOK_GOODREADS_BOOK_ID) + "=?", new String[]{Long.toString(grBookId)}, "");
     }
 
@@ -3372,10 +3384,10 @@ public class CatalogueDBAdapter implements AutoCloseable {
      * @param startId     the 'first' (e.g. 'oldest') bookId to since the last sync with goodreads
      * @param updatesOnly true, if we only want the updated records since the last sync with goodreads
      *
-     * @return {@link BooksCursor} containing all records, if any
+     * @return {@link BookCursor} containing all records, if any
      */
     @NonNull
-    public BooksCursor fetchBooksForGoodreadsCursor(final long startId, final boolean updatesOnly) {
+    public BookCursor fetchBooksForGoodreadsCursor(final long startId, final boolean updatesOnly) {
         String sql = "SELECT " +
                 DOM_BOOK_ISBN + "," +
                 DOM_ID + "," +
@@ -3398,10 +3410,10 @@ public class CatalogueDBAdapter implements AutoCloseable {
      *
      * @param bookId to retrieve
      *
-     * @return {@link BooksCursor} containing all records, if any
+     * @return {@link BookCursor} containing all records, if any
      */
     @NonNull
-    public BooksCursor fetchBookForGoodreadsCursor(final long bookId) {
+    public BookCursor fetchBookForGoodreadsCursor(final long bookId) {
         String sql = mSql.get("fetchBookForGoodreadsCursor");
         if (sql == null) {
             sql = "SELECT " + DOM_ID + "," +
@@ -3547,13 +3559,13 @@ public class CatalogueDBAdapter implements AutoCloseable {
      * @param books Cursor of books to update
      * @param stmt  Statement to execute (insert or update)
      */
-    private void ftsSendBooks(final @NonNull BooksCursor books, final @NonNull SynchronizedStatement stmt) {
+    private void ftsSendBooks(final @NonNull BookCursor books, final @NonNull SynchronizedStatement stmt) {
 
         if (!mSyncedDb.inTransaction()) {
             throw new DBExceptions.TransactionException();
         }
 
-        final BookRowView bookRowView = books.getRowView();
+        final BookCursorRow bookCursorRow = books.getCursorRow();
 
         // Build the SQL to get author details for a book.
 
@@ -3611,7 +3623,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
             seriesText.setLength(0);
             titleText.setLength(0);
             // Get list of authors
-            try (Cursor c = mSyncedDb.rawQuery(authorBaseSql, new String[]{Long.toString(bookRowView.getId())})) {
+            try (Cursor c = mSyncedDb.rawQuery(authorBaseSql, new String[]{Long.toString(bookCursorRow.getId())})) {
                 // Get column indexes, if not already got
                 if (colGivenNames < 0) {
                     colGivenNames = c.getColumnIndex(DOM_AUTHOR_GIVEN_NAMES.name);
@@ -3629,7 +3641,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
             }
 
             // Get list of series
-            try (Cursor c = mSyncedDb.rawQuery(seriesBaseSql, new String[]{Long.toString(bookRowView.getId())})) {
+            try (Cursor c = mSyncedDb.rawQuery(seriesBaseSql, new String[]{Long.toString(bookCursorRow.getId())})) {
                 // Get column indexes, if not already got
                 if (colSeriesInfo < 0) {
                     colSeriesInfo = c.getColumnIndex("seriesInfo");
@@ -3642,7 +3654,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
             }
 
             // Get list of anthology data (author and title)
-            try (Cursor c = mSyncedDb.rawQuery(anthologyBaseSql, new String[]{Long.toString(bookRowView.getId())})) {
+            try (Cursor c = mSyncedDb.rawQuery(anthologyBaseSql, new String[]{Long.toString(bookCursorRow.getId())})) {
                 // Get column indexes, if not already got
                 if (colTOCEntryAuthorInfo < 0) {
                     colTOCEntryAuthorInfo = c.getColumnIndex(aliasTOCEntryAuthorInfo);
@@ -3662,15 +3674,15 @@ public class CatalogueDBAdapter implements AutoCloseable {
             // Set the parameters and call
             bindStringOrNull(stmt, 1, authorText.toString());
             // Titles should only contain title, not SERIES
-            bindStringOrNull(stmt, 2, bookRowView.getTitle() + "; " + titleText);
+            bindStringOrNull(stmt, 2, bookCursorRow.getTitle() + "; " + titleText);
             // We could add a 'series' column, or just add it as part of the description
-            bindStringOrNull(stmt, 3, bookRowView.getDescription() + seriesText);
-            bindStringOrNull(stmt, 4, bookRowView.getNotes());
-            bindStringOrNull(stmt, 5, bookRowView.getPublisherName());
-            bindStringOrNull(stmt, 6, bookRowView.getGenre());
-            bindStringOrNull(stmt, 7, bookRowView.getLocation());
-            bindStringOrNull(stmt, 8, bookRowView.getIsbn());
-            stmt.bindLong(9, bookRowView.getId());
+            bindStringOrNull(stmt, 3, bookCursorRow.getDescription() + seriesText);
+            bindStringOrNull(stmt, 4, bookCursorRow.getNotes());
+            bindStringOrNull(stmt, 5, bookCursorRow.getPublisherName());
+            bindStringOrNull(stmt, 6, bookCursorRow.getGenre());
+            bindStringOrNull(stmt, 7, bookCursorRow.getLocation());
+            bindStringOrNull(stmt, 8, bookCursorRow.getIsbn());
+            stmt.bindLong(9, bookCursorRow.getId());
 
             stmt.execute();
         }
@@ -3722,7 +3734,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
                                 + " VALUES (?,?,?,?,?,?,?,?,?)");
             }
 
-            try (BooksCursor books = fetchBooks("SELECT * FROM " + TBL_BOOKS + " WHERE " + DOM_ID + "=? ", new String[]{Long.toString(bookId)})) {
+            try (BookCursor books = fetchBooks("SELECT * FROM " + TBL_BOOKS + " WHERE " + DOM_ID + "=? ", new String[]{Long.toString(bookId)})) {
                 ftsSendBooks(books, mInsertFtsStmt);
             } finally {
                 if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
@@ -3762,7 +3774,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
                                 DOM_BOOK_LOCATION, DOM_BOOK_ISBN) + " WHERE " + DOM_DOCID + "=?");
             }
 
-            try (BooksCursor books = fetchBooks("SELECT * FROM " + TBL_BOOKS + " WHERE " + DOM_ID + "=?", new String[]{Long.toString(bookId)})) {
+            try (BookCursor books = fetchBooks("SELECT * FROM " + TBL_BOOKS + " WHERE " + DOM_ID + "=?", new String[]{Long.toString(bookId)})) {
                 ftsSendBooks(books, mUpdateFtsStmt);
             } finally {
                 if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
@@ -3840,7 +3852,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
         ftsTemp.drop(mSyncedDb);
 
         try (SynchronizedStatement insert = mSyncedDb.compileStatement(sql);
-             BooksCursor books = fetchBooks("SELECT * FROM " + TBL_BOOKS, new String[]{})) {
+             BookCursor books = fetchBooks("SELECT * FROM " + TBL_BOOKS, new String[]{})) {
             ftsSendBooks(books, insert);
             // Drop old table, ready for rename
             TBL_BOOKS_FTS.drop(mSyncedDb);

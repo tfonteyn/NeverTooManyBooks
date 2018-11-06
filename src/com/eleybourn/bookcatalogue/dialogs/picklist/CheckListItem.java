@@ -1,8 +1,4 @@
-package com.eleybourn.bookcatalogue.dialogs;
-
-import android.support.annotation.NonNull;
-
-import java.util.List;
+package com.eleybourn.bookcatalogue.dialogs.picklist;
 
 public interface CheckListItem<T> {
     /** the item we're encapsulating */

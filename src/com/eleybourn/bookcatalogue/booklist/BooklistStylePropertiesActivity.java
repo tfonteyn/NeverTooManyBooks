@@ -102,6 +102,7 @@ public class BooklistStylePropertiesActivity extends BaseActivity {
                 finish();
             }
         });
+
         findViewById(R.id.cancel).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -124,11 +125,11 @@ public class BooklistStylePropertiesActivity extends BaseActivity {
         // Make the title
         String title;
         if (mStyle.getDisplayName().isEmpty()) {
-            title = getString(R.string.new_style);
+            title = getString(R.string.dialog_title_new_style);
         } else if (mStyle.id == 0) {
-            title = getString(R.string.clone_style_colon_name, mStyle.getDisplayName());
+            title = getString(R.string.dialog_title_clone_style_colon_name, mStyle.getDisplayName());
         } else {
-            title = getString(R.string.edit_style_colon_name, mStyle.getDisplayName());
+            title = getString(R.string.dialog_title_edit_style_colon_name, mStyle.getDisplayName());
         }
 
         setTitle(title);
@@ -165,7 +166,7 @@ public class BooklistStylePropertiesActivity extends BaseActivity {
     @CallSuper
     protected void onActivityResult(final int requestCode, final int resultCode, final @Nullable Intent data) {
         if (BuildConfig.DEBUG) {
-            Logger.info(this,"onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
+            Logger.info(this, "onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
         }
         switch (requestCode) {
             case BooklistStyleGroupsActivity.REQUEST_CODE: /* 06ed8d0e-7120-47aa-b47e-c0cd46361dcb */
@@ -253,24 +254,34 @@ public class BooklistStylePropertiesActivity extends BaseActivity {
         @NonNull
         @Override
         public View getView(final @NonNull LayoutInflater inflater) {
-            View v = inflater.inflate(R.layout.property_value_string_button, null);
-            ViewTagger.setTag(v, R.id.TAG_PROPERTY, this); // value: GroupsProperty
+            final ViewGroup root = (ViewGroup) inflater.inflate(R.layout.row_property_string_with_edit_button, null);
+            // create Holder -> not needed here
 
-            final TextView name = v.findViewById(R.id.name);
+            // tags used
+            ViewTagger.setTag(root, R.id.TAG_PROPERTY, this); // value: GroupsProperty
+
+            // Set the initial values
+            final TextView name = root.findViewById(R.id.name);
             name.setText(getName());
 
-            final TextView value = v.findViewById(R.id.value);
+            final TextView value = root.findViewById(R.id.value);
             value.setHint(getName());
             value.setText(get());
 
-            final View btn = v.findViewById(R.id.edit_button);
-            btn.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    startGroupsActivity();
-                }
-            });
-            return v;
+            // Setup click handlers view row and edit button
+            root.setOnClickListener(new OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            startGroupsActivity();
+                        }
+                    });
+            root.findViewById(R.id.btn_edit).setOnClickListener(new OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            startGroupsActivity();
+                        }
+                    });
+            return root;
         }
     }
 }

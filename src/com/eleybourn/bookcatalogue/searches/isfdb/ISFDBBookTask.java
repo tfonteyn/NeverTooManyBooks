@@ -14,7 +14,7 @@ class ISFDBBookTask implements SimpleTaskQueue.SimpleTask {
     @NonNull
     private final String bookUrl;
     private final Bundle mBookData = new Bundle();
-    private boolean fetchThumbnail;
+    private final boolean fetchThumbnail;
 
     ISFDBBookTask(final @NonNull String bookUrl,
                   final boolean fetchThumbnail,

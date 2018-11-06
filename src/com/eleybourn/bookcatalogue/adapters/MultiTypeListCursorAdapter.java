@@ -49,7 +49,7 @@ public class MultiTypeListCursorAdapter extends CursorAdapter implements FastScr
     @NonNull
     private final LayoutInflater mInflater;
     @NonNull
-    private final MultiTypeListHandler mHandler;
+    private final MultiTypeListHandler mListHandler;
 
     //FIXME: https://www.androiddesignpatterns.com/2012/07/loaders-and-loadermanager-background.html
 
@@ -59,7 +59,7 @@ public class MultiTypeListCursorAdapter extends CursorAdapter implements FastScr
         super(activity, cursor);
         //noinspection ConstantConditions
         mInflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        mHandler = handler;
+        mListHandler = handler;
     }
 
     /**
@@ -81,7 +81,7 @@ public class MultiTypeListCursorAdapter extends CursorAdapter implements FastScr
 
     @Override
     public int getItemViewType(final int position) {
-        final Cursor cursor = this.getCursor();
+        final Cursor listCursor = this.getCursor();
         //
         // At least on Android 2.3.4 we see attempts to get item types for cached items beyond the
         // end of empty cursors. This implies a cleanup ordering issue, but has not been confirmed.
@@ -89,28 +89,28 @@ public class MultiTypeListCursorAdapter extends CursorAdapter implements FastScr
         //
         // NOTE: It DOES NOT fix the error; just gathers more debug info
         //
-        if (cursor.isClosed()) {
-            throw new IllegalStateException("Attempt to get type of item on closed cursor (" + cursor + ")");
-        } else if (position >= cursor.getCount()) {
-            throw new IllegalStateException("Attempt to get type of item beyond end of cursor (" + cursor + ")");
+        if (listCursor.isClosed()) {
+            throw new IllegalStateException("Attempt to get type of item on closed cursor (" + listCursor + ")");
+        } else if (position >= listCursor.getCount()) {
+            throw new IllegalStateException("Attempt to get type of item beyond end of cursor (" + listCursor + ")");
         } else {
-            cursor.moveToPosition(position);
-            return mHandler.getItemViewType(cursor);
+            listCursor.moveToPosition(position);
+            return mListHandler.getItemViewType(listCursor);
         }
     }
 
     @Override
     public int getViewTypeCount() {
-        return mHandler.getViewTypeCount();
+        return mListHandler.getViewTypeCount();
     }
 
     @NonNull
     @Override
     public View getView(final int position, final View convertView, final @NonNull ViewGroup parent) {
-        Cursor cursor = this.getCursor();
-        cursor.moveToPosition(position);
+        Cursor listCursor = this.getCursor();
+        listCursor.moveToPosition(position);
 
-        return mHandler.getView(cursor, mInflater, convertView, parent);
+        return mListHandler.getView(listCursor, mInflater, convertView, parent);
     }
 
     /**
@@ -122,15 +122,15 @@ public class MultiTypeListCursorAdapter extends CursorAdapter implements FastScr
     @Nullable
     public String[] getSectionTextForPosition(final int position) {
         Tracker.enterFunction(this, "getSectionTextForPosition", position);
-        final Cursor cursor = this.getCursor();
-        if (position < 0 || position >= cursor.getCount()) {
+        final Cursor listCursor = this.getCursor();
+        if (position < 0 || position >= listCursor.getCount()) {
             return null;
         }
 
-        final int savedPos = cursor.getPosition();
-        cursor.moveToPosition(position);
-        final String[] section = mHandler.getSectionText(cursor);
-        cursor.moveToPosition(savedPos);
+        final int savedPos = listCursor.getPosition();
+        listCursor.moveToPosition(position);
+        final String[] section = mListHandler.getSectionText(listCursor);
+        listCursor.moveToPosition(savedPos);
 
         if (DEBUG_SWITCHES.BOOKLIST_BUILDER && BuildConfig.DEBUG) {
             Logger.info(this, " MultiTypeListCursorAdapter.getSectionTextForPosition");

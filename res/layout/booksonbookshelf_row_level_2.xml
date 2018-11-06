@@ -46,7 +46,7 @@
             tools:ignore="ContentDescription" />
 
         <View
-            style="@style/listDividerHorizontal" />
+            style="@style/divider_horizontalList" />
     </LinearLayout>
 
 </RelativeLayout>

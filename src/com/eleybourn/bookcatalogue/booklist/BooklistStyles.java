@@ -167,7 +167,7 @@ public class BooklistStyles extends ArrayList<BooklistStyle> {
         style.addGroups(ROW_KIND_AUTHOR, ROW_KIND_YEAR_PUBLISHED, ROW_KIND_SERIES);
 
         // Format
-        style = new BooklistStyle(R.string.format);
+        style = new BooklistStyle(R.string.lbl_format);
         list.add(style);
         style.addGroups(ROW_KIND_FORMAT);
 
@@ -177,7 +177,7 @@ public class BooklistStyles extends ArrayList<BooklistStyle> {
         style.addGroups(ROW_KIND_YEAR_READ, ROW_KIND_MONTH_READ, ROW_KIND_AUTHOR);
 
         // Location
-        style = new BooklistStyle(R.string.location);
+        style = new BooklistStyle(R.string.lbl_location);
         list.add(style);
         style.addGroups(ROW_KIND_LOCATION, ROW_KIND_AUTHOR, ROW_KIND_SERIES);
 
@@ -187,12 +187,12 @@ public class BooklistStyles extends ArrayList<BooklistStyle> {
         style.addGroups(ROW_KIND_LANGUAGE, ROW_KIND_AUTHOR, ROW_KIND_SERIES);
 
         // Rating
-        style = new BooklistStyle(R.string.rating);
+        style = new BooklistStyle(R.string.lbl_rating);
         list.add(style);
         style.addGroups(ROW_KIND_RATING, ROW_KIND_AUTHOR, ROW_KIND_SERIES);
 
         // Bookshelf
-        style = new BooklistStyle(R.string.bookshelf);
+        style = new BooklistStyle(R.string.lbl_bookshelf);
         list.add(style);
         style.addGroups(ROW_KIND_BOOKSHELF, ROW_KIND_AUTHOR, ROW_KIND_SERIES);
 

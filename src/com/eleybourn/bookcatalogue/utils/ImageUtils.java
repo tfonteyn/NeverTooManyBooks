@@ -213,7 +213,7 @@ public class ImageUtils {
      * @param urlText            Image file URL
      * @param filenameSuffix    Suffix to add
      *
-     * @return Downloaded fileSpec, or blank "" on onPartialDatePickerCancel
+     * @return Downloaded fileSpec, or blank "" on failure
      */
     @NonNull
     public static String saveThumbnailFromUrl(final @NonNull String urlText, final @NonNull String filenameSuffix) {
@@ -255,7 +255,7 @@ public class ImageUtils {
      *
      * @param urlText Image file URL
      *
-     * @return Downloaded byte[] or null upon onPartialDatePickerCancel
+     * @return Downloaded byte[] or null upon failure
      */
     @Nullable
     public static byte[] getBytesFromUrl(final @NonNull String urlText) {
@@ -344,7 +344,7 @@ public class ImageUtils {
 
         // Check if we have a file and/or it is valid
         if (thumbFile == null || !thumbFile.exists()) {
-            StandardDialogs.showUserMessage(activity, R.string.cover_not_set);
+            StandardDialogs.showUserMessage(activity, R.string.warning_cover_not_set);
         } else {
             BitmapFactory.Options opt = new BitmapFactory.Options();
             opt.inJustDecodeBounds = true;
@@ -352,9 +352,9 @@ public class ImageUtils {
 
             // If no size info, assume file bad and return appropriate icon
             if (opt.outHeight <= 0 || opt.outWidth <= 0) {
-                StandardDialogs.showUserMessage(activity, R.string.cover_corrupt);
+                StandardDialogs.showUserMessage(activity, R.string.warning_cover_corrupt);
             } else {
-                final Dialog dialog = new StandardDialogs.BasicDialog(activity, R.style.ZoomedImage);
+                final Dialog dialog = new StandardDialogs.BasicDialog(activity, R.style.zoomedCoverImage);
 
                 final ImageView cover = new ImageView(activity);
                 fetchFileIntoImageView(cover, thumbFile, thumbSizes.zoomed, thumbSizes.zoomed, true);

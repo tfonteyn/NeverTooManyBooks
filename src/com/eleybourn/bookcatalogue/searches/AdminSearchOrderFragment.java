@@ -15,7 +15,7 @@ import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter;
-import com.eleybourn.bookcatalogue.utils.ArrayUtils;
+import com.eleybourn.bookcatalogue.adapters.SimpleListAdapterRowActionListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,7 +70,7 @@ public class AdminSearchOrderFragment extends Fragment {
         return mList;
     }
 
-    private class SearchSiteListAdapter extends SimpleListAdapter<SearchManager.SearchSite> {
+    private class SearchSiteListAdapter extends SimpleListAdapter<SearchManager.SearchSite> implements SimpleListAdapterRowActionListener<SearchManager.SearchSite> {
 
         SearchSiteListAdapter(final @NonNull Context context,
                               final int rowViewId,
@@ -79,7 +79,7 @@ public class AdminSearchOrderFragment extends Fragment {
         }
 
         @Override
-        protected void onSetupView(final @NonNull View convertView, final @NonNull SearchManager.SearchSite item) {
+        public void onGetView(final @NonNull View convertView, final @NonNull SearchManager.SearchSite item) {
             final TextView name = convertView.findViewById(R.id.row_name);
             name.setText(item.name);
 
@@ -94,5 +94,4 @@ public class AdminSearchOrderFragment extends Fragment {
             });
         }
     }
-
 }

@@ -41,7 +41,7 @@ public interface Importer {
      *
      * @return <tt>true</tt>on onTextFieldEditorSave
      */
-    @SuppressWarnings("UnusedReturnValue")
+    @SuppressWarnings({"UnusedReturnValue", "SameReturnValue"})
     boolean importBooks(final @NonNull InputStream importStream,
                         final @Nullable Importer.CoverFinder coverFinder,
                         final @NonNull Importer.OnImporterListener listener,

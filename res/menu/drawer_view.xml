@@ -8,7 +8,7 @@
     <item
         android:id="@+id/nav_manage_bookshelves"
         android:icon="@drawable/ic_library_books"
-        android:title="@string/menu_bookshelf" />
+        android:title="@string/menu_edit_bookshelves" />
 
     <item
         android:id="@+id/nav_booklist_prefs"
@@ -18,12 +18,12 @@
     <item
         android:id="@+id/nav_other_prefs"
         android:icon="@drawable/ic_settings"
-        android:title="@string/preferences" />
+        android:title="@string/dialog_title_preferences" />
 
     <item
         android:id="@+id/nav_admin"
         android:icon="@drawable/ic_build"
-        android:title="@string/menu_administration" />
+        android:title="@string/menu_administration_short" />
 
     <item
         android:id="@+id/nav_help"
@@ -37,13 +37,13 @@
         android:icon="@drawable/ic_attach_money"
         android:menuCategory="secondary"
         android:orderInCategory="2"
-        android:title="@string/lbl_donate" />
+        android:title="@string/about_lbl_donate" />
 
     <item
         android:id="@+id/nav_about"
         android:icon="@drawable/ic_info_outline"
         android:menuCategory="secondary"
         android:orderInCategory="3"
-        android:title="@string/lbl_about" />
+        android:title="@string/menu_about" />
 
 </menu>

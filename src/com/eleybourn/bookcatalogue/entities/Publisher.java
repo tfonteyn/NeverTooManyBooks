@@ -34,7 +34,7 @@ import java.util.Objects;
  * ENHANCE Could just have used a String, but this way we're prepared for a dedicated table with the publishers
  */
 public class Publisher implements Serializable {
-    public static final char SEPARATOR = ',';
+    private static final char SEPARATOR = ',';
     private static final long serialVersionUID = 1L;
     public String name;
 

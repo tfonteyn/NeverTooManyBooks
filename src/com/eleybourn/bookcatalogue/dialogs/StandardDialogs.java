@@ -19,14 +19,12 @@
  */
 package com.eleybourn.bookcatalogue.dialogs;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
@@ -35,14 +33,8 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatDialog;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Checkable;
-import android.widget.CompoundButton;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
@@ -55,13 +47,7 @@ import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsRegisterActivity;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingAdminActivity;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
 import com.eleybourn.bookcatalogue.taskqueue.QueueManager;
-import com.eleybourn.bookcatalogue.utils.DateUtils;
-import com.eleybourn.bookcatalogue.utils.Utils;
-import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -201,7 +187,7 @@ public class StandardDialogs {
 
         final AlertDialog dialog = new AlertDialog.Builder(context)
                 .setMessage(String.format(context.getString(R.string.really_delete_series), series.name))
-                .setTitle(R.string.delete_series)
+                .setTitle(R.string.dialog_title_delete_series)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .create();
 
@@ -227,6 +213,7 @@ public class StandardDialogs {
     /**
      * @return the resource id for a string in case of error, 0 for ok
      */
+    @StringRes
     public static int deleteBookAlert(final @NonNull Context context,
                                       final @NonNull CatalogueDBAdapter db,
                                       final long bookId,
@@ -263,7 +250,7 @@ public class StandardDialogs {
 
         final AlertDialog dialog = new AlertDialog.Builder(context)
                 .setMessage((context.getString(R.string.really_delete_book, title, authors)))
-                .setTitle(R.string.menu_delete)
+                .setTitle(R.string.menu_delete_book)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .create();
 
@@ -289,7 +276,7 @@ public class StandardDialogs {
 
     /**
      * Display a dialog warning the user that goodreads authentication is required;
-     * gives the options: 'request now', 'more info' or 'onPartialDatePickerCancel'.
+     * gives the options: 'request now', 'more info' or 'cancel'.
      */
     public static void goodreadsAuthAlert(final @NonNull FragmentActivity context) {
         final AlertDialog dialog = new AlertDialog.Builder(context)
@@ -324,238 +311,6 @@ public class StandardDialogs {
 
         dialog.show();
 
-    }
-
-    /* ========================================================================================== */
-
-    /**
-     * Select a custom item from a list, and call handler when/if item is selected.
-     */
-    public static void selectItemDialog(final @NonNull LayoutInflater inflater,
-                                        final @Nullable String message,
-                                        final @NonNull List<SimpleDialogItem> items,
-                                        final @Nullable SimpleDialogItem selectedItem,
-                                        final @NonNull SimpleDialogOnClickListener handler) {
-
-        // Build the base dialog
-        final View root = inflater.inflate(R.layout.dialog_select_one_from_list, null);
-        final AlertDialog.Builder builder = new AlertDialog.Builder(inflater.getContext())
-                .setView(root);
-        // and the top message (if any)
-        TextView messageView = root.findViewById(R.id.message);
-        if (message != null && !message.isEmpty()) {
-            messageView.setText(message);
-        } else {
-            messageView.setVisibility(View.GONE);
-            root.findViewById(R.id.messageBottomDivider).setVisibility(View.GONE);
-        }
-
-        final AlertDialog dialog = builder.create();
-
-        // Create the listener for each item
-        OnClickListener listener = new OnClickListener() {
-            @Override
-            public void onClick(final @NonNull View v) {
-                SimpleDialogItem item = ViewTagger.getTag(v, R.id.TAG_DIALOG_ITEM);
-                // For a consistent UI, make sure the selector is checked as well.
-                // NOT mandatory from a functional point of view, just consistent
-                if (item != null && !(v instanceof Checkable)) {
-                    CompoundButton btn = item.getSelector(v);
-                    if (btn != null) {
-                        btn.setChecked(true);
-                        btn.invalidate();
-                    }
-                }
-                dialog.dismiss();
-                if (item != null) {
-                    handler.onClick(item);
-                }
-            }
-        };
-
-        // Add the items to the dialog
-        ViewGroup list = root.findViewById(android.R.id.list);
-        for (SimpleDialogItem item : items) {
-            View view = item.getView(inflater);
-            view.setOnClickListener(listener);
-            view.setBackgroundResource(android.R.drawable.list_selector_background);
-
-            ViewTagger.setTag(view, R.id.TAG_DIALOG_ITEM, item);
-
-            CompoundButton btn = item.getSelector(view);
-            if (btn != null) {
-                ViewTagger.setTag(btn, R.id.TAG_DIALOG_ITEM, item);
-                btn.setChecked(item == selectedItem);
-                btn.setOnClickListener(listener);
-            }
-            list.addView(view);
-        }
-        dialog.show();
-    }
-
-    /**
-     * Wrapper class to present a list of files for selection
-     */
-    public static void selectFileDialog(final @NonNull LayoutInflater inflater,
-                                        final @Nullable String title,
-                                        final @NonNull List<File> files,
-                                        final @NonNull SimpleDialogOnClickListener handler) {
-        List<SimpleDialogItem> items = new ArrayList<>();
-        for (File file : files) {
-            items.add(new SimpleDialogFileItem(file));
-        }
-        selectItemDialog(inflater, title, items, null, handler);
-    }
-
-    /**
-     * Wrapper class to present a list of arbitrary objects for selection; it uses
-     * the toString() method to display a simple list.
-     */
-    public static <T> void selectStringDialog(final @NonNull LayoutInflater inflater,
-                                              final @Nullable String title,
-                                              final @NonNull List<T> objects,
-                                              final @Nullable String current,
-                                              final @NonNull SimpleDialogOnClickListener handler) {
-        List<SimpleDialogItem> items = new ArrayList<>();
-        SimpleDialogItem selectedItem = null;
-        for (T object : objects) {
-            SimpleDialogObjectItem item = new SimpleDialogObjectItem(object);
-            if (current != null && object.toString().equalsIgnoreCase(current))
-                selectedItem = item;
-            items.add(item);
-        }
-        selectItemDialog(inflater, title, items, selectedItem, handler);
-    }
-
-    /**
-     * Interface for item that displays in a custom dialog list
-     */
-    public interface SimpleDialogItem {
-        @NonNull
-        View getView(final @NonNull LayoutInflater inflater);
-
-        @Nullable
-        CompoundButton getSelector(View v);
-    }
-
-    /**
-     * Interface to listen for item selection in a custom dialog list
-     */
-    public interface SimpleDialogOnClickListener {
-        void onClick(final @NonNull SimpleDialogItem item);
-    }
-
-    /**
-     * Simple item to manage a File object in a list of items.
-     */
-    public static class SimpleDialogFileItem implements SimpleDialogItem {
-        @NonNull
-        private final File mFile;
-
-        SimpleDialogFileItem(final @NonNull File file) {
-            mFile = file;
-        }
-
-        @NonNull
-        public File getFile() {
-            return mFile;
-        }
-
-        @Override
-        @Nullable
-        public CompoundButton getSelector(final View v) {
-            return null;
-        }
-
-        /**
-         * Get a View to display the file
-         */
-        @Override
-        @NonNull
-        public View getView(final @NonNull LayoutInflater inflater) {
-            // Create the view
-            View root = inflater.inflate(R.layout.dialog_file_list_item, null);
-            // Set the file name
-            TextView name = root.findViewById(R.id.name);
-            name.setText(mFile.getName());
-            // Set the path
-            TextView location = root.findViewById(R.id.path);
-            location.setText(mFile.getParent());
-            // Set the size
-            TextView size = root.findViewById(R.id.size);
-            size.setText(Utils.formatFileSize(mFile.length()));
-            // Set the last modified date
-            TextView update = root.findViewById(R.id.updated);
-            update.setText(DateUtils.toPrettyDateTime(new Date(mFile.lastModified())));
-            // Return it
-            return root;
-        }
-    }
-
-    /**
-     * Item to manage an Object in a list of items.
-     */
-    public static class SimpleDialogObjectItem implements SimpleDialogItem {
-        @NonNull
-        private final Object mObject;
-
-        SimpleDialogObjectItem(final @NonNull Object object) {
-            mObject = object;
-        }
-
-        /**
-         * Get a View to display the object -> toString() and put into CompoundButton.text
-         */
-        @Override
-        @NonNull
-        public View getView(final @NonNull LayoutInflater inflater) {
-            @SuppressLint("InflateParams") // root==null as it's a dialog
-            View root = inflater.inflate(R.layout.row_string_list_item, null);
-            TextView name = root.findViewById(R.id.name);
-            name.setText(mObject.toString());
-            return root;
-        }
-
-        @NonNull
-        public CompoundButton getSelector(final @NonNull View view) {
-            return (CompoundButton) view.findViewById(R.id.selector);
-        }
-
-        /**
-         * Get the underlying object as a string
-         */
-        @Override
-        public String toString() {
-            return mObject.toString();
-        }
-    }
-
-    public static class SimpleDialogMenuItem extends SimpleDialogObjectItem {
-        final int mItemId;
-        final int mDrawableId;
-
-        public SimpleDialogMenuItem(final @NonNull Object object,
-                                    final int itemId,
-                                    final @DrawableRes int icon) {
-            super(object);
-            mItemId = itemId;
-            mDrawableId = icon;
-        }
-
-        public int getItemId() {
-            return mItemId;
-        }
-
-        @Override
-        @NonNull
-        public View getView(final @NonNull LayoutInflater inflater) {
-            View root = super.getView(inflater);
-            TextView name = root.findViewById(R.id.name);
-            name.setCompoundDrawablesWithIntrinsicBounds(mDrawableId, 0, 0, 0);
-            // Now make the actual CompoundButton gone
-            getSelector(root).setVisibility(View.GONE);
-            return root;
-        }
     }
 
     /* ========================================================================================== */

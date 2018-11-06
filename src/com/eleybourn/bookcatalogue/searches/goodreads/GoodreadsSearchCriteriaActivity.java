@@ -35,8 +35,8 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
-import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
-import com.eleybourn.bookcatalogue.database.cursors.BooksCursor;
+import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
+import com.eleybourn.bookcatalogue.database.cursors.BookCursorRow;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 
@@ -84,26 +84,26 @@ public class GoodreadsSearchCriteriaActivity extends BaseActivity {
 
             setViewVisibility(R.id.original_details, true);
 
-            try (BooksCursor cursor = mDb.fetchBookById(mBookId)){
+            try (BookCursor cursor = mDb.fetchBookById(mBookId)){
                 if (!cursor.moveToFirst()) {
                     StandardDialogs.showUserMessage(this, R.string.book_no_longer_exists);
                     setResult(Activity.RESULT_CANCELED);
                     finish();
                     return;
                 }
-                final BookRowView bookRowView = cursor.getRowView();
+                final BookCursorRow bookCursorRow = cursor.getCursorRow();
                 {
-                    String s = bookRowView.getPrimaryAuthorNameFormattedGivenFirst();
+                    String s = bookCursorRow.getPrimaryAuthorNameFormattedGivenFirst();
                     setViewText(R.id.author, s);
                     criteria.append(s).append(" ");
                 }
                 {
-                    String s = bookRowView.getTitle();
+                    String s = bookCursorRow.getTitle();
                     setViewText(R.id.title, s);
                     criteria.append(s).append(" ");
                 }
                 {
-                    String s = bookRowView.getIsbn();
+                    String s = bookCursorRow.getIsbn();
                     setViewText(R.id.isbn, s);
                     criteria.append(s).append(" ");
                 }

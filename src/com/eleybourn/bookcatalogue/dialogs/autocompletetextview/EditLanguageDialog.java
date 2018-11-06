@@ -18,22 +18,23 @@
  * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.eleybourn.bookcatalogue;
+package com.eleybourn.bookcatalogue.dialogs.autocompletetextview;
 
 import android.app.Activity;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 
+import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 
-public class EditGenreDialog extends EditStringDialog {
-    EditGenreDialog(final @NonNull Activity activity, final @NonNull CatalogueDBAdapter db, final @NonNull Runnable onChanged) {
+public class EditLanguageDialog extends EditStringDialog {
+    public EditLanguageDialog(final @NonNull Activity activity, final @NonNull CatalogueDBAdapter db, final @NonNull Runnable onChanged) {
         super(activity, db, onChanged);
     }
 
     @CallSuper
     public void edit(final @NonNull String s) {
-        super.edit(s, R.layout.dialog_edit_genre, R.string.edit_genre_details);
+        super.edit(s, R.layout.dialog_edit_language, R.string.dialog_title_edit_language);
     }
 
     @Override
@@ -42,7 +43,7 @@ public class EditGenreDialog extends EditStringDialog {
         if (to.equals(from)) {
             return;
         }
-        mDb.globalReplaceGenre(from, to);
+        mDb.globalReplaceLanguage(from, to);
         mOnChanged.run();
     }
 }

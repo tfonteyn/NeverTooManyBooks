@@ -61,7 +61,7 @@ abstract public class ManagedTask extends Thread {
     private final long mMessageSenderId;
     /** Options indicating the main runTask method has completed. Set in thread run */
     private boolean mFinished = false;
-    /** Indicates the user has requested a onPartialDatePickerCancel. Up to the subclass to decide what to do. */
+    /** Indicates the user has requested a cancel. Up to the subclass to decide what to do. */
     private boolean mCancelFlg = false;
 
     /**

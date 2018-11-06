@@ -25,7 +25,7 @@
 
     <EditText
         android:id="@+id/add_title"
-        style="@style/bookOrSeriesTitleTextEntry"
+        style="@style/titleTextEntry"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/add_author"
@@ -40,7 +40,7 @@
         android:layout_toStartOf="@id/add_button"
         android:inputType="number"
         android:maxLength="4"
-        android:hint="@string/first_publication"
+        android:hint="@string/lbl_first_publication"
         tools:ignore="Autofill" />
     <Button
         android:id="@+id/add_button"
@@ -59,7 +59,7 @@
 
         <com.eleybourn.bookcatalogue.widgets.TouchListViewWithDropListener xmlns:tlv="http://schemas.android.com/apk/res/com.eleybourn.bookcatalogue"
             android:id="@android:id/list"
-            style="@style/TouchListView"
+            style="@style/tlv_TouchListView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             tlv:grabber="@+id/grabber"

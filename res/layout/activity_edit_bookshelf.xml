@@ -15,7 +15,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/toolbar"
-        android:hint="@string/bookshelf"
+        android:hint="@string/lbl_bookshelf"
         android:inputType="text"
         tools:ignore="Autofill" />
 

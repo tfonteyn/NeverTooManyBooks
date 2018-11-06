@@ -33,22 +33,22 @@ import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer;
 /**
  * Cursor implementation for book-related queries. The cursor wraps common
  * column lookups and reduces code clutter when accessing common columns by
- * providing a {@link BookRowView}
+ * providing a {@link BookCursorRow}
  *
  * @author Philip Warner
  */
-public class BooksCursor extends TrackedCursor implements AutoCloseable {
+public class BookCursor extends TrackedCursor implements AutoCloseable {
 
     /** Get the row ID; need a local implementation so that get/setSelected() works. */
     private int mIdCol = -2;
-    /** Get a RowView */
-    @Nullable
-    private BookRowView mBookRowView;
 
-    public BooksCursor(final @NonNull SQLiteCursorDriver driver,
-                       final @NonNull String editTable,
-                       final @NonNull SQLiteQuery query,
-                       final @NonNull Synchronizer sync) {
+    @Nullable
+    private BookCursorRow mBookCursorRow;
+
+    public BookCursor(final @NonNull SQLiteCursorDriver driver,
+                      final @NonNull String editTable,
+                      final @NonNull SQLiteQuery query,
+                      final @NonNull Synchronizer sync) {
         super(driver, editTable, query, sync);
     }
 
@@ -62,20 +62,17 @@ public class BooksCursor extends TrackedCursor implements AutoCloseable {
     }
 
     @NonNull
-    public BookRowView getRowView() {
-        if (mBookRowView == null) {
-            mBookRowView = new BookRowView(this);
+    public BookCursorRow getCursorRow() {
+        if (mBookCursorRow == null) {
+            mBookCursorRow = new BookCursorRow(this);
         }
-        return mBookRowView;
+        return mBookCursorRow;
     }
 
-    /**
-     * Clear the RowView
-     */
     @Override
     @CallSuper
     public void close() {
         super.close();
-        mBookRowView = null;
+        mBookCursorRow = null;
     }
 }

@@ -176,7 +176,7 @@ public class Queue extends Thread {
      * Update the related database record to process the task correctly.
      *
      * @param task    Task object
-     * @param result  true on onTextFieldEditorSave, false on onPartialDatePickerCancel
+     * @param result  true on Save, false on cancel
      * @param requeue true if requeue needed
      */
     private void handleResult(final @NonNull Task task, final boolean result, final boolean requeue) {

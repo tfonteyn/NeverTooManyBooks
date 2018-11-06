@@ -20,13 +20,9 @@
         <ImageView
             android:id="@+id/coverImage"
             style="@style/coverImage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
             android:focusable="true"
-            android:gravity="center_horizontal"
-            tools:ignore="ContentDescription"
-            tools:src="@drawable/ic_image" />
+            tools:src="@drawable/ic_image"
+            tools:ignore="ContentDescription" />
 
         <RelativeLayout
             android:id="@+id/row_author"
@@ -35,12 +31,12 @@
 
             <TextView
                 android:id="@+id/lbl_author"
-                style="@style/editorFieldHeader"
+                style="@style/lbl_editField"
                 android:text="@string/author" />
 
             <Button
                 android:id="@+id/author"
-                style="@style/dataEntryButton"
+                style="@style/buttonDataEntry"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/lbl_author"
@@ -58,13 +54,13 @@
 
             <TextView
                 android:id="@+id/lbl_title"
-                style="@style/editorFieldHeader"
+                style="@style/lbl_editField"
                 android:labelFor="@id/title"
                 android:text="@string/title" />
 
             <EditText
                 android:id="@+id/title"
-                style="@style/bookOrSeriesTitleTextEntry"
+                style="@style/titleTextEntry"
                 android:layout_below="@id/lbl_title"
                 tools:ignore="Autofill" />
         </RelativeLayout>
@@ -76,7 +72,7 @@
 
             <TextView
                 android:id="@+id/lbl_isbn"
-                style="@style/editorFieldHeader"
+                style="@style/lbl_editField"
                 android:layout_alignParentTop="false"
                 android:layout_centerVertical="true"
                 android:labelFor="@+id/isbn"
@@ -84,7 +80,7 @@
 
             <EditText
                 android:id="@+id/isbn"
-                style="@style/editorFieldText"
+                style="@style/simpleTextEntry"
                 android:layout_alignParentStart="false"
                 android:layout_toEndOf="@id/lbl_isbn"
                 android:inputType="text"
@@ -96,7 +92,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:text="@string/is_anthology" />
+            android:text="@string/lbl_is_anthology" />
 
         <RelativeLayout
             android:id="@+id/row_series"
@@ -105,12 +101,12 @@
 
             <TextView
                 android:id="@+id/lbl_series"
-                style="@style/editorFieldHeader"
+                style="@style/lbl_editField"
                 android:text="@string/series" />
 
             <Button
-                android:id="@+id/series"
-                style="@style/dataEntryButton"
+                android:id="@+id/name"
+                style="@style/buttonDataEntry"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/lbl_series"
@@ -125,9 +121,9 @@
 
             <TextView
                 android:id="@+id/lbl_publisher"
-                style="@style/editorFieldHeader"
+                style="@style/lbl_editField"
                 android:labelFor="@id/publisher"
-                android:text="@string/publisher" />
+                android:text="@string/lbl_publisher" />
 
             <AutoCompleteTextView
                 android:id="@+id/publisher"
@@ -152,12 +148,12 @@
 
             <TextView
                 android:id="@+id/lbl_date_published"
-                style="@style/editorFieldHeader"
-                android:text="@string/date_published" />
+                style="@style/lbl_editField"
+                android:text="@string/lbl_date_published" />
 
             <Button
                 android:id="@+id/date_published"
-                style="@style/dataEntryButton"
+                style="@style/buttonDataEntry"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/lbl_date_published"
@@ -172,12 +168,12 @@
 
             <TextView
                 android:id="@+id/lbl_first_publication"
-                style="@style/editorFieldHeader"
-                android:text="@string/first_publication" />
+                style="@style/lbl_editField"
+                android:text="@string/lbl_first_publication" />
 
             <Button
                 android:id="@+id/first_publication"
-                style="@style/dataEntryButton"
+                style="@style/buttonDataEntry"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/lbl_first_publication"
@@ -192,12 +188,12 @@
 
             <TextView
                 android:id="@+id/lbl_bookshelves"
-                style="@style/editorFieldHeader"
-                android:text="@string/bookshelves" />
+                style="@style/lbl_editField"
+                android:text="@string/lbl_bookshelves_long" />
 
             <Button
                 android:id="@+id/bookshelves"
-                style="@style/dataEntryButton"
+                style="@style/buttonDataEntry"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/lbl_bookshelves"
@@ -212,13 +208,13 @@
 
             <TextView
                 android:id="@+id/lbl_pages"
-                style="@style/editorFieldHeader"
+                style="@style/lbl_editField"
                 android:labelFor="@id/pages"
-                android:text="@string/pages" />
+                android:text="@string/lbl_pages" />
 
             <EditText
                 android:id="@+id/pages"
-                style="@style/editorFieldText"
+                style="@style/simpleTextEntry"
                 android:layout_below="@id/lbl_pages"
                 android:layout_centerVertical="true"
                 android:inputType="number"
@@ -233,13 +229,13 @@
 
             <TextView
                 android:id="@+id/lbl_price_listed"
-                style="@style/editorFieldHeader"
+                style="@style/lbl_editField"
                 android:labelFor="@id/price_listed"
-                android:text="@string/price_listed" />
+                android:text="@string/lbl_price_listed" />
 
             <EditText
                 android:id="@+id/price_listed"
-                style="@style/editorFieldText"
+                style="@style/simpleTextEntry"
                 android:layout_width="wrap_content"
                 android:layout_below="@id/lbl_price_listed"
                 android:layout_toStartOf="@id/price_listed_currency"
@@ -250,7 +246,7 @@
 
             <AutoCompleteTextView
                 android:id="@+id/price_listed_currency"
-                style="@style/editorFieldText"
+                style="@style/simpleTextEntry"
                 android:layout_width="wrap_content"
                 android:layout_below="@id/lbl_price_listed"
                 android:layout_alignParentStart="false"
@@ -282,13 +278,13 @@
 
             <TextView
                 android:id="@+id/lbl_format"
-                style="@style/editorFieldHeader"
+                style="@style/lbl_editField"
                 android:labelFor="@id/format"
-                android:text="@string/format" />
+                android:text="@string/lbl_format" />
 
             <AutoCompleteTextView
                 android:id="@+id/format"
-                style="@style/editorFieldText"
+                style="@style/simpleTextEntry"
                 android:layout_below="@id/lbl_format"
                 android:layout_centerVertical="true"
                 android:layout_toStartOf="@id/btn_format"
@@ -310,13 +306,13 @@
 
             <TextView
                 android:id="@+id/lbl_genre"
-                style="@style/editorFieldHeader"
+                style="@style/lbl_editField"
                 android:labelFor="@id/genre"
-                android:text="@string/genre" />
+                android:text="@string/lbl_genre" />
 
             <AutoCompleteTextView
                 android:id="@+id/genre"
-                style="@style/editorFieldText"
+                style="@style/simpleTextEntry"
                 android:layout_below="@id/lbl_genre"
                 android:layout_centerVertical="true"
                 android:layout_toStartOf="@id/btn_genre"
@@ -338,7 +334,7 @@
 
             <TextView
                 android:id="@+id/lbl_language"
-                style="@style/editorFieldHeader"
+                style="@style/lbl_editField"
                 android:labelFor="@id/language"
                 android:text="@string/lbl_language" />
 
@@ -370,7 +366,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingTop="12dp"
-                android:text="@string/description"
+                android:text="@string/lbl_description"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
             <ImageButton
@@ -383,7 +379,7 @@
 
         <View
             android:id="@+id/description_divider"
-            style="@style/listDividerHorizontal" />
+            style="@style/divider_horizontalList" />
 
         <TextView
             android:id="@+id/description"

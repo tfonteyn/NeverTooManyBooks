@@ -202,7 +202,7 @@ public class GoodreadsUtils {
      * Ask the user which books to send, then send them.
      *
      * Optionally, display a dialog warning the user that goodreads authentication is required; gives them
-     * the options: 'request now', 'more info' or 'onPartialDatePickerCancel'.
+     * the options: 'request now', 'more info' or 'cancel'.
      */
     public static void sendBooksToGoodreads(final @NonNull BaseActivity ctx) {
 

@@ -373,7 +373,7 @@ public class EditBookTOCFragment extends BookAbstractFragment implements Handles
     @CallSuper
     public void onPrepareOptionsMenu(final @NonNull Menu menu) {
         menu.clear();
-        menu.add(Menu.NONE, R.id.MENU_POPULATE_TOC_FROM_ISFDB, 0, R.string.populate_toc)
+        menu.add(Menu.NONE, R.id.MENU_POPULATE_TOC_FROM_ISFDB, 0, R.string.menu_populate_toc)
                 .setIcon(R.drawable.ic_autorenew);
         super.onPrepareOptionsMenu(menu);
     }
@@ -397,6 +397,9 @@ public class EditBookTOCFragment extends BookAbstractFragment implements Handles
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * (yes, icons are not supported and won't show. Still leaving the setIcon calls in for now.)
+     */
     @Override
     @CallSuper
     public void onCreateContextMenu(final @NonNull ContextMenu menu,
@@ -464,7 +467,7 @@ public class EditBookTOCFragment extends BookAbstractFragment implements Handles
     private class TOCListAdapterForEditing extends TOCListAdapter {
 
         TOCListAdapterForEditing(final @NonNull Context context,
-                                 @SuppressWarnings("SameParameterValue") @LayoutRes final int rowViewId,
+                                 @SuppressWarnings("SameParameterValue") final @LayoutRes int rowViewId,
                                  final @NonNull ArrayList<TOCEntry> items) {
             super(context, rowViewId, items);
         }
@@ -473,7 +476,7 @@ public class EditBookTOCFragment extends BookAbstractFragment implements Handles
          * copies the selected entry into the edit fields + sets the confirm button to reflect a save (versus add)
          */
         @Override
-        protected void onRowClick(final @NonNull View v, final @NonNull TOCEntry item, final int position) {
+        public void onRowClick(final @NonNull View v, final @NonNull TOCEntry item, final int position) {
             mPubDateTextView.setText(item.getFirstPublication());
             mTitleTextView.setText(item.getTitle());
             mAuthorTextView.setText(item.getAuthor().getDisplayName());
@@ -482,7 +485,7 @@ public class EditBookTOCFragment extends BookAbstractFragment implements Handles
         }
 
         @Override
-        protected void onListChanged() {
+        public void onListChanged() {
             setDirty(true);
         }
     }

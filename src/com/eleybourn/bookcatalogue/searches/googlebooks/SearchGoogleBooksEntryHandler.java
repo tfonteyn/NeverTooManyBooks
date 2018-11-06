@@ -26,7 +26,6 @@ import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
-import com.eleybourn.bookcatalogue.utils.BundleUtils;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 
 import org.xml.sax.Attributes;

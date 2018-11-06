@@ -20,19 +20,18 @@
 
 package com.eleybourn.bookcatalogue;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.view.ContextMenu;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import android.widget.PopupMenu;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseListActivity;
 import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
@@ -40,6 +39,7 @@ import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
+import com.eleybourn.bookcatalogue.dialogs.picklist.SelectOneDialog;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.widgets.TouchListViewWithDropListener;
 
@@ -67,12 +67,12 @@ public class EditBookshelvesActivity extends BaseListActivity {
     @CallSuper
     public void onCreate(final @Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTitle(R.string.title_manage_bs);
+        setTitle(R.string.dialog_title_edit_bookshelves);
 
         mDb = new CatalogueDBAdapter(this)
                 .open();
+
         populateList();
-        registerForContextMenu(getListView());
     }
 
     private void populateList() {
@@ -81,32 +81,49 @@ public class EditBookshelvesActivity extends BaseListActivity {
         setListAdapter(adapter);
     }
 
+    /**
+     * Using {@link SelectOneDialog#showContextMenuDialog} for context menus
+     */
     @Override
-    @CallSuper
-    public void onCreateContextMenu(final @NonNull ContextMenu menu, final View v, final ContextMenuInfo menuInfo) {
-        menu.add(Menu.NONE, R.id.MENU_DELETE, 0, R.string.menu_delete)
-                .setIcon(R.drawable.ic_delete);
+    public void initListViewContextMenuListener(final @NonNull Context context) {
+        getListView().setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(final AdapterView<?> parent, final View view, final int position, final long id) {
+                String menuTitle = mList.get(position).name;
 
-        super.onCreateContextMenu(menu, v, menuInfo);
+                // legal trick to get an instance of Menu.
+                mListViewContextMenu = new PopupMenu(context, null).getMenu();
+                // custom menuInfo
+                SelectOneDialog.SimpleDialogMenuInfo menuInfo = new SelectOneDialog.SimpleDialogMenuInfo(menuTitle, view, position);
+                // populate the menu
+                mListViewContextMenu.add(Menu.NONE, R.id.MENU_DELETE, 0, R.string.menu_delete_bookshelf)
+                        .setIcon(R.drawable.ic_delete);
+                // display
+                onCreateListViewContextMenu(mListViewContextMenu, view, menuInfo);
+                return true;
+            }
+        });
     }
 
+    /**
+     * Using {@link SelectOneDialog#showContextMenuDialog} for context menus
+     */
     @Override
-    @CallSuper
-    public boolean onContextItemSelected(final @NonNull MenuItem item) {
-        switch (item.getItemId()) {
+    public boolean onListViewContextItemSelected(final @NonNull MenuItem menuItem,
+                                                 final @NonNull SelectOneDialog.SimpleDialogMenuInfo menuInfo) {
+        switch (menuItem.getItemId()) {
             case R.id.MENU_DELETE:
-                AdapterContextMenuInfo menuInfo = (AdapterContextMenuInfo) item.getMenuInfo();
                 Bookshelf bookshelf = mList.get(menuInfo.position);
                 if (bookshelf.id != 1) {
                     mDb.deleteBookshelf(bookshelf.id);
                     populateList();
                 } else {
-                    //TODO: why not ? as long as we make sure there is another one left.. e.g. count > 2, then you can delete 'one'
-                    StandardDialogs.showUserMessage(this, R.string.delete_1st_bs);
+                    //TODO: why not ? as long as we make sure there is another one left.. e.g. count > 2, then you can delete '1'
+                    StandardDialogs.showUserMessage(this, R.string.warning_cannot_delete_1st_bs);
                 }
                 return true;
         }
-        return super.onContextItemSelected(item);
+        return false;
     }
 
     /**
@@ -121,7 +138,7 @@ public class EditBookshelvesActivity extends BaseListActivity {
     @CallSuper
     public boolean onCreateOptionsMenu(final @NonNull Menu menu) {
 
-        menu.add(Menu.NONE, R.id.MENU_INSERT, 0, R.string.menu_insert_bs)
+        menu.add(Menu.NONE, R.id.MENU_INSERT, 0, R.string.menu_add_bookshelf)
                 .setIcon(R.drawable.ic_add)
                 .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 
@@ -140,19 +157,27 @@ public class EditBookshelvesActivity extends BaseListActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Listen for clicks on items in our list
+     *
+     * {@link BaseListActivity} enables 'this' as the listener
+     */
     @Override
-    protected void onListItemClick(final @NonNull ListView listView, final @NonNull View view, final int position, final long id) {
-        Bookshelf bookshelf = mList.get(position);
-        Intent intent = new Intent(this, EditBookshelfActivity.class);
-        intent.putExtra(UniqueId.KEY_ID, bookshelf.id);
-        startActivityForResult(intent, EditBookshelfActivity.REQUEST_CODE_EDIT); /* eabd012d-e5db-4c3b-ad65-876ed04b8eca */
+    public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long id) {
+        // if click was on our ListView
+        if (parent.getId() == getListView().getId()) {
+            Bookshelf bookshelf = mList.get(position);
+            Intent intent = new Intent(this, EditBookshelfActivity.class);
+            intent.putExtra(UniqueId.KEY_ID, bookshelf.id);
+            startActivityForResult(intent, EditBookshelfActivity.REQUEST_CODE_EDIT); /* eabd012d-e5db-4c3b-ad65-876ed04b8eca */
+        }
     }
 
     @Override
     @CallSuper
     protected void onActivityResult(final int requestCode, final int resultCode, final @Nullable Intent data) {
         if (BuildConfig.DEBUG) {
-            Logger.info(this,"onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
+            Logger.info(this, "onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
         }
         switch (requestCode) {
             case EditBookshelfActivity.REQUEST_CODE_EDIT: /* eabd012d-e5db-4c3b-ad65-876ed04b8eca */

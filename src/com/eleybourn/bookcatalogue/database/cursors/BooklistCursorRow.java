@@ -38,13 +38,13 @@ import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 
 /**
- * RowView object for the BooklistCursor.
+ * CursorRow object for the BooklistCursor.
  *
  * Implements methods to perform common tasks on the 'current' row of the cursor.
  *
  * @author Philip Warner
  */
-public class BooklistRowView extends BookRowViewBase {
+public class BooklistCursorRow extends BookCursorRowBase {
 
     /** Underlying builder object */
     @NonNull
@@ -77,7 +77,7 @@ public class BooklistRowView extends BookRowViewBase {
      * @param cursor  Underlying Cursor
      * @param builder Underlying Builder
      */
-    public BooklistRowView(final @NonNull Cursor cursor, final @NonNull BooklistBuilder builder) {
+    public BooklistCursorRow(final @NonNull Cursor cursor, final @NonNull BooklistBuilder builder) {
         super(cursor);
         mBuilder = builder;
 
@@ -131,7 +131,7 @@ public class BooklistRowView extends BookRowViewBase {
      * @param level Level of the row group
      * @param s     Source value
      *
-     * @return Formatted string, or original string on any onPartialDatePickerCancel
+     * @return Formatted string, or original string on any failure
      */
     @Nullable
     private String formatRowGroup(final int level, final @Nullable String s) {

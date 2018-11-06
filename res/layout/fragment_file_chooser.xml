@@ -44,7 +44,7 @@
 
     <View
         android:id="@+id/header_divider"
-        style="@style/listDividerHorizontal"
+        style="@style/divider_horizontalList"
         android:layout_below="@id/row_path_up" />
 
     <com.eleybourn.bookcatalogue.widgets.FastScrollListView
@@ -59,7 +59,7 @@
 
     <View
         android:id="@+id/footer_divider"
-        style="@style/listDividerHorizontal"
+        style="@style/divider_horizontalList"
         android:layout_above="@+id/file_name" />
 
     <EditText

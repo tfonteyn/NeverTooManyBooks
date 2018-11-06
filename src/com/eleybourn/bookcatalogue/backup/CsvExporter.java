@@ -26,8 +26,8 @@ import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
-import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
-import com.eleybourn.bookcatalogue.database.cursors.BooksCursor;
+import com.eleybourn.bookcatalogue.database.cursors.BookCursorRow;
+import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
@@ -191,10 +191,10 @@ public class CsvExporter implements Exporter {
         int num = 0;
         final StringBuilder row = new StringBuilder();
 
-        try (BooksCursor bookCursor = mDb.exportBooks(since);
+        try (BookCursor bookCursor = mDb.exportBooks(since);
              BufferedWriter out = new BufferedWriter(new OutputStreamWriter(outputStream, UTF8), BUFFER_SIZE)) {
 
-            final BookRowView bookRowView = bookCursor.getRowView();
+            final BookCursorRow bookCursorRow = bookCursor.getCursorRow();
             final int totalBooks = bookCursor.getCount();
 
             if (listener.isCancelled()) {
@@ -214,7 +214,7 @@ public class CsvExporter implements Exporter {
                     author_stringList = AUTHOR + ", " + UNKNOWN;
                 }
 
-                String title = bookRowView.getTitle();
+                String title = bookCursorRow.getTitle();
                 // Sanity check: ensure title is non-blank. This has not happened yet, but we
                 // know if does for author, so completeness suggests making sure all 'required'
                 // fields are non-blank.
@@ -242,40 +242,40 @@ public class CsvExporter implements Exporter {
                 row.append(formatCell(bookId))
                         .append(formatCell(author_stringList))
                         .append(formatCell(title))
-                        .append(formatCell(bookRowView.getIsbn()))
-                        .append(formatCell(bookRowView.getPublisherName()))
-                        .append(formatCell(bookRowView.getDatePublished()))
-                        .append(formatCell(bookRowView.getFirstPublication()))
-                        .append(formatCell(bookRowView.getEditionBitMask()))
-                        .append(formatCell(bookRowView.getRating()))
+                        .append(formatCell(bookCursorRow.getIsbn()))
+                        .append(formatCell(bookCursorRow.getPublisherName()))
+                        .append(formatCell(bookCursorRow.getDatePublished()))
+                        .append(formatCell(bookCursorRow.getFirstPublication()))
+                        .append(formatCell(bookCursorRow.getEditionBitMask()))
+                        .append(formatCell(bookCursorRow.getRating()))
                         .append(formatCell(bookshelves_id_stringList.toString()))
                         .append(formatCell(bookshelves_name_stringList.toString()))
-                        .append(formatCell(bookRowView.getRead()))
+                        .append(formatCell(bookCursorRow.getRead()))
                         .append(formatCell(ArrayUtils.getSeriesUtils().encodeList(mDb.getBookSeriesList(bookId))))
-                        .append(formatCell(bookRowView.getPages()))
-                        .append(formatCell(bookRowView.getNotes()))
+                        .append(formatCell(bookCursorRow.getPages()))
+                        .append(formatCell(bookCursorRow.getNotes()))
 
-                        .append(formatCell(bookRowView.getListPrice()))
-                        .append(formatCell(bookRowView.getListPriceCurrency()))
-                        .append(formatCell(bookRowView.getPricePaid()))
-                        .append(formatCell(bookRowView.getPricePaidCurrency()))
+                        .append(formatCell(bookCursorRow.getListPrice()))
+                        .append(formatCell(bookCursorRow.getListPriceCurrency()))
+                        .append(formatCell(bookCursorRow.getPricePaid()))
+                        .append(formatCell(bookCursorRow.getPricePaidCurrency()))
 
-                        .append(formatCell(bookRowView.getAnthologyBitMask()))
-                        .append(formatCell(bookRowView.getLocation()))
-                        .append(formatCell(bookRowView.getReadStart()))
-                        .append(formatCell(bookRowView.getReadEnd()))
-                        .append(formatCell(bookRowView.getFormat()))
-                        .append(formatCell(bookRowView.getSigned()))
-                        .append(formatCell(bookRowView.getLoanedTo()))
+                        .append(formatCell(bookCursorRow.getAnthologyBitMask()))
+                        .append(formatCell(bookCursorRow.getLocation()))
+                        .append(formatCell(bookCursorRow.getReadStart()))
+                        .append(formatCell(bookCursorRow.getReadEnd()))
+                        .append(formatCell(bookCursorRow.getFormat()))
+                        .append(formatCell(bookCursorRow.getSigned()))
+                        .append(formatCell(bookCursorRow.getLoanedTo()))
                         .append(formatCell(ArrayUtils.getTOCUtils().encodeList( mDb.getTOCEntriesByBook(bookId))))
-                        .append(formatCell(bookRowView.getDescription()))
-                        .append(formatCell(bookRowView.getGenre()))
-                        .append(formatCell(bookRowView.getLanguage()))
-                        .append(formatCell(bookRowView.getDateAdded()))
-                        .append(formatCell(bookRowView.getGoodreadsBookId()))
-                        .append(formatCell(bookRowView.getDateLastSyncedWithGoodReads()))
-                        .append(formatCell(bookRowView.getDateLastUpdated()))
-                        .append(formatCell(bookRowView.getBookUuid()))
+                        .append(formatCell(bookCursorRow.getDescription()))
+                        .append(formatCell(bookCursorRow.getGenre()))
+                        .append(formatCell(bookCursorRow.getLanguage()))
+                        .append(formatCell(bookCursorRow.getDateAdded()))
+                        .append(formatCell(bookCursorRow.getGoodreadsBookId()))
+                        .append(formatCell(bookCursorRow.getDateLastSyncedWithGoodReads()))
+                        .append(formatCell(bookCursorRow.getDateLastUpdated()))
+                        .append(formatCell(bookCursorRow.getBookUuid()))
                         .append("\n");
                 out.write(row.toString());
 

@@ -47,7 +47,7 @@ public class EditAuthorDialog {
     public void edit(final @NonNull Author author) {
         final Dialog dialog = new StandardDialogs.BasicDialog(mActivity);
         dialog.setContentView(R.layout.dialog_edit_author);
-        dialog.setTitle(R.string.edit_author_details);
+        dialog.setTitle(R.string.dialog_title_edit_author);
 
         final EditText familyView = dialog.findViewById(R.id.family_name);
         //noinspection ConstantConditions
@@ -62,7 +62,7 @@ public class EditAuthorDialog {
             public void onClick(View v) {
                 String newFamily = familyView.getText().toString().trim();
                 if (newFamily.isEmpty()) {
-                    StandardDialogs.showUserMessage(mActivity, R.string.author_is_blank);
+                    StandardDialogs.showUserMessage(mActivity, R.string.warning_blank_author);
                     return;
                 }
                 String newGiven = givenView.getText().toString().trim();

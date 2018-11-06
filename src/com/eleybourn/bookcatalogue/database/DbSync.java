@@ -257,6 +257,7 @@ public class DbSync {
                 releaseSharedLock();
             }
 
+            @SuppressWarnings("SameReturnValue")
             @NonNull
             @Override
             public LockType getType() {
@@ -275,6 +276,7 @@ public class DbSync {
                 releaseExclusiveLock();
             }
 
+            @SuppressWarnings("SameReturnValue")
             @NonNull
             @Override
             public LockType getType() {

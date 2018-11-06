@@ -23,7 +23,7 @@
             android:textIsSelectable="true" />
 
         <View
-            style="@style/listDividerHorizontal"
+            style="@style/divider_horizontalList"
             android:layout_below="@id/events_found" />
     </RelativeLayout>
 

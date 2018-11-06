@@ -16,7 +16,7 @@
 
         <View
             android:id="@+id/header"
-            style="@style/listDividerHorizontal"
+            style="@style/divider_horizontalList"
             android:layout_alignParentTop="true"
             android:paddingBottom="@dimen/padding_border" />
 

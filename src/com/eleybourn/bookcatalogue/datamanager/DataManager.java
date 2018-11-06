@@ -378,8 +378,11 @@ public class DataManager {
      * The Bundle collection is then used in cross-validation as a second pass, and finally
      * passed to each defined cross-validator.
      *
+     * {@link ValidatorException} are added to {@link #mValidationExceptions}
+     *
      * @return boolean True if all validation passed.
      */
+    @SuppressWarnings("UnusedReturnValue")
     public boolean validate() {
 
         boolean isOk = true;
@@ -407,6 +410,8 @@ public class DataManager {
 
     /**
      * Internal utility routine to perform one loop validating all fields.
+     *
+     * {@link ValidatorException} are added to {@link #mValidationExceptions}
      *
      * @param crossValidating Options indicating if this is a cross validation pass.
      */

@@ -31,18 +31,18 @@ import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
  * class has get*() methods for the most common book-related fields. Passed a Cursor object
  * it will retrieve the specified value using the current cursor row.
  *
- * {@link BooksCursor#getRowView()} returns cached {@link BookRowView} based on the Cursor.
+ * {@link BookCursor#getCursorRow()} returns cached {@link BookCursorRow} based on the Cursor.
  *
  * @author Philip Warner
  */
-public class BookRowView extends BookRowViewBase {
+public class BookCursorRow extends BookCursorRowBase {
 
     private int mPrimaryAuthorCol = -2;
     private int mPrimaryAuthorGivenFirstCol = -2;
     private int mPrimarySeriesCol = -2;
     private int mLoanedToCol = -2;
 
-    public BookRowView(final @NonNull Cursor cursor) {
+    public BookCursorRow(final @NonNull Cursor cursor) {
         super(cursor);
     }
 

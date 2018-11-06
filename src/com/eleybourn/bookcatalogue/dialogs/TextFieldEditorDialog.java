@@ -42,7 +42,7 @@ import com.eleybourn.bookcatalogue.R;
 class TextFieldEditorDialog extends AlertDialog {
     /** View which displays the text */
     private final EditText mTextView;
-    /** Listener for dialog exit/save/onPartialDatePickerCancel */
+    /** Listener for dialog exit/save/cancel */
     private OnTextFieldEditorResultsListener mListener;
 
     /**
@@ -119,6 +119,7 @@ class TextFieldEditorDialog extends AlertDialog {
     public String getText() {
         return mTextView.getText().toString().trim();
     }
+
     /**
      * Listener to receive notifications when dialog is closed by any means.
      *

@@ -88,7 +88,7 @@ public class BookSearchActivity extends BaseActivityWithTasks {
     public static final String BY_SCAN = "scan";
 
     /** optionally limit the sites to search on. By default uses {@link SearchManager#SEARCH_ALL} */
-    public static final String REQUEST_BKEY_SEARCH_SITES = "SearchSites";
+    private static final String REQUEST_BKEY_SEARCH_SITES = "SearchSites";
     /** */
     private static final String SEARCH_MANAGER_ID = "SearchManagerId";
     private static final String SCANNER_STARTED = "ScannerStarted";
@@ -416,7 +416,7 @@ public class BookSearchActivity extends BaseActivityWithTasks {
             }
         } catch (SecurityException e) {
             AlertDialog dialog = new AlertDialog.Builder(BookSearchActivity.this)
-                    .setMessage(R.string.bad_scanner)
+                    .setMessage(R.string.warning_bad_scanner)
                     .setTitle(R.string.install_scan_title)
                     .setIconAttribute(android.R.attr.alertDialogIcon)
                     .create();
@@ -605,7 +605,7 @@ public class BookSearchActivity extends BaseActivityWithTasks {
                         // Verify - this can be a dangerous operation
                         AlertDialog dialog = new AlertDialog.Builder(this)
                                 .setMessage(R.string.duplicate_book_message)
-                                .setTitle(R.string.duplicate_book_title)
+                                .setTitle(R.string.dialog_title_duplicate_book)
                                 .setIconAttribute(android.R.attr.alertDialogIcon)
                                 .create();
 
@@ -615,7 +615,7 @@ public class BookSearchActivity extends BaseActivityWithTasks {
                                         doSearchBook();
                                     }
                                 });
-                        dialog.setButton(AlertDialog.BUTTON_NEUTRAL, getString(R.string.edit_book),
+                        dialog.setButton(AlertDialog.BUTTON_NEUTRAL, getString(R.string.menu_edit_book),
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(final DialogInterface dialog, final int which) {
                                         EditBookActivity.startActivityForResult(BookSearchActivity.this, /* 9e2c0b04-8217-4b49-9937-96d160104265 */

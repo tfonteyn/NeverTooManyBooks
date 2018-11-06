@@ -20,9 +20,11 @@
 
 package com.eleybourn.bookcatalogue.booklist;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
+import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.View;
@@ -32,6 +34,8 @@ import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
+import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter;
+import com.eleybourn.bookcatalogue.adapters.SimpleListAdapterRowActionListener;
 import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyleGroupsActivity.GroupWrapper;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -65,7 +69,7 @@ public class BooklistStyleGroupsActivity extends EditObjectListActivity<GroupWra
      * Constructor
      */
     public BooklistStyleGroupsActivity() {
-        super(R.layout.booklist_style_edit_group_list, R.layout.booklist_style_edit_row, null);
+        super(R.layout.booklist_style_edit_group_list, R.layout.row_edit_booklist_style, null);
     }
 
     @Override
@@ -121,37 +125,7 @@ public class BooklistStyleGroupsActivity extends EditObjectListActivity<GroupWra
         return groups;
     }
 
-    /**
-     * Set up the view for a passed wrapper.
-     */
-    @Override
-    protected void onSetupView(final @NonNull View target, final @NonNull GroupWrapper wrapper) {
-        Holder holder = ViewTagger.getTag(target, R.id.TAG_HOLDER);// value BooklistStyleGroupsActivity.Holder
-        if (holder == null) {
-            // New view, so build the Holder
-            holder = new Holder();
-            holder.name = target.findViewById(R.id.name);
-            holder.present = target.findViewById(R.id.present);
-            // Tag the parts that need it
-            ViewTagger.setTag(target, R.id.TAG_HOLDER, holder);// value BooklistStyleGroupsActivity.Holder
-            ViewTagger.setTag(holder.present, R.id.TAG_HOLDER, holder);// value BooklistStyleGroupsActivity.Holder
 
-            // Handle a click on the CheckedTextView
-            holder.present.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(@NonNull View v) {
-                    Holder h = ViewTagger.getTagOrThrow(v, R.id.TAG_HOLDER);// value BooklistStyleGroupsActivity.Holder
-                    boolean newStatus = !h.wrapper.present;
-                    h.wrapper.present = newStatus;
-                    h.present.setChecked(newStatus);
-                }
-            });
-        }
-        // Setup the variant fields in the holder
-        holder.wrapper = wrapper;
-        holder.name.setText(wrapper.group.getName());
-        holder.present.setChecked(holder.wrapper.present);
-    }
 
     /**
      * Save the style in the resulting Intent
@@ -184,7 +158,44 @@ public class BooklistStyleGroupsActivity extends EditObjectListActivity<GroupWra
 
         return true;
     }
+    protected SimpleListAdapter<GroupWrapper> createListAdapter(final @LayoutRes int rowViewId, final @NonNull ArrayList<GroupWrapper> list) {
+        return new GroupWrapperListAdapter(this,rowViewId,list);
+    }
 
+    protected class GroupWrapperListAdapter extends SimpleListAdapter<GroupWrapper> implements SimpleListAdapterRowActionListener<GroupWrapper> {
+        GroupWrapperListAdapter(final @NonNull Context context, final @LayoutRes int rowViewId, final @NonNull ArrayList<GroupWrapper> items) {
+            super(context, rowViewId, items);
+        }
+
+        @Override
+        public void onGetView(final @NonNull View target, final @NonNull GroupWrapper wrapper) {
+            Holder holder = ViewTagger.getTag(target, R.id.TAG_HOLDER);// value BooklistStyleGroupsActivity.Holder
+            if (holder == null) {
+                // New view, so build the Holder
+                holder = new Holder();
+                holder.name = target.findViewById(R.id.name);
+                holder.present = target.findViewById(R.id.present);
+                // Tag the parts that need it
+                ViewTagger.setTag(target, R.id.TAG_HOLDER, holder);// value BooklistStyleGroupsActivity.Holder
+                ViewTagger.setTag(holder.present, R.id.TAG_HOLDER, holder);// value BooklistStyleGroupsActivity.Holder
+
+                // Handle a click on the CheckedTextView
+                holder.present.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(@NonNull View v) {
+                        Holder h = ViewTagger.getTagOrThrow(v, R.id.TAG_HOLDER);// value BooklistStyleGroupsActivity.Holder
+                        boolean newStatus = !h.wrapper.present;
+                        h.wrapper.present = newStatus;
+                        h.present.setChecked(newStatus);
+                    }
+                });
+            }
+            // Setup the variant fields in the holder
+            holder.wrapper = wrapper;
+            holder.name.setText(wrapper.group.getName());
+            holder.present.setChecked(holder.wrapper.present);
+        }
+    }
     /**
      * We build a list of GroupWrappers which is passed to the underlying class for editing.
      * The wrapper includes extra details needed by this activity.

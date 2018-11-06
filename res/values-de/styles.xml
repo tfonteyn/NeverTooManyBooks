@@ -1,31 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <style name="editorFieldText" parent="@style/editorFieldTextBase">
+    <style name="simpleTextEntry" parent="@style/base_editorField">
         <item name="android:inputType">textCapSentences</item>
     </style>
 
-    <style name="dataEntryButton" parent="@style/editorFieldTextBase">
+    <style name="buttonDataEntry" parent="@style/base_editorField">
         <!-- empty -->
     </style>
 
-    <style name="localeBasedTextEntry" parent="@style/editorFieldText">
-        <!-- -->
+    <style name="base_localeBasedTextEntry" parent="@style/simpleTextEntry">
+        <!-- empty -->
     </style>
 
-    <style name="languageTextEntry" parent="@style/localeBasedTextEntry">
-        <!-- -->
+    <style name="languageTextEntry" parent="@style/base_localeBasedTextEntry">
+        <!-- empty -->
     </style>
 
-    <style name="personalNameTextEntry" parent="@style/localeBasedTextEntry">
-        <!-- -->
+    <style name="personalNameTextEntry" parent="@style/base_localeBasedTextEntry">
+        <!-- empty -->
     </style>
 
-    <style name="bookOrSeriesTitleTextEntry" parent="@style/localeBasedTextEntry">
-        <!-- -->
+    <style name="titleTextEntry" parent="@style/base_localeBasedTextEntry">
+        <!-- empty -->
     </style>
-    <style name="bookFormatTextEntry" parent="@style/localeBasedTextEntry">
-        <!-- -->
+
+    <style name="bookFormatTextEntry" parent="@style/base_localeBasedTextEntry">
+        <!-- empty -->
     </style>
 </resources>
 

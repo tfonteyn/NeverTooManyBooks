@@ -33,14 +33,14 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
-import com.eleybourn.bookcatalogue.database.cursors.BooksCursor;
+import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
 import com.eleybourn.bookcatalogue.datamanager.BitmaskDataAccessor;
 import com.eleybourn.bookcatalogue.datamanager.BooleanDataAccessor;
 import com.eleybourn.bookcatalogue.datamanager.DataAccessor;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.dialogs.CheckListItem;
-import com.eleybourn.bookcatalogue.dialogs.CheckListItemBase;
+import com.eleybourn.bookcatalogue.dialogs.picklist.CheckListItem;
+import com.eleybourn.bookcatalogue.dialogs.picklist.CheckListItemBase;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 
@@ -112,10 +112,10 @@ public class Book extends DataManager {
 
     /* NEWKIND: edition */
     static {
-        EDITIONS.put(EDITION_FIRST, R.string.edition_first_edition);
-        EDITIONS.put(EDITION_FIRST_IMPRESSION, R.string.edition_first_impression);
-        EDITIONS.put(EDITION_LIMITED, R.string.edition_limited);
-        EDITIONS.put(EDITION_BOOK_CLUB, R.string.edition_book_club_edition);
+        EDITIONS.put(EDITION_FIRST, R.string.lbl_edition_first_edition);
+        EDITIONS.put(EDITION_FIRST_IMPRESSION, R.string.lbl_edition_first_impression);
+        EDITIONS.put(EDITION_LIMITED, R.string.lbl_edition_limited);
+        EDITIONS.put(EDITION_BOOK_CLUB, R.string.lbl_edition_book_club);
     }
 
 
@@ -196,7 +196,7 @@ public class Book extends DataManager {
         // Connect to DB and get cursor for book details
         CatalogueDBAdapter db = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
         db.open();
-        try (BooksCursor book = db.fetchBookById(bookId)) {
+        try (BookCursor book = db.fetchBookById(bookId)) {
             if (book.moveToFirst()) {
                 // Put all cursor fields in collection
                 putAll(book);
@@ -486,7 +486,7 @@ public class Book extends DataManager {
 
     private static class EditionCheckListItem extends CheckListItemBase<Integer> {
         @StringRes
-        private int labelId;
+        private final int labelId;
 
         EditionCheckListItem(final @NonNull Integer bit, final @StringRes int labelId, final boolean selected) {
             super(bit, selected);

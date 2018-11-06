@@ -125,7 +125,7 @@ public class EditBookLoanedFragment extends BookAbstractFragment {
     }
 
     @NonNull
-    private ScrollView loadFragmentIntoScrollView(@LayoutRes final int resId) {
+    private ScrollView loadFragmentIntoScrollView(final @LayoutRes int resId) {
         //noinspection ConstantConditions
         ScrollView sv = getView().findViewById(R.id.root);
         sv.removeAllViews();

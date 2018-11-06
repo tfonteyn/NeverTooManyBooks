@@ -30,8 +30,8 @@
         android:orientation="horizontal">
 
         <AutoCompleteTextView
-            android:id="@+id/series"
-            style="@style/bookOrSeriesTitleTextEntry"
+            android:id="@+id/name"
+            style="@style/titleTextEntry"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="2"
@@ -66,7 +66,7 @@
 
         <com.eleybourn.bookcatalogue.widgets.TouchListViewWithDropListener xmlns:tlv="http://schemas.android.com/apk/res/com.eleybourn.bookcatalogue"
             android:id="@android:id/list"
-            style="@style/TouchListView"
+            style="@style/tlv_TouchListView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             tlv:grabber="@+id/grabber"

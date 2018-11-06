@@ -108,7 +108,7 @@ public class BackupFileDetails implements FileDetails {
      * Fill in the details for the view we returned above.
      */
     @Override
-    public void onSetupView(final @NonNull View convertView, final @NonNull Context context) {
+    public void onGetView(final @NonNull View convertView, final @NonNull Context context) {
 
         // Set the basic data
         TextView name = convertView.findViewById(R.id.name);

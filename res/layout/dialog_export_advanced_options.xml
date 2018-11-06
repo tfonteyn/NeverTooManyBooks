@@ -75,7 +75,7 @@
             android:layout_alignBottom="@id/covers_check"
             android:layout_alignParentEnd="true"
             android:layout_toEndOf="@id/covers_check"
-            android:text="@string/cover_images"
+            android:text="@string/btn_cover_images"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <TextView
@@ -116,7 +116,7 @@
             android:layout_alignBottom="@id/preferences_check"
             android:layout_alignParentEnd="true"
             android:layout_toEndOf="@id/preferences_check"
-            android:text="@string/preferences"
+            android:text="@string/dialog_title_preferences"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <TextView

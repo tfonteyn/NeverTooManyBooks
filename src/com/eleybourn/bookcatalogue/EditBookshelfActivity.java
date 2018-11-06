@@ -59,7 +59,7 @@ public class EditBookshelfActivity extends BaseActivity {
     protected void onCreate(final @Nullable Bundle savedInstanceState) {
         try {
             super.onCreate(savedInstanceState);
-            this.setTitle(R.string.title_edit_bs);
+            this.setTitle(R.string.menu_edit_bookshelf);
 
             mDb = new CatalogueDBAdapter(this)
                     .open();

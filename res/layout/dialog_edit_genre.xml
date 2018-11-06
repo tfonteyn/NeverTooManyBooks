@@ -3,13 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/dialogFrame">
 
-    <EditText
+    <AutoCompleteTextView
         android:id="@+id/name"
-        style="@style/editorFieldText"
+        style="@style/simpleTextEntry"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:completionThreshold="2"
-        android:hint="@string/genre"
+        android:hint="@string/not_set"
         tools:ignore="Autofill"/>
 
     <TextView

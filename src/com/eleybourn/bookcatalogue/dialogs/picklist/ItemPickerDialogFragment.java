@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.eleybourn.bookcatalogue.dialogs;
+package com.eleybourn.bookcatalogue.dialogs.picklist;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -34,47 +34,49 @@ import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.RTE;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 /**
- * Fragment wrapper for {@link CheckListEditorDialog}
- *
- * @param <T> type to use for {@link CheckListItem}
+ * Fragment wrapper for {@link ItemPickerDialog}
  */
-public class CheckListEditorDialogFragment<T> extends DialogFragment {
+public class ItemPickerDialogFragment extends DialogFragment {
 
-    public static final String BKEY_CHECK_LIST = "list";
+    public static final String BKEY_ITEM_LIST = "list";
+    public static final String BKEY_MESSAGE = "message";
+    public static final String BKEY_SELECTED_ITEM = "item";
 
     @StringRes
     private int mTitleId;
     @IdRes
     private int mDestinationFieldId;
+
+    private String mMessage = null;
+    private int mSelectedItem = -1;
+
+    @Nullable
+    private ArrayList<ItemPickerDialog.Item> mList;
+
     /**
      * Object to handle changes
      */
-    private final CheckListEditorDialog.OnCheckListEditorResultsListener mEditListener =
-            new CheckListEditorDialog.OnCheckListEditorResultsListener() {
-                /**
-                 * @param <T2>  type to use for {@link CheckListItem}
-                 */
+    private final ItemPickerDialog.OnItemPickerResultsListener mEditListener =
+            new ItemPickerDialog.OnItemPickerResultsListener() {
                 @Override
-                public <T2> void onCheckListEditorSave(final @NonNull CheckListEditorDialog dialog,
-                                                       final @NonNull List<CheckListItem<T2>> list) {
+                public void onItemPickerSave(final @NonNull ItemPickerDialog dialog,
+                                             final @NonNull ItemPickerDialog.Item item) {
                     dialog.dismiss();
-                    ((OnCheckListEditorResultsListener) requireActivity()).onCheckListEditorSave(CheckListEditorDialogFragment.this,
-                            mDestinationFieldId, list);
+                    ((OnItemPickerResultsListener) requireActivity()).onItemPickerSave(ItemPickerDialogFragment.this,
+                            mDestinationFieldId, item);
                 }
 
                 @Override
-                public void onCheckListEditorCancel(final @NonNull CheckListEditorDialog dialog) {
+                public void onItemPickerCancel(final @NonNull ItemPickerDialog dialog) {
                     dialog.dismiss();
-                    ((OnCheckListEditorResultsListener) requireActivity()).onCheckListEditorCancel(CheckListEditorDialogFragment.this,
+                    ((OnItemPickerResultsListener) requireActivity()).onCheckListEditorCancel(ItemPickerDialogFragment.this,
                             mDestinationFieldId);
                 }
             };
-    @Nullable
-    private ArrayList<CheckListItem<T>> mList;
+
 
     /**
      * Ensure activity supports interface
@@ -83,8 +85,8 @@ public class CheckListEditorDialogFragment<T> extends DialogFragment {
     @CallSuper
     public void onAttach(final @NonNull Context context) {
         super.onAttach(context);
-        if (!(context instanceof CheckListEditorDialogFragment.OnCheckListEditorResultsListener)) {
-            throw new RTE.MustImplementException(context, OnCheckListEditorResultsListener.class);
+        if (!(context instanceof ItemPickerDialogFragment.OnItemPickerResultsListener)) {
+            throw new RTE.MustImplementException(context, OnItemPickerResultsListener.class);
         }
     }
 
@@ -93,32 +95,45 @@ public class CheckListEditorDialogFragment<T> extends DialogFragment {
      */
     @NonNull
     @Override
-    public CheckListEditorDialog<T> onCreateDialog(final @Nullable Bundle savedInstanceState) {
+    public ItemPickerDialog onCreateDialog(final @Nullable Bundle savedInstanceState) {
+
         // Restore saved state info
         if (savedInstanceState != null) {
             mTitleId = savedInstanceState.getInt(UniqueId.BKEY_DIALOG_TITLE);
             mDestinationFieldId = savedInstanceState.getInt(UniqueId.BKEY_FIELD_ID);
             // data to edit
-            if (savedInstanceState.containsKey(BKEY_CHECK_LIST)) {
-                mList = ArrayUtils.getListFromBundle(savedInstanceState, BKEY_CHECK_LIST);
+            if (savedInstanceState.containsKey(BKEY_ITEM_LIST)) {
+                mList = ArrayUtils.getListFromBundle(savedInstanceState, BKEY_ITEM_LIST);
+            }
+            if (savedInstanceState.containsKey(BKEY_MESSAGE)) {
+                mMessage = savedInstanceState.getString(BKEY_MESSAGE);
+            }
+            if (savedInstanceState.containsKey(BKEY_SELECTED_ITEM)) {
+                mSelectedItem = savedInstanceState.getInt(BKEY_SELECTED_ITEM, -1);
             }
         } else {
             Bundle args = getArguments();
             Objects.requireNonNull(args);
-            mTitleId = args.getInt(UniqueId.BKEY_DIALOG_TITLE, R.string.edit);
+            mTitleId = args.getInt(UniqueId.BKEY_DIALOG_TITLE, R.string.select_an_action);
             mDestinationFieldId = args.getInt(UniqueId.BKEY_FIELD_ID);
             // data to edit
-            if (args.containsKey(BKEY_CHECK_LIST)) {
-                mList = ArrayUtils.getListFromBundle(args, BKEY_CHECK_LIST);
+            if (args.containsKey(BKEY_ITEM_LIST)) {
+                mList = ArrayUtils.getListFromBundle(args, BKEY_ITEM_LIST);
+            }
+            if (args.containsKey(BKEY_MESSAGE)) {
+                mMessage = args.getString(BKEY_MESSAGE);
+            }
+            if (args.containsKey(BKEY_SELECTED_ITEM)) {
+                mSelectedItem = args.getInt(BKEY_SELECTED_ITEM, -1);
             }
         }
 
-        CheckListEditorDialog<T> editor = new CheckListEditorDialog<>(requireActivity());
+        ItemPickerDialog editor = new ItemPickerDialog(requireActivity(), mMessage);
         if (mTitleId != 0) {
             editor.setTitle(mTitleId);
         }
         if (mList != null) {
-            editor.setList(mList);
+            editor.setList(mList, mSelectedItem);
         }
         editor.setResultsListener(mEditListener);
         return editor;
@@ -130,7 +145,13 @@ public class CheckListEditorDialogFragment<T> extends DialogFragment {
         outState.putInt(UniqueId.BKEY_DIALOG_TITLE, mTitleId);
         outState.putInt(UniqueId.BKEY_FIELD_ID, mDestinationFieldId);
         if (mList != null) {
-            outState.putSerializable(BKEY_CHECK_LIST, mList);
+            outState.putSerializable(BKEY_ITEM_LIST, mList);
+        }
+        if (mMessage != null) {
+            outState.putString(BKEY_MESSAGE, mMessage);
+        }
+        if (mSelectedItem >= 0) {
+            outState.putInt(BKEY_SELECTED_ITEM, mSelectedItem);
         }
         super.onSaveInstanceState(outState);
     }
@@ -142,7 +163,7 @@ public class CheckListEditorDialogFragment<T> extends DialogFragment {
     @CallSuper
     public void onPause() {
         @SuppressWarnings("unchecked")
-        CheckListEditorDialog<T> dialog = (CheckListEditorDialog<T>) getDialog();
+        ItemPickerDialog dialog = (ItemPickerDialog) getDialog();
         if (dialog != null) {
             mList = dialog.getList();
         }
@@ -152,12 +173,12 @@ public class CheckListEditorDialogFragment<T> extends DialogFragment {
     /**
      * Listener interface to receive notifications when dialog is closed by any means.
      */
-    public interface OnCheckListEditorResultsListener {
-        <T2> void onCheckListEditorSave(final @NonNull CheckListEditorDialogFragment dialog,
-                                        final int destinationFieldId,
-                                        final @NonNull List<CheckListItem<T2>> list);
+    public interface OnItemPickerResultsListener {
+        void onItemPickerSave(final @NonNull ItemPickerDialogFragment dialog,
+                                   final int destinationFieldId,
+                                   final @NonNull ItemPickerDialog.Item item);
 
-        void onCheckListEditorCancel(final @NonNull CheckListEditorDialogFragment dialog,
+        void onCheckListEditorCancel(final @NonNull ItemPickerDialogFragment dialog,
                                      final int destinationFieldId);
     }
 }

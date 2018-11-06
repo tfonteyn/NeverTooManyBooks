@@ -20,7 +20,7 @@
 
     <TextView
         android:id="@+id/name"
-        style="@style/fileNameText"
+        style="@style/txt_row_fileName"
         android:layout_alignParentTop="true"
         android:layout_marginTop="@dimen/padding_border"
         android:layout_toEndOf="@id/icon"
@@ -28,7 +28,7 @@
 
     <TextView
         android:id="@+id/details"
-        style="@style/fileInfoText"
+        style="@style/txt_row_fileInfo"
         android:layout_below="@id/name"
         android:paddingEnd="@dimen/padding_book_details_text"
         android:paddingStart="@dimen/padding_book_details_text"
@@ -38,7 +38,7 @@
 
     <TextView
         android:id="@+id/date"
-        style="@style/fileInfoText"
+        style="@style/txt_row_fileInfo"
         android:layout_below="@id/details"
         android:paddingEnd="@dimen/padding_book_details_text"
         android:paddingStart="@dimen/padding_book_details_text"

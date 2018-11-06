@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 
 public class BooleanDataAccessor implements DataAccessor {
-    private String key;
+    private final String key;
 
     public BooleanDataAccessor(final @NonNull String key) {
         this.key = key;

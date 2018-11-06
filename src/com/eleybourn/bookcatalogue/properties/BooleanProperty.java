@@ -27,6 +27,7 @@ import android.support.annotation.StringRes;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 
@@ -57,27 +58,32 @@ public class BooleanProperty extends ValuePropertyWithGlobalDefault<Boolean> imp
     @NonNull
     @Override
     public View getView(final @NonNull LayoutInflater inflater) {
-        // Get the view and setup holder
-        View view = inflater.inflate(R.layout.property_value_boolean, null);
+        final ViewGroup root = (ViewGroup) inflater.inflate(R.layout.row_property_boolean, null);
+
+        // create Holder
         final Holder holder = new Holder();
-
         holder.property = this;
-        holder.cb = view.findViewById(R.id.checkbox);
-        holder.name = view.findViewById(R.id.name);
-        holder.value = view.findViewById(R.id.value);
-
-        ViewTagger.setTag(view, R.id.TAG_PROPERTY, holder);// value BooleanProperty.Holder
-        ViewTagger.setTag(holder.cb, R.id.TAG_PROPERTY, holder);// value BooleanProperty.Holder
-
+        holder.cb = root.findViewById(R.id.checkbox);
         // Set the ID so weird stuff does not happen on activity reload after config changes.
         holder.cb.setId(nextViewId());
-
+        holder.name = root.findViewById(R.id.name);
         holder.name.setText(this.getNameResourceId());
+        holder.value = root.findViewById(R.id.value);
 
-        // Set initial state
+        // tags used
+        ViewTagger.setTag(root, R.id.TAG_PROPERTY, holder);// value BooleanProperty.Holder
+        ViewTagger.setTag(holder.cb, R.id.TAG_PROPERTY, holder);// value BooleanProperty.Holder
+
+        // Set the initial values
         setViewValues(holder, get());
 
         // Setup click handlers for view and checkbox
+        root.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(@NonNull View v) {
+                handleClick(v);
+            }
+        });
         holder.cb.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(@NonNull View v) {
@@ -85,14 +91,7 @@ public class BooleanProperty extends ValuePropertyWithGlobalDefault<Boolean> imp
             }
         });
 
-        view.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(@NonNull View v) {
-                handleClick(v);
-            }
-        });
-
-        return view;
+        return root;
     }
 
     private void handleClick(final @NonNull View view) {

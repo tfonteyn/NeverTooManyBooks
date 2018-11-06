@@ -178,7 +178,7 @@ public class Logger {
                     StorageUtils.renameFile(orig, backup);
                 }
             } catch (Exception ignore) {
-                // Ignore backup onPartialDatePickerCancel...
+                // Ignore backup failure...
             }
             BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(StorageUtils.getErrorLog()), "utf8"), 8192);
             out.write("");

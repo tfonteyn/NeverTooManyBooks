@@ -37,7 +37,7 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UpdateFromInternetActivity;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
-import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
+import com.eleybourn.bookcatalogue.database.cursors.BookCursorRow;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.BookNotFoundException;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.NetworkException;
@@ -132,8 +132,8 @@ public class GoodreadsManager {
     @NonNull
     private static Long mLastRequestTime = 0L;
     /** OAuth helpers */
-    private CommonsHttpOAuthConsumer mConsumer;
-    private OAuthProvider mProvider;
+    private final CommonsHttpOAuthConsumer mConsumer;
+    private final OAuthProvider mProvider;
     /** Local API object */
     @Nullable
     private IsbnToId mIsbnToId = null;
@@ -705,28 +705,28 @@ public class GoodreadsManager {
      * Wrapper to send an entire book, including shelves, to Goodreads.
      *
      * @param db          DB connection
-     * @param bookRowView single book to send
+     * @param bookCursorRow single book to send
      *
      * @return Disposition of book
      */
     @NonNull
     ExportDisposition sendOneBook(final @NonNull CatalogueDBAdapter db,
-                                  final @NonNull BookRowView bookRowView) throws
+                                  final @NonNull BookCursorRow bookCursorRow) throws
             OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException,
             NotAuthorizedException, IOException, NetworkException, BookNotFoundException {
-        long bookId = bookRowView.getId();
+        long bookId = bookCursorRow.getId();
         Bundle grBook = null;
 
         // Get the list of shelves from goodreads. This is cached per instance of GoodreadsManager.
         GoodreadsBookshelves grShelfList = getShelves();
 
         // Get the book ISBN
-        String isbn = bookRowView.getIsbn();
+        String isbn = bookCursorRow.getIsbn();
         long grId;
 
         // See if the book has a goodreads ID and if it is valid.
         try {
-            grId = bookRowView.getGoodreadsBookId();
+            grId = bookCursorRow.getGoodreadsBookId();
             if (grId != 0) {
                 // Get the book details to make sure we have a valid book ID
                 grBook = this.getBookById(grId);
@@ -794,7 +794,7 @@ public class GoodreadsManager {
             // review.update does not seem to update them properly
             if (exclusiveCount == 0) {
                 String pseudoShelf;
-                if (bookRowView.isRead()) {
+                if (bookCursorRow.isRead()) {
                     pseudoShelf = "Read";
                 } else {
                     pseudoShelf = "To Read";
@@ -862,7 +862,7 @@ public class GoodreadsManager {
             try {
                 // Do not sync Notes<->Review. We will add a 'Review' field later.
                 //this.updateReview(reviewId, books.isRead(), books.getReadEnd(), books.getNotes(), ((int)books.getRating()) );
-                this.updateReview(reviewId, bookRowView.isRead(), bookRowView.getReadEnd(), null, ((int) bookRowView.getRating()));
+                this.updateReview(reviewId, bookCursorRow.isRead(), bookCursorRow.getReadEnd(), null, ((int) bookCursorRow.getRating()));
             } catch (BookNotFoundException e) {
                 return ExportDisposition.error;
             }

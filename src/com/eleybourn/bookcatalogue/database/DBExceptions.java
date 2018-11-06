@@ -7,7 +7,7 @@ public class DBExceptions {
 
     /**
      * Should NOT be used when the a search MAY fail.
-     * Only use when the Search MUST NOT fail as this would indicate an integrity onPartialDatePickerCancel
+     * Only use when the Search MUST NOT fail as this would indicate an integrity error
      */
     static class NotFoundException extends RuntimeException {
         NotFoundException(final @Nullable String msg) {

@@ -62,7 +62,7 @@ public class BooklistPreferencesActivity extends PreferencesBaseActivity {
     public static final int BOOKLIST_GENERATE_AUTOMATIC = 4; // default
 
     /** Force list construction to compatible mode (compatible with Android 1.6) (name kept for backwards compatibility) */
-    public static final String PREF_BOOKLIST_GENERATION_MODE = "App.BooklistGenerationMode";
+    private static final String PREF_BOOKLIST_GENERATION_MODE = "App.BooklistGenerationMode";
 
     /** Prefix for all preferences */
     private static final String TAG = "BookList.Global";
@@ -115,10 +115,10 @@ public class BooklistPreferencesActivity extends PreferencesBaseActivity {
                 .add(BOOK_LIST_STATE_PRESERVED, R.string.book_list_state_remember_state);
 
         mBooklistCompatibilityModeListItems.add(null, R.string.use_default_setting)
-                .add(BOOKLIST_GENERATE_OLD_STYLE, R.string.force_compatibility_mode)
-                .add(BOOKLIST_GENERATE_FLAT_TRIGGER, R.string.force_enhanced_compatibility_mode)
-                .add(BOOKLIST_GENERATE_NESTED_TRIGGER, R.string.force_fully_featured)
-                .add(BOOKLIST_GENERATE_AUTOMATIC, R.string.automatically_use_recommended_option);
+                .add(BOOKLIST_GENERATE_OLD_STYLE, R.string.booklist_generation_force_compatibility_mode)
+                .add(BOOKLIST_GENERATE_FLAT_TRIGGER, R.string.booklist_generation_force_enhanced_compatibility_mode)
+                .add(BOOKLIST_GENERATE_NESTED_TRIGGER, R.string.booklist_generation_force_fully_featured)
+                .add(BOOKLIST_GENERATE_AUTOMATIC, R.string.booklist_generation_use_recommended_option);
 
         mCacheThumbnailsListItems.add(null, R.string.use_default_setting)
                 .add(false, R.string.thumbnails_resizing_each_time)

@@ -166,9 +166,10 @@ public class UniqueId {
 
     public static final String KEY_AUTHOR_ID = DOM_AUTHOR_ID.name;
     public static final String KEY_AUTHOR_FAMILY_NAME = DOM_AUTHOR_FAMILY_NAME.name;
-    public static final String KEY_AUTHOR_FORMATTED = DOM_AUTHOR_FORMATTED.name;
     public static final String KEY_AUTHOR_GIVEN_NAMES = DOM_AUTHOR_GIVEN_NAMES.name;
+
     public static final String KEY_AUTHOR_NAME = DOM_AUTHOR_NAME.name;
+    public static final String KEY_AUTHOR_FORMATTED = DOM_AUTHOR_FORMATTED.name;
 
     public static final String KEY_BOOKSHELF_NAME = DOM_BOOKSHELF.name;
 

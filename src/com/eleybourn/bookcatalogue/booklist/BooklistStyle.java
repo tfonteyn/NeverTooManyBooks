@@ -400,19 +400,19 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
                 .setWeight(-99);
 
         mXtraShowBookshelves = new BooleanProperty("XBookshelves",
-                PropertyGroup.GRP_EXTRA_BOOK_DETAILS, R.string.bookshelves)
+                PropertyGroup.GRP_EXTRA_BOOK_DETAILS, R.string.lbl_bookshelves_long)
                 .setPreferenceKey(PREF_SHOW_BOOKSHELVES);
 
         mXtraShowLocation = new BooleanProperty("XLocation",
-                PropertyGroup.GRP_EXTRA_BOOK_DETAILS, R.string.location)
+                PropertyGroup.GRP_EXTRA_BOOK_DETAILS, R.string.lbl_location)
                 .setPreferenceKey(PREF_SHOW_LOCATION);
 
         mXtraShowPublisher = new BooleanProperty("XPublisher",
-                PropertyGroup.GRP_EXTRA_BOOK_DETAILS, R.string.publisher)
+                PropertyGroup.GRP_EXTRA_BOOK_DETAILS, R.string.lbl_publisher)
                 .setPreferenceKey(PREF_SHOW_PUBLISHER);
 
         mXtraShowFormat = new BooleanProperty("XFormat",
-                PropertyGroup.GRP_EXTRA_BOOK_DETAILS, R.string.format)
+                PropertyGroup.GRP_EXTRA_BOOK_DETAILS, R.string.lbl_format)
                 .setPreferenceKey(PREF_SHOW_FORMAT);
 
         mXtraShowAuthor = new BooleanProperty("XAuthor",

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/list_wrapper"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingEnd="@dimen/padding_border"
+    android:paddingStart="@dimen/padding_border">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        style="@style/toolbar" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/toolbar"
+        android:layout_alignParentBottom="true"
+        android:fillViewport="true">
+        <!--android:layout_above="@+id/buttonbar_cancel_save"-->
+
+        <com.eleybourn.bookcatalogue.widgets.TouchListViewWithDropListener xmlns:tlv="http://schemas.android.com/apk/res/com.eleybourn.bookcatalogue"
+            android:id="@android:id/list"
+            style="@style/tlv_TouchListView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tlv:grabber="@+id/grabber"
+            tlv:normal_height="32dp"
+            tlv:remove_mode="none" />
+
+    </ScrollView>
+
+    <!-- not used, leaving as a reminder. All changes are don on-the-fly, a 'cancel' would be the same as 'save' -->
+    <!--<include-->
+        <!--android:id="@+id/buttonbar_cancel_save"-->
+        <!--layout="@layout/inc_buttonbar_cancel_save"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_alignParentBottom="true" />-->
+</RelativeLayout>

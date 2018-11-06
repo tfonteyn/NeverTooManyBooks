@@ -323,7 +323,7 @@ public class StartupActivity extends AppCompatActivity {
         } else {
             AlertDialog dialog = new AlertDialog.Builder(this)
                     .setMessage(Html.fromHtml(UpgradeMessageManager.getUpgradeMessage()))
-                    .setTitle(R.string.upgrade_title)
+                    .setTitle(R.string.about_lbl_upgrade)
                     .setIcon(R.drawable.ic_info_outline)
                     .create();
 

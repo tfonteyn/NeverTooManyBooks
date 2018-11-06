@@ -24,6 +24,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
@@ -45,17 +46,17 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.ListView;
+import android.widget.PopupMenu;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.BooksMultiTypeListHandler.BooklistChangeListener;
 import com.eleybourn.bookcatalogue.adapters.MultiTypeListCursorAdapter;
-import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
+import com.eleybourn.bookcatalogue.baseactivity.BaseListActivity;
 import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;
 import com.eleybourn.bookcatalogue.booklist.BooklistBuilder.BookRowInfo;
 import com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds;
@@ -72,9 +73,7 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
-import com.eleybourn.bookcatalogue.dialogs.StandardDialogs.SimpleDialogItem;
-import com.eleybourn.bookcatalogue.dialogs.StandardDialogs.SimpleDialogMenuItem;
-import com.eleybourn.bookcatalogue.dialogs.StandardDialogs.SimpleDialogOnClickListener;
+import com.eleybourn.bookcatalogue.dialogs.picklist.SelectOneDialog;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.searches.SearchLocalActivity;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue;
@@ -91,7 +90,8 @@ import java.util.Objects;
  *
  * @author Philip Warner
  */
-public class BooksOnBookshelf extends BaseActivity implements BooklistChangeListener {
+public class BooksOnBookshelf extends BaseListActivity implements
+        BooklistChangeListener {
     /** Is book info opened in read-only mode. (old name for backwards compatibility) */
     public static final String PREF_OPEN_BOOK_READ_ONLY = "App.OpenBookReadOnly";
 
@@ -156,7 +156,7 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
     /** Handler to manage all Views on the list */
     private BooksMultiTypeListHandler mListHandler;
     /** Current displayed list cursor */
-    private BooklistPseudoCursor mList;
+    private BooklistPseudoCursor mListCursor;
     /** Multi-type adapter to manage list connection to cursor */
     private MultiTypeListCursorAdapter mAdapter;
     /** Preferred booklist state in next rebuild */
@@ -230,8 +230,6 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
             }
 
             mSearchText = initSearchField(searchText);
-
-            initListItemMenus();
 
             // use the custom fast scroller (the ListView in the XML is our custom version).
             getListView().setFastScrollEnabled(true);
@@ -329,13 +327,13 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
         mTaskQueue.finish();
 
         try {
-            if (mList != null) {
+            if (mListCursor != null) {
                 try {
-                    mList.getBuilder().close();
+                    mListCursor.getBuilder().close();
                 } catch (Exception e) {
                     Logger.error(e);
                 }
-                mList.close();
+                mListCursor.close();
             }
         } catch (Exception e) {
             Logger.error(e);
@@ -352,16 +350,81 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
     }
 
     /**
-     * Handle selections from context menu
+     * * {@link BaseListActivity} enables 'this' as the listener for our ListView
      */
     @Override
-    @CallSuper
-    public boolean onContextItemSelected(final @NonNull MenuItem item) {
-        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-        mList.moveToPosition(info.position);
+    public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long id) {
+        // click on a ROW item in our ListView ?
+        if (view.getId() == R.id.ROW) {
+            mListCursor.moveToPosition(position);
 
-        return mListHandler.onContextItemSelected(mDb, info.targetView, mList.getRowView(), this, item.getItemId())
-                || super.onContextItemSelected(item);
+            switch (mListCursor.getCursorRow().getRowKind()) {
+                // If it's a book, view or edit it.
+                case RowKinds.ROW_KIND_BOOK: {
+                    long bookId = mListCursor.getCursorRow().getBookId();
+                    boolean readOnly = getPrefs().getBoolean(PREF_OPEN_BOOK_READ_ONLY, true);
+
+                    if (readOnly) {
+                        String listTable = mListCursor.getBuilder().createFlattenedBooklist().getTable().getName();
+                        Intent intent = new Intent(BooksOnBookshelf.this, BookDetailsActivity.class);
+                        intent.putExtra(UniqueId.KEY_ID, bookId);
+                        intent.putExtra(BookDetailsActivity.REQUEST_BKEY_FLATTENED_BOOKLIST, listTable);
+                        intent.putExtra(BookDetailsActivity.REQUEST_BKEY_FLATTENED_BOOKLIST_POSITION, position);
+                        startActivityForResult(intent, BookDetailsActivity.REQUEST_CODE); /* e63944b6-b63a-42b1-897a-a0e8e0dabf8a */
+
+                    } else {
+                        EditBookActivity.startActivityForResult(BooksOnBookshelf.this, bookId, EditBookActivity.TAB_EDIT); /* 91b95a7f-17d6-4f98-af58-5f040b52414f */
+                    }
+                    break;
+                }
+                default: {
+                    // If it's level, expand/collapse. Technically, TODO: we could expand/collapse any level
+                    // but storing and recovering the view becomes unmanageable.
+                    if (mListCursor.getCursorRow().getLevel() == 1) {
+                        mListCursor.getBuilder().toggleExpandNode(mListCursor.getCursorRow().getAbsolutePosition());
+                        mListCursor.requery();
+                        mAdapter.notifyDataSetChanged();
+                    }
+                }
+            }
+        }
+
+    }
+
+    /**
+     * Using {@link SelectOneDialog#showContextMenuDialog} for context menus
+     */
+    @Override
+    public void initListViewContextMenuListener(final @NonNull Context context) {
+        getListView().setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(final AdapterView<?> parent, final View view, final int position, final long id) {
+                mListCursor.moveToPosition(position);
+                String menuTitle = mListCursor.getCursorRow().getTitle();
+
+                // legal trick to get an instance of Menu.
+                mListViewContextMenu = new PopupMenu(context, null).getMenu();
+                // custom menuInfo
+                SelectOneDialog.SimpleDialogMenuInfo menuInfo = new SelectOneDialog.SimpleDialogMenuInfo(menuTitle, view, position);
+                // populate the menu
+                mListHandler.prepareListViewContextMenu(mListViewContextMenu, mListCursor.getCursorRow());
+                // display
+                onCreateListViewContextMenu(mListViewContextMenu, view, menuInfo);
+                return true;
+            }
+        });
+    }
+
+    /**
+     * Using {@link SelectOneDialog#showContextMenuDialog} for context menus
+     */
+    @Override
+    public boolean onListViewContextItemSelected(final @NonNull MenuItem menuItem,
+                                                 final @NonNull SelectOneDialog.SimpleDialogMenuInfo menuInfo) {
+        mListCursor.moveToPosition(menuInfo.position);
+
+        return mListHandler.onContextItemSelected(menuItem, menuInfo.targetView,
+                mDb, mListCursor.getCursorRow(), BooksOnBookshelf.this);
     }
 
     /**
@@ -383,13 +446,14 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
                 .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 
         menu.add(Menu.NONE, R.id.MENU_EXPAND, 0, R.string.menu_expand_all)
-                .setIcon(R.drawable.ic_expand_more);
+                .setIcon(R.drawable.ic_unfold_more);
 
         menu.add(Menu.NONE, R.id.MENU_COLLAPSE, 0, R.string.menu_collapse_all)
-                .setIcon(R.drawable.ic_expand_less);
+                .setIcon(R.drawable.ic_unfold_less);
 
         return super.onCreateOptionsMenu(menu);
     }
+
 
     /**
      * This will be called when a menu item is selected. A large switch
@@ -418,9 +482,9 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
                 if (getListView().getChildCount() != 0) {
                     int oldAbsPos = mListHandler.getAbsolutePosition(getListView().getChildAt(0));
                     savePosition();
-                    mList.getBuilder().expandAll(true);
-                    mTopRow = mList.getBuilder().getPosition(oldAbsPos);
-                    displayList(mList.getBuilder().getList(), null);
+                    mListCursor.getBuilder().expandAll(true);
+                    mTopRow = mListCursor.getBuilder().getPosition(oldAbsPos);
+                    displayList(mListCursor.getBuilder().getList(), null);
                 }
                 return true;
             }
@@ -429,9 +493,9 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
                 if (getListView().getChildCount() != 0) {
                     int oldAbsPos = mListHandler.getAbsolutePosition(getListView().getChildAt(0));
                     savePosition();
-                    mList.getBuilder().expandAll(false);
-                    mTopRow = mList.getBuilder().getPosition(oldAbsPos);
-                    displayList(mList.getBuilder().getList(), null);
+                    mListCursor.getBuilder().expandAll(false);
+                    mTopRow = mListCursor.getBuilder().getPosition(oldAbsPos);
+                    displayList(mListCursor.getBuilder().getList(), null);
                 }
                 return true;
             }
@@ -529,14 +593,6 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
     }
 
     /**
-     * Support routine now that this activity is no longer a ListActivity
-     */
-    @NonNull
-    private ListView getListView() {
-        return (ListView) findViewById(android.R.id.list);
-    }
-
-    /**
      * Display the passed cursor in the ListView
      *
      * @param newList    New cursor to use
@@ -556,12 +612,12 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
         }
 
         // Save the old list so we can close it later, and set the new list locally
-        BooklistPseudoCursor oldList = mList;
-        mList = newList;
+        BooklistPseudoCursor oldList = mListCursor;
+        mListCursor = newList;
 
         // Get new handler and adapter since list may be radically different structure
         mListHandler = new BooksMultiTypeListHandler();
-        mAdapter = new MultiTypeListCursorAdapter(this, mList, mListHandler);
+        mAdapter = new MultiTypeListCursorAdapter(this, mListCursor, mListHandler);
 
         // Get the ListView and set it up
         final ListView listView = getListView();
@@ -576,7 +632,7 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
         listView.setFastScrollEnabled(true);
 
         // Restore saved position
-        final int count = mList.getCount();
+        final int count = mListCursor.getCount();
         try {
             if (mTopRow >= count) {
                 mTopRow = count - 1;
@@ -594,8 +650,8 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
             fixPositionWhenDrawn(listView, targetRows);
         }
 
-        final boolean hasLevel1 = (mList.numLevels() > 1);
-        final boolean hasLevel2 = (mList.numLevels() > 2);
+        final boolean hasLevel1 = (mListCursor.numLevels() > 1);
+        final boolean hasLevel2 = (mListCursor.numLevels() > 2);
 
         if (hasLevel2 && (showHeaderFlags & BooklistStyle.SUMMARY_SHOW_LEVEL_2) != 0) {
             listViewHolder.level2Text.setVisibility(View.VISIBLE);
@@ -644,7 +700,7 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
 
         // Close old list
         if (oldList != null) {
-            if (mList.getBuilder() != oldList.getBuilder()) {
+            if (mListCursor.getBuilder() != oldList.getBuilder()) {
                 oldList.getBuilder().close();
             }
             oldList.close();
@@ -715,7 +771,7 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
                     // - put phone in portrait mode
                     // - edit a book near bottom of list
                     // - turn phone to landscape
-                    // - save the book (don't onPartialDatePickerCancel)
+                    // - save the book (don't cancel)
                     // Book will be off bottom of screen without the smoothScroll in the second Runnable.
                     //
                     lv.setSelectionFromTop(best.listPosition, 0);
@@ -760,11 +816,11 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
 
         mLastTop = topItem;
         if (hasLevel1 && (flags & BooklistStyle.SUMMARY_SHOW_LEVEL_1) != 0) {
-            if (mList.moveToPosition(topItem)) {
-                String text = mList.getRowView().getLevel1Data();
+            if (mListCursor.moveToPosition(topItem)) {
+                String text = mListCursor.getCursorRow().getLevel1Data();
                 holder.level1Text.setText(text);
                 if (hasLevel2 && (flags & BooklistStyle.SUMMARY_SHOW_LEVEL_2) != 0) {
-                    text = mList.getRowView().getLevel2Data();
+                    text = mListCursor.getCursorRow().getLevel2Data();
                     holder.level2Text.setText(text);
                 }
             }
@@ -820,73 +876,6 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
         }
 
         return searchText;
-    }
-
-    /**
-     * Add both Click and LongClick to row items
-     */
-    private void initListItemMenus() {
-
-        getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long rowId) {
-                // Move the cursor to the position
-                mList.moveToPosition(position);
-
-                // If it's a book, view or edit it.
-                int kind = mList.getRowView().getRowKind();
-                if (kind == RowKinds.ROW_KIND_BOOK) {
-                    long bookId = mList.getRowView().getBookId();
-                    boolean readOnly = getPrefs().getBoolean(PREF_OPEN_BOOK_READ_ONLY, true);
-
-                    if (readOnly) {
-                        String listTable = mList.getBuilder().createFlattenedBooklist().getTable().getName();
-                        Intent intent = new Intent(BooksOnBookshelf.this, BookDetailsActivity.class);
-                        intent.putExtra(UniqueId.KEY_ID, bookId);
-                        intent.putExtra(BookDetailsActivity.REQUEST_BKEY_FLATTENED_BOOKLIST, listTable);
-                        intent.putExtra(BookDetailsActivity.REQUEST_BKEY_FLATTENED_BOOKLIST_POSITION, position);
-                        startActivityForResult(intent, BookDetailsActivity.REQUEST_CODE); /* e63944b6-b63a-42b1-897a-a0e8e0dabf8a */
-
-                    } else {
-                        EditBookActivity.startActivityForResult(BooksOnBookshelf.this, bookId, EditBookActivity.TAB_EDIT); /* 91b95a7f-17d6-4f98-af58-5f040b52414f */
-                    }
-                } else {
-                    // If it's level, expand/collapse. Technically, TODO: we could expand/collapse any level
-                    // but storing and recovering the view becomes unmanageable.
-                    if (mList.getRowView().getLevel() == 1) {
-                        mList.getBuilder().toggleExpandNode(mList.getRowView().getAbsolutePosition());
-                        mList.requery();
-                        mAdapter.notifyDataSetChanged();
-                    }
-                }
-            }
-        });
-
-        //TOMF: redo this with a standard context menu
-        getListView().setOnItemLongClickListener(new OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(final AdapterView<?> parent, final @NonNull View view, final int position, final long id) {
-                mList.moveToPosition(position);
-                List<SimpleDialogItem> menu = new ArrayList<>();
-                mListHandler.buildContextMenu(mList.getRowView(), menu);
-
-                if (menu.size() > 0) {
-                    StandardDialogs.selectItemDialog(getLayoutInflater(),
-                            null, menu, null,
-                            new SimpleDialogOnClickListener() {
-                                @Override
-                                public void onClick(final @NonNull SimpleDialogItem item) {
-                                    mList.moveToPosition(position);
-                                    int id = ((SimpleDialogMenuItem) item).getItemId();
-
-                                    mListHandler.onContextItemSelected(mDb, view, mList.getRowView(),
-                                            BooksOnBookshelf.this, id);
-                                }
-                            });
-                }
-                return true;
-            }
-        });
     }
 
     private void initHints() {
@@ -1008,8 +997,6 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
         }
     }
 
-    //<editor-fold desc="Booklist Style operations">
-
     /**
      * Save the bookshelf + it's style + the style as the new default.
      */
@@ -1023,6 +1010,8 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
         ed.putString(PREF_LIST_STYLE_FOR_BOOKSHELF + bookshelf.name, style.getCanonicalName());
         ed.apply();
     }
+
+    //<editor-fold desc="Booklist Style operations">
 
     /**
      * get the dedicated style for our bookshelf, or the global one.
@@ -1201,7 +1190,6 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
         // Do a rebuild
         initBookList(true);
     }
-    //</editor-fold>
 
     @NonNull
     private BooklistBuilder getBooklistBuilder() {
@@ -1221,6 +1209,7 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
 
         return builder;
     }
+    //</editor-fold>
 
     /**
      * Queue a rebuild of the underlying cursor and data.
@@ -1268,7 +1257,7 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
 
         /** the builder */
         @NonNull
-        private BooklistBuilder bookListBuilder;
+        private final BooklistBuilder bookListBuilder;
 
         /**
          * Constructor.
@@ -1291,8 +1280,8 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
 
             // If not a full rebuild then just use the current builder to re-query the underlying data
             //noinspection ConstantConditions
-            if (mList != null && !this.isFullRebuild) {
-                bookListBuilder = mList.getBuilder();
+            if (mListCursor != null && !this.isFullRebuild) {
+                bookListBuilder = mListCursor.getBuilder();
             } else {
                 bookListBuilder = getBooklistBuilder();
                 // Build based on our current criteria
@@ -1313,7 +1302,7 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
                     t0 = System.currentTimeMillis();
                 }
                 // Build the underlying data
-                if (mList != null && !this.isFullRebuild) {
+                if (mListCursor != null && !this.isFullRebuild) {
                     bookListBuilder.rebuild();
                 } else {
                     bookListBuilder.build(mRebuildState, mCurrentPositionedBookId);
@@ -1427,8 +1416,8 @@ public class BooksOnBookshelf extends BaseActivity implements BooklistChangeList
             } finally {
                 if (taskContext.isTerminating()) {
                     // onFinish() will not be called, and we can discard our work...
-                    if (tempList != null && tempList != mList) {
-                        if (mList == null || tempList.getBuilder() != mList.getBuilder()) {
+                    if (tempList != null && tempList != mListCursor) {
+                        if (mListCursor == null || tempList.getBuilder() != mListCursor.getBuilder()) {
                             try {
                                 tempList.getBuilder().close();
                             } catch (Exception ignore) {

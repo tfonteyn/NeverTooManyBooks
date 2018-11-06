@@ -77,37 +77,64 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
     @NonNull
     @Override
     public View getView(final @NonNull LayoutInflater inflater) {
-        final ViewGroup root = (ViewGroup) inflater.inflate(R.layout.property_value_list, null);
+        final ViewGroup root = (ViewGroup) inflater.inflate(R.layout.row_property_list, null);
+
+        // create Holder -> not needed here
+
+        // tags used
         ViewTagger.setTag(root, R.id.TAG_PROPERTY, this);// value: ListProperty
-        // Display the list of values when clicked.
+
+        // Try to find the list item that corresponds to the current stored value.
+        ItemEntry<T> currentlyStored = null;
+        for (ItemEntry<T> entry : mList) {
+            if (entry.value == null) {
+                if (get() == null) {
+                    currentlyStored = entry;
+                }
+            } else {
+                if (get() != null && entry.value.equals(get())) {
+                    currentlyStored = entry;
+                }
+            }
+        }
+
+        // Set the initial values
+        TextView text = root.findViewById(R.id.name);
+        text.setText(getName());
+        setValueInView(root, currentlyStored);
+
+        // Setup click handlers for view and edit button
         root.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(@NonNull View view) {
                 handleClick(view, inflater);
             }
         });
-
-        // Set the name
-        TextView text = root.findViewById(R.id.name);
-        text.setText(getName());
-
-        // Try to find the list item that corresponds to the current stored value.
-        ItemEntry<T> entry = null;
-        for (ItemEntry<T> e : mList) {
-            if (e.value == null) {
-                if (get() == null) {
-                    entry = e;
-                }
-            } else {
-                if (get() != null && e.value.equals(get())) {
-                    entry = e;
-                }
+        root.findViewById(R.id.btn_edit).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                handleClick(view, inflater);
             }
-        }
-        // Display current value
-        setValueInView(root, entry);
+        });
 
         return root;
+    }
+
+    /** Set the 'value' field in the passed view to match the passed item. */
+    private void setValueInView(final @NonNull View baseView, final @Nullable ItemEntry<T> item) {
+        TextView view = baseView.findViewById(R.id.value);
+
+        if (item == null) {
+            view.setText("");
+        } else {
+            if (isDefault(item.value)) {
+                view.setTypeface(null, Typeface.NORMAL);
+            } else {
+                view.setTypeface(null, Typeface.BOLD);
+            }
+
+            view.setText(item.getString());
+        }
     }
 
     private void handleClick(final @NonNull View base, final @NonNull LayoutInflater inflater) {
@@ -124,21 +151,6 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
         }
     }
 
-    /** Set the 'value' field in the passed view to match the passed item. */
-    private void setValueInView(final @NonNull View baseView, final @Nullable ItemEntry<T> item) {
-        TextView text = baseView.findViewById(R.id.value);
-
-        if (item == null) {
-            text.setText("");
-        } else {
-            if (isDefault(item.value))
-                text.setTypeface(null, Typeface.NORMAL);
-            else
-                text.setTypeface(null, Typeface.BOLD);
-
-            text.setText(item.getString());
-        }
-    }
 
     /**
      * Called to display a list of values for this property.
@@ -155,7 +167,7 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
 
         // Get the view and the radio group
         @SuppressLint("InflateParams") // root==null as it's a dialog
-        View root = inflater.inflate(R.layout.property_value_list_list, null);
+                View root = inflater.inflate(R.layout.row_property_list_dialog_list, null);
         final AlertDialog dialog = new AlertDialog.Builder(inflater.getContext())
                 .setView(root)
                 .create();
@@ -179,13 +191,14 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
 
                 // Check if this value is the currently selected value
                 boolean selected = false;
-                if (entry.value == null && currentValue == null)
+                if (entry.value == null && currentValue == null) {
                     selected = true;
-                else if (entry.value != null && entry.value.equals(currentValue))
+                } else if (entry.value != null && entry.value.equals(currentValue)) {
                     selected = true;
+                }
 
                 // Make the view for this item
-                View line = inflater.inflate(R.layout.property_value_list_item, radioGroup, false);
+                View line = inflater.inflate(R.layout.row_property_list_dialog_list_item, radioGroup, false);
                 CompoundButton sel = line.findViewById(R.id.selector);
 
                 //Set the various values

@@ -37,7 +37,7 @@ import java.util.Objects;
  * @author Philip Warner
  */
 public class Author implements Serializable, Utils.ItemWithIdFixup {
-    public static final char SEPARATOR = ',';
+    private static final char SEPARATOR = ',';
     private static final long serialVersionUID = 4597779234440821872L;
     public long id;
     public String familyName;

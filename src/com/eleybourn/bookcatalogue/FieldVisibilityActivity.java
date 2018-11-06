@@ -66,32 +66,32 @@ public class FieldVisibilityActivity extends BaseActivity {
         mFields.add(new FieldInfo(UniqueId.KEY_BOOK_ISBN, R.string.isbn, false));
         mFields.add(new FieldInfo(UniqueId.KEY_SERIES_NAME, R.string.series, false));
         mFields.add(new FieldInfo(UniqueId.KEY_SERIES_NUM, R.string.series_num, false));
-        mFields.add(new FieldInfo(UniqueId.KEY_DESCRIPTION, R.string.description, false));
+        mFields.add(new FieldInfo(UniqueId.KEY_DESCRIPTION, R.string.lbl_description, false));
 
-        mFields.add(new FieldInfo(UniqueId.KEY_BOOK_PUBLISHER, R.string.publisher, false));
-        mFields.add(new FieldInfo(UniqueId.KEY_BOOK_DATE_PUBLISHED, R.string.first_publication, false));
-        mFields.add(new FieldInfo(UniqueId.KEY_FIRST_PUBLICATION, R.string.date_published, false));
+        mFields.add(new FieldInfo(UniqueId.KEY_BOOK_PUBLISHER, R.string.lbl_publisher, false));
+        mFields.add(new FieldInfo(UniqueId.KEY_BOOK_DATE_PUBLISHED, R.string.lbl_first_publication, false));
+        mFields.add(new FieldInfo(UniqueId.KEY_FIRST_PUBLICATION, R.string.lbl_date_published, false));
 
-        mFields.add(new FieldInfo(UniqueId.KEY_BOOK_FORMAT, R.string.format, false));
-        mFields.add(new FieldInfo(UniqueId.KEY_BOOK_GENRE, R.string.genre, false));
+        mFields.add(new FieldInfo(UniqueId.KEY_BOOK_FORMAT, R.string.lbl_format, false));
+        mFields.add(new FieldInfo(UniqueId.KEY_BOOK_GENRE, R.string.lbl_genre, false));
         mFields.add(new FieldInfo(UniqueId.KEY_BOOK_LANGUAGE, R.string.lbl_language, false));
-        mFields.add(new FieldInfo(UniqueId.KEY_BOOK_PAGES, R.string.pages, false));
-        mFields.add(new FieldInfo(UniqueId.KEY_BOOK_PRICE_LISTED, R.string.price_listed, false));
+        mFields.add(new FieldInfo(UniqueId.KEY_BOOK_PAGES, R.string.lbl_pages, false));
+        mFields.add(new FieldInfo(UniqueId.KEY_BOOK_PRICE_LISTED, R.string.lbl_price_listed, false));
 
         mFields.add(new FieldInfo(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK, R.string.table_of_content, false));
 
         // **** PERSONAL FIELDS ****
-        mFields.add(new FieldInfo(UniqueId.KEY_BOOKSHELF_NAME, R.string.bookshelf, false));
-        mFields.add(new FieldInfo(UniqueId.KEY_LOAN_LOANED_TO, R.string.loan, false));
-        mFields.add(new FieldInfo(UniqueId.KEY_NOTES, R.string.notes, false));
-        mFields.add(new FieldInfo(UniqueId.KEY_BOOK_LOCATION, R.string.location_of_book, false));
-        mFields.add(new FieldInfo(UniqueId.KEY_BOOK_PRICE_PAID, R.string.price_paid, false));
-        mFields.add(new FieldInfo(UniqueId.KEY_BOOK_READ, R.string.read, false));
-        mFields.add(new FieldInfo(UniqueId.KEY_BOOK_READ_START, R.string.read_start, false));
-        mFields.add(new FieldInfo(UniqueId.KEY_BOOK_READ_END, R.string.read_end, false));
-        mFields.add(new FieldInfo(UniqueId.KEY_BOOK_EDITION_BITMASK, R.string.edition, false));
-        mFields.add(new FieldInfo(UniqueId.KEY_BOOK_SIGNED, R.string.signed, false));
-        mFields.add(new FieldInfo(UniqueId.KEY_BOOK_RATING, R.string.rating, false));
+        mFields.add(new FieldInfo(UniqueId.KEY_BOOKSHELF_NAME, R.string.lbl_bookshelf, false));
+        mFields.add(new FieldInfo(UniqueId.KEY_LOAN_LOANED_TO, R.string.lbl_loaned_to, false));
+        mFields.add(new FieldInfo(UniqueId.KEY_NOTES, R.string.lbl_notes, false));
+        mFields.add(new FieldInfo(UniqueId.KEY_BOOK_LOCATION, R.string.lbl_location_long, false));
+        mFields.add(new FieldInfo(UniqueId.KEY_BOOK_PRICE_PAID, R.string.lbl_price_paid, false));
+        mFields.add(new FieldInfo(UniqueId.KEY_BOOK_READ, R.string.lbl_read, false));
+        mFields.add(new FieldInfo(UniqueId.KEY_BOOK_READ_START, R.string.lbl_read_start, false));
+        mFields.add(new FieldInfo(UniqueId.KEY_BOOK_READ_END, R.string.lbl_read_end, false));
+        mFields.add(new FieldInfo(UniqueId.KEY_BOOK_EDITION_BITMASK, R.string.lbl_edition, false));
+        mFields.add(new FieldInfo(UniqueId.KEY_BOOK_SIGNED, R.string.lbl_signed, false));
+        mFields.add(new FieldInfo(UniqueId.KEY_BOOK_RATING, R.string.lbl_rating, false));
 
         //NEWKIND: new fields
     }

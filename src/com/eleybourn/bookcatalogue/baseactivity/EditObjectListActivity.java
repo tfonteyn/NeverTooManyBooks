@@ -21,11 +21,11 @@
 package com.eleybourn.bookcatalogue.baseactivity;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.IdRes;
+import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.View;
@@ -36,6 +36,7 @@ import android.widget.TextView;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter;
+import com.eleybourn.bookcatalogue.adapters.SimpleListAdapterRowActionListener;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
@@ -53,38 +54,55 @@ import java.util.Objects;
  * which will be automatically handled. Optional IDs are noted:
  *
  * Main View:
- * - onPartialDatePickerCancel
- * - confirm
- * - add (OPTIONAL)
+ * - R.id.cancel
+ * - R.id.confirm
+ * - R.id.add (OPTIONAL)
  *
- * Row View must have layout ID set to "@id/ROW" (defined in ids.xml)
+ * Row view:
  *
- * The row view is tagged using TAG_ROW_POSITION, to save the rows position for
- * use when moving the row up/down or deleting it.
+ * {@link #createListAdapter} needs to be implemented returning a suitable {@link SimpleListAdapter}
+ * which implements {@link SimpleListAdapterRowActionListener}.
+ * The method {@link SimpleListAdapterRowActionListener<T>#onGetView} should be implemented.
+ * Others are optional to override.
  *
- * Abstract method {@link #onSetupView} should be implemented by all.
  * Method {@link #onAdd} has an implementation that throws an {@link UnsupportedOperationException}
- * So if your list supports adding to, you must implement the onAdd.
+ * So if your list supports adding to, you must implement {@link #onAdd}.
+ *
  *
  * This Activity uses {@link TouchListViewWithDropListener} extended from {@link TouchListView}
  * from CommonsWare which is in turn based on Android code
  * for TouchInterceptor which was (reputedly) removed in Android 2.2.
  *
- * For this code to work, the  main view must contain:
- *
- * - {@link TouchListViewWithDropListener} with id = @android:id/list
- * - with the following attributes:
- * -    tlv:ic_grabber="@+id/<SOME ID FOR AN IMAGE>" (eg. "@+id/ic_grabber")
- * -    tlv:remove_mode="none"
- * -    tlv:normal_height="64dip" ---- or some similar value
+ * For this code to work, the  main view must contain a {@link TouchListViewWithDropListener}
+ * <pre>
+ *     id:
+ *        android:id="@android:id/list"
+ *     attributes:
+ *        tlv:ic_grabber="@+id/<SOME ID FOR AN IMAGE>" (eg. "@+id/ic_grabber")
+ *        tlv:remove_mode="none"
+ *        tlv:normal_height="64dip" ---- or some similar value
+ *  </pre>
  *
  * Each row view must have:
  *
- * - an ID of "@id/ROW"
- * - an {@link ImageView} with an ID of "@+id/<SOME ID FOR AN IMAGE>" (eg. "@+id/ic_grabber")
- * - (OPTIONAL) a subview with an ID of "@+d/ROW_DETAILS"; when clicked, this will result
- * -            in the {@link #onRowClick} event. If not present, then the
- * -            {@link #onRowClick} is set on the "@id/ROW"
+ * Relevant id's predefined in ids.xml:
+ * <pre>
+ *  		<item name="ROW" type="id"/>
+ *  		<item name="ROW_DETAILS" type="id"/>
+ *      	<item name="TAG_ROW_POSITION" type="id" />
+ *  </pre>
+ *
+ * The row view is tagged using TAG_ROW_POSITION, to save the rows position for
+ * use when moving the row up/down or deleting it.
+ * <pre>
+ *      android:id="@id/ROW"    for the root of the row view
+ *
+ *      {@link ImageView} with an ID of "@+id/<SOME ID FOR AN IMAGE>" (eg. "@+id/ic_grabber")
+ *
+ *      (OPTIONAL) a subview with an ID of "@+d/ROW_DETAILS"; which when clicked, will result
+ *                 in the {@link SimpleListAdapterRowActionListener<T>#onRowClick} event.
+ *                 If not present, then the event is set on "@id/ROW"
+ * </pre>
  *
  * @param <T> the object type as used in the List
  *
@@ -96,8 +114,10 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Bas
     @Nullable
     private final String mBKey;
     /** The resource ID for the base view */
+    @LayoutRes
     private final int mBaseViewId;
     /** The resource ID for the row view */
+    @LayoutRes
     private final int mRowViewId;
     /**
      * Handle 'Cancel'
@@ -111,16 +131,6 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Bas
                 13854efe-e8fd-447a-a195-47678c0d87e7 */
                 finish();
             }
-        }
-    };
-    /**
-     * Handle 'Add'
-     */
-    private final OnClickListener mAddListener = new OnClickListener() {
-        @Override
-        public void onClick(@NonNull View v) {
-            onAdd(v);
-            onListChanged();
         }
     };
     /** the rows */
@@ -141,7 +151,17 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Bas
             }
         }
     };
-    protected EditObjectListAdapter mAdapter;
+    protected SimpleListAdapter<T> mAdapter;
+    /**
+     * Handle 'Add'
+     */
+    private final OnClickListener mAddListener = new OnClickListener() {
+        @Override
+        public void onClick(@NonNull View v) {
+            onAdd(v);
+            mAdapter.onListChanged();
+        }
+    };
     protected CatalogueDBAdapter mDb;
     @Nullable
     protected String mBookTitle;
@@ -153,13 +173,124 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Bas
      *
      * @param baseViewId Resource id of base view
      * @param rowViewId  Resource id of row view
-     * @param bkey       The key to use in the Bundle to get the array
+     * @param bkey       The key to use in the Bundle to get the list
      */
-    protected EditObjectListActivity(final int baseViewId, final int rowViewId, final @Nullable String bkey) {
+    protected EditObjectListActivity(final @LayoutRes int baseViewId,
+                                     final @LayoutRes int rowViewId,
+                                     final @Nullable String bkey) {
         mBKey = bkey;
         mBaseViewId = baseViewId;
         mRowViewId = rowViewId;
     }
+
+    @Override
+    protected int getLayoutId() {
+        return mBaseViewId;
+    }
+
+    @Override
+    @CallSuper
+    protected void onCreate(final @Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        try {
+            // Setup the DB
+            mDb = new CatalogueDBAdapter(this);
+            mDb.open();
+
+            mList = getList(savedInstanceState, mBKey);
+            initListAdapter(mList);
+
+            // Look for id and title
+            Bundle extras = getIntent().getExtras();
+            if (extras != null) {
+                mRowId = extras.getLong(UniqueId.KEY_ID);
+
+                mBookTitle = extras.getString(UniqueId.KEY_TITLE);
+                setTextOrHideView(R.id.title, mBookTitle);
+            }
+
+            // Add handlers for 'Save', 'Cancel' and 'Add' (if resources are defined)
+            setOnClickListener(R.id.confirm, mSaveListener);
+            setOnClickListener(R.id.cancel, mCancelListener);
+            setOnClickListener(R.id.add, mAddListener);
+
+        } catch (Exception e) {
+            Logger.error(e);
+        }
+    }
+
+    /**
+     * try to load the list from:
+     * 1. savedInstanceState ?
+     * 2. intent extras ?
+     * 3. getList() from child ?
+     * 4. throw FATAL error
+     */
+    @NonNull
+    private ArrayList<T> getList(final @Nullable Bundle savedInstanceState, String key) {
+        ArrayList<T> list = null;
+
+        // we need the ArrayList before building the adapter.
+        if (key != null) {
+            if (savedInstanceState != null && savedInstanceState.containsKey(key)) {
+                list = ArrayUtils.getListFromBundle(savedInstanceState, key);
+            }
+            // not in savedInstanceState ? check the intent
+            if (list == null) {
+                list = ArrayUtils.getListFromIntentExtras(getIntent(), key);
+            }
+        }
+        // still nothing ? Then ask the subclass to setup the list
+        if (list == null) {
+            list = getList();
+        }
+        // give up if still null
+        Objects.requireNonNull(list, "Unable to find list for key '" + key + "'");
+
+        return list;
+    }
+
+    /**
+     * Called to get the list if it was not in the intent.
+     * Override to make it do something
+     */
+    @Nullable
+    protected ArrayList<T> getList() {
+        return null;
+    }
+
+    /**
+     * Replace the current list
+     */
+    protected void setList(final @NonNull ArrayList<T> newList) {
+        View listView = this.getListView().getChildAt(0);
+        final int savedTop = listView == null ? 0 : listView.getTop();
+        final int savedRow = this.getListView().getFirstVisiblePosition();
+
+        mList = newList;
+        initListAdapter(mList);
+
+        getListView().post(new Runnable() {
+            @Override
+            public void run() {
+                getListView().setSelectionFromTop(savedRow, savedTop);
+            }
+        });
+    }
+
+    /**
+     * Set up list handling
+     */
+    private void initListAdapter(ArrayList<T> list) {
+        this.mAdapter = createListAdapter(mRowViewId, list);
+        setListAdapter(this.mAdapter);
+    }
+
+    /**
+     * get the specific list adapter from the child class
+     */
+    abstract protected SimpleListAdapter<T> createListAdapter(final @LayoutRes int rowViewId, final @NonNull ArrayList<T> list);
+
 
     /**
      * Called when user clicks the 'Add' button (if present).
@@ -167,65 +298,13 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Bas
      * @param target The view that was clicked ('add' button).
      */
     protected void onAdd(final @NonNull View target) {
-        throw new UnsupportedOperationException("Unexpected call to 'onAdd'");
-    }
-
-    /**
-     * Call to set up the row view.
-     *
-     * @param target The target row view object
-     * @param object The object (or type T) from which to draw values.
-     */
-    abstract protected void onSetupView(final @NonNull View target, final @NonNull T object);
-
-    protected void onListChanged() {
-    }
-
-    /**
-     * Called when an otherwise inactive part of the row is clicked.
-     * Optional to implement, by default does nothing.
-     *
-     * @param target The view clicked
-     * @param object The object associated with this row
-     */
-    protected void onRowClick(final @NonNull View target, final @NonNull T object, final int position) {
-    }
-
-    /**
-     * Called when an otherwise inactive part of the row is long clicked.
-     *
-     * @param target The view clicked
-     * @param object The object associated with this row
-     *
-     * @return <tt>true</tt>if handled
-     */
-    @SuppressWarnings({"unused", "SameReturnValue"})
-    @CallSuper
-    protected boolean onRowLongClick(final @NonNull View target, final @NonNull T object, final int position) {
-        return true;
-    }
-
-    /**
-     * @return true if delete is allowed to happen
-     */
-    @SuppressWarnings({"unused", "SameReturnValue"})
-    @CallSuper
-    protected boolean onRowDelete(final @NonNull View target, final @NonNull T object, final int position) {
-        return true;
-    }
-
-    @SuppressWarnings({"unused", "EmptyMethod"})
-    protected void onRowDown(final @NonNull View target, final @NonNull T object, final int position) {
-    }
-
-    @SuppressWarnings({"unused", "EmptyMethod"})
-    protected void onRowUp(final @NonNull View target, final @NonNull T object, final int position) {
+        throw new UnsupportedOperationException("Must be overridden");
     }
 
     /**
      * Called when user clicks the 'Save' button (if present). Primary task is
      * to return a boolean indicating it is OK to continue.
-     * <p>
+     *
      * Can be overridden to perform other checks.
      *
      * @param intent A newly created Intent to store output if necessary.
@@ -249,88 +328,6 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Bas
         return true;
     }
 
-    /**
-     * Called to get the list if it was not in the intent.
-     */
-    @Nullable
-    protected ArrayList<T> getList() {
-        return null;
-    }
-
-    /**
-     * Replace the current list
-     */
-    protected void setList(ArrayList<T> newList) {
-        View listView = this.getListView().getChildAt(0);
-        final int savedTop = listView == null ? 0 : listView.getTop();
-        final int savedRow = this.getListView().getFirstVisiblePosition();
-
-        this.mList = newList;
-        // Set up list handling
-        this.mAdapter = new EditObjectListAdapter(this, mRowViewId, mList);
-        setListAdapter(this.mAdapter);
-
-        getListView().post(new Runnable() {
-            @Override
-            public void run() {
-                getListView().setSelectionFromTop(savedRow, savedTop);
-            }
-        });
-    }
-
-    @Override
-    protected int getLayoutId() {
-        return mBaseViewId;
-    }
-
-    @Override
-    @CallSuper
-    protected void onCreate(final @Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        try {
-            // Setup the DB
-            mDb = new CatalogueDBAdapter(this);
-            mDb.open();
-
-            // Add handlers for 'Save', 'Cancel' and 'Add' (if resources are defined)
-            setOnClickListener(R.id.confirm, mSaveListener);
-            setOnClickListener(R.id.cancel, mCancelListener);
-            setOnClickListener(R.id.add, mAddListener);
-
-            // we need the ArrayList before building the adapter.
-            if (mBKey != null) {
-                if (savedInstanceState != null && savedInstanceState.containsKey(mBKey)) {
-                    mList = ArrayUtils.getListFromBundle(savedInstanceState, mBKey);
-                }
-                // not in savedInstanceState ? check the intent
-                if (mList == null) {
-                    mList = ArrayUtils.getListFromIntentExtras(getIntent(), mBKey);
-                }
-            }
-            // still nothing ? Then ask the subclass to setup the list
-            if (mList == null) {
-                mList = getList();
-            }
-            // give up if still null
-            Objects.requireNonNull(mList, "Unable to find list for key '" + mBKey + "'");
-
-            // Set up list handling
-            this.mAdapter = new EditObjectListAdapter(this, mRowViewId, mList);
-            setListAdapter(this.mAdapter);
-
-            // Look for id and title
-            Bundle extras = getIntent().getExtras();
-            if (extras != null) {
-                mRowId = extras.getLong(UniqueId.KEY_ID);
-
-                mBookTitle = extras.getString(UniqueId.KEY_TITLE);
-                setTextOrHideView(R.id.title, mBookTitle);
-            }
-
-        } catch (Exception e) {
-            Logger.error(e);
-        }
-    }
 
     /**
      * Utility routine to setup a listener for the specified view id
@@ -339,9 +336,9 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Bas
      * @param listener Listener
      */
     private void setOnClickListener(final @IdRes int viewId, final @NonNull OnClickListener listener) {
-        View v = this.findViewById(viewId);
-        if (v != null) {
-            v.setOnClickListener(listener);
+        View view = this.findViewById(viewId);
+        if (view != null) {
+            view.setOnClickListener(listener);
         }
     }
 
@@ -356,11 +353,12 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Bas
         if (textView == null) {
             return;
         }
+
         if (value == null || value.isEmpty()) {
             textView.setVisibility(View.GONE);
-            return;
+        } else {
+            textView.setText(value);
         }
-        textView.setText(value);
     }
 
     /**
@@ -403,55 +401,5 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Bas
         }
         super.onDestroy();
         Tracker.exitOnDestroy(this);
-    }
-
-    /**
-     * bit of a kludge .. {@link SimpleListAdapter} is encapsulation here, and not extension.
-     * So wrap it up in this dummy class.
-     * probably needs an interface
-     */
-    protected class EditObjectListAdapter extends SimpleListAdapter<T> {
-        EditObjectListAdapter(final @NonNull Context context, final int rowViewId, final @NonNull ArrayList<T> items) {
-            super(context, rowViewId, items);
-        }
-
-        @Override
-        protected void onSetupView(final @NonNull View convertView, final @NonNull T item) {
-            EditObjectListActivity.this.onSetupView(convertView, item);
-        }
-
-        @Override
-        protected void onRowClick(final @NonNull View target, final @NonNull T item, final int position) {
-            EditObjectListActivity.this.onRowClick(target, item, position);
-        }
-
-        @Override
-        @CallSuper
-        protected boolean onRowLongClick(final @NonNull View target, final @NonNull T item, final int position) {
-            super.onRowLongClick(target, item, position);
-            return EditObjectListActivity.this.onRowLongClick(target, item, position);
-        }
-
-        @Override
-        protected void onListChanged() {
-            EditObjectListActivity.this.onListChanged();
-        }
-
-        @Override
-        @CallSuper
-        protected boolean onRowDelete(final @NonNull View target, final @NonNull T item, final int position) {
-            super.onRowDelete(target, item, position);
-            return EditObjectListActivity.this.onRowDelete(target, item, position);
-        }
-
-        @Override
-        protected void onRowDown(final @NonNull View target, final @NonNull T item, final int position) {
-            EditObjectListActivity.this.onRowDown(target, item, position);
-        }
-
-        @Override
-        protected void onRowUp(final @NonNull View target, final @NonNull T item, final int position) {
-            EditObjectListActivity.this.onRowUp(target, item, position);
-        }
     }
 }

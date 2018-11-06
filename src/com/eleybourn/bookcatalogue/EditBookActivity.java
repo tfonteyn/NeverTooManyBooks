@@ -38,8 +38,8 @@ import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.datamanager.DataEditor;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
-import com.eleybourn.bookcatalogue.dialogs.CheckListEditorDialogFragment;
-import com.eleybourn.bookcatalogue.dialogs.CheckListItem;
+import com.eleybourn.bookcatalogue.dialogs.picklist.CheckListEditorDialogFragment;
+import com.eleybourn.bookcatalogue.dialogs.picklist.CheckListItem;
 import com.eleybourn.bookcatalogue.dialogs.PartialDatePickerDialogFragment;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.dialogs.TextFieldEditorDialogFragment;
@@ -150,7 +150,7 @@ public class EditBookActivity extends BookBaseActivity implements
 
             holder = new Holder();
             holder.fragment = (Fragment) mTabClasses[TAB_EDIT_NOTES].newInstance();
-            tab = mTabLayout.newTab().setText(R.string.notes).setTag(holder);
+            tab = mTabLayout.newTab().setText(R.string.lbl_notes).setTag(holder);
             mTabLayout.addTab(tab);
             mAllTabs.add(tab);
 
@@ -160,7 +160,7 @@ public class EditBookActivity extends BookBaseActivity implements
             if (isExistingBook && Fields.isVisible(UniqueId.KEY_LOAN_LOANED_TO)) {
                 holder = new Holder();
                 holder.fragment = (Fragment) mTabClasses[TAB_EDIT_LOANS].newInstance();
-                tab = mTabLayout.newTab().setText(R.string.loan).setTag(holder);
+                tab = mTabLayout.newTab().setText(R.string.lbl_loaned_to).setTag(holder);
                 mTabLayout.addTab(tab);
                 mAllTabs.add(tab);
             }
@@ -297,7 +297,7 @@ public class EditBookActivity extends BookBaseActivity implements
      * passed nextStep parameter will be executed. Passing nextStep is necessary because
      * this method may return after displaying a dialogue.
      *
-     * @param nextStep The next step to be executed on onTextFieldEditorSave/onPartialDatePickerCancel.
+     * @param nextStep The next step to be executed on confirm/cancel.
      */
     private void saveBook(final @NonNull PostConfirmOrCancelAction nextStep) {
         DataEditor dataEditorFragment = (DataEditor) getSupportFragmentManager().findFragmentById(R.id.fragment);
@@ -311,11 +311,11 @@ public class EditBookActivity extends BookBaseActivity implements
 
         // However, there is some data that we really do require...
         if (mBook.getAuthorList().size() == 0) {
-            StandardDialogs.showUserMessage(this, R.string.required_author);
+            StandardDialogs.showUserMessage(this, R.string.warning_required_author);
             return;
         }
         if (!mBook.containsKey(UniqueId.KEY_TITLE) || mBook.getString(UniqueId.KEY_TITLE).isEmpty()) {
-            StandardDialogs.showUserMessage(this, R.string.required_title);
+            StandardDialogs.showUserMessage(this, R.string.warning_required_title);
             return;
         }
 
@@ -329,7 +329,7 @@ public class EditBookActivity extends BookBaseActivity implements
                  */
                 AlertDialog dialog = new AlertDialog.Builder(this)
                         .setMessage(getString(R.string.duplicate_book_message))
-                        .setTitle(R.string.duplicate_book_title)
+                        .setTitle(R.string.dialog_title_duplicate_book)
                         .setIconAttribute(android.R.attr.alertDialogIcon)
                         .create();
 

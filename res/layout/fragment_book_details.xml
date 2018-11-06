@@ -14,7 +14,7 @@
 
         <TextView
             android:id="@+id/loaned_to"
-            style="@style/bookDetailText"
+            style="@style/txt_row_bookDetail"
             android:background="?android:attr/colorForeground"
             android:gravity="center"
             android:textAppearance="?android:attr/textAppearanceLargeInverse"
@@ -36,7 +36,7 @@
 
                 <TextView
                     android:id="@+id/title"
-                    style="@style/title"
+                    style="@style/txt_row_bookMajorDetail"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_alignWithParentIfMissing="true"
@@ -57,7 +57,7 @@
 
                 <CheckedTextView
                     android:id="@+id/read"
-                    style="@style/read_checkbox"
+                    style="@style/cbx_read"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentTop="true"
@@ -89,7 +89,7 @@
 
                     <TextView
                         android:id="@+id/lbl_isbn"
-                        style="@style/bookDetailLabel"
+                        style="@style/lbl_textField"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:paddingStart="6dp"
@@ -98,7 +98,7 @@
 
                     <TextView
                         android:id="@+id/isbn"
-                        style="@style/bookMinorDetailText"
+                        style="@style/txt_row_bookMinorDetail"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textIsSelectable="true"
@@ -114,7 +114,7 @@
 
                     <TextView
                         android:id="@+id/pages"
-                        style="@style/bookMinorDetailText"
+                        style="@style/txt_row_bookMinorDetail"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:paddingStart="@dimen/padding_border"
@@ -124,7 +124,7 @@
 
                     <TextView
                         android:id="@+id/format"
-                        style="@style/bookMinorDetailText"
+                        style="@style/txt_row_bookMinorDetail"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textIsSelectable="true"
@@ -132,7 +132,7 @@
                 </LinearLayout>
             </RelativeLayout>
 
-            <!-- layout_height for image_wrapper used to be wrap_content but caused the image to disappear??? wtf? -->
+            <!-- FIXME: why this wrapper ? -->
             <RelativeLayout
                 android:id="@+id/row_image"
                 android:layout_width="0dp"
@@ -143,24 +143,22 @@
                 <ImageView
                     android:id="@+id/coverImage"
                     style="@style/coverImage"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:contentDescription="@string/thumbnail"
-                    tools:src="@drawable/ic_image" />
+                    tools:src="@drawable/ic_image"
+                    tools:ignore="ContentDescription" />
             </RelativeLayout>
         </LinearLayout>
 
-        <View style="@style/listDividerHorizontal" />
+        <View style="@style/divider_horizontalList" />
 
         <!-- Series -->
         <TextView
             android:id="@+id/lbl_series"
-            style="@style/bookDetailLabel"
+            style="@style/lbl_textField"
             android:text="@string/series" />
 
         <TextView
-            android:id="@+id/series"
-            style="@style/bookDetailText"
+            android:id="@+id/name"
+            style="@style/txt_row_bookDetail"
             android:textIsSelectable="true"
             tools:text="Series name (1)\nSeries name (2)" />
 
@@ -174,7 +172,7 @@
             tools:visibility="visible">
 
             <TextView
-                style="@style/bookDetailLabel"
+                style="@style/lbl_textField"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/table_of_content" />
@@ -205,7 +203,7 @@
         <!-- Publishing -->
         <TextView
             android:id="@+id/lbl_publishing"
-            style="@style/bookDetailLabel"
+            style="@style/lbl_textField"
             android:text="@string/book_details_readonly_publishing" />
 
         <LinearLayout
@@ -215,7 +213,7 @@
 
             <TextView
                 android:id="@+id/publisher"
-                style="@style/bookDetailText"
+                style="@style/txt_row_bookDetail"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textIsSelectable="true"
@@ -225,24 +223,24 @@
         <!-- Book Shelves -->
         <TextView
             android:id="@+id/lbl_bookshelves"
-            style="@style/bookDetailLabel"
-            android:text="@string/bookshelves" />
+            style="@style/lbl_textField"
+            android:text="@string/lbl_bookshelves_long" />
 
         <TextView
             android:id="@+id/bookshelves"
-            style="@style/bookDetailText"
+            style="@style/txt_row_bookDetail"
             android:textIsSelectable="true"
             tools:text="The best books, Wanted" />
 
         <!-- Genre -->
         <TextView
             android:id="@+id/lbl_genre"
-            style="@style/bookDetailLabel"
-            android:text="@string/genre" />
+            style="@style/lbl_textField"
+            android:text="@string/lbl_genre" />
 
         <TextView
             android:id="@+id/genre"
-            style="@style/bookDetailText"
+            style="@style/txt_row_bookDetail"
             android:textIsSelectable="true"
             tools:text="Science Fiction" />
 
@@ -257,12 +255,12 @@
 
                 <TextView
                     android:id="@+id/lbl_language"
-                    style="@style/bookDetailLabel"
+                    style="@style/lbl_textField"
                     android:text="@string/lbl_language" />
 
                 <TextView
                     android:id="@+id/language"
-                    style="@style/bookDetailText"
+                    style="@style/txt_row_bookDetail"
                     android:textIsSelectable="true"
                     tools:text="Quenya" />
             </TableRow>
@@ -273,12 +271,12 @@
                 android:layout_height="wrap_content">
 
                 <TextView
-                    style="@style/bookDetailLabel"
-                    android:text="@string/first_publication" />
+                    style="@style/lbl_textField"
+                    android:text="@string/lbl_first_publication" />
 
                 <TextView
                     android:id="@+id/first_publication"
-                    style="@style/bookDetailText"
+                    style="@style/txt_row_bookDetail"
                     android:layout_weight="1"
                     android:textIsSelectable="true"
                     tools:text="1938" />
@@ -290,12 +288,12 @@
                 android:layout_height="wrap_content">
 
                 <TextView
-                    style="@style/bookDetailLabel"
-                    android:text="@string/price_listed" />
+                    style="@style/lbl_textField"
+                    android:text="@string/lbl_price_listed" />
 
                 <TextView
                     android:id="@+id/price_listed"
-                    style="@style/bookDetailText"
+                    style="@style/txt_row_bookDetail"
                     android:layout_weight="1"
                     android:textIsSelectable="true"
                     tools:text="$45" />
@@ -308,20 +306,20 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:text="@string/notes"
+            android:text="@string/lbl_notes"
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
-        <View style="@style/listDividerHorizontal" />
+        <View style="@style/divider_horizontalList" />
 
         <!-- Notes -->
         <TextView
             android:id="@+id/lbl_notes"
-            style="@style/bookDetailLabel"
-            android:text="@string/edit_book_notes" />
+            style="@style/lbl_textField"
+            android:text="@string/menu_edit_book_notes" />
 
         <TextView
             android:id="@+id/notes"
-            style="@style/bookDetailText"
+            style="@style/txt_row_bookDetail"
             android:textIsSelectable="true"
             tools:text="The best book of all times" />
 
@@ -337,13 +335,13 @@
                 android:layout_height="wrap_content">
 
                 <TextView
-                    style="@style/bookDetailLabel"
+                    style="@style/lbl_textField"
                     android:layout_width="wrap_content"
-                    android:text="@string/edition" />
+                    android:text="@string/lbl_edition" />
 
                 <TextView
                     android:id="@+id/edition"
-                    style="@style/bookDetailText"
+                    style="@style/txt_row_bookDetail"
                     android:layout_weight="1"
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     tools:text="special one with a very special cover" />
@@ -357,13 +355,13 @@
                 android:layout_height="wrap_content">
 
                 <TextView
-                    style="@style/bookDetailLabel"
+                    style="@style/lbl_textField"
                     android:layout_width="wrap_content"
-                    android:text="@string/signed" />
+                    android:text="@string/lbl_signed" />
 
                 <TextView
                     android:id="@+id/signed"
-                    style="@style/bookDetailText"
+                    style="@style/txt_row_bookDetail"
                     tools:text="Yes" />
 
             </TableRow>
@@ -375,12 +373,12 @@
                 android:layout_height="wrap_content">
 
                 <TextView
-                    style="@style/bookDetailLabel"
-                    android:text="@string/date_purchased" />
+                    style="@style/lbl_textField"
+                    android:text="@string/lbl_date_purchased" />
 
                 <TextView
                     android:id="@+id/date_purchased"
-                    style="@style/bookDetailText"
+                    style="@style/txt_row_bookDetail"
                     android:layout_weight="1"
                     android:textIsSelectable="true"
                     tools:text="Nov 10, 2011" />
@@ -393,12 +391,12 @@
                 android:layout_height="wrap_content">
 
                 <TextView
-                    style="@style/bookDetailLabel"
-                    android:text="@string/price_paid" />
+                    style="@style/lbl_textField"
+                    android:text="@string/lbl_price_paid" />
 
                 <TextView
                     android:id="@+id/price_paid"
-                    style="@style/bookDetailText"
+                    style="@style/txt_row_bookDetail"
                     android:layout_weight="1"
                     android:textIsSelectable="true"
                     tools:text="$45" />
@@ -411,12 +409,12 @@
                 android:layout_height="wrap_content">
 
                 <TextView
-                    style="@style/bookDetailLabel"
-                    android:text="@string/read_start" />
+                    style="@style/lbl_textField"
+                    android:text="@string/lbl_read_start" />
 
                 <TextView
                     android:id="@+id/read_start"
-                    style="@style/bookDetailText"
+                    style="@style/txt_row_bookDetail"
                     android:layout_weight="1"
                     android:textIsSelectable="true"
                     tools:text="Nov 10, 2011" />
@@ -428,12 +426,12 @@
                 android:layout_height="wrap_content">
 
                 <TextView
-                    style="@style/bookDetailLabel"
-                    android:text="@string/read_end" />
+                    style="@style/lbl_textField"
+                    android:text="@string/lbl_read_end" />
 
                 <TextView
                     android:id="@+id/read_end"
-                    style="@style/bookDetailText"
+                    style="@style/txt_row_bookDetail"
                     android:layout_weight="1"
                     android:textIsSelectable="true"
                     tools:text="Dec 15, 2011" />
@@ -447,12 +445,12 @@
                 android:layout_height="wrap_content">
 
                 <TextView
-                    style="@style/bookDetailLabel"
-                    android:text="@string/location_of_book" />
+                    style="@style/lbl_textField"
+                    android:text="@string/lbl_location_long" />
 
                 <TextView
                     android:id="@+id/location"
-                    style="@style/bookDetailText"
+                    style="@style/txt_row_bookDetail"
                     android:layout_weight="1"
                     android:textIsSelectable="true"
                     tools:text="Library" />
@@ -465,12 +463,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:text="@string/description"
+            android:text="@string/lbl_description"
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
         <View
             android:id="@+id/description_divider"
-            style="@style/listDividerHorizontal" />
+            style="@style/divider_horizontalList" />
 
         <!-- reminder: textIsSelectable etc won't work here, as its done in code -->
         <TextView

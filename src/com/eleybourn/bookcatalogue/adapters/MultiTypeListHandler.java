@@ -27,6 +27,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.eleybourn.bookcatalogue.database.cursors.BookCursorRowBase;
+
 /**
  * Interface for handling the View-related tasks in a multi-type ListView.
  *
@@ -55,7 +57,7 @@ public interface MultiTypeListHandler {
      *
      * @param cursor      Cursor, positioned at current row
      * @param inflater    Inflater to use in case a new view resource must be expanded
-     * @param convertView Pointer to reusable bew of correct type (may be null)
+     * @param convertView Pointer to reusable view of correct type (may be null)
      * @param parent      Parent view group
      *
      * @return Filled-in view to use.
@@ -78,8 +80,9 @@ public interface MultiTypeListHandler {
     /**
      * Abstract base class for 'holder' objects in a multi-type list view.
      *
-     * @param <T> Row context passed to each method. Typically a RowView. Could be a cursor
-     *            or any other object capable of representing the data in the current row.
+     * @param <T> Row context passed to each method. Typically a {@link BookCursorRowBase}.
+     *            Could be a cursor or any other object capable of representing the data
+     *            in the current row.
      *
      * @author Philip Warner
      */
@@ -97,7 +100,7 @@ public interface MultiTypeListHandler {
         public abstract void set(final @NonNull T rowContext, final @NonNull View v, final int level);
 
         /**
-         * Use  the passed rowContext to determine the kind of View that is required
+         * Use the passed rowContext to determine the kind of View that is required
          * and return a new view.
          */
         public abstract View newView(final @NonNull T rowContext,

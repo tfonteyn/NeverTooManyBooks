@@ -36,6 +36,7 @@ import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
+import com.eleybourn.bookcatalogue.adapters.SimpleListAdapterRowActionListener;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.filechooser.FileLister.FileListerListener;
 import com.eleybourn.bookcatalogue.utils.RTE;
@@ -192,7 +193,7 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
         // Setup and display the list
         mList = list;
         // We pass no view ID since each item can provide the view id
-        DirectoryAdapter adapter = new DirectoryAdapter(requireActivity(), mList);
+        FileDetailsAdapter adapter = new FileDetailsAdapter(requireActivity(), mList);
         //noinspection ConstantConditions
         ListView lv = getView().findViewById(android.R.id.list);
         lv.setAdapter(adapter);
@@ -214,7 +215,7 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
         File getFile();
 
         /** Called to fill in the details of this object in the View provided by the ViewProvider implementation */
-        void onSetupView(final @NonNull View convertView, final @NonNull Context context);
+        void onGetView(final @NonNull View convertView, final @NonNull Context context);
     }
 
     /**
@@ -222,19 +223,19 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
      *
      * @author pjw
      */
-    protected class DirectoryAdapter extends SimpleListAdapter<FileDetails> {
+    protected class FileDetailsAdapter extends SimpleListAdapter<FileDetails> implements SimpleListAdapterRowActionListener<FileDetails>{
 
-        DirectoryAdapter(final @NonNull Context context, final @NonNull ArrayList<FileDetails> items) {
+        FileDetailsAdapter(final @NonNull Context context, final @NonNull ArrayList<FileDetails> items) {
             super(context, 0, items);
         }
 
         @Override
-        protected void onSetupView(final @NonNull View convertView, final @NonNull FileDetails item) {
-            item.onSetupView(convertView, requireActivity());
+        public void onGetView(final @NonNull View convertView, final @NonNull FileDetails item) {
+            item.onGetView(convertView, requireActivity());
         }
 
         @Override
-        protected void onRowClick(final @NonNull View v, final @Nullable FileDetails item, final int position) {
+        public void onRowClick(final @NonNull View v, final @Nullable FileDetails item, final int position) {
             if (item != null) {
                 if (item.getFile().isDirectory()) {
                     mRootPath = item.getFile();

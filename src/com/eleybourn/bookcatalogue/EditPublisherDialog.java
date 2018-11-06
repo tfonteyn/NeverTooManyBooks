@@ -47,7 +47,7 @@ public class EditPublisherDialog {
     public void edit(final @NonNull Publisher publisher) {
         final Dialog dialog = new StandardDialogs.BasicDialog(mActivity);
         dialog.setContentView(R.layout.dialog_edit_publisher);
-        dialog.setTitle(R.string.edit_publisher_details);
+        dialog.setTitle(R.string.dialog_title_edit_publisher);
 
         final EditText nameView = dialog.findViewById(R.id.name);
         //noinspection ConstantConditions

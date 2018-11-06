@@ -103,7 +103,6 @@ public class LibraryThingManager {
 //	private static final String RESPONSE = "response";
 //	private static final String ITEM = "item";
 
-
     @NonNull
     private static Long mLastRequestTime = 0L;
 
@@ -140,6 +139,7 @@ public class LibraryThingManager {
             }
             mLastRequestTime = now + wait;
         }
+
         if (wait > 0) {
             try {
                 Thread.sleep(wait);

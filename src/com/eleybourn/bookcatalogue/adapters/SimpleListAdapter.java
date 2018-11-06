@@ -20,7 +20,6 @@
 package com.eleybourn.bookcatalogue.adapters;
 
 import android.content.Context;
-import android.support.annotation.CallSuper;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -29,7 +28,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.R;
@@ -56,14 +54,14 @@ import java.util.Objects;
  *
  * The layout must have the top id of:
  *
- * - ROW        {@link #onRowClick}, unless ROW_DETAILS is defined.
+ * - ROW        {@link SimpleListAdapterRowActionListener<T>#onRowClick}, unless ROW_DETAILS is defined.
  *
  * The layout can optionally contain these "@+id/" :
  *
- * - ROW_DETAILS         {@link #onRowClick}; if no 'id/ROW_DETAILS' found, then 'id/ROW' is tried instead
- * - ROW_UP              {@link #onRowUp}
- * - ROW_DOWN            {@link #onRowDown}
- * - ROW_DELETE          {@link #onRowDelete}
+ * - ROW_DETAILS         {@link SimpleListAdapterRowActionListener<T>#onRowClick}; if no 'id/ROW_DETAILS' found, then 'id/ROW' is tried instead
+ * - ROW_UP              {@link SimpleListAdapterRowActionListener<T>#onRowUp}
+ * - ROW_DOWN            {@link SimpleListAdapterRowActionListener<T>#onRowDown}
+ * - ROW_DELETE          {@link SimpleListAdapterRowActionListener<T>#onRowDelete}
  *
  * ROW is the complete row, ROW_DETAIL is a child of ROW.
  * So you should never have a ROW_DETAIL without an enclosing ROW element
@@ -85,22 +83,9 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
     @LayoutRes
     private final int mRowViewId;
     @NonNull
-    private final List<T> mItems;
+    private final List<T> mList;
 
-    @Nullable
-    private final View.OnLongClickListener mRowLongClickListener = new View.OnLongClickListener() {
-        @Override
-        public boolean onLongClick(@NonNull View v) {
-            try {
-                int pos = getViewRow(v);
-                T item = getItem(pos);
-                return item != null && onRowLongClick(v, item, pos);
-            } catch (Exception e) {
-                Logger.error(e);
-            }
-            return false;
-        }
-    };
+
     @Nullable
     private final View.OnClickListener mRowClickListener = new View.OnClickListener() {
         @Override
@@ -116,7 +101,20 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
             }
         }
     };
-
+    @Nullable
+    private final View.OnLongClickListener mRowLongClickListener = new View.OnLongClickListener() {
+        @Override
+        public boolean onLongClick(final @NonNull View v) {
+            try {
+                int pos = getViewRow(v);
+                T item = getItem(pos);
+                return item != null && onRowLongClick(v, item, pos);
+            } catch (Exception e) {
+                Logger.error(e);
+            }
+            return false;
+        }
+    };
     @Nullable
     private final View.OnClickListener mRowDeleteListener = new View.OnClickListener() {
         @Override
@@ -130,7 +128,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
                     onListChanged();
                 }
             } catch (Exception e) {
-                // TODO: Allow a specific exception to onPartialDatePickerCancel the action
+                // TODO: Allow a specific exception to cancel the action
                 Logger.error(e);
             }
         }
@@ -149,12 +147,12 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
             try {
                 onRowDown(v, old, pos);
 
-                mItems.set(pos, getItem(pos + 1));
-                mItems.set(pos + 1, old);
+                mList.set(pos, getItem(pos + 1));
+                mList.set(pos + 1, old);
                 notifyDataSetChanged();
                 onListChanged();
             } catch (Exception e) {
-                // TODO: Allow a specific exception to onPartialDatePickerCancel the action
+                // TODO: Allow a specific exception to cancel the action
                 Logger.error(e);
             }
         }
@@ -173,12 +171,12 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
             try {
                 onRowUp(v, old, pos);
 
-                mItems.set(pos - 1, getItem(pos));
-                mItems.set(pos, old);
+                mList.set(pos - 1, getItem(pos));
+                mList.set(pos, old);
                 notifyDataSetChanged();
                 onListChanged();
             } catch (Exception e) {
-                // TODO: Allow a specific exception to onPartialDatePickerCancel the action
+                // TODO: Allow a specific exception to cancel the action
                 Logger.error(e);
             }
 
@@ -192,58 +190,13 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
     private boolean mHasDown = false;
     private boolean mHasDelete = false;
 
-    protected SimpleListAdapter(final @NonNull Context context, @LayoutRes final int rowViewId, final @NonNull List<T> items) {
-        super(context, rowViewId, items);
+    protected SimpleListAdapter(final @NonNull Context context,
+                                final @LayoutRes int rowViewId,
+                                final @NonNull List<T> list) {
+        super(context, rowViewId, list);
         mRowViewId = rowViewId;
-        mItems = items;
+        mList = list;
     }
-
-    protected void onListChanged() {
-    }
-
-    /**
-     * Called when an otherwise inactive part of the row is clicked.
-     *
-     * @param target The view clicked
-     * @param item   The object associated with this row
-     */
-    protected void onRowClick(final @NonNull View target, final @NonNull T item, final int position) {
-    }
-
-    /**
-     * Called when an otherwise inactive part of the row is long clicked.
-     *
-     * @param target The view clicked
-     * @param item   The object associated with this row
-     *
-     * @return <tt>true</tt>if handled
-     */
-    @CallSuper
-    protected boolean onRowLongClick(final @NonNull View target, final @NonNull T item, final int position) {
-        return true;
-    }
-
-    /**
-     * @return <tt>true</tt>if delete is allowed to happen
-     */
-    @CallSuper
-    protected boolean onRowDelete(final @NonNull View target, final @NonNull T item, final int position) {
-        return true;
-    }
-
-    protected void onRowDown(final @NonNull View target, final @NonNull T item, final int position) {
-    }
-
-    protected void onRowUp(final @NonNull View target, final @NonNull T item, final int position) {
-    }
-
-    /**
-     * Call to set up the row view. This is called by {@link #getView}
-     *
-     * @param convertView The target row view object
-     * @param item        The object (or type T) from which to draw values.
-     */
-    abstract protected void onSetupView(final @NonNull View convertView, final @NonNull T item);
 
     @NonNull
     @Override
@@ -276,8 +229,8 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
         }
 
         if (row != null) {
-            row.setOnLongClickListener(mRowLongClickListener);
             row.setOnClickListener(mRowClickListener);
+            row.setOnLongClickListener(mRowLongClickListener);
             row.setFocusable(false);
         }
 
@@ -322,7 +275,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
 
             // Ask the subclass to set other fields.
             try {
-                onSetupView(convertView, item);
+                onGetView(convertView, item);
             } catch (Exception e) {
                 Logger.error(e);
             }
@@ -332,6 +285,11 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
         }
         return convertView;
     }
+
+    /**
+     * Called by {@link #getView} to allow children to setup extra fields.
+     */
+    protected abstract void onGetView(final View convertView, final T item);
 
     /**
      * Find the first ancestor that has the ID R.id.ROW. This will be the complete row View.
@@ -355,6 +313,26 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
         return (Integer) o;
     }
 
+    public void onRowDown(@NonNull final View target, @NonNull final T item, final int position) {
+        // do nothing
+    }
+
+    public void onRowUp(@NonNull final View target, @NonNull final T item, final int position) {
+        // do nothing
+    }
+
+    public boolean onRowDelete(@NonNull final View target, @NonNull final T item, final int position) {
+        return false;
+    }
+
+    public void onRowClick(@NonNull final View target, @NonNull final T item, final int position) {
+    }
+    public boolean onRowLongClick(@NonNull final View target, @NonNull final T item, final int position) {
+        return false;
+    }
+    public void onListChanged() {
+    }
+
     /**
      * Interface to allow underlying objects to determine their view ID.
      */
@@ -362,5 +340,4 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
         @SuppressWarnings("SameReturnValue")
         int getViewId();
     }
-
 }

@@ -1,6 +1,7 @@
 package com.eleybourn.bookcatalogue;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
@@ -11,16 +12,14 @@ import android.provider.MediaStore;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.view.ContextMenu;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnCreateContextMenuListener;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 
 import com.eleybourn.bookcatalogue.Fields.Field;
 import com.eleybourn.bookcatalogue.cropper.CropIImage;
@@ -30,6 +29,7 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
+import com.eleybourn.bookcatalogue.dialogs.picklist.SelectOneDialog;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.IsbnUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
@@ -47,13 +47,13 @@ import java.util.Objects;
  * Abstract class for creating activities containing book details with a Cover image.
  *
  * All Cover image manipulation methods are implemented here.
- * the only {@link Field} handled here is the cover image.
+ * the only {@link Field} handled here is the cover image R.id.coverImage
  *
  * Used by
  * {@link BookDetailsFragment}
  * {@link EditBookFieldsFragment}
  */
-public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFragment {
+public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFragment implements SelectOneDialog.hasViewContextMenu {
 
     public static final String PREF_USE_EXTERNAL_IMAGE_CROPPER = "App.UseExternalImageCropper";
     public static final String PREF_CROP_FRAME_WHOLE_IMAGE = "App.CropFrameWholeImage";
@@ -73,7 +73,7 @@ public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFra
     private ImageView mCoverView;
 
     /**
-     * 2018-11-03: explicitly removed ALL fields (except cover image) to the concrete classes.
+     * 2018-11-03: explicitly moved ALL fields (except cover image) to the concrete classes.
      * Even with duplication, this brings this class back to what
      * it should be: COVER IMAGE support
      */
@@ -81,21 +81,31 @@ public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFra
     protected void initFields() {
         super.initFields();
 
-        mFields.add(R.id.coverImage, "", UniqueId.KEY_BOOK_THUMBNAIL);
-
-        // We need the view in many places. Cache it, to avoid clutter & casting
-        mCoverView = mFields.getField(R.id.coverImage).getView();
         // See how big the display is and use that to set bitmap sizes
         initThumbSize(requireActivity());
-        // add zoom & context menu to the cover image
-        initCoverImageListeners(mFields.getField(R.id.coverImage));
+
+        // add the cover image.
+        mFields.add(R.id.coverImage, "", UniqueId.KEY_BOOK_THUMBNAIL);
+        // We need the view in many places. Cache it, to avoid clutter & casting
+        mCoverView = mFields.getField(R.id.coverImage).getView();
+        if (mFields.getField(R.id.coverImage).visible) {
+            // add context menu to the cover image
+            initViewContextMenuListener(requireContext(), mCoverView);
+            //Allow zooming by clicking on the image
+            mCoverView.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ImageUtils.showZoomedThumb(requireActivity(), getCoverFile(getBook().getBookId()));
+                }
+            });
+        }
     }
 
     @Override
     @CallSuper
     public void onActivityResult(final int requestCode, final int resultCode, final @Nullable Intent data) {
         if (BuildConfig.DEBUG) {
-            Logger.info(this,"onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
+            Logger.info(this, "onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
         }
         switch (requestCode) {
             case UniqueId.ACTIVITY_REQUEST_CODE_ANDROID_IMAGE_CAPTURE: /* 0b7027eb-a9da-469b-8ba7-2122f1006e92 */
@@ -140,8 +150,6 @@ public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFra
     }
 
     /**
-     * Thumbnail menu (context) setup is done in {@link #initCoverImageListeners}
-     *
      * @see #setHasOptionsMenu
      * @see #onPrepareOptionsMenu
      * @see #onOptionsItemSelected
@@ -169,127 +177,155 @@ public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFra
         switch (item.getItemId()) {
             case R.id.SUBMENU_REPLACE_THUMB:
                 // Show the context menu for the cover thumbnail
-                mCoverView.showContextMenu();
+                prepareCoverImageViewContextMenu(mCoverView);
                 return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void initViewContextMenuListener(final @NonNull Context context, final @NonNull View view) {
+        view.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(final @NonNull View view) {
+                prepareCoverImageViewContextMenu(view);
+                return true;
+            }
+        });
+    }
+
     /**
-     * Handle menu items for manipulating the Cover Image (thumbnail)
-     *
-     * Menu setup was done in {@link #initCoverImageListeners}
+     * external from {@link #initViewContextMenuListener} as we also need this from {@link #onOptionsItemSelected}
+     */
+    private void prepareCoverImageViewContextMenu(final @NonNull View view) {
+
+        String menuTitle = getString(R.string.thumbnail);
+
+        // legal trick to get an instance of Menu.
+        Menu menu = new PopupMenu(BookAbstractFragmentWithCoverImage.this.getContext(), null).getMenu();
+        // custom menuInfo
+        SelectOneDialog.SimpleDialogMenuInfo menuInfo = new SelectOneDialog.SimpleDialogMenuInfo(menuTitle, view, 0);
+        // populate the menu
+
+        menu.add(Menu.NONE, R.id.MENU_DELETE_THUMB, 0, R.string.menu_delete_thumb)
+                .setIcon(R.drawable.ic_delete);
+
+        SubMenu replaceThumbnailSubmenu = menu.addSubMenu(Menu.NONE,
+                R.id.SUBMENU_REPLACE_THUMB, 2, R.string.menu_replace_thumb);
+        replaceThumbnailSubmenu.setIcon(R.drawable.ic_find_replace);
+
+        replaceThumbnailSubmenu.add(Menu.NONE, R.id.MENU_ADD_THUMB_FROM_CAMERA, 1, R.string.menu_add_thumb_photo)
+                .setIcon(R.drawable.ic_add_a_photo);
+        replaceThumbnailSubmenu.add(Menu.NONE, R.id.MENU_ADD_THUMB_FROM_GALLERY, 2, R.string.menu_add_thumb_gallery)
+                .setIcon(R.drawable.ic_image);
+        replaceThumbnailSubmenu.add(Menu.NONE, R.id.MENU_ADD_THUMB_ALT_EDITIONS, 3, R.string.menu_thumb_alt_editions)
+                .setIcon(R.drawable.ic_find_replace);
+
+        SubMenu rotateThumbnailSubmenu = menu.addSubMenu(Menu.NONE,
+                R.id.SUBMENU_ROTATE_THUMB, 3, R.string.menu_rotate_thumb);
+        rotateThumbnailSubmenu.setIcon(R.drawable.ic_rotate_right);
+
+        rotateThumbnailSubmenu.add(Menu.NONE, R.id.MENU_ROTATE_THUMB_CW, 1, R.string.menu_rotate_thumb_cw)
+                .setIcon(R.drawable.ic_rotate_right);
+        rotateThumbnailSubmenu.add(Menu.NONE, R.id.MENU_ROTATE_THUMB_CCW, 2, R.string.menu_rotate_thumb_ccw)
+                .setIcon(R.drawable.ic_rotate_left);
+        rotateThumbnailSubmenu.add(Menu.NONE, R.id.MENU_ROTATE_THUMB_180, 3, R.string.menu_rotate_thumb_180)
+                .setIcon(R.drawable.ic_swap_vert);
+        menu.add(Menu.NONE, R.id.MENU_CROP_THUMB, 4, R.string.menu_crop_thumb)
+                .setIcon(R.drawable.ic_crop);
+
+        // display
+        onCreateViewContextMenu(menu, view, menuInfo);
+    }
+
+    /**
+     * Using {@link SelectOneDialog#showContextMenuDialog} for context menus
      */
     @Override
-    @CallSuper
-    public boolean onContextItemSelected(final @NonNull MenuItem item) {
-        Tracker.handleEvent(this, "Context Menu Item " + item.getItemId(), Tracker.States.Enter);
+    public void onCreateViewContextMenu(final @NonNull Menu menu,
+                                        final @NonNull View view,
+                                        final @NonNull SelectOneDialog.SimpleDialogMenuInfo menuInfo) {
 
-        try {
-            File thumbFile = getCoverFile(getBook().getBookId());
-
-            switch (item.getItemId()) {
-
-                case R.id.MENU_DELETE_THUMB:
-                    deleteCoverFile();
-                    ImageUtils.fetchFileIntoImageView(mCoverView, thumbFile, mThumbSize.normal, mThumbSize.normal, true);
-                    return true;
-
-                case R.id.SUBMENU_ROTATE_THUMB:
-                    // Just a submenu; skip, but display a hint if user is rotating a camera image
-                    if (mGotCameraImage) {
-                        HintManager.displayHint(requireActivity(), R.string.hint_autorotate_camera_images, null);
-                        mGotCameraImage = false;
-                    }
-                    return true;
-
-                case R.id.MENU_ROTATE_THUMB_CW:
-                    rotateThumbnail(90);
-                    ImageUtils.fetchFileIntoImageView(mCoverView, thumbFile, mThumbSize.normal, mThumbSize.normal, true);
-                    return true;
-
-                case R.id.MENU_ROTATE_THUMB_CCW:
-                    rotateThumbnail(-90);
-                    ImageUtils.fetchFileIntoImageView(mCoverView, thumbFile, mThumbSize.normal, mThumbSize.normal, true);
-                    return true;
-
-                case R.id.MENU_ROTATE_THUMB_180:
-                    rotateThumbnail(180);
-                    ImageUtils.fetchFileIntoImageView(mCoverView, thumbFile, mThumbSize.normal, mThumbSize.normal, true);
-                    return true;
-
-                case R.id.MENU_CROP_THUMB:
-                    cropCoverImage(thumbFile);
-                    return true;
-
-                case R.id.MENU_ADD_THUMB_FROM_CAMERA:
-                    getCoverFromCamera();
-                    return true;
-
-                case R.id.MENU_ADD_THUMB_FROM_GALLERY:
-                    getCoverFromGallery();
-                    return true;
-
-                case R.id.MENU_ADD_THUMB_ALT_EDITIONS:
-                    getCoverFromAlternativeEditions();
-                    return true;
-            }
-
-            return super.onContextItemSelected(item);
-        } finally {
-            Tracker.handleEvent(this, "Context Menu Item " + item.getItemId(), Tracker.States.Exit);
+        if (menu.size() > 0) {
+            SelectOneDialog.showContextMenuDialog(getLayoutInflater(), menuInfo, menu,
+                    new SelectOneDialog.SimpleDialogOnClickListener() {
+                        @Override
+                        public void onClick(final @NonNull SelectOneDialog.SimpleDialogItem item) {
+                            MenuItem menuItem = ((SelectOneDialog.SimpleDialogMenuItem) item).getMenuItem();
+                            if (menuItem.hasSubMenu()) {
+                                menuInfo.title = menuItem.getTitle().toString();
+                                onCreateViewContextMenu(menuItem.getSubMenu(), view, menuInfo);
+                            } else {
+                                onViewContextItemSelected(menuItem, view);
+                            }
+                        }
+                    });
         }
     }
 
-    //<editor-fold desc="Cover init">
+    /**
+     * Using {@link SelectOneDialog#showContextMenuDialog} for context menus
+     */
+    @Override
+    public boolean onViewContextItemSelected(final @NonNull MenuItem menuItem,
+                                             final @NonNull View view) {
 
-    private void initCoverImageListeners(final @NonNull Field coverField) {
-        //Allow zooming by clicking on image
-        coverField.getView().setOnClickListener(new OnClickListener() {
+        // should not happen for now, but nice to remind ourselves we *could* have multiple views.
+        if (view.getId() != R.id.coverImage) {
+            return false;
+        }
 
-            @Override
-            public void onClick(View v) {
-                ImageUtils.showZoomedThumb(requireActivity(), getCoverFile(getBook().getBookId()));
+        File thumbFile = getCoverFile(getBook().getBookId());
+
+        switch (menuItem.getItemId()) {
+            case R.id.MENU_DELETE_THUMB: {
+                deleteCoverFile();
+                ImageUtils.fetchFileIntoImageView(mCoverView, thumbFile, mThumbSize.normal, mThumbSize.normal, true);
+                return true;
             }
-        });
-        // add the context menu
-        coverField.getView().setOnCreateContextMenuListener(new OnCreateContextMenuListener() {
-            @Override
-            @CallSuper
-            public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
-
-                menu.add(Menu.NONE, R.id.MENU_DELETE_THUMB, 0, R.string.menu_delete_thumb)
-                        .setIcon(R.drawable.ic_delete);
-
-                SubMenu replaceThumbnailSubmenu = menu.addSubMenu(Menu.NONE,
-                        R.id.SUBMENU_REPLACE_THUMB, 2, R.string.menu_replace_thumb);
-                replaceThumbnailSubmenu.setIcon(R.drawable.ic_find_replace);
-
-                replaceThumbnailSubmenu.add(Menu.NONE, R.id.MENU_ADD_THUMB_FROM_CAMERA, 1, R.string.menu_add_thumb_photo)
-                        .setIcon(R.drawable.ic_add_a_photo);
-                replaceThumbnailSubmenu.add(Menu.NONE, R.id.MENU_ADD_THUMB_FROM_GALLERY, 2, R.string.menu_add_thumb_gallery)
-                        .setIcon(R.drawable.ic_image);
-                replaceThumbnailSubmenu.add(Menu.NONE, R.id.MENU_ADD_THUMB_ALT_EDITIONS, 3, R.string.menu_thumb_alt_editions)
-                        .setIcon(R.drawable.ic_find_replace);
-
-                SubMenu rotateThumbnailSubmenu = menu.addSubMenu(Menu.NONE,
-                        R.id.SUBMENU_ROTATE_THUMB, 3, R.string.menu_rotate_thumb);
-                rotateThumbnailSubmenu.setIcon(R.drawable.ic_rotate_right);
-
-                rotateThumbnailSubmenu.add(Menu.NONE, R.id.MENU_ROTATE_THUMB_CW, 1, R.string.menu_rotate_thumb_cw)
-                        .setIcon(R.drawable.ic_rotate_right);
-                rotateThumbnailSubmenu.add(Menu.NONE, R.id.MENU_ROTATE_THUMB_CCW, 2, R.string.menu_rotate_thumb_ccw)
-                        .setIcon(R.drawable.ic_rotate_left);
-                rotateThumbnailSubmenu.add(Menu.NONE, R.id.MENU_ROTATE_THUMB_180, 3, R.string.menu_rotate_thumb_180)
-                        .setIcon(R.drawable.ic_swap_vert);
-                menu.add(Menu.NONE, R.id.MENU_CROP_THUMB, 4, R.string.menu_crop_thumb)
-                        .setIcon(R.drawable.ic_crop);
-
-                // don't do this
-                //BookAbstractFragmentWithCoverImage.super.onCreateContextMenu(menu,v,menuInfo);
+            case R.id.SUBMENU_ROTATE_THUMB: {
+                // Just a submenu; skip, but display a hint if user is rotating a camera image
+                if (mGotCameraImage) {
+                    HintManager.displayHint(requireActivity(), R.string.hint_autorotate_camera_images, null);
+                    mGotCameraImage = false;
+                }
+                return true;
             }
-        });
+            case R.id.MENU_ROTATE_THUMB_CW: {
+                rotateThumbnail(90);
+                ImageUtils.fetchFileIntoImageView(mCoverView, thumbFile, mThumbSize.normal, mThumbSize.normal, true);
+                return true;
+            }
+            case R.id.MENU_ROTATE_THUMB_CCW: {
+                rotateThumbnail(-90);
+                ImageUtils.fetchFileIntoImageView(mCoverView, thumbFile, mThumbSize.normal, mThumbSize.normal, true);
+                return true;
+            }
+            case R.id.MENU_ROTATE_THUMB_180: {
+                rotateThumbnail(180);
+                ImageUtils.fetchFileIntoImageView(mCoverView, thumbFile, mThumbSize.normal, mThumbSize.normal, true);
+                return true;
+            }
+            case R.id.MENU_CROP_THUMB: {
+                cropCoverImage(thumbFile);
+                return true;
+            }
+            case R.id.MENU_ADD_THUMB_FROM_CAMERA: {
+                getCoverFromCamera();
+                return true;
+            }
+            case R.id.MENU_ADD_THUMB_FROM_GALLERY: {
+                getCoverFromGallery();
+                return true;
+            }
+            case R.id.MENU_ADD_THUMB_ALT_EDITIONS: {
+                getCoverFromAlternativeEditions();
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -438,10 +474,6 @@ public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFra
         }
     }
 
-    //</editor-fold>
-
-    //<editor-fold desc="Cover manipulation Operations">
-
     /**
      * Rotate the thumbnail
      *
@@ -557,9 +589,6 @@ public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFra
             Tracker.handleEvent(this, "cropCoverImageExternal", Tracker.States.Exit);
         }
     }
-    //</editor-fold>
-
-    //<editor-fold desc="Cover File operations">
 
     /**
      * Delete the provided thumbnail
@@ -600,7 +629,6 @@ public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFra
             return StorageUtils.getCoverFile(mDb.getBookUuid(bookId));
         }
     }
-    //</editor-fold>
 
     @Override
     @CallSuper

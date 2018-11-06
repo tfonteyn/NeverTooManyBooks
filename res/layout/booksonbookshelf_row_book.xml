@@ -11,10 +11,8 @@
     <ImageView
         android:id="@+id/coverImage"
         style="@style/coverImage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:contentDescription="@string/thumbnail"
-        tools:src="@drawable/ic_image" />
+        tools:src="@drawable/ic_image"
+        tools:ignore="ContentDescription" />
 
     <LinearLayout
         android:id="@id/ROW_INFO"
@@ -27,7 +25,7 @@
 
         <TextView
             android:id="@+id/series_num_long"
-            style="@style/booklist_book_row_minor_fields"
+            style="@style/row_booklist_extra_fields"
             tools:ignore="SelectableText"
             tools:text="series_num_long" />
 
@@ -46,50 +44,45 @@
 
             <TextView
                 android:id="@+id/title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingEnd="@dimen/padding_border"
-                android:paddingStart="@dimen/padding_border"
-                android:singleLine="false"
-                android:textAppearance="?android:attr/textAppearanceMedium"
+                style="@style/row_booklist_book_title"
                 tools:ignore="SelectableText"
                 tools:text="book title" />
         </LinearLayout>
 
         <TextView
             android:id="@+id/author"
-            style="@style/booklist_book_row_minor_fields"
+            style="@style/row_booklist_extra_fields"
             tools:ignore="SelectableText"
             tools:text="author name" />
 
         <TextView
             android:id="@+id/shelves"
-            style="@style/booklist_book_row_minor_fields"
+            style="@style/row_booklist_extra_fields"
             tools:ignore="SelectableText"
             tools:text="bookshelves" />
 
         <TextView
             android:id="@+id/location"
-            style="@style/booklist_book_row_minor_fields"
+            style="@style/row_booklist_extra_fields"
             tools:ignore="SelectableText"
             tools:text="location" />
 
         <TextView
             android:id="@+id/publisher"
-            style="@style/booklist_book_row_minor_fields"
+            style="@style/row_booklist_extra_fields"
             tools:ignore="SelectableText"
             tools:text="publisher" />
 
         <TextView
             android:id="@+id/format"
-            style="@style/booklist_book_row_minor_fields"
+            style="@style/row_booklist_extra_fields"
             tools:ignore="SelectableText"
             tools:text="format" />
     </LinearLayout>
 
     <CheckedTextView
         android:id="@+id/read"
-        style="@style/read_checkbox"
+        style="@style/cbx_read"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         tools:checked="true" />

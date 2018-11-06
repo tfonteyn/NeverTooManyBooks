@@ -4,8 +4,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 
 public class BitmaskDataAccessor implements DataAccessor {
-    private String key;
-    private int bit;
+    private final String key;
+    private final int bit;
 
     public BitmaskDataAccessor(final @NonNull String key, final int bit) {
         this.key = key;

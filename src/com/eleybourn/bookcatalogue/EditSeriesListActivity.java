@@ -21,10 +21,12 @@
 package com.eleybourn.bookcatalogue;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
+import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
@@ -34,11 +36,15 @@ import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter;
+import com.eleybourn.bookcatalogue.adapters.SimpleListAdapterRowActionListener;
 import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.utils.Utils;
+
+import java.util.ArrayList;
 
 /**
  * Activity to edit a list of series provided in an ArrayList<Series> and return an updated list.
@@ -58,22 +64,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
         super(R.layout.activity_edit_list_series, R.layout.row_edit_series_list, UniqueId.BKEY_SERIES_ARRAY);
     }
 
-    @Override
-    protected void onSetupView(final @NonNull View target, final @NonNull Series series) {
-        TextView dt = target.findViewById(R.id.row_series);
-        if (dt != null) {
-            dt.setText(series.getDisplayName());
-        }
-        TextView st = target.findViewById(R.id.row_series_sort);
-        if (st != null) {
-            if (series.getDisplayName().equals(series.getSortName())) {
-                st.setVisibility(View.GONE);
-            } else {
-                st.setVisibility(View.VISIBLE);
-                st.setText(series.getSortName());
-            }
-        }
-    }
+
 
     @Override
     @CallSuper
@@ -84,7 +75,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
 
             mSeriesAdapter = new ArrayAdapter<>(this,
                     android.R.layout.simple_dropdown_item_1line, mDb.getAllSeries());
-            ((AutoCompleteTextView) this.findViewById(R.id.series)).setAdapter(mSeriesAdapter);
+            ((AutoCompleteTextView) this.findViewById(R.id.name)).setAdapter(mSeriesAdapter);
 
             getWindow().setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
@@ -95,7 +86,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
 
     @Override
     protected void onAdd(final @NonNull View target) {
-        AutoCompleteTextView seriesField = EditSeriesListActivity.this.findViewById(R.id.series);
+        AutoCompleteTextView seriesField = EditSeriesListActivity.this.findViewById(R.id.name);
         String seriesTitle = seriesField.getText().toString().trim();
 
         if (!seriesTitle.isEmpty()) {
@@ -105,7 +96,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
             newSeries.id = mDb.getSeriesId(newSeries.name);
             for (Series series : mList) {
                 if (series.equals(newSeries)) {
-                    StandardDialogs.showUserMessage(EditSeriesListActivity.this, R.string.series_already_in_list);
+                    StandardDialogs.showUserMessage(EditSeriesListActivity.this, R.string.warning_series_already_in_list);
                     return;
                 }
             }
@@ -114,52 +105,11 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
             seriesField.setText("");
             numberField.setText("");
         } else {
-            StandardDialogs.showUserMessage(EditSeriesListActivity.this, R.string.series_is_blank);
+            StandardDialogs.showUserMessage(EditSeriesListActivity.this, R.string.warning_blank_series);
         }
     }
 
-    @Override
-    protected void onRowClick(final @NonNull View target, final @NonNull Series series, final int position) {
-        final Dialog dialog = new StandardDialogs.BasicDialog(this);
-        dialog.setContentView(R.layout.dialog_edit_book_series);
-        dialog.setTitle(R.string.edit_book_series);
 
-        final AutoCompleteTextView seriesNameField = dialog.findViewById(R.id.series);
-        //noinspection ConstantConditions
-        seriesNameField.setText(series.name);
-        seriesNameField.setAdapter(mSeriesAdapter);
-
-        final EditText seriesNumberField = dialog.findViewById(R.id.series_num);
-        //noinspection ConstantConditions
-        seriesNumberField.setText(series.number);
-
-        //noinspection ConstantConditions
-        dialog.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String newName = seriesNameField.getText().toString().trim();
-                if (newName.isEmpty()) {
-                    StandardDialogs.showUserMessage(EditSeriesListActivity.this, R.string.series_is_blank);
-                    return;
-                }
-
-                Series newSeries = new Series(newName, seriesNumberField.getText().toString().trim());
-                confirmEdit(series, newSeries);
-
-                dialog.dismiss();
-            }
-        });
-
-        //noinspection ConstantConditions
-        dialog.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-            }
-        });
-
-        dialog.show();
-    }
 
     private void confirmEdit(final @NonNull Series from, final @NonNull Series to) {
         // case sensitive equality
@@ -233,7 +183,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
 
     @Override
     protected boolean onSave(final @NonNull Intent intent) {
-        final AutoCompleteTextView view = findViewById(R.id.series);
+        final AutoCompleteTextView view = findViewById(R.id.name);
         String s = view.getText().toString().trim();
         if (s.isEmpty()) {
             return true;
@@ -263,5 +213,74 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
         dialog.show();
         return false;
 
+    }
+    protected SimpleListAdapter<Series> createListAdapter(final @LayoutRes int rowViewId, final @NonNull ArrayList<Series> list) {
+        return new SeriesListAdapter(this, rowViewId, list);
+    }
+
+    protected class SeriesListAdapter extends SimpleListAdapter<Series> implements SimpleListAdapterRowActionListener<Series> {
+        SeriesListAdapter(final @NonNull Context context, final @LayoutRes int rowViewId, final @NonNull ArrayList<Series> items) {
+            super(context, rowViewId, items);
+        }
+
+        @Override
+        public void onGetView(final @NonNull View target, final @NonNull Series series) {
+            TextView dt = target.findViewById(R.id.row_series);
+            if (dt != null) {
+                dt.setText(series.getDisplayName());
+            }
+            TextView st = target.findViewById(R.id.row_series_sort);
+            if (st != null) {
+                if (series.getDisplayName().equals(series.getSortName())) {
+                    st.setVisibility(View.GONE);
+                } else {
+                    st.setVisibility(View.VISIBLE);
+                    st.setText(series.getSortName());
+                }
+            }
+        }
+
+        @Override
+        public void onRowClick(final @NonNull View target, final @NonNull Series series, final int position) {
+            final Dialog dialog = new StandardDialogs.BasicDialog(EditSeriesListActivity.this);
+            dialog.setContentView(R.layout.dialog_edit_book_series);
+            dialog.setTitle(R.string.dialog_title_edit_book_series);
+
+            final AutoCompleteTextView seriesNameField = dialog.findViewById(R.id.name);
+            //noinspection ConstantConditions
+            seriesNameField.setText(series.name);
+            seriesNameField.setAdapter(mSeriesAdapter);
+
+            final EditText seriesNumberField = dialog.findViewById(R.id.series_num);
+            //noinspection ConstantConditions
+            seriesNumberField.setText(series.number);
+
+            //noinspection ConstantConditions
+            dialog.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String newName = seriesNameField.getText().toString().trim();
+                    if (newName.isEmpty()) {
+                        StandardDialogs.showUserMessage(EditSeriesListActivity.this, R.string.warning_blank_series);
+                        return;
+                    }
+
+                    Series newSeries = new Series(newName, seriesNumberField.getText().toString().trim());
+                    confirmEdit(series, newSeries);
+
+                    dialog.dismiss();
+                }
+            });
+
+            //noinspection ConstantConditions
+            dialog.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialog.dismiss();
+                }
+            });
+
+            dialog.show();
+        }
     }
 }

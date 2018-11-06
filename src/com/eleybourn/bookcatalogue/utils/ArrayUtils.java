@@ -52,7 +52,7 @@ public class ArrayUtils<T> {
     public ArrayUtils() {
     }
 
-    public ArrayUtils(final @NonNull Factory<T> factory) {
+    private ArrayUtils(final @NonNull Factory<T> factory) {
         mFactory = factory;
     }
 

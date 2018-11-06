@@ -86,8 +86,8 @@ public class BooklistGroup implements Serializable {
     static {
         mRowKindNames.put(ROW_KIND_AUTHOR, BookCatalogueApp.getResourceString(R.string.author));
         mRowKindNames.put(ROW_KIND_SERIES, BookCatalogueApp.getResourceString(R.string.series));
-        mRowKindNames.put(ROW_KIND_GENRE, BookCatalogueApp.getResourceString(R.string.genre));
-        mRowKindNames.put(ROW_KIND_PUBLISHER, BookCatalogueApp.getResourceString(R.string.publisher));
+        mRowKindNames.put(ROW_KIND_GENRE, BookCatalogueApp.getResourceString(R.string.lbl_genre));
+        mRowKindNames.put(ROW_KIND_PUBLISHER, BookCatalogueApp.getResourceString(R.string.lbl_publisher));
         mRowKindNames.put(ROW_KIND_READ_AND_UNREAD, BookCatalogueApp.getResourceString(R.string.read_amp_unread));
         mRowKindNames.put(ROW_KIND_LOANED, BookCatalogueApp.getResourceString(R.string.loaned));
         mRowKindNames.put(ROW_KIND_YEAR_PUBLISHED, BookCatalogueApp.getResourceString(R.string.publication_year));
@@ -96,17 +96,17 @@ public class BooklistGroup implements Serializable {
         mRowKindNames.put(ROW_KIND_YEAR_ADDED, BookCatalogueApp.getResourceString(R.string.added_year));
         mRowKindNames.put(ROW_KIND_MONTH_ADDED, BookCatalogueApp.getResourceString(R.string.added_month));
         mRowKindNames.put(ROW_KIND_DAY_ADDED, BookCatalogueApp.getResourceString(R.string.added_day));
-        mRowKindNames.put(ROW_KIND_FORMAT, BookCatalogueApp.getResourceString(R.string.format));
+        mRowKindNames.put(ROW_KIND_FORMAT, BookCatalogueApp.getResourceString(R.string.lbl_format));
         mRowKindNames.put(ROW_KIND_YEAR_READ, BookCatalogueApp.getResourceString(R.string.read_year));
         mRowKindNames.put(ROW_KIND_MONTH_READ, BookCatalogueApp.getResourceString(R.string.read_month));
         mRowKindNames.put(ROW_KIND_DAY_READ, BookCatalogueApp.getResourceString(R.string.read_day));
-        mRowKindNames.put(ROW_KIND_LOCATION, BookCatalogueApp.getResourceString(R.string.location));
+        mRowKindNames.put(ROW_KIND_LOCATION, BookCatalogueApp.getResourceString(R.string.lbl_location));
         mRowKindNames.put(ROW_KIND_LANGUAGE, BookCatalogueApp.getResourceString(R.string.lbl_language));
         mRowKindNames.put(ROW_KIND_UPDATE_DAY, BookCatalogueApp.getResourceString(R.string.update_day));
         mRowKindNames.put(ROW_KIND_UPDATE_MONTH, BookCatalogueApp.getResourceString(R.string.update_month));
         mRowKindNames.put(ROW_KIND_UPDATE_YEAR, BookCatalogueApp.getResourceString(R.string.update_year));
-        mRowKindNames.put(ROW_KIND_RATING, BookCatalogueApp.getResourceString(R.string.rating));
-        mRowKindNames.put(ROW_KIND_BOOKSHELF, BookCatalogueApp.getResourceString(R.string.bookshelf));
+        mRowKindNames.put(ROW_KIND_RATING, BookCatalogueApp.getResourceString(R.string.lbl_rating));
+        mRowKindNames.put(ROW_KIND_BOOKSHELF, BookCatalogueApp.getResourceString(R.string.lbl_bookshelf));
         mRowKindNames.put(ROW_KIND_BOOK, BookCatalogueApp.getResourceString(R.string.book));
         // NEWKIND: ROW_KIND_x
 

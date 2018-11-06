@@ -355,6 +355,8 @@ public class Fields extends ArrayList<Fields.Field> {
      * But leaving this in place for now.
      * Called by {@link #validateAllFields(Bundle)} which however is not even called at all
      *
+     * {@link ValidatorException} are added to {@link #mValidationExceptions}
+     *
      * @param values          The Bundle to fill in/use.
      * @param crossValidating Options indicating if this is a cross validation pass.
      */
@@ -402,6 +404,8 @@ public class Fields extends ArrayList<Fields.Field> {
      * passed to each defined cross-validator.
      *
      * TOMF: as it turns out, the original code never set the {@link FieldValidator} at all. and also never called this method even.
+     *
+     * {@link ValidatorException} are added to {@link #mValidationExceptions}
      *
      * @param values The Bundle collection to fill
      *
@@ -575,7 +579,7 @@ public class Fields extends ArrayList<Fields.Field> {
         void validate(final @NonNull Fields fields,
                       final @NonNull Field field,
                       final @NonNull Bundle values,
-                      final boolean crossValidating);
+                      final boolean crossValidating) throws ValidatorException;
     }
 
     /**
@@ -588,8 +592,10 @@ public class Fields extends ArrayList<Fields.Field> {
         /**
          * @param fields The Fields object containing the Field being validated
          * @param values A Bundle collection with all validated field values.
+         *
+         * @throws ValidatorException For any validation failure.
          */
-        void validate(final @NonNull Fields fields, final @NonNull Bundle values);
+        void validate(final @NonNull Fields fields, final @NonNull Bundle values) throws ValidatorException;
     }
 
     /**
@@ -1028,7 +1034,7 @@ public class Fields extends ArrayList<Fields.Field> {
     static public class BinaryYesNoEmptyFormatter implements FieldFormatter {
 
         @NonNull
-        private Resources mRes;
+        private final Resources mRes;
 
         /**
          * @param res resources so we can get 'yes'/'no'
@@ -1074,7 +1080,7 @@ public class Fields extends ArrayList<Fields.Field> {
     static public class PriceFormatter implements FieldFormatter {
 
         @NonNull
-        private String currencyCode;
+        private final String currencyCode;
 
         /**
          */

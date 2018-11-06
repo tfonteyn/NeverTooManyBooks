@@ -17,7 +17,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/hint"
         android:focusable="false"
-        android:text="@string/do_not_show_again" />
+        android:text="@string/hint_do_not_show_again" />
 
     <Button
         android:id="@+id/confirm"

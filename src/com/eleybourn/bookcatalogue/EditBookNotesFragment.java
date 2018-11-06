@@ -34,9 +34,9 @@ import com.eleybourn.bookcatalogue.Fields.Field;
 import com.eleybourn.bookcatalogue.Fields.FieldFormatter;
 import com.eleybourn.bookcatalogue.datamanager.validators.ValidatorException;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.dialogs.CheckListEditorDialogFragment;
-import com.eleybourn.bookcatalogue.dialogs.CheckListItem;
-import com.eleybourn.bookcatalogue.dialogs.CheckListItemBase;
+import com.eleybourn.bookcatalogue.dialogs.picklist.CheckListEditorDialogFragment;
+import com.eleybourn.bookcatalogue.dialogs.picklist.CheckListItem;
+import com.eleybourn.bookcatalogue.dialogs.picklist.CheckListItemBase;
 import com.eleybourn.bookcatalogue.dialogs.PartialDatePickerDialogFragment;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
@@ -63,7 +63,7 @@ public class EditBookNotesFragment extends BookAbstractFragment implements
      * @return List of locations
      */
     @NonNull
-    public List<String> getLocations() {
+    private List<String> getLocations() {
         if (mLocations == null) {
             mLocations = mDb.getLocations();
         }
@@ -140,11 +140,11 @@ public class EditBookNotesFragment extends BookAbstractFragment implements
         initValuePicker(field, R.string.currency, R.id.btn_price_paid_currency, getPricePaidCurrencyCodes());
 
         field = mFields.add(R.id.location, UniqueId.KEY_BOOK_LOCATION);
-        initValuePicker(field, R.string.location, R.id.location_button, getLocations());
+        initValuePicker(field, R.string.lbl_location, R.id.btn_location, getLocations());
 
         field = mFields.add(R.id.edition, UniqueId.KEY_BOOK_EDITION_BITMASK)
                 .setFormatter(new Fields.BookEditionsFormatter());
-        initCheckListEditor(field, R.string.edition, getBook().getEditableEditionList());
+        initCheckListEditor(field, R.string.lbl_edition, getBook().getEditableEditionList());
 
 
         // ENHANCE: Add a partial date validator. Or not.
@@ -153,18 +153,18 @@ public class EditBookNotesFragment extends BookAbstractFragment implements
 
         field = mFields.add(R.id.date_purchased, UniqueId.KEY_BOOK_DATE_ADDED)
                 .setFormatter(dateFormatter);
-        initPartialDatePicker(field, R.string.date_purchased, true);
+        initPartialDatePicker(field, R.string.lbl_date_purchased, true);
 
         field = mFields.add(R.id.read_start, UniqueId.KEY_BOOK_READ_START)
                 .setFormatter(dateFormatter);
-        initPartialDatePicker(field, R.string.read_start, true);
+        initPartialDatePicker(field, R.string.lbl_read_start, true);
 
         field = mFields.add(R.id.read_end, UniqueId.KEY_BOOK_READ_END)
                 .setFormatter(dateFormatter);
-        initPartialDatePicker(field, R.string.read_end, true);
+        initPartialDatePicker(field, R.string.lbl_read_end, true);
 
         mFields.addCrossValidator(new Fields.FieldCrossValidator() {
-            public void validate(final @NonNull Fields fields, final @NonNull Bundle values) {
+            public void validate(final @NonNull Fields fields, final @NonNull Bundle values) throws ValidatorException{
                 String start = values.getString(UniqueId.KEY_BOOK_READ_START);
                 if (start == null || start.isEmpty()) {
                     return;

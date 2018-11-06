@@ -17,7 +17,7 @@
 
     <View
         android:id="@+id/messageBottomDivider"
-        style="@style/listDividerHorizontal" />
+        style="@style/divider_horizontalList" />
 
     <ScrollView
         android:layout_width="match_parent"

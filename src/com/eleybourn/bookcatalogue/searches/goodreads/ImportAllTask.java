@@ -31,8 +31,8 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
-import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
-import com.eleybourn.bookcatalogue.database.cursors.BooksCursor;
+import com.eleybourn.bookcatalogue.database.cursors.BookCursorRow;
+import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Book;
@@ -232,7 +232,7 @@ class ImportAllTask extends GenericTask {
 
         // Find the books in our database - NOTE: may be more than one!
         // First look by goodreads book ID
-        BooksCursor c = db.fetchBooksByGoodreadsBookId(grId);
+        BookCursor c = db.fetchBooksByGoodreadsBookId(grId);
         try {
             boolean found = c.moveToFirst();
             if (!found) {
@@ -249,13 +249,13 @@ class ImportAllTask extends GenericTask {
 
             if (found) {
                 // If found, update ALL related books
-                BookRowView bookRowView = c.getRowView();
+                BookCursorRow bookCursorRow = c.getCursorRow();
                 do {
                     // Check for abort
                     if (this.isAborting()) {
                         break;
                     }
-                    updateBook(db, bookRowView, review);
+                    updateBook(db, bookCursorRow, review);
                 } while (c.moveToNext());
             } else {
                 // Create the book
@@ -307,10 +307,10 @@ class ImportAllTask extends GenericTask {
      * Update the book using the GR data
      */
     private void updateBook(final @NonNull CatalogueDBAdapter db,
-                            final @NonNull BookRowView bookRowView,
+                            final @NonNull BookCursorRow bookCursorRow,
                             final @NonNull Bundle review) {
         // Get last date book was sent to GR (may be null)
-        final String lastGrSync = bookRowView.getDateLastSyncedWithGoodReads();
+        final String lastGrSync = bookCursorRow.getDateLastSyncedWithGoodReads();
         // If the review has an 'updated' date, then see if we can compare to book
         if (lastGrSync != null && review.containsKey(ListReviewsFieldNames.UPDATED)) {
             final String lastUpdate = review.getString(ListReviewsFieldNames.UPDATED);
@@ -322,9 +322,9 @@ class ImportAllTask extends GenericTask {
         }
         // We build a new book bundle each time since it will build on the existing
         // data for the given book, not just replace it.
-        Book book = buildBundle(db, bookRowView, review);
+        Book book = buildBundle(db, bookCursorRow, review);
 
-        db.updateBook(bookRowView.getId(), book, CatalogueDBAdapter.BOOK_UPDATE_SKIP_PURGE_REFERENCES | CatalogueDBAdapter.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
+        db.updateBook(bookCursorRow.getId(), book, CatalogueDBAdapter.BOOK_UPDATE_SKIP_PURGE_REFERENCES | CatalogueDBAdapter.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
         //db.setGoodreadsSyncDate(rv.getLongFromBundles());
     }
 
@@ -351,7 +351,7 @@ class ImportAllTask extends GenericTask {
      */
     @NonNull
     private Book buildBundle(final @NonNull CatalogueDBAdapter db,
-                             final @Nullable BookRowView bookRowView,
+                             final @Nullable BookCursorRow bookCursorRow,
                              final @NonNull Bundle review) {
         Book book = new Book();
 
@@ -410,12 +410,12 @@ class ImportAllTask extends GenericTask {
         }
 
         ArrayList<Author> authors;
-        if (bookRowView == null) {
+        if (bookCursorRow == null) {
             // It's a new book. Start a clean list.
             authors = new ArrayList<>();
         } else {
             // it's an update. Get current authors.
-            authors = db.getBookAuthorList(bookRowView.getId());
+            authors = db.getBookAuthorList(bookCursorRow.getId());
         }
 
         for (Bundle grAuthor : grAuthors) {
@@ -426,7 +426,7 @@ class ImportAllTask extends GenericTask {
         }
         book.putAuthorList(authors);
 
-        if (bookRowView == null) {
+        if (bookCursorRow == null) {
             // Use the GR added date for new books
             addStringIfNonBlank(review, ListReviewsFieldNames.ADDED, book, DatabaseDefinitions.DOM_BOOK_DATE_ADDED.name);
             // Also fetch thumbnail if add
@@ -459,10 +459,10 @@ class ImportAllTask extends GenericTask {
             Series.SeriesDetails details = Series.findSeriesFromBookTitle(thisTitle);
             if (details != null && !details.name.isEmpty()) {
                 ArrayList<Series> allSeries;
-                if (bookRowView == null) {
+                if (bookCursorRow == null) {
                     allSeries = new ArrayList<>();
                 } else {
-                    allSeries = db.getBookSeriesList(bookRowView.getId());
+                    allSeries = db.getBookSeriesList(bookCursorRow.getId());
                 }
 
                 allSeries.add(new Series(details.name, details.position));

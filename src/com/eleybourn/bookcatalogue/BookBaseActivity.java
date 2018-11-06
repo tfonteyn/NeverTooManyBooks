@@ -74,7 +74,7 @@ public abstract class BookBaseActivity extends BaseActivity implements
                 actionBar.setSubtitle(book.getAuthorTextShort());
             } else {
                 // new book
-                actionBar.setTitle(R.string.menu_insert);
+                actionBar.setTitle(R.string.menu_add_book);
                 actionBar.setSubtitle(null);
             }
         }

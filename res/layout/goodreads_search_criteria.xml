@@ -88,7 +88,7 @@
                     android:textIsSelectable="true" />
             </LinearLayout>
 
-            <View style="@style/listDividerHorizontal" />
+            <View style="@style/divider_horizontalList" />
         </LinearLayout>
 
         <LinearLayout
@@ -105,7 +105,8 @@
 
             <EditText
                 android:id="@+id/search_text"
-                style="@style/searchTextEntry"
+                style="@style/simpleTextEntry"
+                android:inputType="textMultiLine"
                 android:layout_width="match_parent"
                 android:layout_height="0dip"
                 android:layout_weight="1"
@@ -123,7 +124,7 @@
                 android:text="@string/search" />
         </LinearLayout>
 
-        <View style="@style/listDividerHorizontal" />
+        <View style="@style/divider_horizontalList" />
     </LinearLayout>
 
     <LinearLayout
@@ -135,7 +136,7 @@
         android:paddingLeft="@dimen/padding_border"
         android:paddingRight="@dimen/padding_border">
 
-        <View style="@style/listDividerHorizontal" />
+        <View style="@style/divider_horizontalList" />
 
         <TextView
             android:id="@+id/works_found"

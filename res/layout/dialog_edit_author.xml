@@ -6,22 +6,22 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/family_name"
+        android:text="@string/lbl_family_name"
         android:textSize="12sp" />
 
-    <EditText
+    <AutoCompleteTextView
         android:id="@+id/family_name"
         style="@style/personalNameTextEntry"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:completionThreshold="2"
-        android:hint="@string/family_name"
+        android:hint="@string/not_set"
         tools:ignore="Autofill"/>
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/given_names"
+        android:text="@string/lbl_given_names"
         android:textSize="12sp" />
 
     <EditText
@@ -29,7 +29,7 @@
         style="@style/personalNameTextEntry"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/given_names"
+        android:hint="@string/not_set"
         android:singleLine="true"
         tools:ignore="Autofill" />
 

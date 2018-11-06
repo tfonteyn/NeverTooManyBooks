@@ -37,7 +37,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/version_number"
+                    android:text="@string/about_lbl_version_number"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
 
                 <TextView
@@ -56,7 +56,7 @@
                 android:layout_height="wrap_content"
                 android:paddingEnd="@dimen/padding_border"
                 android:paddingStart="@dimen/padding_border"
-                android:text="@string/lbl_website"
+                android:text="@string/about_lbl_website"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <TextView
@@ -69,7 +69,7 @@
                 android:layout_height="wrap_content"
                 android:paddingEnd="@dimen/padding_border"
                 android:paddingStart="@dimen/padding_border"
-                android:text="@string/lbl_sourcecode"
+                android:text="@string/about_lbl_sourcecode"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <TextView
@@ -82,7 +82,7 @@
                 android:layout_height="wrap_content"
                 android:paddingEnd="@dimen/padding_border"
                 android:paddingStart="@dimen/padding_border"
-                android:text="@string/lbl_contacts"
+                android:text="@string/about_lbl_contacts"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <TextView
@@ -100,7 +100,7 @@
                 android:layout_height="wrap_content"
                 android:paddingEnd="@dimen/padding_border"
                 android:paddingStart="@dimen/padding_border"
-                android:text="@string/lbl_special_thanks"
+                android:text="@string/about_lbl_special_thanks"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <TextView
@@ -110,7 +110,7 @@
                 android:paddingBottom="@dimen/padding_border"
                 android:paddingEnd="@dimen/padding_border_triple"
                 android:paddingStart="@dimen/padding_border_triple"
-                android:text="@string/translators_blurb"
+                android:text="@string/about_translators_blurb"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
             <TextView

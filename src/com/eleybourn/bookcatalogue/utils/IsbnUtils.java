@@ -402,7 +402,7 @@ public class IsbnUtils {
         /**
          * @param upc UPC code, example: "070999 00225 530054", "00225" (price) and "5" will be discarded to construct the isbn
          *
-         * @return list of digits or empty on onPartialDatePickerCancel
+         * @return list of digits or empty on failure
          */
         @NonNull
         private List<Integer> upcToDigits(final @NonNull String upc) throws NumberFormatException {

@@ -28,6 +28,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -56,15 +57,16 @@ public class StringProperty extends ValuePropertyWithGlobalDefault<String> imple
     @Override
     @NonNull
     public View getView(final @NonNull LayoutInflater inflater) {
-        // Get base view and components. Tag them.
-        View view = inflater.inflate(R.layout.property_value_string, null);
+        final ViewGroup root = (ViewGroup) inflater.inflate(R.layout.row_property_string_in_place_editing, null);
+        // create Holder -> not needed here
 
-        ViewTagger.setTag(view, R.id.TAG_PROPERTY, this);// value: StringProperty
-        final TextView name = view.findViewById(R.id.name);
-        final EditText value = view.findViewById(R.id.value);
+        // tags used
+        ViewTagger.setTag(root, R.id.TAG_PROPERTY, this);// value: StringProperty
 
-        // Set the current values
+        // Set the initial values
+        final TextView name = root.findViewById(R.id.name);
         name.setText(getName());
+        final EditText value = root.findViewById(R.id.value);
         value.setHint(getName());
         value.setText(get());
 
@@ -84,7 +86,7 @@ public class StringProperty extends ValuePropertyWithGlobalDefault<String> imple
             }
         });
 
-        return view;
+        return root;
     }
 
     @NonNull
@@ -145,7 +147,7 @@ public class StringProperty extends ValuePropertyWithGlobalDefault<String> imple
 
     /** Optional validator. */
     @Override
-    public void validate() {
+    public void validate() throws ValidationException {
         if (mRequireNonBlank) {
             String s = get();
             if (s == null || s.trim().isEmpty()) {

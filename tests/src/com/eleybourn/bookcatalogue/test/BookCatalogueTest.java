@@ -328,7 +328,7 @@ public class BookCatalogueTest extends ActivityInstrumentationTestCase2 {
 		assertFalse(t.searchText("Foobar"));
 		
 		
-		//search & onPartialDatePickerCancel
+		//search & cancel
 		t.clickOnMenuItem("Automatically Populate Titles");
 		t.sleep(3000);
 		t.clickOnButton("Cancel");

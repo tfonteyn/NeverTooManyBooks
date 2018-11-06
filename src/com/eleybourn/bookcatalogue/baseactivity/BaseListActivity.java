@@ -2,15 +2,22 @@ package com.eleybourn.bookcatalogue.baseactivity;
 
 import android.app.Activity;
 import android.app.ListActivity;
+import android.content.Context;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.view.ContextMenu;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.dialogs.picklist.SelectOneDialog;
 
 import java.util.Objects;
 
@@ -59,20 +66,17 @@ import java.util.Objects;
  * </LinearLayout>
  * </pre>
  */
-abstract public class BaseListActivity extends BaseActivity {
+abstract public class BaseListActivity extends BaseActivity implements
+        AdapterView.OnItemClickListener,
+        SelectOneDialog.hasListViewContextMenu {
 
     private final Handler mHandler = new Handler();
-    private final AdapterView.OnItemClickListener mOnClickListener = new AdapterView.OnItemClickListener() {
-
-        public void onItemClick(final AdapterView<?> parent, final @NonNull View v, final int position, final long id) {
-            onListItemClick((ListView) parent, v, position, id);
-        }
-    };
-    private ListAdapter mAdapter;
-    private ListView mList;
+    protected Menu mListViewContextMenu;
+    private ListAdapter mListAdapter;
+    private ListView mListView;
     private final Runnable mRequestFocus = new Runnable() {
         public void run() {
-            mList.focusableViewAvailable(mList);
+            mListView.focusableViewAvailable(mListView);
         }
     };
     private boolean mFinishedStart = false;
@@ -82,18 +86,11 @@ abstract public class BaseListActivity extends BaseActivity {
         return R.layout.list_activity;
     }
 
-    /**
-     * This method will be called when an item in the list is selected.
-     * Subclasses should override.
-     * Subclasses can call {@link #getListView().getItemAtPosition}
-     * if they need to access the data associated with the selected item.
-     *
-     * @param l        The ListView where the click happened
-     * @param v        The view that was clicked within the ListView
-     * @param position The position of the view in the list
-     * @param id       The row id of the item that was clicked
-     */
-    protected void onListItemClick(final @NonNull ListView l, final @NonNull View v, final int position, final long id) {
+    @Override
+    protected void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // enable context menu for the list view
+        initListViewContextMenuListener(this);
     }
 
     /**
@@ -116,19 +113,29 @@ abstract public class BaseListActivity extends BaseActivity {
     @CallSuper
     public void onContentChanged() {
         super.onContentChanged();
-        View emptyView = findViewById(android.R.id.empty);
-        mList = findViewById(android.R.id.list);
-        Objects.requireNonNull(mList, "Your content must have a ListView whose id attribute is '@android:id/list'");
+        mListView = findViewById(android.R.id.list);
+        Objects.requireNonNull(mListView, "Layout must have a ListView whose id attribute is '@android:id/list'");
 
+        View emptyView = findViewById(android.R.id.empty);
         if (emptyView != null) {
-            mList.setEmptyView(emptyView);
+            mListView.setEmptyView(emptyView);
         }
-        mList.setOnItemClickListener(mOnClickListener);
+        mListView.setOnItemClickListener(this);
+
         if (mFinishedStart) {
-            setListAdapter(mAdapter);
+            setListAdapter(mListAdapter);
         }
         mHandler.post(mRequestFocus);
         mFinishedStart = true;
+    }
+
+    /**
+     * Listen for clicks on items in our list
+     *
+     * {@link #onContentChanged} enables 'this' as the listener for our ListView
+     */
+    @Override
+    public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long id) {
     }
 
     /**
@@ -136,7 +143,7 @@ abstract public class BaseListActivity extends BaseActivity {
      */
     @SuppressWarnings("unused")
     public void setSelection(final int position) {
-        mList.setSelection(position);
+        mListView.setSelection(position);
     }
 
     /**
@@ -144,7 +151,7 @@ abstract public class BaseListActivity extends BaseActivity {
      */
     @SuppressWarnings("unused")
     public int getSelectedItemPosition() {
-        return mList.getSelectedItemPosition();
+        return mListView.getSelectedItemPosition();
     }
 
     /**
@@ -152,14 +159,14 @@ abstract public class BaseListActivity extends BaseActivity {
      */
     @SuppressWarnings("unused")
     public long getSelectedItemId() {
-        return mList.getSelectedItemId();
+        return mListView.getSelectedItemId();
     }
 
     /**
      * Get the activity's list view widget.
      */
     protected ListView getListView() {
-        return mList;
+        return mListView;
     }
 
     /**
@@ -167,7 +174,7 @@ abstract public class BaseListActivity extends BaseActivity {
      */
     @SuppressWarnings("unused")
     public ListAdapter getListAdapter() {
-        return mAdapter;
+        return mListAdapter;
     }
 
     /**
@@ -175,8 +182,75 @@ abstract public class BaseListActivity extends BaseActivity {
      */
     protected void setListAdapter(final @NonNull ListAdapter adapter) {
         synchronized (this) {
-            mAdapter = adapter;
-            mList.setAdapter(adapter);
+            mListAdapter = adapter;
+            mListView.setAdapter(adapter);
         }
     }
+
+    /**
+     * Using {@link SelectOneDialog#showContextMenuDialog} for context menus
+     */
+    @Override
+    public void initListViewContextMenuListener(@NonNull final Context context) {
+        //do nothing, example code you can copy to overriding methods:
+
+//        getListView().setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+//            @Override
+//            public boolean onItemLongClick(final AdapterView<?> parent, final View view, final int position, final long id) {
+//
+//                // SET THE TITLE
+//                String menuTitle = mList.get(position).getTitle();
+//
+//                // legal trick to get an instance of Menu.
+//                mListViewContextMenu = new PopupMenu(context, null).getMenu();
+//                // custom menuInfo
+//                SelectOneDialog.SimpleDialogMenuInfo menuInfo = new SelectOneDialog.SimpleDialogMenuInfo(menuTitle, view, position);
+//
+//                // POPULATE the menu
+//                mListViewContextMenu.add(Menu.NONE, R.id.MENU_DELETE, 0, R.string.menu_delete_something)
+//                        .setIcon(R.drawable.ic_delete);
+//
+//                // display
+//                onCreateListViewContextMenu(mListViewContextMenu, view, menuInfo);
+//                return true;
+//            }
+//        });
+    }
+
+    /**
+     * Using {@link SelectOneDialog#showContextMenuDialog} for context menus
+     *
+     * Replaces: {@link #onCreateContextMenu(ContextMenu, View, ContextMenu.ContextMenuInfo)}
+     */
+    @Override
+    public void onCreateListViewContextMenu(final @NonNull Menu menu,
+                                            final @NonNull View view,
+                                            final @NonNull SelectOneDialog.SimpleDialogMenuInfo menuInfo) {
+        if (menu.size() > 0) {
+            SelectOneDialog.showContextMenuDialog(getLayoutInflater(), menuInfo, menu,
+                    new SelectOneDialog.SimpleDialogOnClickListener() {
+                        @Override
+                        public void onClick(final @NonNull SelectOneDialog.SimpleDialogItem item) {
+                            MenuItem menuItem = ((SelectOneDialog.SimpleDialogMenuItem) item).getMenuItem();
+                            if (menuItem.hasSubMenu()) {
+                                menuInfo.title = menuItem.getTitle().toString();
+                                onCreateListViewContextMenu(menuItem.getSubMenu(), view, menuInfo);
+                            } else {
+                                onListViewContextItemSelected(menuItem, menuInfo);
+                            }
+                        }
+                    });
+        }
+    }
+
+    /**
+     * Using {@link SelectOneDialog#showContextMenuDialog} for context menus
+     */
+    @SuppressWarnings("UnusedReturnValue")
+    @Override
+    public boolean onListViewContextItemSelected(final @NonNull MenuItem menuItem,
+                                                 final @NonNull SelectOneDialog.SimpleDialogMenuInfo menuInfo) {
+        return false;
+    }
+
 }

@@ -18,31 +18,34 @@
  * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.eleybourn.bookcatalogue;
+package com.eleybourn.bookcatalogue.dialogs.autocompletetextview;
 
 import android.app.Activity;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 
+import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 
-public class EditLocationDialog extends EditStringDialog {
-    EditLocationDialog(final @NonNull Activity activity, final @NonNull CatalogueDBAdapter db, final @NonNull Runnable onChanged) {
-        super(activity, db, onChanged);
+public class EditFormatDialog extends EditStringDialog {
+    public EditFormatDialog(final @NonNull Activity activity,
+                            final @NonNull CatalogueDBAdapter db,
+                            final @NonNull Runnable onChanged) {
+        super(activity, db, android.R.layout.simple_dropdown_item_1line, db.getFormats(), onChanged);
     }
 
     @CallSuper
-    public void edit(final @NonNull String s) {
-        super.edit(s, R.layout.dialog_edit_location, R.string.edit_location_details);
+    public void edit(final @NonNull String currentText) {
+        super.edit(currentText, R.layout.dialog_edit_format, R.string.dialog_title_edit_format);
     }
 
     @Override
     protected void confirmEdit(final @NonNull String from, final @NonNull String to) {
         // case sensitive equality
-        if (to.equals(from)) {
+        if (from.equals(to)) {
             return;
         }
-        mDb.globalReplaceLocation(from, to);
+        mDb.globalReplaceFormat(from, to);
         mOnChanged.run();
     }
 }

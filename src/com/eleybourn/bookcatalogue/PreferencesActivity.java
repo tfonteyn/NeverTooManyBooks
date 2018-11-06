@@ -221,7 +221,7 @@ public class PreferencesActivity extends PreferencesBaseActivity {
         // Make sure the names are correct
         updateLocalesListItems();
 
-        setTitle(R.string.preferences);
+        setTitle(R.string.dialog_title_preferences);
     }
 
     @Override

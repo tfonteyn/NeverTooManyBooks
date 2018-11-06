@@ -8,8 +8,8 @@ import android.widget.ArrayAdapter;
 import com.eleybourn.bookcatalogue.baseactivity.BaseListActivity;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Tracker;
-import com.eleybourn.bookcatalogue.entities.TOCEntry;
 import com.eleybourn.bookcatalogue.entities.Author;
+import com.eleybourn.bookcatalogue.entities.TOCEntry;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -31,6 +31,7 @@ public class AuthorActivity extends BaseListActivity {
     @CallSuper
     protected void onCreate(final @Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         Bundle extras = getIntent().getExtras();
         Objects.requireNonNull(extras);
         long authorId = extras.getLong(UniqueId.KEY_ID);

@@ -6,19 +6,18 @@ import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.database.DBExceptions;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
-import com.eleybourn.bookcatalogue.entities.Book;
 
 /**
  * Convenience class to avoid having to write the same code in more than one place. This
  * class has get*() methods for the most common (all?) book-related fields. Passed a Cursor object
  * it will retrieve the specified value using the current cursor row.
  *
- * Unified {@link BookRowView} and {@link BooklistRowView}
+ * Unified {@link BookCursorRow} and {@link BooklistCursorRow}
  *
  * This base class should ONLY have accessors for fields actually present in the 'books' table
  * Others should be done via extended classes of this base one.
  */
-public class BookRowViewBase {
+public class BookCursorRowBase {
 
     /** Associated cursor object */
     @NonNull
@@ -55,7 +54,7 @@ public class BookRowViewBase {
     private int mDateLastSyncedWithGoodReadsCol = -2;
     private int mDatePublishedCol = -2;
 
-    protected BookRowViewBase(final @NonNull Cursor cursor) {
+    protected BookCursorRowBase(final @NonNull Cursor cursor) {
         mCursor = cursor;
     }
 

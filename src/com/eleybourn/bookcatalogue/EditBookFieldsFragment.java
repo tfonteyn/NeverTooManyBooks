@@ -35,9 +35,9 @@ import android.widget.Checkable;
 
 import com.eleybourn.bookcatalogue.Fields.Field;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.dialogs.CheckListEditorDialogFragment;
-import com.eleybourn.bookcatalogue.dialogs.CheckListItem;
-import com.eleybourn.bookcatalogue.dialogs.CheckListItemBase;
+import com.eleybourn.bookcatalogue.dialogs.picklist.CheckListEditorDialogFragment;
+import com.eleybourn.bookcatalogue.dialogs.picklist.CheckListItem;
+import com.eleybourn.bookcatalogue.dialogs.picklist.CheckListItemBase;
 import com.eleybourn.bookcatalogue.dialogs.PartialDatePickerDialogFragment;
 import com.eleybourn.bookcatalogue.dialogs.TextFieldEditorDialogFragment;
 import com.eleybourn.bookcatalogue.entities.Author;
@@ -135,7 +135,7 @@ public class EditBookFieldsFragment extends BookAbstractFragmentWithCoverImage i
                     }
                 });
 
-        mFields.add(R.id.series, UniqueId.KEY_SERIES_NAME)
+        mFields.add(R.id.name, UniqueId.KEY_SERIES_NAME)
                 .getView().setOnClickListener(
                 new OnClickListener() {
                     @Override
@@ -153,27 +153,27 @@ public class EditBookFieldsFragment extends BookAbstractFragmentWithCoverImage i
         mFields.add(R.id.isbn, UniqueId.KEY_BOOK_ISBN);
 
         field = mFields.add(R.id.description, UniqueId.KEY_DESCRIPTION).setShowHtml(true);
-        initTextFieldEditor(field, R.string.description, R.id.btn_description, true);
+        initTextFieldEditor(field, R.string.lbl_description, R.id.btn_description, true);
 
         field = mFields.add(R.id.genre, UniqueId.KEY_BOOK_GENRE);
-        initValuePicker(field, R.string.genre, R.id.btn_genre, getGenres());
+        initValuePicker(field, R.string.lbl_genre, R.id.btn_genre, getGenres());
 
         field = mFields.add(R.id.language, UniqueId.KEY_BOOK_LANGUAGE);
         initValuePicker(field, R.string.lbl_language, R.id.btn_language, getLanguages());
 
         field = mFields.add(R.id.format, UniqueId.KEY_BOOK_FORMAT);
-        initValuePicker(field, R.string.format, R.id.btn_format, getFormats());
+        initValuePicker(field, R.string.lbl_format, R.id.btn_format, getFormats());
 
         field = mFields.add(R.id.publisher, UniqueId.KEY_BOOK_PUBLISHER);
-        initValuePicker(field, R.string.publisher, R.id.btn_publisher, getPublishers());
+        initValuePicker(field, R.string.lbl_publisher, R.id.btn_publisher, getPublishers());
 
         field = mFields.add(R.id.date_published, UniqueId.KEY_BOOK_DATE_PUBLISHED)
                 .setFormatter(new Fields.DateFieldFormatter());
-        initPartialDatePicker(field, R.string.date_published, false);
+        initPartialDatePicker(field, R.string.lbl_date_published, false);
 
         field = mFields.add(R.id.first_publication, UniqueId.KEY_FIRST_PUBLICATION)
                 .setFormatter(new Fields.DateFieldFormatter());
-        initPartialDatePicker(field, R.string.first_publication, false);
+        initPartialDatePicker(field, R.string.lbl_first_publication, false);
 
         mFields.add(R.id.price_listed, UniqueId.KEY_BOOK_PRICE_LISTED);
         field = mFields.add(R.id.price_listed_currency, UniqueId.KEY_BOOK_PRICE_LISTED_CURRENCY);
@@ -192,7 +192,7 @@ public class EditBookFieldsFragment extends BookAbstractFragmentWithCoverImage i
         // Personal fields
         field = mFields.add(R.id.bookshelves, UniqueId.KEY_BOOKSHELF_NAME)
                 .setDoNotFetch(true);
-        initCheckListEditor(field, R.string.bookshelves, getBook().getEditableBookshelvesList(mDb));
+        initCheckListEditor(field, R.string.lbl_bookshelves_long, getBook().getEditableBookshelvesList(mDb));
     }
 
     @Override
@@ -262,7 +262,7 @@ public class EditBookFieldsFragment extends BookAbstractFragmentWithCoverImage i
         }
     }
 
-    protected void populateAuthorListField(final @NonNull Book book) {
+    private void populateAuthorListField(final @NonNull Book book) {
         ArrayList<Author> list = book.getAuthorList();
         if (list.size() != 0 && Utils.pruneList(mDb, list)) {
             setDirty(true);
@@ -277,7 +277,7 @@ public class EditBookFieldsFragment extends BookAbstractFragmentWithCoverImage i
     }
 
     protected void populateSeriesListField(final @NonNull Book book) {
-        boolean visible = mFields.getField(R.id.series).visible;
+        boolean visible = mFields.getField(R.id.name).visible;
         if (visible) {
             ArrayList<Series> list = book.getSeriesList();
             int seriesCount = list.size();
@@ -291,11 +291,11 @@ public class EditBookFieldsFragment extends BookAbstractFragmentWithCoverImage i
             if (newText.isEmpty()) {
                 newText = getString(R.string.set_series);
             }
-            mFields.getField(R.id.series).setValue(newText);
+            mFields.getField(R.id.name).setValue(newText);
         }
         //noinspection ConstantConditions
         getView().findViewById(R.id.lbl_series).setVisibility(visible ? View.VISIBLE : View.GONE);
-        getView().findViewById(R.id.series).setVisibility(visible ? View.VISIBLE : View.GONE);
+        getView().findViewById(R.id.name).setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
 

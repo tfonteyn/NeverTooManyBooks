@@ -41,7 +41,7 @@ public class BooklistCursor extends TrackedCursor implements BooklistSupportProv
     private final BooklistBuilder mBuilder;
     /** Cached RowView for this cursor */
     @Nullable
-    private BooklistRowView mRowView = null;
+    private BooklistCursorRow mRowView = null;
 
     /**
      * Constructor
@@ -73,9 +73,9 @@ public class BooklistCursor extends TrackedCursor implements BooklistSupportProv
      * Get a RowView for this cursor. Constructs one if necessary.
      */
     @NonNull
-    public BooklistRowView getRowView() {
+    public BooklistCursorRow getCursorRow() {
         if (mRowView == null) {
-            mRowView = new BooklistRowView(this, mBuilder);
+            mRowView = new BooklistCursorRow(this, mBuilder);
         }
         return mRowView;
     }

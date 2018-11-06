@@ -81,7 +81,7 @@ public class BookDetailsFragment extends BookAbstractFragmentWithCoverImage {
         // ENHANCE: simplify the SQL and use a formatter instead.
         mFields.add(R.id.author, "", UniqueId.KEY_AUTHOR_FORMATTED);
 
-        mFields.add(R.id.series, UniqueId.KEY_SERIES_NAME);
+        mFields.add(R.id.name, UniqueId.KEY_SERIES_NAME);
         mFields.add(R.id.title, UniqueId.KEY_TITLE);
         mFields.add(R.id.isbn, UniqueId.KEY_BOOK_ISBN);
         mFields.add(R.id.description, UniqueId.KEY_DESCRIPTION).setShowHtml(true);
@@ -158,7 +158,7 @@ public class BookDetailsFragment extends BookAbstractFragmentWithCoverImage {
         }
     }
 
-    protected void populateAuthorListField(final @NonNull Book book) {
+    private void populateAuthorListField(final @NonNull Book book) {
         ArrayList<Author> authors = book.getAuthorList();
         int authorsCount = authors.size();
         boolean visible = authorsCount != 0;
@@ -181,7 +181,7 @@ public class BookDetailsFragment extends BookAbstractFragmentWithCoverImage {
     protected void populateSeriesListField(final @NonNull Book book) {
         ArrayList<Series> list = book.getSeriesList();
         int seriesCount = list.size();
-        boolean visible = seriesCount != 0 && mFields.getField(R.id.series).visible;
+        boolean visible = seriesCount != 0 && mFields.getField(R.id.name).visible;
         if (visible) {
             Series.pruneSeriesList(list);
             Utils.pruneList(mDb, list);
@@ -193,11 +193,11 @@ public class BookDetailsFragment extends BookAbstractFragmentWithCoverImage {
                 }
             }
 
-            mFields.getField(R.id.series).setValue(builder.toString());
+            mFields.getField(R.id.name).setValue(builder.toString());
         }
         //noinspection ConstantConditions
         getView().findViewById(R.id.lbl_series).setVisibility(visible ? View.VISIBLE : View.GONE);
-        getView().findViewById(R.id.series).setVisibility(visible ? View.VISIBLE : View.GONE);
+        getView().findViewById(R.id.name).setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
     /**
@@ -265,10 +265,15 @@ public class BookDetailsFragment extends BookAbstractFragmentWithCoverImage {
 
         mFields.getField(R.id.loaned_to).getView()
                 .setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
+                    /**
+                     * (yes, icons are not supported and won't show. Still leaving the setIcon calls in for now.)
+                     */
                     @Override
                     @CallSuper
-                    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-                        menu.add(Menu.NONE, R.id.MENU_BOOK_EDIT_LOANS, 0, R.string.edit_book_friends)
+                    public void onCreateContextMenu(final @NonNull ContextMenu menu,
+                                                    final @NonNull View v,
+                                                    final @NonNull ContextMenu.ContextMenuInfo menuInfo) {
+                        menu.add(Menu.NONE, R.id.MENU_BOOK_EDIT_LOANS, 0, R.string.menu_edit_book_friends)
                                 .setIcon(R.drawable.ic_people);
                     }
                 });
@@ -371,7 +376,7 @@ public class BookDetailsFragment extends BookAbstractFragmentWithCoverImage {
     @Override
     @CallSuper
     public void onCreateOptionsMenu(final @NonNull Menu menu, final @NonNull MenuInflater inflater) {
-        menu.add(Menu.NONE, R.id.MENU_BOOK_EDIT, 0, R.string.edit_book)
+        menu.add(Menu.NONE, R.id.MENU_BOOK_EDIT, 0, R.string.menu_edit_book)
                 .setIcon(R.drawable.ic_mode_edit)
                 .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 

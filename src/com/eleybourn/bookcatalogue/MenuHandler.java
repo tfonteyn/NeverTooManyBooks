@@ -40,7 +40,7 @@ public class MenuHandler {
     public static void addCreateBookSubMenu(final @NonNull Menu menu) {
         SubMenu subMenu = menu.addSubMenu(0, R.id.SUBMENU_BOOK_ADD,
                 Menu.NONE,
-                BookCatalogueApp.getResourceString(R.string.menu_insert) + "&hellip;");
+                BookCatalogueApp.getResourceString(R.string.menu_add_book) + "&hellip;");
 
         subMenu.setIcon(R.drawable.ic_add)
                 .getItem()

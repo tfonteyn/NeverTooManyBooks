@@ -31,8 +31,8 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.CursorAdapter;
 
-import com.eleybourn.bookcatalogue.dialogs.ContextDialogItem;
 import com.eleybourn.bookcatalogue.database.cursors.BindableItemCursor;
+import com.eleybourn.bookcatalogue.dialogs.ContextDialogItem;
 
 import java.util.Hashtable;
 import java.util.List;
@@ -49,11 +49,11 @@ public class BindableItemCursorAdapter extends CursorAdapter {
     private final BindableItemBinder mBinder;
     /** hash of class names and values used to dynamically allocate layout numbers */
     private final Map<String, Integer> mItemTypeLookups = new Hashtable<>();
-    /** The position passed to the last call of getItemViewType() */
+    /** The position passed to the last call of {@link #getItemViewType} */
     private int mLastItemViewTypePos = -1;
-    /** The item type returned by the last call of getItemViewType() */
+    /** The item type returned by the last call of {@link #getItemViewType} */
     private int mLastItemViewType = -1;
-    /** The Event used in the last call of getItemViewType() */
+    /** The Event used in the last call of {@link #getItemViewType} */
     private BindableItem mLastItemViewTypeEvent = null;
     private int mItemTypeCount = 0;
 
@@ -77,7 +77,7 @@ public class BindableItemCursorAdapter extends CursorAdapter {
      * NOT USED. Should never be called.
      */
     @Override
-    public void bindView(final View view, final Context context, final Cursor cursor) {
+    public void bindView(final @NonNull View view, final @NonNull Context context, final @NonNull Cursor cursor) {
         throw new UnsupportedOperationException();
     }
 
@@ -86,7 +86,7 @@ public class BindableItemCursorAdapter extends CursorAdapter {
      */
     @NonNull
     @Override
-    public View newView(final Context context, final Cursor cursor, final ViewGroup parent) {
+    public View newView(final @NonNull Context context, final @NonNull Cursor cursor, final @NonNull ViewGroup parent) {
         throw new UnsupportedOperationException();
     }
 
@@ -117,9 +117,9 @@ public class BindableItemCursorAdapter extends CursorAdapter {
         }
 
         // Get the Event object
-        BindableItemCursor c = (BindableItemCursor) getCursor();
-        c.moveToPosition(position);
-        BindableItem bindable = c.getBindableItem();
+        BindableItemCursor cursor = (BindableItemCursor) getCursor();
+        cursor.moveToPosition(position);
+        BindableItem bindable = cursor.getBindableItem();
 
         // Use the class name to generate a layout number
         String s = bindable.getClass().toString();
@@ -182,18 +182,19 @@ public class BindableItemCursorAdapter extends CursorAdapter {
 
     public interface BindableItemBinder {
         /**
-         * Return the number of different Event types and event that the list will display. An approximation is fine, but
-         * overestimating will be more efficient than underestimating. This is analogous to the
-         * CursorAdapter.getViewTypeCount() method but needs to be set to the minimum of the total number of Event subclasses
-         * that may be returned.
+         * Return the number of different Event types and event that the list will display.
+         * An approximation is fine, but overestimating will be more efficient than underestimating.
+         * This is analogous to the CursorAdapter.getViewTypeCount() method but needs to be set
+         * to the minimum of the total number of Event subclasses that may be returned.
          *
          * @return number of view types that events will return.
          */
         int getBindableItemTypeCount();
 
         /**
-         * Called to bind a specific event to a View in the list. It is passed to the subclass so that any
-         * application-specific context can be added, or it can just be passed off to the Event object itself.
+         * Called to bind a specific event to a View in the list. It is passed to the subclass
+         * so that any application-specific context can be added, or it can just be passed off
+         * to the Event object itself.
          *
          * @param context     Context of request
          * @param convertView View to populate
@@ -225,12 +226,14 @@ public class BindableItemCursorAdapter extends CursorAdapter {
                              final @NonNull ViewGroup parent);
 
         /**
-         * Bind this Event to the passed view. The view will be one created by a call to newListItemView(...).
+         * Bind this Event to the passed view. The view will be one created by a call
+         * to newListItemView(...).
          *
          * @param view    View to populate
          * @param context Context using view
          * @param cursor  EventsCursor for this event, positioned at its row.
-         * @param appInfo Any application-specific object the caller chooses to send. eg. a database adapter.
+         * @param appInfo Any application-specific object the caller chooses to send.
+         *                eg. a database adapter.
          */
         void bindView(final @NonNull View view,
                       final @NonNull Context context,
@@ -238,8 +241,9 @@ public class BindableItemCursorAdapter extends CursorAdapter {
                       final @NonNull Object appInfo);
 
         /**
-         * Called when an item in a list has been clicked, this method should populate the passed 'items' parameter with
-         * one ContextDialogItem per operation that can be performed on this object.
+         * Called when an item in a list has been clicked, this method should populate the passed
+         * 'items' parameter with one {@link ContextDialogItem} per operation that can be
+         * performed on this object.
          *
          * @param ctx      Context resulting in Click() event
          * @param parent   ListView (or other) that contained the item
@@ -247,7 +251,8 @@ public class BindableItemCursorAdapter extends CursorAdapter {
          * @param position position in cursor of item
          * @param id       row id of item
          * @param items    items collection to fill
-         * @param appInfo  Any application-specific object the caller chooses to send. eg. a database adapter.
+         * @param appInfo  Any application-specific object the caller chooses to send.
+         *                 eg. a database adapter.
          */
         void addContextMenuItems(final @NonNull Context ctx,
                                  @NonNull AdapterView<?> parent,

@@ -163,7 +163,7 @@ public class Utils {
                     connInfo.connection.setConnectTimeout(30000);
                     connInfo.connection.setReadTimeout(30000);
 
-                    // start the connection as a background task, so that we can onPartialDatePickerCancel any runaway timeouts.
+                    // start the connection as a background task, so that we can cancel any runaway timeouts.
                     Terminator.enqueue(new Runnable() {
                         @Override
                         public void run() {
@@ -355,7 +355,7 @@ public class Utils {
     }
 
     //ENHANCE: surely this can be done more intelligently ?
-    private static Map<String,String> CURRENCY_MAP = new HashMap<>();
+    private static final Map<String,String> CURRENCY_MAP = new HashMap<>();
     static {
         CURRENCY_MAP.put("","");
         CURRENCY_MAP.put("€","EUR");

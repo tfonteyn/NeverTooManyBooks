@@ -40,8 +40,8 @@ import com.eleybourn.bookcatalogue.EditBookActivity;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
-import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
-import com.eleybourn.bookcatalogue.database.cursors.BooksCursor;
+import com.eleybourn.bookcatalogue.database.cursors.BookCursorRow;
+import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
 import com.eleybourn.bookcatalogue.dialogs.ContextDialogItem;
 import com.eleybourn.bookcatalogue.dialogs.HintManager.HintOwner;
 import com.eleybourn.bookcatalogue.entities.Author;
@@ -173,7 +173,7 @@ public class BookEvents {
 
             String title = db.getBookTitle(mBookId);
             if (title==null) {
-                title = context.getString(R.string.this_book_deleted_uc);
+                title = context.getString(R.string.warning_book_was_deleted_uc);
             }
 
             holder.title.setText(title);
@@ -211,7 +211,7 @@ public class BookEvents {
                                         final @NonNull Object appInfo) {
 
             // EDIT BOOK
-            items.add(new ContextDialogItem(context.getString(R.string.edit_book), new Runnable() {
+            items.add(new ContextDialogItem(context.getString(R.string.menu_edit_book), new Runnable() {
                 @Override
                 public void run() {
                     try {
@@ -304,11 +304,11 @@ public class BookEvents {
             final BookEventHolder holder = ViewTagger.getTagOrThrow(view, R.id.TAG_BOOK_EVENT_HOLDER);
             final CatalogueDBAdapter db = (CatalogueDBAdapter) appInfo;
 
-            try (BooksCursor booksCursor = db.fetchBookForGoodreadsCursor(mBookId)) {
+            try (BookCursor bookCursor = db.fetchBookForGoodreadsCursor(mBookId)) {
                 // Hide parts of view based on current book details.
-                if (booksCursor.moveToFirst()) {
-                    final BookRowView bookRowView = booksCursor.getRowView();
-                    if (bookRowView.getIsbn().isEmpty()) {
+                if (bookCursor.moveToFirst()) {
+                    final BookCursorRow bookCursorRow = bookCursor.getCursorRow();
+                    if (bookCursorRow.getIsbn().isEmpty()) {
                         holder.retry.setVisibility(View.GONE);
                     } else {
                         holder.retry.setVisibility(View.VISIBLE);
@@ -336,10 +336,10 @@ public class BookEvents {
             super.addContextMenuItems(context, parent, view, position, eventId, items, appInfo);
 
             final CatalogueDBAdapter db = (CatalogueDBAdapter) appInfo;
-            try (BooksCursor booksCursor = db.fetchBookForGoodreadsCursor(mBookId)) {
-                final BookRowView bookRowView = booksCursor.getRowView();
-                if (booksCursor.moveToFirst()) {
-                    if (!bookRowView.getIsbn().isEmpty()) {
+            try (BookCursor bookCursor = db.fetchBookForGoodreadsCursor(mBookId)) {
+                final BookCursorRow bookCursorRow = bookCursor.getCursorRow();
+                if (bookCursor.moveToFirst()) {
+                    if (!bookCursorRow.getIsbn().isEmpty()) {
                         items.add(new ContextDialogItem(context.getString(R.string.retry_task), new Runnable() {
                             @Override
                             public void run() {

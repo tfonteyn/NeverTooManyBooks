@@ -30,7 +30,7 @@ import android.support.annotation.RequiresPermission;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
-import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.DatabaseHelper;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
 import java.io.BufferedReader;
@@ -108,8 +108,6 @@ public class StorageUtils {
 
     /**
      * Check if the external storage is writable
-     *
-     * @return onTextFieldEditorSave or onPartialDatePickerCancel
      */
     static public boolean isWriteProtected() throws SecurityException {
         try {
@@ -495,12 +493,7 @@ public class StorageUtils {
      */
     public static void backupDatabaseFile(final @NonNull String destFilename) {
         try {
-            //FIXME: really ? just to get the path ?
-            CatalogueDBAdapter db = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
-            db.open();
-            String dbPath = db.getPath();
-            db.close();
-
+            String dbPath = DatabaseHelper.getDatabasePath(BookCatalogueApp.getAppContext());
             backupFile(dbPath, destFilename);
         } catch (Exception e) {
             Logger.error(e);

@@ -19,13 +19,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/read" />
+            android:text="@string/lbl_read" />
 
         <TextView
             android:id="@+id/lbl_rating"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/rating"
+            android:text="@string/lbl_rating"
             android:textSize="16sp" />
 
         <RatingBar
@@ -35,7 +35,7 @@
             android:layout_weight="1"
             android:numStars="5" />
 
-        <View style="@style/listDividerHorizontal" />
+        <View style="@style/divider_horizontalList" />
 
         <RelativeLayout
             android:id="@+id/row_notes"
@@ -46,8 +46,8 @@
 
             <TextView
                 android:id="@+id/lbl_notes"
-                style="@style/editorFieldHeader"
-                android:text="@string/edit_book_notes" />
+                style="@style/lbl_editField"
+                android:text="@string/menu_edit_book_notes" />
 
             <EditText
                 android:id="@+id/notes"
@@ -62,7 +62,7 @@
 
         </RelativeLayout>
 
-        <View style="@style/listDividerHorizontal" />
+        <View style="@style/divider_horizontalList" />
 
         <RelativeLayout
             android:id="@+id/row_date_purchased"
@@ -72,12 +72,12 @@
 
             <TextView
                 android:id="@+id/lbl_date_purchased"
-                style="@style/editorFieldHeader"
-                android:text="@string/date_purchased"/>
+                style="@style/lbl_editField"
+                android:text="@string/lbl_date_purchased"/>
 
             <Button
                 android:id="@+id/date_purchased"
-                style="@style/dataEntryButton"
+                style="@style/buttonDataEntry"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
@@ -92,13 +92,13 @@
 
             <TextView
                 android:id="@+id/lbl_price_paid"
-                style="@style/editorFieldHeader"
+                style="@style/lbl_editField"
                 android:labelFor="@id/price_paid"
-                android:text="@string/price_paid" />
+                android:text="@string/lbl_price_paid" />
 
             <EditText
                 android:id="@+id/price_paid"
-                style="@style/editorFieldText"
+                style="@style/simpleTextEntry"
                 android:layout_width="wrap_content"
                 android:layout_below="@id/lbl_price_paid"
                 android:layout_toStartOf="@id/price_paid_currency"
@@ -109,7 +109,7 @@
 
             <AutoCompleteTextView
                 android:id="@+id/price_paid_currency"
-                style="@style/editorFieldText"
+                style="@style/simpleTextEntry"
                 android:layout_width="wrap_content"
                 android:layout_below="@id/lbl_price_paid"
                 android:layout_alignParentStart="false"
@@ -134,14 +134,14 @@
                 tools:ignore="ContentDescription" />
         </RelativeLayout>
 
-        <View style="@style/listDividerHorizontal" />
+        <View style="@style/divider_horizontalList" />
 
         <CheckBox
             android:id="@+id/signed"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/signed" />
+            android:text="@string/lbl_signed" />
 
         <RelativeLayout
             android:id="@+id/row_edition"
@@ -151,12 +151,12 @@
 
             <TextView
                 android:id="@+id/lbl_edition"
-                style="@style/editorFieldHeader"
-                android:text="@string/edition" />
+                style="@style/lbl_editField"
+                android:text="@string/lbl_edition" />
 
             <Button
                 android:id="@+id/edition"
-                style="@style/dataEntryButton"
+                style="@style/buttonDataEntry"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
@@ -164,7 +164,7 @@
                 android:layout_below="@id/lbl_edition" />
         </RelativeLayout>
 
-        <View style="@style/listDividerHorizontal" />
+        <View style="@style/divider_horizontalList" />
 
         <RelativeLayout
             android:id="@+id/row_read_start"
@@ -174,12 +174,12 @@
 
             <TextView
                 android:id="@+id/lbl_read_start"
-                style="@style/editorFieldHeader"
-                android:text="@string/read_start" />
+                style="@style/lbl_editField"
+                android:text="@string/lbl_read_start" />
 
             <Button
                 android:id="@+id/read_start"
-                style="@style/dataEntryButton"
+                style="@style/buttonDataEntry"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
@@ -187,7 +187,7 @@
                 android:layout_below="@id/lbl_read_start" />
         </RelativeLayout>
 
-        <View style="@style/listDividerHorizontal" />
+        <View style="@style/divider_horizontalList" />
 
         <RelativeLayout
             android:id="@+id/row_read_end"
@@ -197,12 +197,12 @@
 
             <TextView
                 android:id="@+id/lbl_read_end"
-                style="@style/editorFieldHeader"
-                android:text="@string/read_end" />
+                style="@style/lbl_editField"
+                android:text="@string/lbl_read_end" />
 
             <Button
                 android:id="@+id/read_end"
-                style="@style/dataEntryButton"
+                style="@style/buttonDataEntry"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
@@ -210,7 +210,7 @@
                 android:layout_below="@id/lbl_read_end" />
         </RelativeLayout>
 
-        <View style="@style/listDividerHorizontal" />
+        <View style="@style/divider_horizontalList" />
 
         <RelativeLayout
             android:id="@+id/row_location"
@@ -221,21 +221,21 @@
 
             <TextView
                 android:id="@+id/lbl_location"
-                style="@style/editorFieldHeader"
-                android:text="@string/location_of_book"
+                style="@style/lbl_editField"
+                android:text="@string/lbl_location_long"
                 android:labelFor="@id/location"/>
 
             <AutoCompleteTextView
                 android:id="@+id/location"
-                style="@style/editorFieldText"
+                style="@style/simpleTextEntry"
                 android:layout_below="@id/lbl_location"
-                android:layout_toStartOf="@id/location_button"
+                android:layout_toStartOf="@id/btn_location"
                 android:layout_centerVertical="true"
                 android:completionThreshold="2"
                 android:inputType="textCapSentences" />
 
             <ImageButton
-                android:id="@+id/location_button"
+                android:id="@+id/btn_location"
                 style="@style/dropDownMenuButton"
                 android:layout_alignBottom="@id/location"
                 app:srcCompat="@drawable/ic_expand_more"

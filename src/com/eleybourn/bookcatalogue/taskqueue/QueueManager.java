@@ -225,9 +225,8 @@ public abstract class QueueManager {
             // Save it
             mDb.enqueueTask(task, queueName);
             if (mActiveQueues.containsKey(queueName)) {
-                Queue queue = mActiveQueues.get(queueName);
-                synchronized (queue) {
-                    queue.notify();
+                synchronized (mActiveQueues) {
+                    mActiveQueues.get(queueName).notify();
                 }
             } else {
                 // Create the queue; it will start and add itself to the manager

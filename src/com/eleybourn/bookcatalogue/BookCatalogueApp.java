@@ -32,8 +32,8 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.support.annotation.ArrayRes;
+import android.support.annotation.AttrRes;
 import android.support.annotation.CallSuper;
-import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
@@ -479,7 +479,7 @@ public class BookCatalogueApp extends Application {
      * @return resolved attribute
      */
     @SuppressWarnings("unused")
-    public static int getAttr(final int attr) {
+    public static int getAttr(final @AttrRes int attr) {
         return getAttr(mInstance.getApplicationContext().getTheme(), attr);
     }
 
@@ -489,7 +489,7 @@ public class BookCatalogueApp extends Application {
      *
      * @return resolved attribute
      */
-    public static int getAttr(final @NonNull Resources.Theme theme, final @IdRes int attr) {
+    public static int getAttr(final @NonNull Resources.Theme theme, final @AttrRes int attr) {
         TypedValue tv = new TypedValue();
         theme.resolveAttribute(attr, tv, true);
         return tv.resourceId;

@@ -25,143 +25,143 @@
             <!-- GENERAL -->
 
             <TextView
-                style="@style/prefsHeader"
+                style="@style/hdr_preferencesSection"
                 android:text="@string/general" />
 
             <TextView
                 android:id="@+id/lbl_fields"
-                style="@style/prefsItem"
+                style="@style/row_option_in_list"
                 android:drawableStart="@drawable/ic_visibility"
                 android:text="@string/menu_manage_fields" />
 
             <TextView
                 android:id="@+id/lbl_edit_styles"
-                style="@style/prefsItem"
+                style="@style/row_option_in_list"
                 android:drawableStart="@drawable/ic_style"
-                android:text="@string/edit_book_list_styles" />
+                android:text="@string/menu_edit_book_list_styles" />
 
-            <View style="@style/listDividerHorizontal" />
+            <View style="@style/divider_horizontalList" />
 
             <!-- DATA IMPORT/EXPORT -->
 
             <TextView
-                style="@style/prefsHeader"
+                style="@style/hdr_preferencesSection"
                 android:text="@string/data_import_export" />
 
             <TextView
                 android:id="@+id/lbl_backup_catalogue"
-                style="@style/prefsItem"
+                style="@style/row_option_in_list"
                 android:drawableStart="@drawable/ic_save"
                 android:text="@string/backup_to_archive" />
 
             <TextView
                 android:id="@+id/lbl_restore_catalogue"
-                style="@style/prefsItem"
+                style="@style/row_option_in_list"
                 android:drawableStart="@drawable/ic_file_download"
                 android:text="@string/import_from_archive" />
 
             <TextView
                 android:id="@+id/lbl_export"
-                style="@style/prefsItem"
+                style="@style/row_option_in_list"
                 android:drawableStart="@drawable/ic_save"
                 android:text="@string/export_to_csv" />
 
             <TextView
                 android:id="@+id/lbl_import"
-                style="@style/prefsItem"
+                style="@style/row_option_in_list"
                 android:drawableStart="@drawable/ic_file_download"
                 android:text="@string/import_from_csv" />
 
-            <View style="@style/listDividerHorizontal" />
+            <View style="@style/divider_horizontalList" />
 
             <!-- FIELD UPDATES -->
 
             <TextView
-                style="@style/prefsHeader"
+                style="@style/hdr_preferencesSection"
                 android:text="@string/internet_update_fields" />
 
             <TextView
                 android:id="@+id/lbl_update_internet"
-                style="@style/prefsItem"
+                style="@style/row_option_in_list"
                 android:drawableStart="@drawable/ic_content_copy"
                 android:text="@string/update_fields" />
 
             <TextView
                 android:id="@+id/lbl_sync_with_goodreads"
-                style="@style/prefsItem"
+                style="@style/row_option_in_list"
                 android:drawableStart="@drawable/ic_autorenew"
                 android:text="@string/gr_sync_with_goodreads" />
 
             <TextView
                 android:id="@+id/lbl_import_all_from_goodreads"
-                style="@style/prefsItem"
+                style="@style/row_option_in_list"
                 android:drawableStart="@drawable/ic_file_download"
                 android:text="@string/gr_import_all_from_goodreads" />
 
             <TextView
                 android:id="@+id/lbl_send_books_to_goodreads"
-                style="@style/prefsItem"
+                style="@style/row_option_in_list"
                 android:drawableStart="@drawable/ic_send"
                 android:text="@string/gr_send_book" />
 
-            <View style="@style/listDividerHorizontal" />
+            <View style="@style/divider_horizontalList" />
             <!-- CREDENTIALS -->
 
             <TextView
-                style="@style/prefsHeader"
+                style="@style/hdr_preferencesSection"
                 android:text="@string/credentials" />
 
             <TextView
                 android:id="@+id/goodreads_auth"
-                style="@style/prefsItem"
+                style="@style/row_option_in_list"
                 android:drawableStart="?attr/ic_goodreads"
                 android:text="@string/goodreads"
                 tools:drawableStart="@drawable/ic_goodreads_dark"/>
 
             <TextView
                 android:id="@+id/librarything_auth"
-                style="@style/prefsItem"
+                style="@style/row_option_in_list"
                 android:drawableStart="@drawable/ic_security"
                 android:text="@string/library_thing" />
 
-            <View style="@style/listDividerHorizontal" />
+            <View style="@style/divider_horizontalList" />
             <!-- ADVANCED OPTIONS Header -->
 
             <TextView
-                style="@style/prefsHeader"
+                style="@style/hdr_preferencesSection"
                 android:text="@string/advanced_options" />
 
             <TextView
                 android:id="@+id/search_sites"
-                style="@style/prefsItem"
+                style="@style/row_option_in_list"
                 android:drawableStart="@drawable/ic_search"
                 android:text="@string/search_sites" />
 
             <TextView
                 android:id="@+id/lbl_background_tasks"
-                style="@style/prefsItem"
+                style="@style/row_option_in_list"
                 android:drawableStart="@drawable/ic_format_list_bulleted"
                 android:text="@string/background_tasks" />
 
             <TextView
                 android:id="@+id/lbl_reset_hints"
-                style="@style/prefsItem"
+                style="@style/row_option_in_list"
                 android:drawableStart="@drawable/ic_undo"
-                android:text="@string/reset_hints" />
+                android:text="@string/hint_reset_all_hints" />
 
             <TextView
                 android:id="@+id/lbl_erase_cover_cache"
-                style="@style/prefsItem"
+                style="@style/row_option_in_list"
                 android:drawableStart="@drawable/ic_close"
                 android:text="@string/erase_cover_cache" />
 
             <TextView
                 android:id="@+id/lbl_backup"
-                style="@style/prefsItem"
+                style="@style/row_option_in_list"
                 android:drawableStart="@drawable/ic_save"
-                android:text="@string/copy_database" />
+                android:text="@string/menu_copy_database" />
 
-            <View style="@style/listDividerHorizontal" />
+            <View style="@style/divider_horizontalList" />
         </LinearLayout>
 
     </ScrollView>

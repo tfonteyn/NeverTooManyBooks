@@ -257,6 +257,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return mMessage;
     }
 
+    public static String getDatabasePath(final @NonNull Context context) {
+        return context.getDatabasePath(DATABASE_NAME).getAbsolutePath();
+    }
+
     /**
      * For the upgrade to version 83, all cover files were moved to a sub directory.
      *

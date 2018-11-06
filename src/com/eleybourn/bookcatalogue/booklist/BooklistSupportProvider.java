@@ -22,7 +22,7 @@ package com.eleybourn.bookcatalogue.booklist;
 
 import android.support.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.database.cursors.BooklistRowView;
+import com.eleybourn.bookcatalogue.database.cursors.BooklistCursorRow;
 
 /**
  * Interface for objects that can provide long-lived instances of Booklist-related items.
@@ -33,7 +33,7 @@ import com.eleybourn.bookcatalogue.database.cursors.BooklistRowView;
  */
 public interface BooklistSupportProvider {
     @NonNull
-    BooklistRowView getRowView();
+    BooklistCursorRow getCursorRow();
 
     @NonNull
     BooklistBuilder getBuilder();

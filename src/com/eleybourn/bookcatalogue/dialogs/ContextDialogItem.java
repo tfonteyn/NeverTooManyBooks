@@ -22,9 +22,13 @@ package com.eleybourn.bookcatalogue.dialogs;
 
 import android.support.annotation.NonNull;
 
+import com.eleybourn.bookcatalogue.baseactivity.BindableItemListActivity;
+
 /**
  * Class to make building a 'context menu' from an AlertDialog a little easier.
- * Used in {@link com.eleybourn.bookcatalogue.taskqueue.Event} and related Activities.
+ * Used in {@link BindableItemListActivity} and related.
+ *
+ * Basically links a menu choice string to a Runnable
  *
  * @author Philip Warner
  */
