@@ -125,6 +125,9 @@ public class BookCatalogueApp extends Application {
     /** Last full backup file path */
     public static final String PREF_LAST_BACKUP_FILE = "Backup.LastFile";
 
+    // we really only use the one */
+    private static final int NOTIFICATION_ID = 0;
+
     /**
      * NEWKIND: APP THEME
      * Also add new themes in R.array.supported_themes,
@@ -419,7 +422,7 @@ public class BookCatalogueApp extends Application {
                 .setContentIntent(PendingIntent.getActivity(mInstance.getApplicationContext(), 0, intent, 0))
                 .build();
 
-        mNotifier.notify(R.id.NOTIFICATION, notification);
+        mNotifier.notify(NOTIFICATION_ID, notification);
     }
 
     /**

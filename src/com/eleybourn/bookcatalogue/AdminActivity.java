@@ -436,7 +436,7 @@ public class AdminActivity extends BaseActivityWithTasks {
         switch (requestCode) {
             case FieldVisibilityActivity.REQUEST_CODE: /* 2f885b11-27f2-40d7-8c8b-fcb4d95a4151 */
             case BooklistStylesActivity.REQUEST_CODE: /* 13854efe-e8fd-447a-a195-47678c0d87e7 */
-
+                // no local action needed,
                 // pass results up
                 setResult(resultCode, data); /* 7f46620d-7951-4637-8783-b410730cd460 */
                 return;

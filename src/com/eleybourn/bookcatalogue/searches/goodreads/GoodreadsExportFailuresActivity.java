@@ -113,7 +113,7 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity {
         });
 
         if (savedInstanceState == null) {
-            HintManager.displayHint(this, R.string.hint_background_task_events, null);
+            HintManager.displayHint(this.getLayoutInflater(), R.string.hint_background_task_events, null);
         }
     }
 
@@ -146,7 +146,7 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity {
         // If it owns a hint, display it
         if (event instanceof HintOwner) {
             // Show the hint if necessary; fall through to the runnable
-            HintManager.displayHint(this, ((HintOwner) event).getHint(), new Runnable() {
+            HintManager.displayHint(this.getLayoutInflater(), ((HintOwner) event).getHint(), new Runnable() {
                 @Override
                 public void run() {
                     doContextMenu(parent, v, position, id);

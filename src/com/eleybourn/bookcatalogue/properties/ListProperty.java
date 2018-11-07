@@ -140,7 +140,7 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
     private void handleClick(final @NonNull View base, final @NonNull LayoutInflater inflater) {
         final ItemEntries<T> items = mList;
         if (this.hasHint()) {
-            HintManager.displayHint(base.getContext(), this.getHint(), new Runnable() {
+            HintManager.displayHint(inflater, this.getHint(), new Runnable() {
                 @Override
                 public void run() {
                     displayList(base, inflater, items);

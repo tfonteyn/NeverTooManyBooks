@@ -64,7 +64,7 @@ public class BookDetailsFragment extends BookAbstractFragmentWithCoverImage {
         initThumbSize(requireActivity());
 
         if (savedInstanceState == null) {
-            HintManager.displayHint(requireActivity(), R.string.hint_view_only_help, null);
+            HintManager.displayHint(requireActivity().getLayoutInflater(), R.string.hint_view_only_help, null);
         }
     }
 

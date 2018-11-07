@@ -95,7 +95,7 @@ public class BooklistStyleGroupsActivity extends EditObjectListActivity<GroupWra
             this.setTitle(getString(R.string.groupings) + ": " + mStyle.getDisplayName());
 
             if (savedInstanceState == null) {
-                HintManager.displayHint(this, R.string.hint_booklist_style_groups, null);
+                HintManager.displayHint(this.getLayoutInflater(), R.string.hint_booklist_style_groups, null);
             }
 
         } catch (Exception e) {

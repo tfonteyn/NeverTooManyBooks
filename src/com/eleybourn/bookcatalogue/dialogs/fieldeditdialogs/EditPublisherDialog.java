@@ -18,48 +18,59 @@
  * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.eleybourn.bookcatalogue;
+package com.eleybourn.bookcatalogue.dialogs.fieldeditdialogs;
 
 import android.app.Activity;
-import android.app.Dialog;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.EditText;
 
+import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
+import com.eleybourn.bookcatalogue.dialogs.fieldeditdialogs.EditSeriesDialog;
 import com.eleybourn.bookcatalogue.entities.Publisher;
 
+/**
+ *  Dialog to edit a single publisher.
+ *
+ * Calling point is a List.
+ */
 public class EditPublisherDialog {
     @NonNull
-    private final Activity mActivity;
+    private final Activity mContext;
     @NonNull
     private final CatalogueDBAdapter mDb;
     @NonNull
     private final Runnable mOnChanged;
 
-    EditPublisherDialog(final @NonNull Activity activity, final @NonNull CatalogueDBAdapter db, final @NonNull Runnable onChanged) {
+    public EditPublisherDialog(final @NonNull Activity activity, final @NonNull CatalogueDBAdapter db, final @NonNull Runnable onChanged) {
         mDb = db;
-        mActivity = activity;
+        mContext = activity;
         mOnChanged = onChanged;
     }
 
     public void edit(final @NonNull Publisher publisher) {
-        final Dialog dialog = new StandardDialogs.BasicDialog(mActivity);
-        dialog.setContentView(R.layout.dialog_edit_publisher);
-        dialog.setTitle(R.string.dialog_title_edit_publisher);
+        // Build the base dialog
+        final View root = mContext.getLayoutInflater().inflate(R.layout.dialog_edit_publisher, null);
 
-        final EditText nameView = dialog.findViewById(R.id.name);
+        final EditText nameView = root.findViewById(R.id.name);
         //noinspection ConstantConditions
         nameView.setText(publisher.name);
 
+        final AlertDialog dialog = new AlertDialog.Builder(mContext)
+                .setView(root)
+                .setTitle(R.string.dialog_title_edit_publisher)
+                .create();
+
         //noinspection ConstantConditions
-        dialog.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
+        root.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String newName = nameView.getText().toString().trim();
                 if (newName.isEmpty()) {
-                    StandardDialogs.showUserMessage(mActivity, R.string.name_can_not_be_blank);
+                    StandardDialogs.showUserMessage(mContext, R.string.name_can_not_be_blank);
                     return;
                 }
                 Publisher newPublisher = new Publisher(newName);
@@ -69,7 +80,7 @@ public class EditPublisherDialog {
         });
 
         //noinspection ConstantConditions
-        dialog.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
+        root.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();

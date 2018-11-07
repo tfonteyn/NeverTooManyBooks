@@ -36,7 +36,7 @@ import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
  * @author pjw
  */
 abstract public class BaseActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener,CanBeDirty {
+        implements NavigationView.OnNavigationItemSelectedListener, CanBeDirty {
 
     /** The side/navigation panel */
     @Nullable
@@ -47,7 +47,7 @@ abstract public class BaseActivity extends AppCompatActivity
     /** when a locale or theme is changed, a restart of the activity is needed */
     private boolean mReloadOnResume = false;
 
-    /** universal flag used to indicate something was changed */
+    /** universal flag used to indicate something was changed and not saved (yet) */
     private boolean mIsDirty = false;
 
     public boolean isDirty() {
@@ -56,6 +56,18 @@ abstract public class BaseActivity extends AppCompatActivity
 
     public void setDirty(final boolean isDirty) {
         this.mIsDirty = isDirty;
+    }
+
+    /** we're not (or no longer) dirty, but we did potentially make (local/global/preferences) changes */
+    private boolean mGlobalChangesMade = false;
+
+    public boolean changesMade() {
+        return mGlobalChangesMade;
+    }
+
+    //TOMF ENHANCE: start using this as a sure way of detecting committed changes in setResult
+    public void setChangesMade(final boolean changesMade) {
+        this.mGlobalChangesMade = changesMade;
     }
 
     protected int getLayoutId() {

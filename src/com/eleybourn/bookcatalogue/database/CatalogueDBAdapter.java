@@ -631,7 +631,8 @@ public class CatalogueDBAdapter implements AutoCloseable {
         if (mSetGoodreadsSyncDateStmt == null) {
             mSetGoodreadsSyncDateStmt = mStatements.add("mSetGoodreadsSyncDateStmt",
                     "UPDATE " + TBL_BOOKS +
-                            " SET " + DOM_BOOK_GOODREADS_LAST_SYNC_DATE + " = current_timestamp" +
+                            " SET " +
+                            DOM_BOOK_GOODREADS_LAST_SYNC_DATE + "=current_timestamp" +
                             " WHERE " + DOM_ID + "=?");
         }
         mSetGoodreadsSyncDateStmt.bindLong(1, bookId);
@@ -1103,8 +1104,9 @@ public class CatalogueDBAdapter implements AutoCloseable {
 
             // First handle anthologies; they have a single author and are easy
             mSyncedDb.execSQL("UPDATE " + TBL_ANTHOLOGY +
-                    " SET " + DOM_AUTHOR_ID + "=" + to.id
-                    + " WHERE " + DOM_AUTHOR_ID + "=" + from.id);
+                    " SET " + 
+                    DOM_AUTHOR_ID + "=" + to.id +
+                    " WHERE " + DOM_AUTHOR_ID + "=" + from.id);
 
             globalReplacePositionedBookItem(TBL_BOOK_AUTHOR, DOM_AUTHOR_ID.name, DOM_AUTHOR_POSITION.name, from.id, to.id);
 
@@ -1765,7 +1767,8 @@ public class CatalogueDBAdapter implements AutoCloseable {
      */
     private void setBookDirty(final long bookId) {
         mSyncedDb.execSQL("UPDATE " + TBL_BOOKS +
-                " SET " + DOM_LAST_UPDATE_DATE + " = current_timestamp" +
+                " SET " +
+                DOM_LAST_UPDATE_DATE + "=current_timestamp" +
                 " WHERE " + DOM_ID + "=" + bookId);
     }
 
@@ -1776,12 +1779,12 @@ public class CatalogueDBAdapter implements AutoCloseable {
         // set all related books based on anthology author as dirty
         if (mSetBooksDirtyByAuthor1Stmt == null) {
             mSetBooksDirtyByAuthor1Stmt = mStatements.add("mSetBooksDirtyByAuthor1Stmt",
-                    "UPDATE " + TBL_BOOKS.ref() +
-                            " SET " + DOM_LAST_UPDATE_DATE + "=current_timestamp" +
+                    "UPDATE " + TBL_BOOKS +
+                            " SET " + 
+                            DOM_LAST_UPDATE_DATE + "=current_timestamp" +
                             " WHERE" +
-                            " Exists(SELECT * FROM " + TBL_ANTHOLOGY.ref() +
-                            " WHERE " + TBL_ANTHOLOGY.dot(DOM_AUTHOR_ID) + "=?" +
-                            " AND " + TBL_ANTHOLOGY.dot(DOM_BOOK_ID) + "=" + TBL_BOOKS.dot(DOM_ID) + ")");
+                            " Exists(SELECT * FROM " + TBL_ANTHOLOGY.ref() + TBL_ANTHOLOGY.join(TBL_BOOKS)+
+                            " WHERE " + TBL_ANTHOLOGY.dot(DOM_AUTHOR_ID) + "=?)");
         }
         mSetBooksDirtyByAuthor1Stmt.bindLong(1, authorId);
         mSetBooksDirtyByAuthor1Stmt.executeUpdateDelete();
@@ -1790,12 +1793,12 @@ public class CatalogueDBAdapter implements AutoCloseable {
         // set all related books based on series as dirty
         if (mSetBooksDirtyByAuthor2Stmt == null) {
             mSetBooksDirtyByAuthor2Stmt = mStatements.add("mSetBooksDirtyByAuthor2Stmt",
-                    "UPDATE " + TBL_BOOKS.ref() +
-                            " SET " + DOM_LAST_UPDATE_DATE + " = current_timestamp" +
+                    "UPDATE " + TBL_BOOKS +
+                            " SET " + 
+                            DOM_LAST_UPDATE_DATE + "=current_timestamp" +
                             " WHERE" +
-                            " Exists(SELECT * FROM " + TBL_BOOK_AUTHOR.ref() +
-                            " WHERE " + TBL_BOOK_AUTHOR.dot(DOM_AUTHOR_ID) + "=?" +
-                            " AND " + TBL_BOOK_AUTHOR.dot(DOM_BOOK_ID) + "=" + TBL_BOOKS.dot(DOM_ID) + ")");
+                            " Exists(SELECT * FROM " + TBL_BOOK_AUTHOR.ref() + TBL_BOOK_AUTHOR.join(TBL_BOOKS)+
+                            " WHERE " + TBL_BOOK_AUTHOR.dot(DOM_AUTHOR_ID) + "=?)");
         }
         mSetBooksDirtyByAuthor2Stmt.bindLong(1, authorId);
         mSetBooksDirtyByAuthor2Stmt.executeUpdateDelete();
@@ -1807,11 +1810,12 @@ public class CatalogueDBAdapter implements AutoCloseable {
     private void setBooksDirtyBySeries(final long seriesId) {
         if (mSetBooksDirtyBySeriesStmt == null) {
             mSetBooksDirtyBySeriesStmt = mStatements.add("mSetBooksDirtyBySeriesStmt",
-                    "UPDATE " + TBL_BOOKS.ref() +
-                            " SET " + DOM_LAST_UPDATE_DATE + " = current_timestamp" +
+                    "UPDATE " + TBL_BOOKS +
+                            " SET " +
+                            DOM_LAST_UPDATE_DATE + "=current_timestamp" +
                             " WHERE" +
-                            " Exists(SELECT * FROM " + TBL_BOOK_SERIES.ref() + " WHERE " + TBL_BOOK_SERIES.dot(DOM_SERIES_ID) + "=?" +
-                            " AND " + TBL_BOOK_SERIES.dot(DOM_BOOK_ID) + "=" + TBL_BOOKS.dot(DOM_ID) + ")");
+                            " Exists(SELECT * FROM " + TBL_BOOK_SERIES.ref() + TBL_BOOK_SERIES.join(TBL_BOOKS) +
+                            " WHERE " + TBL_BOOK_SERIES.dot(DOM_SERIES_ID) + "=?)");
         }
         mSetBooksDirtyBySeriesStmt.bindLong(1, seriesId);
         mSetBooksDirtyBySeriesStmt.executeUpdateDelete();
@@ -1823,11 +1827,12 @@ public class CatalogueDBAdapter implements AutoCloseable {
     private void setBooksDirtyByBookshelf(final long bookshelfId) {
         if (mSetBooksDirtyByBookshelfStmt == null) {
             mSetBooksDirtyByBookshelfStmt = mStatements.add("mSetBooksDirtyByBookshelfStmt",
-                    "UPDATE " + TBL_BOOKS.ref() +
-                            " SET " + DOM_LAST_UPDATE_DATE + " = current_timestamp" +
+                    "UPDATE " + TBL_BOOKS +
+                            " SET " +
+                            DOM_LAST_UPDATE_DATE + "=current_timestamp" +
                             " WHERE" +
-                            " Exists(SELECT * FROM " + TBL_BOOK_BOOKSHELF.ref() + " WHERE " + TBL_BOOK_BOOKSHELF.dot(DOM_BOOKSHELF_ID) + "=?" +
-                            " AND " + TBL_BOOK_BOOKSHELF.dot(DOM_BOOK_ID) + "=" + TBL_BOOKS.dot(DOM_ID) + ")");
+                            " Exists(SELECT * FROM " + TBL_BOOK_BOOKSHELF.ref() + TBL_BOOK_BOOKSHELF.join(TBL_BOOKS) +
+                            " WHERE " + TBL_BOOK_BOOKSHELF.dot(DOM_BOOKSHELF_ID) + "=?)");
         }
         mSetBooksDirtyByBookshelfStmt.bindLong(1, bookshelfId);
         mSetBooksDirtyByBookshelfStmt.executeUpdateDelete();
@@ -2895,9 +2900,10 @@ public class CatalogueDBAdapter implements AutoCloseable {
         }
         // Update books but prevent duplicate index errors
         String sql = "UPDATE " + TBL_BOOKS +
-                " SET " + DOM_BOOK_FORMAT + " = '" + encodeString(to) + "," +
-                " " + DOM_LAST_UPDATE_DATE + " = current_timestamp" +
-                " WHERE " + DOM_BOOK_FORMAT + " = '" + encodeString(from) + "'";
+                " SET " + 
+                DOM_BOOK_FORMAT + "='" + encodeString(to) + "," +
+                DOM_LAST_UPDATE_DATE + "=current_timestamp" +
+                " WHERE " + DOM_BOOK_FORMAT + "='" + encodeString(from) + "'";
         mSyncedDb.execSQL(sql);
     }
 
@@ -2924,9 +2930,10 @@ public class CatalogueDBAdapter implements AutoCloseable {
         }
         // Update books but prevent duplicate index errors
         String sql = "UPDATE " + TBL_BOOKS +
-                " SET " + DOM_BOOK_GENRE + " = '" + encodeString(to) + "'," +
-                " " + DOM_LAST_UPDATE_DATE + " = current_timestamp" +
-                " WHERE " + DOM_BOOK_GENRE + " = '" + encodeString(from) + "'";
+                " SET " + 
+                DOM_BOOK_GENRE + "='" + encodeString(to) + "'," +
+                DOM_LAST_UPDATE_DATE + "=current_timestamp" +
+                " WHERE " + DOM_BOOK_GENRE + "='" + encodeString(from) + "'";
         mSyncedDb.execSQL(sql);
     }
 
@@ -2953,9 +2960,11 @@ public class CatalogueDBAdapter implements AutoCloseable {
         }
 
         // Update books but prevent duplicate index errors
-        String sql = "UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_LANGUAGE + " = '" + encodeString(to) + "'," +
-                " " + DOM_LAST_UPDATE_DATE + " = current_timestamp"
-                + " WHERE " + DOM_BOOK_LANGUAGE + " = '" + encodeString(from) + "'";
+        String sql = "UPDATE " + TBL_BOOKS + 
+                " SET " + 
+                DOM_BOOK_LANGUAGE + "='" + encodeString(to) + "'," +
+                DOM_LAST_UPDATE_DATE + "=current_timestamp"
+                + " WHERE " + DOM_BOOK_LANGUAGE + "='" + encodeString(from) + "'";
         mSyncedDb.execSQL(sql);
     }
 
@@ -3059,9 +3068,10 @@ public class CatalogueDBAdapter implements AutoCloseable {
         }
         // Update books but prevent duplicate index errors
         String sql = "UPDATE " + TBL_BOOKS +
-                " SET " + DOM_BOOK_LOCATION + " = '" + encodeString(to) + "'," +
-                " " + DOM_LAST_UPDATE_DATE + " = current_timestamp "
-                + " WHERE " + DOM_BOOK_LOCATION + " = '" + encodeString(from) + "'";
+                " SET " +
+                DOM_BOOK_LOCATION + "='" + encodeString(to) + "'," +
+                DOM_LAST_UPDATE_DATE + "=current_timestamp "
+                + " WHERE " + DOM_BOOK_LOCATION + "='" + encodeString(from) + "'";
         mSyncedDb.execSQL(sql);
     }
 
@@ -3088,9 +3098,10 @@ public class CatalogueDBAdapter implements AutoCloseable {
         }
         // Update books but prevent duplicate index errors
         String sql = "UPDATE " + TBL_BOOKS +
-                " SET " + DOM_BOOK_PUBLISHER + " = '" + encodeString(to.name) + "'," +
-                " " + DOM_LAST_UPDATE_DATE + " = current_timestamp"
-                + " WHERE " + DOM_BOOK_PUBLISHER + " = '" + encodeString(from.name) + "'";
+                " SET " +
+                DOM_BOOK_PUBLISHER + "='" + encodeString(to.name) + "'," +
+                DOM_LAST_UPDATE_DATE + "=current_timestamp"
+                + " WHERE " + DOM_BOOK_PUBLISHER + "='" + encodeString(from.name) + "'";
         mSyncedDb.execSQL(sql);
     }
 
@@ -3236,7 +3247,8 @@ public class CatalogueDBAdapter implements AutoCloseable {
 
             // Update books but prevent duplicate index errors
             String sql = "UPDATE " + TBL_BOOK_SERIES +
-                    " SET " + DOM_SERIES_ID + "=" + to.id +
+                    " SET " +
+                    DOM_SERIES_ID + "=" + to.id +
                     " WHERE " + DOM_SERIES_ID + "=" + from.id +
                     " AND NOT Exists(SELECT NULL FROM " + TBL_BOOK_SERIES.ref() + " WHERE " +
                     TBL_BOOK_SERIES.dot(DOM_BOOK_ID) + "=" + TBL_BOOK_SERIES.dot(DOM_BOOK_ID) +

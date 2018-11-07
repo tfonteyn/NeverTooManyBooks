@@ -287,7 +287,7 @@ public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFra
             case R.id.SUBMENU_ROTATE_THUMB: {
                 // Just a submenu; skip, but display a hint if user is rotating a camera image
                 if (mGotCameraImage) {
-                    HintManager.displayHint(requireActivity(), R.string.hint_autorotate_camera_images, null);
+                    HintManager.displayHint(requireActivity().getLayoutInflater(), R.string.hint_autorotate_camera_images, null);
                     mGotCameraImage = false;
                 }
                 return true;

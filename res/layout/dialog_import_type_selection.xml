@@ -19,12 +19,12 @@
 
         <RadioButton
             android:id="@+id/all_books"
-            style="@style/option_button"
+            style="@style/row_option_radio_button"
             android:text="@string/all_books" />
 
         <TextView
             android:id="@+id/all_books_blurb"
-            style="@style/option_blurb"
+            style="@style/row_option_blurb"
             android:text="@string/all_books_blurb" />
     </LinearLayout>
 
@@ -36,12 +36,12 @@
 
         <RadioButton
             android:id="@+id/new_and_changed_books"
-            style="@style/option_button"
+            style="@style/row_option_radio_button"
             android:text="@string/new_and_changed_books" />
 
         <TextView
             android:id="@+id/new_and_changed_books_blurb"
-            style="@style/option_blurb"
+            style="@style/row_option_blurb"
             android:text="@string/new_and_changed_books_blurb" />
     </LinearLayout>
 

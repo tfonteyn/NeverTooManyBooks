@@ -98,7 +98,7 @@ public class TaskListActivity extends BindableItemListActivity {
             });
 
             if (savedInstanceState == null)
-                HintManager.displayHint(this, R.string.hint_background_tasks, null);
+                HintManager.displayHint(this.getLayoutInflater(), R.string.hint_background_tasks, null);
 
         } catch (Exception e) {
             Logger.error(e);

@@ -354,41 +354,37 @@ public class BooksOnBookshelf extends BaseListActivity implements
      */
     @Override
     public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long id) {
-        // click on a ROW item in our ListView ?
-        if (view.getId() == R.id.ROW) {
-            mListCursor.moveToPosition(position);
+        mListCursor.moveToPosition(position);
 
-            switch (mListCursor.getCursorRow().getRowKind()) {
-                // If it's a book, view or edit it.
-                case RowKinds.ROW_KIND_BOOK: {
-                    long bookId = mListCursor.getCursorRow().getBookId();
-                    boolean readOnly = getPrefs().getBoolean(PREF_OPEN_BOOK_READ_ONLY, true);
+        switch (mListCursor.getCursorRow().getRowKind()) {
+            // If it's a book, view or edit it.
+            case RowKinds.ROW_KIND_BOOK: {
+                long bookId = mListCursor.getCursorRow().getBookId();
+                boolean readOnly = getPrefs().getBoolean(PREF_OPEN_BOOK_READ_ONLY, true);
 
-                    if (readOnly) {
-                        String listTable = mListCursor.getBuilder().createFlattenedBooklist().getTable().getName();
-                        Intent intent = new Intent(BooksOnBookshelf.this, BookDetailsActivity.class);
-                        intent.putExtra(UniqueId.KEY_ID, bookId);
-                        intent.putExtra(BookDetailsActivity.REQUEST_BKEY_FLATTENED_BOOKLIST, listTable);
-                        intent.putExtra(BookDetailsActivity.REQUEST_BKEY_FLATTENED_BOOKLIST_POSITION, position);
-                        startActivityForResult(intent, BookDetailsActivity.REQUEST_CODE); /* e63944b6-b63a-42b1-897a-a0e8e0dabf8a */
+                if (readOnly) {
+                    String listTable = mListCursor.getBuilder().createFlattenedBooklist().getTable().getName();
+                    Intent intent = new Intent(BooksOnBookshelf.this, BookDetailsActivity.class);
+                    intent.putExtra(UniqueId.KEY_ID, bookId);
+                    intent.putExtra(BookDetailsActivity.REQUEST_BKEY_FLATTENED_BOOKLIST, listTable);
+                    intent.putExtra(BookDetailsActivity.REQUEST_BKEY_FLATTENED_BOOKLIST_POSITION, position);
+                    startActivityForResult(intent, BookDetailsActivity.REQUEST_CODE); /* e63944b6-b63a-42b1-897a-a0e8e0dabf8a */
 
-                    } else {
-                        EditBookActivity.startActivityForResult(BooksOnBookshelf.this, bookId, EditBookActivity.TAB_EDIT); /* 91b95a7f-17d6-4f98-af58-5f040b52414f */
-                    }
-                    break;
+                } else {
+                    EditBookActivity.startActivityForResult(BooksOnBookshelf.this, bookId, EditBookActivity.TAB_EDIT); /* 91b95a7f-17d6-4f98-af58-5f040b52414f */
                 }
-                default: {
-                    // If it's level, expand/collapse. Technically, TODO: we could expand/collapse any level
-                    // but storing and recovering the view becomes unmanageable.
-                    if (mListCursor.getCursorRow().getLevel() == 1) {
-                        mListCursor.getBuilder().toggleExpandNode(mListCursor.getCursorRow().getAbsolutePosition());
-                        mListCursor.requery();
-                        mAdapter.notifyDataSetChanged();
-                    }
+                break;
+            }
+            default: {
+                // If it's level, expand/collapse. Technically, TODO: we could expand/collapse any level
+                // but storing and recovering the view becomes unmanageable.
+                if (mListCursor.getCursorRow().getLevel() == 1) {
+                    mListCursor.getBuilder().toggleExpandNode(mListCursor.getCursorRow().getAbsolutePosition());
+                    mListCursor.requery();
+                    mAdapter.notifyDataSetChanged();
                 }
             }
         }
-
     }
 
     /**
@@ -469,7 +465,7 @@ public class BooksOnBookshelf extends BaseListActivity implements
         switch (item.getItemId()) {
 
             case R.id.MENU_SORT:
-                HintManager.displayHint(this, R.string.hint_booklist_style_menu, new Runnable() {
+                HintManager.displayHint(this.getLayoutInflater(), R.string.hint_booklist_style_menu, new Runnable() {
                     @Override
                     public void run() {
                         doSortMenu(false);
@@ -577,10 +573,36 @@ public class BooksOnBookshelf extends BaseListActivity implements
                 }
                 return;
 
-            case BooklistPreferencesActivity.REQUEST_CODE: /* 9cdb2cbe-1390-4ed8-a491-87b3b1a1edb9 */
-            case BooklistStylesActivity.REQUEST_CODE: /* 3f210502-91ab-4b11-b165-605e09bb0c17 */
             case AdminActivity.REQUEST_CODE: /* 7f46620d-7951-4637-8783-b410730cd460 */
+                // AdminActivity itself never returns a RESULT_CANCEL
+                // ENHANCE: use OnSharedPreferenceChangeListener ?
+                // but it does pass up correct OK/CANCELLED results coming from
+                //     FieldVisibilityActivity.REQUEST_CODE: /* 2f885b11-27f2-40d7-8c8b-fcb4d95a4151 */
+                //     BooklistStylesActivity.REQUEST_CODE: /* 13854efe-e8fd-447a-a195-47678c0d87e7 */
+                if (resultCode == Activity.RESULT_OK) {
+                    refreshStyle();
+                    savePosition();
+                    initBookList(true);
+                }
+                return;
+
+            case BooklistStylesActivity.REQUEST_CODE: /* 3f210502-91ab-4b11-b165-605e09bb0c17 */
+                // BooklistStylesActivity itself never returns a RESULT_CANCEL
+                // ENHANCE: use OnSharedPreferenceChangeListener ?
+                // but it does pass up correct OK/CANCELLED results coming from
+                //     BooklistStylePropertiesActivity.REQUEST_CODE:  /* fadd7b9a-7eaf-4af9-90ce-6ffb7b93afe6 */
+                if (resultCode == Activity.RESULT_OK) {
+                    refreshStyle();
+                    savePosition();
+                    initBookList(true);
+                }
+                return;
+
+
+            case BooklistPreferencesActivity.REQUEST_CODE: /* 9cdb2cbe-1390-4ed8-a491-87b3b1a1edb9 */
             case PreferencesActivity.REQUEST_CODE: /* 46f41e7b-f49c-465d-bea0-80ec85330d1c */
+                //ENHANCE none of these currently returns RESULT_CANCEL due to not registering global changes
+                // ENHANCE:use OnSharedPreferenceChangeListener ?
                 if (resultCode == Activity.RESULT_OK) {
                     refreshStyle();
                     savePosition();
@@ -879,10 +901,10 @@ public class BooksOnBookshelf extends BaseListActivity implements
     }
 
     private void initHints() {
-        HintManager.displayHint(this, R.string.hint_view_only_book_details, null);
-        HintManager.displayHint(this, R.string.hint_book_list, null);
+        HintManager.displayHint(this.getLayoutInflater(), R.string.hint_view_only_book_details, null);
+        HintManager.displayHint(this.getLayoutInflater(), R.string.hint_book_list, null);
         if (StartupActivity.getShowAmazonHint() && HintManager.shouldBeShown(R.string.hint_amazon_links_blurb)) {
-            HintManager.displayHint(this, R.string.hint_amazon_links_blurb, null,
+            HintManager.displayHint(this.getLayoutInflater(), R.string.hint_amazon_links_blurb, null,
                     getString(R.string.menu_amazon_books_by_author),
                     getString(R.string.menu_amazon_books_in_series),
                     getString(R.string.menu_amazon_books_by_author_in_series),
@@ -1249,15 +1271,14 @@ public class BooksOnBookshelf extends BaseListActivity implements
     private class GetBookListTask implements SimpleTask {
         /** Indicates whole table structure needs rebuild, vs. just do a reselect of underlying data */
         private final boolean isFullRebuild;
+        /** the builder */
+        @NonNull
+        private final BooklistBuilder bookListBuilder;
         /** Resulting Cursor */
         private BooklistPseudoCursor tempList = null;
         /** used to determine new cursor position */
         @Nullable
         private ArrayList<BookRowInfo> targetRows = null;
-
-        /** the builder */
-        @NonNull
-        private final BooklistBuilder bookListBuilder;
 
         /**
          * Constructor.

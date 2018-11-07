@@ -37,8 +37,6 @@
                 <TextView
                     android:id="@+id/title"
                     style="@style/txt_row_bookMajorDetail"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
                     android:layout_alignWithParentIfMissing="true"
                     android:layout_alignParentStart="true"
                     android:layout_alignParentTop="true"

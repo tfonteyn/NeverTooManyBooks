@@ -50,15 +50,11 @@ import java.util.Objects;
 
 /**
  * Base class for editing a list of objects. The inheritor must specify a view id and a row view
- * id to the constructor of this class. Each view can have the following sub-view IDs present
- * which will be automatically handled. Optional IDs are noted:
+ * id to the constructor of this class.
  *
- * Main View:
- * - R.id.cancel
- * - R.id.confirm
- * - R.id.add (OPTIONAL)
- *
- * Row view:
+ * This Activity uses {@link TouchListViewWithDropListener} extended from {@link TouchListView}
+ * from CommonsWare which is in turn based on Android code
+ * for TouchInterceptor which was (reputedly) removed in Android 2.2.
  *
  * {@link #createListAdapter} needs to be implemented returning a suitable {@link SimpleListAdapter}
  * which implements {@link SimpleListAdapterRowActionListener}.
@@ -68,12 +64,7 @@ import java.util.Objects;
  * Method {@link #onAdd} has an implementation that throws an {@link UnsupportedOperationException}
  * So if your list supports adding to, you must implement {@link #onAdd}.
  *
- *
- * This Activity uses {@link TouchListViewWithDropListener} extended from {@link TouchListView}
- * from CommonsWare which is in turn based on Android code
- * for TouchInterceptor which was (reputedly) removed in Android 2.2.
- *
- * For this code to work, the  main view must contain a {@link TouchListViewWithDropListener}
+ * For this code to work, the main view must contain a {@link TouchListViewWithDropListener}
  * <pre>
  *     id:
  *        android:id="@android:id/list"
@@ -83,26 +74,13 @@ import java.util.Objects;
  *        tlv:normal_height="64dip" ---- or some similar value
  *  </pre>
  *
- * Each row view must have:
+ * Main View buttons:
+ * - R.id.cancel
+ * - R.id.confirm
+ * - R.id.add (OPTIONAL) see above for {@link #onAdd}
  *
- * Relevant id's predefined in ids.xml:
- * <pre>
- *  		<item name="ROW" type="id"/>
- *  		<item name="ROW_DETAILS" type="id"/>
- *      	<item name="TAG_ROW_POSITION" type="id" />
- *  </pre>
- *
- * The row view is tagged using TAG_ROW_POSITION, to save the rows position for
- * use when moving the row up/down or deleting it.
- * <pre>
- *      android:id="@id/ROW"    for the root of the row view
- *
- *      {@link ImageView} with an ID of "@+id/<SOME ID FOR AN IMAGE>" (eg. "@+id/ic_grabber")
- *
- *      (OPTIONAL) a subview with an ID of "@+d/ROW_DETAILS"; which when clicked, will result
- *                 in the {@link SimpleListAdapterRowActionListener<T>#onRowClick} event.
- *                 If not present, then the event is set on "@id/ROW"
- * </pre>
+ * Each row view must use id's as listed in {@link SimpleListAdapter} and in addition have
+ * an {@link ImageView} with an ID of "@+id/<SOME ID FOR AN IMAGE>" matching the TLV one as above.
  *
  * @param <T> the object type as used in the List
  *
@@ -151,7 +129,7 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Bas
             }
         }
     };
-    protected SimpleListAdapter<T> mAdapter;
+    protected SimpleListAdapter<T> mListAdapter;
     /**
      * Handle 'Add'
      */
@@ -159,7 +137,7 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Bas
         @Override
         public void onClick(@NonNull View v) {
             onAdd(v);
-            mAdapter.onListChanged();
+            mListAdapter.onListChanged();
         }
     };
     protected CatalogueDBAdapter mDb;
@@ -282,8 +260,8 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Bas
      * Set up list handling
      */
     private void initListAdapter(ArrayList<T> list) {
-        this.mAdapter = createListAdapter(mRowViewId, list);
-        setListAdapter(this.mAdapter);
+        this.mListAdapter = createListAdapter(mRowViewId, list);
+        setListAdapter(this.mListAdapter);
     }
 
     /**

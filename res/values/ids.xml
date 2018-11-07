@@ -23,6 +23,9 @@
     <!-- used for tagging items in a list of items used in a selection dialog -->
     <item name="TAG_DIALOG_ITEM" type="id" />
 
+    <!-- used by {@link BooksMultiTypeListHandler} for the row details (book, level 1,2,3) -->
+    <item name="BLB_ROW_DETAILS" type="id" />
+
     <!-- BEGIN predefined menu items -->
     <item name="SUBMENU_BOOK_ADD" type="id"/>
     <item name="MENU_BOOK_ADD_BY_SCAN" type="id"/>
@@ -63,6 +66,7 @@
     <item name="MENU_SHARE" type="id"/>
 
     <item name="MENU_INSERT" type="id"/>
+    <item name="MENU_EDIT" type="id"/>
     <item name="MENU_DELETE" type="id"/>
     
     <item name="MENU_SORT" type="id"/>
@@ -93,19 +97,13 @@
     <!-- END predefined menu items -->
 
     <!-- BEGIN used by {@link SimpleListAdapter} and {@link EditObjectListActivity} -->
-    <item name="ROW" type="id" />
-    <item name="ROW_INFO" type="id" />  <!-- used by {@link BooksMultiTypeListHandler} to hide/show rows TODO: can't we use ROW_DETAIL for this ?-->
-    <item name="ROW_DETAILS" type="id" />
-    <item name="ROW_UP" type="id"/>
-    <item name="ROW_DOWN" type="id"/>
-    <item name="ROW_DELETE" type="id"/>
-    <item name="ROW_POSITION" type="id"/>
-
-    <item name="TAG_ROW_POSITION" type="id" />
+    <item name="SLA_ROW" type="id" />
+    <item name="SLA_ROW_DETAILS" type="id" />
+    <item name="SLA_ROW_UP" type="id"/>
+    <item name="SLA_ROW_DOWN" type="id"/>
+    <item name="SLA_ROW_DELETE" type="id"/>
+    <item name="SLA_ROW_POSITION" type="id"/>
+    <item name="SLA_ROW_POSITION_TAG" type="id" />
     <!-- END used by {@link SimpleListAdapter} and {@link EditObjectListActivity} -->
-
-    <!-- BEGIN Not used in xml -->
-    <item name="NOTIFICATION" type="id" />
-    <!-- END Not used in xml -->
 
 </resources>

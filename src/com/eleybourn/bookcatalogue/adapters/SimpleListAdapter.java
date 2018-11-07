@@ -47,34 +47,34 @@ import java.util.Objects;
  * <a href="https://developer.android.com/guide/topics/ui/layout/recyclerview.html">
  * Recycler View</a> guide.</p>
  *
- *
- *
  * {@link ArrayAdapter} to manage rows of an arbitrary type with row movement via clicking
  * on predefined sub-views, if present.
  *
  * The layout must have the top id of:
+ * <pre>
+ *    SLA_ROW  {@link SimpleListAdapterRowActionListener<T>#onRowClick}, unless SLA_ROW_DETAILS is defined.
+ * </pre>
  *
- * - ROW        {@link SimpleListAdapterRowActionListener<T>#onRowClick}, unless ROW_DETAILS is defined.
+ * The layout can optionally contain these "@+id/"  which will trigger the listed methods
+ * <pre>
+ *    SLA_ROW_DETAILS     {@link SimpleListAdapterRowActionListener<T>#onRowClick};
+ *    SLA_ROW_UP          {@link SimpleListAdapterRowActionListener<T>#onRowUp}
+ *    SLA_ROW_DOWN        {@link SimpleListAdapterRowActionListener<T>#onRowDown}
+ *    SLA_ROW_DELETE      {@link SimpleListAdapterRowActionListener<T>#onRowDelete}
+ * </pre>
  *
- * The layout can optionally contain these "@+id/" :
- *
- * - ROW_DETAILS         {@link SimpleListAdapterRowActionListener<T>#onRowClick}; if no 'id/ROW_DETAILS' found, then 'id/ROW' is tried instead
- * - ROW_UP              {@link SimpleListAdapterRowActionListener<T>#onRowUp}
- * - ROW_DOWN            {@link SimpleListAdapterRowActionListener<T>#onRowDown}
- * - ROW_DELETE          {@link SimpleListAdapterRowActionListener<T>#onRowDelete}
- *
- * ROW is the complete row, ROW_DETAIL is a child of ROW.
- * So you should never have a ROW_DETAIL without an enclosing ROW element
+ * SLA_ROW is the complete row, SLA_ROW_DETAIL is a child of SLA_ROW.
+ * So you should never have a SLA_ROW_DETAIL without an enclosing SLA_ROW element
  *
  * ids.xml has these predefined:
  * <pre>
- * 		<item name="ROW" type="id"/>
- * 		<item name="ROW_DETAILS" type="id"/>
- *     	<item name="ROW_UP" type="id"/>
- * 		<item name="ROW_DOWN" type="id"/>
- * 		<item name="ROW_DELETE" type="id"/>
- *     	<item name="ROW_POSITION" type="id" />
- *     	<item name="TAG_ROW_POSITION" type="id" />
+ *     <item name="SLA_ROW" type="id" />
+ *     <item name="SLA_ROW_DETAILS" type="id" />
+ *     <item name="SLA_ROW_UP" type="id"/>
+ *     <item name="SLA_ROW_DOWN" type="id"/>
+ *     <item name="SLA_ROW_DELETE" type="id"/>
+ *     <item name="SLA_ROW_POSITION" type="id"/>
+ *     <item name="SLA_ROW_POSITION_TAG" type="id" />
  * 	</pre>
  *
  * @author Philip Warner
@@ -219,13 +219,13 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
         }
 
         // Save this views position
-        ViewTagger.setTag(convertView, R.id.TAG_ROW_POSITION, position);
+        ViewTagger.setTag(convertView, R.id.SLA_ROW_POSITION_TAG, position);
 
         // If we use a TouchListView, then don't enable the whole row, so buttons keep working
-        View row = convertView.findViewById(R.id.ROW_DETAILS);
+        View row = convertView.findViewById(R.id.SLA_ROW_DETAILS);
         if (row == null) {
             // but if we did not define a details row subview, try row anyhow
-            row = convertView.findViewById(R.id.ROW);
+            row = convertView.findViewById(R.id.SLA_ROW);
         }
 
         if (row != null) {
@@ -238,7 +238,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
         if (item != null) {
             // Try to set position value
             if (mHasPosition || !mCheckedFields) {
-                TextView pt = convertView.findViewById(R.id.ROW_POSITION);
+                TextView pt = convertView.findViewById(R.id.SLA_ROW_POSITION);
                 if (pt != null) {
                     mHasPosition = true;
                     String text = Integer.toString(position + 1);
@@ -248,7 +248,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
 
             // Try to set the UP handler
             if (mHasUp || !mCheckedFields) {
-                View up = convertView.findViewById(R.id.ROW_UP);
+                View up = convertView.findViewById(R.id.SLA_ROW_UP);
                 if (up != null) {
                     up.setOnClickListener(mRowUpListener);
                     mHasUp = true;
@@ -257,7 +257,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
 
             // Try to set the DOWN handler
             if (mHasDown || !mCheckedFields) {
-                View dn = convertView.findViewById(R.id.ROW_DOWN);
+                View dn = convertView.findViewById(R.id.SLA_ROW_DOWN);
                 if (dn != null) {
                     dn.setOnClickListener(mRowDownListener);
                     mHasDown = true;
@@ -266,7 +266,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
 
             // Try to set the DELETE handler
             if (mHasDelete || !mCheckedFields) {
-                View del = convertView.findViewById(R.id.ROW_DELETE);
+                View del = convertView.findViewById(R.id.SLA_ROW_DELETE);
                 if (del != null) {
                     del.setOnClickListener(mRowDeleteListener);
                     mHasDelete = true;
@@ -292,7 +292,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
     protected abstract void onGetView(final View convertView, final T item);
 
     /**
-     * Find the first ancestor that has the ID R.id.ROW. This will be the complete row View.
+     * Find the first ancestor that has the ID SLA_ROW. This will be the complete row View.
      * Use the TAG on that to get the physical row number.
      *
      * @param view View to search from
@@ -301,15 +301,15 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
      */
     @NonNull
     public Integer getViewRow(@NonNull View view) {
-        while (view.getId() != R.id.ROW) {
+        while (view.getId() != R.id.SLA_ROW) {
             ViewParent parent = view.getParent();
             if (!(parent instanceof View)) {
                 throw new RuntimeException("Could not find row view in view ancestors");
             }
             view = (View) parent;
         }
-        Object o = ViewTagger.getTag(view, R.id.TAG_ROW_POSITION);
-        Objects.requireNonNull(o, "A view with the tag R.id.ROW was found, but it is not the view for the row");
+        Object o = ViewTagger.getTag(view, R.id.SLA_ROW_POSITION_TAG);
+        Objects.requireNonNull(o, "A view with the tag R.id.SLA_ROW was found, but it is not the view for the row");
         return (Integer) o;
     }
 
@@ -327,9 +327,11 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
 
     public void onRowClick(@NonNull final View target, @NonNull final T item, final int position) {
     }
+
     public boolean onRowLongClick(@NonNull final View target, @NonNull final T item, final int position) {
         return false;
     }
+
     public void onListChanged() {
     }
 

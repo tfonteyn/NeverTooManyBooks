@@ -179,7 +179,7 @@ public class BooklistPreferencesActivity extends PreferencesBaseActivity {
             super.onCreate(savedInstanceState);
             setTitle(R.string.booklist_preferences);
             if (savedInstanceState == null) {
-                HintManager.displayHint(this, R.string.hint_booklist_global_properties, null);
+                HintManager.displayHint(this.getLayoutInflater(), R.string.hint_booklist_global_properties, null);
             }
         } catch (Exception e) {
             Logger.error(e);

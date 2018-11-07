@@ -1,10 +1,10 @@
-package com.eleybourn.bookcatalogue.dialogs.autocompletetextview;
+package com.eleybourn.bookcatalogue.dialogs.fieldeditdialogs;
 
 import android.app.Activity;
-import android.app.Dialog;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
+import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -28,7 +28,9 @@ abstract class EditStringDialog {
     /**
      * EditText
      */
-    EditStringDialog(final @NonNull Activity activity, final @NonNull CatalogueDBAdapter db, final @NonNull Runnable onChanged) {
+    EditStringDialog(final @NonNull Activity activity,
+                     final @NonNull CatalogueDBAdapter db,
+                     final @NonNull Runnable onChanged) {
         this.mActivity = activity;
         mOnChanged = onChanged;
         mDb = db;
@@ -56,20 +58,26 @@ abstract class EditStringDialog {
      * @param layout        dialog content view layout
      * @param title         dialog title
      */
-    protected void edit(final @NonNull String currentText, final @LayoutRes int layout, final @StringRes int title) {
-        final Dialog dialog = new StandardDialogs.BasicDialog(mActivity);
-        dialog.setContentView(layout);
-        dialog.setTitle(title);
+    protected void edit(final @NonNull String currentText,
+                        final @LayoutRes int layout,
+                        final @StringRes int title) {
+        // Build the base dialog
+        final View root = mActivity.getLayoutInflater().inflate(layout, null);
 
-        final EditText editView = dialog.findViewById(R.id.name);
+        final EditText editView = root.findViewById(R.id.name);
         //noinspection ConstantConditions
         editView.setText(currentText);
         if (editView instanceof AutoCompleteTextView) {
             ((AutoCompleteTextView) editView).setAdapter(mAdapter);
         }
 
+        final AlertDialog dialog = new AlertDialog.Builder(mActivity)
+                .setView(root)
+                .setTitle(title)
+                .create();
+
         //noinspection ConstantConditions
-        dialog.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
+        root.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String newText = editView.getText().toString().trim();
@@ -83,7 +91,7 @@ abstract class EditStringDialog {
         });
 
         //noinspection ConstantConditions
-        dialog.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
+        root.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();

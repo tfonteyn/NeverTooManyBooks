@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@id/ROW"
+    android:id="@id/SLA_ROW"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal">
@@ -23,7 +23,7 @@
         tools:ignore="UselessParent">
 
         <ImageButton
-            android:id="@id/ROW_DELETE"
+            android:id="@id/SLA_ROW_DELETE"
             style="@style/tlv_delete_button"
             app:srcCompat="@drawable/ic_delete"
             tools:ignore="ContentDescription" />
@@ -35,12 +35,12 @@
             tools:ignore="ContentDescription" />
 
         <RelativeLayout
-            android:id="@id/ROW_DETAILS"
+            android:id="@id/SLA_ROW_DETAILS"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_alignParentTop="true"
-            android:layout_toEndOf="@id/ROW_DELETE"
+            android:layout_toEndOf="@id/SLA_ROW_DELETE"
             android:layout_toStartOf="@id/grabber"
             android:orientation="vertical"
             android:padding="2dp">

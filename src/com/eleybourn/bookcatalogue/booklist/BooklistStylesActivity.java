@@ -82,7 +82,7 @@ public class BooklistStylesActivity extends EditObjectListActivity<BooklistStyle
             registerForContextMenu(getListView());
 
             if (savedInstanceState == null) {
-                HintManager.displayHint(this, R.string.hint_booklist_styles_editor, null);
+                HintManager.displayHint(this.getLayoutInflater(), R.string.hint_booklist_styles_editor, null);
             }
         } catch (Exception e) {
             Logger.error(e);
@@ -166,6 +166,8 @@ public class BooklistStylesActivity extends EditObjectListActivity<BooklistStyle
                     // style can be null (when it was deleted)
                     handleStyleResult(style);
                 }
+                // pass the result code up
+                setResult(resultCode);
                 return;
         }
 

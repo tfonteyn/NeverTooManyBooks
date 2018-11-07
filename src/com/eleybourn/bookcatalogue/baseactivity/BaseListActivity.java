@@ -223,9 +223,9 @@ abstract public class BaseListActivity extends BaseActivity implements
      * Replaces: {@link #onCreateContextMenu(ContextMenu, View, ContextMenu.ContextMenuInfo)}
      */
     @Override
-    public void onCreateListViewContextMenu(final @NonNull Menu menu,
-                                            final @NonNull View view,
-                                            final @NonNull SelectOneDialog.SimpleDialogMenuInfo menuInfo) {
+    public final void onCreateListViewContextMenu(final @NonNull Menu menu,
+                                                  final @NonNull View view,
+                                                  final @NonNull SelectOneDialog.SimpleDialogMenuInfo menuInfo) {
         if (menu.size() > 0) {
             SelectOneDialog.showContextMenuDialog(getLayoutInflater(), menuInfo, menu,
                     new SelectOneDialog.SimpleDialogOnClickListener() {

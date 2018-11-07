@@ -21,19 +21,23 @@
 package com.eleybourn.bookcatalogue.dialogs;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.support.v7.app.AlertDialog;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Checkable;
 import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.EditSeriesListActivity;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
@@ -99,7 +103,7 @@ public class HintManager {
     }
 
     /** Display the passed hint, if the user has not disabled it */
-    public static void displayHint(final @NonNull Context context,
+    public static void displayHint(final @NonNull LayoutInflater inflater,
                                    final @StringRes int stringId,
                                    final @Nullable Runnable postRun,
                                    final @Nullable Object... args) {
@@ -112,12 +116,11 @@ public class HintManager {
         }
 
         // Build the hint dialog
-        final Dialog dialog = new StandardDialogs.BasicDialog(context);
-        dialog.setContentView(R.layout.dialog_hint);
-        dialog.setTitle(R.string.hint);
+        final View root = inflater.inflate(R.layout.dialog_hint, null);
+
 
         // Setup the message
-        final TextView msgField = dialog.findViewById(R.id.hint);
+        final TextView msgField = root.findViewById(R.id.hint);
         if (msgField != null) {
             String hintText = BookCatalogueApp.getResourceString(stringId, args);
             msgField.setText(Utils.linkifyHtml(hintText, Linkify.ALL));
@@ -127,6 +130,11 @@ public class HintManager {
             // Automatically start a browser (or whatever)
             msgField.setMovementMethod(LinkMovementMethod.getInstance());
         }
+
+        final AlertDialog dialog = new AlertDialog.Builder(inflater.getContext())
+                .setView(root)
+                .setTitle(R.string.hint)
+                .create();
 
         // Handle the 'OK' click
         //noinspection ConstantConditions

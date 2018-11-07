@@ -74,6 +74,8 @@
 
     <!-- 'major' detail text field; for example the book title -->
     <style name="txt_row_bookMajorDetail">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
         <item name="android:textIsSelectable">true</item>
         <item name="android:textStyle">italic</item>
@@ -129,6 +131,7 @@
         <item name="android:paddingEnd">@dimen/padding_border</item>
         <item name="android:singleLine">false</item>
     </style>
+
     <!-- *************************************************************************************** -->
     <!-- EditView fields -->
     <!-- *************************************************************************************** -->
@@ -154,17 +157,26 @@
         <item name="android:inputType">textCapWords</item>
     </style>
 
-    <!-- translators: customize this style as per locale requirements -->
-    <style name="languageTextEntry" parent="@style/base_localeBasedTextEntry" />
-
-    <!-- translators: customize this style as per locale requirements -->
+    <!-- translators: customize this style as per locale requirements
+         Fields for 'human' names. e.g. Author, Publisher, ... -->
     <style name="personalNameTextEntry" parent="@style/base_localeBasedTextEntry" />
 
-    <!-- translators: customize this style as per locale requirements -->
+
+    <!-- translators: customize this style as per locale requirements.
+         The language field. -->
+    <style name="languageTextEntry" parent="@style/base_localeBasedTextEntry" />
+
+    <!-- translators: customize this style as per locale requirements.
+         Titles of Books, Series, Bookshelf, TOCEntries (Anthology titles) , ... -->
     <style name="titleTextEntry" parent="@style/base_localeBasedTextEntry" />
 
-    <!-- translators: customize this style as per locale requirements -->
+    <!-- translators: customize this style as per locale requirements.
+         The book format field. -->
     <style name="bookFormatTextEntry" parent="@style/base_localeBasedTextEntry" />
+
+    <!-- not in use yet -->
+    <!--&lt;!&ndash; translators: customize this style as per locale requirements &ndash;&gt;-->
+    <!--<style name="genericNameTextEntry" parent="@style/base_localeBasedTextEntry" />-->
 
 
     <!-- *************************************************************************************** -->
@@ -208,15 +220,6 @@
         <item name="android:padding">@dimen/padding_border_double</item>
     </style>
 
-    <!-- Style for a property setting in lists -->
-    <style name="row_property">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:paddingStart">@dimen/padding_border</item>
-        <item name="android:paddingEnd">@dimen/padding_border_double</item>
-        <item name="android:gravity">top</item>
-    </style>
-
     <!-- Style for keys on the isbn search keyboard -->
     <style name="isbnSearchKey">
         <item name="android:layout_width">75dp</item>
@@ -235,6 +238,18 @@
     <!-- *************************************************************************************** -->
     <!-- TouchListView icons -->
     <!-- *************************************************************************************** -->
+
+    <style name="tlv_checkable_button">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_alignParentStart">true</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:checkMark">?android:attr/textCheckMark</item>
+        <item name="android:focusable">false</item>
+        <item name="android:focusableInTouchMode">false</item>
+        <item name="android:paddingStart">@dimen/padding_border_double</item>
+        <item name="android:paddingEnd">@dimen/padding_border_double</item>
+    </style>
 
     <style name="tlv_delete_button">
         <item name="android:layout_width">25dp</item>
@@ -309,20 +324,12 @@
         <item name="android:layout_height">48dp</item>
     </style>
 
-
     <!-- *************************************************************************************** -->
     <!-- row, button and blurb for 'options' in a an option list (f.e. on a dialog) -->
     <!-- *************************************************************************************** -->
-    <!-- TODO: these three 'option' styles are overlapping in the layout design: radiobtn and simple lists -->
-    <style name="option_button">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:clickable">false</item>
-        <item name="android:focusable">false</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
-    </style>
 
-    <style name="option_blurb">
+    <!-- Used for a dedicated 'help' TextView associated with an option -->
+    <style name="row_option_blurb">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:paddingStart">@dimen/padding_border_quad</item>
@@ -330,20 +337,39 @@
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
     </style>
 
-    <!-- row style for a list of items to choose from; for example in the Admin screen -->
-    <style name="row_option_in_list">
-        <item name="android:layout_width">match_parent</item>
+    <!-- Option in the list shown as a RadioButton -->
+    <style name="row_option_radio_button">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:clickable">false</item>
+        <item name="android:focusable">false</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+    </style>
+
+    <!-- Option in the list shown as a TextView -->
+    <style name="row_option_text">
+        <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:gravity">center_vertical</item>
         <item name="android:paddingStart">@dimen/padding_prefs_item</item>
         <item name="android:drawablePadding">@dimen/padding_prefs_item</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
     </style>
+
+    <!-- Option in the list is a property/preference -->
+    <style name="row_option_property">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingStart">@dimen/padding_border</item>
+        <item name="android:paddingEnd">@dimen/padding_border_double</item>
+        <item name="android:gravity">top</item>
+    </style>
+
     <!-- *************************************************************************************** -->
-    <!-- Booklist row styles -->
+    <!-- Booklist main row fields; level 1,2,3 are kept in their layout files -->
     <!-- *************************************************************************************** -->
 
-    <style name="row_booklist_book_title">
+    <style name="row_booklist_fields_book_title">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:paddingStart">@dimen/padding_border</item>
@@ -352,7 +378,7 @@
         <item name="android:singleLine">false</item>
     </style>
 
-    <style name="row_booklist_extra_fields">
+    <style name="row_booklist_fields_extras">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:paddingStart">@dimen/padding_border</item>
@@ -362,26 +388,23 @@
     </style>
 
     <!-- *************************************************************************************** -->
-    <!-- -->
+    <!-- Navigation Panel specifics -->
     <!-- *************************************************************************************** -->
 
-
-    -->
-
-    <style name="books_on_bookshelf_header">
-        <item name="android:textSize">16sp</item>
-    </style>
-
-    <style name="books_on_bookshelf_list"></style>
-
-    <style name="books_on_bookshelf_nav_view_header">
+    <style name="nav_panel_header">
         <item name="android:padding">@dimen/padding_border_triple</item>
         <item name="android:background">?attr/color_background_nav_header</item>
     </style>
 
-    <style name="books_on_bookshelf_nav_view">
+    <style name="nav_panel_main">
         <item name="android:background">?attr/color_background_nav_panel</item>
     </style>
+
+
+    <!-- *************************************************************************************** -->
+    <!-- -->
+    <!-- *************************************************************************************** -->
+
 
 
 </resources>

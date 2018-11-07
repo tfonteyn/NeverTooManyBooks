@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@id/ROW"
+    android:id="@id/SLA_ROW"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal">
@@ -14,20 +14,10 @@
 
         <CheckedTextView
             android:id="@+id/present"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentBottom="true"
-            android:layout_centerVertical="true"
-            android:checkMark="?android:attr/textCheckMark"
-            android:focusable="false"
-            android:focusableInTouchMode="false"
-            android:paddingStart="@dimen/padding_border_double"
-            android:paddingEnd="@dimen/padding_border_double" />
+            style="@style/tlv_checkable_button" />
 
         <RelativeLayout
-            android:id="@id/ROW_DETAILS"
+            android:id="@id/SLA_ROW_DETAILS"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"

@@ -20,7 +20,6 @@
 
 package com.eleybourn.bookcatalogue;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -41,6 +40,8 @@ import com.eleybourn.bookcatalogue.adapters.SimpleListAdapterRowActionListener;
 import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
+import com.eleybourn.bookcatalogue.dialogs.fieldeditdialogs.EditAuthorDialog;
+import com.eleybourn.bookcatalogue.dialogs.fieldeditdialogs.EditSeriesDialog;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
@@ -49,12 +50,15 @@ import java.util.ArrayList;
 /**
  * Activity to edit a list of series provided in an ArrayList<Series> and return an updated list.
  *
+ * Calling point is a Book; see {@link EditAuthorDialog} for list
+ *
  * @author Philip Warner
  */
 public class EditSeriesListActivity extends EditObjectListActivity<Series> {
 
     public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_EDIT_SERIES;
 
+    /** AutoCompleteTextView */
     private ArrayAdapter<String> mSeriesAdapter;
 
     /**
@@ -63,8 +67,6 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
     public EditSeriesListActivity() {
         super(R.layout.activity_edit_list_series, R.layout.row_edit_series_list, UniqueId.BKEY_SERIES_ARRAY);
     }
-
-
 
     @Override
     @CallSuper
@@ -101,7 +103,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
                 }
             }
             mList.add(newSeries);
-            mAdapter.notifyDataSetChanged();
+            mListAdapter.notifyDataSetChanged();
             seriesField.setText("");
             numberField.setText("");
         } else {
@@ -109,7 +111,52 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
         }
     }
 
+    /** TOMF: TODO: almost duplicate code in {@link EditSeriesDialog} */
+    private void edit(final @NonNull Series series) {
+        // Build the base dialog
+        final View root = EditSeriesListActivity.this.getLayoutInflater().inflate(R.layout.dialog_edit_book_series, null);
 
+        final AutoCompleteTextView seriesNameField = root.findViewById(R.id.name);
+        //noinspection ConstantConditions
+        seriesNameField.setText(series.name);
+        seriesNameField.setAdapter(mSeriesAdapter);
+
+        final EditText seriesNumberField = root.findViewById(R.id.series_num);
+        //noinspection ConstantConditions
+        seriesNumberField.setText(series.number);
+
+        final AlertDialog dialog = new AlertDialog.Builder(EditSeriesListActivity.this)
+                .setView(root)
+                .setTitle(R.string.dialog_title_edit_book_series)
+                .create();
+
+        //noinspection ConstantConditions
+        dialog.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String newName = seriesNameField.getText().toString().trim();
+                if (newName.isEmpty()) {
+                    StandardDialogs.showUserMessage(EditSeriesListActivity.this, R.string.warning_blank_series);
+                    return;
+                }
+
+                Series newSeries = new Series(newName, seriesNumberField.getText().toString().trim());
+                confirmEdit(series, newSeries);
+
+                dialog.dismiss();
+            }
+        });
+
+        //noinspection ConstantConditions
+        dialog.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
+    }
 
     private void confirmEdit(final @NonNull Series from, final @NonNull Series to) {
         // case sensitive equality
@@ -122,7 +169,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
             from.copyFrom(to);
             Series.pruneSeriesList(mList);
             Utils.pruneList(mDb, mList);
-            mAdapter.notifyDataSetChanged();
+            mListAdapter.notifyDataSetChanged();
             return;
         }
 
@@ -130,7 +177,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
         from.id = mDb.getSeriesId(from); //TODO: this call is not needed I think
         to.id = mDb.getSeriesId(to);
 
-        // See if the old series is used by any other books.
+        //See if the old series is used by any other books.; allows us to skip a global replace
         long nRefs = mDb.countSeriesBooks(from);
         boolean fromHasOthers = nRefs > (mRowId == 0 ? 0 : 1);
 
@@ -144,7 +191,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
                 from.id = mDb.getSeriesId(from);
             }
             mDb.insertOrUpdateSeries(from);
-            mAdapter.notifyDataSetChanged();
+            mListAdapter.notifyDataSetChanged();
             return;
         }
 
@@ -162,7 +209,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
                 from.copyFrom(to);
                 Series.pruneSeriesList(mList);
                 Utils.pruneList(mDb, mList);
-                mAdapter.notifyDataSetChanged();
+                mListAdapter.notifyDataSetChanged();
                 dialog.dismiss();
             }
         });
@@ -173,7 +220,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
                 from.copyFrom(to);
                 Series.pruneSeriesList(mList);
                 Utils.pruneList(mDb, mList);
-                mAdapter.notifyDataSetChanged();
+                mListAdapter.notifyDataSetChanged();
                 dialog.dismiss();
             }
         });
@@ -242,45 +289,8 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
 
         @Override
         public void onRowClick(final @NonNull View target, final @NonNull Series series, final int position) {
-            final Dialog dialog = new StandardDialogs.BasicDialog(EditSeriesListActivity.this);
-            dialog.setContentView(R.layout.dialog_edit_book_series);
-            dialog.setTitle(R.string.dialog_title_edit_book_series);
-
-            final AutoCompleteTextView seriesNameField = dialog.findViewById(R.id.name);
-            //noinspection ConstantConditions
-            seriesNameField.setText(series.name);
-            seriesNameField.setAdapter(mSeriesAdapter);
-
-            final EditText seriesNumberField = dialog.findViewById(R.id.series_num);
-            //noinspection ConstantConditions
-            seriesNumberField.setText(series.number);
-
-            //noinspection ConstantConditions
-            dialog.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    String newName = seriesNameField.getText().toString().trim();
-                    if (newName.isEmpty()) {
-                        StandardDialogs.showUserMessage(EditSeriesListActivity.this, R.string.warning_blank_series);
-                        return;
-                    }
-
-                    Series newSeries = new Series(newName, seriesNumberField.getText().toString().trim());
-                    confirmEdit(series, newSeries);
-
-                    dialog.dismiss();
-                }
-            });
-
-            //noinspection ConstantConditions
-            dialog.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    dialog.dismiss();
-                }
-            });
-
-            dialog.show();
+            edit(series);
         }
     }
+
 }

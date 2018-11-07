@@ -21,8 +21,6 @@
         <TextView
             android:id="@+id/title"
             style="@style/txt_row_bookMajorDetail"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             tools:text="Anna Karenina" />
 
         <TextView

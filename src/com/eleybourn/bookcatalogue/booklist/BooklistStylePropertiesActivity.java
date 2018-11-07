@@ -136,7 +136,7 @@ public class BooklistStylePropertiesActivity extends BaseActivity {
 
         // Display hint if required
         if (savedInstanceState == null) {
-            HintManager.displayHint(this, R.string.hint_booklist_style_properties, null);
+            HintManager.displayHint(this.getLayoutInflater(), R.string.hint_booklist_style_properties, null);
         }
     }
 

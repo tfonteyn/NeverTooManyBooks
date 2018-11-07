@@ -58,10 +58,13 @@ import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
-import com.eleybourn.bookcatalogue.dialogs.autocompletetextview.EditFormatDialog;
-import com.eleybourn.bookcatalogue.dialogs.autocompletetextview.EditGenreDialog;
-import com.eleybourn.bookcatalogue.dialogs.autocompletetextview.EditLanguageDialog;
-import com.eleybourn.bookcatalogue.dialogs.autocompletetextview.EditLocationDialog;
+import com.eleybourn.bookcatalogue.dialogs.fieldeditdialogs.EditAuthorDialog;
+import com.eleybourn.bookcatalogue.dialogs.fieldeditdialogs.EditFormatDialog;
+import com.eleybourn.bookcatalogue.dialogs.fieldeditdialogs.EditGenreDialog;
+import com.eleybourn.bookcatalogue.dialogs.fieldeditdialogs.EditLanguageDialog;
+import com.eleybourn.bookcatalogue.dialogs.fieldeditdialogs.EditLocationDialog;
+import com.eleybourn.bookcatalogue.dialogs.fieldeditdialogs.EditPublisherDialog;
+import com.eleybourn.bookcatalogue.dialogs.fieldeditdialogs.EditSeriesDialog;
 import com.eleybourn.bookcatalogue.dialogs.picklist.SelectOneDialog;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Publisher;
@@ -417,11 +420,11 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
      *
      * ENHANCE: Consider using {@link LocalBroadcastManager} instead to all BooklistChangeListener
      *
-     * @param menuItem  Related MenuItem
-     * @param targetView  The view on which was clicked, only needed for 'read' status changes
-     * @param db        CatalogueDBAdapter
-     * @param cursorRow Row view for affected cursor row
-     * @param activity  Calling Activity
+     * @param menuItem   Related MenuItem
+     * @param targetView The view on which was clicked, only needed for 'read' status changes
+     * @param db         CatalogueDBAdapter
+     * @param cursorRow  Row view for affected cursor row
+     * @param activity   Calling Activity
      *
      * @return <tt>true</tt> if handled.
      */
@@ -510,6 +513,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                 } else {
                     Series s = db.getSeries(id);
                     Objects.requireNonNull(s);
+                    //cursorRow.getBookId()
                     EditSeriesDialog d = new EditSeriesDialog(activity, db, new Runnable() {
                         @Override
                         public void run() {
@@ -1167,7 +1171,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
 
         @Override
         public void map(final @NonNull BooklistCursorRow rowView, final @NonNull View v) {
-            rowInfo = v.findViewById(R.id.ROW_INFO);
+            rowInfo = v.findViewById(R.id.BLB_ROW_DETAILS);
             text = v.findViewById(R.id.name);
         }
 
@@ -1220,7 +1224,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
 
         @Override
         public void map(final @NonNull BooklistCursorRow rowView, final @NonNull View view) {
-            rowInfo = view.findViewById(R.id.ROW_INFO);
+            rowInfo = view.findViewById(R.id.BLB_ROW_DETAILS);
             text = view.findViewById(R.id.name);
         }
 
@@ -1285,7 +1289,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
 
         @Override
         public void map(final @NonNull BooklistCursorRow rowView, final @NonNull View view) {
-            rowInfo = view.findViewById(R.id.ROW_INFO);
+            rowInfo = view.findViewById(R.id.BLB_ROW_DETAILS);
             text = view.findViewById(R.id.name);
         }
 

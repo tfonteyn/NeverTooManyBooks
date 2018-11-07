@@ -108,9 +108,6 @@
 
         <!-- Manage Bookshelves -->
         <activity android:name=".EditBookshelvesActivity" />
-        <activity
-            android:name=".EditBookshelfActivity"
-            android:windowSoftInputMode="adjustResize" />
 
         <!-- Field Visibility -->
         <activity android:name=".FieldVisibilityActivity" />

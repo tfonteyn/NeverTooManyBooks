@@ -20,7 +20,6 @@
 
 package com.eleybourn.bookcatalogue;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -40,6 +39,7 @@ import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter;
 import com.eleybourn.bookcatalogue.adapters.SimpleListAdapterRowActionListener;
 import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
+import com.eleybourn.bookcatalogue.dialogs.fieldeditdialogs.EditAuthorDialog;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
@@ -47,6 +47,8 @@ import java.util.ArrayList;
 
 /**
  * Activity to edit a list of authors provided in an ArrayList<Author> and return an updated list.
+ *
+ * Calling point is a Book; see {@link EditAuthorDialog} for list
  *
  * @author Philip Warner
  */
@@ -67,7 +69,7 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
         super.onCreate(savedInstanceState);
         setTitle(mBookTitle);
 
-        // Setup autocomplete for author name
+        // Setup AutoCompleteTextView for author name
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_dropdown_item_1line, mDb.getAuthorsFormattedName());
         ((AutoCompleteTextView) this.findViewById(R.id.author)).setAdapter(adapter);
@@ -93,12 +95,57 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
                 }
             }
             mList.add(author);
-            mAdapter.notifyDataSetChanged();
+            mListAdapter.notifyDataSetChanged();
             authorField.setText("");
         } else {
             //Snackbar.make(target, R.string.author_is_blank, Snackbar.LENGTH_LONG).show();
             StandardDialogs.showUserMessage(this, R.string.warning_blank_author);
         }
+    }
+
+
+    /** TOMF: TODO: almost duplicate code in {@link EditAuthorDialog} */
+    private void edit(final @NonNull Author author) {
+        // Build the base dialog
+        final View root = EditAuthorListActivity.this.getLayoutInflater().inflate(R.layout.dialog_edit_author, null);
+
+        final EditText familyView = root.findViewById(R.id.family_name);
+        //noinspection ConstantConditions
+        familyView.setText(author.familyName);
+        final EditText givenView = root.findViewById(R.id.given_names);
+        //noinspection ConstantConditions
+        givenView.setText(author.givenNames);
+
+        final AlertDialog dialog = new AlertDialog.Builder(EditAuthorListActivity.this)
+                .setView(root)
+                .setTitle(R.string.dialog_title_edit_author)
+                .create();
+
+        //noinspection ConstantConditions
+        dialog.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String newFamily = familyView.getText().toString().trim();
+                if (newFamily.isEmpty()) {
+                    StandardDialogs.showUserMessage(EditAuthorListActivity.this, R.string.warning_blank_author);
+                    return;
+                }
+
+                String newGiven = givenView.getText().toString().trim();
+                Author newAuthor = new Author(newFamily, newGiven);
+                dialog.dismiss();
+                confirmEdit(author, newAuthor);
+            }
+        });
+        //noinspection ConstantConditions
+        dialog.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
     }
 
     private void confirmEdit(final @NonNull Author from, final @NonNull Author to) {
@@ -111,11 +158,11 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
         from.id = mDb.getAuthorIdByName(from.familyName, from.givenNames); //TODO: this call is not needed I think
         to.id = mDb.getAuthorIdByName(to.familyName, to.givenNames);
 
-        // See if the old author is used in any other books.
+        // See if the old author is used in any other books; allows us to skip a global replace
         long nRefs = mDb.countAuthorBooks(from) + mDb.countAuthorAnthologies(from);
         boolean fromHasOthers = nRefs > (mRowId == 0 ? 0 : 1);
 
-        // author is the same, or is only used in this book
+        // author is the same (but maybe different case), or is only used in this book
         if (to.id == from.id || !fromHasOthers) {
             // Just update with the most recent spelling and format
             from.copyFrom(to);
@@ -124,7 +171,7 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
                 from.id = mDb.getAuthorIdByName(from.familyName, from.givenNames);
             }
             mDb.insertOrUpdateAuthor(from);
-            mAdapter.notifyDataSetChanged();
+            mListAdapter.notifyDataSetChanged();
             return;
         }
 
@@ -141,7 +188,7 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
             public void onClick(final @NonNull DialogInterface dialog, final int which) {
                 from.copyFrom(to);
                 Utils.pruneList(mDb, mList);
-                mAdapter.notifyDataSetChanged();
+                mListAdapter.notifyDataSetChanged();
                 dialog.dismiss();
             }
         });
@@ -151,7 +198,7 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
                 mDb.globalReplaceAuthor(from, to);
                 from.copyFrom(to);
                 Utils.pruneList(mDb, mList);
-                mAdapter.notifyDataSetChanged();
+                mListAdapter.notifyDataSetChanged();
                 dialog.dismiss();
             }
         });
@@ -215,42 +262,8 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
 
         @Override
         public void onRowClick(final @NonNull View target, final @NonNull Author author, final int position) {
-            final Dialog dialog = new StandardDialogs.BasicDialog(EditAuthorListActivity.this);
-            dialog.setContentView(R.layout.dialog_edit_author);
-            dialog.setTitle(R.string.dialog_title_edit_author);
-
-            final EditText familyView = dialog.findViewById(R.id.family_name);
-            //noinspection ConstantConditions
-            familyView.setText(author.familyName);
-            final EditText givenView = dialog.findViewById(R.id.given_names);
-            //noinspection ConstantConditions
-            givenView.setText(author.givenNames);
-
-            //noinspection ConstantConditions
-            dialog.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    String newFamily = familyView.getText().toString().trim();
-                    if (newFamily.isEmpty()) {
-                        StandardDialogs.showUserMessage(EditAuthorListActivity.this, R.string.warning_blank_author);
-                        return;
-                    }
-
-                    String newGiven = givenView.getText().toString().trim();
-                    Author newAuthor = new Author(newFamily, newGiven);
-                    dialog.dismiss();
-                    confirmEdit(author, newAuthor);
-                }
-            });
-            //noinspection ConstantConditions
-            dialog.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    dialog.dismiss();
-                }
-            });
-
-            dialog.show();
+            edit(author);
         }
     }
+
 }

@@ -336,7 +336,7 @@
     <!-- ========== Warning/info messages ========== -->
     <!-- ####################################################################################### -->
 
-    <string name="no_books_yet">There are no books in this Bookshelf. Please add some using the menu at the bottom of this screen.</string>
+    <string name="no_books_yet">There are no books on this Bookshelf. Please add some using the menu at the bottom of this screen.</string>
     <string name="no_bookshelves_yet">You have not created any bookshelves yet. Please add some using the menu at the bottom of this screen.</string>
     <string name="no_authors_yet">There are no authors for this Book. Please add some using the text area and button at the top of this screen.</string>
     <string name="no_series_yet">There are no series for this Book. You can add some using the text area and button at the top of this screen.</string>
