@@ -107,7 +107,7 @@
 
 
         <!-- Manage Bookshelves -->
-        <activity android:name=".EditBookshelvesActivity" />
+        <activity android:name=".EditBookshelfListActivity" />
 
         <!-- Field Visibility -->
         <activity android:name=".FieldVisibilityActivity" />

@@ -15,10 +15,10 @@
         android:text=""
         android:visibility="gone" />
 
-    <!-- what the user sees, with a drawable added from code -->
+    <!-- what the user sees, with a drawable (icon) added from code -->
     <TextView
-        android:id="@+id/name"
-        android:layout_width="wrap_content"
+        android:id="@+id/series"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true"

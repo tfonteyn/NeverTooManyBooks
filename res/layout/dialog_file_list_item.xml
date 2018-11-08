@@ -5,7 +5,7 @@
     style="@style/dialogFrame">
 
     <TextView
-        android:id="@+id/name"
+        android:id="@+id/series"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
@@ -20,7 +20,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
-        android:layout_below="@id/name"
+        android:layout_below="@id/series"
         android:layout_marginTop="4dp"
         android:text="@string/updated"
         android:textAppearance="?android:attr/textAppearanceSmall" />

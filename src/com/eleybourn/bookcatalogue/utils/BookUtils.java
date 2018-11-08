@@ -190,7 +190,7 @@ public class BookUtils {
         Uri coverURI = FileProvider.getUriForFile(activity, GenericFileProvider.AUTHORITY, image);
 
         /*
-        FIXME: There's a problem with the facebook app in android,
+        TEST: There's a problem with the facebook app in android,
          so despite it being shown on the list it will not post any text unless the user types it.
 		 */
         Intent share = new Intent(Intent.ACTION_SEND);

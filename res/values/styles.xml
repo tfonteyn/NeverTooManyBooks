@@ -5,8 +5,8 @@
     <!-- Page section headers and dividers -->
     <!-- *************************************************************************************** -->
 
-    <!-- base style for all page section headers; not to be used directly in layouts -->
-    <style name="base_sectionHeader">
+    <!-- base style for a header of grouped fields; not to be used directly in layouts -->
+    <style name="base_groupHeader">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:paddingStart">@dimen/padding_border</item>
@@ -17,11 +17,21 @@
     </style>
 
     <!-- section header for grouped preferences settings -->
-    <style name="hdr_preferencesSection" parent="base_sectionHeader" />
+    <style name="hdr_preferencesSection" parent="base_groupHeader" />
 
     <!-- section header for grouped properties -->
-    <style name="hdr_propertyGroup" parent="base_sectionHeader">
+    <style name="hdr_propertyGroup" parent="base_groupHeader">
         <item name="android:drawableBottom">?attr/dividerHorizontal</item>
+    </style>
+
+    <!-- maybe split this up into a base and a concrete style... -->
+    <style name="majorSectionHeader">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">12dp</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
+        <item name="android:drawableBottom">?attr/dividerHorizontal</item>
+        <item name="android:paddingBottom">2dp</item>
     </style>
 
     <!-- basic horizontal divider line -->
@@ -120,7 +130,7 @@
         <item name="android:textIsSelectable">false</item>
     </style>
 
-    <!-- fields specific for property/preference names; can be TextView or EditView -->
+    <!-- fields specific for property/preference names; can be TextView or EditText -->
     <style name="txt_property_value">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
@@ -133,7 +143,7 @@
     </style>
 
     <!-- *************************************************************************************** -->
-    <!-- EditView fields -->
+    <!-- EditText fields -->
     <!-- *************************************************************************************** -->
 
     <!-- *not to be localised* base style for all EditFields; not to be used directly in layouts -->
@@ -145,39 +155,81 @@
         <item name="android:hint">@string/not_set</item>
     </style>
 
+    <style name="isbnEntryField">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">@dimen/padding_border_double</item>
+        <item name="android:layout_marginEnd">@dimen/padding_border_double</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:digits">1234567890xX</item>
+        <item name="android:gravity">start</item>
+        <item name="android:inputType">textCapCharacters|textNoSuggestions</item>
+        <item name="android:padding">@dimen/padding_border_double</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
+        <item name="android:windowSoftInputMode">stateAlwaysHidden</item>
+    </style>
+
+    <style name="seriesNumberEntry" parent="@style/base_editorField">
+        <item name="android:inputType">text</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
+    <!-- International three character currency code (uppercase) -->
+    <style name="currencyTextEntry" parent="base_editorField">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_alignParentStart">false</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:textAlignment">viewEnd</item>
+        <item name="android:inputType">text|textCapCharacters</item>
+        <item name="android:ems">3</item>
+        <item name="android:maxLength">3</item>
+        <item name="android:paddingStart">@dimen/padding_border_double</item>
+        <item name="android:paddingEnd">@dimen/padding_border_double</item>
+        <item name="android:completionThreshold">1</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
     <!-- *not to be localised* button with 'data' displayed on it, a click leads to a screen/dialog to edit that data -->
     <style name="buttonDataEntry" parent="@style/base_editorField" />
 
-    <!-- *not to be localised* simple text field -->
-    <style name="simpleTextEntry" parent="@style/base_editorField" />
+    <!-- not in use yet -->
+    <style name="searchTextEntry" parent="@style/base_editorField" />
+
+
+    <!-- *************************************************************************************** -->
+    <!-- translators: create a language specific styles.xml file and copy these styles -->
+    <!-- *************************************************************************************** -->
 
     <!-- base style for all *LOCALISED* EditFields; not to be used directly in layouts -->
-    <!-- translators: customize this style as per locale requirements -->
-    <style name="base_localeBasedTextEntry" parent="@style/simpleTextEntry">
+    <style name="base_localeTextEntry" parent="@style/base_editorField">
         <item name="android:inputType">textCapWords</item>
     </style>
 
-    <!-- translators: customize this style as per locale requirements
-         Fields for 'human' names. e.g. Author, Publisher, ... -->
-    <style name="personalNameTextEntry" parent="@style/base_localeBasedTextEntry" />
+    <style name="simpleTextEntry" parent="@style/base_localeTextEntry" />
 
+    <!-- inherits from localised style! -->
+    <style name="multiLineTextEntry" parent="simpleTextEntry">
+        <item name="android:layout_alignParentEnd">true</item>
+        <item name="android:singleLine">false</item>
+        <item name="android:inputType">textCapSentences|textMultiLine</item>
+    </style>
 
-    <!-- translators: customize this style as per locale requirements.
-         The language field. -->
-    <style name="languageTextEntry" parent="@style/base_localeBasedTextEntry" />
+    <!-- Fields for 'human' names. e.g. Author, Publisher, ... -->
+    <style name="personalNameTextEntry" parent="@style/base_localeTextEntry" />
 
-    <!-- translators: customize this style as per locale requirements.
-         Titles of Books, Series, Bookshelf, TOCEntries (Anthology titles) , ... -->
-    <style name="titleTextEntry" parent="@style/base_localeBasedTextEntry" />
+    <!-- Titles of Books, Series, Bookshelf, TOCEntries (Anthology titles) , ... -->
+    <style name="titleTextEntry" parent="@style/base_localeTextEntry" />
 
-    <!-- translators: customize this style as per locale requirements.
-         The book format field. -->
-    <style name="bookFormatTextEntry" parent="@style/base_localeBasedTextEntry" />
+    <!-- The language field. -->
+    <style name="languageTextEntry" parent="@style/base_localeTextEntry" />
 
-    <!-- not in use yet -->
-    <!--&lt;!&ndash; translators: customize this style as per locale requirements &ndash;&gt;-->
-    <!--<style name="genericNameTextEntry" parent="@style/base_localeBasedTextEntry" />-->
+    <!-- The price (listed, paid, ... ) fields. -->
+    <style name="priceTextEntry" parent="@style/base_localeTextEntry">
+        <item name="android:inputType">numberDecimal</item>
+    </style>
 
+    <!-- The book format field. -->
+    <style name="bookFormatTextEntry" parent="@style/base_localeTextEntry" />
 
     <!-- *************************************************************************************** -->
     <!-- Single use / specialised styles -->
@@ -203,7 +255,8 @@
 
     <style name="toolbar">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">?attr/actionBarSize</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minHeight">?attr/actionBarSize</item>
         <item name="android:background">?attr/colorPrimary</item>
     </style>
 
@@ -227,8 +280,8 @@
         <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
     </style>
 
-    <!-- CheckBox for 'read' status of a book -->
-    <style name="cbx_read">
+    <!-- CheckedTextView for 'read' status of a book -->
+    <style name="ctv_read">
         <item name="android:layout_weight">0</item>
         <item name="android:background">@android:color/transparent</item>
         <item name="android:checkMark">?android:attr/textCheckMark</item>
@@ -266,12 +319,6 @@
         <item name="android:paddingStart">@dimen/padding_border</item>
     </style>
 
-    <!-- the actual list view -->
-    <style name="tlv_TouchListView">
-        <item name="android:fadingEdge">none</item>
-        <item name="android:textSize">16sp</item>
-    </style>
-
     <style name="tlv_dragHandle">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
@@ -279,6 +326,14 @@
         <item name="android:layout_alignParentTop">true</item>
         <item name="android:layout_alignParentBottom">true</item>
         <item name="android:layout_alignParentEnd">true</item>
+    </style>
+
+    <!-- the actual list view -->
+    <style name="tlv_TouchListView">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:fadingEdge">none</item>
+        <item name="android:textSize">16sp</item>
     </style>
 
     <!-- *************************************************************************************** -->
@@ -404,7 +459,6 @@
     <!-- *************************************************************************************** -->
     <!-- -->
     <!-- *************************************************************************************** -->
-
 
 
 </resources>

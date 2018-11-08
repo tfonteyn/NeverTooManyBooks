@@ -1874,7 +1874,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
         }
 
         /*
-        FIXME: is this still true ?
+        TEST: is this still true ?
              mAddBookSeriesStmt.bindLong(1, bookId);
         can in theory be outside of the for loop. This was once good enough, but Android 4 (at least)
         causes the bindings to clean when executed. So now we do it each time in loop.

@@ -28,7 +28,7 @@
             android:padding="2dp">
 
             <TextView
-                android:id="@+id/name"
+                android:id="@+id/series"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
@@ -44,7 +44,7 @@
                 android:id="@+id/groups"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/name"
+                android:layout_below="@id/series"
                 android:ellipsize="marquee"
                 android:gravity="start"
                 android:singleLine="false"

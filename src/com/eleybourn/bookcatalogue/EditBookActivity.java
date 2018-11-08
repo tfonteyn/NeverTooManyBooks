@@ -122,6 +122,16 @@ public class EditBookActivity extends BookBaseActivity implements
                 .open();
         Bundle extras = getIntent().getExtras();
 
+        //TOMF: split this activity into a hosting activity and a fragment, just like BookDetailsActivity/Fragment
+//        EditBooksFragment frag = new EditBooksFragment();
+//        frag.setArguments(extras);
+//
+//        getSupportFragmentManager()
+//                .beginTransaction()
+//                .replace(R.id.main_fragment, frag)
+//                .commit();
+
+
         long bookId = getLongFromBundles(UniqueId.KEY_ID, savedInstanceState, extras);
         mBook = loadBook(bookId, savedInstanceState == null ? extras : savedInstanceState);
 
@@ -301,7 +311,7 @@ public class EditBookActivity extends BookBaseActivity implements
      */
     private void saveBook(final @NonNull PostConfirmOrCancelAction nextStep) {
         DataEditor dataEditorFragment = (DataEditor) getSupportFragmentManager().findFragmentById(R.id.fragment);
-        dataEditorFragment.saveTo(mBook);
+        dataEditorFragment.saveFieldsTo(mBook);
 
         // Ignore validation failures; but we still validate to get the current values.
         mBook.validate();

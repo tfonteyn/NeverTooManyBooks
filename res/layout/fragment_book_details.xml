@@ -4,13 +4,13 @@
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true">
+    android:fillViewport="true"
+    android:padding="@dimen/padding_border">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="@dimen/padding_border">
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/loaned_to"
@@ -45,17 +45,15 @@
 
                 <TextView
                     android:id="@+id/author"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    style="@style/txt_row_bookMinorDetail"
                     android:layout_below="@id/title"
                     android:layout_marginTop="@dimen/padding_border"
                     android:paddingBottom="8dp"
-                    android:textIsSelectable="true"
                     tools:text="by Lev Tolstoy" />
 
                 <CheckedTextView
                     android:id="@+id/read"
-                    style="@style/cbx_read"
+                    style="@style/ctv_read"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentTop="true"
@@ -130,7 +128,7 @@
                 </LinearLayout>
             </RelativeLayout>
 
-            <!-- FIXME: why this wrapper ? -->
+            <!-- TEST: why this wrapper ? -->
             <RelativeLayout
                 android:id="@+id/row_image"
                 android:layout_width="0dp"
@@ -141,8 +139,8 @@
                 <ImageView
                     android:id="@+id/coverImage"
                     style="@style/coverImage"
-                    tools:src="@drawable/ic_image"
-                    tools:ignore="ContentDescription" />
+                    tools:ignore="ContentDescription"
+                    tools:src="@drawable/ic_image" />
             </RelativeLayout>
         </LinearLayout>
 
@@ -155,7 +153,7 @@
             android:text="@string/series" />
 
         <TextView
-            android:id="@+id/name"
+            android:id="@+id/series"
             style="@style/txt_row_bookDetail"
             android:textIsSelectable="true"
             tools:text="Series name (1)\nSeries name (2)" />
@@ -186,7 +184,7 @@
                 tools:ignore="ContentDescription" />
         </LinearLayout>
 
-        <!-- don't set padding on the toc. The toc height is calculated as needed
+        <!-- don't set padding on the toc. The toc height is calculated as needed.
         It's always visible, but often empty
         -->
         <ListView
@@ -299,22 +297,11 @@
         </TableLayout>
 
         <!-- Notes section starts here -->
-
         <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:text="@string/lbl_notes"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
-
-        <View style="@style/divider_horizontalList" />
+            style="@style/majorSectionHeader"
+            android:text="@string/lbl_notes" />
 
         <!-- Notes -->
-        <TextView
-            android:id="@+id/lbl_notes"
-            style="@style/lbl_textField"
-            android:text="@string/menu_edit_book_notes" />
-
         <TextView
             android:id="@+id/notes"
             style="@style/txt_row_bookDetail"
@@ -458,15 +445,8 @@
         <!-- Description -->
         <TextView
             android:id="@+id/lbl_description"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:text="@string/lbl_description"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
-
-        <View
-            android:id="@+id/description_divider"
-            style="@style/divider_horizontalList" />
+            style="@style/majorSectionHeader"
+            android:text="@string/lbl_description" />
 
         <!-- reminder: textIsSelectable etc won't work here, as its done in code -->
         <TextView
@@ -479,3 +459,5 @@
     </LinearLayout>
 
 </ScrollView>
+
+

@@ -4,10 +4,8 @@
     style="@style/dialogFrame">
 
     <AutoCompleteTextView
-        android:id="@+id/name"
+        android:id="@+id/series"
         style="@style/languageTextEntry"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:completionThreshold="2"
         android:hint="@string/not_set"
         tools:ignore="Autofill" />

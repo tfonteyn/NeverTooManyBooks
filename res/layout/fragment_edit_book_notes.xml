@@ -51,13 +51,8 @@
 
             <EditText
                 android:id="@+id/notes"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentStart="true"
+                style="@style/multiLineTextEntry"
                 android:layout_below="@id/lbl_notes"
-                android:inputType="textCapSentences|textMultiLine"
-                android:singleLine="false"
                 tools:ignore="LabelFor,Autofill" />
 
         </RelativeLayout>
@@ -98,33 +93,20 @@
 
             <EditText
                 android:id="@+id/price_paid"
-                style="@style/simpleTextEntry"
+                style="@style/priceTextEntry"
                 android:layout_width="wrap_content"
                 android:layout_below="@id/lbl_price_paid"
                 android:layout_toStartOf="@id/price_paid_currency"
-                android:layout_centerVertical="true"
-                android:inputType="numberDecimal"
                 tools:ignore="Autofill"
                 tools:text="14.99" />
 
             <AutoCompleteTextView
                 android:id="@+id/price_paid_currency"
-                style="@style/simpleTextEntry"
-                android:layout_width="wrap_content"
+                style="@style/currencyTextEntry"
                 android:layout_below="@id/lbl_price_paid"
-                android:layout_alignParentStart="false"
                 android:layout_toStartOf="@id/btn_price_paid_currency"
-                android:layout_centerVertical="true"
-                android:textAlignment="viewEnd"
                 android:hint="..."
-                android:inputType="text|textCapCharacters"
-                android:minEms="3"
-                android:paddingStart="@dimen/padding_border_double"
-                android:paddingEnd="@dimen/padding_border_double"
-                android:completionThreshold="1"
-                android:singleLine="true"
-                tools:ignore="Autofill,HardcodedText"
-                tools:text="" />
+                tools:ignore="Autofill,HardcodedText"/>
 
             <ImageButton
                 android:id="@+id/btn_price_paid_currency"

@@ -25,16 +25,14 @@
 
         <TextView
             android:id="@+id/author"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            style="@style/txt_row_bookDetail"
             android:layout_marginTop="@dimen/padding_border"
             android:paddingBottom="8dp"
-            android:textIsSelectable="true"
             tools:text="by Lev Tolstoy" />
 
     </LinearLayout>
     <TextView
-        android:id="@+id/select_fields_help_text"
+        android:id="@+id/select_fields_blurb"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/row_book"
@@ -45,7 +43,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/buttonbar_cancel_update"
-        android:layout_below="@id/select_fields_help_text"
+        android:layout_below="@id/select_fields_blurb"
         android:scrollbars="vertical">
 
         <LinearLayout

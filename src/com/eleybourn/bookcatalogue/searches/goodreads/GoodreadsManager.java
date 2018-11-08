@@ -384,7 +384,7 @@ public class GoodreadsManager {
         if (DEBUG_SWITCHES.GOODREADS && BuildConfig.DEBUG) {
             Logger.info(this,"requestAuthorization authUrl: " + authUrl);
         }
-        //FIXME: double check if this ever gives issues!
+        //TEST: double check if this ever gives issues!
         if (!authUrl.startsWith("http://") && !authUrl.startsWith("https://")) {
             // Make a valid URL for the parser (some come back without a schema)
             authUrl = "http://" + authUrl;

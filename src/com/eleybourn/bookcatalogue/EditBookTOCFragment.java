@@ -49,10 +49,10 @@ import android.widget.TextView;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
-import com.eleybourn.bookcatalogue.entities.TOCEntry;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.Series;
+import com.eleybourn.bookcatalogue.entities.TOCEntry;
 import com.eleybourn.bookcatalogue.searches.isfdb.HandlesISFDB;
 import com.eleybourn.bookcatalogue.searches.isfdb.ISFDBManager;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
@@ -92,7 +92,10 @@ public class EditBookTOCFragment extends BookAbstractFragment implements Handles
     }
 
     /**
-     * has no specific Arguments or savedInstanceState as all is done via {@link #getBook()}
+     * has no specific Arguments or savedInstanceState as all is done via
+     * {@link #getBook()} on the hosting Activity
+     * {@link #onLoadFieldsFromBook(Book, boolean)} from base class onResume
+     * {@link #onSaveFieldsToBook(Book)} from base class onPause
      */
     @Override
     @CallSuper
@@ -100,11 +103,7 @@ public class EditBookTOCFragment extends BookAbstractFragment implements Handles
         super.onActivityCreated(savedInstanceState);
 
         //noinspection ConstantConditions
-        mListView = getView().findViewById(android.R.id.list);
-
-        // first publication TextView
         mPubDateTextView = getView().findViewById(R.id.add_year);
-        // title TextView
         mTitleTextView = getView().findViewById(R.id.add_title);
 
         // Author AutoCompleteTextView
@@ -113,21 +112,11 @@ public class EditBookTOCFragment extends BookAbstractFragment implements Handles
                 android.R.layout.simple_dropdown_item_1line, mDb.getAuthorsFormattedName());
         mAuthorTextView.setAdapter(author_adapter);
 
-        // mSingleAuthor checkbox
-        mSingleAuthor = getView().findViewById(R.id.same_author);
-        mSingleAuthor.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                mAuthorTextView.setVisibility(mSingleAuthor.isChecked() ? View.GONE : View.VISIBLE);
-            }
-        });
-
-
         // author to use if mSingleAuthor is set to true
         mBookAuthor = getBook().getString(UniqueId.KEY_AUTHOR_FORMATTED);
 
         // used to call Search sites to populate the TOC
         mIsbn = getBook().getString(UniqueId.KEY_BOOK_ISBN);
-
 
         mAddButton = getView().findViewById(R.id.add_button);
         mAddButton.setOnClickListener(new View.OnClickListener() {
@@ -164,12 +153,25 @@ public class EditBookTOCFragment extends BookAbstractFragment implements Handles
         });
     }
 
+    /**
+     * No real Field's - commenting this out, but leaving as a reminder
+     */
     @Override
     protected void initFields() {
         super.initFields();
-        // not much to do, only the TOC.
 
-        registerForContextMenu(mListView);
+        // mSingleAuthor checkbox
+        //noinspection ConstantConditions
+        mSingleAuthor = getView().findViewById(R.id.same_author);
+        mSingleAuthor.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                mAuthorTextView.setVisibility(mSingleAuthor.isChecked() ? View.GONE : View.VISIBLE);
+            }
+        });
+
+        mListView = getView().findViewById(android.R.id.list);
+        mListView.setOnCreateContextMenuListener(this);
+
         // clicking on a list entry, puts it in edit fields
         mListView.setOnItemClickListener(new OnItemClickListener() {
             @Override
@@ -188,8 +190,8 @@ public class EditBookTOCFragment extends BookAbstractFragment implements Handles
 
     @Override
     @CallSuper
-    protected void onLoadBookDetails(final @NonNull Book book, final boolean setAllFrom) {
-        super.onLoadBookDetails(book, setAllFrom);
+    protected void onLoadFieldsFromBook(final @NonNull Book book, final boolean setAllFrom) {
+        super.onLoadFieldsFromBook(book, setAllFrom);
 
         // populateFields
         populateSingleAuthorStatus(book);
@@ -199,7 +201,7 @@ public class EditBookTOCFragment extends BookAbstractFragment implements Handles
         //showHideFields(false);
 
         if (BuildConfig.DEBUG) {
-            Logger.info(this, "onLoadBookDetails done");
+            Logger.info(this, "onLoadFieldsFromBook done");
         }
     }
 
@@ -354,7 +356,7 @@ public class EditBookTOCFragment extends BookAbstractFragment implements Handles
     /**
      * The user approved, so add the TOC to the list on screen (still not saved to database)
      */
-    private void commitISFDBData(int tocBitMask, final  @NonNull List<TOCEntry> tocEntries) {
+    private void commitISFDBData(int tocBitMask, final @NonNull List<TOCEntry> tocEntries) {
         if (tocBitMask > 0) {
             getBook().putInt(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK,
                     tocBitMask | getBook().getInt(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK));
@@ -454,13 +456,13 @@ public class EditBookTOCFragment extends BookAbstractFragment implements Handles
 
     @Override
     @CallSuper
-    protected void onSaveBookDetails(final @NonNull Book book) {
-        super.onSaveBookDetails(book);
+    protected void onSaveFieldsToBook(final @NonNull Book book) {
+        super.onSaveFieldsToBook(book);
 
         saveState(book);
 
         if (BuildConfig.DEBUG) {
-            Logger.info(this, "onSaveBookDetails done");
+            Logger.info(this, "onSaveFieldsToBook done");
         }
     }
 

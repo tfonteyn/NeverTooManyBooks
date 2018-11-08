@@ -41,7 +41,7 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/year"
                 android:inputType="number"
-                android:minEms="3"
+                android:ems="4"
                 android:text="2000"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 tools:ignore="HardcodedText,Autofill" />

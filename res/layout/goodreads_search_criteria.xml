@@ -103,9 +103,9 @@
                 android:text="@string/search_criteria"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
+            <!-- no style used on purpose -->
             <EditText
                 android:id="@+id/search_text"
-                style="@style/simpleTextEntry"
                 android:inputType="textMultiLine"
                 android:layout_width="match_parent"
                 android:layout_height="0dip"

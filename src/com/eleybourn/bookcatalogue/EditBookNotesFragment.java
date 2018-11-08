@@ -104,8 +104,10 @@ public class EditBookNotesFragment extends BookAbstractFragment implements
     }
 
     /**
-     * has no specific Arguments or savedInstanceState as all is done via {@link #getBook()}
-     */
+     * has no specific Arguments or savedInstanceState as all is done via
+     * {@link #getBook()} on the hosting Activity
+     * {@link #onLoadFieldsFromBook(Book, boolean)} from base class onResume
+     * {@link #onSaveFieldsToBook(Book)} from base class onPause     */
     @Override
     @CallSuper
     public void onActivityCreated(final @Nullable Bundle savedInstanceState) {
@@ -130,10 +132,11 @@ public class EditBookNotesFragment extends BookAbstractFragment implements
         // non-text; simple checkbox
         mFields.add(R.id.read, UniqueId.KEY_BOOK_READ);
 
-
-        mFields.add(R.id.rating, UniqueId.KEY_BOOK_RATING);
-        mFields.add(R.id.notes, UniqueId.KEY_NOTES);
         mFields.add(R.id.signed, UniqueId.KEY_BOOK_SIGNED);
+        mFields.add(R.id.rating, UniqueId.KEY_BOOK_RATING);
+
+        mFields.add(R.id.notes, UniqueId.KEY_NOTES);
+        //ENHANCE?: initTextFieldEditor(R.id.notes, R.string.lbl_notes, R.id.btn_notes, true);
 
         mFields.add(R.id.price_paid, UniqueId.KEY_BOOK_PRICE_PAID);
         field = mFields.add(R.id.price_paid_currency, UniqueId.KEY_BOOK_PRICE_PAID_CURRENCY);
@@ -182,8 +185,8 @@ public class EditBookNotesFragment extends BookAbstractFragment implements
 
     @Override
     @CallSuper
-    protected void onLoadBookDetails(final @NonNull Book book, final boolean setAllFrom) {
-        super.onLoadBookDetails(book, setAllFrom);
+    protected void onLoadFieldsFromBook(final @NonNull Book book, final boolean setAllFrom) {
+        super.onLoadFieldsFromBook(book, setAllFrom);
 
         // populateFields: all done in super
 
@@ -191,7 +194,7 @@ public class EditBookNotesFragment extends BookAbstractFragment implements
         showHideFields(false);
 
         if (BuildConfig.DEBUG) {
-            Logger.info(this, "onLoadBookDetails done");
+            Logger.info(this, "onLoadFieldsFromBook done");
         }
     }
 
@@ -206,11 +209,11 @@ public class EditBookNotesFragment extends BookAbstractFragment implements
      * Overriding to get some debug
      */
     @Override
-    protected void onSaveBookDetails(final @NonNull Book book) {
-        super.onSaveBookDetails(book);
+    protected void onSaveFieldsToBook(final @NonNull Book book) {
+        super.onSaveFieldsToBook(book);
 
         if (BuildConfig.DEBUG) {
-            Logger.info(this, "onSaveBookDetails done");
+            Logger.info(this, "onSaveFieldsToBook done");
         }
     }
 

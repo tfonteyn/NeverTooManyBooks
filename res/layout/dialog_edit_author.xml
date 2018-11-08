@@ -12,8 +12,6 @@
     <AutoCompleteTextView
         android:id="@+id/family_name"
         style="@style/personalNameTextEntry"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:completionThreshold="2"
         android:hint="@string/not_set"
         tools:ignore="Autofill"/>
@@ -27,8 +25,6 @@
     <EditText
         android:id="@+id/given_names"
         style="@style/personalNameTextEntry"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:hint="@string/not_set"
         android:singleLine="true"
         tools:ignore="Autofill" />

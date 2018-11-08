@@ -888,9 +888,9 @@
 
     <!-- Explanatory note for export date (not yet implemented) -->
     <string name="export_advanced_date_blurb">Optionally specify a date to use in selecting books and/or covers to export:</string>
-
     <!-- Explanatory note for export date (not yet implemented) -->
     <string name="all_books_added_or_updated_since">All books added or updated since:</string>
+
     <!-- Explanatory note for export data since last backup -->
     <string name="all_books_added_or_updated_since_last_full_backup">All books added or updated since last full backup</string>
 

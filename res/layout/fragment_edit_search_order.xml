@@ -1,34 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/body"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="@dimen/padding_border_double"
-    android:orientation="vertical">
+    android:layout_alignParentBottom="true"
+    android:fillViewport="true"
+    android:paddingTop="@dimen/padding_border_double">
     <!-- paddingTop is there to stop the overspill from the TabLayout (bug?)-->
 
-    <ScrollView
-        android:id="@+id/body"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentBottom="true"
-        android:fillViewport="true">
-
-        <com.eleybourn.bookcatalogue.widgets.TouchListViewWithDropListener xmlns:tlv="http://schemas.android.com/apk/res/com.eleybourn.bookcatalogue"
-            android:id="@android:id/list"
-            style="@style/tlv_TouchListView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            tlv:grabber="@+id/grabber"
-            tlv:normal_height="64dip"
-            tlv:remove_mode="none" />
-    </ScrollView>
-
-    <TextView
-        android:id="@android:id/empty"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="16sp"
-        tools:text="container for site list"
-        android:textIsSelectable="false" />
-</RelativeLayout>
+    <com.eleybourn.bookcatalogue.widgets.TouchListViewWithDropListener xmlns:tlv="http://schemas.android.com/apk/res/com.eleybourn.bookcatalogue"
+        android:id="@android:id/list"
+        style="@style/tlv_TouchListView"
+        tlv:grabber="@+id/grabber"
+        tlv:normal_height="64dip"
+        tlv:remove_mode="none" />
+</ScrollView>

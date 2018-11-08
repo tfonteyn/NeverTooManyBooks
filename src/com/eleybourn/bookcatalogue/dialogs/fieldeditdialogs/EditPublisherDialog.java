@@ -29,7 +29,6 @@ import android.widget.EditText;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
-import com.eleybourn.bookcatalogue.dialogs.fieldeditdialogs.EditSeriesDialog;
 import com.eleybourn.bookcatalogue.entities.Publisher;
 
 /**
@@ -55,7 +54,7 @@ public class EditPublisherDialog {
         // Build the base dialog
         final View root = mContext.getLayoutInflater().inflate(R.layout.dialog_edit_publisher, null);
 
-        final EditText nameView = root.findViewById(R.id.name);
+        final EditText nameView = root.findViewById(R.id.series);
         //noinspection ConstantConditions
         nameView.setText(publisher.name);
 

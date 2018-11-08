@@ -1,11 +1,12 @@
 package com.eleybourn.bookcatalogue;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.app.ActionBar;
+import android.support.v7.widget.Toolbar;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -30,7 +31,6 @@ import com.eleybourn.bookcatalogue.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Objects;
 
 /**
  * Class for representing read-only book details.
@@ -53,7 +53,11 @@ public class BookDetailsFragment extends BookAbstractFragmentWithCoverImage {
     }
 
     /**
-     * has no specific Arguments or savedInstanceState as all is done via {@link #getBook()}
+     * has no specific Arguments or savedInstanceState as all is done via
+     * {@link #getBook()} on the hosting Activity
+     * {@link #onLoadFieldsFromBook(Book, boolean)} from base class onResume
+     * {@link #onSaveFieldsToBook(Book)} from base class onPause
+     *
      */
     @Override
     @CallSuper
@@ -81,10 +85,11 @@ public class BookDetailsFragment extends BookAbstractFragmentWithCoverImage {
         // ENHANCE: simplify the SQL and use a formatter instead.
         mFields.add(R.id.author, "", UniqueId.KEY_AUTHOR_FORMATTED);
 
-        mFields.add(R.id.name, UniqueId.KEY_SERIES_NAME);
+        mFields.add(R.id.series, UniqueId.KEY_SERIES_NAME);
         mFields.add(R.id.title, UniqueId.KEY_TITLE);
         mFields.add(R.id.isbn, UniqueId.KEY_BOOK_ISBN);
-        mFields.add(R.id.description, UniqueId.KEY_DESCRIPTION).setShowHtml(true);
+        mFields.add(R.id.description, UniqueId.KEY_DESCRIPTION)
+                .setShowHtml(true);
         mFields.add(R.id.genre, UniqueId.KEY_BOOK_GENRE);
         mFields.add(R.id.language, UniqueId.KEY_BOOK_LANGUAGE);
         mFields.add(R.id.pages, UniqueId.KEY_BOOK_PAGES);
@@ -95,7 +100,6 @@ public class BookDetailsFragment extends BookAbstractFragmentWithCoverImage {
 
         mFields.add(R.id.price_listed, UniqueId.KEY_BOOK_PRICE_LISTED)
                 .setFormatter(new Fields.PriceFormatter(getBook().getString(UniqueId.KEY_BOOK_PRICE_LISTED_CURRENCY)));
-
 
         // Personal fields
         mFields.add(R.id.bookshelves, UniqueId.KEY_BOOKSHELF_NAME)
@@ -129,8 +133,8 @@ public class BookDetailsFragment extends BookAbstractFragmentWithCoverImage {
 
     @Override
     @CallSuper
-    protected void onLoadBookDetails(final @NonNull Book book, final boolean setAllFrom) {
-        super.onLoadBookDetails(book, setAllFrom);
+    protected void onLoadFieldsFromBook(final @NonNull Book book, final boolean setAllFrom) {
+        super.onLoadFieldsFromBook(book, setAllFrom);
 
         populateAuthorListField(book);
         populateSeriesListField(book);
@@ -154,7 +158,7 @@ public class BookDetailsFragment extends BookAbstractFragmentWithCoverImage {
         showHideFields(true);
 
         if (BuildConfig.DEBUG) {
-            Logger.info(this, "onLoadBookDetails done");
+            Logger.info(this, "onLoadFieldsFromBook done");
         }
     }
 
@@ -181,7 +185,7 @@ public class BookDetailsFragment extends BookAbstractFragmentWithCoverImage {
     protected void populateSeriesListField(final @NonNull Book book) {
         ArrayList<Series> list = book.getSeriesList();
         int seriesCount = list.size();
-        boolean visible = seriesCount != 0 && mFields.getField(R.id.name).visible;
+        boolean visible = seriesCount != 0 && mFields.getField(R.id.series).visible;
         if (visible) {
             Series.pruneSeriesList(list);
             Utils.pruneList(mDb, list);
@@ -193,11 +197,11 @@ public class BookDetailsFragment extends BookAbstractFragmentWithCoverImage {
                 }
             }
 
-            mFields.getField(R.id.name).setValue(builder.toString());
+            mFields.getField(R.id.series).setValue(builder.toString());
         }
         //noinspection ConstantConditions
         getView().findViewById(R.id.lbl_series).setVisibility(visible ? View.VISIBLE : View.GONE);
-        getView().findViewById(R.id.name).setVisibility(visible ? View.VISIBLE : View.GONE);
+        getView().findViewById(R.id.series).setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
     /**
@@ -273,7 +277,7 @@ public class BookDetailsFragment extends BookAbstractFragmentWithCoverImage {
                     public void onCreateContextMenu(final @NonNull ContextMenu menu,
                                                     final @NonNull View v,
                                                     final @NonNull ContextMenu.ContextMenuInfo menuInfo) {
-                        menu.add(Menu.NONE, R.id.MENU_BOOK_EDIT_LOANS, 0, R.string.menu_edit_book_friends)
+                        menu.add(Menu.NONE, R.id.MENU_BOOK_LOAN_RETURNED, 0, R.string.loan_returned)
                                 .setIcon(R.drawable.ic_people);
                     }
                 });
@@ -346,12 +350,12 @@ public class BookDetailsFragment extends BookAbstractFragmentWithCoverImage {
     }
 
     @Override
-    protected void onSaveBookDetails(final @NonNull Book book) {
+    protected void onSaveFieldsToBook(final @NonNull Book book) {
         // don't call super, Don't save!
-        // and don't remove this method... or the super *would* try the save!
+        // and don't remove this method... or the super *would* do the save!
 
         if (BuildConfig.DEBUG) {
-            Logger.info(this, "onSaveBookDetails done");
+            Logger.info(this, "onSaveFieldsToBook done");
         }
     }
 
@@ -359,10 +363,10 @@ public class BookDetailsFragment extends BookAbstractFragmentWithCoverImage {
     @CallSuper
     public boolean onContextItemSelected(final @NonNull MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.MENU_BOOK_EDIT_LOANS:
-                //TOMF ENHANCE the 'loan' tab of EditBook needs to be replaced with using a initTextFieldEditor
-                EditBookActivity.startActivityForResult(requireActivity(), /* c6e741b0-7b43-403b-9907-5f8c7eeb3f37 */
-                        EditBookActivity.REQUEST_CODE, EditBookActivity.TAB_EDIT_LOANS);
+            case R.id.MENU_BOOK_LOAN_RETURNED:
+                long bookId = getBook().getBookId();
+                mDb.deleteLoan(bookId, false);
+                reload(bookId);
                 return true;
         }
         return super.onContextItemSelected(item);
@@ -405,20 +409,7 @@ public class BookDetailsFragment extends BookAbstractFragmentWithCoverImage {
     @Override
     public void onActivityResult(final int requestCode, final int resultCode, final @Nullable Intent data) {
         if (BuildConfig.DEBUG) {
-            Logger.info(this, "onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
-        }
-        switch (requestCode) {
-            case EditBookActivity.REQUEST_CODE: /* a54a7e79-88c3-4b48-89df-711bb28935c5, c6e741b0-7b43-403b-9907-5f8c7eeb3f37 */
-                if (resultCode == Activity.RESULT_OK) {
-                    Objects.requireNonNull(data);
-                    long bookId = data.getLongExtra(UniqueId.KEY_ID, 0);
-                    if (bookId > 0) {
-                        reload(bookId);
-                    } else {
-                        throw new IllegalStateException("bookId==0");
-                    }
-                }
-                return;
+            Logger.info(this, "onActivityResult passthrough: requestCode=" + requestCode + ", resultCode=" + resultCode);
         }
         super.onActivityResult(requestCode, resultCode, data);
     }

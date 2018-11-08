@@ -35,6 +35,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -85,9 +86,11 @@ import java.util.Objects;
 public abstract class BookAbstractFragment extends Fragment implements DataEditor {
 
     private final int MENU_GROUP_BOOK = 1;
-    private final int MENU_GROUP_BOOK_AMAZON_AUTHOR = 2;
-    private final int MENU_GROUP_BOOK_AMAZON_AUTHOR_IN_SERIES = 3;
-    private final int MENU_GROUP_BOOK_AMAZON_SERIES = 4;
+
+    private final int MENU_GROUP_SEARCH_AMAZON = 10;
+    private final int MENU_GROUP_BOOK_AMAZON_AUTHOR = 11;
+    private final int MENU_GROUP_BOOK_AMAZON_AUTHOR_IN_SERIES = 12;
+    private final int MENU_GROUP_BOOK_AMAZON_SERIES = 13;
 
     /** */
     protected Fields mFields;
@@ -201,6 +204,7 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
         mFields = new Fields(this);
     }
 
+    //<editor-fold desc="Field editors">
     /**
      * The 'drop-down' menu button next to an AutoCompleteTextView field.
      * Allows us to show a {@link SelectOneDialog#selectObjectDialog} with a list of strings
@@ -331,10 +335,10 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
             }
         });
     }
+    //</editor-fold>
 
+    //<editor-fold desc="standard menu handling">
     /**
-     * visibility false by default, see {@link #onPrepareOptionsMenu}
-     *
      * @see #setHasOptionsMenu
      * @see #onPrepareOptionsMenu
      * @see #onOptionsItemSelected
@@ -345,32 +349,21 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
                                     final @NonNull MenuInflater inflater) {
 
         menu.add(MENU_GROUP_BOOK, R.id.MENU_BOOK_DELETE, 0, R.string.menu_delete_book)
-                .setVisible(false)
                 .setIcon(R.drawable.ic_delete);
-
         menu.add(MENU_GROUP_BOOK, R.id.MENU_BOOK_DUPLICATE, 0, R.string.menu_duplicate_book)
-                .setVisible(false)
                 .setIcon(R.drawable.ic_content_copy);
-
         menu.add(MENU_GROUP_BOOK, R.id.MENU_BOOK_UPDATE_FROM_INTERNET, 0, R.string.internet_update_fields)
-                .setVisible(false)
                 .setIcon(R.drawable.ic_search);
-
         /* TODO: Consider allowing Tweets (or other sharing methods) to work on un-added books. */
         menu.add(MENU_GROUP_BOOK, R.id.MENU_SHARE, 0, R.string.menu_share_this)
-                .setVisible(false)
                 .setIcon(R.drawable.ic_share);
 
-
-        menu.add(MENU_GROUP_BOOK_AMAZON_AUTHOR, R.id.MENU_AMAZON_BOOKS_BY_AUTHOR, 0, R.string.menu_amazon_books_by_author)
-                .setVisible(false)
+        SubMenu searchMenu = menu.addSubMenu(MENU_GROUP_SEARCH_AMAZON,R.id.SUBMENU_AMAZON_SEARCH, 0,R.string.amazon);
+        searchMenu.add(MENU_GROUP_BOOK_AMAZON_AUTHOR, R.id.MENU_AMAZON_BOOKS_BY_AUTHOR, 0, R.string.menu_amazon_books_by_author)
                 .setIcon(R.drawable.ic_search);
-
-        menu.add(MENU_GROUP_BOOK_AMAZON_AUTHOR_IN_SERIES, R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES, 0, R.string.menu_amazon_books_by_author_in_series)
+        searchMenu.add(MENU_GROUP_BOOK_AMAZON_AUTHOR_IN_SERIES, R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES, 0, R.string.menu_amazon_books_by_author_in_series)
                 .setIcon(R.drawable.ic_search);
-
-        menu.add(MENU_GROUP_BOOK_AMAZON_SERIES, R.id.MENU_AMAZON_BOOKS_IN_SERIES, 0, R.string.menu_amazon_books_in_series)
-                .setVisible(false)
+        searchMenu.add(MENU_GROUP_BOOK_AMAZON_SERIES, R.id.MENU_AMAZON_BOOKS_IN_SERIES, 0, R.string.menu_amazon_books_in_series)
                 .setIcon(R.drawable.ic_search);
 
         super.onCreateOptionsMenu(menu, inflater);
@@ -393,9 +386,11 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
         boolean hasAuthor = getBook().getAuthorList().size() > 0;
         boolean hasSeries = getBook().getSeriesList().size() > 0;
 
-        menu.setGroupVisible(MENU_GROUP_BOOK_AMAZON_AUTHOR, hasAuthor);
-        menu.setGroupVisible(MENU_GROUP_BOOK_AMAZON_AUTHOR_IN_SERIES, hasAuthor && hasSeries);
-        menu.setGroupVisible(MENU_GROUP_BOOK_AMAZON_SERIES, hasSeries);
+        menu.setGroupVisible(MENU_GROUP_SEARCH_AMAZON, hasAuthor || hasSeries);
+        // now done as submenu, see onOptionsItemSelected
+//        menu.setGroupVisible(MENU_GROUP_BOOK_AMAZON_AUTHOR, hasAuthor);
+//        menu.setGroupVisible(MENU_GROUP_BOOK_AMAZON_AUTHOR_IN_SERIES, hasAuthor && hasSeries);
+//        menu.setGroupVisible(MENU_GROUP_BOOK_AMAZON_SERIES, hasSeries);
     }
 
     /**
@@ -412,7 +407,18 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
 
         switch (item.getItemId()) {
 
-            case R.id.MENU_BOOK_DELETE:
+            case R.id.SUBMENU_AMAZON_SEARCH: {
+                Menu menu = item.getSubMenu();
+                boolean hasAuthor = getBook().getAuthorList().size() > 0;
+                boolean hasSeries = getBook().getSeriesList().size() > 0;
+
+                menu.setGroupVisible(MENU_GROUP_BOOK_AMAZON_AUTHOR, hasAuthor);
+                menu.setGroupVisible(MENU_GROUP_BOOK_AMAZON_AUTHOR_IN_SERIES, hasAuthor && hasSeries);
+                menu.setGroupVisible(MENU_GROUP_BOOK_AMAZON_SERIES, hasSeries);
+                // let the normal call flow go on
+                break;
+            }
+            case R.id.MENU_BOOK_DELETE: {
                 BookUtils.deleteBook(mActivity, mDb, bookId,
                         // runs if user confirmed deletion.
                         new Runnable() {
@@ -423,73 +429,37 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
                             }
                         });
                 return true;
-
-            case R.id.MENU_BOOK_DUPLICATE:
+            }
+            case R.id.MENU_BOOK_DUPLICATE: {
                 Bundle bookData = BookUtils.duplicateBook(mDb, bookId);
                 Intent intent = new Intent(mActivity, EditBookActivity.class);
                 intent.putExtra(UniqueId.BKEY_BOOK_DATA, bookData);
                 mActivity.startActivityForResult(intent, EditBookActivity.REQUEST_CODE); /* result handled by hosting Activity */
                 return true;
-
-            case R.id.MENU_BOOK_UPDATE_FROM_INTERNET:
+            }
+            case R.id.MENU_BOOK_UPDATE_FROM_INTERNET: {
                 /* 98a6d1eb-4df5-4893-9aaf-fac0ce0fee01 */
                 updateFromInternet(getBook());
                 return true;
-
-
-            case R.id.MENU_SHARE:
+            }
+            case R.id.MENU_SHARE: {
                 BookUtils.shareBook(mActivity, mDb, bookId);
                 return true;
-
-
-            case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR:
+            }
+            case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR: {
                 AmazonUtils.openSearchPage(mActivity, getBook().getPrimaryAuthor(), null);
                 return true;
-
-            case R.id.MENU_AMAZON_BOOKS_IN_SERIES:
+            }
+            case R.id.MENU_AMAZON_BOOKS_IN_SERIES: {
                 AmazonUtils.openSearchPage(mActivity, null, getBook().getPrimarySeries());
                 return true;
-
-            case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES:
+            }
+            case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES: {
                 AmazonUtils.openSearchPage(mActivity, getBook().getPrimaryAuthor(), getBook().getPrimarySeries());
                 return true;
+            }
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    @CallSuper
-    public void onPause() {
-        Tracker.enterOnPause(this);
-        // This is now done in onPause() since the view may have been deleted when this is called
-        saveTo(getBook());
-        super.onPause();
-        Tracker.exitOnPause(this);
-    }
-
-    @Override
-    @CallSuper
-    public void onResume() {
-        super.onResume();
-
-        // load the book, while disabling the AfterFieldChangeListener
-        mFields.setAfterFieldChangeListener(null);
-        loadFrom(getBook());
-        mFields.setAfterFieldChangeListener(new AfterFieldChangeListener() {
-            @Override
-            public void afterFieldChange(@NonNull Field field, final @Nullable String newValue) {
-                setDirty(true);
-            }
-        });
-    }
-
-    @Override
-    @CallSuper
-    public void onDestroy() {
-        if (mDb != null) {
-            mDb.close();
-        }
-        super.onDestroy();
     }
 
     private void updateFromInternet(final @NonNull Book book) {
@@ -534,17 +504,55 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+    //</editor-fold>
+
+    @Override
+    @CallSuper
+    public void onResume() {
+        super.onResume();
+
+        // load the book, while disabling the AfterFieldChangeListener
+        mFields.setAfterFieldChangeListener(null);
+        loadFieldsFrom(getBook());
+        mFields.setAfterFieldChangeListener(new AfterFieldChangeListener() {
+            @Override
+            public void afterFieldChange(@NonNull Field field, final @Nullable String newValue) {
+                setDirty(true);
+            }
+        });
+    }
+
+    @Override
+    @CallSuper
+    public void onPause() {
+        Tracker.enterOnPause(this);
+        // This is now done in onPause() since the view may have been deleted when this is called
+        saveFieldsTo(getBook());
+        super.onPause();
+        Tracker.exitOnPause(this);
+    }
+
+    @Override
+    @CallSuper
+    public void onDestroy() {
+        if (mDb != null) {
+            mDb.close();
+        }
+        super.onDestroy();
+    }
+
+
     //<editor-fold desc="DataEditor interface">
 
     /**
-     * This is 'final' because we want inheritors to implement {@link #onLoadBookDetails}
+     * This is 'final' because we want inheritors to implement {@link #onLoadFieldsFromBook}
      *
      * Load the data while preserving the isDirty() status
      */
     @Override
-    public final <T extends DataManager> void loadFrom(final @NonNull T dataManager) {
+    public final <T extends DataManager> void loadFieldsFrom(final @NonNull T dataManager) {
         final boolean wasDirty = isDirty();
-        onLoadBookDetails((Book) dataManager, false);
+        onLoadFieldsFromBook((Book) dataManager, false);
         setDirty(wasDirty);
     }
 
@@ -560,21 +568,21 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
      * @param setAllFrom flag indicating {@link Fields#setAllFrom} has already been called or not
      */
     @CallSuper
-    protected void onLoadBookDetails(final @NonNull Book book, final boolean setAllFrom) {
+    protected void onLoadFieldsFromBook(final @NonNull Book book, final boolean setAllFrom) {
         if (!setAllFrom) {
             mFields.setAllFrom(book);
         }
         if (BuildConfig.DEBUG) {
-            Logger.info(this, "onLoadBookDetails done");
+            Logger.info(this, "onLoadFieldsFromBook done");
         }
     }
 
     /**
-     * This is 'final' because we want inheritors to implement {@link #onSaveBookDetails}
+     * This is 'final' because we want inheritors to implement {@link #onSaveFieldsToBook}
      */
     @Override
-    public final <T extends DataManager> void saveTo(final @NonNull T dataManager) {
-        onSaveBookDetails((Book) dataManager);
+    public final <T extends DataManager> void saveFieldsTo(final @NonNull T dataManager) {
+        onSaveFieldsToBook((Book) dataManager);
     }
 
     /**
@@ -583,10 +591,11 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
      *
      * Override as needed, calling super if needed
      */
-    protected void onSaveBookDetails(final @NonNull Book book) {
+    protected void onSaveFieldsToBook(final @NonNull Book book) {
         mFields.putAllInto(book);
+
         if (BuildConfig.DEBUG) {
-            Logger.info(this, "onSaveBookDetails done");
+            Logger.info(this, "onSaveFieldsToBook done");
         }
     }
     //</editor-fold>
@@ -613,7 +622,7 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
         // actual book
         showHideField(hideIfEmpty, R.id.coverImage, R.id.row_image);
         showHideField(hideIfEmpty, R.id.isbn, R.id.row_isbn, R.id.lbl_isbn);
-        showHideField(hideIfEmpty, R.id.description, R.id.lbl_description, R.id.description_divider);
+        showHideField(hideIfEmpty, R.id.description, R.id.lbl_description);
         showHideField(hideIfEmpty, R.id.publisher, R.id.row_publisher, R.id.lbl_publishing);
         showHideField(hideIfEmpty, R.id.date_published, R.id.row_date_published, R.id.lbl_publishing);
         showHideField(hideIfEmpty, R.id.first_publication, R.id.row_first_publication);
@@ -629,7 +638,7 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
 //        showHideField(hideIfEmpty, R.id.read, R.id.row_read, R.id.lbl_read);
 
         showHideField(hideIfEmpty, R.id.edition, R.id.row_edition, R.id.lbl_edition);
-        showHideField(hideIfEmpty, R.id.notes, R.id.row_notes, R.id.lbl_notes);
+        showHideField(hideIfEmpty, R.id.notes, R.id.row_notes);
         showHideField(hideIfEmpty, R.id.location, R.id.row_location, R.id.lbl_location);
         showHideField(hideIfEmpty, R.id.date_purchased, R.id.row_date_purchased);
         showHideField(hideIfEmpty, R.id.price_paid, R.id.row_price_paid, R.id.lbl_price_paid);

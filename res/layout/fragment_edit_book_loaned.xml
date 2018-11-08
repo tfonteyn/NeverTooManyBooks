@@ -7,25 +7,20 @@
 
     <TextView
         android:id="@+id/lbl_loan"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
+        style="@style/lbl_editField"
         android:paddingTop="@dimen/padding_border"
         android:text="@string/loaned_to" />
 
     <TextView
         android:id="@+id/loaned_to"
+        style="@style/txt_row_bookDetail"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/confirm"
         android:layout_alignParentBottom="false"
-        android:layout_alignParentStart="true"
         android:layout_alignStart="@+id/lbl_loan"
         android:layout_below="@id/lbl_loan"
         android:layout_toStartOf="@id/confirm"
         android:gravity="center_vertical"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textIsSelectable="true"
         tools:text="Some friend" />
 
     <Button

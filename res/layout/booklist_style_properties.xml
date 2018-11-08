@@ -10,13 +10,6 @@
         android:id="@+id/toolbar"
         style="@style/toolbar" />
 
-    <include
-        android:id="@+id/buttonbar_cancel_save"
-        layout="@layout/inc_buttonbar_cancel_save"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"/>
-
     <ScrollView
         android:id="@+id/scroll_view"
         android:layout_width="match_parent"
@@ -27,7 +20,7 @@
         <!--
              NOTE: This view (id=body) will be EMPTIED by the activity that uses this layout
 			 DON'T ADD ANYTHING TO IT
-			 It is OK to add stuff to the ScrollView, or anywhere else in this layout.
+			 It is OK to add stuff anywhere else in this layout.
         -->
         <LinearLayout
             android:id="@+id/body"
@@ -37,4 +30,10 @@
             android:orientation="vertical" />
     </ScrollView>
 
+    <include
+        android:id="@+id/buttonbar_cancel_save"
+        layout="@layout/inc_buttonbar_cancel_save"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"/>
 </RelativeLayout>

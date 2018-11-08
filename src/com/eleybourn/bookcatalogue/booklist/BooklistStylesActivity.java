@@ -246,7 +246,7 @@ public class BooklistStylesActivity extends EditObjectListActivity<BooklistStyle
             if (holder == null) {
                 holder = new Holder();
                 holder.preferred = target.findViewById(R.id.preferred);
-                holder.name = target.findViewById(R.id.name);
+                holder.name = target.findViewById(R.id.series);
                 holder.groups = target.findViewById(R.id.groups);
                 holder.kind = target.findViewById(R.id.kind);
                 // Tag relevant views

@@ -563,7 +563,7 @@ public class BooksOnBookshelf extends BaseListActivity implements
                 }
                 return;
 
-            case EditBookshelvesActivity.REQUEST_CODE: /* 41e84172-5833-4906-a891-8df302ecc190 */
+            case EditBookshelfListActivity.REQUEST_CODE: /* 41e84172-5833-4906-a891-8df302ecc190 */
                 if (resultCode == Activity.RESULT_OK) {
                     // bookshelves modified, update everything
                     initBookshelfSpinner();
@@ -918,7 +918,7 @@ public class BooksOnBookshelf extends BaseListActivity implements
      */
     private void initBookshelfSpinner() {
         mBookshelfSpinner = findViewById(R.id.bookshelf_name);
-        mBookshelfAdapter = new ArrayAdapter<>(this, R.layout.spinner_frontpage);
+        mBookshelfAdapter = new ArrayAdapter<>(this, R.layout.bookshelf_spinner);
         mBookshelfAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mBookshelfSpinner.setAdapter(mBookshelfAdapter);
 

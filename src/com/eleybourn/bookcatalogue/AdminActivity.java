@@ -29,6 +29,7 @@ import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -53,6 +54,7 @@ import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsUtils;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingAdminActivity;
 import com.eleybourn.bookcatalogue.tasks.ManagedTask;
 import com.eleybourn.bookcatalogue.tasks.TaskListActivity;
+import com.eleybourn.bookcatalogue.utils.GenericFileProvider;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 import java.io.File;
@@ -490,7 +492,9 @@ public class AdminActivity extends BaseActivityWithTasks {
 
                         ArrayList<Uri> uris = new ArrayList<>();
                         try {
-                            uris.add(Uri.fromFile(StorageUtils.getFile(CsvExporter.EXPORT_FILE_NAME)));
+                            Uri coverURI = FileProvider.getUriForFile(AdminActivity.this, GenericFileProvider.AUTHORITY,
+                                    StorageUtils.getFile(CsvExporter.EXPORT_FILE_NAME));
+                            uris.add(coverURI);
                             emailIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
                             startActivity(Intent.createChooser(emailIntent, getString(R.string.send_mail)));
                         } catch (NullPointerException e) {

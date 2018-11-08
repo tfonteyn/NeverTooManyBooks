@@ -16,11 +16,9 @@
             android:layout_width="match_parent"
             android:layout_height="0dip"
             android:layout_weight="1"
-            android:digits="0123456789Xx"
             android:hint="@string/isbn"
-            android:inputType="text|number"
+            android:inputType="text"
             android:padding="@dimen/padding_border_double"
-            android:textAppearance="?android:attr/textAppearanceLarge"
             tools:ignore="Autofill" />
     </LinearLayout>
 

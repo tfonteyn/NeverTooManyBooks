@@ -323,7 +323,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                         .setIcon(R.drawable.ic_note);
 
                 if (Fields.isVisible(UniqueId.KEY_LOAN_LOANED_TO)) {
-                    menu.add(Menu.NONE, R.id.MENU_BOOK_EDIT_LOANS, 0, R.string.menu_edit_book_friends)
+                    menu.add(Menu.NONE, R.id.MENU_BOOK_EDIT_LOAN, 0, R.string.menu_edit_book_friends)
                             .setIcon(R.drawable.ic_people);
                 }
 
@@ -466,7 +466,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                         cursorRow.getBookId(), EditBookActivity.TAB_EDIT_NOTES);
                 return true;
             }
-            case R.id.MENU_BOOK_EDIT_LOANS: {
+            case R.id.MENU_BOOK_EDIT_LOAN: {
                 EditBookActivity.startActivityForResult(activity, /* 0308715c-e1d2-4a7f-9ba3-cb8f641e096b */
                         cursorRow.getBookId(), EditBookActivity.TAB_EDIT_LOANS);
                 return true;
@@ -1172,7 +1172,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
         @Override
         public void map(final @NonNull BooklistCursorRow rowView, final @NonNull View v) {
             rowInfo = v.findViewById(R.id.BLB_ROW_DETAILS);
-            text = v.findViewById(R.id.name);
+            text = v.findViewById(R.id.series);
         }
 
         @Override
@@ -1225,7 +1225,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
         @Override
         public void map(final @NonNull BooklistCursorRow rowView, final @NonNull View view) {
             rowInfo = view.findViewById(R.id.BLB_ROW_DETAILS);
-            text = view.findViewById(R.id.name);
+            text = view.findViewById(R.id.series);
         }
 
         @Override
@@ -1290,7 +1290,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
         @Override
         public void map(final @NonNull BooklistCursorRow rowView, final @NonNull View view) {
             rowInfo = view.findViewById(R.id.BLB_ROW_DETAILS);
-            text = view.findViewById(R.id.name);
+            text = view.findViewById(R.id.series);
         }
 
         @Override

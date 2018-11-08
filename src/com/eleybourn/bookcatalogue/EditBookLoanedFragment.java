@@ -54,7 +54,7 @@ import java.util.ArrayList;
  *
  *  So this fragment does NOT participate in
  *      {@link #initFields()}
- *      {@link #onLoadBookDetails} and {@link #onSaveBookDetails}
+ *      {@link #onLoadFieldsFromBook} and {@link #onSaveFieldsToBook}
  */
 public class EditBookLoanedFragment extends BookAbstractFragment {
 
@@ -74,8 +74,10 @@ public class EditBookLoanedFragment extends BookAbstractFragment {
     }
 
     /**
-     * has no specific Arguments or savedInstanceState as all is done via {@link #getBook()}
-     */
+     * has no specific Arguments or savedInstanceState as all is done via
+     * {@link #getBook()} on the hosting Activity
+     * {@link #onLoadFieldsFromBook(Book, boolean)} from base class onResume
+     * {@link #onSaveFieldsToBook(Book)} from base class onPause     */
     @Override
     @CallSuper
     public void onActivityCreated(final @Nullable Bundle savedInstanceState) {

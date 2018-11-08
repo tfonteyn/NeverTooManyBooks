@@ -6,9 +6,7 @@
 
     <TextView
         android:id="@+id/lbl_loan"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
+        style="@style/lbl_editField"
         android:paddingTop="@dimen/padding_border"
         android:text="@string/loan_to" />
 
@@ -16,7 +14,6 @@
         android:id="@+id/loaned_to"
         style="@style/personalNameTextEntry"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
         android:layout_below="@id/lbl_loan"
         android:layout_toStartOf="@id/confirm"
         android:completionThreshold="2"

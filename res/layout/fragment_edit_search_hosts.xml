@@ -12,6 +12,7 @@
         android:layout_height="wrap_content"
         android:text="@string/amazon" />
 
+    <!-- no style used on purpose -->
     <EditText
         android:id="@+id/amazon_url"
         android:layout_width="match_parent"
@@ -25,6 +26,7 @@
         android:layout_height="wrap_content"
         android:text="@string/google_books" />
 
+    <!-- no style used on purpose -->
     <EditText
         android:id="@+id/google_url"
         android:layout_width="match_parent"
@@ -33,12 +35,14 @@
         android:inputType="textUri"
         tools:ignore="Autofill,HardcodedText" />
 
+    <!-- there is only one valid URL, so not showing this one. Keeping it for completeness sake -->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/url_ISFDB"
         android:visibility="gone" />
 
+    <!-- no style used on purpose -->
     <EditText
         android:id="@+id/isfdb_url"
         android:layout_width="match_parent"

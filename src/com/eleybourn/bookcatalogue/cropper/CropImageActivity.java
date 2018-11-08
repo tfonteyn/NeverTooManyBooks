@@ -57,7 +57,17 @@ import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 
 /**
- * TODO: remove face-detection, circular crop code from this and related classes.
+ *
+ * ENHANCE: maybe update the crop code ? The original was in Android itself but was deprecated long time ago.
+ *
+ * http://www.java2s.com/Open-Source/Android_Free_Code/Image/crop/index.htm
+ * https://github.com/biokys/cropimage
+ * that one seems to be newer; there are also non-committed pull requests. to be investigated perhaps.
+ *
+ * The external cropper also worked fine on my device.
+ *
+ * Another one which seems very active
+ * https://github.com/ArthurHub/Android-Image-Cropper
  *
  * The activity can crop specific region of interest from an image.
  */
@@ -279,7 +289,7 @@ public class CropImageActivity extends CropMonitoredActivity {
 
     @Override
     protected int getLayoutId() {
-        return R.layout.cropcropimage;
+        return R.layout.activity_cropimage;
     }
 
     @Override

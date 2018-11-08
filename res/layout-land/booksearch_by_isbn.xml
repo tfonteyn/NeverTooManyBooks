@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="@dimen/padding_border" >
+    android:padding="@dimen/padding_border">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -14,35 +14,24 @@
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
-            style="@style/toolbar"/>
+            style="@style/toolbar" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
+            <EditText
+                android:id="@+id/isbn"
+                style="@style/isbnEntryField"
+                android:hint="@string/isbn"
+                tools:ignore="Autofill" />
+
             <CheckBox
                 android:id="@+id/allow_asin"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/allow_asin"
-                android:visibility="gone"/>
-
-            <EditText
-                android:id="@+id/isbn"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/padding_border_double"
-                android:layout_marginEnd="@dimen/padding_border_double"
-                android:layout_weight="1"
-                android:digits="1234567890xX"
-                android:gravity="start"
-                android:hint="@string/isbn"
-                android:inputType="textCapCharacters|textNoSuggestions"
-                android:padding="@dimen/padding_border_double"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:windowSoftInputMode="stateAlwaysHidden"
-                tools:ignore="Autofill" />
+                android:text="@string/allow_asin" />
 
             <Button
                 android:id="@+id/search"
@@ -55,7 +44,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
-            android:orientation="horizontal" >
+            android:orientation="horizontal">
 
             <Button
                 android:id="@+id/isbn_1"
@@ -98,7 +87,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
-            android:orientation="horizontal" >
+            android:orientation="horizontal">
 
             <Button
                 android:id="@+id/isbn_7"

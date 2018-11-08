@@ -21,7 +21,7 @@ import com.eleybourn.bookcatalogue.AdminActivity;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.Donate;
-import com.eleybourn.bookcatalogue.EditBookshelvesActivity;
+import com.eleybourn.bookcatalogue.EditBookshelfListActivity;
 import com.eleybourn.bookcatalogue.Help;
 import com.eleybourn.bookcatalogue.PreferencesActivity;
 import com.eleybourn.bookcatalogue.R;
@@ -56,6 +56,10 @@ abstract public class BaseActivity extends AppCompatActivity
 
     public void setDirty(final boolean isDirty) {
         this.mIsDirty = isDirty;
+        // if we *are* dirty, then we certainly made changes.
+        if (isDirty) {
+            setChangesMade(true);
+        }
     }
 
     /** we're not (or no longer) dirty, but we did potentially make (local/global/preferences) changes */
@@ -103,6 +107,10 @@ abstract public class BaseActivity extends AppCompatActivity
 
         setNavigationView((NavigationView) findViewById(R.id.nav_view));
 
+        initToolbar();
+    }
+
+    private void initToolbar() {
         Toolbar toolbar = findViewById(R.id.toolbar);
         if (toolbar != null) {
             setSupportActionBar(toolbar);
@@ -155,8 +163,8 @@ abstract public class BaseActivity extends AppCompatActivity
                 onSearchRequested();
                 return true;
             case R.id.nav_manage_bookshelves:
-                intent = new Intent(this, EditBookshelvesActivity.class);
-                startActivityForResult(intent, EditBookshelvesActivity.REQUEST_CODE); /* 41e84172-5833-4906-a891-8df302ecc190 */
+                intent = new Intent(this, EditBookshelfListActivity.class);
+                startActivityForResult(intent, EditBookshelfListActivity.REQUEST_CODE); /* 41e84172-5833-4906-a891-8df302ecc190 */
                 break;
             case R.id.nav_booklist_prefs:
                 intent = new Intent(this, BooklistPreferencesActivity.class);

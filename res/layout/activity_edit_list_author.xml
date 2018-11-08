@@ -14,20 +14,15 @@
 
     <TextView
         android:id="@+id/title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        style="@style/txt_row_bookDetail"
         android:layout_below="@id/toolbar"
-        android:hint="@string/title"
-        android:textSize="16sp"
-        tools:text="Book Title"
-        android:textIsSelectable="true" />
+        tools:text="Book Title goes here"/>
 
     <LinearLayout
         android:id="@+id/top_buttons"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/title"
-        android:gravity="top"
         android:orientation="horizontal">
 
         <AutoCompleteTextView
@@ -59,8 +54,6 @@
         <com.eleybourn.bookcatalogue.widgets.TouchListViewWithDropListener xmlns:tlv="http://schemas.android.com/apk/res/com.eleybourn.bookcatalogue"
             android:id="@android:id/list"
             style="@style/tlv_TouchListView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             tlv:grabber="@+id/grabber"
             tlv:normal_height="64dip"
             tlv:remove_mode="none" />

@@ -128,6 +128,6 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
-        app:headerLayout="@layout/nav__panel_header"
-        app:menu="@menu/drawer_view" />
+        app:headerLayout="@layout/nav_panel_header"
+        app:menu="@menu/nav_panel" />
 </android.support.v4.widget.DrawerLayout>

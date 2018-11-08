@@ -61,8 +61,8 @@ import java.util.List;
  */
 public class EditBookFieldsFragment extends BookAbstractFragmentWithCoverImage implements
         CheckListEditorDialogFragment.OnCheckListEditorResultsListener,
-        TextFieldEditorDialogFragment.OnTextFieldEditorResultsListener,
-        PartialDatePickerDialogFragment.OnPartialDatePickerResultsListener {
+        PartialDatePickerDialogFragment.OnPartialDatePickerResultsListener,
+        TextFieldEditorDialogFragment.OnTextFieldEditorResultsListener {
 
     /** Lists in database so far, we cache them for performance */
     private List<String> mFormats;
@@ -86,16 +86,25 @@ public class EditBookFieldsFragment extends BookAbstractFragmentWithCoverImage i
     public void onAttach(final @NonNull Context context) {
         super.onAttach(context);
         if (!(context instanceof CheckListEditorDialogFragment.OnCheckListEditorResultsListener)) {
-            throw new RTE.MustImplementException(context, CheckListEditorDialogFragment.OnCheckListEditorResultsListener.class);
+            throw new RTE.MustImplementException(context,
+                    CheckListEditorDialogFragment.OnCheckListEditorResultsListener.class);
         }
         if (!(context instanceof PartialDatePickerDialogFragment.OnPartialDatePickerResultsListener)) {
-            throw new RTE.MustImplementException(context, PartialDatePickerDialogFragment.OnPartialDatePickerResultsListener.class);
+            throw new RTE.MustImplementException(context,
+                    PartialDatePickerDialogFragment.OnPartialDatePickerResultsListener.class);
         }
         if (!(context instanceof TextFieldEditorDialogFragment.OnTextFieldEditorResultsListener)) {
-            throw new RTE.MustImplementException(context, TextFieldEditorDialogFragment.OnTextFieldEditorResultsListener.class);
+            throw new RTE.MustImplementException(context,
+                    TextFieldEditorDialogFragment.OnTextFieldEditorResultsListener.class);
         }
     }
 
+    /**
+     * has no specific Arguments or savedInstanceState as all is done via
+     * {@link #getBook()} on the hosting Activity
+     * {@link #onLoadFieldsFromBook(Book, boolean)} from base class onResume
+     * {@link #onSaveFieldsToBook(Book)} from base class onPause
+     */
     @CallSuper
     @Override
     public void onActivityCreated(final @Nullable Bundle savedInstanceState) {
@@ -135,7 +144,7 @@ public class EditBookFieldsFragment extends BookAbstractFragmentWithCoverImage i
                     }
                 });
 
-        mFields.add(R.id.name, UniqueId.KEY_SERIES_NAME)
+        mFields.add(R.id.series, UniqueId.KEY_SERIES_NAME)
                 .getView().setOnClickListener(
                 new OnClickListener() {
                     @Override
@@ -152,7 +161,8 @@ public class EditBookFieldsFragment extends BookAbstractFragmentWithCoverImage i
         mFields.add(R.id.title, UniqueId.KEY_TITLE);
         mFields.add(R.id.isbn, UniqueId.KEY_BOOK_ISBN);
 
-        field = mFields.add(R.id.description, UniqueId.KEY_DESCRIPTION).setShowHtml(true);
+        field = mFields.add(R.id.description, UniqueId.KEY_DESCRIPTION)
+                .setShowHtml(true);
         initTextFieldEditor(field, R.string.lbl_description, R.id.btn_description, true);
 
         field = mFields.add(R.id.genre, UniqueId.KEY_BOOK_GENRE);
@@ -197,8 +207,8 @@ public class EditBookFieldsFragment extends BookAbstractFragmentWithCoverImage i
 
     @Override
     @CallSuper
-    protected void onLoadBookDetails(final @NonNull Book book, final boolean setAllFrom) {
-        super.onLoadBookDetails(book, setAllFrom);
+    protected void onLoadFieldsFromBook(final @NonNull Book book, final boolean setAllFrom) {
+        super.onLoadFieldsFromBook(book, setAllFrom);
 
         // new book ? load data fields from Extras
         if (book.getBookId() <= 0) {
@@ -217,7 +227,7 @@ public class EditBookFieldsFragment extends BookAbstractFragmentWithCoverImage i
         showHideFields(false);
 
         if (BuildConfig.DEBUG) {
-            Logger.info(this, "onLoadBookDetails done");
+            Logger.info(this, "onLoadFieldsFromBook done");
         }
     }
 
@@ -277,7 +287,7 @@ public class EditBookFieldsFragment extends BookAbstractFragmentWithCoverImage i
     }
 
     protected void populateSeriesListField(final @NonNull Book book) {
-        boolean visible = mFields.getField(R.id.name).visible;
+        boolean visible = mFields.getField(R.id.series).visible;
         if (visible) {
             ArrayList<Series> list = book.getSeriesList();
             int seriesCount = list.size();
@@ -291,11 +301,11 @@ public class EditBookFieldsFragment extends BookAbstractFragmentWithCoverImage i
             if (newText.isEmpty()) {
                 newText = getString(R.string.set_series);
             }
-            mFields.getField(R.id.name).setValue(newText);
+            mFields.getField(R.id.series).setValue(newText);
         }
         //noinspection ConstantConditions
         getView().findViewById(R.id.lbl_series).setVisibility(visible ? View.VISIBLE : View.GONE);
-        getView().findViewById(R.id.name).setVisibility(visible ? View.VISIBLE : View.GONE);
+        getView().findViewById(R.id.series).setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
 

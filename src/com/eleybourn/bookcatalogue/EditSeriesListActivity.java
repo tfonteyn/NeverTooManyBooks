@@ -77,7 +77,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
 
             mSeriesAdapter = new ArrayAdapter<>(this,
                     android.R.layout.simple_dropdown_item_1line, mDb.getAllSeries());
-            ((AutoCompleteTextView) this.findViewById(R.id.name)).setAdapter(mSeriesAdapter);
+            ((AutoCompleteTextView) this.findViewById(R.id.series)).setAdapter(mSeriesAdapter);
 
             getWindow().setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
@@ -88,7 +88,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
 
     @Override
     protected void onAdd(final @NonNull View target) {
-        AutoCompleteTextView seriesField = EditSeriesListActivity.this.findViewById(R.id.name);
+        AutoCompleteTextView seriesField = EditSeriesListActivity.this.findViewById(R.id.series);
         String seriesTitle = seriesField.getText().toString().trim();
 
         if (!seriesTitle.isEmpty()) {
@@ -116,7 +116,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
         // Build the base dialog
         final View root = EditSeriesListActivity.this.getLayoutInflater().inflate(R.layout.dialog_edit_book_series, null);
 
-        final AutoCompleteTextView seriesNameField = root.findViewById(R.id.name);
+        final AutoCompleteTextView seriesNameField = root.findViewById(R.id.series);
         //noinspection ConstantConditions
         seriesNameField.setText(series.name);
         seriesNameField.setAdapter(mSeriesAdapter);
@@ -230,7 +230,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
 
     @Override
     protected boolean onSave(final @NonNull Intent intent) {
-        final AutoCompleteTextView view = findViewById(R.id.name);
+        final AutoCompleteTextView view = findViewById(R.id.series);
         String s = view.getText().toString().trim();
         if (s.isEmpty()) {
             return true;

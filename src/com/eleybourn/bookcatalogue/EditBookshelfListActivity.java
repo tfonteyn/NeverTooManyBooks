@@ -52,7 +52,7 @@ import java.util.ArrayList;
  * refit with extends {@link EditObjectListActivity} ? => no point,
  * we don't want/need a {@link TouchListViewWithDropListener}
  */
-public class EditBookshelvesActivity extends BaseListActivity {
+public class EditBookshelfListActivity extends BaseListActivity {
 
     public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_EDIT_BOOKSHELF_LIST;
 

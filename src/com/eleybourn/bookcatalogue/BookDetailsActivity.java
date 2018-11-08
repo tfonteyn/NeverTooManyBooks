@@ -50,13 +50,12 @@ public class BookDetailsActivity extends BookBaseActivity {
 
     @Override
     protected int getLayoutId() {
-        return R.layout.activity_book_base;
+        return R.layout.activity_main;
     }
 
     @Override
     @CallSuper
     public void onCreate(final @Nullable Bundle savedInstanceState) {
-        Tracker.enterOnCreate(this);
         super.onCreate(savedInstanceState);
 
         mDb = new CatalogueDBAdapter(this)
@@ -72,12 +71,10 @@ public class BookDetailsActivity extends BookBaseActivity {
 
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.fragment, frag)
+                .replace(R.id.main_fragment, frag)
                 .commit();
 
         initBooklist(extras, savedInstanceState);
-
-        Tracker.exitOnCreate(this);
     }
 
     /**

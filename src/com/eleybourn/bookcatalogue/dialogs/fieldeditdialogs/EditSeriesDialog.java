@@ -59,7 +59,7 @@ public class EditSeriesDialog {
         // Build the base dialog
         final View root = mContext.getLayoutInflater().inflate(R.layout.dialog_edit_series, null);
 
-        final AutoCompleteTextView seriesView = root.findViewById(R.id.name);
+        final AutoCompleteTextView seriesView = root.findViewById(R.id.series);
         //noinspection ConstantConditions
         seriesView.setText(series.name);
         seriesView.setAdapter(mSeriesAdapter);

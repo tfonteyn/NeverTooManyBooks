@@ -556,34 +556,44 @@ public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFra
     }
 
     /**
-     * Experimental
+     * Worked for me...
      */
     private void cropCoverImageExternal(final @NonNull File thumbFile) {
         Tracker.handleEvent(this, "cropCoverImageExternal", Tracker.States.Enter);
         try {
+            File inputFile = new File(thumbFile.getAbsolutePath());
 
-            // this is actually not an official interface; theoretically this might not be there 'tomorrow'
-            // all extras are hardcoded strings on purpose
-            Intent intent = new Intent("com.android.camera.action.CROP");
-
-            // this will open any image file
-            intent.setDataAndType(Uri.fromFile(new File(thumbFile.getAbsolutePath())), "image/*");
-            intent.putExtra("crop", true);
-            intent.putExtra("scale", true);
-            intent.putExtra("noFaceDetection", true);
+            //call the standard crop action intent (the device may not support it)
+            Intent cropIntent = new Intent("com.android.camera.action.CROP");
+            // image Uri and type
+            cropIntent.setDataAndType(Uri.fromFile(inputFile), "image/*");
+            // not interested in faces
+            cropIntent.putExtra("noFaceDetection", true);
             // True to return a Bitmap, false to directly save the cropped image
-            intent.putExtra("return-data", false);
+            cropIntent.putExtra("return-data", false);
+            //indicate we want to crop
+            cropIntent.putExtra("crop", true);
+            // and allow scaling
+            cropIntent.putExtra("scale", true);
+
+            // other options not needed for now.
+//            //indicate aspect of desired crop
+//            cropIntent.putExtra("aspectX", 1);
+//            cropIntent.putExtra("aspectY", 1);
+//            //indicate output X and Y
+//            cropIntent.putExtra("outputX", 256);
+//            cropIntent.putExtra("outputY", 256);
 
             // Save output image in uri
             File cropped = this.getCroppedTempCoverFile();
             StorageUtils.deleteFile(cropped);
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(new File(cropped.getAbsolutePath())));
+            cropIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(new File(cropped.getAbsolutePath())));
 
-            List<ResolveInfo> list = requireActivity().getPackageManager().queryIntentActivities(intent, 0);
+            List<ResolveInfo> list = requireActivity().getPackageManager().queryIntentActivities(cropIntent, 0);
             if (list.size() == 0) {
                 StandardDialogs.showUserMessage(requireActivity(), R.string.error_no_external_crop_app);
             } else {
-                startActivityForResult(intent, UniqueId.ACTIVITY_REQUEST_CODE_EXTERNAL_CROP_IMAGE); /* 28ec93b0-24fb-4a81-ae6d-a282f3a7b918 */
+                startActivityForResult(cropIntent, UniqueId.ACTIVITY_REQUEST_CODE_EXTERNAL_CROP_IMAGE); /* 28ec93b0-24fb-4a81-ae6d-a282f3a7b918 */
             }
         } finally {
             Tracker.handleEvent(this, "cropCoverImageExternal", Tracker.States.Exit);

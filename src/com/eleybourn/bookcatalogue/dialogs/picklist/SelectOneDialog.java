@@ -229,9 +229,8 @@ public class SelectOneDialog {
         @Override
         @NonNull
         public View getView(final @NonNull LayoutInflater inflater) {
-            @SuppressLint("InflateParams") // root==null as it's a dialog
-                    View root = inflater.inflate(R.layout.row_simple_dialog_menu_item, null);
-            TextView line = root.findViewById(R.id.name);
+            @SuppressLint("InflateParams") View root = inflater.inflate(R.layout.row_simple_dialog_list_item, null);
+            TextView line = root.findViewById(R.id.series);
             line.setText(mMenuItem.getTitle());
             Drawable icon = mMenuItem.getIcon();
             Drawable subMenuPointer = null;
@@ -270,9 +269,8 @@ public class SelectOneDialog {
         @Override
         @NonNull
         public View getView(final @NonNull LayoutInflater inflater) {
-            @SuppressLint("InflateParams") // root==null as it's a dialog
-                    View root = inflater.inflate(R.layout.dialog_file_list_item, null);
-            TextView name = root.findViewById(R.id.name);
+            @SuppressLint("InflateParams") View root = inflater.inflate(R.layout.dialog_file_list_item, null);
+            TextView name = root.findViewById(R.id.series);
             name.setText(mFile.getName());
 
             // Set the path
@@ -313,9 +311,8 @@ public class SelectOneDialog {
         @Override
         @NonNull
         public View getView(final @NonNull LayoutInflater inflater) {
-            @SuppressLint("InflateParams") // root==null as it's a dialog
-                    View root = inflater.inflate(R.layout.row_simple_dialog_menu_item, null);
-            TextView name = root.findViewById(R.id.name);
+            @SuppressLint("InflateParams") View root = inflater.inflate(R.layout.row_simple_dialog_list_item, null);
+            TextView name = root.findViewById(R.id.series);
             name.setText(mObject.toString());
             return root;
         }

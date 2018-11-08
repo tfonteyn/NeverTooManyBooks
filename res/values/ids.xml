@@ -38,7 +38,8 @@
     <item name="MENU_BOOK_UPDATE_FROM_INTERNET" type="id"/>
     <item name="MENU_BOOK_EDIT" type="id"/>
     <item name="MENU_BOOK_EDIT_NOTES" type="id"/>
-    <item name="MENU_BOOK_EDIT_LOANS" type="id"/>
+    <item name="MENU_BOOK_EDIT_LOAN" type="id"/>
+    <item name="MENU_BOOK_LOAN_RETURNED" type="id"/>
     <item name="MENU_BOOK_SEND_TO_GOODREADS" type="id"/>
 
     <item name="MENU_AUTHOR_DETAILS" type="id"/>
@@ -68,30 +69,31 @@
     <item name="MENU_INSERT" type="id"/>
     <item name="MENU_EDIT" type="id"/>
     <item name="MENU_DELETE" type="id"/>
-    
+
+    <!-- standard Booklist options menu -->
     <item name="MENU_SORT" type="id"/>
     <item name="MENU_EXPAND" type="id"/>
     <item name="MENU_COLLAPSE" type="id"/>
-    
+
+    <!-- Amazon search options submenu -->
+    <item name="SUBMENU_AMAZON_SEARCH" type="id"/>
     <item name="MENU_AMAZON_BOOKS_IN_SERIES" type="id"/>
     <item name="MENU_AMAZON_BOOKS_BY_AUTHOR" type="id"/>
     <item name="MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES" type="id"/>
 
     <!-- Thumbnail context menu -->
     <item name="MENU_DELETE_THUMB" type="id"/>
-
     <item name="SUBMENU_REPLACE_THUMB" type="id"/>
     <item name="MENU_ADD_THUMB_FROM_CAMERA" type="id"/>
     <item name="MENU_ADD_THUMB_FROM_GALLERY" type="id"/>
     <item name="MENU_ADD_THUMB_ALT_EDITIONS" type="id"/>
-
     <item name="SUBMENU_ROTATE_THUMB" type="id"/>
     <item name="MENU_ROTATE_THUMB_CW" type="id"/>
     <item name="MENU_ROTATE_THUMB_CCW" type="id"/>
     <item name="MENU_ROTATE_THUMB_180" type="id"/>
-
     <item name="MENU_CROP_THUMB" type="id"/>
 
+    <!-- options menu: on-the-fly access to setting search order -->
     <item name="MENU_PREFS_SEARCH_SITES" type="id"/>
 
     <!-- END predefined menu items -->

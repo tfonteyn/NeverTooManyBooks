@@ -111,7 +111,7 @@ public class BackupFileDetails implements FileDetails {
     public void onGetView(final @NonNull View convertView, final @NonNull Context context) {
 
         // Set the basic data
-        TextView name = convertView.findViewById(R.id.name);
+        TextView name = convertView.findViewById(R.id.series);
         name.setText(mFile.getName());
         TextView date = convertView.findViewById(R.id.date);
         ImageView image = convertView.findViewById(R.id.icon);

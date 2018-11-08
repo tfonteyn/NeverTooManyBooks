@@ -22,16 +22,8 @@
             android:orientation="horizontal">
             <EditText
                 android:id="@+id/isbn"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:digits="1234567890xX"
-                android:gravity="start"
+                style="@style/isbnEntryField"
                 android:hint="@string/isbn"
-                android:windowSoftInputMode="stateAlwaysHidden"
-                android:inputType="textCapCharacters|textNoSuggestions"
-                android:padding="@dimen/padding_border_double"
-                android:textAppearance="?android:attr/textAppearanceLarge"
                 tools:ignore="Autofill" />
             <Button
                 android:id="@+id/search"
@@ -136,7 +128,6 @@
             <ImageButton
                 android:id="@+id/isbn_del"
                 style="@style/isbnSearchKey"
-                android:background="?android:selectableItemBackground"
                 app:srcCompat="@drawable/ic_backspace"
                 tools:ignore="ContentDescription" />
         </LinearLayout>
@@ -147,8 +138,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/padding_border_double"
             android:gravity="center|start"
-            android:text="@string/allow_asin"
-            android:visibility="gone"/>
+            android:text="@string/allow_asin"/>
 
     </LinearLayout>
 

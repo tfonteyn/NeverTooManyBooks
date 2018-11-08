@@ -28,6 +28,7 @@
                 android:labelFor="@id/criteria"
                 android:text="@string/search_criteria" />
 
+            <!-- no style used on purpose -->
             <EditText
                 android:id="@+id/criteria"
                 android:layout_width="match_parent"
@@ -43,6 +44,7 @@
                 android:labelFor="@id/author"
                 android:text="@string/author" />
 
+            <!-- no style used on purpose -->
             <EditText
                 android:id="@+id/author"
                 android:layout_width="match_parent"
@@ -58,6 +60,7 @@
                 android:labelFor="@id/title"
                 android:text="@string/title" />
 
+            <!-- no style used on purpose -->
             <EditText
                 android:id="@+id/title"
                 android:layout_width="match_parent"

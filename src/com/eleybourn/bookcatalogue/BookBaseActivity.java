@@ -32,7 +32,7 @@ public abstract class BookBaseActivity extends BaseActivity implements
     public void reload(final long bookId) {
         mBook = loadBook(bookId,null);
         DataEditor dataEditorFragment = (DataEditor) getSupportFragmentManager().findFragmentById(R.id.fragment);
-        dataEditorFragment.loadFrom(mBook);
+        dataEditorFragment.loadFieldsFrom(mBook);
     }
 
     /**

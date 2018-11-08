@@ -7,7 +7,6 @@
     android:layout_height="match_parent"
     android:fillViewport="true"
     android:focusableInTouchMode="true"
-    android:orientation="vertical"
     tools:ignore="DuplicateIds">
 
     <LinearLayout
@@ -78,12 +77,13 @@
                 android:labelFor="@+id/isbn"
                 android:text="@string/isbn" />
 
+            <!-- not using style isbnEntryField -->
             <EditText
                 android:id="@+id/isbn"
                 style="@style/simpleTextEntry"
                 android:layout_alignParentStart="false"
                 android:layout_toEndOf="@id/lbl_isbn"
-                android:inputType="text"
+                android:inputType="textCapCharacters|textNoSuggestions"
                 tools:ignore="Autofill" />
         </RelativeLayout>
 
@@ -105,7 +105,7 @@
                 android:text="@string/series" />
 
             <Button
-                android:id="@+id/name"
+                android:id="@+id/series"
                 style="@style/buttonDataEntry"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -212,12 +212,13 @@
                 android:labelFor="@id/pages"
                 android:text="@string/lbl_pages" />
 
+            <!-- input type text, so details like 'intro pages', 'appendix pages' etc can be used -->
             <EditText
                 android:id="@+id/pages"
                 style="@style/simpleTextEntry"
                 android:layout_below="@id/lbl_pages"
                 android:layout_centerVertical="true"
-                android:inputType="number"
+                android:inputType="text"
                 tools:text="999"
                 tools:ignore="Autofill" />
         </RelativeLayout>
@@ -235,33 +236,20 @@
 
             <EditText
                 android:id="@+id/price_listed"
-                style="@style/simpleTextEntry"
+                style="@style/priceTextEntry"
                 android:layout_width="wrap_content"
                 android:layout_below="@id/lbl_price_listed"
                 android:layout_toStartOf="@id/price_listed_currency"
-                android:layout_centerVertical="true"
-                android:inputType="numberDecimal"
                 tools:ignore="Autofill"
                 tools:text="14.99" />
 
             <AutoCompleteTextView
                 android:id="@+id/price_listed_currency"
-                style="@style/simpleTextEntry"
-                android:layout_width="wrap_content"
+                style="@style/currencyTextEntry"
                 android:layout_below="@id/lbl_price_listed"
-                android:layout_alignParentStart="false"
                 android:layout_toStartOf="@id/btn_price_listed_currency"
-                android:layout_centerVertical="true"
-                android:textAlignment="viewEnd"
                 android:hint="..."
-                android:inputType="text|textCapCharacters"
-                android:minEms="3"
-                android:paddingStart="@dimen/padding_border_double"
-                android:paddingEnd="@dimen/padding_border_double"
-                android:completionThreshold="1"
-                android:singleLine="true"
-                tools:ignore="Autofill,HardcodedText"
-                tools:text="" />
+                tools:ignore="Autofill,HardcodedText" />
 
             <ImageButton
                 android:id="@+id/btn_price_listed_currency"
@@ -284,7 +272,7 @@
 
             <AutoCompleteTextView
                 android:id="@+id/format"
-                style="@style/simpleTextEntry"
+                style="@style/bookFormatTextEntry"
                 android:layout_below="@id/lbl_format"
                 android:layout_centerVertical="true"
                 android:layout_toStartOf="@id/btn_format"

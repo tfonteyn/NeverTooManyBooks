@@ -11,13 +11,16 @@ import android.content.pm.Signature;
 import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.v4.content.FileProvider;
 
+import com.eleybourn.bookcatalogue.AdminActivity;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.scanner.Pic2ShopScanner;
 import com.eleybourn.bookcatalogue.scanner.ScannerManager;
 import com.eleybourn.bookcatalogue.scanner.ZxingScanner;
+import com.eleybourn.bookcatalogue.utils.GenericFileProvider;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 import java.io.File;
@@ -189,7 +192,7 @@ public class DebugReport {
             for (String file : files) {
                 File fileIn = StorageUtils.getFile(file);
                 if (fileIn.exists() && fileIn.length() > 0) {
-                    Uri u = Uri.fromFile(fileIn);
+                    Uri u = FileProvider.getUriForFile(activity, GenericFileProvider.AUTHORITY, fileIn);
                     uris.add(u);
                 }
             }

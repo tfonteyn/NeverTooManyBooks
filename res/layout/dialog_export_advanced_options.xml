@@ -174,14 +174,6 @@
         android:visibility="gone"
         tools:visibility="visible">
 
-        <Button
-            android:id="@+id/date_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:text="&#8230;"
-            tools:ignore="HardcodedText" />
-
         <EditText
             android:id="@+id/txtDate"
             android:layout_width="match_parent"
@@ -192,6 +184,14 @@
             android:ems="10"
             android:inputType="date"
             tools:ignore="LabelFor,Autofill" />
+
+        <Button
+            android:id="@+id/date_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:text="&#8230;"
+            tools:ignore="HardcodedText" />
 
     </RelativeLayout>
 

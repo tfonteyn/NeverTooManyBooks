@@ -261,7 +261,7 @@ public class BooklistStylePropertiesActivity extends BaseActivity {
             ViewTagger.setTag(root, R.id.TAG_PROPERTY, this); // value: GroupsProperty
 
             // Set the initial values
-            final TextView name = root.findViewById(R.id.name);
+            final TextView name = root.findViewById(R.id.series);
             name.setText(getName());
 
             final TextView value = root.findViewById(R.id.value);

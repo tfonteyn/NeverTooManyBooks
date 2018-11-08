@@ -99,7 +99,7 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
         }
 
         // Set the initial values
-        TextView text = root.findViewById(R.id.name);
+        TextView text = root.findViewById(R.id.series);
         text.setText(getName());
         setValueInView(root, currentlyStored);
 

@@ -25,7 +25,9 @@
 			    android:textAppearance="?android:attr/textAppearanceSmall"
 			    android:text="@string/author"
 		  		/>
-			<EditText android:id="@+id/author" 
+			<EditText
+			    android:id="@+id/author"
+			    style="@style/personalNameTextEntry"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content" 
 				android:layout_weight="1"
@@ -46,7 +48,9 @@
 			    android:textAppearance="?android:attr/textAppearanceSmall"
 			    android:text="@string/title"
 		  		/>
-			<EditText android:id="@+id/title" 
+			<EditText
+			    android:id="@+id/title"
+			    style="@style/titleTextEntry"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content" 
 				android:layout_weight="1"
@@ -67,7 +71,9 @@
 			    android:textAppearance="?android:attr/textAppearanceSmall"
 			    android:text="@string/isbn"
 		  		/>
-			<EditText android:id="@+id/isbn" 
+			<EditText
+			    android:id="@+id/isbn"
+			    style="@style/simpleTextEntry"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content" 
 				android:layout_weight="1"

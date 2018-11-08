@@ -17,7 +17,7 @@
         tools:ignore="UselessParent">
 
         <TextView
-            android:id="@+id/name"
+            android:id="@+id/series"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingEnd="2dp"

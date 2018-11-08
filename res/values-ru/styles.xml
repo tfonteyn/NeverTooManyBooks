@@ -1,32 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <style name="simpleTextEntry" parent="@style/base_editorField">
-        <!-- empty -->
-    </style>
+    <!-- base style for all *LOCALISED* EditFields; not to be used directly in layouts -->
+    <style name="base_localeBasedTextEntry" parent="@style/base_editorField" />
 
-    <style name="buttonDataEntry" parent="@style/base_editorField">
-        <!-- empty -->
-    </style>
+    <!-- translators: customize this style as per locale requirements -->
+    <style name="simpleTextEntry" parent="@style/base_localeTextEntry" />
 
-    <style name="base_localeBasedTextEntry" parent="@style/simpleTextEntry">
-        <!-- empty -->
-    </style>
-
-    <style name="languageTextEntry" parent="@style/base_localeBasedTextEntry">
+    <!-- Fields for 'human' names. e.g. Author, Publisher, ... -->
+    <style name="personalNameTextEntry" parent="@style/base_localeTextEntry">
         <item name="android:inputType">textCapWords</item>
     </style>
 
-    <style name="personalNameTextEntry" parent="@style/base_localeBasedTextEntry">
+    <!-- Titles of Books, Series, Bookshelf, TOCEntries (Anthology titles) , ... -->
+    <style name="titleTextEntry" parent="@style/base_localeTextEntry" />
+
+    <!-- The language field. -->
+    <style name="languageTextEntry" parent="@style/base_localeTextEntry">
         <item name="android:inputType">textCapWords</item>
     </style>
 
-    <style name="titleTextEntry" parent="@style/base_localeBasedTextEntry">
-        <item name="android:inputType">text</item>
+    <!-- The price (listed, paid, ... ) fields. -->
+    <style name="priceTextEntry" parent="@style/base_localeTextEntry">
+        <item name="android:inputType">numberDecimal</item>
     </style>
 
-    <style name="bookFormatTextEntry" parent="@style/base_localeBasedTextEntry">
-        <item name="android:inputType">text</item>
-    </style>
+    <!-- The book format field. -->
+    <style name="bookFormatTextEntry" parent="@style/base_localeTextEntry" />
 </resources>
 

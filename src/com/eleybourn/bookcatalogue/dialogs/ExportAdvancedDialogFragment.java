@@ -12,6 +12,7 @@ import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Checkable;
+import android.widget.EditText;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
@@ -72,26 +73,26 @@ public class ExportAdvancedDialogFragment extends DialogFragment {
         mCallerId = args.getInt(UniqueId.BKEY_CALLER_ID);
         mFile = new File(Objects.requireNonNull(args.getString(UniqueId.BKEY_FILE_SPEC)));
 
-        View v = requireActivity().getLayoutInflater().inflate(R.layout.dialog_export_advanced_options, null);
+        View root = requireActivity().getLayoutInflater().inflate(R.layout.dialog_export_advanced_options, null);
 
-        v.findViewById(R.id.confirm).setOnClickListener(new OnClickListener() {
+        root.findViewById(R.id.confirm).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 confirm();
             }
         });
-        v.findViewById(R.id.cancel).setOnClickListener(new OnClickListener() {
+        root.findViewById(R.id.cancel).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 dismiss();
             }
         });
 
-        setRelatedView(v, R.id.books_check, R.id.row_all_books);
-        setRelatedView(v, R.id.covers_check, R.id.row_covers);
+        setRelatedView(root, R.id.books_check, R.id.row_all_books);
+        setRelatedView(root, R.id.covers_check, R.id.row_covers);
 
         AlertDialog dialog = new AlertDialog.Builder(requireActivity())
-                .setView(v)
+                .setView(root)
                 .setTitle(R.string.advanced_options)
                 .setIcon(R.drawable.ic_help_outline)
                 .create();
@@ -152,14 +153,18 @@ public class ExportAdvancedDialogFragment extends DialogFragment {
             settings.options |= Exporter.EXPORT_PREFERENCES | Exporter.EXPORT_STYLES;
         }
 
-        if (((Checkable) dialog.findViewById(R.id.radioSinceLast)).isChecked()) {
+        Checkable radioSinceLast = dialog.findViewById(R.id.radioSinceLast);
+        Checkable radioSinceDate = dialog.findViewById(R.id.radioSinceDate);
+
+        if (radioSinceLast.isChecked()) {
             settings.options |= Exporter.EXPORT_SINCE;
             settings.dateFrom = null;
-        } else if (((Checkable) dialog.findViewById(R.id.radioSinceDate)).isChecked()) {
-            View v = dialog.findViewById(R.id.txtDate);
+
+        } else if (radioSinceDate.isChecked()) {
+            EditText v = dialog.findViewById(R.id.txtDate);
             try {
                 settings.options |= Exporter.EXPORT_SINCE;
-                settings.dateFrom = DateUtils.parseDate(v.toString());
+                settings.dateFrom = DateUtils.parseDate(v.getText().toString().trim());
             } catch (Exception e) {
                 //Snackbar.make(v, R.string.no_date, Snackbar.LENGTH_LONG).show();
                 StandardDialogs.showUserMessage(requireActivity(), R.string.no_date);
