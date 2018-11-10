@@ -321,13 +321,30 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
         // do nothing
     }
 
+    /**
+     * @return <tt>true</tt>if delete is allowed to happen
+     */
     public boolean onRowDelete(@NonNull final View target, @NonNull final T item, final int position) {
-        return false;
+        return true;
     }
 
+    /**
+     * Called when an otherwise inactive part of the row is clicked.
+     *
+     * @param target The view clicked
+     * @param item   The object associated with this row
+     */
     public void onRowClick(@NonNull final View target, @NonNull final T item, final int position) {
     }
 
+    /**
+     * Called when an otherwise inactive part of the row is long clicked.
+     *
+     * @param target The view clicked
+     * @param item   The object associated with this row
+     *
+     * @return <tt>true</tt>if handled
+     */
     public boolean onRowLongClick(@NonNull final View target, @NonNull final T item, final int position) {
         return false;
     }

@@ -1263,7 +1263,7 @@ public class BooklistBuilder implements AutoCloseable {
                 summary.addDomain(DOM_LOANED_TO,
                         "Case" +
                                 " When " + TBL_LOAN.dot(DOM_LOANED_TO) + " is null" +
-                                "  Then '" + BookCatalogueApp.getResourceString(R.string.available) + "'" +
+                                "  Then '" + BookCatalogueApp.getResourceString(R.string.loan_book_available) + "'" +
                                 "  Else '" + BookCatalogueApp.getResourceString(R.string.loaned_to_2) + "' || " + TBL_LOAN.dot(DOM_LOANED_TO) +
                                 " End",
                         SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);

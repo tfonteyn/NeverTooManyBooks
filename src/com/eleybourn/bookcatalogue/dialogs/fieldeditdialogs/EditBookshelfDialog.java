@@ -72,7 +72,7 @@ public class EditBookshelfDialog {
             public void onClick(View v) {
                 String newName = nameView.getText().toString().trim();
                 if (newName.isEmpty()) {
-                    StandardDialogs.showUserMessage(mContext, R.string.name_can_not_be_blank);
+                    StandardDialogs.showUserMessage(mContext, R.string.warning_required_name);
                     return;
                 }
                 Bookshelf newBookshelf = new Bookshelf(newName);

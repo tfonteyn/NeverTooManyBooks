@@ -66,7 +66,7 @@ public class EditSeriesDialog {
 
         final AlertDialog dialog = new AlertDialog.Builder(mContext)
                 .setView(root)
-                .setTitle(R.string.dialog_title_edit_series)
+                .setTitle(R.string.title_edit_series)
                 .create();
 
         //noinspection ConstantConditions
@@ -75,7 +75,7 @@ public class EditSeriesDialog {
             public void onClick(View v) {
                 String newName = seriesView.getText().toString().trim();
                 if (newName.isEmpty()) {
-                    StandardDialogs.showUserMessage(mContext, R.string.warning_blank_series);
+                    StandardDialogs.showUserMessage(mContext, R.string.warning_required_series);
                     return;
                 }
                 confirmEdit(series, new Series(newName, ""));

@@ -1,17 +1,19 @@
 package com.eleybourn.bookcatalogue;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.app.ActionBar;
-import android.support.v7.widget.Toolbar;
 import android.view.ContextMenu;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -19,10 +21,13 @@ import android.widget.CheckedTextView;
 import android.widget.ListView;
 
 import com.eleybourn.bookcatalogue.Fields.Field;
+import com.eleybourn.bookcatalogue.baseactivity.CanBeDirty;
+import com.eleybourn.bookcatalogue.booklist.FlattenedBooklist;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Book;
+import com.eleybourn.bookcatalogue.entities.BookManager;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.entities.TOCEntry;
 import com.eleybourn.bookcatalogue.utils.BookUtils;
@@ -32,18 +37,69 @@ import com.eleybourn.bookcatalogue.utils.Utils;
 import java.util.ArrayList;
 import java.util.Date;
 
+import static android.view.GestureDetector.SimpleOnGestureListener;
+
 /**
  * Class for representing read-only book details.
- *
- * * ok, so why an Adapter and not handle this just like Series is currently handled....
- * *
- * * TODO the idea is to have a new Activity: {@link TOCEntry} -> books containing the story
- * * There is not much point in doing this in the Builder. The amount of entries is expected to be small.
- * * Main audience: the collector who wants *everything* of a certain author.
- *
- * @author n.silin
  */
-public class BookDetailsFragment extends BookAbstractFragmentWithCoverImage {
+public class BookFragment extends BookAbstractFragmentWithCoverImage implements BookManager {
+
+    public static final String TAG = "BookFragment";
+
+    public static final String REQUEST_BKEY_FLATTENED_BOOKLIST_POSITION = "FBLP";
+    public static final String REQUEST_BKEY_FLATTENED_BOOKLIST = "FBL";
+    private Book mBook;
+    @Nullable
+    private FlattenedBooklist mFlattenedBooklist = null;
+    @Nullable
+    private GestureDetector mGestureDetector;
+
+    /* ------------------------------------------------------------------------------------------ */
+
+    //<editor-fold desc="BookManager interface">
+    @NonNull
+    public BookManager getBookManager() {
+        return this;
+    }
+
+    @Override
+    @NonNull
+    public Book getBook() {
+        return mBook;
+    }
+
+    @Override
+    public void setBook(final @NonNull Book book) {
+        mBook = book;
+    }
+
+    public boolean isDirty() {
+        return ((CanBeDirty) requireActivity()).isDirty();
+    }
+
+    public void setDirty(final boolean isDirty) {
+        ((CanBeDirty) requireActivity()).setDirty(isDirty);
+    }
+
+    //</editor-fold>
+
+    /* ------------------------------------------------------------------------------------------ */
+
+    //<editor-fold desc="Fragment startup">
+
+//    /**
+//     * Ensure activity supports interface
+//     */
+//    @Override
+//    @CallSuper
+//    public void onAttach(final @NonNull Context context) {
+//        super.onAttach(context);
+//    }
+
+//    @Override
+//    public void onCreate(@Nullable final Bundle savedInstanceState) {
+//        super.onCreate(savedInstanceState);
+//    }
 
     @Override
     public View onCreateView(final @NonNull LayoutInflater inflater,
@@ -54,15 +110,16 @@ public class BookDetailsFragment extends BookAbstractFragmentWithCoverImage {
 
     /**
      * has no specific Arguments or savedInstanceState as all is done via
-     * {@link #getBook()} on the hosting Activity
+     * {@link BookManager#getBook()}
      * {@link #onLoadFieldsFromBook(Book, boolean)} from base class onResume
      * {@link #onSaveFieldsToBook(Book)} from base class onPause
-     *
      */
     @Override
     @CallSuper
     public void onActivityCreated(final @Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        initBooklist(getArguments(), savedInstanceState);
 
         // override parent as our Activity determines the 'right' dividing coefficient
         initThumbSize(requireActivity());
@@ -131,6 +188,26 @@ public class BookDetailsFragment extends BookAbstractFragmentWithCoverImage {
                 .setDoNotFetch(true);
     }
 
+    /**
+     * returning here from somewhere else (e.g. from editing the book) and have an ID...reload!
+     */
+    @CallSuper
+    @Override
+    public void onResume() {
+        long bookId = getBook().getBookId();
+        if (bookId != 0) {
+            getBook().reload(bookId);
+        }
+        // this will kick of the process that triggers onLoadFieldsFromBook
+        super.onResume();
+    }
+
+    /**
+     * At this point we're told to load our local (to the fragment) fields from the Book.
+     *
+     * @param book       to load from
+     * @param setAllFrom flag indicating {@link Fields#setAllFrom} has already been called or not
+     */
     @Override
     @CallSuper
     protected void onLoadFieldsFromBook(final @NonNull Book book, final boolean setAllFrom) {
@@ -162,13 +239,127 @@ public class BookDetailsFragment extends BookAbstractFragmentWithCoverImage {
         }
     }
 
+    //</editor-fold>
+
+    /* ------------------------------------------------------------------------------------------ */
+
+    //<editor-fold desc="Init the flat booklist & fling handler">
+
+    /**
+     * If we are passed a flat book list, get it and validate it
+     */
+    private void initBooklist(final @Nullable Bundle args,
+                              final @Nullable Bundle savedInstanceState) {
+        if (args == null) {
+            return;
+        }
+
+        String list = args.getString(REQUEST_BKEY_FLATTENED_BOOKLIST);
+        if (list == null || list.isEmpty()) {
+            return;
+        }
+
+        // looks like we have a list, but...
+        mFlattenedBooklist = new FlattenedBooklist(mDb, list);
+        // Check to see it really exists. The underlying table disappeared once in testing
+        // which is hard to explain; it theoretically should only happen if the app closes
+        // the database or if the activity pauses with 'isFinishing()' returning true.
+        if (!mFlattenedBooklist.exists()) {
+            mFlattenedBooklist.close();
+            mFlattenedBooklist = null;
+            return;
+        }
+
+        // ok, we absolutely have a list, get the position we need to be on.
+        int pos;
+        if (savedInstanceState != null && savedInstanceState.containsKey(REQUEST_BKEY_FLATTENED_BOOKLIST_POSITION)) {
+            pos = savedInstanceState.getInt(REQUEST_BKEY_FLATTENED_BOOKLIST_POSITION);
+        } else if (args.containsKey(REQUEST_BKEY_FLATTENED_BOOKLIST_POSITION)) {
+            pos = args.getInt(REQUEST_BKEY_FLATTENED_BOOKLIST_POSITION);
+        } else {
+            pos = 0;
+        }
+        mFlattenedBooklist.moveTo(pos);
+        // the book might have moved around. So see if we can find it.
+        while (mFlattenedBooklist.getBookId() != getBook().getBookId()) {
+            if (!mFlattenedBooklist.moveNext()) {
+                break;
+            }
+        }
+
+        if (mFlattenedBooklist.getBookId() != getBook().getBookId()) {
+            // book not found ? eh? give up...
+            mFlattenedBooklist.close();
+            mFlattenedBooklist = null;
+            return;
+        }
+
+        // finally, enable the listener for flings
+        initGestureDetector();
+    }
+
+    /**
+     * Listener to handle 'fling' events; we could handle others but need to be
+     * careful about possible clicks and scrolling.
+     */
+    private void initGestureDetector() {
+        mGestureDetector = new GestureDetector(this.getContext(), new SimpleOnGestureListener() {
+            @Override
+            public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+                if (mFlattenedBooklist == null) {
+                    return false;
+                }
+
+                // Make sure we have considerably more X-velocity than Y-velocity;
+                // otherwise it might be a scroll.
+                if (Math.abs(velocityX / velocityY) > 2) {
+                    boolean moved;
+                    // Work out which way to move, and do it.
+                    if (velocityX > 0) {
+                        moved = mFlattenedBooklist.movePrev();
+                    } else {
+                        moved = mFlattenedBooklist.moveNext();
+                    }
+
+                    if (moved) {
+                        long bookId = mFlattenedBooklist.getBookId();
+                        // only reload if it's a new book
+                        if (bookId != getBook().getBookId()) {
+                            getBook().reload(bookId);
+                        }
+                    }
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        });
+
+        //noinspection ConstantConditions
+        getView().setOnTouchListener(new View.OnTouchListener() {
+
+            @SuppressLint("ClickableViewAccessibility")
+            @Override
+            public boolean onTouch(final @NonNull View v, final @NonNull MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    return mGestureDetector != null && mGestureDetector.onTouchEvent(event);
+                } else {
+                    return false;
+                }
+            }
+        });
+    }
+    //</editor-fold>
+
+    //<editor-fold desc="Populate">
+
     private void populateAuthorListField(final @NonNull Book book) {
         ArrayList<Author> authors = book.getAuthorList();
         int authorsCount = authors.size();
         boolean visible = authorsCount != 0;
         if (visible) {
             StringBuilder builder = new StringBuilder();
-            builder.append(getString(R.string.book_details_readonly_by));
+            builder.append(getString(R.string.lbl_by_author));
             builder.append(" ");
             for (int i = 0; i < authorsCount; i++) {
                 builder.append(authors.get(i).getDisplayName());
@@ -212,7 +403,7 @@ public class BookDetailsFragment extends BookAbstractFragmentWithCoverImage {
         String pages = book.getString(UniqueId.KEY_BOOK_PAGES);
         boolean hasPages = !pages.isEmpty();
         if (hasPages) {
-            pages = getString(R.string.book_details_readonly_pages, pages);
+            pages = getString(R.string.lbl_x_pages, pages);
         }
         pagesField.setValue(pages);
 
@@ -264,7 +455,7 @@ public class BookDetailsFragment extends BookAbstractFragmentWithCoverImage {
      */
     private void populateLoanedToField(final long bookId) {
         String personLoanedTo = mDb.getLoanByBookId(bookId);
-        personLoanedTo = (personLoanedTo == null ? "" : getString(R.string.book_details_readonly_loaned_to, personLoanedTo));
+        personLoanedTo = (personLoanedTo == null ? "" : getString(R.string.loan_book_details_readonly_loaned_to, personLoanedTo));
         mFields.getField(R.id.loaned_to).setValue(personLoanedTo);
 
         mFields.getField(R.id.loaned_to).getView()
@@ -348,7 +539,37 @@ public class BookDetailsFragment extends BookAbstractFragmentWithCoverImage {
         //noinspection ConstantConditions
         getView().findViewById(R.id.row_toc).setVisibility(visible ? View.VISIBLE : View.GONE);
     }
+    //</editor-fold>
 
+    /* ------------------------------------------------------------------------------------------ */
+
+    //<editor-fold desc="Fragment shutdown">
+
+    /**
+     * Close the list object (frees statements) and if we are finishing, delete the temp table.
+     *
+     * This is an ESSENTIAL step; for some reason, in Android 2.1 if these statements are not
+     * cleaned up, then the underlying SQLiteDatabase gets double-dereference'd, resulting in
+     * the database being closed by the deeply dodgy auto-close code in Android.
+     */
+    @Override
+    @CallSuper
+    public void onPause() {
+        if (mFlattenedBooklist != null) {
+            mFlattenedBooklist.close();
+            if (requireActivity().isFinishing()) {
+                mFlattenedBooklist.deleteData();
+            }
+        }
+        super.onPause();
+    }
+
+    /**
+     * At this point we're told to save our local (to the fragment) fields to the Book.
+     * This method deliberately does not call the super of course, as we don't want a save.
+     *
+     * @param book to save to
+     */
     @Override
     protected void onSaveFieldsToBook(final @NonNull Book book) {
         // don't call super, Don't save!
@@ -361,12 +582,32 @@ public class BookDetailsFragment extends BookAbstractFragmentWithCoverImage {
 
     @Override
     @CallSuper
+    public void onSaveInstanceState(final @NonNull Bundle outState) {
+        outState.putLong(UniqueId.KEY_ID, getBook().getBookId());
+        outState.putBundle(UniqueId.BKEY_BOOK_DATA, getBook().getRawData());
+        if (mFlattenedBooklist != null) {
+            outState.putInt(REQUEST_BKEY_FLATTENED_BOOKLIST_POSITION, (int) mFlattenedBooklist.getPosition());
+        }
+        super.onSaveInstanceState(outState);
+    }
+
+//    @Override
+//    public void onDestroy() {
+//        super.onDestroy();
+//    }
+
+    //</editor-fold>
+
+    /* ------------------------------------------------------------------------------------------ */
+
+    //<editor-fold desc="Menu handlers">
+    @Override
+    @CallSuper
     public boolean onContextItemSelected(final @NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.MENU_BOOK_LOAN_RETURNED:
-                long bookId = getBook().getBookId();
-                mDb.deleteLoan(bookId, false);
-                reload(bookId);
+                Book book = getBook();
+                mDb.deleteLoan(book.getBookId(), false);
                 return true;
         }
         return super.onContextItemSelected(item);
@@ -400,30 +641,43 @@ public class BookDetailsFragment extends BookAbstractFragmentWithCoverImage {
         switch (item.getItemId()) {
             case R.id.MENU_BOOK_EDIT:
                 EditBookActivity.startActivityForResult(requireActivity(),  /* a54a7e79-88c3-4b48-89df-711bb28935c5 */
-                        getBook().getBookId(), EditBookActivity.TAB_EDIT);
+                        getBook().getBookId(), EditBookFragment.TAB_EDIT);
                 return true;
         }
         return super.onOptionsItemSelected(item);
     }
+    //</editor-fold>
+
+    /* ------------------------------------------------------------------------------------------ */
 
     @Override
     public void onActivityResult(final int requestCode, final int resultCode, final @Nullable Intent data) {
         if (BuildConfig.DEBUG) {
-            Logger.info(this, "onActivityResult passthrough: requestCode=" + requestCode + ", resultCode=" + resultCode);
+            Logger.info(this, "onActivityResult requestCode=" + requestCode + ", resultCode=" + resultCode);
         }
+
+        switch (requestCode) {
+            case EditBookFragment.REQUEST_CODE: {
+                if (resultCode == Activity.RESULT_OK)
+                // no need for anything, the book will get reloaded in onResume
+                return;
+            }
+        }
+
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    /**
-     * returning here from somewhere else (e.g. from editing the book) and have an ID...reload!
-     */
-    @CallSuper
-    @Override
-    public void onResume() {
-        super.onResume();
-        long bookId = getBook().getBookId();
-        if (bookId != 0) {
-            getBook().reload(bookId);
-        }
-    }
+//    /**
+//     * We override the dispatcher because the ScrollView will consume all events otherwise.
+//     */
+//    @Override
+//    @CallSuper
+//    public boolean dispatchTouchEvent(MotionEvent event) {
+//        if (mGestureDetector != null && mGestureDetector.onTouchEvent(event)) {
+//            return true;
+//        }
+//        super.dispatchTouchEvent(event);
+//
+//        return true;
+//    }
 }

@@ -21,9 +21,6 @@
 package com.eleybourn.bookcatalogue.dialogs;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.app.Dialog;
-import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
@@ -33,11 +30,9 @@ import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Checkable;
 import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.EditSeriesListActivity;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
@@ -61,7 +56,8 @@ public class HintManager {
     private final static String PREF_HINT = TAG + ".Hint.";
     /** All hints managed by this class */
     @SuppressLint("UseSparseArrays")
-    private static final Map<Integer, Hint> mHints = new HashMap<>();
+    private static final  Map<Integer, Hint> mHints = new HashMap<>();
+
     static {
         mHints.put(R.string.hint_booklist_styles_editor, new Hint("BOOKLIST_STYLES_EDITOR"));
         mHints.put(R.string.hint_booklist_style_groups, new Hint("BOOKLIST_STYLE_GROUPS"));
@@ -118,7 +114,6 @@ public class HintManager {
         // Build the hint dialog
         final View root = inflater.inflate(R.layout.dialog_hint, null);
 
-
         // Setup the message
         final TextView msgField = root.findViewById(R.id.hint);
         if (msgField != null) {
@@ -136,21 +131,22 @@ public class HintManager {
                 .setTitle(R.string.hint)
                 .create();
 
-        // Handle the 'OK' click
         //noinspection ConstantConditions
-        dialog.findViewById(R.id.confirm).setOnClickListener(new OnClickListener() {
+        root.findViewById(R.id.confirm).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
-                // Disable hint if checkbox checked
-                final Checkable cb = dialog.findViewById(R.id.hide_hint_checkbox);
-                //noinspection ConstantConditions
-                if (cb.isChecked()) {
-                    hint.setVisibility(false);
-                }
             }
         });
 
+        //noinspection ConstantConditions
+        root.findViewById(R.id.hint_do_not_show_again).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                hint.setVisibility(false);
+            }
+        });
         dialog.show();
         hint.setHasBeenDisplayed(true);
     }

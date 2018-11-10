@@ -1,5 +1,3 @@
-package com.eleybourn.bookcatalogue.cropper;
-
 /*
  * Copyright (C) 2009 The Android Open Source Project
  *
@@ -15,6 +13,8 @@ package com.eleybourn.bookcatalogue.cropper;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+package com.eleybourn.bookcatalogue.cropper;
 
 import android.app.ProgressDialog;
 import android.graphics.Bitmap;
@@ -34,8 +34,6 @@ class CropUtil {
     private CropUtil() {
     }
 
-
-
     /**
      * Compute the sample size as a function of minSideLength and maxNumOfPixels.
      * minSideLength is used to specify that minimal width or height of a bitmap.
@@ -48,7 +46,7 @@ class CropUtil {
      * The functions prefers returning a sample size that generates a smaller bitmap,
      * unless minSideLength = {@link CropIImage#UNCONSTRAINED}.
      */
-    static Bitmap transform(@NonNull Matrix scaler,
+    static Bitmap transform(@NonNull Matrix matrix,
                             final @NonNull Bitmap source,
                             final int targetWidth,
                             final int targetHeight,
@@ -87,24 +85,24 @@ class CropUtil {
         if (bitmapAspect > viewAspect) {
             float scale = targetHeight / bitmapHeightF;
             if (scale < .9F || scale > 1F) {
-                scaler.setScale(scale, scale);
+                matrix.setScale(scale, scale);
             } else {
-                scaler = null;
+                matrix = null;
             }
         } else {
             float scale = targetWidth / bitmapWidthF;
             if (scale < .9F || scale > 1F) {
-                scaler.setScale(scale, scale);
+                matrix.setScale(scale, scale);
             } else {
-                scaler = null;
+                matrix = null;
             }
         }
 
         Bitmap b1;
-        if (scaler != null) {
+        if (matrix != null) {
             // this is used for mini thumb and crop, so we want to filter here.
             b1 = Bitmap.createBitmap(source, 0, 0, source.getWidth(),
-                    source.getHeight(), scaler, true);
+                    source.getHeight(), matrix, true);
         } else {
             b1 = source;
         }

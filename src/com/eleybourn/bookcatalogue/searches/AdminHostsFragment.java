@@ -17,6 +17,8 @@ import com.eleybourn.bookcatalogue.searches.isfdb.ISFDBManager;
 
 public class AdminHostsFragment extends Fragment {
 
+    public static final String TAG = "AdminHostsFragment";
+
     private EditText amazon_url;
     private EditText google_url;
     private EditText isfdb_url;

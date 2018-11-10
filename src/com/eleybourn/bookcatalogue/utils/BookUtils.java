@@ -29,7 +29,6 @@ import android.support.annotation.StringRes;
 import android.support.v4.content.FileProvider;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.EditBookActivity;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
@@ -114,7 +113,7 @@ public class BookUtils {
     /**
      * Delete book by its database row _id and close current activity.
      *
-     * TOMF: how about using {@link EditBookActivity.PostConfirmOrCancelAction}
+     * TOMF: how about using {@link EditBookFragment.PostConfirmOrCancelAction}
      *
      * @param bookId the book to delete
      */
@@ -158,7 +157,7 @@ public class BookUtils {
                 author = bookCursorRow.getPrimaryAuthorNameFormattedGivenFirst();
                 series = bookCursorRow.getPrimarySeriesFormatted();
             } else {
-                StandardDialogs.showUserMessage(activity, R.string.unable_to_find_book);
+                StandardDialogs.showUserMessage(activity, R.string.warning_unable_to_find_book);
                 return;
             }
         }

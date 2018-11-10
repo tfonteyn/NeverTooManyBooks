@@ -175,7 +175,8 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Bas
             mDb = new CatalogueDBAdapter(this);
             mDb.open();
 
-            mList = getList(savedInstanceState, mBKey);
+            // see getList for full details as to where we "get" the list
+            mList = getList(mBKey, savedInstanceState);
             initListAdapter(mList);
 
             // Look for id and title
@@ -205,7 +206,7 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Bas
      * 4. throw FATAL error
      */
     @NonNull
-    private ArrayList<T> getList(final @Nullable Bundle savedInstanceState, String key) {
+    private ArrayList<T> getList(String key, final @Nullable Bundle savedInstanceState) {
         ArrayList<T> list = null;
 
         // we need the ArrayList before building the adapter.

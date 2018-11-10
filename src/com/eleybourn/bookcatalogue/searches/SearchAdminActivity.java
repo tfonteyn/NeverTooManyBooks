@@ -59,12 +59,12 @@ public class SearchAdminActivity extends BaseActivity {
         switch (requestedTab) {
             case TAB_SEARCH_ORDER:
                 mTabLayout.setVisibility(View.GONE);
-                initSingleTab(R.string.search_site_order, SearchManager.getSiteSearchOrder());
+                initSingleTab(R.string.tab_lbl_search_site_order, SearchSites.getSiteSearchOrder());
                 break;
 
             case TAB_SEARCH_COVER_ORDER:
                 mTabLayout.setVisibility(View.GONE);
-                initSingleTab(R.string.search_site_cover_order, SearchManager.getSiteCoverSearchOrder());
+                initSingleTab(R.string.tab_lbl_search_site_cover_order, SearchSites.getSiteCoverSearchOrder());
                 break;
 
             default:
@@ -81,24 +81,24 @@ public class SearchAdminActivity extends BaseActivity {
         });
     }
 
-    private void initSingleTab(final @StringRes int titleId, final @NonNull ArrayList<SearchManager.SearchSite> list) {
+    private void initSingleTab(final @StringRes int titleId, final @NonNull ArrayList<SearchSites.Site> list) {
         setTitle(titleId);
 
         Bundle args = new Bundle();
-        args.putSerializable(SearchManager.BKEY_SEARCH_SITES, list);
+        args.putSerializable(SearchSites.BKEY_SEARCH_SITES, list);
 
         final AdminSearchOrderFragment frag = new AdminSearchOrderFragment();
         frag.setArguments(args);
 
         Button confirmBtn = findViewById(R.id.confirm);
-        confirmBtn.setText(R.string.use);
+        confirmBtn.setText(R.string.btn_confirm_use);
         confirmBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                int sites = SearchManager.SEARCH_ALL;
-                ArrayList<SearchManager.SearchSite> list = frag.getList();
+                int sites = SearchSites.SEARCH_ALL;
+                ArrayList<SearchSites.Site> list = frag.getList();
                 if (list != null) {
-                    for (SearchManager.SearchSite site : list) {
+                    for (SearchSites.Site site : list) {
                         sites = (site.enabled ? sites | site.id : sites & ~site.id);
                     }
                 }
@@ -112,7 +112,7 @@ public class SearchAdminActivity extends BaseActivity {
 
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.fragment, frag)
+                .replace(R.id.main_fragment, frag)
                 .commit();
     }
 
@@ -123,59 +123,64 @@ public class SearchAdminActivity extends BaseActivity {
         setTitle(R.string.search_internet);
 
         mTabLayout.addOnTabSelectedListener(new TabListener());
-        Holder holder = new Holder();
-        holder.fragment = new AdminHostsFragment();
-        TabLayout.Tab tab = mTabLayout.newTab().setText(R.string.search_sites).setTag(holder);
+        FragmentHolder fragmentHolder = new FragmentHolder();
+        fragmentHolder.fragment = new AdminHostsFragment();
+        fragmentHolder.tag = AdminHostsFragment.TAG;
+        TabLayout.Tab tab = mTabLayout.newTab().setText(R.string.tab_lbl_search_sites).setTag(fragmentHolder);
         mTabLayout.addTab(tab); //TAB_HOSTS
 
         Bundle args = new Bundle();
-        holder = new Holder();
-        holder.fragment = new AdminSearchOrderFragment();
-        args.putSerializable(SearchManager.BKEY_SEARCH_SITES, SearchManager.getSiteSearchOrder());
-        holder.fragment.setArguments(args);
-        tab = mTabLayout.newTab().setText(R.string.search_site_order).setTag(holder);
+        fragmentHolder = new FragmentHolder();
+        fragmentHolder.fragment = new AdminSearchOrderFragment();
+        fragmentHolder.tag = AdminSearchOrderFragment.TAG + TAB_SEARCH_ORDER;
+        args.putSerializable(SearchSites.BKEY_SEARCH_SITES, SearchSites.getSiteSearchOrder());
+        fragmentHolder.fragment.setArguments(args);
+        tab = mTabLayout.newTab().setText(R.string.tab_lbl_search_site_order).setTag(fragmentHolder);
         mTabLayout.addTab(tab); //TAB_SEARCH_ORDER
         tab.select();
 
         args = new Bundle();
-        holder = new Holder();
-        holder.fragment = new AdminSearchOrderFragment();
-        args.putSerializable(SearchManager.BKEY_SEARCH_SITES, SearchManager.getSiteCoverSearchOrder());
-        holder.fragment.setArguments(args);
-        tab = mTabLayout.newTab().setText(R.string.search_site_cover_order).setTag(holder);
+        fragmentHolder = new FragmentHolder();
+        fragmentHolder.fragment = new AdminSearchOrderFragment();
+        fragmentHolder.tag = AdminSearchOrderFragment.TAG + TAB_SEARCH_COVER_ORDER;
+        args.putSerializable(SearchSites.BKEY_SEARCH_SITES, SearchSites.getSiteCoverSearchOrder());
+        fragmentHolder.fragment.setArguments(args);
+        tab = mTabLayout.newTab().setText(R.string.tab_lbl_search_site_cover_order).setTag(fragmentHolder);
         mTabLayout.addTab(tab); //TAB_SEARCH_COVER_ORDER
 
         findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
 
+                //ENHANCE: compare this approach to what is used in EditBookFragment & children. Decide later...
+
                 AdminHostsFragment ahf;
                 AdminSearchOrderFragment asf;
 
                 //noinspection ConstantConditions
-                Holder holder = (Holder) mTabLayout.getTabAt(TAB_HOSTS).getTag();
+                FragmentHolder fragmentHolder = (FragmentHolder) mTabLayout.getTabAt(TAB_HOSTS).getTag();
                 //noinspection ConstantConditions
-                ahf = (AdminHostsFragment) holder.fragment;
+                ahf = (AdminHostsFragment) fragmentHolder.fragment;
                 ahf.saveSettings();
 
-                ArrayList<SearchManager.SearchSite> list;
+                ArrayList<SearchSites.Site> list;
 
                 //noinspection ConstantConditions
-                holder = (Holder) mTabLayout.getTabAt(TAB_SEARCH_ORDER).getTag();
+                fragmentHolder = (FragmentHolder) mTabLayout.getTabAt(TAB_SEARCH_ORDER).getTag();
                 //noinspection ConstantConditions
-                asf = (AdminSearchOrderFragment) holder.fragment;
+                asf = (AdminSearchOrderFragment) fragmentHolder.fragment;
                 list = asf.getList();
                 if (list != null) {
-                    SearchManager.setSearchOrder(list);
+                    SearchSites.setSearchOrder(list);
                 }
 
                 //noinspection ConstantConditions
-                holder = (Holder) mTabLayout.getTabAt(TAB_SEARCH_COVER_ORDER).getTag();
+                fragmentHolder = (FragmentHolder) mTabLayout.getTabAt(TAB_SEARCH_COVER_ORDER).getTag();
                 //noinspection ConstantConditions
-                asf = (AdminSearchOrderFragment) holder.fragment;
+                asf = (AdminSearchOrderFragment) fragmentHolder.fragment;
                 list = asf.getList();
                 if (list != null) {
-                    SearchManager.setCoverSearchOrder(list);
+                    SearchSites.setCoverSearchOrder(list);
                 }
                 setResult(Activity.RESULT_OK);
                 finish();
@@ -186,12 +191,11 @@ public class SearchAdminActivity extends BaseActivity {
     private class TabListener implements TabLayout.OnTabSelectedListener {
         @Override
         public void onTabSelected(final @NonNull TabLayout.Tab tab) {
-            Holder holder = (Holder) tab.getTag();
+            FragmentHolder fragmentHolder = (FragmentHolder) tab.getTag();
             //noinspection ConstantConditions
-            Fragment frag = holder.fragment;
             getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.fragment, frag)
+                    .replace(R.id.main_fragment, fragmentHolder.fragment, fragmentHolder.tag)
                     .commit();
         }
 
@@ -204,7 +208,8 @@ public class SearchAdminActivity extends BaseActivity {
         }
     }
 
-    private class Holder {
+    private class FragmentHolder {
         Fragment fragment;
+        String tag;
     }
 }

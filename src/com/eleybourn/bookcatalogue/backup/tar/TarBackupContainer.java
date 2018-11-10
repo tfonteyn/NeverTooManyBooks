@@ -49,20 +49,25 @@ public class TarBackupContainer implements BackupContainer {
     static final String BOOKS_FILE = "books.csv";
     /** Used in the storage and identification of data store in TAR file */
     static final Pattern BOOKS_PATTERN = Pattern.compile("^books_.*\\.csv$", Pattern.CASE_INSENSITIVE);
+
     /** Used in the storage and identification of data store in TAR file */
     static final String DB_FILE = "snapshot.db";
+
     /** Used in the storage and identification of data store in TAR file */
     static final String INFO_FILE = "INFO.xml";
     /** Used in the storage and identification of data store in TAR file */
     static final Pattern INFO_PATTERN = Pattern.compile("^INFO_.*\\.xml$", Pattern.CASE_INSENSITIVE);
+
     /** Used in the storage and identification of data store in TAR file */
     static final String STYLE_PREFIX = "style.blob.";
     /** Used in the storage and identification of data store in TAR file */
     static final Pattern STYLE_PATTERN = Pattern.compile("^" + STYLE_PREFIX + "[0-9]*$", Pattern.CASE_INSENSITIVE);
+
     /** Used in the storage and identification of data store in TAR file */
     static final String PREFERENCES = "preferences";
     /** UNICODE stream type for read/write text files */
     public static final String UTF8 = "utf8";
+
     /** Buffer size for buffered streams */
     public static final int BUFFER_SIZE = 32768;
     /** Backup file spec */

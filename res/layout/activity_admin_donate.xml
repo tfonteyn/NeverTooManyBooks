@@ -28,13 +28,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingBottom="@dimen/padding_border_quad"
-                android:text="@string/donate"
+                android:text="@string/about_donate"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <TextView
                 android:id="@+id/amazon_url"
                 style="@style/link_donate"
-                android:text="@string/amazon_wish_list" />
+                android:text="@string/about_donate_amazon" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -47,7 +47,7 @@
             <TextView
                 android:id="@+id/donate_url"
                 style="@style/link_donate"
-                android:text="@string/paypal_donation" />
+                android:text="@string/about_donate_paypal" />
 
             <ImageView
                 android:id="@+id/donate_url_image"

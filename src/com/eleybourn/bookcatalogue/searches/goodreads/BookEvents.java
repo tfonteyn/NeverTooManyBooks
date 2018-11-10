@@ -37,6 +37,7 @@ import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.EditBookActivity;
+import com.eleybourn.bookcatalogue.EditBookFragment;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
@@ -218,7 +219,7 @@ public class BookEvents {
                         GrSendBookEvent event = ViewTagger.getTagOrThrow(view, R.id.TAG_EVENT);
                             Intent intent = new Intent(context, EditBookActivity.class);
                             intent.putExtra(UniqueId.KEY_ID, event.getBookId());
-                            intent.putExtra(EditBookActivity.REQUEST_BKEY_TAB, EditBookActivity.TAB_EDIT);
+                            intent.putExtra(EditBookFragment.REQUEST_BKEY_TAB, EditBookFragment.TAB_EDIT);
                             context.startActivity(intent);
                     } catch (Exception ignore) {
                         // not a book event?
@@ -340,7 +341,7 @@ public class BookEvents {
                 final BookCursorRow bookCursorRow = bookCursor.getCursorRow();
                 if (bookCursor.moveToFirst()) {
                     if (!bookCursorRow.getIsbn().isEmpty()) {
-                        items.add(new ContextDialogItem(context.getString(R.string.retry_task), new Runnable() {
+                        items.add(new ContextDialogItem(context.getString(R.string.retry), new Runnable() {
                             @Override
                             public void run() {
                                 try {
@@ -367,7 +368,7 @@ public class BookEvents {
         private static final long serialVersionUID = -7684121345325648066L;
 
         public GrNoMatchEvent(final long bookId) {
-            super(bookId, BookCatalogueApp.getResourceString(R.string.no_matching_book_found));
+            super(bookId, BookCatalogueApp.getResourceString(R.string.warning_no_matching_book_found));
         }
 
         @Override
@@ -386,7 +387,7 @@ public class BookEvents {
         private static final long serialVersionUID = 7260496259505914311L;
 
         public GrNoIsbnEvent(final long bookId) {
-            super(bookId, BookCatalogueApp.getResourceString(R.string.no_isbn_stored_for_book));
+            super(bookId, BookCatalogueApp.getResourceString(R.string.warning_no_isbn_stored_for_book));
         }
 
         @Override

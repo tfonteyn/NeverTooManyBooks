@@ -19,8 +19,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            tools:text="events found"
-            android:textIsSelectable="true" />
+            android:textIsSelectable="false"
+            tools:text="events found" />
 
         <View
             style="@style/divider_horizontalList"

@@ -12,15 +12,15 @@
         android:layout_alignParentTop="true"
         android:singleLine="false"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        tools:text="some filename"
-        tools:ignore="SelectableText" />
+        tools:ignore="SelectableText"
+        tools:text="some filename" />
 
     <TextView
         android:id="@+id/lbl_updated"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
         android:layout_below="@id/series"
+        android:layout_alignParentStart="true"
         android:layout_marginTop="4dp"
         android:text="@string/updated"
         android:textAppearance="?android:attr/textAppearanceSmall" />
@@ -35,15 +35,15 @@
         android:layout_toEndOf="@id/lbl_updated"
         android:singleLine="false"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        tools:text="Fri, 23 July, 17:54:01 2011"
-        tools:ignore="SelectableText" />
+        tools:ignore="SelectableText"
+        tools:text="Fri, 23 July, 17:54:01 2011" />
 
     <TextView
         android:id="@+id/lbl_size"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
         android:layout_below="@id/lbl_updated"
+        android:layout_alignParentStart="true"
         android:layout_marginTop="4dp"
         android:text="@string/size"
         android:textAppearance="?android:attr/textAppearanceSmall" />
@@ -58,16 +58,16 @@
         android:layout_toEndOf="@id/lbl_size"
         android:singleLine="false"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        tools:text="154kb"
-        tools:ignore="SelectableText" />
+        tools:ignore="SelectableText"
+        tools:text="154kb" />
 
     <LinearLayout
         android:id="@+id/path_info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentStart="true"
         android:layout_below="@id/lbl_size"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
         android:layout_marginTop="4sp"
         android:orientation="horizontal">
 
@@ -85,8 +85,8 @@
             android:layout_marginStart="2sp"
             android:singleLine="false"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            tools:text="/mnt/sdcard/foobar/bookCatalogue/path/asd/asd/asd/asd/as/da/sd/asd"
-            android:textIsSelectable="true" />
+            android:textIsSelectable="true"
+            tools:text="/mnt/sdcard/foobar/bookCatalogue/path/asd/asd/asd/asd/as/da/sd/asd" />
     </LinearLayout>
 
     <View

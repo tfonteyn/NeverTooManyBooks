@@ -28,6 +28,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.BookSearchActivity;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
@@ -39,8 +40,8 @@ import com.eleybourn.bookcatalogue.datamanager.BooleanDataAccessor;
 import com.eleybourn.bookcatalogue.datamanager.DataAccessor;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.dialogs.picklist.CheckListItem;
-import com.eleybourn.bookcatalogue.dialogs.picklist.CheckListItemBase;
+import com.eleybourn.bookcatalogue.dialogs.editordialog.CheckListItem;
+import com.eleybourn.bookcatalogue.dialogs.editordialog.CheckListItemBase;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 
@@ -136,7 +137,6 @@ public class Book extends DataManager {
 //        }
 //    }
 
-
     /**
      * Constructor
      *
@@ -164,6 +164,31 @@ public class Book extends DataManager {
     }
 
     /**
+     * This function will populate the Book in three different ways
+     *
+     * 1. If fields (BKEY_BOOK_DATA) have been passed from another activity
+     * (e.g. {@link BookSearchActivity}) it will populate the Book from the bundle
+     *
+     * 2. If a valid bookId exists it will populate the Book from the database
+     *
+     * 3. It will leave the Book blank for new books.
+     *
+     * So *always* returns a valid Book.
+     */
+    @NonNull
+    public static Book getBook(final long bookId, final @Nullable Bundle bundle) {
+        Book book;
+        if (bundle != null && bundle.containsKey(UniqueId.BKEY_BOOK_DATA)) {
+            // If we have saved book data, use it
+            book = new Book(bookId, bundle.getBundle(UniqueId.BKEY_BOOK_DATA));
+        } else {
+            // create new book and try to load the data from the database.
+            book = new Book(bookId, null);
+        }
+        return book;
+    }
+
+    /**
      * Erase everything in this instance and reset the special handlers
      *
      * @return self, for chaining
@@ -182,6 +207,10 @@ public class Book extends DataManager {
      */
     public long getBookId() {
         return this.getLong(UniqueId.KEY_ID);
+    }
+
+    public void refresh() {
+        reload(this.getBookId());
     }
 
     /**
@@ -361,7 +390,6 @@ public class Book extends DataManager {
         putAuthorList(list);
     }
 
-
     /**
      * Utility routine to get an series list from a data manager
      *
@@ -434,7 +462,6 @@ public class Book extends DataManager {
     public void putTOC(final @NonNull ArrayList<TOCEntry> list) {
         super.putSerializable(UniqueId.BKEY_TOC_TITLES_ARRAY, list);
     }
-
 
     /**
      * Cleanup thumbnails from underlying data

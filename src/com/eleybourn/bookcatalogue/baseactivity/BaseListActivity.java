@@ -17,7 +17,7 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.dialogs.picklist.SelectOneDialog;
+import com.eleybourn.bookcatalogue.dialogs.SelectOneDialog;
 
 import java.util.Objects;
 

@@ -17,39 +17,23 @@
  * You should have received a copy of the GNU General Public License
  * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.eleybourn.bookcatalogue.dialogs;
+package com.eleybourn.bookcatalogue.dialogs.editordialog;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
-import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
-import android.support.v4.app.DialogFragment;
-
-import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.UniqueId;
-import com.eleybourn.bookcatalogue.utils.RTE;
-
-import java.util.Objects;
 
 /**
  * Fragment wrapper for {@link TextFieldEditorDialog}
  *
  * @author pjw
  */
-public class TextFieldEditorDialogFragment extends DialogFragment {
+public class TextFieldEditorDialogFragment extends EditorDialogFragment {
     /* Dialog text/message */
     public static final String BKEY_TEXT = "text";
     public static final String BKEY_MULTI_LINE = "multiLine";
-
-    @StringRes
-    private int mTitleId;
-    @IdRes
-    private int mDestinationFieldId;
-
     /**
      * Object to handle changes
      */
@@ -58,35 +42,24 @@ public class TextFieldEditorDialogFragment extends DialogFragment {
                 @Override
                 public void onTextFieldEditorSave(final @NonNull TextFieldEditorDialog dialog, final @NonNull String newText) {
                     dialog.dismiss();
-
-                    ((OnTextFieldEditorResultsListener) requireActivity()).onTextFieldEditorSave(TextFieldEditorDialogFragment.this,
-                            mDestinationFieldId, newText);
+                    ((OnTextFieldEditorResultsListener) getCallerFragment())
+                            .onTextFieldEditorSave(TextFieldEditorDialogFragment.this,
+                                    mDestinationFieldId, newText);
                 }
 
                 @Override
                 public void onTextFieldEditorCancel(final @NonNull TextFieldEditorDialog dialog) {
                     dialog.dismiss();
-
-                    ((OnTextFieldEditorResultsListener) requireActivity()).onTextFieldEditorCancel(TextFieldEditorDialogFragment.this,
-                            mDestinationFieldId);
+                    ((OnTextFieldEditorResultsListener) getCallerFragment())
+                            .onTextFieldEditorCancel(TextFieldEditorDialogFragment.this,
+                                    mDestinationFieldId);
                 }
             };
-    /** Currently displayed text; null if empty/invalid */
+
+    /** Currently displayed; null if empty/invalid */
     @Nullable
     private String mText;
     private boolean mMultiLine = false;
-
-    /**
-     * Ensure activity supports interface
-     */
-    @Override
-    @CallSuper
-    public void onAttach(final @NonNull Context context) {
-        super.onAttach(context);
-        if (!(context instanceof OnTextFieldEditorResultsListener)) {
-            throw new RTE.MustImplementException(context, OnTextFieldEditorResultsListener.class);
-        }
-    }
 
     /**
      * Create the underlying dialog
@@ -94,18 +67,14 @@ public class TextFieldEditorDialogFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(final @Nullable Bundle savedInstanceState) {
+        initStandardArgs(savedInstanceState);
+
         if (savedInstanceState != null) {
-            mTitleId = savedInstanceState.getInt(UniqueId.BKEY_DIALOG_TITLE, R.string.edit);
-            mDestinationFieldId = savedInstanceState.getInt(UniqueId.BKEY_FIELD_ID);
-            // data to edit
             mText = savedInstanceState.getString(BKEY_TEXT, "");
             mMultiLine = savedInstanceState.getBoolean(BKEY_MULTI_LINE);
         } else {
             Bundle args = getArguments();
-            Objects.requireNonNull(args);
-            mTitleId = args.getInt(UniqueId.BKEY_DIALOG_TITLE, R.string.edit);
-            mDestinationFieldId = args.getInt(UniqueId.BKEY_FIELD_ID);
-            // data to edit
+            //noinspection ConstantConditions
             mText = args.getString(BKEY_TEXT, "");
             mMultiLine = args.getBoolean(BKEY_MULTI_LINE);
         }
@@ -123,8 +92,6 @@ public class TextFieldEditorDialogFragment extends DialogFragment {
     @Override
     @CallSuper
     public void onSaveInstanceState(final @NonNull Bundle outState) {
-        outState.putInt(UniqueId.BKEY_DIALOG_TITLE, mTitleId);
-        outState.putInt(UniqueId.BKEY_FIELD_ID, mDestinationFieldId);
         if (mText != null) {
             outState.putString(BKEY_TEXT, mText);
         }
@@ -153,10 +120,10 @@ public class TextFieldEditorDialogFragment extends DialogFragment {
      */
     public interface OnTextFieldEditorResultsListener {
         void onTextFieldEditorSave(final @NonNull TextFieldEditorDialogFragment dialog,
-                                   final int callerId,
+                                   final int destinationFieldId,
                                    final @NonNull String newText);
 
         void onTextFieldEditorCancel(final @NonNull TextFieldEditorDialogFragment dialog,
-                                     final int callerId);
+                                     final int destinationFieldId);
     }
 }

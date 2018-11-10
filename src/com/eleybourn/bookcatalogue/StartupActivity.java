@@ -167,8 +167,8 @@ public class StartupActivity extends AppCompatActivity {
             case 1: {
                 // Create a progress dialog; we may not use it...but we need it to be created in the UI thread.
                 mProgress = ProgressDialog.show(this,
-                        getString(R.string.book_catalogue_startup),
-                        getString(R.string.starting_up),
+                        getString(R.string.title_book_catalogue_startup),
+                        getString(R.string.progress_msg_starting_up),
                         true,
                         true, new OnCancelListener() {
                             @Override
@@ -471,7 +471,7 @@ public class StartupActivity extends AppCompatActivity {
             // Get a DB to make sure the FTS rebuild flag is set appropriately, do not close the database!
             CatalogueDBAdapter db = taskContext.getOpenDb();
             if (BookCatalogueApp.Prefs.getBoolean(PREF_FTS_REBUILD_REQUIRED, false)) {
-                updateProgress(R.string.rebuilding_search_index);
+                updateProgress(R.string.progress_msg_rebuilding_search_index);
                 db.rebuildFts();
                 BookCatalogueApp.Prefs.putBoolean(PREF_FTS_REBUILD_REQUIRED, false);
             }
@@ -487,7 +487,7 @@ public class StartupActivity extends AppCompatActivity {
 
         @Override
         public void run(final @NonNull SimpleTaskContext taskContext) {
-            updateProgress(R.string.optimizing_databases);
+            updateProgress(R.string.progress_msg_optimizing_databases);
 
             // Get a DB connection, do not close the database!
             CatalogueDBAdapter db = taskContext.getOpenDb();

@@ -25,6 +25,7 @@ import android.support.annotation.NonNull;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
+import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -46,6 +47,10 @@ import java.util.Date;
 public abstract class BackupReaderAbstract implements BackupReader {
     @NonNull
     private final CatalogueDBAdapter mDb;
+
+    private static String processPreferences = BookCatalogueApp.getResourceString(R.string.progress_msg_process_preferences);
+    private static String processCover = BookCatalogueApp.getResourceString(R.string.progress_msg_process_cover);
+    private static String processBooklistStyle = BookCatalogueApp.getResourceString(R.string.progress_msg_process_booklist_style);
 
     /**
      * Constructor
@@ -77,6 +82,7 @@ public abstract class BackupReaderAbstract implements BackupReader {
 
         // Get first entity (this will be the entity AFTER the INFO entities)
         ReaderEntity entity = nextEntity();
+        // Reminder: type 'Cover' actually means *all* not recognised files !
 
         // While not at end, loop, processing each entry based on type
         while (entity != null && !listener.isCancelled()) {
@@ -84,23 +90,38 @@ public abstract class BackupReaderAbstract implements BackupReader {
                 Logger.info(this, " Processing " + entity.getName());
             }
             switch (entity.getType()) {
-                case Books:
+                case Books: {
+                    // a CSV file with all book data
                     restoreBooks(listener, entity, importFlags);
                     break;
-                case Cover:
+                }
+                case Cover: {
+                    // This *might* not be a cover !
                     coverCount++;
                     restoreCover(listener, entity, importFlags);
                     break;
+                }
                 case Database:
+                    // don't restore from archive; we're using the CSV file
                     break;
-                case Preferences:
+
+                case Preferences: {
                     restorePreferences(listener, entity);
                     break;
-                case BooklistStyle:
+                }
+                case BooklistStyle: {
                     restoreStyle(listener, entity);
                     break;
-                case Info:
+                }
+                case XML: {
+                    // skip, future extension
                     break;
+                }
+
+                case Info: {
+                    // skip, already handled, should in fact not be seen.
+                    break;
+                }
                 default:
                     throw new RTE.IllegalTypeException("" + entity.getType());
             }
@@ -150,16 +171,22 @@ public abstract class BackupReaderAbstract implements BackupReader {
         importer.importBooks(in, null, importListener, importFlags);
     }
 
+
     /**
      * Restore a cover file.
+     *
+     * Note: there is no check if the file is *really* a cover image (jpg,png)
+     * The file will simply be copied to the covers directory providing the import flags are met.
      */
     private void restoreCover(final @NonNull BackupReaderListener listener,
                               final @NonNull ReaderEntity cover,
                               final int flags) throws IOException {
-        listener.step("Processing Covers...", 1);
+        listener.step(processCover, 1);
 
-        final File currentCover = StorageUtils.getCoverFile(cover.getName());
+        // see if we have this file already
+        final File currentCover = StorageUtils.getRawCoverFile(cover.getName());
         final Date covDate = cover.getDateModified();
+
         if ((flags & Importer.IMPORT_NEW_OR_UPDATED) != 0) {
             if (currentCover.exists()) {
                 Date currFileDate = new Date(currentCover.lastModified());
@@ -179,7 +206,7 @@ public abstract class BackupReaderAbstract implements BackupReader {
      */
     private void restorePreferences(final @NonNull BackupReaderListener listener,
                                     final @NonNull ReaderEntity entity) throws IOException {
-        listener.step("Preferences...", 1);
+        listener.step(processPreferences, 1);
         SharedPreferences prefs = BookCatalogueApp.getSharedPreferences();
         entity.getPreferences(prefs);
     }
@@ -189,13 +216,14 @@ public abstract class BackupReaderAbstract implements BackupReader {
      */
     private void restoreStyle(final @NonNull BackupReaderListener listener,
                               final @NonNull ReaderEntity entity) throws IOException {
-        listener.step("Booklist Styles...", 1);
+        listener.step(processBooklistStyle, 1);
         BooklistStyle booklistStyle = null;
         try {
             booklistStyle = entity.getSerializable();
         } catch (DeserializationException e) {
             Logger.error(e, "Unable to restore style");
         }
+
         if (booklistStyle != null) {
             mDb.insertOrUpdateBooklistStyle(booklistStyle);
         }

@@ -45,7 +45,7 @@ import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
-import com.eleybourn.bookcatalogue.dialogs.picklist.SelectOneDialog;
+import com.eleybourn.bookcatalogue.dialogs.SelectOneDialog;
 import com.eleybourn.bookcatalogue.utils.RTE;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
@@ -76,7 +76,7 @@ public class BooklistStylesActivity extends EditObjectListActivity<BooklistStyle
     protected void onCreate(final @Nullable Bundle savedInstanceState) {
         try {
             super.onCreate(savedInstanceState);
-            this.setTitle(R.string.preferred_styles);
+            this.setTitle(R.string.title_preferred_styles);
 
             // We want context menus to be available
             registerForContextMenu(getListView());
@@ -273,14 +273,14 @@ public class BooklistStylesActivity extends EditObjectListActivity<BooklistStyle
             holder.preferred.setChecked(style.isPreferred());
 
             if (style.isUserDefined()) {
-                holder.kind.setText(R.string.user_defined);
+                holder.kind.setText(R.string.style_is_user_defined);
             } else {
-                holder.kind.setText(R.string.builtin);
+                holder.kind.setText(R.string.style_is_builtin);
             }
         }
 
         /**
-         * TODO: use {@link com.eleybourn.bookcatalogue.dialogs.picklist.SelectOneDialog.SimpleDialogMenuItem}
+         * TODO: use {@link SelectOneDialog.SimpleDialogMenuItem}
          * Use the onRowLongClick to present a context menu.
          */
         @Override
@@ -295,7 +295,7 @@ public class BooklistStylesActivity extends EditObjectListActivity<BooklistStyle
             if (style.isUserDefined()) {
                 mListViewContextMenu.add(Menu.NONE, R.id.MENU_STYLE_DELETE, 0, R.string.menu_delete_style)
                         .setIcon(R.drawable.ic_delete);
-                mListViewContextMenu.add(Menu.NONE, R.id.MENU_STYLE_EDIT, 0, R.string.menu_edit_book_list_style)
+                mListViewContextMenu.add(Menu.NONE, R.id.MENU_STYLE_EDIT, 0, R.string.menu_edit_booklist_style)
                         .setIcon(R.drawable.ic_mode_edit);
             }
             mListViewContextMenu.add(Menu.NONE, R.id.MENU_STYLE_CLONE, 0, R.string.menu_clone_style)

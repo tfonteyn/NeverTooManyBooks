@@ -42,7 +42,7 @@ import com.eleybourn.bookcatalogue.baseactivity.BaseActivityWithTasks;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.searches.SearchAdminActivity;
-import com.eleybourn.bookcatalogue.searches.SearchManager;
+import com.eleybourn.bookcatalogue.searches.SearchSites;
 import com.eleybourn.bookcatalogue.searches.UpdateFromInternetThread;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
 import com.eleybourn.bookcatalogue.tasks.ManagedTask;
@@ -59,11 +59,11 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
 
     public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_UPDATE_FROM_INTERNET;
 
-    /** optionally limit the sites to search on. By default uses {@link SearchManager#SEARCH_ALL} */
+    /** optionally limit the sites to search on. By default uses {@link SearchSites#SEARCH_ALL} */
     public static final String REQUEST_BKEY_SEARCH_SITES = "SearchSites";
     /** */
     private final FieldUsages mFieldUsages = new FieldUsages();
-    private int mSearchSites = SearchManager.SEARCH_ALL;
+    private int mSearchSites = SearchSites.SEARCH_ALL;
     private long mBookId = 0;
 
     private ViewGroup mListContainer;
@@ -114,10 +114,10 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
                 findViewById(R.id.row_book).setVisibility(View.VISIBLE);
             }
 
-            mSearchSites = extras.getInt(REQUEST_BKEY_SEARCH_SITES, SearchManager.SEARCH_ALL);
+            mSearchSites = extras.getInt(REQUEST_BKEY_SEARCH_SITES, SearchSites.SEARCH_ALL);
         }
 
-        setTitle(R.string.select_fields_to_update);
+        setTitle(R.string.title_select_fields_to_update);
         LibraryThingManager.showLtAlertIfNecessary(this, false, "update_from_internet");
 
         mListContainer = findViewById(R.id.manage_fields_scrollview);
@@ -138,7 +138,7 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
                 R.string.isbn, false,
                 FieldUsage.Usage.COPY_IF_BLANK);
         addIfVisible(UniqueId.KEY_BOOK_THUMBNAIL, null,
-                R.string.thumbnail, false,
+                R.string.title_cover, false,
                 FieldUsage.Usage.COPY_IF_BLANK);
         addIfVisible(UniqueId.BKEY_SERIES_ARRAY, UniqueId.KEY_SERIES_NAME,
                 R.string.series, true,
@@ -236,7 +236,7 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
             public void onClick(final View v) {
                 // sanity check
                 if (countUserSelections() == 0) {
-                    StandardDialogs.showUserMessage(UpdateFromInternetActivity.this, R.string.select_min_1_field);
+                    StandardDialogs.showUserMessage(UpdateFromInternetActivity.this, R.string.warning_select_min_1_field);
                     return;
                 }
 
@@ -247,7 +247,7 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
                     // Verify - this can be a dangerous operation
                     AlertDialog dialog = new AlertDialog.Builder(UpdateFromInternetActivity.this)
                             .setMessage(R.string.overwrite_thumbnail)
-                            .setTitle(R.string.update_fields)
+                            .setTitle(R.string.title_update_fields)
                             .setIconAttribute(android.R.attr.alertDialogIcon)
                             .create();
                     dialog.setButton(AlertDialog.BUTTON_POSITIVE, UpdateFromInternetActivity.this.getString(R.string.yes),
@@ -303,7 +303,7 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
     @Override
     @CallSuper
     public boolean onCreateOptionsMenu(final @NonNull Menu menu) {
-        menu.add(Menu.NONE, R.id.MENU_PREFS_SEARCH_SITES, 0, R.string.search_sites)
+        menu.add(Menu.NONE, R.id.MENU_PREFS_SEARCH_SITES, 0, R.string.tab_lbl_search_sites)
                 .setIcon(R.drawable.ic_search)
                 .setShowAsAction(MenuItem.SHOW_AS_ACTION_WITH_TEXT);
 

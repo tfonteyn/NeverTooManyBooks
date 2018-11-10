@@ -122,7 +122,7 @@ public class FlattenedBooklist implements AutoCloseable {
 
     /**
      * Check that the referenced table exists. This is important for resumed activities
-     * where th underlying database connection may have closed and the table been deleted
+     * where the underlying database connection may have closed and the table been deleted
      * as a result.
      */
     public boolean exists() {

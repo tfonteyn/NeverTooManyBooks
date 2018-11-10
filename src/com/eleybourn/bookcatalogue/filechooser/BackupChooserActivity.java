@@ -20,6 +20,8 @@
 package com.eleybourn.bookcatalogue.filechooser;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.IdRes;
@@ -35,7 +37,6 @@ import com.eleybourn.bookcatalogue.backup.Exporter;
 import com.eleybourn.bookcatalogue.backup.Importer;
 import com.eleybourn.bookcatalogue.dialogs.ExportTypeSelectionDialogFragment;
 import com.eleybourn.bookcatalogue.dialogs.ImportTypeSelectionDialogFragment;
-import com.eleybourn.bookcatalogue.dialogs.MessageDialogFragment;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressDialogFragment;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressDialogFragment.FragmentTask;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
@@ -54,7 +55,6 @@ import static com.eleybourn.bookcatalogue.BookCatalogueApp.PREF_LAST_BACKUP_FILE
  * @author pjw
  */
 public class BackupChooserActivity extends FileChooserBaseActivity implements
-        MessageDialogFragment.OnMessageDialogResultsListener,
         ImportTypeSelectionDialogFragment.OnImportTypeSelectionDialogResultsListener,
         ExportTypeSelectionDialogFragment.OnExportTypeSelectionDialogResultsListener {
 
@@ -162,9 +162,17 @@ public class BackupChooserActivity extends FileChooserBaseActivity implements
                             + " " + getString(R.string.please_check_sd_writable)
                             + "\n\n" + getString(R.string.if_the_problem_persists);
 
-                    MessageDialogFragment frag = MessageDialogFragment.newInstance(IS_ERROR,
-                            R.string.backup_to_archive, msg);
-                    frag.show(getSupportFragmentManager(), null);
+                    AlertDialog dialog = new AlertDialog.Builder(this)
+                            .setTitle(R.string.backup_to_archive)
+                            .setMessage(msg)
+                            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(final DialogInterface dialog, final int which) {
+                                    dialog.dismiss();
+                                }
+                            })
+                            .create();
+                    dialog.show();
                     // Just return; user may want to try again
                     return;
                 }
@@ -177,9 +185,19 @@ public class BackupChooserActivity extends FileChooserBaseActivity implements
                         mBackupFile.getParent(),
                         mBackupFile.getName(),
                         Utils.formatFileSize(mBackupFile.length()));
-                MessageDialogFragment frag = MessageDialogFragment.newInstance(IS_SAVE,
-                        R.string.backup_to_archive, msg);
-                frag.show(getSupportFragmentManager(), null);
+                AlertDialog dialog = new AlertDialog.Builder(this)
+                        .setTitle(R.string.backup_to_archive)
+                        .setMessage(msg)
+                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(final DialogInterface dialog, final int which) {
+                                dialog.dismiss();
+                                setResult(mSuccess ? Activity.RESULT_OK : Activity.RESULT_CANCELED);
+                                finish();
+                            }
+                        })
+                        .create();
+                dialog.show();
                 break;
             }
 
@@ -188,10 +206,17 @@ public class BackupChooserActivity extends FileChooserBaseActivity implements
                     String msg = getString(R.string.import_failed)
                             + " " + getString(R.string.please_check_sd_readable)
                             + "\n\n" + getString(R.string.if_the_problem_persists);
-
-                    MessageDialogFragment frag = MessageDialogFragment.newInstance(IS_ERROR,
-                            R.string.import_from_archive, msg);
-                    frag.show(getSupportFragmentManager(), null);
+                    AlertDialog dialog = new AlertDialog.Builder(this)
+                            .setTitle(R.string.import_from_archive)
+                            .setMessage(msg)
+                            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(final DialogInterface dialog, final int which) {
+                                    dialog.dismiss();
+                                }
+                            })
+                            .create();
+                    dialog.show();
                     // Just return; user may want to try again
                     return;
                 }
@@ -200,10 +225,19 @@ public class BackupChooserActivity extends FileChooserBaseActivity implements
                     return;
                 }
 
-                MessageDialogFragment frag = MessageDialogFragment.newInstance(IS_OPEN,
-                        R.string.import_from_archive,
-                        BookCatalogueApp.getResourceString(R.string.import_complete));
-                frag.show(getSupportFragmentManager(), null);
+                AlertDialog dialog = new AlertDialog.Builder(this)
+                        .setTitle(R.string.import_from_archive)
+                        .setMessage(R.string.progress_end_import_complete)
+                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(final DialogInterface dialog, final int which) {
+                                dialog.dismiss();
+                                setResult(mSuccess ? Activity.RESULT_OK : Activity.RESULT_CANCELED);
+                                finish();
+                            }
+                        })
+                        .create();
+                dialog.show();
                 break;
             }
         }
@@ -215,19 +249,6 @@ public class BackupChooserActivity extends FileChooserBaseActivity implements
                                    final boolean success,
                                    final boolean cancelled) {
         // Nothing to do here; we really only care when backup tasks finish, and there's only ever one task
-    }
-
-    @Override
-    public void onMessageDialogResult(final int callerId, final int button) {
-        switch (callerId) {
-            case IS_OPEN:
-            case IS_SAVE:
-                setResult(mSuccess ? Activity.RESULT_OK : Activity.RESULT_CANCELED);
-                finish();
-                break;
-            case IS_ERROR:
-                break;
-        }
     }
 
     @Override

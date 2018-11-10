@@ -37,7 +37,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/row_book"
         android:paddingTop="@dimen/padding_border"
-        android:text="@string/select_fields_to_update_help" />
+        android:text="@string/info_select_fields_to_update" />
 
     <ScrollView
         android:layout_width="match_parent"

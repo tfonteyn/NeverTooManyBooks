@@ -37,7 +37,7 @@ public class GoodreadsUtils {
 
         /* Goodreads SYNC Link */
         {
-            View view = dialog.findViewById(R.id.lbl_sync_with_goodreads);
+            View view = root.findViewById(R.id.lbl_sync_with_goodreads);
             // Make line flash when clicked.
             //noinspection ConstantConditions
             view.setBackgroundResource(android.R.drawable.list_selector_background);
@@ -52,7 +52,7 @@ public class GoodreadsUtils {
 
         /* Goodreads IMPORT Link */
         {
-            View view = dialog.findViewById(R.id.lbl_import_all_from_goodreads);
+            View view = root.findViewById(R.id.lbl_import_all_from_goodreads);
             // Make line flash when clicked.
             //noinspection ConstantConditions
             view.setBackgroundResource(android.R.drawable.list_selector_background);
@@ -67,7 +67,7 @@ public class GoodreadsUtils {
 
         /* Goodreads EXPORT Link */
         {
-            View view = dialog.findViewById(R.id.lbl_send_books_to_goodreads);
+            View view = root.findViewById(R.id.lbl_send_books_to_goodreads);
             // Make line flash when clicked.
             //noinspection ConstantConditions
             view.setBackgroundResource(android.R.drawable.list_selector_background);

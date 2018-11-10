@@ -110,7 +110,7 @@
                 android:paddingBottom="@dimen/padding_border"
                 android:paddingEnd="@dimen/padding_border_triple"
                 android:paddingStart="@dimen/padding_border_triple"
-                android:text="@string/about_translators_blurb"
+                android:text="@string/about_translators"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
             <TextView

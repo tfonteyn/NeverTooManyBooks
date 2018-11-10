@@ -29,7 +29,7 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
-import com.eleybourn.bookcatalogue.dialogs.picklist.SelectOneDialog;
+import com.eleybourn.bookcatalogue.dialogs.SelectOneDialog;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.IsbnUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
@@ -50,10 +50,11 @@ import java.util.Objects;
  * the only {@link Field} handled here is the cover image R.id.coverImage
  *
  * Used by
- * {@link BookDetailsFragment}
+ * {@link BookFragment}
  * {@link EditBookFieldsFragment}
  */
-public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFragment implements SelectOneDialog.hasViewContextMenu {
+public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFragment
+        implements SelectOneDialog.hasViewContextMenu {
 
     public static final String PREF_USE_EXTERNAL_IMAGE_CROPPER = "App.UseExternalImageCropper";
     public static final String PREF_CROP_FRAME_WHOLE_IMAGE = "App.CropFrameWholeImage";
@@ -95,7 +96,7 @@ public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFra
             mCoverView.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    ImageUtils.showZoomedThumb(requireActivity(), getCoverFile(getBook().getBookId()));
+                    ImageUtils.showZoomedThumb(requireActivity(), getCoverFile(getBookManager().getBook().getBookId()));
                 }
             });
         }
@@ -132,10 +133,10 @@ public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFra
                 if (resultCode == Activity.RESULT_OK) {
                     File cropped = this.getCroppedTempCoverFile();
                     if (cropped.exists()) {
-                        File thumbFile = getCoverFile(getBook().getBookId());
+                        File thumbFile = getCoverFile(getBookManager().getBook().getBookId());
                         StorageUtils.renameFile(cropped, thumbFile);
                         // Update the ImageView with the new image
-                        populateCoverImage(getBook().getBookId());
+                        populateCoverImage(getBookManager().getBook().getBookId());
                     } else {
                         Tracker.handleEvent(this, "onActivityResult(" + requestCode + "," + resultCode + ") - result OK, but no image file", Tracker.States.Running);
                     }
@@ -157,7 +158,7 @@ public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFra
     @Override
     public void onCreateOptionsMenu(final @NonNull Menu menu, final @NonNull MenuInflater inflater) {
         if (mFields.getField(R.id.coverImage).visible) {
-            menu.add(Menu.NONE, R.id.SUBMENU_REPLACE_THUMB, 0, R.string.cover_options_cc_ellipsis)
+            menu.add(Menu.NONE, R.id.SUBMENU_REPLACE_THUMB, 0, R.string.menu_cover_replace)
                     .setIcon(R.drawable.ic_add_a_photo)
                     .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         }
@@ -200,7 +201,7 @@ public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFra
      */
     private void prepareCoverImageViewContextMenu(final @NonNull View view) {
 
-        String menuTitle = getString(R.string.thumbnail);
+        String menuTitle = getString(R.string.title_cover);
 
         // legal trick to get an instance of Menu.
         Menu menu = new PopupMenu(BookAbstractFragmentWithCoverImage.this.getContext(), null).getMenu();
@@ -208,31 +209,31 @@ public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFra
         SelectOneDialog.SimpleDialogMenuInfo menuInfo = new SelectOneDialog.SimpleDialogMenuInfo(menuTitle, view, 0);
         // populate the menu
 
-        menu.add(Menu.NONE, R.id.MENU_DELETE_THUMB, 0, R.string.menu_delete_thumb)
+        menu.add(Menu.NONE, R.id.MENU_DELETE_THUMB, 0, R.string.menu_delete)
                 .setIcon(R.drawable.ic_delete);
 
         SubMenu replaceThumbnailSubmenu = menu.addSubMenu(Menu.NONE,
-                R.id.SUBMENU_REPLACE_THUMB, 2, R.string.menu_replace_thumb);
+                R.id.SUBMENU_REPLACE_THUMB, 2, R.string.menu_cover_replace);
         replaceThumbnailSubmenu.setIcon(R.drawable.ic_find_replace);
 
-        replaceThumbnailSubmenu.add(Menu.NONE, R.id.MENU_ADD_THUMB_FROM_CAMERA, 1, R.string.menu_add_thumb_photo)
+        replaceThumbnailSubmenu.add(Menu.NONE, R.id.MENU_ADD_THUMB_FROM_CAMERA, 1, R.string.menu_cover_add_from_camera)
                 .setIcon(R.drawable.ic_add_a_photo);
-        replaceThumbnailSubmenu.add(Menu.NONE, R.id.MENU_ADD_THUMB_FROM_GALLERY, 2, R.string.menu_add_thumb_gallery)
+        replaceThumbnailSubmenu.add(Menu.NONE, R.id.MENU_ADD_THUMB_FROM_GALLERY, 2, R.string.menu_cover_add_from_gallery)
                 .setIcon(R.drawable.ic_image);
-        replaceThumbnailSubmenu.add(Menu.NONE, R.id.MENU_ADD_THUMB_ALT_EDITIONS, 3, R.string.menu_thumb_alt_editions)
+        replaceThumbnailSubmenu.add(Menu.NONE, R.id.MENU_ADD_THUMB_ALT_EDITIONS, 3, R.string.menu_cover_search_alt_editions)
                 .setIcon(R.drawable.ic_find_replace);
 
         SubMenu rotateThumbnailSubmenu = menu.addSubMenu(Menu.NONE,
-                R.id.SUBMENU_ROTATE_THUMB, 3, R.string.menu_rotate_thumb);
+                R.id.SUBMENU_ROTATE_THUMB, 3, R.string.menu_cover_rotate);
         rotateThumbnailSubmenu.setIcon(R.drawable.ic_rotate_right);
 
-        rotateThumbnailSubmenu.add(Menu.NONE, R.id.MENU_ROTATE_THUMB_CW, 1, R.string.menu_rotate_thumb_cw)
+        rotateThumbnailSubmenu.add(Menu.NONE, R.id.MENU_ROTATE_THUMB_CW, 1, R.string.menu_cover_rotate_cw)
                 .setIcon(R.drawable.ic_rotate_right);
-        rotateThumbnailSubmenu.add(Menu.NONE, R.id.MENU_ROTATE_THUMB_CCW, 2, R.string.menu_rotate_thumb_ccw)
+        rotateThumbnailSubmenu.add(Menu.NONE, R.id.MENU_ROTATE_THUMB_CCW, 2, R.string.menu_cover_rotate_ccw)
                 .setIcon(R.drawable.ic_rotate_left);
-        rotateThumbnailSubmenu.add(Menu.NONE, R.id.MENU_ROTATE_THUMB_180, 3, R.string.menu_rotate_thumb_180)
+        rotateThumbnailSubmenu.add(Menu.NONE, R.id.MENU_ROTATE_THUMB_180, 3, R.string.menu_cover_rotate_180)
                 .setIcon(R.drawable.ic_swap_vert);
-        menu.add(Menu.NONE, R.id.MENU_CROP_THUMB, 4, R.string.menu_crop_thumb)
+        menu.add(Menu.NONE, R.id.MENU_CROP_THUMB, 4, R.string.menu_cover_crop)
                 .setIcon(R.drawable.ic_crop);
 
         // display
@@ -276,7 +277,7 @@ public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFra
             return false;
         }
 
-        File thumbFile = getCoverFile(getBook().getBookId());
+        File thumbFile = getCoverFile(getBookManager().getBook().getBookId());
 
         switch (menuItem.getItemId()) {
             case R.id.MENU_DELETE_THUMB: {
@@ -370,7 +371,7 @@ public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFra
             StorageUtils.deleteFile(f);
             intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
         */
-        startActivityForResult(intent, UniqueId.ACTIVITY_REQUEST_CODE_ANDROID_IMAGE_CAPTURE); /* 0b7027eb-a9da-469b-8ba7-2122f1006e92 */
+        requireActivity().startActivityForResult(intent, UniqueId.ACTIVITY_REQUEST_CODE_ANDROID_IMAGE_CAPTURE); /* 0b7027eb-a9da-469b-8ba7-2122f1006e92 */
     }
 
     /**
@@ -379,7 +380,7 @@ public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFra
     private void getCoverFromGallery() {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("image/*");
-        startActivityForResult(Intent.createChooser(intent, getString(R.string.select_picture)),
+        requireActivity().startActivityForResult(Intent.createChooser(intent, getString(R.string.title_select_picture)),
                 UniqueId.ACTIVITY_REQUEST_CODE_ANDROID_ACTION_GET_CONTENT); /* 27ecaa27-5ed8-4670-8947-112ab4ab0098 */
     }
 
@@ -395,12 +396,12 @@ public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFra
                 public void onImageSelected(final @NonNull String fileSpec) {
                     if (mCoverBrowser != null) {
                         // Get the current file
-                        File bookFile = getCoverFile(getBook().getBookId());
+                        File bookFile = getCoverFile(getBookManager().getBook().getBookId());
                         File newFile = new File(fileSpec);
                         // Overwrite with new file
                         StorageUtils.renameFile(newFile, bookFile);
                         // Update the ImageView with the new image
-                        populateCoverImage(getBook().getBookId());
+                        populateCoverImage(getBookManager().getBook().getBookId());
                         mCoverBrowser.dismiss();
                         mCoverBrowser = null;
                     }
@@ -409,10 +410,9 @@ public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFra
             mCoverBrowser.showEditionCovers();
         } else {
             //Snackbar.make(isbnField.getView(), R.string.editions_require_isbn, Snackbar.LENGTH_LONG).show();
-            StandardDialogs.showUserMessage(requireActivity(), R.string.editions_require_isbn);
+            StandardDialogs.showUserMessage(requireActivity(), R.string.warning_editions_require_isbn);
         }
     }
-
 
     /**
      * The camera has captured an image, process it.
@@ -443,7 +443,6 @@ public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFra
         }
     }
 
-
     /**
      * The Intent.ACTION_GET_CONTENT has provided us with an image, process it.
      */
@@ -455,22 +454,22 @@ public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFra
             // If no 'content' scheme, then use the content resolver.
             try {
                 InputStream in = requireContext().getContentResolver().openInputStream(selectedImageUri);
-                imageOk = StorageUtils.saveInputStreamToFile(in, getCoverFile(getBook().getBookId()));
+                imageOk = StorageUtils.saveInputStreamToFile(in, getCoverFile(getBookManager().getBook().getBookId()));
             } catch (FileNotFoundException e) {
                 Logger.error(e, "Unable to copy content to file");
             }
             if (imageOk) {
                 // Update the ImageView with the new image
-                populateCoverImage(getBook().getBookId());
+                populateCoverImage(getBookManager().getBook().getBookId());
             } else {
-                String s = getString(R.string.could_not_copy_image) + ". " + getString(R.string.if_the_problem_persists);
+                String s = getString(R.string.warning_cover_copy_failed) + ". " + getString(R.string.if_the_problem_persists);
                 StandardDialogs.showUserMessage(requireActivity(), s);
             }
         } else {
             /* Deal with the case where the chooser returns a null intent. This seems to happen
              * when the filename is not properly understood by the choose (eg. an apostrophe in
              * the file name confuses ES File Explorer in the current version as of 23-Sep-2012. */
-            StandardDialogs.showUserMessage(requireActivity(), R.string.could_not_copy_image);
+            StandardDialogs.showUserMessage(requireActivity(), R.string.warning_cover_copy_failed);
         }
     }
 
@@ -484,7 +483,7 @@ public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFra
         int attempts = 2;
         while (true) {
             try {
-                File thumbFile = getCoverFile(getBook().getBookId());
+                File thumbFile = getCoverFile(getBookManager().getBook().getBookId());
 
                 Bitmap bitmap = ImageUtils.fetchFileIntoImageView(null, thumbFile,
                         mThumbSize.zoomed * 2, mThumbSize.zoomed * 2, true);
@@ -541,18 +540,11 @@ public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFra
     private void cropCoverImageInternal(final @NonNull File thumbFile) {
         boolean cropFrameWholeImage = getPrefs().getBoolean(PREF_CROP_FRAME_WHOLE_IMAGE, false);
 
-        Intent intent = new Intent(requireActivity(), CropImageActivity.class);
-        intent.putExtra(CropIImage.REQUEST_KEY_IMAGE_ABSOLUTE_PATH, thumbFile.getAbsolutePath());
-        intent.putExtra(CropIImage.REQUEST_KEY_SCALE, true);
-        intent.putExtra(CropIImage.REQUEST_KEY_NO_FACE_DETECTION, true);
-        intent.putExtra(CropIImage.REQUEST_KEY_WHOLE_IMAGE, cropFrameWholeImage);
-
-        // Get and set the output file spec, and make sure it does not already exist.
+        // Get the output file spec, and make sure it does not already exist.
         File cropped = this.getCroppedTempCoverFile();
         StorageUtils.deleteFile(cropped);
-        intent.putExtra(CropIImage.REQUEST_KEY_OUTPUT_ABSOLUTE_PATH, cropped.getAbsolutePath());
 
-        startActivityForResult(intent, CropImageActivity.REQUEST_CODE); /* 31c90366-d352-496f-9b7d-3237dd199a77 */
+        CropImageActivity.startActivityForResult(requireActivity(), thumbFile, cropped, cropFrameWholeImage); /* 31c90366-d352-496f-9b7d-3237dd199a77 */
     }
 
     /**
@@ -593,7 +585,7 @@ public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFra
             if (list.size() == 0) {
                 StandardDialogs.showUserMessage(requireActivity(), R.string.error_no_external_crop_app);
             } else {
-                startActivityForResult(cropIntent, UniqueId.ACTIVITY_REQUEST_CODE_EXTERNAL_CROP_IMAGE); /* 28ec93b0-24fb-4a81-ae6d-a282f3a7b918 */
+                requireActivity().startActivityForResult(cropIntent, UniqueId.ACTIVITY_REQUEST_CODE_EXTERNAL_CROP_IMAGE); /* 28ec93b0-24fb-4a81-ae6d-a282f3a7b918 */
             }
         } finally {
             Tracker.handleEvent(this, "cropCoverImageExternal", Tracker.States.Exit);
@@ -605,7 +597,7 @@ public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFra
      */
     private void deleteCoverFile() {
         try {
-            File thumbFile = getCoverFile(getBook().getBookId());
+            File thumbFile = getCoverFile(getBookManager().getBook().getBookId());
             StorageUtils.deleteFile(thumbFile);
         } catch (Exception e) {
             Logger.error(e);
@@ -617,7 +609,7 @@ public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFra
      * Ensure that the cached thumbnails for this book are deleted (if present)
      */
     private void invalidateCachedThumbnail() {
-        final long bookId = getBook().getBookId();
+        final long bookId = getBookManager().getBook().getBookId();
         if (bookId != 0) {
             try (CoversDbHelper coversDbHelper = CoversDbHelper.getInstance(requireContext())) {
                 coversDbHelper.deleteBookCover(mDb.getBookUuid(bookId));

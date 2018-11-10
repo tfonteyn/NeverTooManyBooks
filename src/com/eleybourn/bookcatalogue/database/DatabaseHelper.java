@@ -393,7 +393,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         StartupActivity startup = StartupActivity.getActiveActivity();
         if (startup != null) {
-            startup.updateProgress(R.string.upgrading_ellipsis);
+            startup.updateProgress(R.string.progress_msg_upgrading);
         }
 
         if (oldVersion != newVersion) {

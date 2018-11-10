@@ -5,7 +5,7 @@ import android.support.annotation.StringRes;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.searches.SearchManager;
+import com.eleybourn.bookcatalogue.searches.SearchSites;
 import com.eleybourn.bookcatalogue.searches.SearchTask;
 import com.eleybourn.bookcatalogue.tasks.TaskManager;
 
@@ -53,7 +53,7 @@ public class SearchGoogleBooksTask extends SearchTask {
      */
     @Override
     public int getSearchId() {
-        return SearchManager.SEARCH_GOOGLE;
+        return SearchSites.SEARCH_GOOGLE;
     }
 
 }

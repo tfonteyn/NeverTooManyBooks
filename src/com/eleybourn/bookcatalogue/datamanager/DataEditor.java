@@ -31,9 +31,7 @@ import android.support.annotation.NonNull;
  */
 public interface DataEditor {
 	/** Save current data TO the passed DataManager */
-    <T extends DataManager>  void saveFieldsTo(final @NonNull T /* in/out */ data);
+    <T extends DataManager>  void saveFieldsTo(final @NonNull T /* in/out */ dataManager);
 	/** Load current data FROM passed DataManager */
-    <T extends DataManager> void loadFieldsFrom(final @NonNull T /* in/out */ data);
-
-//    <T extends DataManager> T getDataManager();
+    <T extends DataManager> void loadFieldsFrom(final @NonNull T /* in/out */ dataManager);
 }

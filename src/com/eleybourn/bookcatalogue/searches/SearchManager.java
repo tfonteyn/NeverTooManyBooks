@@ -20,7 +20,6 @@
 
 package com.eleybourn.bookcatalogue.searches;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
@@ -34,11 +33,6 @@ import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.entities.TOCEntry;
 import com.eleybourn.bookcatalogue.messaging.MessageSwitch;
-import com.eleybourn.bookcatalogue.searches.amazon.SearchAmazonTask;
-import com.eleybourn.bookcatalogue.searches.goodreads.SearchGoodreadsTask;
-import com.eleybourn.bookcatalogue.searches.googlebooks.SearchGoogleBooksTask;
-import com.eleybourn.bookcatalogue.searches.isfdb.SearchISFDBTask;
-import com.eleybourn.bookcatalogue.searches.librarything.SearchLibraryThingTask;
 import com.eleybourn.bookcatalogue.tasks.ManagedTask;
 import com.eleybourn.bookcatalogue.tasks.TaskManager;
 import com.eleybourn.bookcatalogue.tasks.TaskManager.TaskManagerListener;
@@ -47,7 +41,6 @@ import com.eleybourn.bookcatalogue.utils.BundleUtils;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.IsbnUtils;
-import com.eleybourn.bookcatalogue.utils.RTE;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -65,94 +58,9 @@ import java.util.List;
  * @author Philip Warner
  */
 public class SearchManager implements TaskManagerListener {
-    /** Options indicating a search source to use */
-    public static final int SEARCH_GOOGLE = 1;
-    /** Options indicating a search source to use */
-    public static final int SEARCH_AMAZON = 1 << 1;
-    /** Options indicating a search source to use */
-    public static final int SEARCH_LIBRARY_THING = 1 << 2;
-    /** Options indicating a search source to use */
-    public static final int SEARCH_GOODREADS = 1 << 3;
-    /** Options indicating a search source to use */
-    public static final int SEARCH_ISFDB = 1 << 4;
-    /** Mask including all search sources */
-    public static final int SEARCH_ALL = SEARCH_GOOGLE | SEARCH_AMAZON | SEARCH_LIBRARY_THING | SEARCH_GOODREADS | SEARCH_ISFDB;
-    /** */
-    static final String BKEY_SEARCH_SITES = "searchSitesList";
-    private static final String TAG = "SearchManager";
 
-    /** the default search site order */
-    private static final List<SearchSite> mSearchOrderDefaults = new ArrayList<>();
-    /** the default search site order */
-    private static final List<SearchSite> mCoverSearchOrderDefaults = new ArrayList<>();
-    /** TODO: not user configurable for now, but plumbing installed */
-    @NonNull
-    private static final List<SearchSite> mReliabilityOrder;
     /** see {@link TaskSwitch} */
     private static final TaskSwitch mMessageSwitch = new TaskSwitch();
-    /** the users preferred search site order */
-    private static ArrayList<SearchSite> mPreferredSearchOrder;
-    /** the users preferred search site order */
-    private static ArrayList<SearchSite> mPreferredCoverSearchOrder;
-
-    static {
-        /*ENHANCE: note to self... redo this mess. To complicated for what it is doing. Isolate ALL functionality in SearchSite
-
-         * default search order
-         *
-         * NEWKIND: search web site configuration
-         *
-         *  Original app reliability order was:
-         *  {SEARCH_GOODREADS, SEARCH_AMAZON, SEARCH_GOOGLE, SEARCH_LIBRARY_THING}
-         */
-        SearchSite site;
-
-        mSearchOrderDefaults.add(new SearchSite(SEARCH_AMAZON, "Amazon",
-                0, true, 1));
-        mSearchOrderDefaults.add(new SearchSite(SEARCH_GOODREADS, "GoodReads",
-                1, true, 0));
-        mSearchOrderDefaults.add(new SearchSite(SEARCH_GOOGLE, "Google",
-                2, true, 2));
-        site = new SearchSite(SEARCH_LIBRARY_THING, "LibraryThing",
-                3, true, 3);
-        site.isbnOnly = true;
-        mSearchOrderDefaults.add(site);
-        mSearchOrderDefaults.add(new SearchSite(SEARCH_ISFDB, "ISFDB",
-                4, true, 4));
-
-
-        mCoverSearchOrderDefaults.add(new SearchSite(SEARCH_GOOGLE, "Google-cover",
-                0, true));
-        site = new SearchSite(SEARCH_LIBRARY_THING, "LibraryThing-cover",
-                1, true);
-        site.isbnOnly = true;
-        mCoverSearchOrderDefaults.add(site);
-        mCoverSearchOrderDefaults.add(new SearchSite(SEARCH_ISFDB, "ISFDB-cover",
-                2, true));
-
-
-        // we're going to use set(index,...), so make them big enough
-        mPreferredSearchOrder = new ArrayList<>(mSearchOrderDefaults);
-        mReliabilityOrder = new ArrayList<>(mSearchOrderDefaults);
-
-        mPreferredCoverSearchOrder = new ArrayList<>(mCoverSearchOrderDefaults);
-
-        for (SearchSite searchSite : mSearchOrderDefaults) {
-            searchSite.enabled = BookCatalogueApp.Prefs.getBoolean(TAG + "." + searchSite.name + ".enabled", searchSite.enabled);
-            searchSite.order = BookCatalogueApp.Prefs.getInt(TAG + "." + searchSite.name + ".order", searchSite.order);
-            searchSite.reliability = BookCatalogueApp.Prefs.getInt(TAG + "." + searchSite.name + ".reliability", searchSite.reliability);
-
-            mReliabilityOrder.set(searchSite.reliability, searchSite);
-            mPreferredSearchOrder.set(searchSite.order, searchSite);
-        }
-
-        for (SearchSite searchSite : mCoverSearchOrderDefaults) {
-            searchSite.enabled = BookCatalogueApp.Prefs.getBoolean(TAG + "." + searchSite.name + ".cover.enabled", searchSite.enabled);
-            searchSite.order = BookCatalogueApp.Prefs.getInt(TAG + "." + searchSite.name + ".cover.order", searchSite.order);
-
-            mPreferredCoverSearchOrder.set(searchSite.order, searchSite);
-        }
-    }
 
     /** TaskManager for threads; may have other threads than the ones this object creates. */
     @NonNull
@@ -210,38 +118,6 @@ public class SearchManager implements TaskManagerListener {
     }
 
     @NonNull
-    static ArrayList<SearchSite> getSiteSearchOrder() {
-        return mPreferredSearchOrder;
-    }
-
-    static void setSearchOrder(final @NonNull ArrayList<SearchSite> newList) {
-        mPreferredSearchOrder = newList;
-        SharedPreferences.Editor e = BookCatalogueApp.Prefs.edit();
-        for (SearchSite site : newList) {
-            e.putInt(TAG + "." + site.name + ".reliability", site.reliability);
-            e.putBoolean(TAG + "." + site.name + ".enabled", site.enabled);
-            e.putInt(TAG + "." + site.name + ".order", site.order);
-        }
-        e.apply();
-    }
-
-    @NonNull
-    public static ArrayList<SearchSite> getSiteCoverSearchOrder() {
-        return mPreferredCoverSearchOrder;
-    }
-
-    static void setCoverSearchOrder(final @NonNull ArrayList<SearchSite> newList) {
-        mPreferredCoverSearchOrder = newList;
-        SharedPreferences.Editor e = BookCatalogueApp.Prefs.edit();
-        for (SearchSite site : newList) {
-            e.putBoolean(TAG + "." + site.name + ".cover.enabled", site.enabled);
-            e.putInt(TAG + "." + site.name + ".cover.order", site.order);
-        }
-        e.apply();
-    }
-
-
-    @NonNull
     public static TaskSwitch getMessageSwitch() {
         return mMessageSwitch;
     }
@@ -292,11 +168,10 @@ public class SearchManager implements TaskManagerListener {
     public void onFinished() {
     }
 
-
     /**
      * Start a search
      *
-     * @param searchFlags    bitmask with sites to search, see {@link #SEARCH_ALL} and individual flags
+     * @param searchFlags    bitmask with sites to search, see {@link SearchSites#SEARCH_ALL} and individual flags
      *
      *                       ONE of these three parameters must be !.isEmpty
      * @param author         to search for (can be empty)
@@ -309,7 +184,7 @@ public class SearchManager implements TaskManagerListener {
                        final @NonNull String title,
                        final @NonNull String isbn,
                        final boolean fetchThumbnail) {
-        if ((searchFlags & SEARCH_ALL) == 0) {
+        if ((searchFlags & SearchSites.SEARCH_ALL) == 0) {
             throw new IllegalArgumentException("Must specify at least one source to use");
         }
 
@@ -358,7 +233,7 @@ public class SearchManager implements TaskManagerListener {
                     // Assume it's an ASIN, and just search Amazon
                     mSearchingAsin = true;
                     mWaitingForIsbn = false;
-                    tasksStarted = startSearches(SEARCH_AMAZON);
+                    tasksStarted = startSearches(SearchSites.SEARCH_AMAZON);
                 }
             } else {
                 // Run one at a time, startNext() defined the order.
@@ -497,7 +372,7 @@ public class SearchManager implements TaskManagerListener {
         if (mHasValidIsbn) {
             // If ISBN was passed, ignore entries with the wrong ISBN, and put entries with no ISBN at the end
             final List<Integer> uncertain = new ArrayList<>();
-            for (SearchSite site : mReliabilityOrder) {
+            for (SearchSites.Site site : SearchSites.getReliabilityOrder()) {
                 if (mSearchResults.containsKey(site.id)) {
                     Bundle bookData = mSearchResults.get(site.id);
                     if (bookData.containsKey(UniqueId.KEY_BOOK_ISBN)) {
@@ -514,7 +389,7 @@ public class SearchManager implements TaskManagerListener {
             mBookData.putString(UniqueId.KEY_BOOK_ISBN, mIsbn);
         } else {
             // If ISBN was not passed, then just use the default order
-            for (SearchSite site : mReliabilityOrder) {
+            for (SearchSites.Site site : SearchSites.getReliabilityOrder()) {
                 results.add(site.id);
             }
         }
@@ -574,7 +449,7 @@ public class SearchManager implements TaskManagerListener {
 
         // If book is not found or missing required data, warn the user
         if (authors == null || authors.isEmpty() || title == null || title.isEmpty()) {
-            mTaskManager.showUserMessage(BookCatalogueApp.getResourceString(R.string.book_not_found));
+            mTaskManager.showUserMessage(BookCatalogueApp.getResourceString(R.string.warning_book_not_found));
         }
         if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
             Logger.info(this, "All searches done, passing the data back to mMessageSenderId:" + mMessageSenderId);
@@ -600,7 +475,7 @@ public class SearchManager implements TaskManagerListener {
      */
     private boolean startNext() {
         // Loop though in 'search-priority' order
-        for (SearchSite source : mPreferredSearchOrder) {
+        for (SearchSites.Site source : SearchSites.getSiteSearchOrder()) {
             // If this search includes the source, check it
             if (source.enabled && ((mSearchFlags & source.id) != 0)) {
                 // If the source has not been searched, search it
@@ -620,7 +495,7 @@ public class SearchManager implements TaskManagerListener {
     private boolean startSearches(final int sources) {
         boolean atLeastOneStarted = false;
         // Scan searches in priority order
-        for (SearchSite source : mPreferredSearchOrder) {
+        for (SearchSites.Site source : SearchSites.getSiteSearchOrder()) {
             // If requested search contains this source...
             if (source.enabled && ((sources & source.id) != 0)) {
                 // If we have not run this search...
@@ -640,7 +515,7 @@ public class SearchManager implements TaskManagerListener {
      *
      * @param site to search
      */
-    private boolean startOneSearch(final SearchSite site) {
+    private boolean startOneSearch(final @NonNull SearchSites.Site site) {
         if (mCancelledFlg) {
             return false;
         }
@@ -746,75 +621,6 @@ public class SearchManager implements TaskManagerListener {
 
         @NonNull
         SearchManager getSearchManager();
-    }
-
-    public static class SearchSite {
-        public final int id;
-        final String name;
-
-        public boolean enabled;
-        int order;
-        int reliability;
-        boolean isbnOnly = false;
-
-        @SuppressWarnings("SameParameterValue")
-        SearchSite(final int bit,
-                   final @NonNull String name,
-                   final int order,
-                   final boolean enabled) {
-            this.id = bit;
-            this.name = name;
-            this.order = order;
-            this.enabled = enabled;
-
-            this.reliability = order;
-        }
-
-        @SuppressWarnings("SameParameterValue")
-        SearchSite(final int id,
-                   final @NonNull String name,
-                   final int order,
-                   final boolean enabled,
-                   final int reliability) {
-            this.id = id;
-            this.name = name;
-            this.order = order;
-            this.enabled = enabled;
-            this.reliability = reliability;
-        }
-
-        public SearchTask getTask(final @NonNull TaskManager manager) {
-            switch (id) {
-                case SEARCH_GOOGLE:
-                    return new SearchGoogleBooksTask(name, manager);
-
-                case SEARCH_AMAZON:
-                    return new SearchAmazonTask(name, manager);
-
-                case SEARCH_GOODREADS:
-                    return new SearchGoodreadsTask(name, manager);
-
-                case SEARCH_ISFDB:
-                    return new SearchISFDBTask(name, manager);
-
-                case SEARCH_LIBRARY_THING:
-                    return new SearchLibraryThingTask(name, manager);
-
-                default:
-                    throw new RTE.IllegalTypeException("Unexpected search source: " + name);
-            }
-        }
-
-//        @Override
-//        public String toString() {
-//            return "SearchSite{" +
-//                    "id=" + id +
-//                    ", name='" + name + '\'' +
-//                    ", enabled=" + enabled +
-//                    ", order=" + order +
-//                    ", reliability=" + reliability +
-//                    '}';
-//        }
     }
 
     /**

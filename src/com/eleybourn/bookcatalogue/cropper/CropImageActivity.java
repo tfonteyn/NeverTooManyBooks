@@ -75,6 +75,20 @@ public class CropImageActivity extends CropMonitoredActivity {
 
     public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_CROP_IMAGE;
 
+    public static void startActivityForResult(final @NonNull Activity activity,
+                                              final @NonNull File thumbFile,
+                                              final File cropped,
+                                              final boolean cropFrameWholeImage) {
+            Intent intent = new Intent(activity, CropImageActivity.class);
+            intent.putExtra(CropIImage.REQUEST_KEY_IMAGE_ABSOLUTE_PATH, thumbFile.getAbsolutePath());
+            intent.putExtra(CropIImage.REQUEST_KEY_SCALE, true);
+            intent.putExtra(CropIImage.REQUEST_KEY_NO_FACE_DETECTION, true);
+            intent.putExtra(CropIImage.REQUEST_KEY_WHOLE_IMAGE, cropFrameWholeImage);
+            intent.putExtra(CropIImage.REQUEST_KEY_OUTPUT_ABSOLUTE_PATH, cropped.getAbsolutePath());
+
+        activity.startActivityForResult(intent, CropImageActivity.REQUEST_CODE); /* 31c90366-d352-496f-9b7d-3237dd199a77 */
+    }
+
     // private static final String TAG = "CropImage";
 
     private static final int NO_STORAGE_ERROR = -1;
@@ -256,36 +270,7 @@ public class CropImageActivity extends CropMonitoredActivity {
     };
     private CropIImage mImage;
 
-    private static void showUserMessage(final @NonNull Activity activity) {
-        int remaining = calculatePicturesRemaining();
-        @StringRes
-        int msgId = 0;
 
-        if (remaining == NO_STORAGE_ERROR) {
-            if (Environment.MEDIA_CHECKING.equals(Environment.getExternalStorageState())) {
-                msgId = R.string.error_storage_preparing_card;
-            } else {
-                msgId = R.string.error_storage_no_card;
-            }
-        } else if (remaining < 1) {
-            msgId = R.string.error_storage_no_space;
-        }
-
-        if (msgId != 0) {
-            StandardDialogs.showUserMessage(activity, msgId);
-        }
-    }
-
-    private static int calculatePicturesRemaining() {
-        try {
-            long remaining = StorageUtils.getFreeSpace();
-            return (int) (remaining / ESTIMATED_PICTURE_SIZE);
-        } catch (Exception ex) {
-            // if we can't stat the filesystem then we don't know how many pictures are remaining.
-            // It might be zero but just leave it blank since we really don't know.
-            return CANNOT_STAT_ERROR;
-        }
-    }
 
     @Override
     protected int getLayoutId() {
@@ -357,6 +342,38 @@ public class CropImageActivity extends CropMonitoredActivity {
             }
         });
         startFaceDetection();
+    }
+
+
+    private static void showUserMessage(final @NonNull Activity activity) {
+        int remaining = calculatePicturesRemaining();
+        @StringRes
+        int msgId = 0;
+
+        if (remaining == NO_STORAGE_ERROR) {
+            if (Environment.MEDIA_CHECKING.equals(Environment.getExternalStorageState())) {
+                msgId = R.string.error_storage_preparing_card;
+            } else {
+                msgId = R.string.error_storage_no_card;
+            }
+        } else if (remaining < 1) {
+            msgId = R.string.error_storage_no_space;
+        }
+
+        if (msgId != 0) {
+            StandardDialogs.showUserMessage(activity, msgId);
+        }
+    }
+
+    private static int calculatePicturesRemaining() {
+        try {
+            long remaining = StorageUtils.getFreeSpace();
+            return (int) (remaining / ESTIMATED_PICTURE_SIZE);
+        } catch (Exception ex) {
+            // if we can't stat the filesystem then we don't know how many pictures are remaining.
+            // It might be zero but just leave it blank since we really don't know.
+            return CANNOT_STAT_ERROR;
+        }
     }
 
     @NonNull

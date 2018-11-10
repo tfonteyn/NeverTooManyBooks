@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.eleybourn.bookcatalogue.dialogs.picklist;
+package com.eleybourn.bookcatalogue.dialogs.editordialog;
 
 import android.content.Context;
 import android.content.DialogInterface;

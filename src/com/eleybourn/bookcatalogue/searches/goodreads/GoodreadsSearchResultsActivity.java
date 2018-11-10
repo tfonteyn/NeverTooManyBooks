@@ -110,7 +110,7 @@ public class GoodreadsSearchResultsActivity extends BaseListActivity {
 
         // Finish if no results, otherwise display them
         if (works.size() == 0) {
-            StandardDialogs.showUserMessage(this, R.string.no_matching_book_found);
+            StandardDialogs.showUserMessage(this, R.string.warning_no_matching_book_found);
             setResult(Activity.RESULT_CANCELED);
             finish();
             return;

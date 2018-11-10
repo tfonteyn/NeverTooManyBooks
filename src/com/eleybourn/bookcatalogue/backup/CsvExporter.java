@@ -184,7 +184,7 @@ public class CsvExporter implements Exporter {
         }
 
         // Display startup message
-        listener.onProgress(BookCatalogueApp.getResourceString(R.string.export_starting_ellipsis), 0);
+        listener.onProgress(BookCatalogueApp.getResourceString(R.string.progress_msg_export_starting), 0);
         boolean displayingStartupMessage = true;
 
         long lastUpdate = 0;

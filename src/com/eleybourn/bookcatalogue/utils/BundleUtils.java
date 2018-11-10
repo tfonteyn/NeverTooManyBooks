@@ -35,57 +35,67 @@ public class BundleUtils {
     }
 
     /**
-     * Get a value from a Bundle and convert to a long.
+     * Get a int from a Bundle
      *
-     * @param bundle to check
-     * @param key    to check for
+     * @param key     to check for
+     * @param bundles to check
      *
-     * @return Result
-     *
-     * @throws NumberFormatException if it was a string with an invalid format
+     * @return Result or 0 when not found
      */
-    public static long getLongFromBundle(final @NonNull Bundle bundle, final @Nullable String key)
-            throws NumberFormatException {
-        Object value = bundle.get(key);
-
-        if (value instanceof Long) {
-            return (Long) value;
-        } else if (value instanceof String) {
-            return Long.parseLong((String) value);
-        } else if (value instanceof Integer) {
-            return ((Integer) value).longValue();
-        } else {
-            throw new NumberFormatException("Not a long value: " + value);
+    public static int getIntFromBundles(final String key, final @NonNull Bundle... bundles) {
+        int value;
+        for (Bundle bundle : bundles) {
+            if (bundle != null && bundle.containsKey(key)) {
+                value = bundle.getInt(key, -1);
+                if (value != -1) {
+                    return value;
+                }
+            }
         }
+        return 0;
     }
 
-//    public static void dumpBundle(final @NonNull Class clazz, final @Nullable Bundle bundle) {
-//        if (bundle == null) {
-//            Logger.debug("Bundle was null");
-//            return;
-//        }
-//        if (bundle.isEmpty()) {
-//            Logger.debug("Bundle was empty");
-//            return;
-//        }
-//
-//        for (String key : bundle.keySet()) {
-//            Object value = bundle.get(key);
-//
-//            if (value instanceof String) {
-//                Logger.info(clazz,key + "(String)=`" + bundle.getString(key) + "`");
-//            } else if (value instanceof Integer) {
-//                Logger.info(clazz, key + "(Integer)=`" + bundle.getInt(key) + "`");
-//            } else if (value instanceof Long) {
-//                Logger.info(clazz, key + "(Long)=`" + bundle.getLong(key) + "`");
-//            }  else if (value instanceof Float) {
-//                Logger.info(clazz,key + "(Float)=`" + bundle.getFloat(key) + "`");
-//            }  else if (value instanceof Boolean) {
-//                Logger.info(clazz,key + "(Boolean)=`" + bundle.getBoolean(key) + "`");
-//            }  else if (value instanceof Double) {
-//                Logger.info(clazz,key + "(Double)=`" + bundle.getDouble(key) + "`");
-//            }
-//        }
-//    }
+    /**
+     * Get a long from a Bundle
+     *
+     * @param key     to check for
+     * @param bundles to check
+     *
+     * @return Result or 0 when not found
+     */
+    public static long getLongFromBundles(final @Nullable String key, final @NonNull Bundle... bundles) {
+        long value;
+        for (Bundle bundle : bundles) {
+            if (bundle != null && bundle.containsKey(key)) {
+                value = bundle.getLong(key, -1);
+                if (value != -1) {
+                    return value;
+                }
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * Get a Bundle from a Bundle
+     *
+     * @param key     to check for
+     * @param bundles to check
+     *
+     * @return Result or null when not found
+     */
+    public static Bundle getBundleFromBundles(final @Nullable String key, final @NonNull Bundle... bundles) {
+        Bundle value;
+        for (Bundle bundle : bundles) {
+            if (bundle != null && bundle.containsKey(key)) {
+                value = bundle.getBundle(key);
+                if (value != null) {
+                    return value;
+                }
+            }
+        }
+        return null;
+    }
+
 
 }

@@ -69,6 +69,6 @@ public interface ReaderEntity {
 
     /** Supported entity types */
     enum BackupEntityType {
-        Cover, Books, Info, Database, Preferences, BooklistStyle
+        Cover, Books, Info, Database, Preferences, BooklistStyle, XML
     }
 }

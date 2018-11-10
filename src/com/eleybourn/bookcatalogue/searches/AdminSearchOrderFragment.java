@@ -23,8 +23,10 @@ import java.util.Objects;
 
 public class AdminSearchOrderFragment extends Fragment {
 
+    public static final String TAG = "AdminSearchOrderFragment";
+
     private ListView mListView;
-    private ArrayList<SearchManager.SearchSite> mList;
+    private ArrayList<SearchSites.Site> mList;
     private SearchSiteListAdapter mAdapter;
 
     private boolean isCreated;
@@ -43,7 +45,7 @@ public class AdminSearchOrderFragment extends Fragment {
         Bundle args = getArguments();
         Objects.requireNonNull(args);
         //noinspection unchecked
-        mList = (ArrayList<SearchManager.SearchSite>) args.getSerializable(SearchManager.BKEY_SEARCH_SITES);
+        mList = (ArrayList<SearchSites.Site>) args.getSerializable(SearchSites.BKEY_SEARCH_SITES);
 
         mAdapter = new SearchSiteListAdapter(requireContext(), R.layout.row_edit_searchsite, mList);
         //noinspection ConstantConditions
@@ -53,14 +55,14 @@ public class AdminSearchOrderFragment extends Fragment {
     }
 
     @Nullable
-    public ArrayList<SearchManager.SearchSite> getList() {
+    public ArrayList<SearchSites.Site> getList() {
         if (isCreated) {
-            ArrayList<SearchManager.SearchSite> newList = new ArrayList<>(mList);
+            ArrayList<SearchSites.Site> newList = new ArrayList<>(mList);
             for (int i = 0; i < mListView.getChildCount(); i++) {
                 // get the current position of each site, and store that back into the site object.
                 View child = mListView.getChildAt(i);
                 int pos = mAdapter.getViewRow(child);
-                SearchManager.SearchSite site = mAdapter.getItem(pos);
+                SearchSites.Site site = mAdapter.getItem(pos);
                 //noinspection ConstantConditions
                 site.order = i;
                 newList.set(site.order, site);
@@ -70,16 +72,16 @@ public class AdminSearchOrderFragment extends Fragment {
         return mList;
     }
 
-    private class SearchSiteListAdapter extends SimpleListAdapter<SearchManager.SearchSite> implements SimpleListAdapterRowActionListener<SearchManager.SearchSite> {
+    private class SearchSiteListAdapter extends SimpleListAdapter<SearchSites.Site> implements SimpleListAdapterRowActionListener<SearchSites.Site> {
 
         SearchSiteListAdapter(final @NonNull Context context,
                               final int rowViewId,
-                              final @NonNull List<SearchManager.SearchSite> list) {
+                              final @NonNull List<SearchSites.Site> list) {
             super(context, rowViewId, list);
         }
 
         @Override
-        public void onGetView(final @NonNull View convertView, final @NonNull SearchManager.SearchSite item) {
+        public void onGetView(final @NonNull View convertView, final @NonNull SearchSites.Site item) {
             final TextView name = convertView.findViewById(R.id.row_name);
             name.setText(item.name);
 

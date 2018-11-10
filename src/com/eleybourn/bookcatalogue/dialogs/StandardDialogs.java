@@ -149,7 +149,7 @@ public class StandardDialogs {
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .create();
 
-        dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getString(R.string.more_info),
+        dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getString(R.string.btn_more_info),
                 new DialogInterface.OnClickListener() {
                     public void onClick(final @NonNull DialogInterface dialog, final int which) {
                         Intent i = new Intent(context, LibraryThingAdminActivity.class);
@@ -159,7 +159,7 @@ public class StandardDialogs {
                 });
 
         if (!required) {
-            dialog.setButton(DialogInterface.BUTTON_NEUTRAL, context.getString(R.string.disable_dialogue),
+            dialog.setButton(DialogInterface.BUTTON_NEUTRAL, context.getString(R.string.btn_disable_message),
                     new DialogInterface.OnClickListener() {
                         public void onClick(final @NonNull DialogInterface dialog, final int which) {
                             SharedPreferences.Editor ed = prefs.edit();
@@ -186,8 +186,8 @@ public class StandardDialogs {
                                          final @NonNull Runnable onDeleted) {
 
         final AlertDialog dialog = new AlertDialog.Builder(context)
-                .setMessage(String.format(context.getString(R.string.really_delete_series), series.name))
-                .setTitle(R.string.dialog_title_delete_series)
+                .setMessage(String.format(context.getString(R.string.warning_really_delete_series), series.name))
+                .setTitle(R.string.title_delete_series)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .create();
 
@@ -225,7 +225,7 @@ public class StandardDialogs {
         String title;
         try (Cursor cursor = db.fetchBookById(bookId)) {
             if (!cursor.moveToFirst()) {
-                return R.string.unable_to_find_book;
+                return R.string.warning_unable_to_find_book;
             }
 
             title = cursor.getString(cursor.getColumnIndex(DatabaseDefinitions.DOM_TITLE.name));
@@ -249,7 +249,7 @@ public class StandardDialogs {
         }
 
         final AlertDialog dialog = new AlertDialog.Builder(context)
-                .setMessage((context.getString(R.string.really_delete_book, title, authors)))
+                .setMessage((context.getString(R.string.warning_really_delete_book, title, authors)))
                 .setTitle(R.string.menu_delete_book)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .create();
@@ -280,7 +280,7 @@ public class StandardDialogs {
      */
     public static void goodreadsAuthAlert(final @NonNull FragmentActivity context) {
         final AlertDialog dialog = new AlertDialog.Builder(context)
-                .setTitle(R.string.gr_auth_access)
+                .setTitle(R.string.gr_title_auth_access)
                 .setMessage(R.string.gr_action_cannot_blah_blah)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .create();
@@ -293,7 +293,7 @@ public class StandardDialogs {
                     }
                 });
 
-        dialog.setButton(DialogInterface.BUTTON_NEUTRAL, context.getString(R.string.tell_me_more),
+        dialog.setButton(DialogInterface.BUTTON_NEUTRAL, context.getString(R.string.btn_tell_me_more),
                 new DialogInterface.OnClickListener() {
                     public void onClick(final @NonNull DialogInterface dialog, final int which) {
                         dialog.dismiss();

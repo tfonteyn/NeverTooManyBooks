@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.eleybourn.bookcatalogue.dialogs;
+package com.eleybourn.bookcatalogue.dialogs.editordialog;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -39,6 +39,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 
 import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 
 import java.util.Calendar;
 
@@ -299,9 +300,9 @@ class PartialDatePickerDialog extends AlertDialog {
                             public void onClick(final View v) {
                                 // Ensure the date is 'hierarchically valid'; require year, if month is non-null, require month if day non-null
                                 if (mDay != null && mDay > 0 && (mMonth == null || mMonth == 0)) {
-                                    StandardDialogs.showUserMessage(mActivity, R.string.if_day_is_specified_month_and_year_must_be);
+                                    StandardDialogs.showUserMessage(mActivity, R.string.warning_if_day_set_month_and_year_must_be);
                                 } else if (mMonth != null && mMonth > 0 && mYear == null) {
-                                    StandardDialogs.showUserMessage(mActivity, R.string.if_month_is_specified_year_must_be);
+                                    StandardDialogs.showUserMessage(mActivity, R.string.warning_if_month_set_year_must_be);
                                 } else {
                                     if (mListener != null)
                                         mListener.onPartialDatePickerSave(PartialDatePickerDialog.this, mYear, mMonth, mDay);

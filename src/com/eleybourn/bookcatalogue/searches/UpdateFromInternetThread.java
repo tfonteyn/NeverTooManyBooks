@@ -41,7 +41,6 @@ import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.tasks.ManagedTask;
 import com.eleybourn.bookcatalogue.tasks.TaskManager;
 import com.eleybourn.bookcatalogue.utils.ArrayUtils;
-import com.eleybourn.bookcatalogue.utils.BundleUtils;
 import com.eleybourn.bookcatalogue.utils.RTE;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
@@ -86,7 +85,7 @@ public class UpdateFromInternetThread extends ManagedTask {
     /** current book ID */
     private long mCurrentBookId = 0;
     /** current book UUID */
-    private String mCurrentBookUuid = null;
+    private String mCurrentUuid = null;
 
     /** The (subset) of fields relevant to the current book */
     private UpdateFromInternetActivity.FieldUsages mCurrentBookFieldUsages;
@@ -129,7 +128,7 @@ public class UpdateFromInternetThread extends ManagedTask {
 
         mSearchSites = searchSites;
         mSearchManager = new SearchManager(mTaskManager, mSearchListener);
-        mTaskManager.doProgress(BookCatalogueApp.getResourceString(R.string.starting_search));
+        mTaskManager.doProgress(BookCatalogueApp.getResourceString(R.string.progress_msg_starting_search));
         getMessageSwitch().addListener(getSenderId(), listener, false);
     }
 
@@ -201,9 +200,9 @@ public class UpdateFromInternetThread extends ManagedTask {
                 }
 
                 // Get the book ID
-                mCurrentBookId = BundleUtils.getLongFromBundle(mOriginalBookData, UniqueId.KEY_ID);
+                mCurrentBookId = mOriginalBookData.getLong(UniqueId.KEY_ID);
                 // Get the book UUID
-                mCurrentBookUuid = mOriginalBookData.getString(UniqueId.KEY_BOOK_UUID);
+                mCurrentUuid = mOriginalBookData.getString(UniqueId.KEY_BOOK_UUID);
                 // Get the extra data about the book
                 mOriginalBookData.putSerializable(UniqueId.BKEY_AUTHOR_ARRAY, mDb.getBookAuthorList(mCurrentBookId));
                 mOriginalBookData.putSerializable(UniqueId.BKEY_SERIES_ARRAY, mDb.getBookSeriesList(mCurrentBookId));
@@ -295,7 +294,7 @@ public class UpdateFromInternetThread extends ManagedTask {
                         switch (usage.key) {
                             // - If it's a thumbnail, then see if it's missing or empty.
                             case UniqueId.KEY_BOOK_THUMBNAIL:
-                                File file = StorageUtils.getCoverFile(mCurrentBookUuid);
+                                File file = StorageUtils.getCoverFile(mCurrentUuid);
                                 if (!file.exists() || file.length() == 0) {
                                     mCurrentBookFieldUsages.put(usage);
                                 }
@@ -365,12 +364,12 @@ public class UpdateFromInternetThread extends ManagedTask {
         if (cancelled) {
             cancelTask();
         } else if (newBookData.size() == 0) {
-            mTaskManager.showUserMessage(BookCatalogueApp.getResourceString(R.string.unable_to_find_book));
+            mTaskManager.showUserMessage(BookCatalogueApp.getResourceString(R.string.warning_unable_to_find_book));
         }
 
         // Save the local data from the context so we can start a new search
         if (!isCancelled() && newBookData.size() > 0) {
-            processSearchResults(mCurrentBookId, mCurrentBookUuid, mCurrentBookFieldUsages, newBookData, mOriginalBookData);
+            processSearchResults(mCurrentBookId, mCurrentUuid, mCurrentBookFieldUsages, newBookData, mOriginalBookData);
         }
 
         // Done! This need to go after processSearchResults() because we will signal(free) the
@@ -399,7 +398,7 @@ public class UpdateFromInternetThread extends ManagedTask {
      * @param originalBookData Original data
      */
     private void processSearchResults(final long bookId,
-                                      final @NonNull String bookUuid,
+                                      final @NonNull String uuid,
                                       final @NonNull UpdateFromInternetActivity.FieldUsages requestedFields,
                                       final @NonNull Bundle newBookData,
                                       final @NonNull Bundle originalBookData) {
@@ -425,13 +424,13 @@ public class UpdateFromInternetThread extends ManagedTask {
                     File downloadedFile = StorageUtils.getTempCoverFile();
                     boolean copyThumb = false;
                     if (usage.usage == UpdateFromInternetActivity.FieldUsage.Usage.COPY_IF_BLANK) {
-                        File file = StorageUtils.getCoverFile(bookUuid);
+                        File file = StorageUtils.getCoverFile(uuid);
                         copyThumb = (!file.exists() || file.length() == 0);
                     } else if (usage.usage == UpdateFromInternetActivity.FieldUsage.Usage.OVERWRITE) {
                         copyThumb = true;
                     }
                     if (copyThumb) {
-                        File file = StorageUtils.getCoverFile(bookUuid);
+                        File file = StorageUtils.getCoverFile(uuid);
                         StorageUtils.renameFile(downloadedFile, file);
                     } else {
                         StorageUtils.deleteFile(downloadedFile);

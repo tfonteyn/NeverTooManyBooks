@@ -17,21 +17,14 @@
  * You should have received a copy of the GNU General Public License
  * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.eleybourn.bookcatalogue.dialogs;
+package com.eleybourn.bookcatalogue.dialogs.editordialog;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
-import android.support.v4.app.DialogFragment;
-
-import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.UniqueId;
-import com.eleybourn.bookcatalogue.utils.RTE;
 
 import java.util.Objects;
 
@@ -40,19 +33,13 @@ import java.util.Objects;
  *
  * @author pjw
  */
-public class PartialDatePickerDialogFragment extends DialogFragment {
+public class PartialDatePickerDialogFragment extends EditorDialogFragment {
     /** a standard sql style date string, must be correct */
     public static final String BKEY_DATE = "date";
     /** or the date split into components, which can partial */
     public static final String BKEY_YEAR = "year";
     public static final String BKEY_MONTH = "month";
     public static final String BKEY_DAY = "day";
-
-    @StringRes
-    private int mTitleId;
-    @IdRes
-    private int mDestinationFieldId;
-
     /**
      * Object to handle changes
      */
@@ -63,40 +50,27 @@ public class PartialDatePickerDialogFragment extends DialogFragment {
                                                     final Integer month,
                                                     final Integer day) {
                     dialog.dismiss();
-                    ((OnPartialDatePickerResultsListener) requireActivity()).onPartialDatePickerSave(PartialDatePickerDialogFragment.this,
-                            mDestinationFieldId, year, month, day);
+                    ((OnPartialDatePickerResultsListener) getCallerFragment())
+                            .onPartialDatePickerSave(PartialDatePickerDialogFragment.this,
+                                    mDestinationFieldId, year, month, day);
                 }
 
                 @Override
                 public void onPartialDatePickerCancel(final @NonNull PartialDatePickerDialog dialog) {
                     dialog.dismiss();
-
-                    ((OnPartialDatePickerResultsListener) requireActivity()).onPartialDatePickerCancel(PartialDatePickerDialogFragment.this,
-                            mDestinationFieldId);
+                    ((OnPartialDatePickerResultsListener) getCallerFragment())
+                            .onPartialDatePickerCancel(PartialDatePickerDialogFragment.this,
+                                    mDestinationFieldId);
                 }
             };
 
-    /** Currently displayed year; null if empty/invalid */
+    /** Currently displayed; null if empty/invalid */
     @Nullable
     private Integer mYear;
-    /** Currently displayed month; null if empty/invalid */
     @Nullable
     private Integer mMonth;
-    /** Currently displayed day; null if empty/invalid */
     @Nullable
     private Integer mDay;
-
-    /**
-     * Check the activity supports the interface
-     */
-    @Override
-    @CallSuper
-    public void onAttach(final @NonNull Context context) {
-        super.onAttach(context);
-        if (!(context instanceof OnPartialDatePickerResultsListener)) {
-            throw new RTE.MustImplementException(context, OnPartialDatePickerResultsListener.class);
-        }
-    }
 
     /**
      * Create the underlying dialog
@@ -104,41 +78,25 @@ public class PartialDatePickerDialogFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(final @Nullable Bundle savedInstanceState) {
+        initStandardArgs(savedInstanceState);
+
         if (savedInstanceState != null) {
-            mTitleId = savedInstanceState.getInt(UniqueId.BKEY_DIALOG_TITLE);
-            mDestinationFieldId = savedInstanceState.getInt(UniqueId.BKEY_FIELD_ID);
-            // data to edit
             if (savedInstanceState.containsKey(BKEY_DATE)) {
                 setDate(savedInstanceState.getString(BKEY_DATE, ""));
             } else {
-                if (savedInstanceState.containsKey(BKEY_YEAR)) {
-                    mYear = savedInstanceState.getInt(BKEY_YEAR);
-                }
-                if (savedInstanceState.containsKey(BKEY_MONTH)) {
-                    mMonth = savedInstanceState.getInt(BKEY_MONTH);
-                }
-                if (savedInstanceState.containsKey(BKEY_DAY)) {
-                    mDay = savedInstanceState.getInt(BKEY_DAY);
-                }
+                mYear = savedInstanceState.getInt(BKEY_YEAR);
+                mMonth = savedInstanceState.getInt(BKEY_MONTH);
+                mDay = savedInstanceState.getInt(BKEY_DAY);
             }
         } else {
             Bundle args = getArguments();
             Objects.requireNonNull(args);
-            mTitleId = args.getInt(UniqueId.BKEY_DIALOG_TITLE, R.string.edit);
-            mDestinationFieldId = args.getInt(UniqueId.BKEY_FIELD_ID);
-            // data to edit
             if (args.containsKey(BKEY_DATE)) {
                 setDate(args.getString(BKEY_DATE, ""));
             } else {
-                if (args.containsKey(BKEY_YEAR)) {
-                    mYear = args.getInt(BKEY_YEAR);
-                }
-                if (args.containsKey(BKEY_MONTH)) {
-                    mMonth = args.getInt(BKEY_MONTH);
-                }
-                if (args.containsKey(BKEY_DAY)) {
-                    mDay = args.getInt(BKEY_DAY);
-                }
+                mYear = args.getInt(BKEY_YEAR);
+                mMonth = args.getInt(BKEY_MONTH);
+                mDay = args.getInt(BKEY_DAY);
             }
         }
 
@@ -186,8 +144,6 @@ public class PartialDatePickerDialogFragment extends DialogFragment {
     @Override
     @CallSuper
     public void onSaveInstanceState(final @NonNull Bundle outState) {
-        outState.putInt(UniqueId.BKEY_DIALOG_TITLE, mTitleId);
-        outState.putInt(UniqueId.BKEY_FIELD_ID, mDestinationFieldId);
         if (mYear != null) {
             outState.putInt(BKEY_YEAR, mYear);
         }

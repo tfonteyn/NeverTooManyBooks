@@ -54,9 +54,9 @@ public class PreferencesActivity extends PreferencesBaseActivity {
     private static final ItemEntries<Integer> mRotationListItems = new ItemEntries<Integer>()
             .add(null, R.string.use_default_setting)
             .add(0, R.string.no)
-            .add(90, R.string.menu_rotate_thumb_cw)
-            .add(-90, R.string.menu_rotate_thumb_ccw)
-            .add(180, R.string.menu_rotate_thumb_180);
+            .add(90, R.string.menu_cover_rotate_cw)
+            .add(-90, R.string.menu_cover_rotate_ccw)
+            .add(180, R.string.menu_cover_rotate_180);
 
     /** List of supported message implementations */
     private static final ItemEntries<Integer> mMessageImplementationItems = new ItemEntries<Integer>()
@@ -221,7 +221,7 @@ public class PreferencesActivity extends PreferencesBaseActivity {
         // Make sure the names are correct
         updateLocalesListItems();
 
-        setTitle(R.string.dialog_title_preferences);
+        setTitle(R.string.title_preferences);
     }
 
     @Override

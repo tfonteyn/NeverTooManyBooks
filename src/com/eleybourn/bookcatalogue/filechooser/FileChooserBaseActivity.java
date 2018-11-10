@@ -91,9 +91,9 @@ public abstract class FileChooserBaseActivity extends BaseActivity implements
                 && fragmentManager.findFragmentById(R.id.browser_fragment) == null) {
             // Create the browser
             FileChooserFragment frag = getChooserFragment();
-            getSupportFragmentManager()
+            fragmentManager
                     .beginTransaction()
-                    .replace(R.id.browser_fragment, frag)
+                    .replace(R.id.browser_fragment, frag, FileChooserFragment.TAG)
                     .commit();
         }
 
@@ -206,7 +206,7 @@ public abstract class FileChooserBaseActivity extends BaseActivity implements
         FileLister lister = getFileLister(root);
 
         // Start the task
-        SimpleTaskQueueProgressDialogFragment.runTaskWithProgress(this, R.string.searching_directory_ellipsis, lister, true, 0);
+        SimpleTaskQueueProgressDialogFragment.runTaskWithProgress(this, R.string.progress_msg_searching_directory, lister, true, 0);
 
     }
 }

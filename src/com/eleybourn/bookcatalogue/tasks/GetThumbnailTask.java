@@ -80,7 +80,7 @@ public class GetThumbnailTask implements SimpleTask {
     private final WeakReference<ImageView> mView;
     /** ID of book whose cover we are getting */
     @NonNull
-    private final String mBookHash;
+    private final String mUuid;
     /** Options indicating original caller had checked cache */
     private final boolean mCacheWasChecked;
     /** The width of the thumbnail retrieved (based on preferences) */
@@ -111,7 +111,7 @@ public class GetThumbnailTask implements SimpleTask {
         mView = new WeakReference<>(v);
         mCacheWasChecked = cacheWasChecked;
 
-        mBookHash = hash;
+        mUuid = hash;
         mWidth = maxWidth;
         mHeight = maxHeight;
 
@@ -200,16 +200,16 @@ public class GetThumbnailTask implements SimpleTask {
 
 
         if (!mCacheWasChecked) {
-            File originalFile = StorageUtils.getCoverFile(mBookHash);
+            File originalFile = StorageUtils.getCoverFile(mUuid);
             try (CoversDbHelper coversDbHelper = CoversDbHelper.getInstance(mContext)) {
                 mBitmap = coversDbHelper.fetchCachedImageIntoImageView(originalFile,
-                        null, mBookHash, mWidth, mHeight);
+                        null, mUuid, mWidth, mHeight);
             }
             mWasInCache = (mBitmap != null);
         }
 
         if (mBitmap == null) {
-            mBitmap = ImageUtils.fetchBookCoverIntoImageView(null, mBookHash,
+            mBitmap = ImageUtils.fetchBookCoverIntoImageView(null, mUuid,
                     mWidth, mHeight, true, false, false);
         }
 
@@ -242,7 +242,7 @@ public class GetThumbnailTask implements SimpleTask {
                 // Queue the image to be written to the cache. Do it in a separate queue to avoid
                 // delays in displaying image and to avoid contention -- the cache queue only has
                 // one thread. Tell the cache write it can be recycled if we don't have a valid view.
-                ThumbnailCacheWriterTask.writeToCache(mContext, CoversDbHelper.getThumbnailCoverCacheId(mBookHash, mWidth, mHeight), mBitmap, !viewIsValid);
+                ThumbnailCacheWriterTask.writeToCache(mContext, CoversDbHelper.getThumbnailCoverCacheId(mUuid, mWidth, mHeight), mBitmap, !viewIsValid);
             }
             if (viewIsValid) {
                 //LayoutParams lp = new LayoutParams(mBitmap.getWidth(), mBitmap.getHeight());

@@ -54,7 +54,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:text="@string/gr_auth_access" />
+                android:text="@string/gr_title_auth_access" />
 
             <!-- BLURB 3 -->
 
@@ -81,7 +81,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:text="@string/forget_credentials" />
+                android:text="@string/gr_btn_forget_credentials" />
 
             <!-- BLURB 3 -->
 

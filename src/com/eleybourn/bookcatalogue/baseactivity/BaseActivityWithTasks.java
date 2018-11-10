@@ -259,7 +259,7 @@ abstract public class BaseActivityWithTasks extends BaseActivity {
 
         // Set message; if we are cancelling we override the message
         if (mTaskManager != null && mTaskManager.isCancelling()) {
-            mProgressDialog.setMessage(getString(R.string.cancelling));
+            mProgressDialog.setMessage(getString(R.string.progress_msg_cancelling));
         } else {
             mProgressDialog.setMessage(mProgressMessage);
         }

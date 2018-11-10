@@ -38,7 +38,7 @@
                 android:id="@+id/lbl_edit_styles"
                 style="@style/row_option_text"
                 android:drawableStart="@drawable/ic_style"
-                android:text="@string/menu_edit_book_list_styles" />
+                android:text="@string/menu_edit_booklist_styles" />
 
             <View style="@style/divider_horizontalList" />
 
@@ -84,7 +84,7 @@
                 android:id="@+id/lbl_update_internet"
                 style="@style/row_option_text"
                 android:drawableStart="@drawable/ic_content_copy"
-                android:text="@string/update_fields" />
+                android:text="@string/title_update_fields" />
 
             <TextView
                 android:id="@+id/lbl_sync_with_goodreads"
@@ -129,13 +129,13 @@
 
             <TextView
                 style="@style/hdr_preferencesSection"
-                android:text="@string/advanced_options" />
+                android:text="@string/title_advanced_options" />
 
             <TextView
                 android:id="@+id/search_sites"
                 style="@style/row_option_text"
                 android:drawableStart="@drawable/ic_search"
-                android:text="@string/search_sites" />
+                android:text="@string/tab_lbl_search_sites" />
 
             <TextView
                 android:id="@+id/lbl_background_tasks"

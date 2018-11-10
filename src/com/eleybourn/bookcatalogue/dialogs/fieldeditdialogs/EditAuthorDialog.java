@@ -66,7 +66,7 @@ public class EditAuthorDialog {
 
         final AlertDialog dialog = new AlertDialog.Builder(mContext)
                 .setView(root)
-                .setTitle(R.string.dialog_title_edit_author)
+                .setTitle(R.string.title_edit_author)
                 .create();
 
         //noinspection ConstantConditions
@@ -75,7 +75,7 @@ public class EditAuthorDialog {
             public void onClick(View v) {
                 String newFamily = familyView.getText().toString().trim();
                 if (newFamily.isEmpty()) {
-                    StandardDialogs.showUserMessage(mContext, R.string.warning_blank_author);
+                    StandardDialogs.showUserMessage(mContext, R.string.warning_required_author);
                     return;
                 }
                 String newGiven = givenView.getText().toString().trim();

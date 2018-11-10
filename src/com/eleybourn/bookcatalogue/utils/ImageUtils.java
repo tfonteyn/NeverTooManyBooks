@@ -46,7 +46,8 @@ public class ImageUtils {
     @Nullable
     public static Bitmap fetchFileIntoImageView(final @Nullable ImageView destView,
                                                 final @NonNull File file,
-                                                final int maxWidth, final int maxHeight, final boolean exact) {
+                                                final int maxWidth, final int maxHeight,
+                                                final boolean exact) {
         // Get the file, if it exists. Otherwise set 'broken image' icon and exit.
         if (!file.exists()) {
             if (destView != null)
@@ -63,7 +64,8 @@ public class ImageUtils {
     @Nullable
     public static Bitmap fetchFileIntoImageView(final @Nullable ImageView destView,
                                                 final @NonNull String fileSpec,
-                                                final int maxWidth, final int maxHeight, final boolean exact) {
+                                                final int maxWidth, final int maxHeight,
+                                                final boolean exact) {
 
         // Read the file to get file size
         final BitmapFactory.Options opt = new BitmapFactory.Options();
@@ -164,7 +166,7 @@ public class ImageUtils {
      * the cache date. If the cached image date is < the file, it is rebuilt.
      *
      * @param destView        View to populate
-     * @param coverUUID       ID of book to retrieve.
+     * @param uuid       ID of book to retrieve.
      * @param maxWidth        Max width of resulting image
      * @param maxHeight       Max height of resulting image
      * @param exact           Whether to fit dimensions exactly
@@ -175,12 +177,14 @@ public class ImageUtils {
      */
     @Nullable
     public static Bitmap fetchBookCoverIntoImageView(final @Nullable ImageView destView,
-                                                     final @NonNull String coverUUID,
-                                                     final int maxWidth, final int maxHeight, final boolean exact,
-                                                     final boolean checkCache, final boolean allowBackground) {
+                                                     final @NonNull String uuid,
+                                                     final int maxWidth, final int maxHeight,
+                                                     final boolean exact,
+                                                     final boolean checkCache,
+                                                     final boolean allowBackground) {
 
         //* Get the original file so we can use the modification date, path etc */
-        final File coverFile = StorageUtils.getCoverFile(coverUUID);
+        final File coverFile = StorageUtils.getCoverFile(uuid);
 
         boolean cacheWasChecked = false;
 
@@ -188,7 +192,7 @@ public class ImageUtils {
         if (checkCache && destView != null
                 && !GetThumbnailTask.hasActiveTasks() && !ThumbnailCacheWriterTask.hasActiveTasks()) {
             try (CoversDbHelper coversDbHelper = CoversDbHelper.getInstance(destView.getContext())) {
-                final Bitmap bm = coversDbHelper.fetchCachedImageIntoImageView(coverFile, destView, coverUUID, maxWidth, maxHeight);
+                final Bitmap bm = coversDbHelper.fetchCachedImageIntoImageView(coverFile, destView, uuid, maxWidth, maxHeight);
                 if (bm != null) {
                     return bm;
                 }
@@ -199,7 +203,7 @@ public class ImageUtils {
         // If we get here, the image is not in the cache but the original exists. See if we can queue it.
         if (allowBackground && destView != null) {
             destView.setImageBitmap(null);
-            GetThumbnailTask.getThumbnail(destView.getContext(), coverUUID, destView, maxWidth, maxHeight, cacheWasChecked);
+            GetThumbnailTask.getThumbnail(destView.getContext(), uuid, destView, maxWidth, maxHeight, cacheWasChecked);
             return null;
         }
 
@@ -354,8 +358,9 @@ public class ImageUtils {
             if (opt.outHeight <= 0 || opt.outWidth <= 0) {
                 StandardDialogs.showUserMessage(activity, R.string.warning_cover_corrupt);
             } else {
+//                final Dialog dialog = new AlertDialog.Builder(activity,R.style.zoomedCoverImage)
+//                        .create();
                 final Dialog dialog = new StandardDialogs.BasicDialog(activity, R.style.zoomedCoverImage);
-
                 final ImageView cover = new ImageView(activity);
                 fetchFileIntoImageView(cover, thumbFile, thumbSizes.zoomed, thumbSizes.zoomed, true);
                 cover.setAdjustViewBounds(true);

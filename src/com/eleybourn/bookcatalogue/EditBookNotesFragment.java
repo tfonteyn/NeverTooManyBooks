@@ -20,7 +20,6 @@
 
 package com.eleybourn.bookcatalogue;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.IdRes;
@@ -34,55 +33,57 @@ import com.eleybourn.bookcatalogue.Fields.Field;
 import com.eleybourn.bookcatalogue.Fields.FieldFormatter;
 import com.eleybourn.bookcatalogue.datamanager.validators.ValidatorException;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.dialogs.picklist.CheckListEditorDialogFragment;
-import com.eleybourn.bookcatalogue.dialogs.picklist.CheckListItem;
-import com.eleybourn.bookcatalogue.dialogs.picklist.CheckListItemBase;
-import com.eleybourn.bookcatalogue.dialogs.PartialDatePickerDialogFragment;
+import com.eleybourn.bookcatalogue.dialogs.editordialog.CheckListEditorDialogFragment;
+import com.eleybourn.bookcatalogue.dialogs.editordialog.CheckListItem;
+import com.eleybourn.bookcatalogue.dialogs.editordialog.CheckListItemBase;
+import com.eleybourn.bookcatalogue.dialogs.editordialog.PartialDatePickerDialogFragment;
 import com.eleybourn.bookcatalogue.entities.Book;
+import com.eleybourn.bookcatalogue.entities.BookManager;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
-import com.eleybourn.bookcatalogue.utils.RTE;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This class is called by {@link EditBookActivity} and displays the Notes Tab
+ * This class is called by {@link EditBookFragment} and displays the Notes Tab
  */
 public class EditBookNotesFragment extends BookAbstractFragment implements
         CheckListEditorDialogFragment.OnCheckListEditorResultsListener,
         PartialDatePickerDialogFragment.OnPartialDatePickerResultsListener {
 
-    /** Lists in database so far, we cache them for performance */
+    public static final String TAG = "EditBookNotesFragment";
+
+    /**
+     * Field drop down lists
+     * Lists in database so far, we cache them for performance but only load them when really needed
+     */
     private List<String> mLocations;
     private List<String> mPricePaidCurrencies;
 
-    /**
-     * Load a location list; reloading this list every time a tab changes is slow.
-     * So we cache it.
-     *
-     * @return List of locations
-     */
+    /* ------------------------------------------------------------------------------------------ */
     @NonNull
-    private List<String> getLocations() {
-        if (mLocations == null) {
-            mLocations = mDb.getLocations();
-        }
-        return mLocations;
+    protected BookManager getBookManager() {
+        //noinspection ConstantConditions
+        return ((EditBookFragment)this.getParentFragment()).getBookManager();
     }
 
-    /**
-     * Load a currency list; reloading this list every time a tab changes is slow.
-     * So we cache it.
-     *
-     * @return List of ISO currency codes
-     */
-    @NonNull
-    public List<String> getPricePaidCurrencyCodes() {
-        if (mPricePaidCurrencies == null) {
-            mPricePaidCurrencies = mDb.getCurrencyCodes(UniqueId.KEY_BOOK_PRICE_PAID_CURRENCY);
-        }
-        return mPricePaidCurrencies;
-    }
+    /* ------------------------------------------------------------------------------------------ */
+
+    //<editor-fold desc="Fragment startup">
+
+//    /**
+//     * Ensure activity supports interface
+//     */
+//    @Override
+//    @CallSuper
+//    public void onAttach(final @NonNull Context context) {
+//        super.onAttach(context);
+//    }
+
+//    @Override
+//    public void onCreate(@Nullable final Bundle savedInstanceState) {
+//        super.onCreate(savedInstanceState);
+//    }
 
     @Override
     public View onCreateView(final @NonNull LayoutInflater inflater,
@@ -92,20 +93,8 @@ public class EditBookNotesFragment extends BookAbstractFragment implements
     }
 
     /**
-     * Check the activity supports the interface
-     */
-    @Override
-    @CallSuper
-    public void onAttach(final @NonNull Context context) {
-        super.onAttach(context);
-        if (!(context instanceof CheckListEditorDialogFragment.OnCheckListEditorResultsListener)) {
-            throw new RTE.MustImplementException(context, CheckListEditorDialogFragment.OnCheckListEditorResultsListener.class);
-        }
-    }
-
-    /**
      * has no specific Arguments or savedInstanceState as all is done via
-     * {@link #getBook()} on the hosting Activity
+     * {@link BookManager#getBook()} on the hosting Activity
      * {@link #onLoadFieldsFromBook(Book, boolean)} from base class onResume
      * {@link #onSaveFieldsToBook(Book)} from base class onPause     */
     @Override
@@ -147,7 +136,7 @@ public class EditBookNotesFragment extends BookAbstractFragment implements
 
         field = mFields.add(R.id.edition, UniqueId.KEY_BOOK_EDITION_BITMASK)
                 .setFormatter(new Fields.BookEditionsFormatter());
-        initCheckListEditor(field, R.string.lbl_edition, getBook().getEditableEditionList());
+        initCheckListEditor(TAG, field, R.string.lbl_edition, getBookManager().getBook().getEditableEditionList());
 
 
         // ENHANCE: Add a partial date validator. Or not.
@@ -156,15 +145,15 @@ public class EditBookNotesFragment extends BookAbstractFragment implements
 
         field = mFields.add(R.id.date_purchased, UniqueId.KEY_BOOK_DATE_ADDED)
                 .setFormatter(dateFormatter);
-        initPartialDatePicker(field, R.string.lbl_date_purchased, true);
+        initPartialDatePicker(TAG, field, R.string.lbl_date_purchased, true);
 
         field = mFields.add(R.id.read_start, UniqueId.KEY_BOOK_READ_START)
                 .setFormatter(dateFormatter);
-        initPartialDatePicker(field, R.string.lbl_read_start, true);
+        initPartialDatePicker(TAG, field, R.string.lbl_read_start, true);
 
         field = mFields.add(R.id.read_end, UniqueId.KEY_BOOK_READ_END)
                 .setFormatter(dateFormatter);
-        initPartialDatePicker(field, R.string.lbl_read_end, true);
+        initPartialDatePicker(TAG, field, R.string.lbl_read_end, true);
 
         mFields.addCrossValidator(new Fields.FieldCrossValidator() {
             public void validate(final @NonNull Fields fields, final @NonNull Bundle values) throws ValidatorException{
@@ -183,12 +172,16 @@ public class EditBookNotesFragment extends BookAbstractFragment implements
         });
     }
 
+//    @CallSuper
+//    @Override
+//    public void onResume() {
+//        super.onResume();
+//    }
+
     @Override
     @CallSuper
     protected void onLoadFieldsFromBook(final @NonNull Book book, final boolean setAllFrom) {
         super.onLoadFieldsFromBook(book, setAllFrom);
-
-        // populateFields: all done in super
 
         // Restore default visibility
         showHideFields(false);
@@ -198,15 +191,21 @@ public class EditBookNotesFragment extends BookAbstractFragment implements
         }
     }
 
+    //</editor-fold>
+
+    /* ------------------------------------------------------------------------------------------ */
+
+    //<editor-fold desc="Fragment shutdown">
+
     @Override
     @CallSuper
     public void onPause() {
-        mFields.putAllInto(getBook());
+        onSaveFieldsToBook(getBookManager().getBook());
         super.onPause();
     }
 
     /**
-     * Overriding to get some debug
+     * Overriding to get extra debug
      */
     @Override
     protected void onSaveFieldsToBook(final @NonNull Book book) {
@@ -217,6 +216,15 @@ public class EditBookNotesFragment extends BookAbstractFragment implements
         }
     }
 
+//    @Override
+//    public void onDestroy() {
+//        super.onDestroy();
+//    }
+    //</editor-fold>
+
+    /* ------------------------------------------------------------------------------------------ */
+
+    //<editor-fold desc="Field editors callbacks">
     @Override
     public <T> void onCheckListEditorSave(final @NonNull CheckListEditorDialogFragment dialog,
                                           final int destinationFieldId,
@@ -225,8 +233,8 @@ public class EditBookNotesFragment extends BookAbstractFragment implements
 
         if (destinationFieldId == R.id.edition) {
             ArrayList<Integer> result = CheckListItemBase.extractList(list);
-            getBook().putEditions(result);
-            mFields.getField(destinationFieldId).setValue(getBook().getString(UniqueId.KEY_BOOK_EDITION_BITMASK));
+            getBookManager().getBook().putEditions(result);
+            mFields.getField(destinationFieldId).setValue(getBookManager().getBook().getString(UniqueId.KEY_BOOK_EDITION_BITMASK));
         }
     }
 
@@ -251,4 +259,37 @@ public class EditBookNotesFragment extends BookAbstractFragment implements
                                           final int destinationFieldId) {
         dialog.dismiss();
     }
+    //</editor-fold>
+
+    //<editor-fold desc="Field drop down lists">
+    /**
+     * Load a location list; reloading this list every time a tab changes is slow.
+     * So we cache it.
+     *
+     * @return List of locations
+     */
+    @NonNull
+    private List<String> getLocations() {
+        if (mLocations == null) {
+            mLocations = mDb.getLocations();
+        }
+        return mLocations;
+    }
+
+    /**
+     * Load a currency list; reloading this list every time a tab changes is slow.
+     * So we cache it.
+     *
+     * @return List of ISO currency codes
+     */
+    @NonNull
+    public List<String> getPricePaidCurrencyCodes() {
+        if (mPricePaidCurrencies == null) {
+            mPricePaidCurrencies = mDb.getCurrencyCodes(UniqueId.KEY_BOOK_PRICE_PAID_CURRENCY);
+        }
+        return mPricePaidCurrencies;
+    }
+    //</editor-fold>
+
+    /* ------------------------------------------------------------------------------------------ */
 }

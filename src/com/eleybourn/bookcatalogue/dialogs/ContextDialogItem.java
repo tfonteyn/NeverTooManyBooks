@@ -30,7 +30,7 @@ import com.eleybourn.bookcatalogue.baseactivity.BindableItemListActivity;
  *
  * Basically links a menu choice string to a Runnable
  *
- * Move code using this to {@link com.eleybourn.bookcatalogue.dialogs.picklist.SelectOneDialog.SimpleDialogMenuItem}
+ * Move code using this to {@link SelectOneDialog.SimpleDialogMenuItem}
  *
  * @author Philip Warner
  */

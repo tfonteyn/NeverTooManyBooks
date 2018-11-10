@@ -51,6 +51,7 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Book;
+import com.eleybourn.bookcatalogue.entities.BookManager;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.entities.TOCEntry;
 import com.eleybourn.bookcatalogue.searches.isfdb.HandlesISFDB;
@@ -61,9 +62,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This class is called by {@link EditBookActivity} and displays the Content Tab
+ * This class is called by {@link EditBookFragment} and displays the Content Tab
  */
 public class EditBookTOCFragment extends BookAbstractFragment implements HandlesISFDB {
+
+    public static final String TAG = "EditBookTOCFragment";
 
     private EditText mTitleTextView;
     private EditText mPubDateTextView;
@@ -82,7 +85,32 @@ public class EditBookTOCFragment extends BookAbstractFragment implements Handles
      * ISFDB editions (url's) of a book(isbn)
      * We'll try them one by one if the user asks for a re-try
      */
-    private List<String> mEditions;
+    private List<String> mISFDBEditionUrls;
+
+    /* ------------------------------------------------------------------------------------------ */
+    @NonNull
+    protected BookManager getBookManager() {
+        //noinspection ConstantConditions
+        return ((EditBookFragment)this.getParentFragment()).getBookManager();
+    }
+
+    /* ------------------------------------------------------------------------------------------ */
+
+    //<editor-fold desc="Fragment startup">
+
+//    /**
+//     * Ensure activity supports interface
+//     */
+//    @Override
+//    @CallSuper
+//    public void onAttach(final @NonNull Context context) {
+//        super.onAttach(context);
+//    }
+
+//    @Override
+//    public void onCreate(@Nullable final Bundle savedInstanceState) {
+//        super.onCreate(savedInstanceState);
+//    }
 
     @Override
     public View onCreateView(final @NonNull LayoutInflater inflater,
@@ -93,7 +121,7 @@ public class EditBookTOCFragment extends BookAbstractFragment implements Handles
 
     /**
      * has no specific Arguments or savedInstanceState as all is done via
-     * {@link #getBook()} on the hosting Activity
+     * {@link BookManager#getBook()} on the hosting Activity
      * {@link #onLoadFieldsFromBook(Book, boolean)} from base class onResume
      * {@link #onSaveFieldsToBook(Book)} from base class onPause
      */
@@ -113,10 +141,10 @@ public class EditBookTOCFragment extends BookAbstractFragment implements Handles
         mAuthorTextView.setAdapter(author_adapter);
 
         // author to use if mSingleAuthor is set to true
-        mBookAuthor = getBook().getString(UniqueId.KEY_AUTHOR_FORMATTED);
+        mBookAuthor = getBookManager().getBook().getString(UniqueId.KEY_AUTHOR_FORMATTED);
 
         // used to call Search sites to populate the TOC
-        mIsbn = getBook().getString(UniqueId.KEY_BOOK_ISBN);
+        mIsbn = getBookManager().getBook().getString(UniqueId.KEY_BOOK_ISBN);
 
         mAddButton = getView().findViewById(R.id.add_button);
         mAddButton.setOnClickListener(new View.OnClickListener() {
@@ -148,7 +176,7 @@ public class EditBookTOCFragment extends BookAbstractFragment implements Handles
                 mPubDateTextView.setText("");
                 mTitleTextView.setText("");
                 mAuthorTextView.setText("");
-                setDirty(true);
+                getBookManager().setDirty(true);
             }
         });
     }
@@ -188,6 +216,12 @@ public class EditBookTOCFragment extends BookAbstractFragment implements Handles
         });
     }
 
+//    @CallSuper
+//    @Override
+//    public void onResume() {
+//        super.onResume();
+//    }
+
     @Override
     @CallSuper
     protected void onLoadFieldsFromBook(final @NonNull Book book, final boolean setAllFrom) {
@@ -205,6 +239,12 @@ public class EditBookTOCFragment extends BookAbstractFragment implements Handles
         }
     }
 
+    //</editor-fold>
+
+    /* ------------------------------------------------------------------------------------------ */
+
+    //<editor-fold desc="Populate">
+
     private void populateSingleAuthorStatus(final @NonNull Book book) {
         int bitmask = book.getInt(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK);
         boolean singleAuthor = (DatabaseDefinitions.DOM_IS_ANTHOLOGY == (bitmask & DatabaseDefinitions.DOM_IS_ANTHOLOGY));
@@ -217,155 +257,56 @@ public class EditBookTOCFragment extends BookAbstractFragment implements Handles
      */
     private void populateContentList() {
         // Get all of the rows from the database and create the item list
-        mList = getBook().getTOC();
+        mList = getBookManager().getBook().getTOC();
 
         // Now create a simple cursor adapter and set it to display
         ArrayAdapter<TOCEntry> adapter = new TOCListAdapterForEditing(requireActivity(),
                 R.layout.row_edit_toc_entry, mList);
         mListView.setAdapter(adapter);
     }
+    //</editor-fold>
 
-    /**
-     * Mimic ListActivity
-     */
-    @NonNull
-    private ListView getListView() {
-        return mListView;
-    }
+    /* ------------------------------------------------------------------------------------------ */
 
-    @SuppressWarnings("unchecked")
-    private <T extends ArrayAdapter<TOCEntry>> T getListAdapter() {
-        return (T) getListView().getAdapter();
-    }
+    //<editor-fold desc="Fragment shutdown">
 
-    /**
-     * we got one or more editions from ISFDB
-     * Store the url's locally as the user might want to try the next in line
-     *
-     * ENHANCE: add the url's to the options menu for retry. Remove from menu each time one is tried.
-     */
+//    @Override
+//    @CallSuper
+//    public void onPause() {
+//        super.onPause();
+//    }
+
     @Override
-    public void onGotISFDBEditions(final @NonNull List<String> editions) {
-        mEditions = editions;
-        if (mEditions.size() > 0) {
-            ISFDBManager.search(mEditions.get(0), this);
+    @CallSuper
+    protected void onSaveFieldsToBook(final @NonNull Book book) {
+        super.onSaveFieldsToBook(book);
+
+        book.putTOC(mList);
+
+        // multiple authors is now automatically done during database access. The checkbox is only
+        // a visual aid for hiding/showing the author EditText.
+        // So while this command is 'correct', it does not stop (and does not bother) the user
+        // setting it wrong. insert/update into the database will correctly set it by simply looking at
+        // at the toc itself
+        book.putInt(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK,
+                mSingleAuthor.isChecked() ?
+                        DatabaseDefinitions.DOM_IS_ANTHOLOGY
+                        : DatabaseDefinitions.DOM_BOOK_WITH_MULTIPLE_AUTHORS ^ DatabaseDefinitions.DOM_IS_ANTHOLOGY);
+
+        if (BuildConfig.DEBUG) {
+            Logger.info(this, "onSaveFieldsToBook done");
         }
     }
 
-    /**
-     * we got a book
-     *
-     * @param bookData our book from ISFDB.
-     */
-    @Override
-    public void onGotISFDBBook(final @NonNull Bundle bookData) {
+//    @Override
+//    public void onDestroy() {
+//        super.onDestroy();
+//    }
+    //</editor-fold>
 
-        // update the book with series information that was gathered from the TOC
-        String encoded_series_list = bookData.getString(UniqueId.BKEY_SERIES_STRING_LIST);
-        if (encoded_series_list != null) {
-            ArrayList<Series> inBook = getBook().getSeriesList();
-            List<Series> series = ArrayUtils.getSeriesUtils().decodeList(encoded_series_list, false);
-            for (Series s : series) {
-                if (!inBook.contains(s)) {
-                    inBook.add(s);
-                }
-            }
-            getBook().putSeriesList(inBook);
-        }
+    /* ------------------------------------------------------------------------------------------ */
 
-        // update the book with the first publication date that was gathered from the TOC
-        final String bookFirstPublication = bookData.getString(UniqueId.KEY_FIRST_PUBLICATION);
-        if (bookFirstPublication != null) {
-            //Logger.info(this, " onGotISFDBBook: first pub=" + bookFirstPublication);
-            if (getBook().getString(UniqueId.KEY_FIRST_PUBLICATION).isEmpty()) {
-                getBook().putString(UniqueId.KEY_FIRST_PUBLICATION, bookFirstPublication);
-            }
-        }
-
-        // finally the TOC itself; not saved here but only put on display for the user to approve
-        final int tocBitMask = bookData.getInt(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK);
-        List<TOCEntry> tocEntries = null;
-        // preferably from the array.
-        if (bookData.containsKey(UniqueId.BKEY_TOC_TITLES_ARRAY)) {
-            tocEntries = ArrayUtils.getTOCFromBundle(bookData);
-            bookData.remove(UniqueId.BKEY_TOC_TITLES_ARRAY);
-        } else {
-            String encoded_content_list = bookData.getString(UniqueId.BKEY_TOC_STRING_LIST);
-            if (encoded_content_list != null) {
-                tocEntries = ArrayUtils.getTOCUtils().decodeList(encoded_content_list, false);
-                bookData.remove(UniqueId.BKEY_TOC_STRING_LIST);
-            }
-        }
-
-        boolean hasTOC = (tocEntries != null && !tocEntries.isEmpty());
-
-        StringBuilder msg = new StringBuilder();
-        if (hasTOC) {
-            msg.append(getString(R.string.toc_confirm)).append("\n\n");
-            for (TOCEntry t : tocEntries) {
-                msg.append(t.getTitle()).append(", ");
-            }
-        } else {
-            msg.append(getString(R.string.error_automatic_toc_population_failed));
-        }
-
-        TextView content = new TextView(this.getContext());
-        content.setText(msg);
-        // Not ideal but works
-        content.setTextSize(14);
-        //ENHANCE API 23 ?
-        //content.setTextAppearance(android.R.style.TextAppearance_Small);
-        //ENHANCE API 26 ?
-        //content.setAutoSizeTextTypeWithDefaults(TextView.AUTO_SIZE_TEXT_TYPE_UNIFORM);
-
-        AlertDialog dialog = new AlertDialog.Builder(requireActivity())
-                .setIconAttribute(android.R.attr.alertDialogIcon)
-                .setView(content)
-                .create();
-
-        if (hasTOC) {
-            final List<TOCEntry> finalTOCEntries = tocEntries;
-            dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(android.R.string.ok),
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(final DialogInterface dialog, final int which) {
-                            commitISFDBData(tocBitMask, finalTOCEntries);
-                        }
-                    });
-        }
-
-        // if we found multiple editions, allow a re-try with the next inline
-        if (mEditions.size() > 1) {
-            dialog.setButton(AlertDialog.BUTTON_NEUTRAL, getString(R.string.try_again),
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(final DialogInterface dialog, final int which) {
-                            mEditions.remove(0);
-                            ISFDBManager.search(mEditions.get(0), EditBookTOCFragment.this);
-                        }
-                    });
-        }
-
-        dialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(android.R.string.cancel),
-                new DialogInterface.OnClickListener() {
-                    public void onClick(final @NonNull DialogInterface dialog, final int which) {
-                        dialog.dismiss();
-                    }
-                });
-        dialog.show();
-    }
-
-    /**
-     * The user approved, so add the TOC to the list on screen (still not saved to database)
-     */
-    private void commitISFDBData(int tocBitMask, final @NonNull List<TOCEntry> tocEntries) {
-        if (tocBitMask > 0) {
-            getBook().putInt(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK,
-                    tocBitMask | getBook().getInt(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK));
-            populateSingleAuthorStatus(getBook());
-        }
-
-        mList.addAll(tocEntries);
-        getListAdapter().notifyDataSetChanged();
-    }
+    //<editor-fold desc="Menu Handlers">
 
     /**
      * Run each time the menu button is pressed. This will setup the options menu
@@ -421,49 +362,151 @@ public class EditBookTOCFragment extends BookAbstractFragment implements Handles
                 AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
                 ArrayAdapter<TOCEntry> adapter = getListAdapter();
                 adapter.remove(adapter.getItem((int) info.id));
-                setDirty(true);
+                getBookManager().setDirty(true);
                 return true;
         }
         return super.onContextItemSelected(item);
     }
+    //</editor-fold>
+
+    /* ------------------------------------------------------------------------------------------ */
+
+    //<editor-fold desc="ISFDB interface">
+    /**
+     * we got one or more editions from ISFDB
+     * Store the url's locally as the user might want to try the next in line
+     *
+     * ENHANCE: add the url's to the options menu for retry. Remove from menu each time one is tried.
+     */
+    @Override
+    public void onGotISFDBEditions(final @NonNull List<String> editions) {
+        mISFDBEditionUrls = editions;
+        if (mISFDBEditionUrls.size() > 0) {
+            ISFDBManager.search(mISFDBEditionUrls.get(0), this);
+        }
+    }
 
     /**
-     * put the TOC into the book (and still not saved to db, that will be up to the user 'save'ing the book)
+     * we got a book
      *
-     * @param book to update
+     * @param bookData our book from ISFDB.
      */
-    private void saveState(final @NonNull Book book) {
-
-        book.putTOC(mList);
-
-        // multiple authors is now automatically done during database access. The checkbox is only
-        // a visual aid for hiding/showing the author EditText.
-        // So while this command is 'correct', it does not stop (and does not bother) the user
-        // setting it wrong. insert/update into the database will correctly set it by simply looking at
-        // at the toc itself
-        book.putInt(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK,
-                mSingleAuthor.isChecked() ?
-                        DatabaseDefinitions.DOM_IS_ANTHOLOGY
-                        : DatabaseDefinitions.DOM_BOOK_WITH_MULTIPLE_AUTHORS ^ DatabaseDefinitions.DOM_IS_ANTHOLOGY);
-    }
-
     @Override
-    @CallSuper
-    public void onPause() {
-        saveState(getBook());
-        super.onPause();
-    }
+    public void onGotISFDBBook(final @NonNull Bundle bookData) {
 
-    @Override
-    @CallSuper
-    protected void onSaveFieldsToBook(final @NonNull Book book) {
-        super.onSaveFieldsToBook(book);
-
-        saveState(book);
-
-        if (BuildConfig.DEBUG) {
-            Logger.info(this, "onSaveFieldsToBook done");
+        // update the book with series information that was gathered from the TOC
+        String encoded_series_list = bookData.getString(UniqueId.BKEY_SERIES_STRING_LIST);
+        if (encoded_series_list != null) {
+            ArrayList<Series> inBook = getBookManager().getBook().getSeriesList();
+            List<Series> series = ArrayUtils.getSeriesUtils().decodeList(encoded_series_list, false);
+            for (Series s : series) {
+                if (!inBook.contains(s)) {
+                    inBook.add(s);
+                }
+            }
+            getBookManager().getBook().putSeriesList(inBook);
         }
+
+        // update the book with the first publication date that was gathered from the TOC
+        final String bookFirstPublication = bookData.getString(UniqueId.KEY_FIRST_PUBLICATION);
+        if (bookFirstPublication != null) {
+            //Logger.info(this, " onGotISFDBBook: first pub=" + bookFirstPublication);
+            if (getBookManager().getBook().getString(UniqueId.KEY_FIRST_PUBLICATION).isEmpty()) {
+                getBookManager().getBook().putString(UniqueId.KEY_FIRST_PUBLICATION, bookFirstPublication);
+            }
+        }
+
+        // finally the TOC itself; not saved here but only put on display for the user to approve
+        final int tocBitMask = bookData.getInt(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK);
+        List<TOCEntry> tocEntries = null;
+        // preferably from the array.
+        if (bookData.containsKey(UniqueId.BKEY_TOC_TITLES_ARRAY)) {
+            tocEntries = ArrayUtils.getTOCFromBundle(bookData);
+            bookData.remove(UniqueId.BKEY_TOC_TITLES_ARRAY);
+        } else {
+            String encoded_content_list = bookData.getString(UniqueId.BKEY_TOC_STRING_LIST);
+            if (encoded_content_list != null) {
+                tocEntries = ArrayUtils.getTOCUtils().decodeList(encoded_content_list, false);
+                bookData.remove(UniqueId.BKEY_TOC_STRING_LIST);
+            }
+        }
+
+        boolean hasTOC = (tocEntries != null && !tocEntries.isEmpty());
+
+        StringBuilder msg = new StringBuilder();
+        if (hasTOC) {
+            msg.append(getString(R.string.toc_confirm)).append("\n\n");
+            for (TOCEntry t : tocEntries) {
+                msg.append(t.getTitle()).append(", ");
+            }
+        } else {
+            msg.append(getString(R.string.error_automatic_toc_population_failed));
+        }
+
+        TextView content = new TextView(this.getContext());
+        content.setText(msg);
+        // Not ideal but works
+        content.setTextSize(14);
+        //ENHANCE API 23 ?
+        //content.setTextAppearance(android.R.style.TextAppearance_Small);
+        //ENHANCE API 26 ?
+        //content.setAutoSizeTextTypeWithDefaults(TextView.AUTO_SIZE_TEXT_TYPE_UNIFORM);
+
+        AlertDialog dialog = new AlertDialog.Builder(requireActivity())
+                .setIconAttribute(android.R.attr.alertDialogIcon)
+                .setView(content)
+                .create();
+
+        if (hasTOC) {
+            final List<TOCEntry> finalTOCEntries = tocEntries;
+            dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(android.R.string.ok),
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(final DialogInterface dialog, final int which) {
+                            commitISFDBData(tocBitMask, finalTOCEntries);
+                        }
+                    });
+        }
+
+        // if we found multiple editions, allow a re-try with the next inline
+        if (mISFDBEditionUrls.size() > 1) {
+            dialog.setButton(AlertDialog.BUTTON_NEUTRAL, getString(R.string.retry),
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(final DialogInterface dialog, final int which) {
+                            mISFDBEditionUrls.remove(0);
+                            ISFDBManager.search(mISFDBEditionUrls.get(0), EditBookTOCFragment.this);
+                        }
+                    });
+        }
+
+        dialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(android.R.string.cancel),
+                new DialogInterface.OnClickListener() {
+                    public void onClick(final @NonNull DialogInterface dialog, final int which) {
+                        dialog.dismiss();
+                    }
+                });
+        dialog.show();
+    }
+
+    /**
+     * The user approved, so add the TOC to the list on screen (still not saved to database)
+     */
+    private void commitISFDBData(int tocBitMask, final @NonNull List<TOCEntry> tocEntries) {
+        if (tocBitMask > 0) {
+            getBookManager().getBook().putInt(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK,
+                    tocBitMask | getBookManager().getBook().getInt(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK));
+            populateSingleAuthorStatus(getBookManager().getBook());
+        }
+
+        mList.addAll(tocEntries);
+        getListAdapter().notifyDataSetChanged();
+    }
+    //</editor-fold>
+
+    /* ------------------------------------------------------------------------------------------ */
+
+    @SuppressWarnings("unchecked")
+    private <T extends ArrayAdapter<TOCEntry>> T getListAdapter() {
+        return (T) mListView.getAdapter();
     }
 
     private class TOCListAdapterForEditing extends TOCListAdapter {
@@ -488,7 +531,7 @@ public class EditBookTOCFragment extends BookAbstractFragment implements Handles
 
         @Override
         public void onListChanged() {
-            setDirty(true);
+            getBookManager().setDirty(true);
         }
     }
 }

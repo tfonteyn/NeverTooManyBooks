@@ -250,7 +250,7 @@ public class SimpleTaskQueueProgressDialogFragment extends DialogFragment {
     }
 
     /**
-     * Ensure activity supports event
+     * Show any user message that need showing
      */
     @Override
     @CallSuper

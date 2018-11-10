@@ -43,10 +43,10 @@ import com.eleybourn.bookcatalogue.database.CoversDbHelper;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
-import com.eleybourn.bookcatalogue.dialogs.picklist.SelectOneDialog.SimpleDialogFileItem;
-import com.eleybourn.bookcatalogue.dialogs.picklist.SelectOneDialog.SimpleDialogItem;
-import com.eleybourn.bookcatalogue.dialogs.picklist.SelectOneDialog.SimpleDialogOnClickListener;
-import com.eleybourn.bookcatalogue.dialogs.picklist.SelectOneDialog;
+import com.eleybourn.bookcatalogue.dialogs.SelectOneDialog.SimpleDialogFileItem;
+import com.eleybourn.bookcatalogue.dialogs.SelectOneDialog.SimpleDialogItem;
+import com.eleybourn.bookcatalogue.dialogs.SelectOneDialog.SimpleDialogOnClickListener;
+import com.eleybourn.bookcatalogue.dialogs.SelectOneDialog;
 import com.eleybourn.bookcatalogue.filechooser.BackupChooserActivity;
 import com.eleybourn.bookcatalogue.searches.SearchAdminActivity;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsRegisterActivity;
@@ -353,7 +353,7 @@ public class AdminActivity extends BaseActivityWithTasks {
                 public void onClick(View v) {
                     StorageUtils.backupDatabaseFile();
                     //Snackbar.make(v, R.string.backup_success, Snackbar.LENGTH_LONG).show();
-                    StandardDialogs.showUserMessage(AdminActivity.this, R.string.backup_success);
+                    StandardDialogs.showUserMessage(AdminActivity.this, R.string.progress_end_backup_success);
                 }
             });
 
@@ -372,8 +372,8 @@ public class AdminActivity extends BaseActivityWithTasks {
      */
     private void confirmToImportFromCSV() {
         AlertDialog dialog = new AlertDialog.Builder(this)
-                .setMessage(R.string.import_alert)
-                .setTitle(R.string.import_data)
+                .setMessage(R.string.warning_import_be_cautious)
+                .setTitle(R.string.title_import_data)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .create();
         dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(android.R.string.ok),
@@ -399,7 +399,7 @@ public class AdminActivity extends BaseActivityWithTasks {
         List<File> files = StorageUtils.findCsvFiles();
         // If none, exit with message
         if (files.size() == 0) {
-            StandardDialogs.showUserMessage(this, R.string.no_export_files_found);
+            StandardDialogs.showUserMessage(this, R.string.warning_no_export_files_found);
         } else {
             if (files.size() == 1) {
                 // If only 1, just use it
@@ -492,8 +492,10 @@ public class AdminActivity extends BaseActivityWithTasks {
 
                         ArrayList<Uri> uris = new ArrayList<>();
                         try {
-                            Uri coverURI = FileProvider.getUriForFile(AdminActivity.this, GenericFileProvider.AUTHORITY,
-                                    StorageUtils.getFile(CsvExporter.EXPORT_FILE_NAME));
+                            File coverFile = StorageUtils.getFile(CsvExporter.EXPORT_FILE_NAME);
+                            Uri coverURI = FileProvider.getUriForFile(AdminActivity.this,
+                                    GenericFileProvider.AUTHORITY, coverFile);
+
                             uris.add(coverURI);
                             emailIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
                             startActivity(Intent.createChooser(emailIntent, getString(R.string.send_mail)));

@@ -15,7 +15,7 @@
         android:layout_height="wrap_content"
         android:paddingBottom="@dimen/padding_border"
         android:paddingTop="@dimen/padding_border"
-        android:text="@string/immediate_global_changes"
+        android:text="@string/warning_immediate_global_changes"
         android:textSize="16sp" />
 
     <include

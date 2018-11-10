@@ -116,7 +116,7 @@
             android:layout_alignBottom="@id/preferences_check"
             android:layout_alignParentEnd="true"
             android:layout_toEndOf="@id/preferences_check"
-            android:text="@string/dialog_title_preferences"
+            android:text="@string/title_preferences"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <TextView

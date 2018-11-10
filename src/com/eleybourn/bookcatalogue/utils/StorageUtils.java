@@ -198,11 +198,22 @@ public class StorageUtils {
     }
 
     /**
+     *
+     * @param filename a generic filename
+     *
+     * @return a File with that name, located in the covers directory
+     */
+    @NonNull
+    public static File getRawCoverFile(final @NonNull String filename) {
+        return new File(COVER_FILE_PATH + File.separator + filename);
+    }
+
+    /**
      * return the cover for the given uuid.
      *
      * @param uuid of the book,
      *
-     * @return The File object for existing files, or a new placeholder.
+     * @return The File object for existing files, or a new (jpg) placeholder.
      */
     @NonNull
     public static File getCoverFile(final @NonNull String uuid) {

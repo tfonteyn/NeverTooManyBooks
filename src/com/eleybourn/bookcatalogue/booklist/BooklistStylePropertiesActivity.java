@@ -125,11 +125,11 @@ public class BooklistStylePropertiesActivity extends BaseActivity {
         // Make the title
         String title;
         if (mStyle.getDisplayName().isEmpty()) {
-            title = getString(R.string.dialog_title_new_style);
+            title = getString(R.string.title_add_style);
         } else if (mStyle.id == 0) {
-            title = getString(R.string.dialog_title_clone_style_colon_name, mStyle.getDisplayName());
+            title = getString(R.string.title_clone_style_colon_name, mStyle.getDisplayName());
         } else {
-            title = getString(R.string.dialog_title_edit_style_colon_name, mStyle.getDisplayName());
+            title = getString(R.string.title_edit_style_colon_name, mStyle.getDisplayName());
         }
 
         setTitle(title);

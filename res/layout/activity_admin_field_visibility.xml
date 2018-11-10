@@ -26,7 +26,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingTop="@dimen/padding_border"
-                android:text="@string/manage_fields_help" />
+                android:text="@string/info_manage_fields" />
         </LinearLayout>
 
     </ScrollView>

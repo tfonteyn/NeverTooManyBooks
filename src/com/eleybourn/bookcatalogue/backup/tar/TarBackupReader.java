@@ -79,6 +79,8 @@ public class TarBackupReader extends BackupReaderAbstract {
 
     /**
      * Get the next entity (allowing for peeking).
+     *
+     * @return the next entity found.
      */
     @Override
     @Nullable
@@ -96,28 +98,48 @@ public class TarBackupReader extends BackupReaderAbstract {
         }
 
         // Based on the file name, determine entity type
-        BackupEntityType type;
-        if (entry.getName().equalsIgnoreCase(TarBackupContainer.BOOKS_FILE)) {
-            type = BackupEntityType.Books;
-        } else if (TarBackupContainer.BOOKS_PATTERN.matcher(entry.getName()).find()) {
-            type = BackupEntityType.Books;
-        } else if (entry.getName().equalsIgnoreCase(TarBackupContainer.INFO_FILE)) {
-            type = BackupEntityType.Info;
-        } else if (TarBackupContainer.INFO_PATTERN.matcher(entry.getName()).find()) {
-            type = BackupEntityType.Info;
-        } else if (entry.getName().equalsIgnoreCase(TarBackupContainer.DB_FILE)) {
-            type = BackupEntityType.Database;
-        } else if (TarBackupContainer.STYLE_PATTERN.matcher(entry.getName()).find()) {
-            type = BackupEntityType.BooklistStyle;
-        } else if (entry.getName().equalsIgnoreCase(TarBackupContainer.PREFERENCES)) {
-            type = BackupEntityType.Preferences;
-        } else {
-            type = BackupEntityType.Cover;
-        }
+        BackupEntityType type = getBackupEntityType(entry);
 
         // Create entity
         return new TarReaderEntity(this, entry, type);
 
+    }
+
+    /**
+     * @return the TarArchiveEntry type. However, {@link BackupEntityType#Cover} is returned for
+     *         *all* files which are not actually recognised.
+     */
+    @NonNull
+    public BackupEntityType getBackupEntityType(final @NonNull TarArchiveEntry entry) {
+        String name = entry.getName();
+
+        if (name.equalsIgnoreCase(TarBackupContainer.BOOKS_FILE)
+                ||TarBackupContainer.BOOKS_PATTERN.matcher(name).find()) {
+            return BackupEntityType.Books;
+
+        } else if (name.equalsIgnoreCase(TarBackupContainer.INFO_FILE)
+                || TarBackupContainer.INFO_PATTERN.matcher(name).find()) {
+            return  BackupEntityType.Info;
+
+        } else if (name.toLowerCase().endsWith(".xml")) {
+            return  BackupEntityType.XML;
+
+        } else if (name.equalsIgnoreCase(TarBackupContainer.DB_FILE)) {
+            return  BackupEntityType.Database;
+
+        } else if (TarBackupContainer.STYLE_PATTERN.matcher(name).find()) {
+            return BackupEntityType.BooklistStyle;
+
+        } else if (name.equalsIgnoreCase(TarBackupContainer.PREFERENCES)) {
+            return BackupEntityType.Preferences;
+
+//        } else if (name.toLowerCase().endsWith(".jpg") || name.toLowerCase().endsWith(".png")) {
+//            return BackupEntityType.Cover;
+
+        } else {
+            // any not recognised file is considered a cover file.
+            return BackupEntityType.Cover;
+        }
     }
 
     /**

@@ -288,8 +288,8 @@ public class UpgradeDatabase {
         try (Cursor c = db.rawQuery("SELECT " + DOM_ID + "," + DOM_BOOK_UUID + " FROM " + TBL_BOOKS + " ORDER BY " + DOM_ID, new String[]{})) {
             while (c.moveToNext()) {
                 final long id = c.getLong(0);
-                final String hash = c.getString(1);
-                StorageUtils.renameFile(StorageUtils.getCoverFile(Long.toString(id)), StorageUtils.getCoverFile(hash));
+                final String uuid = c.getString(1);
+                StorageUtils.renameFile(StorageUtils.getCoverFile(Long.toString(id)), StorageUtils.getCoverFile(uuid));
             }
         }
     }

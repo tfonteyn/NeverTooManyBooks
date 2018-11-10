@@ -214,20 +214,20 @@ abstract public class BaseActivity extends AppCompatActivity
     public boolean onOptionsItemSelected(final @NonNull MenuItem item) {
         switch (item.getItemId()) {
             // Default handler for home icon
-            case android.R.id.home:
-                if (mDrawerLayout != null) {
-                    mDrawerLayout.openDrawer(GravityCompat.START);
-                    return true;
+            case android.R.id.home: {
+                // the home icon is only a hamburger at the top level
+                if (isTaskRoot()) {
+                    if (mDrawerLayout != null) {
+                        mDrawerLayout.openDrawer(GravityCompat.START);
+                        return true;
+                    }
                 }
-
-                if (BuildConfig.DEBUG) {
-                    Logger.info(this, " BaseActivity.onOptionsItemSelected handling android.R.id.home as onBackPressed");
-                }
-                // for all activities that were opened with startActivity()
-                // where 'home' is treated as 'up', pretend user pressing the back button
+                // otherwise, home is an 'up' event. So pretend the back button was pressed.
                 onBackPressed();
                 return true;
+            }
         }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -238,7 +238,7 @@ abstract public class BaseActivity extends AppCompatActivity
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         if (BuildConfig.DEBUG) {
             // lowest level of our Activities, see if we missed anything
-            Logger.info(this, "onActivityResult: BaseActivity - requestCode=" + requestCode + ", resultCode=" + resultCode);
+            Logger.info(this, "onActivityResult: NOT HANDLED: requestCode=" + requestCode + ", resultCode=" + resultCode);
         }
 
         super.onActivityResult(requestCode, resultCode, data);
@@ -250,9 +250,6 @@ abstract public class BaseActivity extends AppCompatActivity
     @Override
     @CallSuper
     public void onBackPressed() {
-        if (BuildConfig.DEBUG) {
-            Logger.info(this, " BaseActivity.onBackPressed with dirty=" + isDirty());
-        }
 
         // Check if edits need saving, and finish the activity if not
         if (isDirty()) {
@@ -299,7 +296,7 @@ abstract public class BaseActivity extends AppCompatActivity
      * If your activity does an actual finish() call it *must* take care of the result itself
      * (of course it can still implement and call this method for the sake of uniformity
      */
-    protected void setActivityResult() {
+    public void setActivityResult() {
         // do nothing
     }
 

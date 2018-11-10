@@ -107,7 +107,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
             seriesField.setText("");
             numberField.setText("");
         } else {
-            StandardDialogs.showUserMessage(EditSeriesListActivity.this, R.string.warning_blank_series);
+            StandardDialogs.showUserMessage(EditSeriesListActivity.this, R.string.warning_required_series);
         }
     }
 
@@ -127,16 +127,16 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
 
         final AlertDialog dialog = new AlertDialog.Builder(EditSeriesListActivity.this)
                 .setView(root)
-                .setTitle(R.string.dialog_title_edit_book_series)
+                .setTitle(R.string.title_edit_book_series)
                 .create();
 
         //noinspection ConstantConditions
-        dialog.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
+        root.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String newName = seriesNameField.getText().toString().trim();
                 if (newName.isEmpty()) {
-                    StandardDialogs.showUserMessage(EditSeriesListActivity.this, R.string.warning_blank_series);
+                    StandardDialogs.showUserMessage(EditSeriesListActivity.this, R.string.warning_required_series);
                     return;
                 }
 
@@ -148,7 +148,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
         });
 
         //noinspection ConstantConditions
-        dialog.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
+        root.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
@@ -204,7 +204,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
                 .setIcon(R.drawable.ic_info_outline)
                 .create();
 
-        dialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.this_book), new DialogInterface.OnClickListener() {
+        dialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.btn_this_book), new DialogInterface.OnClickListener() {
             public void onClick(final @NonNull DialogInterface dialog, final int which) {
                 from.copyFrom(to);
                 Series.pruneSeriesList(mList);
@@ -228,11 +228,19 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
         dialog.show();
     }
 
+    /**
+     * Called when user clicks the 'Save' button.
+     * @param intent A newly created Intent to store output if necessary.
+     *               The super has already stored the list into the intent.
+     *
+     * @return <tt>true</tt>if activity should exit, false to abort exit.
+     */
     @Override
     protected boolean onSave(final @NonNull Intent intent) {
         final AutoCompleteTextView view = findViewById(R.id.series);
         String s = view.getText().toString().trim();
         if (s.isEmpty()) {
+        // no current edit, so we're good to go
             return true;
         }
 

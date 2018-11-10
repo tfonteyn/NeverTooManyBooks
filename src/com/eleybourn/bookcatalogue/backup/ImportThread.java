@@ -70,9 +70,9 @@ public class ImportThread extends ManagedTask {
             new CsvImporter().importBooks(in, mCoverFinder, mImportListener, Importer.IMPORT_ALL);
 
             if (isCancelled()) {
-                showUserMessage(getString(R.string.cancelled));
+                showUserMessage(getString(R.string.progress_end_cancelled));
             } else {
-                showUserMessage(getString(R.string.import_complete));
+                showUserMessage(getString(R.string.progress_end_import_complete));
             }
         } catch (IOException e) {
             showUserMessage(getString(R.string.error_import_failed_is_location_correct));

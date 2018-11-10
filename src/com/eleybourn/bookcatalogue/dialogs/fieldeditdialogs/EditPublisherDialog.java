@@ -60,7 +60,7 @@ public class EditPublisherDialog {
 
         final AlertDialog dialog = new AlertDialog.Builder(mContext)
                 .setView(root)
-                .setTitle(R.string.dialog_title_edit_publisher)
+                .setTitle(R.string.title_edit_publisher)
                 .create();
 
         //noinspection ConstantConditions
@@ -69,7 +69,7 @@ public class EditPublisherDialog {
             public void onClick(View v) {
                 String newName = nameView.getText().toString().trim();
                 if (newName.isEmpty()) {
-                    StandardDialogs.showUserMessage(mContext, R.string.name_can_not_be_blank);
+                    StandardDialogs.showUserMessage(mContext, R.string.warning_required_name);
                     return;
                 }
                 Publisher newPublisher = new Publisher(newName);

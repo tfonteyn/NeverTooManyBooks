@@ -27,6 +27,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.CallSuper;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -101,9 +102,8 @@ public class SearchLocalActivity extends BaseActivity {
 
     /** Detect when user touches something, just so we know they are 'busy'. */
     private final OnTouchListener mOnTouchListener = new OnTouchListener() {
-
         @Override
-        public boolean onTouch(View v, MotionEvent event) {
+        public boolean onTouch(final @NonNull View v, final @NonNull MotionEvent event) {
             userIsActive(false);
             return false;
         }

@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/dialogFrame">
+    style="@style/dialogFrame"
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/hint"
@@ -11,19 +12,29 @@
         android:textIsSelectable="true"
         tools:text="A well meant hint"/>
 
-    <CheckBox
-        android:id="@+id/hide_hint_checkbox"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        style="?attr/buttonBarStyle"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/hint"
-        android:focusable="false"
-        android:text="@string/hint_do_not_show_again" />
+        android:orientation="horizontal">
 
-    <Button
-        android:id="@+id/confirm"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/hide_hint_checkbox"
-        android:layout_centerHorizontal="true"
-        android:text="@android:string/ok" />
-</RelativeLayout>
+        <Button
+            android:id="@+id/hint_do_not_show_again"
+            style="?attr/buttonBarNeutralButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|start"
+            android:layout_weight="1"
+            android:text="@string/btn_disable_message" />
+
+        <Button
+            android:id="@+id/confirm"
+            style="?attr/buttonBarPositiveButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|end"
+            android:layout_weight="1"
+            android:text="@android:string/ok" />
+    </LinearLayout>
+
+</LinearLayout>

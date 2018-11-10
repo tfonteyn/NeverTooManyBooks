@@ -53,6 +53,9 @@ import java.util.Objects;
  * @author pjw
  */
 public class FileChooserFragment extends Fragment implements FileListerListener {
+
+    public static final String TAG = "FileChooserFragment";
+
     private static final String BKEY_ROOT_PATH = "rootPath";
     private static final String BKEY_LIST = "list";
 

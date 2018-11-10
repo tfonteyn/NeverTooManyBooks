@@ -67,7 +67,7 @@
                 android:layout_height="wrap_content"
                 android:inputType="textMultiLine"
                 android:singleLine="false"
-                tools:ignore="Autofill"/>
+                tools:ignore="Autofill" />
 
             <View style="@style/divider_horizontalList" />
 
@@ -76,8 +76,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/padding_border"
-                tools:text="# books found"
-                android:textIsSelectable="true" />
+                android:textIsSelectable="true"
+                tools:text="# books found" />
 
         </LinearLayout>
 
@@ -90,8 +90,8 @@
         style="?attr/buttonBarStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_alignParentBottom="true">
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal">
 
         <Button
             android:id="@+id/rebuild"

@@ -121,7 +121,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:focusable="false"
-                android:text="@string/search" />
+                android:text="@string/menu_search" />
         </LinearLayout>
 
         <View style="@style/divider_horizontalList" />

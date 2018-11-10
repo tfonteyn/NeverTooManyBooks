@@ -176,20 +176,20 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
         mShowHeaderInfoListItems.add(SUMMARY_SHOW_LEVEL_1_AND_COUNT, R.string.summary_details_show_first_level_and_book_count);
         mShowHeaderInfoListItems.add(SUMMARY_SHOW_ALL, R.string.summary_details_show_all);
 
-        mReadFilterListItems.add(FILTER_NO, R.string.select_unread_only);
-        mReadFilterListItems.add(FILTER_YES, R.string.select_read_only);
+        mReadFilterListItems.add(FILTER_NO, R.string.booklist_filters_unread);
+        mReadFilterListItems.add(FILTER_YES, R.string.booklist_filters_read);
         mReadFilterListItems.add(FILTER_EITHER, R.string.all_books);
 
-        mSignedFilterListItems.add(FILTER_NO, R.string.select_signed_no);
-        mSignedFilterListItems.add(FILTER_YES, R.string.select_signed_yes);
+        mSignedFilterListItems.add(FILTER_NO, R.string.booklist_filters_signed_no);
+        mSignedFilterListItems.add(FILTER_YES, R.string.booklist_filters_signed_yes);
         mSignedFilterListItems.add(FILTER_EITHER, R.string.all_books);
 
-        mAnthologyFilterListItems.add(FILTER_NO, R.string.select_is_anthology_no);
-        mAnthologyFilterListItems.add(FILTER_YES, R.string.select_is_anthology_yes);
+        mAnthologyFilterListItems.add(FILTER_NO, R.string.booklist_filters_is_anthology_no);
+        mAnthologyFilterListItems.add(FILTER_YES, R.string.booklist_filters_is_anthology_yes);
         mAnthologyFilterListItems.add(FILTER_EITHER, R.string.all_books);
 
-        mLoanedFilterListItems.add(FILTER_NO, R.string.select_loaned_no);
-        mLoanedFilterListItems.add(FILTER_YES, R.string.select_loaned_yes);
+        mLoanedFilterListItems.add(FILTER_NO, R.string.booklist_filters_loaned_no);
+        mLoanedFilterListItems.add(FILTER_YES, R.string.booklist_filters_loaned_yes);
         mLoanedFilterListItems.add(FILTER_EITHER, R.string.all_books);
     }
 
@@ -434,19 +434,19 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
                 .setDefaultValue(SUMMARY_SHOW_ALL);
 
         mXtraReadFilter = new IntegerListProperty(mReadFilterListItems, "XReadUnreadAll", /* keep name for compat */
-                PropertyGroup.GRP_EXTRA_FILTERS, R.string.select_based_on_read_status)
+                PropertyGroup.GRP_EXTRA_FILTERS, R.string.booklist_filters_select_based_on_read_status)
                 .setDefaultValue(FILTER_EITHER);
 
         mXtraSignedFilter = new IntegerListProperty(mSignedFilterListItems, "XSignedFilter",
-                PropertyGroup.GRP_EXTRA_FILTERS, R.string.select_based_on_signed_status)
+                PropertyGroup.GRP_EXTRA_FILTERS, R.string.booklist_filters_select_based_on_signed_status)
                 .setDefaultValue(FILTER_EITHER);
 
         mXtraAnthologyFilter = new IntegerListProperty(mAnthologyFilterListItems, "XAnthologyFilter",
-                PropertyGroup.GRP_EXTRA_FILTERS, R.string.select_based_on_is_anthology_status)
+                PropertyGroup.GRP_EXTRA_FILTERS, R.string.booklist_filters_select_based_on_is_anthology_status)
                 .setDefaultValue(FILTER_EITHER);
 
         mXtraLoanedFilter = new IntegerListProperty(mLoanedFilterListItems, "XLoanedFilter",
-                PropertyGroup.GRP_EXTRA_FILTERS, R.string.select_based_on_loaned_status)
+                PropertyGroup.GRP_EXTRA_FILTERS, R.string.booklist_filters_select_based_on_loaned_status)
                 .setDefaultValue(FILTER_EITHER);
     }
 

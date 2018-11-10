@@ -1403,7 +1403,7 @@ public class Fields extends ArrayList<Fields.Field> {
             //TODO We need to introduce a better way to handle this.
             view.setOnTouchListener(new View.OnTouchListener() {
                 @Override
-                public boolean onTouch(View v, @NonNull MotionEvent event) {
+                public boolean onTouch(final @NonNull View v, final @NonNull MotionEvent event) {
                     if (MotionEvent.ACTION_UP == event.getAction()) {
                         if (mAfterFieldChangeListener != null) {
                             mAfterFieldChangeListener.afterFieldChange(Field.this, null);

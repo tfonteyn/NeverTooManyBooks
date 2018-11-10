@@ -71,7 +71,7 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/buttonbar_cancel_save"
         android:layout_below="@id/top_buttons"
-        android:text="@string/no_series_yet"
+        android:text="@string/info_no_series_yet"
         android:textSize="16sp" />
 
     <include

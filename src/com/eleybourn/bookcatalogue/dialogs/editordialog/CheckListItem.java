@@ -1,4 +1,4 @@
-package com.eleybourn.bookcatalogue.dialogs.picklist;
+package com.eleybourn.bookcatalogue.dialogs.editordialog;
 
 public interface CheckListItem<T> {
     /** the item we're encapsulating */

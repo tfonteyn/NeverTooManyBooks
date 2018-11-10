@@ -92,26 +92,26 @@ public class LocalCoverFinder implements Importer.CoverFinder {
     }
 
     /**
-     * Find the current cover file (or new file) based on the passed source and UUID.
+     * Find the current cover file (or new file) based on the passed UUID.
      *
-     * @param newUuid UUID of file
+     * @param uuid of file
      *
      * @return Existing file (if length > 0), or new file object
      */
     @NonNull
-    private File getNewCoverFile(final @NonNull String newUuid) {
+    private File getNewCoverFile(final @NonNull String uuid) {
         // Check for ANY current image; delete empty ones and retry
-        File newFile = StorageUtils.getCoverFile(newUuid);
+        File newFile = StorageUtils.getCoverFile(uuid);
         while (newFile.exists()) {
             if (newFile.length() > 0) {
                 return newFile;
             } else {
                 StorageUtils.deleteFile(newFile);
             }
-            newFile = StorageUtils.getCoverFile(newUuid);
+            newFile = StorageUtils.getCoverFile(uuid);
         }
 
-        return StorageUtils.getCoverFile(newUuid);
+        return StorageUtils.getCoverFile(uuid);
     }
 
     /**

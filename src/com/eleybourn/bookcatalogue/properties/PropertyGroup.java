@@ -59,7 +59,7 @@ public class PropertyGroup {
 
     /** Global PropertyGroup definition */
     private static final int GRP_EXTRA_FILTERS_ID = ++GRP_COUNT;
-    public static final PropertyGroup GRP_EXTRA_FILTERS = mGroups.addGroup(GRP_EXTRA_FILTERS_ID, R.string.extra_filters, 70);
+    public static final PropertyGroup GRP_EXTRA_FILTERS = mGroups.addGroup(GRP_EXTRA_FILTERS_ID, R.string.booklist_filters, 70);
 
     /** Global PropertyGroup definition */
     private static final int GRP_USER_INTERFACE_ID = ++GRP_COUNT;
@@ -75,7 +75,7 @@ public class PropertyGroup {
 
     /** Global PropertyGroup definition */
     private static final int GRP_ADVANCED_OPTIONS_ID = ++GRP_COUNT;
-    public static final PropertyGroup GRP_ADVANCED_OPTIONS = mGroups.addGroup(GRP_ADVANCED_OPTIONS_ID, R.string.advanced_options, 80);
+    public static final PropertyGroup GRP_ADVANCED_OPTIONS = mGroups.addGroup(GRP_ADVANCED_OPTIONS_ID, R.string.title_advanced_options, 80);
 
     /** ID of this group */
     private final int id;

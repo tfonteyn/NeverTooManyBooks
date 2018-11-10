@@ -200,7 +200,7 @@
         <TextView
             android:id="@+id/lbl_publishing"
             style="@style/lbl_textField"
-            android:text="@string/book_details_readonly_publishing" />
+            android:text="@string/lbl_publishing" />
 
         <LinearLayout
             android:layout_width="match_parent"

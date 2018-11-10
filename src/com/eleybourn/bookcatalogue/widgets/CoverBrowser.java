@@ -46,7 +46,7 @@ import android.widget.ViewSwitcher.ViewFactory;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
-import com.eleybourn.bookcatalogue.searches.SearchManager;
+import com.eleybourn.bookcatalogue.searches.SearchSites;
 import com.eleybourn.bookcatalogue.searches.googlebooks.GoogleBooksManager;
 import com.eleybourn.bookcatalogue.searches.isfdb.ISFDBManager;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
@@ -128,6 +128,7 @@ public class CoverBrowser {
         mFileManager = new FileManager();
 
         mDialog = new StandardDialogs.BasicDialog(mActivity);
+//        mDialog = new AlertDialog.Builder(mActivity).create();
     }
 
     /**
@@ -167,7 +168,7 @@ public class CoverBrowser {
         }
 
         if (!IsbnUtils.isValid(mIsbn)) {
-            StandardDialogs.showUserMessage(mActivity, R.string.no_isbn_no_editions);
+            StandardDialogs.showUserMessage(mActivity, R.string.warning_no_isbn_no_editions);
             shutdown();
             return;
         }
@@ -181,12 +182,12 @@ public class CoverBrowser {
 
         // Setup the basic dialog
         mDialog.setContentView(R.layout.dialog_cover_browser);
-        mDialog.setTitle(R.string.finding_editions);
+        mDialog.setTitle(R.string.title_finding_editions);
         mDialog.show();
     }
 
     private void showGallery() {
-        mDialog.setTitle(R.string.select_cover);
+        mDialog.setTitle(R.string.title_select_cover);
 
         // Setup the Gallery.
         final PagerLayout container = mDialog.findViewById(R.id.gallery);
@@ -215,7 +216,7 @@ public class CoverBrowser {
 
         // Show help message
         final TextView msgVw = mDialog.findViewById(R.id.switcherStatus);
-        msgVw.setText(R.string.click_on_thumb);
+        msgVw.setText(R.string.info_click_on_thumb);
         msgVw.setVisibility(View.VISIBLE);
 
         // When the large image is clicked, send it back to the caller and terminate.
@@ -324,7 +325,7 @@ public class CoverBrowser {
 
                     // Show status message
                     final TextView msgVw = mDialog.findViewById(R.id.switcherStatus);
-                    msgVw.setText(R.string.loading);
+                    msgVw.setText(R.string.progress_msg_loading);
                     msgVw.setVisibility(View.VISIBLE);
 
                     GetFullImageTask task = new GetFullImageTask(isbn, mSwitcher);
@@ -383,7 +384,7 @@ public class CoverBrowser {
         @Override
         public void onFinish(final @Nullable Exception e) {
             if (mAlternativeEditions == null || mAlternativeEditions.isEmpty()) {
-                StandardDialogs.showUserMessage(mActivity, R.string.no_editions);
+                StandardDialogs.showUserMessage(mActivity, R.string.warning_no_editions);
                 shutdown();
                 return;
             }
@@ -470,7 +471,7 @@ public class CoverBrowser {
         /**
          * Constructor
          *
-         * @param isbn in the editions list for the ISBN to use
+         * @param isbn     in the editions list for the ISBN to use
          * @param switcher ImageSwitcher to update
          */
         GetFullImageTask(final @NonNull String isbn, final @NonNull ImageSwitcher switcher) {
@@ -515,7 +516,7 @@ public class CoverBrowser {
             } else {
                 msgVw.setVisibility(View.VISIBLE);
                 switcher.setVisibility(View.GONE);
-                msgVw.setText(R.string.image_not_found);
+                msgVw.setText(R.string.warning_cover_not_found);
             }
         }
     }
@@ -577,20 +578,22 @@ public class CoverBrowser {
                 files.remove(key);
             }
 
+            //Reminder: the for() loop will bailout (return) as soon as a cover file is found.
+            // it does not collect covers from all sites; just from the first one found.
             // ENHANCE: allow the user to prioritize the order on the fly.
-            for (SearchManager.SearchSite site : SearchManager.getSiteCoverSearchOrder()) {
+            for (SearchSites.Site site : SearchSites.getSiteCoverSearchOrder()) {
                 if (site.enabled) {
                     File file = null;
                     switch (site.id) {
-                        case SearchManager.SEARCH_LIBRARY_THING: {
+                        case SearchSites.SEARCH_LIBRARY_THING: {
                             file = libraryThingManager.getCoverImage(isbn, null, size);
                             break;
                         }
-                        case SearchManager.SEARCH_GOOGLE: {
+                        case SearchSites.SEARCH_GOOGLE: {
                             file = GoogleBooksManager.getCoverImage(isbn);
                             break;
                         }
-                        case SearchManager.SEARCH_ISFDB: {
+                        case SearchSites.SEARCH_ISFDB: {
                             file = ISFDBManager.getCoverImage(isbn);
                             break;
                         }
@@ -603,7 +606,6 @@ public class CoverBrowser {
                             return fileSpec;
                         }
                     }
-
                 }
             }
 
@@ -635,8 +637,8 @@ public class CoverBrowser {
          */
         void purge() {
             try {
-                for (String k : files.keySet()) {
-                    String fileSpec = files.getString(k);
+                for (String key : files.keySet()) {
+                    String fileSpec = files.getString(key);
                     if (fileSpec != null) {
                         StorageUtils.deleteFile(new File(fileSpec));
                     }

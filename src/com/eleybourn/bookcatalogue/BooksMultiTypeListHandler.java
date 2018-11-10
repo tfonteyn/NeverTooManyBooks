@@ -65,7 +65,7 @@ import com.eleybourn.bookcatalogue.dialogs.fieldeditdialogs.EditLanguageDialog;
 import com.eleybourn.bookcatalogue.dialogs.fieldeditdialogs.EditLocationDialog;
 import com.eleybourn.bookcatalogue.dialogs.fieldeditdialogs.EditPublisherDialog;
 import com.eleybourn.bookcatalogue.dialogs.fieldeditdialogs.EditSeriesDialog;
-import com.eleybourn.bookcatalogue.dialogs.picklist.SelectOneDialog;
+import com.eleybourn.bookcatalogue.dialogs.SelectOneDialog;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Publisher;
 import com.eleybourn.bookcatalogue.entities.Series;
@@ -323,7 +323,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                         .setIcon(R.drawable.ic_note);
 
                 if (Fields.isVisible(UniqueId.KEY_LOAN_LOANED_TO)) {
-                    menu.add(Menu.NONE, R.id.MENU_BOOK_EDIT_LOAN, 0, R.string.menu_edit_book_friends)
+                    menu.add(Menu.NONE, R.id.MENU_BOOK_EDIT_LOAN, 0, R.string.menu_edit_book_loan)
                             .setIcon(R.drawable.ic_people);
                 }
 
@@ -332,7 +332,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                 break;
             }
             case RowKinds.ROW_KIND_AUTHOR: {
-                menu.add(Menu.NONE, R.id.MENU_AUTHOR_DETAILS, 0, R.string.details)
+                menu.add(Menu.NONE, R.id.MENU_AUTHOR_DETAILS, 0, R.string.author_details)
                         .setIcon(R.drawable.ic_details);
                 menu.add(Menu.NONE, R.id.MENU_AUTHOR_EDIT, 0, R.string.menu_edit_author)
                         .setIcon(R.drawable.ic_mode_edit);
@@ -395,7 +395,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
         boolean hasAuthor = (cursorRow.hasAuthorId() && cursorRow.getAuthorId() > 0);
         boolean hasSeries = (cursorRow.hasSeriesId() && cursorRow.getSeriesId() > 0);
         if (hasAuthor || hasSeries) {
-            SubMenu subMenu = menu.addSubMenu(R.string.search);
+            SubMenu subMenu = menu.addSubMenu(R.string.menu_search);
 
             if (hasAuthor) {
                 subMenu.add(Menu.NONE, R.id.MENU_AMAZON_BOOKS_BY_AUTHOR, 0, R.string.menu_amazon_books_by_author)
@@ -458,17 +458,17 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
             }
             case R.id.MENU_BOOK_EDIT: {
                 EditBookActivity.startActivityForResult(activity, /* 01564e26-b463-425e-8889-55a8228c82d5 */
-                        cursorRow.getBookId(), EditBookActivity.TAB_EDIT);
+                        cursorRow.getBookId(), EditBookFragment.TAB_EDIT);
                 return true;
             }
             case R.id.MENU_BOOK_EDIT_NOTES: {
                 EditBookActivity.startActivityForResult(activity, /* 8a5c649a-e97b-4d53-8133-6060ef3c3072 */
-                        cursorRow.getBookId(), EditBookActivity.TAB_EDIT_NOTES);
+                        cursorRow.getBookId(), EditBookFragment.TAB_EDIT_NOTES);
                 return true;
             }
             case R.id.MENU_BOOK_EDIT_LOAN: {
                 EditBookActivity.startActivityForResult(activity, /* 0308715c-e1d2-4a7f-9ba3-cb8f641e096b */
-                        cursorRow.getBookId(), EditBookActivity.TAB_EDIT_LOANS);
+                        cursorRow.getBookId(), EditBookFragment.TAB_EDIT_LOANS);
                 return true;
             }
             case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR: {

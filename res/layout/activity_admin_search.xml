@@ -17,7 +17,7 @@
         android:background="?attr/colorPrimary" />
 
     <FrameLayout
-        android:id="@+id/fragment"
+        android:id="@+id/main_fragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/buttonbar_cancel_save"

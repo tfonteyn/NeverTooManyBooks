@@ -36,7 +36,7 @@ public class EditLanguageDialog extends EditStringDialog {
 
     @CallSuper
     public void edit(final @NonNull String s) {
-        super.edit(s, R.layout.dialog_edit_language, R.string.dialog_title_edit_language);
+        super.edit(s, R.layout.dialog_edit_language, R.string.title_edit_language);
     }
 
     @Override

@@ -167,7 +167,7 @@ public class BackupManager {
 
         };
         SimpleTaskQueueProgressDialogFragment frag = SimpleTaskQueueProgressDialogFragment
-                .runTaskWithProgress(context, R.string.backing_up_ellipsis, task, false, taskId);
+                .runTaskWithProgress(context, R.string.progress_msg_backing_up, task, false, taskId);
         frag.setNumberFormat(null);
         return resultingFile;
     }
@@ -210,11 +210,11 @@ public class BackupManager {
                     Logger.error(e);
                     throw new RuntimeException("Error during restore", e);
                 }
-                Logger.info(BackupManager.class,"Finished importing " + inputFile.getAbsolutePath() + ", size = " + inputFile.length());
+                Logger.info(BackupManager.class, "Finished importing " + inputFile.getAbsolutePath() + ", size = " + inputFile.length());
             }
         };
         SimpleTaskQueueProgressDialogFragment frag = SimpleTaskQueueProgressDialogFragment.runTaskWithProgress(context,
-                R.string.importing_ellipsis, task, false, taskId);
+                R.string.progress_msg_importing, task, false, taskId);
         frag.setNumberFormat(null);
     }
 

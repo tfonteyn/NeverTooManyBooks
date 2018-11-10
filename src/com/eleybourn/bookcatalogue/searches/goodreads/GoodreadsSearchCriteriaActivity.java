@@ -86,7 +86,7 @@ public class GoodreadsSearchCriteriaActivity extends BaseActivity {
 
             try (BookCursor cursor = mDb.fetchBookById(mBookId)){
                 if (!cursor.moveToFirst()) {
-                    StandardDialogs.showUserMessage(this, R.string.book_no_longer_exists);
+                    StandardDialogs.showUserMessage(this, R.string.warning_book_no_longer_exists);
                     setResult(Activity.RESULT_CANCELED);
                     finish();
                     return;

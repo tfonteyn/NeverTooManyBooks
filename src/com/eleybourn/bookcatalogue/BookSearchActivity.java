@@ -53,6 +53,7 @@ import com.eleybourn.bookcatalogue.scanner.Scanner;
 import com.eleybourn.bookcatalogue.scanner.ScannerManager;
 import com.eleybourn.bookcatalogue.searches.SearchAdminActivity;
 import com.eleybourn.bookcatalogue.searches.SearchManager;
+import com.eleybourn.bookcatalogue.searches.SearchSites;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
 import com.eleybourn.bookcatalogue.utils.AsinUtils;
 import com.eleybourn.bookcatalogue.utils.IsbnUtils;
@@ -87,7 +88,7 @@ public class BookSearchActivity extends BaseActivityWithTasks {
     public static final String BY_TEXT = "text";
     public static final String BY_SCAN = "scan";
 
-    /** optionally limit the sites to search on. By default uses {@link SearchManager#SEARCH_ALL} */
+    /** optionally limit the sites to search on. By default uses {@link SearchSites#SEARCH_ALL} */
     private static final String REQUEST_BKEY_SEARCH_SITES = "SearchSites";
     /** */
     private static final String SEARCH_MANAGER_ID = "SearchManagerId";
@@ -132,7 +133,7 @@ public class BookSearchActivity extends BaseActivityWithTasks {
     };
     private String mBy;
 
-    private int mSearchSites = SearchManager.SEARCH_ALL;
+    private int mSearchSites = SearchSites.SEARCH_ALL;
     /**
      * Return the layout to use for this subclass
      */
@@ -175,7 +176,7 @@ public class BookSearchActivity extends BaseActivityWithTasks {
             super.onCreate(savedInstanceState);
             this.setTitle(R.string.title_isbn_search);
 
-            mSearchSites = extras.getInt(REQUEST_BKEY_SEARCH_SITES, SearchManager.SEARCH_ALL);
+            mSearchSites = extras.getInt(REQUEST_BKEY_SEARCH_SITES, SearchSites.SEARCH_ALL);
 
             LibraryThingManager.showLtAlertIfNecessary(this, false, "search");
 
@@ -251,7 +252,7 @@ public class BookSearchActivity extends BaseActivityWithTasks {
     @Override
     @CallSuper
     public boolean onCreateOptionsMenu(final @NonNull Menu menu) {
-        menu.add(Menu.NONE, R.id.MENU_PREFS_SEARCH_SITES, 0, R.string.search_sites)
+        menu.add(Menu.NONE, R.id.MENU_PREFS_SEARCH_SITES, 0, R.string.tab_lbl_search_sites)
                 .setIcon(R.drawable.ic_search)
                 .setShowAsAction(MenuItem.SHOW_AS_ACTION_WITH_TEXT);
 
@@ -417,7 +418,7 @@ public class BookSearchActivity extends BaseActivityWithTasks {
         } catch (SecurityException e) {
             AlertDialog dialog = new AlertDialog.Builder(BookSearchActivity.this)
                     .setMessage(R.string.warning_bad_scanner)
-                    .setTitle(R.string.install_scan_title)
+                    .setTitle(R.string.title_install_scan)
                     .setIconAttribute(android.R.attr.alertDialogIcon)
                     .create();
 
@@ -452,7 +453,7 @@ public class BookSearchActivity extends BaseActivityWithTasks {
             try {
                 AlertDialog dialog = new AlertDialog.Builder(BookSearchActivity.this)
                         .setMessage(R.string.install_scan)
-                        .setTitle(R.string.install_scan_title)
+                        .setTitle(R.string.title_install_scan)
                         .setIconAttribute(android.R.attr.alertDialogIcon)
                         .create();
 
@@ -579,9 +580,9 @@ public class BookSearchActivity extends BaseActivityWithTasks {
                 if (!IsbnUtils.isValid(mIsbn) && (!allowAsin || !AsinUtils.isValid(mIsbn))) {
                     int msg;
                     if (allowAsin) {
-                        msg = R.string.x_is_not_a_valid_isbn_or_asin;
+                        msg = R.string.warning_x_is_not_a_valid_isbn_or_asin;
                     } else {
-                        msg = R.string.x_is_not_a_valid_isbn;
+                        msg = R.string.warning_x_is_not_a_valid_isbn;
                     }
                     StandardDialogs.showUserMessage(this, getString(msg, mIsbn));
                     if (mMode == Mode.Scan) {
@@ -604,8 +605,8 @@ public class BookSearchActivity extends BaseActivityWithTasks {
                     if (existingId > 0) {
                         // Verify - this can be a dangerous operation
                         AlertDialog dialog = new AlertDialog.Builder(this)
-                                .setMessage(R.string.duplicate_book_message)
-                                .setTitle(R.string.dialog_title_duplicate_book)
+                                .setMessage(R.string.warning_duplicate_book_message)
+                                .setTitle(R.string.title_duplicate_book)
                                 .setIconAttribute(android.R.attr.alertDialogIcon)
                                 .create();
 
@@ -619,7 +620,7 @@ public class BookSearchActivity extends BaseActivityWithTasks {
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(final DialogInterface dialog, final int which) {
                                         EditBookActivity.startActivityForResult(BookSearchActivity.this, /* 9e2c0b04-8217-4b49-9937-96d160104265 */
-                                                existingId, EditBookActivity.TAB_EDIT);
+                                                existingId, EditBookFragment.TAB_EDIT);
                                     }
                                 });
                         dialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(android.R.string.cancel),
@@ -665,7 +666,7 @@ public class BookSearchActivity extends BaseActivityWithTasks {
                     Logger.info(this, "doSearchBook, starting search for mSearchManagerId: " + mSearchManagerId);
                 }
 
-                getTaskManager().doProgress(getString(R.string.searching_ellipsis));
+                getTaskManager().doProgress(getString(R.string.progress_msg_searching));
                 searchManager.search(mSearchSites, mAuthor, mTitle, mIsbn, true);
                 // reset the details so we don't restart the search unnecessarily
                 mAuthor = "";
@@ -693,7 +694,7 @@ public class BookSearchActivity extends BaseActivityWithTasks {
                     startScannerActivity();
                 }
             } else {
-                getTaskManager().doProgress(getString(R.string.adding_book_ellipsis));
+                getTaskManager().doProgress(getString(R.string.progress_msg_adding_book));
                 Intent intent = new Intent(this, EditBookActivity.class);
                 intent.putExtra(UniqueId.BKEY_BOOK_DATA, bookData);
                 startActivityForResult(intent, EditBookActivity.REQUEST_CODE); /* 341ace23-c2c8-42d6-a71e-909a3a19ba99 */

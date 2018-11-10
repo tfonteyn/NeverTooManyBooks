@@ -73,7 +73,7 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
-import com.eleybourn.bookcatalogue.dialogs.picklist.SelectOneDialog;
+import com.eleybourn.bookcatalogue.dialogs.SelectOneDialog;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.searches.SearchLocalActivity;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue;
@@ -103,7 +103,7 @@ public class BooksOnBookshelf extends BaseListActivity implements
     /** Preference name for the default style to use */
     private final static String PREF_LIST_STYLE = TAG + ".LIST_STYLE";
     @StringRes
-    private final static int DEFAULT_STYLE = R.string.sort_author_series;
+    private final static int DEFAULT_STYLE = R.string.style_builtin_author_series;
     /** Preference name for the style to use specific to a bookshelf */
     private final static String PREF_LIST_STYLE_FOR_BOOKSHELF = TAG + ".LIST_STYLE.BOOKSHELF." /* + name of shelf */;
 
@@ -366,12 +366,12 @@ public class BooksOnBookshelf extends BaseListActivity implements
                     String listTable = mListCursor.getBuilder().createFlattenedBooklist().getTable().getName();
                     Intent intent = new Intent(BooksOnBookshelf.this, BookDetailsActivity.class);
                     intent.putExtra(UniqueId.KEY_ID, bookId);
-                    intent.putExtra(BookDetailsActivity.REQUEST_BKEY_FLATTENED_BOOKLIST, listTable);
-                    intent.putExtra(BookDetailsActivity.REQUEST_BKEY_FLATTENED_BOOKLIST_POSITION, position);
+                    intent.putExtra(BookFragment.REQUEST_BKEY_FLATTENED_BOOKLIST, listTable);
+                    intent.putExtra(BookFragment.REQUEST_BKEY_FLATTENED_BOOKLIST_POSITION, position);
                     startActivityForResult(intent, BookDetailsActivity.REQUEST_CODE); /* e63944b6-b63a-42b1-897a-a0e8e0dabf8a */
 
                 } else {
-                    EditBookActivity.startActivityForResult(BooksOnBookshelf.this, bookId, EditBookActivity.TAB_EDIT); /* 91b95a7f-17d6-4f98-af58-5f040b52414f */
+                    EditBookActivity.startActivityForResult(BooksOnBookshelf.this, bookId, EditBookFragment.TAB_EDIT); /* 91b95a7f-17d6-4f98-af58-5f040b52414f */
                 }
                 break;
             }
@@ -497,7 +497,7 @@ public class BooksOnBookshelf extends BaseListActivity implements
             }
         }
 
-        return MenuHandler.onOptionsItemSelected(this, item) || super.onOptionsItemSelected(item);
+        return MenuHandler.onOptionsItemSelectedBookSubMenu(this, item) || super.onOptionsItemSelected(item);
     }
 
     /**
@@ -1099,7 +1099,7 @@ public class BooksOnBookshelf extends BaseListActivity implements
 
         final AlertDialog dialog = new AlertDialog.Builder(this)
                 .setView(dialogView)
-                .setTitle(R.string.select_style)
+                .setTitle(R.string.title_select_style)
                 .create();
         dialog.show();
 
@@ -1117,7 +1117,7 @@ public class BooksOnBookshelf extends BaseListActivity implements
 
         // second section are options to do 'more things then listed'
         ViewGroup menu = dialogView.findViewById(R.id.menu);
-        int moreOrLess = showAll ? R.string.show_fewer_ellipsis : R.string.show_more_ellipsis;
+        int moreOrLess = showAll ? R.string.menu_show_fewer_ellipsis : R.string.menu_show_more_ellipsis;
         addStyleTextMenuItem(menu, inf, moreOrLess, new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -1125,7 +1125,7 @@ public class BooksOnBookshelf extends BaseListActivity implements
                 doSortMenu(!showAll);
             }
         });
-        addStyleTextMenuItem(menu, inf, R.string.customize_ellipsis, new OnClickListener() {
+        addStyleTextMenuItem(menu, inf, R.string.menu_customize_ellipsis, new OnClickListener() {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();

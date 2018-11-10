@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue;
 
 import android.Manifest;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -39,15 +40,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.entities.Book;
+import com.eleybourn.bookcatalogue.entities.BookManager;
 
 import java.util.ArrayList;
 
 /**
- * This class is called by {@link EditBookActivity} and displays the Loaned Tab
+ * This class is called by {@link EditBookFragment} and displays the Loaned Tab
  *
  * Users can select a book and, from this activity, select a friend to "loan" the book to.
  * * This will then be saved in the database.
@@ -58,6 +59,8 @@ import java.util.ArrayList;
  */
 public class EditBookLoanedFragment extends BookAbstractFragment {
 
+    public static final String TAG = "EditBookLoanedFragment";
+
     private static final String[] PROJECTION = {
             ContactsContract.Contacts._ID,
             ContactsContract.Contacts.LOOKUP_KEY,
@@ -65,6 +68,31 @@ public class EditBookLoanedFragment extends BookAbstractFragment {
     };
 
     private TextView mLoanedTo;
+
+    /* ------------------------------------------------------------------------------------------ */
+    @NonNull
+    protected BookManager getBookManager() {
+        //noinspection ConstantConditions
+        return ((EditBookFragment)this.getParentFragment()).getBookManager();
+    }
+
+    /* ------------------------------------------------------------------------------------------ */
+
+    //<editor-fold desc="Fragment startup">
+
+//    /**
+//     * Ensure activity supports interface
+//     */
+//    @Override
+//    @CallSuper
+//    public void onAttach(final @NonNull Context context) {
+//        super.onAttach(context);
+//    }
+
+//    @Override
+//    public void onCreate(@Nullable final Bundle savedInstanceState) {
+//        super.onCreate(savedInstanceState);
+//    }
 
     @Override
     public View onCreateView(final @NonNull LayoutInflater inflater,
@@ -75,15 +103,16 @@ public class EditBookLoanedFragment extends BookAbstractFragment {
 
     /**
      * has no specific Arguments or savedInstanceState as all is done via
-     * {@link #getBook()} on the hosting Activity
+     * {@link BookManager#getBook()} on the hosting Activity
      * {@link #onLoadFieldsFromBook(Book, boolean)} from base class onResume
-     * {@link #onSaveFieldsToBook(Book)} from base class onPause     */
+     * {@link #onSaveFieldsToBook(Book)} from base class onPause
+     */
     @Override
     @CallSuper
     public void onActivityCreated(final @Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        String friend = mDb.getLoanByBookId(getBook().getBookId());
+        String friend = mDb.getLoanByBookId(getBookManager().getBook().getBookId());
         if (friend == null) {
             showLoanTo();
         } else {
@@ -91,11 +120,31 @@ public class EditBookLoanedFragment extends BookAbstractFragment {
         }
     }
 
+    @Override
+    protected void initFields() {
+        super.initFields();
+    }
+
+//    @CallSuper
+//    @Override
+//    public void onResume() {
+//        super.onResume();
+//    }
+
+    @Override
+    protected void onLoadFieldsFromBook(@NonNull final Book book, final boolean setAllFrom) {
+        super.onLoadFieldsFromBook(book, setAllFrom);
+    }
+    //</editor-fold>
+
+    /* ------------------------------------------------------------------------------------------ */
+
+    //<editor-fold desc="Populate">
     /**
      * Display the loan to page. It is slightly different to the existing loan page
      */
     private void showLoanTo() {
-        ScrollView sv = loadFragmentIntoScrollView(R.layout.fragment_edit_book_loan_to);
+        ViewGroup sv = loadFragmentIntoView(R.layout.fragment_edit_book_loan_to);
         mLoanedTo = sv.findViewById(R.id.loaned_to);
         setPhoneContactsAdapter();
 
@@ -114,7 +163,7 @@ public class EditBookLoanedFragment extends BookAbstractFragment {
      * @param user The user the book was loaned to
      */
     private void showLoaned(final @NonNull String user) {
-        ScrollView sv = loadFragmentIntoScrollView(R.layout.fragment_edit_book_loaned);
+        ViewGroup sv = loadFragmentIntoView(R.layout.fragment_edit_book_loaned);
         mLoanedTo = sv.findViewById(R.id.loaned_to);
         mLoanedTo.setText(user);
 
@@ -127,22 +176,48 @@ public class EditBookLoanedFragment extends BookAbstractFragment {
     }
 
     @NonNull
-    private ScrollView loadFragmentIntoScrollView(final @LayoutRes int resId) {
+    private ViewGroup loadFragmentIntoView(final @LayoutRes int fragmentId) {
         //noinspection ConstantConditions
-        ScrollView sv = getView().findViewById(R.id.root);
+        ViewGroup sv = getView().findViewById(R.id.root);
         sv.removeAllViews();
-        requireActivity().getLayoutInflater().inflate(resId, sv);
+        requireActivity().getLayoutInflater().inflate(fragmentId, sv);
         return sv;
     }
+    //</editor-fold>
+
+    /* ------------------------------------------------------------------------------------------ */
+
+    //<editor-fold desc="Fragment shutdown">
+
+//    @Override
+//    @CallSuper
+//    public void onPause() {
+//        super.onPause();
+//    }
+
+    @Override
+    @CallSuper
+    protected void onSaveFieldsToBook(final @NonNull Book book) {
+        super.onSaveFieldsToBook(book);
+    }
+
+//    @Override
+//    public void onDestroy() {
+//        super.onDestroy();
+//    }
+    //</editor-fold>
+
+    /* ------------------------------------------------------------------------------------------ */
 
     private void saveLoan(final @NonNull String friend) {
-        Book book = getBook();
+        Book book = getBookManager().getBook();
         book.putString(UniqueId.KEY_LOAN_LOANED_TO, friend);
         mDb.insertLoan(book, true);
     }
 
     private void removeLoan() {
-        mDb.deleteLoan(getBook().getBookId(), true);
+        Book book = getBookManager().getBook();
+        mDb.deleteLoan(book.getBookId(), true);
     }
 
     /**
@@ -155,7 +230,7 @@ public class EditBookLoanedFragment extends BookAbstractFragment {
             return;
         }
         // call secured method
-        ArrayList<String> contacts = getContacts();
+        ArrayList<String> contacts = getPhoneContacts();
         ArrayAdapter<String> adapter = new ArrayAdapter<>(requireActivity(), android.R.layout.simple_dropdown_item_1line, contacts);
         ((AutoCompleteTextView) mLoanedTo).setAdapter(adapter);
     }
@@ -167,7 +242,7 @@ public class EditBookLoanedFragment extends BookAbstractFragment {
      */
     @RequiresPermission(Manifest.permission.READ_CONTACTS)
     @NonNull
-    private ArrayList<String> getContacts() throws SecurityException {
+    private ArrayList<String> getPhoneContacts() throws SecurityException {
         ArrayList<String> list = new ArrayList<>();
         ContentResolver cr = requireActivity().getContentResolver();
         try (Cursor contactsCursor = cr.query(ContactsContract.Contacts.CONTENT_URI, PROJECTION, null, null, null)) {

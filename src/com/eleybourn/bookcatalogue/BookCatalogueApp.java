@@ -444,6 +444,9 @@ public class BookCatalogueApp extends Application {
     /**
      * Get the list of supported locale names
      *
+     * There are also: cs, pl but those are not complete.
+     * (2018-11-10: pt_BR was removed altogether as it was pure english)
+     *
      * @return ArrayList of locale names
      */
     @NonNull

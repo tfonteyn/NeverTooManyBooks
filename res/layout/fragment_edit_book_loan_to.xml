@@ -25,7 +25,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_below="@id/lbl_loan"
-        android:text="@string/lbl_loaned_to" />
+        android:text="@string/tab_lbl_loan" />
 
 </RelativeLayout>
 

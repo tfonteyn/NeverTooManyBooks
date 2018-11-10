@@ -33,7 +33,7 @@
                 android:id="@+id/click_here"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/help_click_here"
+                android:text="@string/about_help_click_here"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <TextView
@@ -61,7 +61,7 @@
                 android:layout_height="wrap_content"
                 android:paddingBottom="@dimen/padding_border_quad"
                 android:paddingTop="@dimen/padding_border_double"
-                android:text="@string/cleanup_files_text"
+                android:text="@string/info_cleanup_files_text"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <Button

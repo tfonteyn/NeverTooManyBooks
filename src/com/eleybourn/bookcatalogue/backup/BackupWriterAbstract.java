@@ -221,8 +221,8 @@ public abstract class BackupWriterAbstract implements BackupWriter {
         int ok = 0;
         int missing = 0;
         int skipped = 0;
-        String fmt_no_skip = BookCatalogueApp.getResourceString(R.string.covers_progress);
-        String fmt_skip = BookCatalogueApp.getResourceString(R.string.covers_progress_increment);
+        String fmt_no_skip = BookCatalogueApp.getResourceString(R.string.progress_covers);
+        String fmt_skip = BookCatalogueApp.getResourceString(R.string.progress_covers_skip);
 
         try (Cursor cursor = mDb.fetchBookUuidList()) {
             final int uuidCol = cursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_UUID.toString());

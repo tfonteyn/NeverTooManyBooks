@@ -109,60 +109,60 @@ public class BooklistStyles extends ArrayList<BooklistStyle> {
         BooklistStyle style;
 
         // Author/Series
-        style = new BooklistStyle(R.string.sort_author_series);
+        style = new BooklistStyle(R.string.style_builtin_author_series);
         list.add(style);
         style.addGroups(ROW_KIND_AUTHOR, ROW_KIND_SERIES);
 
         // Unread
-        style = new BooklistStyle(R.string.sort_unread);
+        style = new BooklistStyle(R.string.style_builtin_unread);
         list.add(style);
         style.addGroups(ROW_KIND_AUTHOR, ROW_KIND_SERIES);
         style.setReadFilter(BooklistStyle.FILTER_NO);
 
         // Compact
-        style = new BooklistStyle(R.string.compact);
+        style = new BooklistStyle(R.string.style_builtin_compact);
         list.add(style);
         style.addGroups(ROW_KIND_AUTHOR);
         style.setCondensed(true);
         style.setShowThumbnails(false);
 
         // Title
-        style = new BooklistStyle(R.string.sort_title_first_letter);
+        style = new BooklistStyle(R.string.style_builtin_title_first_letter);
         list.add(style);
         style.addGroups(RowKinds.ROW_KIND_TITLE_LETTER);
 
         // Series
-        style = new BooklistStyle(R.string.sort_series);
+        style = new BooklistStyle(R.string.style_builtin_series);
         list.add(style);
         style.addGroup(RowKinds.ROW_KIND_SERIES);
 
         // Genre
-        style = new BooklistStyle(R.string.sort_genre);
+        style = new BooklistStyle(R.string.style_builtin_genre);
         list.add(style);
         style.addGroups(ROW_KIND_GENRE, ROW_KIND_AUTHOR, ROW_KIND_SERIES);
 
         // Loaned
-        style = new BooklistStyle(R.string.sort_loaned);
+        style = new BooklistStyle(R.string.style_builtin_loaned);
         list.add(style);
         style.addGroups(ROW_KIND_LOANED, ROW_KIND_AUTHOR, ROW_KIND_SERIES);
 
         // Read & Unread
-        style = new BooklistStyle(R.string.sort_read_and_unread);
+        style = new BooklistStyle(R.string.style_builtin_read_and_unread);
         list.add(style);
         style.addGroups(ROW_KIND_READ_AND_UNREAD, ROW_KIND_AUTHOR, ROW_KIND_SERIES);
 
         // Publication date
-        style = new BooklistStyle(R.string.sort_publication_date);
+        style = new BooklistStyle(R.string.style_builtin_publication_date);
         list.add(style);
         style.addGroups(ROW_KIND_YEAR_PUBLISHED, ROW_KIND_MONTH_PUBLISHED, ROW_KIND_AUTHOR, ROW_KIND_SERIES);
 
         // Added date
-        style = new BooklistStyle(R.string.sort_added_date);
+        style = new BooklistStyle(R.string.style_builtin_added_date);
         list.add(style);
         style.addGroups(ROW_KIND_YEAR_ADDED, ROW_KIND_MONTH_ADDED, ROW_KIND_DAY_ADDED, ROW_KIND_AUTHOR);
 
         // Author/Publication date
-        style = new BooklistStyle(R.string.sort_author_year);
+        style = new BooklistStyle(R.string.style_builtin_author_year);
         list.add(style);
         style.addGroups(ROW_KIND_AUTHOR, ROW_KIND_YEAR_PUBLISHED, ROW_KIND_SERIES);
 
@@ -172,7 +172,7 @@ public class BooklistStyles extends ArrayList<BooklistStyle> {
         style.addGroups(ROW_KIND_FORMAT);
 
         // Read date
-        style = new BooklistStyle(R.string.sort_read_date);
+        style = new BooklistStyle(R.string.style_builtin_read_date);
         list.add(style);
         style.addGroups(ROW_KIND_YEAR_READ, ROW_KIND_MONTH_READ, ROW_KIND_AUTHOR);
 

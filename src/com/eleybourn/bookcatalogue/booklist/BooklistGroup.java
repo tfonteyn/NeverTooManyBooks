@@ -92,7 +92,7 @@ public class BooklistGroup implements Serializable {
         mRowKindNames.put(ROW_KIND_LOANED, BookCatalogueApp.getResourceString(R.string.loaned));
         mRowKindNames.put(ROW_KIND_YEAR_PUBLISHED, BookCatalogueApp.getResourceString(R.string.publication_year));
         mRowKindNames.put(ROW_KIND_MONTH_PUBLISHED, BookCatalogueApp.getResourceString(R.string.publication_month));
-        mRowKindNames.put(ROW_KIND_TITLE_LETTER, BookCatalogueApp.getResourceString(R.string.sort_title_first_letter));
+        mRowKindNames.put(ROW_KIND_TITLE_LETTER, BookCatalogueApp.getResourceString(R.string.style_builtin_title_first_letter));
         mRowKindNames.put(ROW_KIND_YEAR_ADDED, BookCatalogueApp.getResourceString(R.string.added_year));
         mRowKindNames.put(ROW_KIND_MONTH_ADDED, BookCatalogueApp.getResourceString(R.string.added_month));
         mRowKindNames.put(ROW_KIND_DAY_ADDED, BookCatalogueApp.getResourceString(R.string.added_day));

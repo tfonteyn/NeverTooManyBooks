@@ -1,4 +1,4 @@
-package com.eleybourn.bookcatalogue.dialogs.picklist;
+package com.eleybourn.bookcatalogue.dialogs;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

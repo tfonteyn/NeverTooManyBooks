@@ -39,7 +39,7 @@ import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.dialogs.fieldeditdialogs.EditBookshelfDialog;
-import com.eleybourn.bookcatalogue.dialogs.picklist.SelectOneDialog;
+import com.eleybourn.bookcatalogue.dialogs.SelectOneDialog;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.widgets.TouchListViewWithDropListener;
 
@@ -67,7 +67,7 @@ public class EditBookshelfListActivity extends BaseListActivity {
     @CallSuper
     public void onCreate(final @Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTitle(R.string.dialog_title_edit_bookshelves);
+        setTitle(R.string.title_edit_bookshelves);
 
         mDb = new CatalogueDBAdapter(this)
                 .open();
@@ -188,7 +188,7 @@ public class EditBookshelfListActivity extends BaseListActivity {
     }
 
     @Override
-    protected void setActivityResult() {
+    public void setActivityResult() {
         setResult(changesMade() ? Activity.RESULT_OK : Activity.RESULT_CANCELED); /* 41e84172-5833-4906-a891-8df302ecc190 */
     }
 

@@ -45,7 +45,7 @@ import java.util.List;
  *
  * Places to add them:
  * {@link BookAbstractFragment#showHideFields(boolean)}
- * {@link BookDetailsFragment#populateReadStatus} and similar show methods in that class
+ * {@link BookFragment#populateReadStatus} and similar show methods in that class
  * or the parent classes
  *
  * Note that the Booklist related preferences do NOT observe visibility of these fields.
@@ -62,7 +62,7 @@ public class FieldVisibilityActivity extends BaseActivity {
     static {
         mFields.add(new FieldInfo(UniqueId.KEY_AUTHOR_ID, R.string.author, true));
         mFields.add(new FieldInfo(UniqueId.KEY_TITLE, R.string.title, true));
-        mFields.add(new FieldInfo(UniqueId.KEY_BOOK_THUMBNAIL, R.string.thumbnail, false));
+        mFields.add(new FieldInfo(UniqueId.KEY_BOOK_THUMBNAIL, R.string.title_cover, false));
         mFields.add(new FieldInfo(UniqueId.KEY_BOOK_ISBN, R.string.isbn, false));
         mFields.add(new FieldInfo(UniqueId.KEY_SERIES_NAME, R.string.series, false));
         mFields.add(new FieldInfo(UniqueId.KEY_SERIES_NUM, R.string.series_num, false));
@@ -82,7 +82,7 @@ public class FieldVisibilityActivity extends BaseActivity {
 
         // **** PERSONAL FIELDS ****
         mFields.add(new FieldInfo(UniqueId.KEY_BOOKSHELF_NAME, R.string.lbl_bookshelf, false));
-        mFields.add(new FieldInfo(UniqueId.KEY_LOAN_LOANED_TO, R.string.lbl_loaned_to, false));
+        mFields.add(new FieldInfo(UniqueId.KEY_LOAN_LOANED_TO, R.string.lbl_loaning, false));
         mFields.add(new FieldInfo(UniqueId.KEY_NOTES, R.string.lbl_notes, false));
         mFields.add(new FieldInfo(UniqueId.KEY_BOOK_LOCATION, R.string.lbl_location_long, false));
         mFields.add(new FieldInfo(UniqueId.KEY_BOOK_PRICE_PAID, R.string.lbl_price_paid, false));
@@ -158,7 +158,7 @@ public class FieldVisibilityActivity extends BaseActivity {
      * For now, always signal that something (might have) changed
      */
     @Override
-    protected void setActivityResult() {
+    public void setActivityResult() {
         setResult(Activity.RESULT_OK); /* 2f885b11-27f2-40d7-8c8b-fcb4d95a4151 */
     }
 

@@ -99,7 +99,7 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
             authorField.setText("");
         } else {
             //Snackbar.make(target, R.string.author_is_blank, Snackbar.LENGTH_LONG).show();
-            StandardDialogs.showUserMessage(this, R.string.warning_blank_author);
+            StandardDialogs.showUserMessage(this, R.string.warning_required_author);
         }
     }
 
@@ -118,16 +118,16 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
 
         final AlertDialog dialog = new AlertDialog.Builder(EditAuthorListActivity.this)
                 .setView(root)
-                .setTitle(R.string.dialog_title_edit_author)
+                .setTitle(R.string.title_edit_author)
                 .create();
 
         //noinspection ConstantConditions
-        dialog.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
+        root.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String newFamily = familyView.getText().toString().trim();
                 if (newFamily.isEmpty()) {
-                    StandardDialogs.showUserMessage(EditAuthorListActivity.this, R.string.warning_blank_author);
+                    StandardDialogs.showUserMessage(EditAuthorListActivity.this, R.string.warning_required_author);
                     return;
                 }
 
@@ -138,7 +138,7 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
             }
         });
         //noinspection ConstantConditions
-        dialog.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
+        root.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
@@ -184,7 +184,7 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .create();
 
-        dialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.this_book), new DialogInterface.OnClickListener() {
+        dialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.btn_this_book), new DialogInterface.OnClickListener() {
             public void onClick(final @NonNull DialogInterface dialog, final int which) {
                 from.copyFrom(to);
                 Utils.pruneList(mDb, mList);
@@ -206,6 +206,13 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
         dialog.show();
     }
 
+    /**
+     * Called when user clicks the 'Save' button.
+     * @param intent A newly created Intent to store output if necessary.
+     *               The super has already stored the list into the intent.
+     *
+     * @return <tt>true</tt>if activity should exit, false to abort exit.
+     */
     @Override
     protected boolean onSave(final @NonNull Intent intent) {
         final AutoCompleteTextView view = findViewById(R.id.author);
