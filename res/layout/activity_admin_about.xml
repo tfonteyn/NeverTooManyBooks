@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -12,76 +13,54 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="0dp"
-        android:fillViewport="true">
+        android:fillViewport="true"
+        android:padding="0dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingEnd="@dimen/padding_border"
-            android:paddingStart="@dimen/padding_border">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/app_name"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
+            android:paddingStart="@dimen/padding_border"
+            android:paddingEnd="@dimen/padding_border">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingEnd="@dimen/padding_border"
-                android:paddingStart="@dimen/padding_border">
+                android:paddingStart="@dimen/padding_border"
+                android:paddingEnd="@dimen/padding_border">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/about_lbl_version_number"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
+                    android:text="@string/app_name"
+                    android:textAppearance="?android:attr/textAppearanceLarge" />
 
                 <TextView
                     android:id="@+id/version"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:paddingBottom="@dimen/padding_border"
-                    android:paddingEnd="@dimen/padding_border"
                     android:paddingStart="@dimen/padding_border"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:textIsSelectable="true" />
+                    android:paddingEnd="@dimen/padding_border"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textIsSelectable="true"
+                    tools:text="6.0.0" />
             </LinearLayout>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingEnd="@dimen/padding_border"
-                android:paddingStart="@dimen/padding_border"
-                android:text="@string/about_lbl_website"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <TextView
                 android:id="@+id/website"
                 style="@style/link_url"
-                android:text="@string/url_website" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingEnd="@dimen/padding_border"
-                android:paddingStart="@dimen/padding_border"
-                android:text="@string/about_lbl_sourcecode"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                tools:text="website url" />
 
             <TextView
                 android:id="@+id/sourcecode"
                 style="@style/link_url"
-                android:text="@string/url_sourcecode" />
+                tools:text="sourcecode url" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingEnd="@dimen/padding_border"
                 android:paddingStart="@dimen/padding_border"
+                android:paddingEnd="@dimen/padding_border"
                 android:text="@string/about_lbl_contacts"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -96,28 +75,59 @@
                 android:text="@string/email_contact2" />
 
             <TextView
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingEnd="@dimen/padding_border"
                 android:paddingStart="@dimen/padding_border"
+                android:paddingEnd="@dimen/padding_border"
                 android:text="@string/about_lbl_special_thanks"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <TextView
-                android:id="@+id/thanks"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingBottom="@dimen/padding_border"
-                android:paddingEnd="@dimen/padding_border_triple"
                 android:paddingStart="@dimen/padding_border_triple"
+                android:paddingEnd="@dimen/padding_border_triple"
                 android:text="@string/about_translators"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
             <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="@dimen/padding_border"
+                android:paddingEnd="@dimen/padding_border"
+                android:text="@string/about_lbl_donate"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingEnd="@dimen/padding_border"
+                android:paddingStart="@dimen/padding_border_triple"
+                android:paddingEnd="@dimen/padding_border_triple"
+                android:text="@string/about_donate"
+                android:textAppearance="?android:attr/textAppearanceSmall" />
+
+            <TextView
+                android:id="@+id/amazon_url"
+                style="@style/link_donate"
+                android:text="@string/about_donate_amazon" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/dash_or_dash"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
+                android:id="@+id/donate_url"
+                style="@style/link_donate"
+                android:text="@string/about_donate_paypal" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:paddingStart="@dimen/padding_border"
+                android:paddingEnd="@dimen/padding_border"
                 android:text="@string/amazon"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -125,11 +135,11 @@
                 android:id="@+id/amazon_links_info"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingBottom="@dimen/padding_border"
-                android:paddingEnd="@dimen/padding_border_triple"
                 android:paddingStart="@dimen/padding_border_triple"
-                android:text="@string/hint_amazon_links_blurb"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                android:paddingEnd="@dimen/padding_border_triple"
+                android:paddingBottom="@dimen/padding_border"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                tools:text="@string/hint_amazon_links_blurb" />
         </LinearLayout>
 
     </ScrollView>

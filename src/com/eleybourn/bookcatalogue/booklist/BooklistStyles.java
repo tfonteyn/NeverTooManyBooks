@@ -28,7 +28,7 @@ import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
-import com.eleybourn.bookcatalogue.utils.ArrayUtils;
+import com.eleybourn.bookcatalogue.utils.StringList;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -80,14 +80,13 @@ public class BooklistStyles extends ArrayList<BooklistStyle> {
 
     /**
      * Get a list of canonical names of the preferred styles from user preferences.
-     *
      */
     @NonNull
     private static Set<String> getPreferredStyleNames() {
         Set<String> names = new HashSet<>();
         String itemStr = BookCatalogueApp.Prefs.getString(PREF_MENU_ITEMS, null);
         if (itemStr != null && !itemStr.isEmpty()) {
-            List<String> list = ArrayUtils.decodeList(itemStr);
+            List<String> list = StringList.decode(itemStr);
             for (String name : list) {
                 if (name != null && !name.isEmpty()) {
                     names.add(name);
@@ -220,7 +219,7 @@ public class BooklistStyles extends ArrayList<BooklistStyle> {
         String itemStr = BookCatalogueApp.Prefs.getString(PREF_MENU_ITEMS, null);
         if (itemStr != null && !itemStr.isEmpty()) {
             // Break it up and process in order
-            List<String> list = ArrayUtils.decodeList(itemStr);
+            List<String> list = StringList.decode(itemStr);
             for (String n : list) {
                 // Add any exiting style that is preferred
                 BooklistStyle s = allStyles.findCanonical(n);
@@ -285,9 +284,9 @@ public class BooklistStyles extends ArrayList<BooklistStyle> {
         for (BooklistStyle style : list) {
             if (style.isPreferred()) {
                 if (items.length() > 0) {
-                    items.append(ArrayUtils.MULTI_STRING_SEPARATOR);
+                    items.append(StringList.MULTI_STRING_SEPARATOR);
                 }
-                items.append(ArrayUtils.encodeListItem(style.getCanonicalName()));
+                items.append(StringList.encodeListItem(style.getCanonicalName()));
             }
         }
         BookCatalogueApp.Prefs.putString(PREF_MENU_ITEMS, items.toString());

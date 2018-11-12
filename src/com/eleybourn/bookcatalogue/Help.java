@@ -25,6 +25,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.Nullable;
+import android.text.method.LinkMovementMethod;
+import android.text.util.Linkify;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -37,8 +39,7 @@ import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 /**
- * This is the Help page. It contains details about the app, links to my website and email,
- * functions to export and import books and functions to manage bookshelves.
+ * This is the Help page.
  *
  * @author Evan Leybourn
  */
@@ -56,23 +57,11 @@ public class Help extends BaseActivity {
         try {
             setTitle(R.string.app_name);
 
-            findViewById(R.id.help_instructions).setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(Intent.ACTION_VIEW,
-                            Uri.parse(getString(R.string.url_help)));
-                    startActivity(intent);
-                }
-            });
+            TextView view;
 
-            findViewById(R.id.help_page).setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(Intent.ACTION_VIEW,
-                            Uri.parse(getString(R.string.url_help)));
-                    startActivity(intent);
-                }
-            });
+            view = findViewById(R.id.help_page);
+            view.setText(Utils.linkifyHtml(getString(R.string.url_help, getString(R.string.about_help_click_here)), Linkify.ALL));
+            view.setMovementMethod(LinkMovementMethod.getInstance());
 
             findViewById(R.id.send_info).setOnClickListener(new OnClickListener() {
                 @Override
@@ -86,6 +75,13 @@ public class Help extends BaseActivity {
         } catch (Exception e) {
             Logger.error(e);
         }
+    }
+
+    @Override
+    @CallSuper
+    protected void onResume() {
+        super.onResume();
+        initCleanupButton();
     }
 
     private void initCleanupButton() {
@@ -115,10 +111,5 @@ public class Help extends BaseActivity {
         }
     }
 
-    @Override
-    @CallSuper
-    protected void onResume() {
-        super.onResume();
-        initCleanupButton();
-    }
+
 }

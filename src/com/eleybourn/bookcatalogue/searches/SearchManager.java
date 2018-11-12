@@ -36,7 +36,7 @@ import com.eleybourn.bookcatalogue.messaging.MessageSwitch;
 import com.eleybourn.bookcatalogue.tasks.ManagedTask;
 import com.eleybourn.bookcatalogue.tasks.TaskManager;
 import com.eleybourn.bookcatalogue.tasks.TaskManager.TaskManagerListener;
-import com.eleybourn.bookcatalogue.utils.ArrayUtils;
+import com.eleybourn.bookcatalogue.utils.StringList;
 import com.eleybourn.bookcatalogue.utils.BundleUtils;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
@@ -260,7 +260,7 @@ public class SearchManager implements TaskManagerListener {
      * @param dest   Destination Bundle
      */
     private void appendData(final @NonNull String key, final @NonNull Bundle source, final @NonNull Bundle dest) {
-        String res = dest.getString(key) + ArrayUtils.MULTI_STRING_SEPARATOR + source.getString(key);
+        String res = dest.getString(key) + StringList.MULTI_STRING_SEPARATOR + source.getString(key);
         dest.putString(key, res);
 
         if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
@@ -312,7 +312,7 @@ public class SearchManager implements TaskManagerListener {
                 } else if (UniqueId.BKEY_TOC_STRING_LIST.equals(key)) {
                     appendData(key, bookData, mBookData);
 
-                } else if (UniqueId.BKEY_THUMBNAIL_FILES_SPEC.equals(key)) {
+                } else if (UniqueId.BKEY_THUMBNAIL_FILE_SPEC.equals(key)) {
                     appendData(key, bookData, mBookData);
 
                 } else if (UniqueId.KEY_BOOK_DATE_PUBLISHED.equals(key)) {
@@ -408,7 +408,7 @@ public class SearchManager implements TaskManagerListener {
             authors = mAuthor;
         }
         if (authors != null && !authors.isEmpty()) {
-            ArrayList<Author> list = ArrayUtils.getAuthorUtils().decodeList(authors, false);
+            ArrayList<Author> list = StringList.getAuthorUtils().decode(authors, false);
             mBookData.putSerializable(UniqueId.BKEY_AUTHOR_ARRAY, list);
             mBookData.remove(UniqueId.BKEY_AUTHOR_STRING_LIST);
         }
@@ -434,7 +434,7 @@ public class SearchManager implements TaskManagerListener {
         // Try to use/construct series
         String series = mBookData.getString(UniqueId.BKEY_SERIES_STRING_LIST);
         if (series != null && !series.isEmpty()) {
-            ArrayList<Series> list = ArrayUtils.getSeriesUtils().decodeList(series, false);
+            ArrayList<Series> list = StringList.getSeriesUtils().decode(series, false);
             mBookData.putSerializable(UniqueId.BKEY_SERIES_ARRAY, list);
             mBookData.remove(UniqueId.BKEY_SERIES_STRING_LIST);
         }
@@ -442,7 +442,7 @@ public class SearchManager implements TaskManagerListener {
         // Try to use/construct TOCEntries
         String tocEntriesAsStringList = mBookData.getString(UniqueId.BKEY_TOC_STRING_LIST);
         if (tocEntriesAsStringList != null && !tocEntriesAsStringList.isEmpty()) {
-            ArrayList<TOCEntry> list = ArrayUtils.getTOCUtils().decodeList(tocEntriesAsStringList, false);
+            ArrayList<TOCEntry> list = StringList.getTOCUtils().decode(tocEntriesAsStringList, false);
             mBookData.putSerializable(UniqueId.BKEY_TOC_TITLES_ARRAY, list);
             mBookData.remove(UniqueId.BKEY_TOC_STRING_LIST);
         }

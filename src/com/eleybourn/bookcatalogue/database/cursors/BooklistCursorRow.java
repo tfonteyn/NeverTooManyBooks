@@ -174,9 +174,9 @@ public class BooklistCursorRow extends BookCursorRowBase {
      */
     public long getBookId() {
         if (mBookIdCol < 0) {
-            mBookIdCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_ID.name);
+            mBookIdCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_FK_BOOK_ID.name);
             if (mBookIdCol < 0) {
-                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_BOOK_ID.name);
+                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_FK_BOOK_ID.name);
             }
         }
         return mCursor.getLong(mBookIdCol);
@@ -187,9 +187,9 @@ public class BooklistCursorRow extends BookCursorRowBase {
      */
     public long getSeriesId() {
         if (mSeriesIdCol < 0) {
-            mSeriesIdCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_SERIES_ID.name);
+            mSeriesIdCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_FK_SERIES_ID.name);
             if (mSeriesIdCol < 0) {
-                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_SERIES_ID.name);
+                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_FK_SERIES_ID.name);
             }
         }
         return mCursor.getLong(mSeriesIdCol);
@@ -199,7 +199,7 @@ public class BooklistCursorRow extends BookCursorRowBase {
         if (mSeriesIdCol >= 0) {
             return true;
         }
-        mSeriesIdCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_SERIES_ID.name);
+        mSeriesIdCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_FK_SERIES_ID.name);
         return (mSeriesIdCol >= 0);
     }
 
@@ -243,9 +243,9 @@ public class BooklistCursorRow extends BookCursorRowBase {
      */
     public long getAuthorId() {
         if (mAuthorIdCol < 0) {
-            mAuthorIdCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_AUTHOR_ID.name);
+            mAuthorIdCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_FK_AUTHOR_ID.name);
             if (mAuthorIdCol < 0) {
-                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_AUTHOR_ID.name);
+                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_FK_AUTHOR_ID.name);
             }
         }
         return mCursor.getLong(mAuthorIdCol);
@@ -255,7 +255,7 @@ public class BooklistCursorRow extends BookCursorRowBase {
         if (mAuthorIdCol >= 0) {
             return true;
         }
-        mAuthorIdCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_AUTHOR_ID.name);
+        mAuthorIdCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_FK_AUTHOR_ID.name);
         return (mAuthorIdCol >= 0);
     }
 
@@ -278,9 +278,9 @@ public class BooklistCursorRow extends BookCursorRowBase {
      */
     public int getRowKind() {
         if (mRowKindCol < 0) {
-            mRowKindCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_ROW_KIND.name);
+            mRowKindCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BL_NODE_ROW_KIND.name);
             if (mRowKindCol < 0) {
-                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_ROW_KIND.name);
+                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_BL_NODE_ROW_KIND.name);
             }
         }
         return mCursor.getInt(mRowKindCol);
@@ -291,9 +291,9 @@ public class BooklistCursorRow extends BookCursorRowBase {
      */
     public int getLevel() {
         if (mLevelCol < 0) {
-            mLevelCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_LEVEL.name);
+            mLevelCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BL_NODE_LEVEL.name);
             if (mLevelCol < 0) {
-                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_LEVEL.name);
+                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_BL_NODE_LEVEL.name);
             }
         }
         return mCursor.getInt(mLevelCol);

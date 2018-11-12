@@ -28,7 +28,7 @@ import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.utils.ArrayUtils;
+import com.eleybourn.bookcatalogue.utils.StringList;
 import com.eleybourn.bookcatalogue.utils.BundleUtils;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 
@@ -179,9 +179,12 @@ import java.util.Currency;
  */
 public class SearchAmazonHandler extends DefaultHandler {
 
-    /* The XML element names */
-    //private static String XML_ID = "id";
-    //private static final String XML_TOTAL_RESULTS = "TotalResults";
+    /** file suffix for cover files */
+    private static final String FILENAME_SUFFIX = "_AM";
+
+    /** XML tags we look for */
+//    private static final String XML_ID = "id";
+//    private static final String XML_TOTAL_RESULTS = "TotalResults";
     private static final String XML_ENTRY = "Item";
     private static final String XML_AUTHOR = "Author";
     private static final String XML_TITLE = "Title";
@@ -286,9 +289,9 @@ public class SearchAmazonHandler extends DefaultHandler {
     @CallSuper
     public void endDocument() {
         if (mFetchThumbnail && !mThumbnailUrl.isEmpty()) {
-            String fileSpec = ImageUtils.saveThumbnailFromUrl(mThumbnailUrl, "_AM");
+            String fileSpec = ImageUtils.saveThumbnailFromUrl(mThumbnailUrl, FILENAME_SUFFIX);
             if (!fileSpec.isEmpty())
-                ArrayUtils.addOrAppend(mBookData, UniqueId.BKEY_THUMBNAIL_FILES_SPEC, fileSpec);
+                StringList.addOrAppend(mBookData, UniqueId.BKEY_THUMBNAIL_FILE_SPEC, fileSpec);
         }
     }
 
@@ -324,7 +327,7 @@ public class SearchAmazonHandler extends DefaultHandler {
                 mInListPrice = false;
             } else if (entry) {
                 if (localName.equalsIgnoreCase(XML_AUTHOR)) {
-                    ArrayUtils.addOrAppend(mBookData, UniqueId.BKEY_AUTHOR_STRING_LIST, mBuilder.toString());
+                    StringList.addOrAppend(mBookData, UniqueId.BKEY_AUTHOR_STRING_LIST, mBuilder.toString());
                 } else if (localName.equalsIgnoreCase(XML_TITLE)) {
                     addIfNotPresent(UniqueId.KEY_TITLE);
                 } else if (localName.equalsIgnoreCase(XML_EAN)
@@ -357,7 +360,7 @@ public class SearchAmazonHandler extends DefaultHandler {
                         Logger.info(this, localName + "->'" + mBuilder + "'");
                     }
                 }
-            } //else if (localName.equalsIgnoreCase(TOTAL_RESULTS)){
+            } //else if (localName.equalsIgnoreCase(XML_TOTAL_RESULTS)){
             // not used for now... int mCount = Integer.parseInt(mBuilder.toString());
             //}
 

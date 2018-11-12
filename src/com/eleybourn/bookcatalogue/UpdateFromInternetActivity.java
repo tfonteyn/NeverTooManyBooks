@@ -129,50 +129,35 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
 
     private void initFields() {
         addIfVisible(UniqueId.BKEY_AUTHOR_ARRAY, UniqueId.KEY_AUTHOR_ID,
-                R.string.author, true,
-                FieldUsage.Usage.ADD_EXTRA);
+                R.string.author, true, FieldUsage.Usage.AddExtra);
         addIfVisible(UniqueId.KEY_TITLE, null,
-                R.string.title, false,
-                FieldUsage.Usage.COPY_IF_BLANK);
+                R.string.title, false, FieldUsage.Usage.CopyIfBlank);
         addIfVisible(UniqueId.KEY_BOOK_ISBN, null,
-                R.string.isbn, false,
-                FieldUsage.Usage.COPY_IF_BLANK);
-        addIfVisible(UniqueId.KEY_BOOK_THUMBNAIL, null,
-                R.string.title_cover, false,
-                FieldUsage.Usage.COPY_IF_BLANK);
+                R.string.isbn, false, FieldUsage.Usage.CopyIfBlank);
+        addIfVisible(UniqueId.BKEY_HAVE_THUMBNAIL, null,
+                R.string.title_cover, false, FieldUsage.Usage.CopyIfBlank);
         addIfVisible(UniqueId.BKEY_SERIES_ARRAY, UniqueId.KEY_SERIES_NAME,
-                R.string.series, true,
-                FieldUsage.Usage.ADD_EXTRA);
+                R.string.series, true, FieldUsage.Usage.AddExtra);
         addIfVisible(UniqueId.BKEY_TOC_TITLES_ARRAY, UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK,
-                R.string.table_of_content, true,
-                FieldUsage.Usage.ADD_EXTRA);
+                R.string.table_of_content, true, FieldUsage.Usage.AddExtra);
         addIfVisible(UniqueId.KEY_BOOK_PUBLISHER, null,
-                R.string.lbl_publisher, false,
-                FieldUsage.Usage.COPY_IF_BLANK);
+                R.string.lbl_publisher, false, FieldUsage.Usage.CopyIfBlank);
         addIfVisible(UniqueId.KEY_BOOK_DATE_PUBLISHED, null,
-                R.string.lbl_date_published, false,
-                FieldUsage.Usage.COPY_IF_BLANK);
+                R.string.lbl_date_published, false, FieldUsage.Usage.CopyIfBlank);
         addIfVisible(UniqueId.KEY_FIRST_PUBLICATION, null,
-                R.string.lbl_first_publication, false,
-                FieldUsage.Usage.COPY_IF_BLANK);
+                R.string.lbl_first_publication, false, FieldUsage.Usage.CopyIfBlank);
         addIfVisible(UniqueId.KEY_DESCRIPTION, null,
-                R.string.lbl_description, false,
-                FieldUsage.Usage.COPY_IF_BLANK);
+                R.string.lbl_description, false, FieldUsage.Usage.CopyIfBlank);
         addIfVisible(UniqueId.KEY_BOOK_PAGES, null,
-                R.string.lbl_pages, false,
-                FieldUsage.Usage.COPY_IF_BLANK);
+                R.string.lbl_pages, false, FieldUsage.Usage.CopyIfBlank);
         addIfVisible(UniqueId.KEY_BOOK_PRICE_LISTED, null,
-                R.string.lbl_price_listed, false,
-                FieldUsage.Usage.COPY_IF_BLANK);
+                R.string.lbl_price_listed, false, FieldUsage.Usage.CopyIfBlank);
         addIfVisible(UniqueId.KEY_BOOK_FORMAT, null,
-                R.string.lbl_format, false,
-                FieldUsage.Usage.COPY_IF_BLANK);
+                R.string.lbl_format, false, FieldUsage.Usage.CopyIfBlank);
         addIfVisible(UniqueId.KEY_BOOK_GENRE, null,
-                R.string.lbl_genre, false,
-                FieldUsage.Usage.COPY_IF_BLANK);
+                R.string.lbl_genre, false, FieldUsage.Usage.CopyIfBlank);
         addIfVisible(UniqueId.KEY_BOOK_LANGUAGE, null,
-                R.string.lbl_language, false,
-                FieldUsage.Usage.COPY_IF_BLANK);
+                R.string.lbl_language, false, FieldUsage.Usage.CopyIfBlank);
     }
 
     /**
@@ -241,7 +226,7 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
                 }
 
                 // If they have selected thumbnails, check if they want to download ALL
-                FieldUsage coversWanted = mFieldUsages.get(UniqueId.KEY_BOOK_THUMBNAIL);
+                FieldUsage coversWanted = mFieldUsages.get(UniqueId.BKEY_HAVE_THUMBNAIL);
                 // but don't ask if its a single book only; just download it.
                 if (mBookId == 0 && coversWanted.isSelected()) {
                     // Verify - this can be a dangerous operation
@@ -253,7 +238,7 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
                     dialog.setButton(AlertDialog.BUTTON_POSITIVE, UpdateFromInternetActivity.this.getString(R.string.yes),
                             new DialogInterface.OnClickListener() {
                                 public void onClick(final DialogInterface dialog, final int which) {
-                                    mFieldUsages.get(UniqueId.KEY_BOOK_THUMBNAIL).usage = FieldUsage.Usage.OVERWRITE;
+                                    mFieldUsages.get(UniqueId.BKEY_HAVE_THUMBNAIL).usage = FieldUsage.Usage.Overwrite;
                                     startUpdate(mBookId);
                                 }
                             });
@@ -267,7 +252,7 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
                     dialog.setButton(AlertDialog.BUTTON_NEUTRAL, UpdateFromInternetActivity.this.getString(R.string.no),
                             new DialogInterface.OnClickListener() {
                                 public void onClick(final DialogInterface dialog, final int which) {
-                                    mFieldUsages.get(UniqueId.KEY_BOOK_THUMBNAIL).usage = FieldUsage.Usage.COPY_IF_BLANK;
+                                    mFieldUsages.get(UniqueId.BKEY_HAVE_THUMBNAIL).usage = FieldUsage.Usage.CopyIfBlank;
                                     startUpdate(mBookId);
                                 }
                             });
@@ -428,7 +413,7 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
         }
 
         public boolean isSelected() {
-            return (usage != Usage.SKIP);
+            return (usage != Usage.Skip);
         }
 
         public String getLabel(final @NonNull Context context) {
@@ -442,40 +427,40 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
         /**
          * Cycle to the next Usage stage:
          *
-         * if (canAppend): SKIP -> COPY_IF_BLANK -> ADD_EXTRA -> OVERWRITE -> SKIP
-         * else          : SKIP -> COPY_IF_BLANK -> OVERWRITE -> SKIP
+         * if (canAppend): Skip -> CopyIfBlank -> AddExtra -> Overwrite -> Skip
+         * else          : Skip -> CopyIfBlank -> Overwrite -> Skip
          */
         public void nextState() {
             switch (usage) {
-                case SKIP:
-                    usage = Usage.COPY_IF_BLANK;
+                case Skip:
+                    usage = Usage.CopyIfBlank;
                     break;
-                case COPY_IF_BLANK:
+                case CopyIfBlank:
                     if (canAppend) {
-                        usage = Usage.ADD_EXTRA;
+                        usage = Usage.AddExtra;
                     } else {
-                        usage = Usage.OVERWRITE;
+                        usage = Usage.Overwrite;
                     }
                     break;
-                case ADD_EXTRA:
-                    usage = Usage.OVERWRITE;
+                case AddExtra:
+                    usage = Usage.Overwrite;
                     break;
-                case OVERWRITE:
-                    usage = Usage.SKIP;
+                case Overwrite:
+                    usage = Usage.Skip;
             }
         }
 
         public enum Usage {
-            SKIP, COPY_IF_BLANK, ADD_EXTRA, OVERWRITE;
+            Skip, CopyIfBlank, AddExtra, Overwrite;
 
             @StringRes
             int getStringId() {
                 switch (this) {
-                    case COPY_IF_BLANK:
+                    case CopyIfBlank:
                         return R.string.usage_copy_if_blank;
-                    case ADD_EXTRA:
+                    case AddExtra:
                         return R.string.usage_add_extra;
-                    case OVERWRITE:
+                    case Overwrite:
                         return R.string.usage_overwrite;
                     default:
                         return R.string.usage_skip;

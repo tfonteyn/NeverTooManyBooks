@@ -4,6 +4,9 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+
 public class BundleUtils {
     /**
      * Check if passed Bundle contains a non-blank string .
@@ -32,6 +35,27 @@ public class BundleUtils {
         if (test == null || test.isEmpty()) {
             bundle.putString(key, value.trim());
         }
+    }
+
+    /**
+     * Get a string from a Bundle
+     *
+     * @param key     to check for
+     * @param bundles to check
+     *
+     * @return Result or null when not found
+     */
+    public static String getStringFromBundles(final String key, final Bundle... bundles) {
+        String value;
+        for (Bundle bundle : bundles) {
+            if (bundle != null && bundle.containsKey(key)) {
+                value = bundle.getString(key);
+                if (value != null) {
+                    return value;
+                }
+            }
+        }
+        return null;
     }
 
     /**
@@ -89,6 +113,46 @@ public class BundleUtils {
         for (Bundle bundle : bundles) {
             if (bundle != null && bundle.containsKey(key)) {
                 value = bundle.getBundle(key);
+                if (value != null) {
+                    return value;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Utility routine to get the list from the passed bundle. Added to reduce lint warnings...
+     *
+     * @param key     to check for
+     * @param bundle  to check
+     *
+     * @return List, or null when not present
+     */
+    @SuppressWarnings("unchecked")
+    @Nullable
+    public static <T extends ArrayList> T getListFromBundle(final @Nullable String key, final @Nullable Bundle bundle) {
+        if (bundle == null) {
+            return null;
+        }
+        return (T) bundle.getSerializable(key);
+    }
+
+    /**
+     * Utility routine to get the list from the passed bundles. Added to reduce lint warnings...
+     *
+     * @param key     to check for
+     * @param bundles to check
+     *
+     * @return List, or null when not present
+     */
+    @SuppressWarnings("unchecked")
+    @Nullable
+    public static <T extends ArrayList> T getListFromBundles(final @Nullable String key, final @NonNull Bundle... bundles) {
+        T value;
+        for (Bundle bundle : bundles) {
+            if (bundle != null && bundle.containsKey(key)) {
+                value = (T) bundle.getSerializable(key);
                 if (value != null) {
                     return value;
                 }

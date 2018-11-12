@@ -95,7 +95,7 @@ public class CoverBrowser {
     private SimpleTaskQueue mImageFetcher = null;
     /** List of all editions for the given ISBN */
     private List<String> mAlternativeEditions;
-    /** Object to ensure files are cleaned up. */
+    /** Handles downloading, checking and cleanup of files. */
     private FileManager mFileManager;
     /** Indicates a 'shutdown()' has been requested */
     private boolean mShutdown = false;
@@ -522,12 +522,14 @@ public class CoverBrowser {
     }
 
     /**
-     * Simple utility class to (try) to cleanup and prevent files from accumulating.
+     * Handles downloading, checking and cleanup of files
      *
      * @author Philip Warner
      */
     private class FileManager {
         final LibraryThingManager libraryThingManager = new LibraryThingManager();
+
+        /** key = isbn + "_" + size */
         private final Bundle files = new Bundle();
 
         private boolean isGood(final @NonNull File file) {
@@ -586,7 +588,7 @@ public class CoverBrowser {
                     File file = null;
                     switch (site.id) {
                         case SearchSites.SEARCH_LIBRARY_THING: {
-                            file = libraryThingManager.getCoverImage(isbn, null, size);
+                            file = libraryThingManager.getCoverImage(isbn, size);
                             break;
                         }
                         case SearchSites.SEARCH_GOOGLE: {

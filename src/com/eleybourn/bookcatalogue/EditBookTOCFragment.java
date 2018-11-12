@@ -56,7 +56,8 @@ import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.entities.TOCEntry;
 import com.eleybourn.bookcatalogue.searches.isfdb.HandlesISFDB;
 import com.eleybourn.bookcatalogue.searches.isfdb.ISFDBManager;
-import com.eleybourn.bookcatalogue.utils.ArrayUtils;
+import com.eleybourn.bookcatalogue.utils.StringList;
+import com.eleybourn.bookcatalogue.utils.BundleUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -398,7 +399,7 @@ public class EditBookTOCFragment extends BookAbstractFragment implements Handles
         String encoded_series_list = bookData.getString(UniqueId.BKEY_SERIES_STRING_LIST);
         if (encoded_series_list != null) {
             ArrayList<Series> inBook = getBookManager().getBook().getSeriesList();
-            List<Series> series = ArrayUtils.getSeriesUtils().decodeList(encoded_series_list, false);
+            List<Series> series = StringList.getSeriesUtils().decode(encoded_series_list, false);
             for (Series s : series) {
                 if (!inBook.contains(s)) {
                     inBook.add(s);
@@ -418,15 +419,15 @@ public class EditBookTOCFragment extends BookAbstractFragment implements Handles
 
         // finally the TOC itself; not saved here but only put on display for the user to approve
         final int tocBitMask = bookData.getInt(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK);
-        List<TOCEntry> tocEntries = null;
+        ArrayList<TOCEntry> tocEntries = null;
         // preferably from the array.
         if (bookData.containsKey(UniqueId.BKEY_TOC_TITLES_ARRAY)) {
-            tocEntries = ArrayUtils.getTOCFromBundle(bookData);
+            tocEntries = BundleUtils.getListFromBundle(UniqueId.BKEY_TOC_TITLES_ARRAY, bookData);
             bookData.remove(UniqueId.BKEY_TOC_TITLES_ARRAY);
         } else {
             String encoded_content_list = bookData.getString(UniqueId.BKEY_TOC_STRING_LIST);
             if (encoded_content_list != null) {
-                tocEntries = ArrayUtils.getTOCUtils().decodeList(encoded_content_list, false);
+                tocEntries = StringList.getTOCUtils().decode(encoded_content_list, false);
                 bookData.remove(UniqueId.BKEY_TOC_STRING_LIST);
             }
         }

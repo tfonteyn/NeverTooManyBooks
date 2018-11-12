@@ -91,14 +91,14 @@ public class Logger {
      */
     public static void info(final @NonNull Object object, final String message) {
         Class clazz = object.getClass();
-        String msg = "INFO|" + clazz.getCanonicalName() + "|" + message;
+        String msg;
         if (clazz.isAnonymousClass()) {
-            //ENHANCE: redo info method, so it 'simply gets the caller class from the stacktrace, e.g. just print line 1 i.e.
-            error(msg);
+            msg = "INFO|AnonymousClass|" + message;
         } else {
-            Log.e(TAG, msg);
-            writeToErrorLog(msg);
+            msg = "INFO|" + clazz.getCanonicalName() + "|" + message;
         }
+        Log.e(TAG, msg);
+        writeToErrorLog(msg);
     }
 
     /**

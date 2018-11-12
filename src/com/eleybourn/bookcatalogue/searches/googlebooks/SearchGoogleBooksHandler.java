@@ -107,7 +107,7 @@ import org.xml.sax.helpers.DefaultHandler;
  *			<gbs:viewability value='http://schemas.google.com/books/2008#view_no_pages'/>
  *			<dc:creator>Garth Sundem</dc:creator>
  *			<dc:date>2009-03-10</dc:date>
- *			<dc:description>And here, for you pathetic non-geeks, is the last chance to save yourselves: Love this book, live this book, and you too can join us in the experience of total ...</dc:description>
+ * 		    <dc:description>These days, from blah blah ....the Geek Wars have</dc:description>
  *			<dc:format>245 pages</dc:format>
  *			<dc:format>book</dc:format>
  *			<dc:identifier>lf2EMetoLugC</dc:identifier>

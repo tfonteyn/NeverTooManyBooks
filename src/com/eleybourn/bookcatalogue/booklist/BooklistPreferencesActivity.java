@@ -81,6 +81,7 @@ public class BooklistPreferencesActivity extends PreferencesBaseActivity {
                     .setPreferenceKey(PREF_BOOK_LIST_STATE)
                     .setDefaultValue(BOOK_LIST_ALWAYS_EXPANDED)
                     .setGlobal(true);
+
     /** Booklist Compatibility mode property values */
     private static final ItemEntries<Integer> mBooklistCompatibilityModeListItems = new ItemEntries<>();
     private static final IntegerListProperty mBooklistCompatibilityModeProperty =
@@ -88,7 +89,9 @@ public class BooklistPreferencesActivity extends PreferencesBaseActivity {
                     PropertyGroup.GRP_ADVANCED_OPTIONS, R.string.booklist_generation)
                     .setDefaultValue(BOOKLIST_GENERATE_AUTOMATIC)
                     .setPreferenceKey(PREF_BOOKLIST_GENERATION_MODE)
-                    .setGlobal(true);
+                    .setGlobal(true)
+                    .setWeight(1000);
+
     /** Enable Thumbnail Cache property definition */
     private static final ItemEntries<Boolean> mCacheThumbnailsListItems = new ItemEntries<>();
     private static final BooleanListProperty mCacheThumbnailsProperty =
@@ -97,7 +100,8 @@ public class BooklistPreferencesActivity extends PreferencesBaseActivity {
                     .setPreferenceKey(PREF_CACHE_THUMBNAILS)
                     .setDefaultValue(false)
                     .setGlobal(true)
-                    .setWeight(100);
+                    .setWeight(110);
+
     /** Enable Background Thumbnail fetch property definition */
     private static final ItemEntries<Boolean> mBackgroundThumbnailsListItems = new ItemEntries<>();
     private static final BooleanListProperty mBackgroundThumbnailsProperty =
@@ -190,7 +194,7 @@ public class BooklistPreferencesActivity extends PreferencesBaseActivity {
      * Setup each component of the layout using the passed preferences
      */
     @Override
-    protected void initViews(final @NonNull Properties globalProperties) {
+    protected void initFields(final @NonNull Properties globalProperties) {
         // Create a dummy style and add one group of each kind
         BooklistStyle style = new BooklistStyle("");
         for (int kind : BooklistGroup.getRowKinds()) {

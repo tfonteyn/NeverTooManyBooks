@@ -25,18 +25,25 @@ import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.UniqueId;
-import com.eleybourn.bookcatalogue.utils.ArrayUtils;
+import com.eleybourn.bookcatalogue.utils.StringList;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import java.util.Locale;
+
 /*
  * An XML handler for the Google Books entry return
  *
  * <?xml version='1.0' encoding='UTF-8'?>
- * <entry xmlns='http://www.w3.org/2005/Atom' xmlns:gbs='http://schemas.google.com/books/2008' xmlns:dc='http://purl.org/dc/terms' xmlns:batch='http://schemas.google.com/gdata/batch' xmlns:gd='http://schemas.google.com/g/2005'>
+ * <entry xmlns='http://www.w3.org/2005/Atom'
+ *      xmlns:gbs='http://schemas.google.com/books/2008'
+ *      xmlns:dc='http://purl.org/dc/terms'
+ *      xmlns:batch='http://schemas.google.com/gdata/batch'
+ *      xmlns:gd='http://schemas.google.com/g/2005'>
+ *
  * 		<id>http://www.google.com/books/feeds/volumes/A4NDPgAACAAJ</id>
  * 		<updated>2010-02-28T10:49:24.000Z</updated>
  * 		<category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/books/2008#volume'/>
@@ -66,7 +73,12 @@ import org.xml.sax.helpers.DefaultHandler;
  * </entry>
  *
  * <?xml version='1.0' encoding='UTF-8'?>
- * <entry xmlns='http://www.w3.org/2005/Atom' xmlns:gbs='http://schemas.google.com/books/2008' xmlns:dc='http://purl.org/dc/terms' xmlns:batch='http://schemas.google.com/gdata/batch' xmlns:gd='http://schemas.google.com/g/2005'>
+ * <entry xmlns='http://www.w3.org/2005/Atom'
+ *      xmlns:gbs='http://schemas.google.com/books/2008'
+ *      xmlns:dc='http://purl.org/dc/terms'
+ *      xmlns:batch='http://schemas.google.com/gdata/batch'
+ *      xmlns:gd='http://schemas.google.com/g/2005'>
+ *
  * 		<id>http://www.google.com/books/feeds/volumes/lf2EMetoLugC</id>
  * 		<updated>2010-03-01T07:31:23.000Z</updated>
  * 		<category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/books/2008#volume'/>
@@ -81,7 +93,7 @@ import org.xml.sax.helpers.DefaultHandler;
  * 		<gbs:viewability value='http://schemas.google.com/books/2008#view_no_pages'/>
  * 		<dc:creator>Garth Sundem</dc:creator>
  * 		<dc:date>2009-03-10</dc:date>
- * 		<dc:description>TUNE IN. TURN ON. GEEK OUT.Sorry, beautiful people. These days, from government to business to technology to Hollywood, geeks rule the world. Finally, here’s the book no self-respecting geek can live without–a guide jam-packed with 314.1516 short entries both useful and fun. Science, pop-culture trivia, paper airplanes, and pure geek-ish nostalgia coexist as happily in these pages as they do in their natural habitat of the geek brain.In short, dear geek, here you’ll find everything you need to achieve nirvana. And here, for you pathetic non-geeks, is the last chance to save yourselves: Love this book, live this book, and you too can join us in the experience of total world domination. • become a sudoku god• brew your own beer• build a laser beam• classify all living things• clone your pet• exorcise demons• find the world’s best corn mazes• grasp the theory of relativity• have sex on Second Life• injure a fish• join the Knights Templar• kick ass with sweet martial-arts moves• learn ludicrous emoticons• master the Ocarina of Time• pimp your cubicle• program a remote control• quote He-Man and Che Guevara• solve fiendish logic puzzles• touch Carl Sagan • unmask Linus Torvalds• visit Beaver Lick, Kentucky• win bar bets• write your name in ElvishJoin us or die, you will.Begun, the Geek Wars have</dc:description>
+ * 		<dc:description>These days, from blah blah ....the Geek Wars have</dc:description>
  * 		<dc:format>Dimensions 13.2x20.1x2.0 cm</dc:format>
  * 		<dc:format>288 pages</dc:format>
  * 		<dc:format>book</dc:format>
@@ -109,18 +121,23 @@ import org.xml.sax.helpers.DefaultHandler;
  *
  */
 class SearchGoogleBooksEntryHandler extends DefaultHandler {
-    //	private static final String ID = "id";
-//	private static final String TOTAL_RESULTS = "totalResults";
-//	private static final String ENTRY = "entry";
-    private static final String AUTHOR = "creator";
-    private static final String TITLE = "title";
-    private static final String ISBN = "identifier";
-    private static final String DATE_PUBLISHED = "date";
-    private static final String PUBLISHER = "publisher";
-    private static final String PAGES = "format"; // yes, 'format'
-    private static final String LINK = "link";
-    private static final String GENRE = "subject";
-    private static final String DESCRIPTION = "description";
+
+    /** file suffix for cover files */
+    private static final String FILENAME_SUFFIX = "_GB";
+
+    /** XML tags we look for */
+//	private static final String ID = "id";
+    private static final String XML_AUTHOR = "creator";
+    private static final String XML_TITLE = "title";
+    private static final String XML_ISBN = "identifier";
+    private static final String XML_DATE_PUBLISHED = "date";
+    private static final String XML_PUBLISHER = "publisher";
+    private static final String XML_FORMAT = "format";
+    private static final String XML_LINK = "link";
+    private static final String XML_GENRE = "subject";
+    private static final String XML_DESCRIPTION = "description";
+    private static final String XML_LANGUAGE = "language";
+
     private static boolean mFetchThumbnail;
     @NonNull
     private final Bundle mValues;
@@ -138,13 +155,12 @@ class SearchGoogleBooksEntryHandler extends DefaultHandler {
         builder.append(ch, start, length);
     }
 
-    private void addIfNotPresent(final @NonNull String key) {
+    private void addIfNotPresent(final @NonNull String key, final @NonNull String value) {
         String test = mValues.getString(key);
         if (test == null || test.isEmpty()) {
-            mValues.putString(key, builder.toString());
+            mValues.putString(key, value);
         }
     }
-
     @Override
     @CallSuper
     public void endElement(final @NonNull String uri,
@@ -153,34 +169,49 @@ class SearchGoogleBooksEntryHandler extends DefaultHandler {
         super.endElement(uri, localName, name);
 
         switch(localName.toLowerCase()) {
-            case TITLE: {
-                addIfNotPresent(UniqueId.KEY_TITLE);
+            case XML_TITLE: {
+                // there can be multiple listed, but only one 'primary'
+                addIfNotPresent(UniqueId.KEY_TITLE, builder.toString());
                 break;
             }
-            case ISBN: {
+            case XML_ISBN: {
                 String tmp = builder.toString();
                 if (tmp.indexOf("ISBN:") == 0) {
                     tmp = tmp.substring(5);
                     String isbn = mValues.getString(UniqueId.KEY_BOOK_ISBN);
+                    // store the 'longest' isbn
                     if (isbn == null || tmp.length() > isbn.length()) {
                         mValues.putString(UniqueId.KEY_BOOK_ISBN, tmp);
                     }
                 }
                 break;
             }
-            case AUTHOR: {
-                ArrayUtils.addOrAppend(mValues, UniqueId.BKEY_AUTHOR_STRING_LIST, builder.toString());
+            case XML_LANGUAGE: {
+                String lang = builder.toString();
+                if (!lang.isEmpty()) {
+                    Locale loc = new Locale(lang);
+                    addIfNotPresent(UniqueId.KEY_BOOK_LANGUAGE, loc.getDisplayLanguage());
+                }
                 break;
             }
-            case PUBLISHER: {
-                addIfNotPresent(UniqueId.KEY_BOOK_PUBLISHER);
+            case XML_AUTHOR: {
+                StringList.addOrAppend(mValues, UniqueId.BKEY_AUTHOR_STRING_LIST, builder.toString());
                 break;
             }
-            case DATE_PUBLISHED: {
-                addIfNotPresent(UniqueId.KEY_BOOK_DATE_PUBLISHED);
+            case XML_PUBLISHER: {
+                addIfNotPresent(UniqueId.KEY_BOOK_PUBLISHER, builder.toString());
                 break;
             }
-            case PAGES: {
+            case XML_DATE_PUBLISHED: {
+                addIfNotPresent(UniqueId.KEY_BOOK_DATE_PUBLISHED, builder.toString());
+                break;
+            }
+            case XML_FORMAT: {
+                /*
+                 * 		<dc:format>Dimensions 13.2x20.1x2.0 cm</dc:format>
+                 * 		<dc:format>288 pages</dc:format>
+                 * 		<dc:format>book</dc:format>
+                 */
                 String tmp = builder.toString();
                 int index = tmp.indexOf(" pages");
                 if (index > -1) {
@@ -189,13 +220,13 @@ class SearchGoogleBooksEntryHandler extends DefaultHandler {
                 }
                 break;
             }
-            case GENRE: {
+            case XML_GENRE: {
                 //ENHANCE: only the 'last' genre is taken, but a book/genre needs to be restructured to have a separate 'genres' table
                 mValues.putString(UniqueId.KEY_BOOK_GENRE, builder.toString());
                 break;
             }
-            case DESCRIPTION: {
-                addIfNotPresent(UniqueId.KEY_DESCRIPTION);
+            case XML_DESCRIPTION: {
+                addIfNotPresent(UniqueId.KEY_DESCRIPTION, builder.toString());
                 break;
             }
         }
@@ -217,12 +248,12 @@ class SearchGoogleBooksEntryHandler extends DefaultHandler {
                              final @NonNull String name,
                              final @NonNull Attributes attributes) throws SAXException {
         super.startElement(uri, localName, name, attributes);
-        if (mFetchThumbnail && LINK.equalsIgnoreCase(localName)) {
+        if (mFetchThumbnail && XML_LINK.equalsIgnoreCase(localName)) {
             if (("http://schemas.google.com/books/2008/thumbnail").equals(attributes.getValue("", "rel"))) {
                 String thumbnail = attributes.getValue("", "href");
-                String fileSpec = ImageUtils.saveThumbnailFromUrl(thumbnail, "_GB");
+                String fileSpec = ImageUtils.saveThumbnailFromUrl(thumbnail, FILENAME_SUFFIX);
                 if (!fileSpec.isEmpty()) {
-                    ArrayUtils.addOrAppend(mValues, UniqueId.BKEY_THUMBNAIL_FILES_SPEC, fileSpec);
+                    StringList.addOrAppend(mValues, UniqueId.BKEY_THUMBNAIL_FILE_SPEC, fileSpec);
                 }
             }
         }

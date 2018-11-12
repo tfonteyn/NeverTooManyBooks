@@ -417,7 +417,8 @@ public class DbSync {
          * Locking-aware wrapper for underlying database method.
          */
         @NonNull
-        public SynchronizedCursor rawQuery(final @NonNull String sql, final @Nullable String[] selectionArgs) {
+        public SynchronizedCursor rawQuery(final @NonNull String sql,
+                                           final @Nullable String[] selectionArgs) {
             return rawQueryWithFactory(mCursorFactory, sql, selectionArgs, "");
         }
 
@@ -1047,6 +1048,13 @@ public class DbSync {
             } catch (Exception ignore) {
                 // Ignore; may have been finalized
             }
+        }
+
+        @Override
+        public String toString() {
+            return "SynchronizedStatement{" +
+                    "mSql='" + mSql + '\'' +
+                    '}';
         }
     }
 

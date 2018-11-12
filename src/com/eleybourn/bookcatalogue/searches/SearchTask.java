@@ -30,7 +30,7 @@ import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.entities.Series.SeriesDetails;
 import com.eleybourn.bookcatalogue.tasks.ManagedTask;
 import com.eleybourn.bookcatalogue.tasks.TaskManager;
-import com.eleybourn.bookcatalogue.utils.ArrayUtils;
+import com.eleybourn.bookcatalogue.utils.StringList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -108,12 +108,12 @@ abstract public class SearchTask extends ManagedTask {
                 if (details != null && !details.name.isEmpty()) {
                     List<Series> list;
                     if (mBookData.containsKey(UniqueId.BKEY_SERIES_STRING_LIST)) {
-                        list = ArrayUtils.getSeriesUtils().decodeList(mBookData.getString(UniqueId.BKEY_SERIES_STRING_LIST), false);
+                        list = StringList.getSeriesUtils().decode(mBookData.getString(UniqueId.BKEY_SERIES_STRING_LIST), false);
                     } else {
                         list = new ArrayList<>();
                     }
                     list.add(new Series(details.name, details.position));
-                    mBookData.putString(UniqueId.BKEY_SERIES_STRING_LIST, ArrayUtils.getSeriesUtils().encodeList(list));
+                    mBookData.putString(UniqueId.BKEY_SERIES_STRING_LIST, StringList.getSeriesUtils().encode(list));
                     mBookData.putString(UniqueId.KEY_TITLE, thisTitle.substring(0, details.startChar - 1).trim());
                 }
             }

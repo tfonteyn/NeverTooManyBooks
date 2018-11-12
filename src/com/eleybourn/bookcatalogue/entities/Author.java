@@ -24,7 +24,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
-import com.eleybourn.bookcatalogue.utils.ArrayUtils;
+import com.eleybourn.bookcatalogue.utils.StringList;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 import java.io.Serializable;
@@ -155,11 +155,11 @@ public class Author implements Serializable, Utils.ItemWithIdFixup {
     public String toString() {
         // Always use givenNames even if blanks because we need to KNOW they are blank. There
         // is a slim chance that family name may contain spaces (eg. 'Anonymous Anarchists').
-        return ArrayUtils.encodeListItem(SEPARATOR, familyName) + SEPARATOR + " " + ArrayUtils.encodeListItem(SEPARATOR, givenNames);
+        return StringList.encodeListItem(SEPARATOR, familyName) + SEPARATOR + " " + StringList.encodeListItem(SEPARATOR, givenNames);
     }
 
     private void fromString(final @NonNull String name) {
-        ArrayList<String> list = ArrayUtils.decodeList(SEPARATOR, name);
+        ArrayList<String> list = StringList.decode(SEPARATOR, name);
         if (list.size() > 0) {
             if (list.size() < 2) {
                 // We have a name with no comma. Parse it the usual way.

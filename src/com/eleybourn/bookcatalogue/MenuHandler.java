@@ -35,10 +35,12 @@ public class MenuHandler {
     /**
      * Add SubMenu for book creation.
      *
+     * Group: R.id.SUBMENU_BOOK_ADD
+     *
      * @param menu Root menu
      */
     public static void addCreateBookSubMenu(final @NonNull Menu menu) {
-        SubMenu subMenu = menu.addSubMenu(0, R.id.SUBMENU_BOOK_ADD,
+        SubMenu subMenu = menu.addSubMenu(R.id.SUBMENU_BOOK_ADD, R.id.SUBMENU_BOOK_ADD,
                 Menu.NONE,
                 BookCatalogueApp.getResourceString(R.string.menu_add_book));
 
@@ -46,15 +48,14 @@ public class MenuHandler {
                 .getItem()
                 .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 
-        subMenu.add(Menu.NONE, R.id.MENU_BOOK_ADD_BY_SCAN, Menu.NONE, R.string.menu_add_book_by_barcode_scan)
+        subMenu.add(R.id.SUBMENU_BOOK_ADD, R.id.MENU_BOOK_ADD_BY_SCAN, Menu.NONE, R.string.menu_add_book_by_barcode_scan)
                 .setIcon(R.drawable.ic_add_a_photo);
-        subMenu.add(Menu.NONE, R.id.MENU_BOOK_ADD_BY_SEARCH_ISBN, Menu.NONE, R.string.menu_add_book_by_isbn)
+        subMenu.add(R.id.SUBMENU_BOOK_ADD, R.id.MENU_BOOK_ADD_BY_SEARCH_ISBN, Menu.NONE, R.string.menu_add_book_by_isbn)
                 .setIcon(R.drawable.ic_zoom_in);
-        subMenu.add(Menu.NONE, R.id.MENU_BOOK_ADD_BY_SEARCH_TEXT, Menu.NONE, R.string.search_internet)
+        subMenu.add(R.id.SUBMENU_BOOK_ADD, R.id.MENU_BOOK_ADD_BY_SEARCH_TEXT, Menu.NONE, R.string.search_internet)
                 .setIcon(R.drawable.ic_zoom_in);
-        subMenu.add(Menu.NONE, R.id.MENU_BOOK_ADD_MANUALLY, Menu.NONE, R.string.menu_add_book_manually)
+        subMenu.add(R.id.SUBMENU_BOOK_ADD, R.id.MENU_BOOK_ADD_MANUALLY, Menu.NONE, R.string.menu_add_book_manually)
                 .setIcon(R.drawable.ic_add);
-
     }
 
     /**
@@ -68,7 +69,7 @@ public class MenuHandler {
                 BookCatalogueApp.getResourceString(R.string.amazon_ellipsis));
 
         subMenu.setIcon(R.drawable.ic_search);
-
+        // we use the group to make the entry visible/invisible, hence it's == the actual id.
         subMenu.add(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR, R.id.MENU_AMAZON_BOOKS_BY_AUTHOR, Menu.NONE, R.string.menu_amazon_books_by_author)
                 .setIcon(R.drawable.ic_search);
         subMenu.add(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES, R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES, Menu.NONE, R.string.menu_amazon_books_by_author_in_series)

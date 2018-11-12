@@ -23,7 +23,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
-import com.eleybourn.bookcatalogue.utils.ArrayUtils;
+import com.eleybourn.bookcatalogue.utils.StringList;
 import com.eleybourn.bookcatalogue.utils.RTE;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
@@ -51,8 +51,8 @@ public class TOCEntry implements Serializable, Utils.ItemWithIdFixup {
      *
      * "anthology title (year) * author ","anthology title (year) * author ",...
      */
-    private static final char TITLE_AUTHOR_DELIM = '*';
     private static final char SEPARATOR = ',';
+    private static final char TITLE_AUTHOR_DELIM = '*';
 
     /**
      * Used by:
@@ -125,7 +125,7 @@ public class TOCEntry implements Serializable, Utils.ItemWithIdFixup {
         // V82: Giants In The Sky * Blish, James
         // V83: Giants In The Sky (1952) * Blish, James
 
-        List<String> list = ArrayUtils.decodeList(TITLE_AUTHOR_DELIM, encodedString);
+        List<String> list = StringList.decode(TITLE_AUTHOR_DELIM, encodedString);
         mAuthor = new Author(list.get(1));
         String title = list.get(0);
 
@@ -160,7 +160,7 @@ public class TOCEntry implements Serializable, Utils.ItemWithIdFixup {
         } else {
             yearStr = "";
         }
-        return ArrayUtils.encodeListItem(SEPARATOR, mTitle) + yearStr + " " + TITLE_AUTHOR_DELIM + " " + mAuthor;
+        return StringList.encodeListItem(SEPARATOR, mTitle) + yearStr + " " + TITLE_AUTHOR_DELIM + " " + mAuthor;
     }
 
     @NonNull

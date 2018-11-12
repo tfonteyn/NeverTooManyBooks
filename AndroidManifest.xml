@@ -98,7 +98,6 @@
         <!-- Admin pages -->
         <activity android:name=".Help" />
         <activity android:name=".About" />
-        <activity android:name=".Donate" />
         <activity android:name=".AdminActivity" />
 
         <!-- ************************************************************ -->

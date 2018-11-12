@@ -119,8 +119,6 @@ public class HintManager {
         if (msgField != null) {
             String hintText = BookCatalogueApp.getResourceString(stringId, args);
             msgField.setText(Utils.linkifyHtml(hintText, Linkify.ALL));
-            //msg.setText(Html.fromHtml(hintText)); //stringId);
-            //Linkify.addLinks(msg, Linkify.ALL);
 
             // Automatically start a browser (or whatever)
             msgField.setMovementMethod(LinkMovementMethod.getInstance());

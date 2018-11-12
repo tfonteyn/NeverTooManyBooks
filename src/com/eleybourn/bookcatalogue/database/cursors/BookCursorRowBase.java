@@ -46,13 +46,16 @@ public class BookCursorRowBase {
     private int mPricePaidCurrencyCol = -2;
     private int mDescriptionCol = -2;
     private int mFirstPublicationCol = -2;
-    private int mGoodreadsBookIdCol = -2;
     private int mAnthologyMaskCol = -2;
     private int mEditionMaskCol = -2;
     private int mDateAddedCol = -2;
     private int mDateLastUpdatedCol = -2;
-    private int mDateLastSyncedWithGoodReadsCol = -2;
     private int mDatePublishedCol = -2;
+
+    private int mLibraryThinkgBookIdCol = -2;
+    private int mISFDBBookIdCol = -2;
+    private int mGoodreadsBookIdCol = -2;
+    private int mDateLastSyncedWithGoodReadsCol = -2;
 
     protected BookCursorRowBase(final @NonNull Cursor cursor) {
         mCursor = cursor;
@@ -86,9 +89,9 @@ public class BookCursorRowBase {
 
     public final long getId() {
         if (mIdCol < 0) {
-            mIdCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_ID.name);
+            mIdCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_PK_ID.name);
             if (mIdCol < 0) {
-                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_ID.name);
+                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_PK_ID.name);
             }
         }
         return mCursor.getLong(mIdCol);
@@ -158,6 +161,16 @@ public class BookCursorRowBase {
             }
         }
         return mCursor.getString(mPublisherCol);
+    }
+
+    public final String getDatePublished() {
+        if (mDatePublishedCol < 0) {
+            mDatePublishedCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_DATE_PUBLISHED.name);
+            if (mDatePublishedCol < 0) {
+                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_BOOK_DATE_PUBLISHED.name);
+            }
+        }
+        return mCursor.getString(mDatePublishedCol);
     }
 
     /**
@@ -234,16 +247,6 @@ public class BookCursorRowBase {
             }
         }
         return mCursor.getString(mDescriptionCol);
-    }
-
-    public final long getGoodreadsBookId() {
-        if (mGoodreadsBookIdCol < 0) {
-            mGoodreadsBookIdCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_GOODREADS_BOOK_ID.name);
-            if (mGoodreadsBookIdCol < 0) {
-                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_BOOK_GOODREADS_BOOK_ID.name);
-            }
-        }
-        return mCursor.getLong(mGoodreadsBookIdCol);
     }
 
     public final String getNotes() {
@@ -386,6 +389,36 @@ public class BookCursorRowBase {
         return mCursor.getString(mDateLastUpdatedCol);
     }
 
+    public final long getLibraryThingBookId() {
+        if (mLibraryThinkgBookIdCol < 0) {
+            mLibraryThinkgBookIdCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_LIBRARY_THING_ID.name);
+            if (mLibraryThinkgBookIdCol < 0) {
+                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_BOOK_LIBRARY_THING_ID.name);
+            }
+        }
+        return mCursor.getLong(mLibraryThinkgBookIdCol);
+    }
+
+    public final long getISFDBBookId() {
+        if (mISFDBBookIdCol < 0) {
+            mISFDBBookIdCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_ISFDB_ID.name);
+            if (mISFDBBookIdCol < 0) {
+                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_BOOK_ISFDB_ID.name);
+            }
+        }
+        return mCursor.getLong(mISFDBBookIdCol);
+    }
+
+    public final long getGoodreadsBookId() {
+        if (mGoodreadsBookIdCol < 0) {
+            mGoodreadsBookIdCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_GOODREADS_BOOK_ID.name);
+            if (mGoodreadsBookIdCol < 0) {
+                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_BOOK_GOODREADS_BOOK_ID.name);
+            }
+        }
+        return mCursor.getLong(mGoodreadsBookIdCol);
+    }
+
     public final String getDateLastSyncedWithGoodReads() {
         if (mDateLastSyncedWithGoodReadsCol < 0) {
             mDateLastSyncedWithGoodReadsCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_GOODREADS_LAST_SYNC_DATE.name);
@@ -394,15 +427,5 @@ public class BookCursorRowBase {
             }
         }
         return mCursor.getString(mDateLastSyncedWithGoodReadsCol);
-    }
-
-    public final String getDatePublished() {
-        if (mDatePublishedCol < 0) {
-            mDatePublishedCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_DATE_PUBLISHED.name);
-            if (mDatePublishedCol < 0) {
-                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_BOOK_DATE_PUBLISHED.name);
-            }
-        }
-        return mCursor.getString(mDatePublishedCol);
     }
 }

@@ -98,9 +98,8 @@ public class LibraryThingAdminActivity extends BaseActivity {
                          */
                         @Override
                         public void run(final @NonNull SimpleTaskQueueProgressDialogFragment fragment, final @NonNull SimpleTaskContext taskContext) {
-                            Bundle tmp = new Bundle();
                             LibraryThingManager ltm = new LibraryThingManager();
-                            File tmpFile = ltm.getCoverImage("0451451783", tmp, LibraryThingManager.ImageSizes.SMALL);
+                            File tmpFile = ltm.getCoverImage("0451451783", LibraryThingManager.ImageSizes.SMALL);
                             if (tmpFile != null) {
                                 tmpFile.deleteOnExit();
                                 long length = tmpFile.length();
@@ -118,7 +117,6 @@ public class LibraryThingAdminActivity extends BaseActivity {
                         @Override
                         public void onFinish(final @NonNull SimpleTaskQueueProgressDialogFragment fragment, final @Nullable Exception exception) {
                         }
-
                     };
 
                     // Get the fragment to display task progress

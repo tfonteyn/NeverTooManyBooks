@@ -70,6 +70,14 @@ public class IntegerListProperty extends ListProperty<Integer> implements Intege
     @NonNull
     @Override
     @CallSuper
+    public IntegerListProperty setWeight(final int weight) {
+        super.setWeight(weight);
+        return this;
+    }
+
+    @NonNull
+    @Override
+    @CallSuper
     public IntegerListProperty setDefaultValue(final Integer value) {
         super.setDefaultValue(value);
         return this;

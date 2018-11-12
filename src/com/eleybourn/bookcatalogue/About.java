@@ -20,12 +20,12 @@
 
 package com.eleybourn.bookcatalogue;
 
+import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.Nullable;
@@ -43,6 +43,8 @@ import com.eleybourn.bookcatalogue.utils.Utils;
 /**
  * This is the About page. It contains details about the app, links to my website and email.
  *
+ * URL's are hardcoded and should not be changed.
+ *
  * @author Evan Leybourn
  */
 public class About extends BaseActivity {
@@ -55,68 +57,82 @@ public class About extends BaseActivity {
     @Override
     @CallSuper
     public void onCreate(final @Nullable Bundle savedInstanceState) {
-        try {
-            super.onCreate(savedInstanceState);
-            setTitle(R.string.app_name);
-            setupPage();
-        } catch (Exception e) {
-            Logger.error(e);
-        }
-    }
+        super.onCreate(savedInstanceState);
+        setTitle(R.string.app_name);
 
-    private void setupPage() {
         /* Version Number */
-        TextView release = findViewById(R.id.version);
+        TextView view = findViewById(R.id.version);
         PackageManager manager = this.getPackageManager();
         PackageInfo info;
         try {
             info = manager.getPackageInfo(this.getPackageName(), 0);
             String versionName = info.versionName;
-            release.setText(versionName);
+            view.setText(versionName);
         } catch (NameNotFoundException e) {
             Logger.error(e);
         }
 
-        findViewById(R.id.website).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.url_website)));
-                startActivity(intent);
-            }
-        });
+        view = findViewById(R.id.website);
+        view.setText(Utils.linkifyHtml(getString(R.string.url_website, getString(R.string.about_lbl_website)), Linkify.ALL));
+        view.setMovementMethod(LinkMovementMethod.getInstance());
 
-        findViewById(R.id.sourcecode).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.url_sourcecode)));
-                startActivity(intent);
-            }
-        });
+        view = findViewById(R.id.sourcecode);
+        view.setText(Utils.linkifyHtml(getString(R.string.url_sourcecode, getString(R.string.about_lbl_sourcecode)), Linkify.ALL));
+        view.setMovementMethod(LinkMovementMethod.getInstance());
 
-        findViewById(R.id.contact1).setOnClickListener(new OnClickListener() {
+        view = findViewById(R.id.contact1);
+        view.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 sendContactEmail(R.string.email_contact1);
             }
         });
 
-        findViewById(R.id.contact2).setOnClickListener(new OnClickListener() {
+        view = findViewById(R.id.contact2);
+        view.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 sendContactEmail(R.string.email_contact2);
             }
         });
 
+        /* URL as-is for reference
 
-        TextView amazon = findViewById(R.id.amazon_links_info);
-        // Setup the linked HTML
-        String text = getString(R.string.hint_amazon_links_blurb,
+        "https://www.paypal.com/cgi-bin/webscr?cmd=_donations" +
+                        "&business=WHD6PFWXXTPX8&lc=AU" +
+                        "&item_name=BookCatalogue&item_number=BCPP" +
+                        "&currency_code=USD" +
+                        "&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted"
+         */
+        // url with encoded % characters
+        @SuppressLint("DefaultLocale")
+        String paypalUrl = String.format(
+                "<a href=\"https://www.paypal.com/cgi-bin/webscr?cmd=_donations" +
+                        "&business=WHD6PFWXXTPX8&lc=AU" +
+                        "&item_name=BookCatalogue&item_number=BCPP" +
+                        "&currency_code=USD" +
+                        "&bn=PP%%2dDonationsBF%%3abtn_donateCC_LG%%2egif%%3aNonHosted\">%1s</a>",
+                getString(R.string.about_donate_paypal));
+
+        view = findViewById(R.id.donate_url);
+        view.setText(Utils.linkifyHtml(paypalUrl, Linkify.ALL));
+        view.setMovementMethod(LinkMovementMethod.getInstance());
+
+        view = findViewById(R.id.amazon_url);
+        String text = String.format(
+                "<a href=\"https://www.amazon.com/gp/registry/wishlist/2A2E48ONH64HM?tag=bookcatalogue-20\">%1s</a>",
+                getString(R.string.about_donate_amazon));
+        view.setText(Utils.linkifyHtml(text, Linkify.ALL));
+        view.setMovementMethod(LinkMovementMethod.getInstance());
+
+        view = findViewById(R.id.amazon_links_info);
+        text = getString(R.string.hint_amazon_links_blurb,
                 getString(R.string.menu_amazon_books_by_author),
                 getString(R.string.menu_amazon_books_in_series),
                 getString(R.string.menu_amazon_books_by_author_in_series),
                 getString(R.string.app_name));
-        amazon.setText(Utils.linkifyHtml(text, Linkify.ALL));
-        amazon.setMovementMethod(LinkMovementMethod.getInstance());
+        view.setText(Utils.linkifyHtml(text, Linkify.ALL));
+        view.setMovementMethod(LinkMovementMethod.getInstance());
 
     }
 

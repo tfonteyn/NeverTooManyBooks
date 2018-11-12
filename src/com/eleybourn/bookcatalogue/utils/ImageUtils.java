@@ -57,6 +57,7 @@ public class ImageUtils {
 
         return fetchFileIntoImageView(destView, file.getPath(), maxWidth, maxHeight, exact);
     }
+
     /**
      * Shrinks the passed image file spec into the specified dimensions, and returns the bitmap.
      * If the view is non-null, the image is also placed in the view.
@@ -99,7 +100,7 @@ public class ImageUtils {
         final int samplePow2 = (int) Math.pow(2, Math.ceil(Math.log(idealSampleSize) / Math.log(2)));
 
         if (DEBUG_SWITCHES.IMAGE_UTILS && BuildConfig.DEBUG) {
-            Logger.info(ImageUtils.class,"fetchFileIntoImageView:\n" +
+            Logger.info(ImageUtils.class, "fetchFileIntoImageView:\n" +
                     " filename = " + fileSpec + "\n" +
                     "  exact       = " + exact + "\n" +
                     "  maxWidth    = " + maxWidth + ", opt.outWidth = " + opt.outWidth + ", widthRatio   = " + widthRatio + "\n" +
@@ -148,7 +149,7 @@ public class ImageUtils {
         }
 
         if (DEBUG_SWITCHES.IMAGE_UTILS && BuildConfig.DEBUG) {
-            Logger.info(ImageUtils.class,"bm.width = " + bm.getWidth() + ", bm.height = " + bm.getHeight());
+            Logger.info(ImageUtils.class, "bm.width = " + bm.getWidth() + ", bm.height = " + bm.getHeight());
         }
 
         // Set ImageView and return bitmap
@@ -166,7 +167,7 @@ public class ImageUtils {
      * the cache date. If the cached image date is < the file, it is rebuilt.
      *
      * @param destView        View to populate
-     * @param uuid       ID of book to retrieve.
+     * @param uuid            ID of book to retrieve.
      * @param maxWidth        Max width of resulting image
      * @param maxHeight       Max height of resulting image
      * @param exact           Whether to fit dimensions exactly
@@ -214,8 +215,8 @@ public class ImageUtils {
     /**
      * Given a URL, get an image and save to a file, optionally appending a suffix to the file.
      *
-     * @param urlText            Image file URL
-     * @param filenameSuffix    Suffix to add
+     * @param urlText        Image file URL
+     * @param filenameSuffix Suffix to add
      *
      * @return Downloaded fileSpec, or blank "" on failure
      */
@@ -248,7 +249,7 @@ public class ImageUtils {
         Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length, new BitmapFactory.Options());
 
         if (DEBUG_SWITCHES.IMAGE_UTILS && BuildConfig.DEBUG) {
-            Logger.info(ImageUtils.class,"Array " + bytes.length + " bytes, bitmap " + bitmap.getHeight() + "x" + bitmap.getWidth());
+            Logger.info(ImageUtils.class, "Array " + bytes.length + " bytes, bitmap " + bitmap.getHeight() + "x" + bitmap.getWidth());
         }
         return bitmap;
     }
@@ -283,21 +284,21 @@ public class ImageUtils {
 
 
     /**
-     * If there is a {@link UniqueId#BKEY_THUMBNAIL_FILES_SPEC} key, pick the largest image, rename it
-     * and delete the others. Finally, remove the key. and set KEY_BOOK_THUMBNAIL to true
+     * If there is a {@link UniqueId#BKEY_THUMBNAIL_FILE_SPEC} key, pick the largest image, rename it
+     * and delete the others. Finally, remove the key. and set BKEY_HAVE_THUMBNAIL to true
      */
     public static void cleanupThumbnails(final @Nullable Bundle result) {
-        if (result == null || !result.containsKey(UniqueId.BKEY_THUMBNAIL_FILES_SPEC)) {
+        if (result == null) {
             return;
         }
 
-        String s = result.getString(UniqueId.BKEY_THUMBNAIL_FILES_SPEC);
-        if (s == null) {
+        String fileSpecs = result.getString(UniqueId.BKEY_THUMBNAIL_FILE_SPEC);
+        if (fileSpecs == null) {
             return;
         }
 
         // Parse the list
-        ArrayList<String> files = ArrayUtils.decodeList(s);
+        ArrayList<String> files = StringList.decode(fileSpecs);
 
         long bestFileSize = -1;
         int bestFileIndex = -1;
@@ -335,8 +336,9 @@ public class ImageUtils {
             StorageUtils.renameFile(new File(files.get(bestFileIndex)), StorageUtils.getTempCoverFile());
         }
         // Finally, cleanup the data
-        result.remove(UniqueId.BKEY_THUMBNAIL_FILES_SPEC);
-        result.putBoolean(UniqueId.KEY_BOOK_THUMBNAIL, true);
+        result.remove(UniqueId.BKEY_THUMBNAIL_FILE_SPEC);
+        // and indicate we got a file
+        result.putBoolean(UniqueId.BKEY_HAVE_THUMBNAIL, true);
     }
 
     /**
@@ -378,13 +380,6 @@ public class ImageUtils {
             }
         }
     }
-    /**
-     * NEWKIND: if we ever need more sizes, add a field here and set it in {@link #getThumbSizes}
-     */
-    public static class ThumbSize {
-        public int normal;
-        public int zoomed;
-    }
 
     /**
      * normal:  Minimum of MAX_EDIT_THUMBNAIL_SIZE and 1/3rd of largest screen dimension
@@ -405,6 +400,14 @@ public class ImageUtils {
         final DisplayMetrics metrics = new DisplayMetrics();
         activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
         return metrics;
+    }
+
+    /**
+     * NEWKIND: if we ever need more sizes, add a field here and set it in {@link #getThumbSizes}
+     */
+    public static class ThumbSize {
+        public int normal;
+        public int zoomed;
     }
 
 

@@ -20,10 +20,8 @@ import com.eleybourn.bookcatalogue.About;
 import com.eleybourn.bookcatalogue.AdminActivity;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
-import com.eleybourn.bookcatalogue.Donate;
 import com.eleybourn.bookcatalogue.EditBookshelfListActivity;
 import com.eleybourn.bookcatalogue.Help;
-import com.eleybourn.bookcatalogue.PreferencesActivity;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.booklist.BooklistPreferencesActivity;
@@ -104,7 +102,6 @@ abstract public class BaseActivity extends AppCompatActivity
          see https://developer.android.com/training/implementing-navigation/nav-drawer
          */
         setDrawerLayout((DrawerLayout) findViewById(R.id.drawer_layout));
-
         setNavigationView((NavigationView) findViewById(R.id.nav_view));
 
         initToolbar();
@@ -170,10 +167,6 @@ abstract public class BaseActivity extends AppCompatActivity
                 intent = new Intent(this, BooklistPreferencesActivity.class);
                 startActivityForResult(intent, BooklistPreferencesActivity.REQUEST_CODE); /* 9cdb2cbe-1390-4ed8-a491-87b3b1a1edb9 */
                 return true;
-            case R.id.nav_other_prefs:
-                intent = new Intent(this, PreferencesActivity.class);
-                startActivityForResult(intent, PreferencesActivity.REQUEST_CODE); /* 46f41e7b-f49c-465d-bea0-80ec85330d1c */
-                return true;
             case R.id.nav_admin:
                 intent = new Intent(this, AdminActivity.class);
                 startActivityForResult(intent, AdminActivity.REQUEST_CODE); /* 7f46620d-7951-4637-8783-b410730cd460 */
@@ -186,10 +179,6 @@ abstract public class BaseActivity extends AppCompatActivity
                 intent = new Intent(this, Help.class);
                 startActivity(intent);
                 return true;
-            case R.id.nav_donate:
-                intent = new Intent(this, Donate.class);
-                startActivity(intent);
-                break;
         }
 
         return false;
@@ -250,8 +239,13 @@ abstract public class BaseActivity extends AppCompatActivity
     @Override
     @CallSuper
     public void onBackPressed() {
+        finishIfClean();
+    }
 
-        // Check if edits need saving, and finish the activity if not
+    /**
+     *  Check if edits need saving, and finish the activity if not
+     */
+    private void finishIfClean() {
         if (isDirty()) {
             StandardDialogs.showConfirmUnsavedEditsDialog(this,
                     /* run when user clicks 'exit' */
@@ -259,9 +253,7 @@ abstract public class BaseActivity extends AppCompatActivity
                         @Override
                         public void run() {
                             // set default result
-                            Intent data = new Intent();
-                            data.putExtra(UniqueId.BKEY_BACK_PRESSED, true);
-                            setResult(Activity.RESULT_OK, data);  /* onBackPressed */
+                            setResult(Activity.RESULT_OK);
                             // but allow overriding
                             setActivityResult();
                             finish();
@@ -270,13 +262,22 @@ abstract public class BaseActivity extends AppCompatActivity
                     });
         } else {
             // set default result
-            Intent data = new Intent();
-            data.putExtra(UniqueId.BKEY_BACK_PRESSED, true);
-            setResult(Activity.RESULT_OK, data); /* onBackPressed */
+            setResult(Activity.RESULT_OK);
             // but allow overriding
             setActivityResult();
             finish();
         }
+    }
+
+    /**
+     * Always called by {@link BaseActivity#finishIfClean()}
+     *
+     * If your activity needs to send a result, override this call.
+     * If your activity does an actual finish() call it *must* take care of the result itself
+     * (of course it can still implement and call this method for the sake of uniformity
+     */
+    public void setActivityResult() {
+        // do nothing
     }
 
 //    @Override
@@ -289,30 +290,7 @@ abstract public class BaseActivity extends AppCompatActivity
 //        super.onPause();
 //    }
 
-    /**
-     * Always called by {@link BaseActivity#onBackPressed()}
-     *
-     * If your activity needs to send a result, override this call.
-     * If your activity does an actual finish() call it *must* take care of the result itself
-     * (of course it can still implement and call this method for the sake of uniformity
-     */
-    public void setActivityResult() {
-        // do nothing
-    }
 
-        /**
-         * get a key/value pair either from the savedInstanceState or the extras.
-         */
-    protected long getLongFromBundles(final @NonNull String key, final @Nullable Bundle savedInstanceState, final @Nullable Bundle extras) {
-        long value = 0;
-        if (savedInstanceState != null) {
-            value = savedInstanceState.getLong(key);
-        }
-        if ((value == 0) && (extras != null)) {
-            value = extras.getLong(key);
-        }
-        return value;
-    }
 
     /** saving on some typing */
     protected SharedPreferences getPrefs() {
@@ -331,7 +309,6 @@ abstract public class BaseActivity extends AppCompatActivity
         updateThemeIfChanged();
         restartActivityIfNeeded();
     }
-
 
     /**
      * Reload this activity if locale has changed.

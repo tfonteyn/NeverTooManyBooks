@@ -15,9 +15,21 @@
     <string name="email_contact2" translatable="false">name2@email</string>
     <string name="email_debug" translatable="false">name3@email</string>
 
-    <string name="url_website" translatable="false">https://wiki.github.com/eleybourn/Book-Catalogue/</string>
-    <string name="url_sourcecode" translatable="false">https://github.com/eleybourn/Book-Catalogue</string>
-    <string name="url_help" translatable="false">https://github.com/eleybourn/Book-Catalogue/wiki/Help</string>
+    <string name="url_website" translatable="false">
+        <![CDATA[
+            <a href="https://wiki.github.com/eleybourn/Book-Catalogue/">%1s</a>
+        ]]>
+    </string>
+    <string name="url_sourcecode" translatable="false">
+        <![CDATA[
+            <a href="https://github.com/eleybourn/Book-Catalogue/">%1s</a>
+        ]]>
+    </string>
+    <string name="url_help" translatable="false">
+        <![CDATA[
+            <a href="https://github.com/eleybourn/Book-Catalogue/wiki/Help">%1s</a>
+        ]]>
+    </string>
 
     <!-- External sites / trademarks  -->
     <string name="amazon" translatable="false">Amazon</string>
@@ -459,7 +471,7 @@
     <!-- A hint describing the benefit of following the Amazon links -->
     <string name="hint_amazon_links_blurb">
         <![CDATA[
-        <p>If you buy things from Amazon after selecting the <i>"%1$\"</i>, <i>"%2$\"</i> or <i>"%3$\"</i>
+        <p>If you buy things from Amazon after selecting the <i>"%1$s"</i>, <i>"%2$s"</i> or <i>"%3$s"</i>
         menu items, a proportion of the purchase price will be sent to the developers of %4$s.</p>
         <p>You can also use the
          <a href="https://github.com/eleybourn/Book-Catalogue/wiki/Frequently-Asked-Questions-%%28FAQ%%29">links on our FAQ</a>
@@ -812,9 +824,10 @@
     <!-- ####################################################################################### -->
 
     <!-- Headings in 'about' dialog -->
-    <string name="about_lbl_website">Web page:</string>
-    <string name="about_lbl_sourcecode">Source Code:</string>
-    <string name="about_lbl_contacts">Contacts:</string>
+    <string name="about_lbl_website">Web page</string>
+    <string name="about_lbl_sourcecode">Source Code</string>
+
+    <string name="about_lbl_contacts">Contacts</string>
     <string name="about_lbl_donate">Donate</string>
     <string name="about_lbl_special_thanks">Special Thanks</string>
     <string name="about_lbl_version_number">Version Number:</string>
@@ -947,7 +960,6 @@
     <string name="select_bookshelves">Select Bookshelves</string>
 
 
-
     <string name="and_others">et. al.</string>
 
     <string name="skip_title">Skip - %s</string>
@@ -1049,7 +1061,6 @@
     <string name="last_error_e">Last Error: %1$s</string>
 
 
-
     <!-- Progress dialog message displayed when doing a long network operation to a web site -->
     <string name="connecting_to_web_site">Connecting to web site…</string>
 
@@ -1061,9 +1072,6 @@
     <!-- Hint displayed when a Catalogue Backup is done -->
     <string name="archive_complete_details">A %3$s file called %2$s was created in the \"%1$s\" directory on your 
     SD card.\n\nYou should manually copy it elsewhere to protect the data in case your device is damaged, lost, or stolen.</string>
-
-
-
 
 
     <!-- Content description for the 'up' icon in the folder browser -->
@@ -1149,9 +1157,6 @@
         <item quantity="one">%1$s star</item>
         <item quantity="other">%1$s stars</item>
     </plurals>
-
-
-
 
 
     <!-- This is an UPDATED string copied from earlier in the file; "Google Googles" (sic) was removed from the list of scanners -->

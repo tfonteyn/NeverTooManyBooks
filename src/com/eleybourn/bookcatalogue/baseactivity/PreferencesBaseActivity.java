@@ -38,7 +38,7 @@ import com.eleybourn.bookcatalogue.properties.Properties;
 abstract public class PreferencesBaseActivity extends BaseActivity {
 
     /** Setup the views in the layout */
-    abstract protected void initViews(final @NonNull Properties globalProps);
+    abstract protected void initFields(final @NonNull Properties globalProps);
 
     @Override
     @CallSuper
@@ -47,7 +47,7 @@ abstract public class PreferencesBaseActivity extends BaseActivity {
             super.onCreate(savedInstanceState);
 
             Properties globalProps = new Properties();
-            initViews(globalProps);
+            initFields(globalProps);
 
             ViewGroup styleProps = findViewById(R.id.dynamic_properties);
             globalProps.buildView(getLayoutInflater(), styleProps);

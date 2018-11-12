@@ -30,7 +30,7 @@ import com.eleybourn.bookcatalogue.database.cursors.BookCursorRow;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
-import com.eleybourn.bookcatalogue.utils.ArrayUtils;
+import com.eleybourn.bookcatalogue.utils.StringList;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 import java.io.BufferedWriter;
@@ -50,7 +50,9 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_GOODREADS_BOOK_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_GOODREADS_LAST_SYNC_DATE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ISBN;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ISFDB_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LANGUAGE;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LIBRARY_THING_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PRICE_LISTED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LOCATION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_NOTES;
@@ -67,7 +69,7 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_UUID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DESCRIPTION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FIRST_PUBLICATION;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PK_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LAST_UPDATE_DATE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LOANED_TO;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE;
@@ -96,7 +98,7 @@ public class CsvExporter implements Exporter {
      * The fields *._DETAILS are string encoded
      */
     private final String EXPORT_FIELD_HEADERS =
-            '"' + DOM_ID.name + "\"," +
+            '"' + DOM_PK_ID.name + "\"," +
                     '"' + UniqueId.BKEY_AUTHOR_STRING_LIST + "\"," +
                     '"' + DOM_TITLE + "\"," +
                     '"' + DOM_BOOK_ISBN + "\"," +
@@ -105,7 +107,7 @@ public class CsvExporter implements Exporter {
                     '"' + DOM_FIRST_PUBLICATION + "\"," +
                     '"' + DOM_BOOK_EDITION_BITMASK + "\"," +
                     '"' + DOM_BOOK_RATING + "\"," +
-                    // this should be UniqueId.DOM_BOOKSHELF_ID but it was misnamed originally
+                    // this should be UniqueId.DOM_FK_BOOKSHELF_ID but it was misnamed originally
                     // but in fact, FIXME? it's not actually used during import anyway
                     '"' + "bookshelf_id\"," +
                     '"' + DOM_BOOKSHELF + "\"," +
@@ -131,6 +133,8 @@ public class CsvExporter implements Exporter {
                     '"' + DOM_BOOK_GENRE + "\"," +
                     '"' + DOM_BOOK_LANGUAGE + "\"," +
                     '"' + DOM_BOOK_DATE_ADDED + "\"," +
+                    '"' + DOM_BOOK_LIBRARY_THING_ID + "\"," +
+                    '"' + DOM_BOOK_ISFDB_ID + "\"," +
                     '"' + DOM_BOOK_GOODREADS_BOOK_ID + "\"," +
                     '"' + DOM_BOOK_GOODREADS_LAST_SYNC_DATE + "\"," +
                     '"' + DOM_LAST_UPDATE_DATE + "\"," +
@@ -206,9 +210,9 @@ public class CsvExporter implements Exporter {
 
             while (bookCursor.moveToNext() && !listener.isCancelled()) {
                 num++;
-                long bookId = bookCursor.getLong(bookCursor.getColumnIndexOrThrow(DOM_ID.name));
+                long bookId = bookCursor.getLong(bookCursor.getColumnIndexOrThrow(DOM_PK_ID.name));
 
-                String author_stringList = ArrayUtils.getAuthorUtils().encodeList(mDb.getBookAuthorList(bookId));
+                String author_stringList = StringList.getAuthorUtils().encode(mDb.getBookAuthorList(bookId));
                 // Sanity check: ensure author is non-blank. This HAPPENS. Probably due to constraint failures.
                 if (author_stringList.trim().isEmpty()) {
                     author_stringList = AUTHOR + ", " + UNKNOWN;
@@ -223,7 +227,7 @@ public class CsvExporter implements Exporter {
                 }
 
                 // For the names, could use this of course:
-                //   ArrayUtils.getBookshelfUtils().encodeList( mDb.getBookshelvesByBookId(bookId));
+                //   StringList.getBookshelfUtils().encode( mDb.getBookshelvesByBookId(bookId));
                 // but we also want a list of the id's.
                 // so....
                 // the selected bookshelves: two CSV columns with CSV id's + CSV names
@@ -234,7 +238,7 @@ public class CsvExporter implements Exporter {
                             .append(bookshelf.id)
                             .append(Bookshelf.SEPARATOR);
                     bookshelves_name_stringList
-                            .append(ArrayUtils.encodeListItem(Bookshelf.SEPARATOR, bookshelf.name))
+                            .append(StringList.encodeListItem(Bookshelf.SEPARATOR, bookshelf.name))
                             .append(Bookshelf.SEPARATOR);
                 }
 
@@ -247,11 +251,12 @@ public class CsvExporter implements Exporter {
                         .append(formatCell(bookCursorRow.getDatePublished()))
                         .append(formatCell(bookCursorRow.getFirstPublication()))
                         .append(formatCell(bookCursorRow.getEditionBitMask()))
+
                         .append(formatCell(bookCursorRow.getRating()))
                         .append(formatCell(bookshelves_id_stringList.toString()))
                         .append(formatCell(bookshelves_name_stringList.toString()))
                         .append(formatCell(bookCursorRow.getRead()))
-                        .append(formatCell(ArrayUtils.getSeriesUtils().encodeList(mDb.getBookSeriesList(bookId))))
+                        .append(formatCell(StringList.getSeriesUtils().encode(mDb.getBookSeriesList(bookId))))
                         .append(formatCell(bookCursorRow.getPages()))
                         .append(formatCell(bookCursorRow.getNotes()))
 
@@ -267,13 +272,17 @@ public class CsvExporter implements Exporter {
                         .append(formatCell(bookCursorRow.getFormat()))
                         .append(formatCell(bookCursorRow.getSigned()))
                         .append(formatCell(bookCursorRow.getLoanedTo()))
-                        .append(formatCell(ArrayUtils.getTOCUtils().encodeList( mDb.getTOCEntriesByBook(bookId))))
+                        .append(formatCell(StringList.getTOCUtils().encode( mDb.getTOCEntriesByBook(bookId))))
                         .append(formatCell(bookCursorRow.getDescription()))
                         .append(formatCell(bookCursorRow.getGenre()))
                         .append(formatCell(bookCursorRow.getLanguage()))
                         .append(formatCell(bookCursorRow.getDateAdded()))
+
+                        .append(formatCell(bookCursorRow.getLibraryThingBookId()))
+                        .append(formatCell(bookCursorRow.getISFDBBookId()))
                         .append(formatCell(bookCursorRow.getGoodreadsBookId()))
                         .append(formatCell(bookCursorRow.getDateLastSyncedWithGoodReads()))
+
                         .append(formatCell(bookCursorRow.getDateLastUpdated()))
                         .append(formatCell(bookCursorRow.getBookUuid()))
                         .append("\n");

@@ -40,6 +40,12 @@
                 android:drawableStart="@drawable/ic_style"
                 android:text="@string/menu_edit_booklist_styles" />
 
+            <TextView
+                android:id="@+id/lbl_preferences"
+                style="@style/row_option_text"
+                android:drawableStart="@drawable/ic_settings"
+                android:text="@string/title_preferences" />
+
             <View style="@style/divider_horizontalList" />
 
             <!-- DATA IMPORT/EXPORT -->

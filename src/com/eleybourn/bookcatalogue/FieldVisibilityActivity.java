@@ -62,7 +62,7 @@ public class FieldVisibilityActivity extends BaseActivity {
     static {
         mFields.add(new FieldInfo(UniqueId.KEY_AUTHOR_ID, R.string.author, true));
         mFields.add(new FieldInfo(UniqueId.KEY_TITLE, R.string.title, true));
-        mFields.add(new FieldInfo(UniqueId.KEY_BOOK_THUMBNAIL, R.string.title_cover, false));
+        mFields.add(new FieldInfo(UniqueId.BKEY_HAVE_THUMBNAIL, R.string.title_cover, false));
         mFields.add(new FieldInfo(UniqueId.KEY_BOOK_ISBN, R.string.isbn, false));
         mFields.add(new FieldInfo(UniqueId.KEY_SERIES_NAME, R.string.series, false));
         mFields.add(new FieldInfo(UniqueId.KEY_SERIES_NUM, R.string.series_num, false));

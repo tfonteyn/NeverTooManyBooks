@@ -23,7 +23,7 @@ package com.eleybourn.bookcatalogue.entities;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.utils.ArrayUtils;
+import com.eleybourn.bookcatalogue.utils.StringList;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -52,7 +52,7 @@ public class Publisher implements Serializable {
     @Override
     @NonNull
     public String toString() {
-        return ArrayUtils.encodeListItem(SEPARATOR, name);
+        return StringList.encodeListItem(SEPARATOR, name);
     }
 
     /**

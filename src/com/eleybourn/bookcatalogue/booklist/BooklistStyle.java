@@ -244,7 +244,7 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
     /**
      * Constructor for user-defined styles.
      */
-    BooklistStyle(final @NonNull String name) {
+    public BooklistStyle(final @NonNull String name) {
         initProperties();
         mNameStringId = 0;
         mGroups = new ArrayList<>();

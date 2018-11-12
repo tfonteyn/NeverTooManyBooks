@@ -31,15 +31,6 @@ import android.support.v4.app.Fragment;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
-/**
- * A tab host activity which holds the edit book tabs
- * 1. Details
- * 2. Notes
- * 3. Anthology titles
- * 4. Loan Book -> ENHANCE: remove this from this activity into either its own, or into a DialogFragment
- *
- * @author Evan Leybourn
- */
 public class EditBookActivity extends BaseActivity {
 
     public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_EDIT_BOOK;

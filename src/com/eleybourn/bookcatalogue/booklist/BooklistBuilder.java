@@ -37,6 +37,7 @@ import com.eleybourn.bookcatalogue.booklist.BooklistGroup.BooklistSeriesGroup;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle.CompoundKey;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.CollationCaseSensitive;
+import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.database.DatabaseHelper;
 import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedDb;
 import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedStatement;
@@ -49,8 +50,8 @@ import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
 import com.eleybourn.bookcatalogue.database.definitions.TableDefinition.TableTypes;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
-import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.RTE;
+import com.eleybourn.bookcatalogue.utils.StringList;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -92,18 +93,20 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ADDED
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FAMILY_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FORMATTED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_GIVEN_NAMES;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_POSITION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_SORT;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BL_BOOK_COUNT;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BL_NODE_EXPANDED;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BL_NODE_LEVEL;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BL_NODE_ROW_KIND;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BL_NODE_VISIBLE;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BL_PRIMARY_SERIES_COUNT;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKSHELF;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKSHELF_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ANTHOLOGY_BITMASK;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_COUNT;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_ADDED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_PUBLISHED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_FORMAT;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_GENRE;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LANGUAGE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LOCATION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PUBLISHER;
@@ -114,14 +117,15 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_SERIES_POSITION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_SIGNED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_UUID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DOCID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_EXPANDED;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_AUTHOR_ID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_BOOKSHELF_ID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_BOOK_ID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_SERIES_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LAST_UPDATE_DATE;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LEVEL;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LOANED_TO;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LOANED_TO_SORT;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PRIMARY_SERIES_COUNT;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PK_DOCID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PK_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PUBLICATION_MONTH;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PUBLICATION_YEAR;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_READ_DAY;
@@ -130,9 +134,7 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_READ_
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_READ_YEAR;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_REAL_ROW_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ROOT_KEY;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ROW_KIND;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SELECTED;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_NUM_FLOAT;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE;
@@ -140,7 +142,6 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_UPDATE_DAY;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_UPDATE_MONTH;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_UPDATE_YEAR;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_VISIBLE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_AUTHORS;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOKS;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOKSHELF;
@@ -232,48 +233,39 @@ public class BooklistBuilder implements AutoCloseable {
     /** used in debug */
     private boolean mDebugReferenceDecremented = false;
 
-    /** Local copy of the BOOK_LIST table definition, renamed to match this instance */
+    /** Local copy of the {@link DatabaseDefinitions#TBL_BOOK_LIST} table definition,
+     * 'book_list_tmp' but renamed by adding the instance number to the end to match this instance */
     private TableDefinition mListTable;
-    /** Local copy of the navigation table definition, renamed to match this instance */
+
+    /** Local copy of the {@link DatabaseDefinitions#TBL_ROW_NAVIGATOR}, renamed to match this instance */
     private TableDefinition mNavTable;
+
     /** Object used in constructing the output table */
     private SummaryBuilder mSummary = null;
+
     /** Statement used to perform initial insert */
     private SynchronizedStatement mBaseBuildStmt = null;
     /** Collection of statements used to build remaining data */
     private ArrayList<SynchronizedStatement> mLevelBuildStmts = null;
-    @Nullable
-    private SynchronizedStatement mDeleteListNodeSettingsStmt = null;
-    @Nullable
-    private SynchronizedStatement mSaveAllListNodeSettingsStmt = null;
-    @Nullable
-    private SynchronizedStatement mDeleteListNodeSettingStmt = null;
-    @Nullable
-    private SynchronizedStatement mSaveListNodeSettingStmt = null;
-    @Nullable
-    private SynchronizedStatement mGetPositionCheckVisibleStmt = null;
-    @Nullable
-    private SynchronizedStatement mGetPositionStmt = null;
-    @Nullable
-    private SynchronizedStatement mGetNodeRootStmt = null;
 
+    private SynchronizedStatement mDeleteListNodeSettingsStmt = null;
+    private SynchronizedStatement mSaveAllListNodeSettingsStmt = null;
+    private SynchronizedStatement mDeleteListNodeSettingStmt = null;
+    private SynchronizedStatement mSaveListNodeSettingStmt = null;
+    private SynchronizedStatement mGetPositionCheckVisibleStmt = null;
+    private SynchronizedStatement mGetPositionStmt = null;
+    private SynchronizedStatement mGetNodeRootStmt = null;
     private SynchronizedStatement mGetNodeLevelStmt = null;
     private SynchronizedStatement mGetNextAtSameLevelStmt = null;
     private SynchronizedStatement mShowStmt = null;
     private SynchronizedStatement mExpandStmt = null;
-    @Nullable
+
     private String mFtsSearchTextCriteria;
-    @Nullable
     private String mAuthorNameCriteria;
-    @Nullable
     private String mTitleCriteria;
-    @Nullable
     private String mBookCriteria;
-    @Nullable
     private String mBookIdListCriteria;
-    @Nullable
     private String mLoanedToCriteria;
-    @Nullable
     private String mSeriesNameCriteria;
 
     private long mBookshelfIdCriteria = 0;
@@ -288,7 +280,7 @@ public class BooklistBuilder implements AutoCloseable {
         if (DEBUG_SWITCHES.BOOKLIST_BUILDER && BuildConfig.DEBUG) {
             synchronized (mDebugInstanceCount) {
                 mDebugInstanceCount++;
-                Logger.info(this,"instances: " + mDebugInstanceCount);
+                Logger.info(this, "instances: " + mDebugInstanceCount);
             }
         }
 
@@ -335,11 +327,11 @@ public class BooklistBuilder implements AutoCloseable {
         flat.setType(TableTypes.Temporary); //RELEASE Make sure is TEMPORARY
         flat.create(mSyncedDb, true);
 
-        String sql = flat.getInsert(DOM_ID, DOM_BOOK_ID) +
-                " SELECT " + mNavTable.dot(DOM_ID) + "," + mListTable.dot(DOM_BOOK_ID) +
+        String sql = flat.getInsert(DOM_PK_ID, DOM_FK_BOOK_ID) +
+                " SELECT " + mNavTable.dot(DOM_PK_ID) + "," + mListTable.dot(DOM_FK_BOOK_ID) +
                 " FROM " + mListTable.ref() + mListTable.join(mNavTable) +
-                " WHERE " + mListTable.dot(DOM_BOOK_ID) + " NOT NULL " +
-                " ORDER BY " + mNavTable.dot(DOM_ID);
+                " WHERE " + mListTable.dot(DOM_FK_BOOK_ID) + " NOT NULL " +
+                " ORDER BY " + mNavTable.dot(DOM_PK_ID);
         mSyncedDb.execSQL(sql);
         return new FlattenedBooklist(mSyncedDb, flat);
     }
@@ -397,11 +389,21 @@ public class BooklistBuilder implements AutoCloseable {
         mNavTable.drop(mSyncedDb);
         mNavTable.create(mSyncedDb, true);
 
+        if (BuildConfig.DEBUG) {
+            Logger.info(this, "mBaseBuildStmt");
+            Logger.info(this, mBaseBuildStmt.toString() + "\n\n");
+        }
+
         // Build base data
         mBaseBuildStmt.execute();
+
         // Rebuild all the rest
-        for (SynchronizedStatement s : mLevelBuildStmts) {
-            s.execute();
+        for (SynchronizedStatement stmt : mLevelBuildStmts) {
+            if (BuildConfig.DEBUG) {
+                Logger.info(this, "mLevelBuildStmts");
+                Logger.info(this, stmt.toString() + "\n\n");
+            }
+            stmt.execute();
         }
     }
 
@@ -410,6 +412,7 @@ public class BooklistBuilder implements AutoCloseable {
      * The logic being that IF they had a time part then it would be UTC.
      * Without a time part, we assume the zone is local (or irrelevant).
      */
+    @NonNull
     private String localDateExpression(final @NonNull String fieldSpec) {
         return "Case" +
                 " When " + fieldSpec +
@@ -429,6 +432,7 @@ public class BooklistBuilder implements AutoCloseable {
      *
      * @return expression
      */
+    @NonNull
     private String yearGlob(@NonNull String fieldSpec, final boolean toLocal) {
         if (toLocal) {
             fieldSpec = localDateExpression(fieldSpec);
@@ -450,6 +454,7 @@ public class BooklistBuilder implements AutoCloseable {
      *
      * @return expression
      */
+    @NonNull
     private String monthGlob(@NonNull String fieldSpec, final boolean toLocal) {
         if (toLocal) {
             fieldSpec = localDateExpression(fieldSpec);
@@ -474,6 +479,7 @@ public class BooklistBuilder implements AutoCloseable {
      *
      * @return expression
      */
+    @NonNull
     private String dayGlob(@NonNull String fieldSpec, final boolean toLocal) {
         if (toLocal) {
             fieldSpec = localDateExpression(fieldSpec);
@@ -491,7 +497,6 @@ public class BooklistBuilder implements AutoCloseable {
                 " Else " + fieldSpec +
                 " End";
     }
-
 
 
     /**
@@ -518,9 +523,16 @@ public class BooklistBuilder implements AutoCloseable {
         this.mAuthorNameCriteria = name;
     }
 
+    /**
+     * add a TBL_BOOKS.dot(DOM_TITLE) LIKE '%title%'
+     * *
+     *
+     * @param title Search criteria: only books with named title (with added wildcards)
+     */
     public void setCriteriaTitle(final @Nullable String title) {
         this.mTitleCriteria = title;
     }
+
     /**
      * add a TBL_SERIES.dot(DOM_SERIES_NAME) LIKE '%seriesName%" with wildcards
      *
@@ -531,7 +543,6 @@ public class BooklistBuilder implements AutoCloseable {
     }
 
     /**
-     *
      * @param bookshelfId Search criteria: only books in on this shelf
      */
     public void setCriteriaBookshelfId(final long bookshelfId) {
@@ -560,8 +571,8 @@ public class BooklistBuilder implements AutoCloseable {
      */
     public void setCriteriaBookIdList(final @Nullable List<Integer> list) {
         if (list != null) {
-            ArrayUtils<Integer> au = new ArrayUtils<>();
-            this.mBookIdListCriteria = au.encodeList(list);
+            StringList<Integer> au = new StringList<>();
+            this.mBookIdListCriteria = au.encode(list);
         }
     }
 
@@ -576,8 +587,7 @@ public class BooklistBuilder implements AutoCloseable {
         Tracker.handleEvent(this, "build-" + mBooklistBuilderId, Tracker.States.Enter);
 
         try {
-            @SuppressWarnings("UnusedAssignment")
-            final long t0 = System.currentTimeMillis();
+            @SuppressWarnings("UnusedAssignment") final long t0 = System.currentTimeMillis();
 
             // Rebuild the main table definition
             buildTableDefinitions();
@@ -586,31 +596,46 @@ public class BooklistBuilder implements AutoCloseable {
             SummaryBuilder summary = new SummaryBuilder();
 
             // Add the minimum required domains which will have special handling
-            mListTable.addDomain(DOM_ID); // Will use default value
+            mListTable.addDomain(DOM_PK_ID); // Will use default value
             mListTable.addDomain(DOM_ROOT_KEY); // Will use expression based on first group; determined later
 
             // Add the domains that have simple pre-determined expressions as sources
-            summary.addDomain(DOM_LEVEL, Integer.toString(mStyle.size() + 1), SummaryBuilder.FLAG_NONE);
-            summary.addDomain(DOM_ROW_KIND, "" + ROW_KIND_BOOK, SummaryBuilder.FLAG_NONE);
-            summary.addDomain(DOM_BOOK_ID, TBL_BOOKS.dot(DOM_ID), SummaryBuilder.FLAG_NONE);
-            summary.addDomain(DOM_BOOK_COUNT, "1", SummaryBuilder.FLAG_NONE);
+            summary.addDomain(DOM_BL_NODE_LEVEL, Integer.toString(mStyle.size() + 1), SummaryBuilder.FLAG_NONE);
+            summary.addDomain(DOM_BL_NODE_ROW_KIND, "" + ROW_KIND_BOOK, SummaryBuilder.FLAG_NONE);
+            summary.addDomain(DOM_FK_BOOK_ID, TBL_BOOKS.dot(DOM_PK_ID), SummaryBuilder.FLAG_NONE);
+            summary.addDomain(DOM_BL_BOOK_COUNT, "1", SummaryBuilder.FLAG_NONE);
 
             StyleInfo styleInfo = new StyleInfo();
 
             // We can not use triggers to fill in headings in API < 8 since SQLite 3.5.9 is broken
             // Allow for the user preferences to override in case another build is broken.
             final int listMode = BooklistPreferencesActivity.getCompatibilityMode();
-            // The default/preferred mode is to use nested triggers
+
+            /*
+                BOOKLIST_GENERATE_OLD_STYLE = 1;
+                BOOKLIST_GENERATE_FLAT_TRIGGER = 2;
+                BOOKLIST_GENERATE_NESTED_TRIGGER = 3;
+                BOOKLIST_GENERATE_AUTOMATIC = 4; // default
+             */
             // we'll always use triggers unless we're in 'ancient' mode
             final boolean useTriggers = (listMode != BooklistPreferencesActivity.BOOKLIST_GENERATE_OLD_STYLE);
-            // Based on the users choice, decide how the triggers will be generated.
-            final boolean nestedTriggers = (listMode == BooklistPreferencesActivity.BOOKLIST_GENERATE_NESTED_TRIGGER);
+
+            // The default/preferred mode is to use nested triggers
+            final boolean nestedTriggers = (listMode == BooklistPreferencesActivity.BOOKLIST_GENERATE_AUTOMATIC)
+                    // or if the user explicitly asked for them
+                    || (listMode == BooklistPreferencesActivity.BOOKLIST_GENERATE_NESTED_TRIGGER);
 
             // Build a sort mask based on if triggers are used; we can not reverse sort if they are not used.
             final int sortDescendingMask = (useTriggers ? SummaryBuilder.FLAG_SORT_DESCENDING : 0);
 
-            @SuppressWarnings("UnusedAssignment")
-            final long t1 = System.currentTimeMillis();
+            if (BuildConfig.DEBUG) {
+                Logger.info(this, "listMode          : " + listMode);
+                Logger.info(this, "useTriggers       : " + useTriggers);
+                Logger.info(this, "nestedTriggers    : " + nestedTriggers);
+                Logger.info(this, "sortDescendingMask: " + sortDescendingMask);
+            }
+
+            @SuppressWarnings("UnusedAssignment") final long t1_basic_setup_done = System.currentTimeMillis();
 
             for (BooklistGroup booklistGroup : mStyle) {
                 build_processEachGroupInTheStyle(summary, styleInfo, booklistGroup, sortDescendingMask);
@@ -621,15 +646,14 @@ public class BooklistBuilder implements AutoCloseable {
                 booklistGroup.groupDomains = summary.cloneGroups();
             }
 
-            @SuppressWarnings("UnusedAssignment")
-            final long t2 = System.currentTimeMillis();
+            @SuppressWarnings("UnusedAssignment") final long t2_groups_processed = System.currentTimeMillis();
 
             // We want the UUID for the book so we can get thumbnails
             summary.addDomain(DOM_BOOK_UUID, TBL_BOOKS.dot(DOM_BOOK_UUID), SummaryBuilder.FLAG_NONE);
 
             // If we have a book ID to remember, then add the DOM_SELECTED field, and setup the expression.
             if (previouslySelectedBookId != 0) {
-                summary.addDomain(DOM_SELECTED, TBL_BOOKS.dot(DOM_ID) + "=" + previouslySelectedBookId, SummaryBuilder.FLAG_NONE);
+                summary.addDomain(DOM_SELECTED, TBL_BOOKS.dot(DOM_PK_ID) + "=" + previouslySelectedBookId, SummaryBuilder.FLAG_NONE);
             }
 
             if (styleInfo.seriesGroup != null) {
@@ -645,7 +669,7 @@ public class BooklistBuilder implements AutoCloseable {
                         TBL_BOOK_SERIES.dot(DOM_BOOK_SERIES_NUM),
                         SummaryBuilder.FLAG_SORTED);
             }
-            summary.addDomain(DOM_LEVEL, null, SummaryBuilder.FLAG_SORTED);
+            summary.addDomain(DOM_BL_NODE_LEVEL, null, SummaryBuilder.FLAG_SORTED);
 
             // Ensure any caller-specified extras (eg. title) are added at the end.
             for (Entry<String, ExtraDomainDetails> d : mExtraDomains.entrySet()) {
@@ -654,8 +678,7 @@ public class BooklistBuilder implements AutoCloseable {
                 summary.addDomain(info.domain, info.sourceExpression, flags);
             }
 
-            @SuppressWarnings("UnusedAssignment")
-            final long t3 = System.currentTimeMillis();
+            @SuppressWarnings("UnusedAssignment") final long t3 = System.currentTimeMillis();
 
             ////////////////////////////////////////////////////////////////////////////////////////
 
@@ -666,25 +689,22 @@ public class BooklistBuilder implements AutoCloseable {
              * We just need to add the 'from' tables. It is a fairly static list, for the most part
              * we just add extra criteria as needed.
              *
-             * The seriesLevel and authorLevel fields will influenced the nature of the join.
+             * The seriesLevel and authorLevel fields will influence the nature of the join.
              * If at a later stage some row kinds introduce more table dependencies, a flag
              * (or object) can be set when processing the level to inform the joining code
              * (below) which tables need to be added.
              */
             SqlComponents sqlCmp = summary.buildSqlComponents(mStyle.getGroupAt(0).getCompoundKey());
 
-            @SuppressWarnings("UnusedAssignment")
-            final long t4 = System.currentTimeMillis();
+            @SuppressWarnings("UnusedAssignment") final long t4_buildSqlComponents = System.currentTimeMillis();
             // Build the join tables
             sqlCmp.join = build_join(styleInfo);
 
-            @SuppressWarnings("UnusedAssignment")
-            final long t5 = System.currentTimeMillis();
+            @SuppressWarnings("UnusedAssignment") final long t5_build_join = System.currentTimeMillis();
             // Build the 'where' clause
             sqlCmp.where = build_whereClause(styleInfo.hasGroupBOOKSHELF);
 
-            @SuppressWarnings("UnusedAssignment")
-            final long t6 = System.currentTimeMillis();
+            @SuppressWarnings("UnusedAssignment") final long t6_build_where = System.currentTimeMillis();
             /*
              * Check if the collation we use is case sensitive; bug introduced in ICS was to
              * make UNICODE not CI.
@@ -728,8 +748,8 @@ public class BooklistBuilder implements AutoCloseable {
                     indexCols.append(",");
                 }
 
-                sortCols.append(DOM_LEVEL.name);
-                indexCols.append(DOM_LEVEL.name);
+                sortCols.append(DOM_BL_NODE_LEVEL.name);
+                indexCols.append(DOM_BL_NODE_LEVEL.name);
                 sortColNameList = sortCols.toString();
                 sortIndexColumnList = indexCols.toString();
             }
@@ -743,32 +763,32 @@ public class BooklistBuilder implements AutoCloseable {
 //					groupCols.append(CatalogueDBAdapter.COLLATION);
 //					groupCols.append(", ");
 //				}
-//				groupCols.append( DOM_LEVEL.name );
+//				groupCols.append( DOM_BL_NODE_LEVEL.name );
 //				//mGroupColumnList = groupCols.toString();
 //			}
 
+            @SuppressWarnings("UnusedAssignment") final long t7_sortColumns_processed = System.currentTimeMillis();
+
             String ix1Sql = "CREATE INDEX " + mListTable + "_IX1 ON " + mListTable + "(" + sortIndexColumnList + ")";
 			/* Indexes that were tried. None had a substantial impact with 800 books.
-			String ix1aSql = "Create Index " + mListTable + "_IX1a on " + mListTable + "(" + DOM_LEVEL + ", " + mSortColumnList + ")";
-			String ix2Sql = "Create Unique Index " + mListTable + "_IX2 on " + mListTable + "(" + DOM_BOOK_ID + ", " + DOM_ID + ")";
+			String ix1aSql = "Create Index " + mListTable + "_IX1a on " + mListTable + "(" + DOM_BL_NODE_LEVEL + ", " + mSortColumnList + ")";
+			String ix2Sql = "Create Unique Index " + mListTable + "_IX2 on " + mListTable + "(" + DOM_FK_BOOK_ID + ", " + DOM_PK_ID + ")";
 
 			String ix3Sql = "Create Index " + mListTable + "_IX3 on " + mListTable + "(" + mGroupColumnList + ")";
-			String ix3aSql = "Create Index " + mListTable + "_IX3 on " + mListTable + "(" + DOM_LEVEL + ", " + mGroupColumnList + ")";
-			String ix3bSql = "Create Index " + mListTable + "_IX3 on " + mListTable + "(" + mGroupColumnList +  ", " + DOM_LEVEL + ")";
+			String ix3aSql = "Create Index " + mListTable + "_IX3 on " + mListTable + "(" + DOM_BL_NODE_LEVEL + ", " + mGroupColumnList + ")";
+			String ix3bSql = "Create Index " + mListTable + "_IX3 on " + mListTable + "(" + mGroupColumnList +  ", " + DOM_BL_NODE_LEVEL + ")";
 			String ix3cSql = "Create Index " + mListTable + "_IX3 on " + mListTable + "(" + mGroupColumnList +  ", " + DOM_ROOT_KEY + CatalogueDBAdapter.COLLATION + ")";
-			String ix3dSql = "Create Index " + mListTable + "_IX3 on " + mListTable + "(" + DOM_LEVEL + ", " + mGroupColumnList +  ", " + DOM_ROOT_KEY + ")";
-			String ix3eSql = "Create Index " + mListTable + "_IX3 on " + mListTable + "(" + mGroupColumnList +  ", " + DOM_ROOT_KEY + "," + DOM_LEVEL + ")";
-			String ix4Sql = "Create Index " + mListTable + "_IX4 on " + mListTable + "(" + DOM_LEVEL + "," + DOM_EXPANDED + "," + DOM_ROOT_KEY + ")";
+			String ix3dSql = "Create Index " + mListTable + "_IX3 on " + mListTable + "(" + DOM_BL_NODE_LEVEL + ", " + mGroupColumnList +  ", " + DOM_ROOT_KEY + ")";
+			String ix3eSql = "Create Index " + mListTable + "_IX3 on " + mListTable + "(" + mGroupColumnList +  ", " + DOM_ROOT_KEY + "," + DOM_BL_NODE_LEVEL + ")";
+			String ix4Sql = "Create Index " + mListTable + "_IX4 on " + mListTable + "(" + DOM_BL_NODE_LEVEL + "," + DOM_BL_NODE_EXPANDED + "," + DOM_ROOT_KEY + ")";
 			*/
 
+            @SuppressWarnings("UnusedAssignment") final long t8_index_build = System.currentTimeMillis();
+
             // We are good to go.
-            @SuppressWarnings("UnusedAssignment")
-            final long t7 = System.currentTimeMillis();
+
             //mSyncedDb.execSQL("PRAGMA synchronous = OFF"); -- Has very little effect
             SyncLock txLock = mSyncedDb.beginTransaction(true);
-
-            @SuppressWarnings("UnusedAssignment")
-            final long t8 = System.currentTimeMillis();
             try {
                 //<editor-fold desc="Experimental commented out code">
 
@@ -845,11 +865,12 @@ public class BooklistBuilder implements AutoCloseable {
                     // If we are using triggers, then we insert them in order and rely on the
                     // triggers to build the summary rows in the correct place.
                     String tgt = makeTriggers(summary, nestedTriggers);
+
                     mBaseBuildStmt = mStatements.add("mBaseBuildStmt",
                             "INSERT INTO " + tgt + "(" + sqlCmp.destinationColumns + ") " +
-                            sqlCmp.select +
-                            " FROM " + sqlCmp.join + sqlCmp.where +
-                            " ORDER BY " + sortColNameList);
+                                    sqlCmp.select +
+                                    " FROM " + sqlCmp.join + sqlCmp.where +
+                                    " ORDER BY " + sortColNameList);
 
                     mBaseBuildStmt.executeInsert();
                 } else {
@@ -857,12 +878,10 @@ public class BooklistBuilder implements AutoCloseable {
                     baseBuildWithoutTriggers(sqlCmp, collationIsCs, ix1Sql, t9);
                 }
 
-                @SuppressWarnings("UnusedAssignment")
-                final long t10 = System.currentTimeMillis();
+                @SuppressWarnings("UnusedAssignment") final long t10_BaseBuild_executed = System.currentTimeMillis();
 
                 mSyncedDb.execSQL("analyze " + mListTable);
-                @SuppressWarnings("UnusedAssignment")
-                final long t11 = System.currentTimeMillis();
+                @SuppressWarnings("UnusedAssignment") final long t11_table_optimized = System.currentTimeMillis();
 
                 /*
                  * Now build a lookup table to match row sort position to row ID. This is used to
@@ -875,46 +894,48 @@ public class BooklistBuilder implements AutoCloseable {
 
                 String sortExpression;
                 if (useTriggers) {
-                    sortExpression = mListTable.dot(DOM_ID);
+                    sortExpression = mListTable.dot(DOM_PK_ID);
                 } else {
                     sortExpression = sortColNameList;
                 }
 
                 // TODO: Rebuild with state preserved is SLOWEST option, Need a better way to preserve state.
-                String insSql = mNavTable.getInsert(DOM_REAL_ROW_ID, DOM_LEVEL, DOM_ROOT_KEY, DOM_VISIBLE, DOM_EXPANDED) +
-                        " SELECT " + mListTable.dot(DOM_ID) + "," +
-                        mListTable.dot(DOM_LEVEL) + "," +
+                String insSql = mNavTable.getInsert(DOM_REAL_ROW_ID, DOM_BL_NODE_LEVEL, DOM_ROOT_KEY, DOM_BL_NODE_VISIBLE, DOM_BL_NODE_EXPANDED) +
+                        " SELECT " + mListTable.dot(DOM_PK_ID) + "," +
+                        mListTable.dot(DOM_BL_NODE_LEVEL) + "," +
                         mListTable.dot(DOM_ROOT_KEY) + "," +
-                        " Case" +
-                        " When " + DOM_LEVEL + "=1" +
-                        "  Then 1" +
+                        "\n Case" +
+                        " When " + DOM_BL_NODE_LEVEL + "=1" +
+                        " Then 1" +
                         " When " + TBL_BOOK_LIST_NODE_SETTINGS.dot(DOM_ROOT_KEY) + " is null" +
-                        "  Then 0" +
-                        "  Else 1" +
+                        "  Then 0  Else 1" +
                         " End," +
-                        " Case" +
+                        "\n Case" +
                         " When " + TBL_BOOK_LIST_NODE_SETTINGS.dot(DOM_ROOT_KEY) + " is null" +
-                        "  Then 0" +
-                        "  Else 1" +
+                        "  Then 0 Else 1" +
                         " End" +
-                        " FROM " + mListTable.ref() + " LEFT OUTER JOIN " + TBL_BOOK_LIST_NODE_SETTINGS.ref() +
+                        "\n FROM " + mListTable.ref() + " LEFT OUTER JOIN " + TBL_BOOK_LIST_NODE_SETTINGS.ref() +
                         "  ON " + TBL_BOOK_LIST_NODE_SETTINGS.dot(DOM_ROOT_KEY) + "=" + mListTable.dot(DOM_ROOT_KEY) +
-                        "	AND " + TBL_BOOK_LIST_NODE_SETTINGS.dot(DOM_ROW_KIND) + "=" + mStyle.getGroupAt(0).kind +
+                        "	AND " + TBL_BOOK_LIST_NODE_SETTINGS.dot(DOM_BL_NODE_ROW_KIND) + "=" + mStyle.getGroupAt(0).kind +
                         " ORDER BY " + sortExpression;
 
                 // Always save the state-preserving navigator for rebuilds
-                SynchronizedStatement navStmt = mStatements.add("InsNav", insSql);
+                SynchronizedStatement navStmt = mStatements.add("mNavTable.insert", insSql);
+                if (BuildConfig.DEBUG) {
+                    Logger.info(this, "Adding mNavTable.insert to mLevelBuildStmts");
+                    Logger.info(this, navStmt.toString());
+                }
                 mLevelBuildStmts.add(navStmt);
 
-                // On first-time builds, get the pref-based list
+                // On first-time builds, get the Preferences-based list
                 switch (preferredState) {
                     case BooklistPreferencesActivity.BOOK_LIST_ALWAYS_COLLAPSED: {
-                        String sql = mNavTable.getInsert(DOM_REAL_ROW_ID, DOM_LEVEL, DOM_ROOT_KEY, DOM_VISIBLE, DOM_EXPANDED) +
-                                " SELECT " + mListTable.dot(DOM_ID) + "," +
-                                mListTable.dot(DOM_LEVEL) + "," +
+                        String sql = mNavTable.getInsert(DOM_REAL_ROW_ID, DOM_BL_NODE_LEVEL, DOM_ROOT_KEY, DOM_BL_NODE_VISIBLE, DOM_BL_NODE_EXPANDED) +
+                                " SELECT " + mListTable.dot(DOM_PK_ID) + "," +
+                                mListTable.dot(DOM_BL_NODE_LEVEL) + "," +
                                 mListTable.dot(DOM_ROOT_KEY) + "," +
-                                " Case" +
-                                " When " + DOM_LEVEL + "=1" +
+                                "\n Case" +
+                                " When " + DOM_BL_NODE_LEVEL + "=1" +
                                 "  Then 1" +
                                 "  Else 0" +
                                 " End," +
@@ -924,9 +945,9 @@ public class BooklistBuilder implements AutoCloseable {
                         break;
                     }
                     case BooklistPreferencesActivity.BOOK_LIST_ALWAYS_EXPANDED: {
-                        String sql = mNavTable.getInsert(DOM_REAL_ROW_ID, DOM_LEVEL, DOM_ROOT_KEY, DOM_VISIBLE, DOM_EXPANDED) +
-                                " SELECT " + mListTable.dot(DOM_ID) + "," +
-                                mListTable.dot(DOM_LEVEL) + "," +
+                        String sql = mNavTable.getInsert(DOM_REAL_ROW_ID, DOM_BL_NODE_LEVEL, DOM_ROOT_KEY, DOM_BL_NODE_VISIBLE, DOM_BL_NODE_EXPANDED) +
+                                " SELECT " + mListTable.dot(DOM_PK_ID) + "," +
+                                mListTable.dot(DOM_BL_NODE_LEVEL) + "," +
                                 mListTable.dot(DOM_ROOT_KEY) + "," +
                                 " 1," +
                                 " 1" +
@@ -940,64 +961,56 @@ public class BooklistBuilder implements AutoCloseable {
                         break;
                 }
 
-                @SuppressWarnings("UnusedAssignment")
-                final long t12 = System.currentTimeMillis();
+                @SuppressWarnings("UnusedAssignment") final long t12_nav_table_build = System.currentTimeMillis();
                 {
                     // Create index on nav table
-                    String sql = "CREATE INDEX " + mNavTable + "_IX1" + " ON " + mNavTable + "(" + DOM_LEVEL + "," + DOM_EXPANDED + "," + DOM_ROOT_KEY + ")";
-                    SynchronizedStatement ixStmt = mStatements.add("navIx1", sql);
+                    String navIx1Sql = "CREATE INDEX " + mNavTable + "_IX1" + " ON " + mNavTable + "(" + DOM_BL_NODE_LEVEL + "," + DOM_BL_NODE_EXPANDED + "," + DOM_ROOT_KEY + ")";
+                    SynchronizedStatement ixStmt = mStatements.add("navIx1", navIx1Sql);
+                    if (BuildConfig.DEBUG) {
+                        Logger.info(this, "Adding index navIx1 to mLevelBuildStmts");
+                        Logger.info(this, ixStmt.toString());
+                    }
                     mLevelBuildStmts.add(ixStmt);
                     ixStmt.execute();
                 }
 
-                @SuppressWarnings("UnusedAssignment")
-                final long t13 = System.currentTimeMillis();
+                @SuppressWarnings("UnusedAssignment") final long t13_nav_table_index_IX1_created = System.currentTimeMillis();
                 {
                     // Essential for main query! If not present, will make getCount() take ages because main query is a cross with no index.
-                    String sql = "CREATE UNIQUE INDEX " + mNavTable + "_IX2" + " ON " + mNavTable + "(" + DOM_REAL_ROW_ID + ")";
-                    SynchronizedStatement ixStmt = mStatements.add("navIx2", sql);
+                    String navIx2Sql = "CREATE UNIQUE INDEX " + mNavTable + "_IX2" + " ON " + mNavTable + "(" + DOM_REAL_ROW_ID + ")";
+                    SynchronizedStatement ixStmt = mStatements.add("navIx2", navIx2Sql);
+                    if (BuildConfig.DEBUG) {
+                        Logger.info(this, "Adding index navIx2 to mLevelBuildStmts");
+                        Logger.info(this, ixStmt.toString());
+                    }
                     mLevelBuildStmts.add(ixStmt);
                     ixStmt.execute();
                 }
 
-                @SuppressWarnings("UnusedAssignment")
-                final long t14 = System.currentTimeMillis();
+                @SuppressWarnings("UnusedAssignment") final long t14_nav_table_index_IX2_created = System.currentTimeMillis();
                 mSyncedDb.execSQL("analyze " + mNavTable);
 
-                //@SuppressWarnings("UnusedAssignment")
-                //final long t18 = System.currentTimeMillis();
-                //stmt = makeStatement(ix1Sql);
-                //mLevelBuildStmts.add(stmt);
-                //stmt.execute();
-
-                //@SuppressWarnings("UnusedAssignment")
-                //final long t19 = System.currentTimeMillis();
-                //mSyncedDb.execSQL(ix2Sql);
-
-                //@SuppressWarnings("UnusedAssignment")
-                //final long t20 = System.currentTimeMillis();
-                //mSyncedDb.execSQL("analyze " + mTableName);
-
                 if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
-                    Logger.info(this,"T1: " + (t1 - t0));
-                    Logger.info(this,"T2: " + (t2 - t1));
-                    Logger.info(this,"T3: " + (t3 - t2));
-                    Logger.info(this,"T4: " + (t4 - t3));
-                    Logger.info(this,"T5: " + (t5 - t4));
-                    Logger.info(this,"T6: " + (t6 - t0));
-                    Logger.info(this,"T7: " + (t7 - t6));
-                    Logger.info(this,"T8: " + (t8 - t7));
-                    Logger.info(this,"T9: " + (t9 - t8));
-                    Logger.info(this,"T10: " + (t10 - t9));
-                    Logger.info(this,"T11: " + (t11 - t10));
-                    Logger.info(this,"T12: " + (t12 - t11));
-                    Logger.info(this,"T13: " + (t13 - t12));
-                    Logger.info(this,"T14: " + (t14 - t13));
-                    //Logger.info(this,"T15: " + (t15 - t14));
-                    //Logger.info(this,"T16: " + (t16 - t15));
-                    //Logger.info(this,"T17: " + (t17 - t16));
-                    //Logger.info(this,"T18: " + (System.currentTimeMillis() - t17));
-                    Logger.info(this,"T21: " + (System.currentTimeMillis() - t14));
+                    Logger.info(this, "T1: " + (t1_basic_setup_done - t0));
+                    Logger.info(this, "T2: " + (t2_groups_processed - t1_basic_setup_done));
+                    Logger.info(this, "T3: " + (t3 - t2_groups_processed));
+
+                    Logger.info(this, "T4: " + (t4_buildSqlComponents - t3));
+                    Logger.info(this, "T5: " + (t5_build_join - t4_buildSqlComponents));
+                    Logger.info(this, "T6: " + (t6_build_where - t5_build_join));
+
+                    Logger.info(this, "T7: " + (t7_sortColumns_processed - t6_build_where));
+                    Logger.info(this, "T8: " + (t8_index_build - t7_sortColumns_processed));
+                    Logger.info(this, "T9: " + (t9 - t8_index_build));
+                    Logger.info(this, "T10: " + (t10_BaseBuild_executed - t9));
+                    Logger.info(this, "T11: " + (t11_table_optimized - t10_BaseBuild_executed));
+                    Logger.info(this, "T12: " + (t12_nav_table_build - t11_table_optimized));
+                    Logger.info(this, "T13: " + (t13_nav_table_index_IX1_created - t12_nav_table_build));
+                    Logger.info(this, "T14: " + (t14_nav_table_index_IX2_created - t13_nav_table_index_IX1_created));
+                    Logger.info(this, "T15: " + (System.currentTimeMillis() - t14_nav_table_index_IX2_created));
+                    Logger.info(this, "============================");
+                    Logger.info(this, "Total time: " + (System.currentTimeMillis() - t0));
+
                 }
                 mSyncedDb.setTransactionSuccessful();
 
@@ -1022,11 +1035,11 @@ public class BooklistBuilder implements AutoCloseable {
         }
     }
 
-    private void baseBuildWithoutTriggers(final @NonNull SqlComponents sqlCmp,
+    private void baseBuildWithoutTriggers(final @NonNull SqlComponents /* in/out */ sqlCmp,
                                           final boolean collationIsCs,
                                           final @NonNull String ix1Sql,
                                           final long t9) {
-        final long t_style[] = new long[mStyle.size()];
+        final long t_style[] = new long[mStyle.size() + 1];
         t_style[0] = System.currentTimeMillis();
 
         // Without triggers we just get the base rows and add summary later
@@ -1056,17 +1069,21 @@ public class BooklistBuilder implements AutoCloseable {
                 collatedCols.append(" ").append(d.name).append(DatabaseHelper.COLLATION);
             }
             // Construct the sum statement for this group
-            String sql = "INSERT INTO " + mListTable + " (" + DOM_LEVEL + "," + DOM_ROW_KIND + cols + "," + DOM_ROOT_KEY + ")" +
+            String summarySql = "INSERT INTO " + mListTable + " (" + DOM_BL_NODE_LEVEL + "," + DOM_BL_NODE_ROW_KIND + cols + "," + DOM_ROOT_KEY + ")" +
                     " SELECT " +
-                    levelId + " AS " + DOM_LEVEL + "," +
-                    g.kind + " AS " + DOM_ROW_KIND + cols + "," +
+                    levelId + " AS " + DOM_BL_NODE_LEVEL + "," +
+                    g.kind + " AS " + DOM_BL_NODE_ROW_KIND + cols + "," +
                     DOM_ROOT_KEY +
-                    " FROM " + mListTable + " WHERE " + DOM_LEVEL + "=" + (levelId + 1) +
+                    " FROM " + mListTable + " WHERE " + DOM_BL_NODE_LEVEL + "=" + (levelId + 1) +
                     " GROUP BY " + collatedCols + "," + DOM_ROOT_KEY + DatabaseHelper.COLLATION;
-            //" GROUP BY " + DOM_LEVEL + ", " + DOM_ROW_KIND + collatedCols;
+            //" GROUP BY " + DOM_BL_NODE_LEVEL + ", " + DOM_BL_NODE_ROW_KIND + collatedCols;
 
             // Save, compile and run this statement
-            SynchronizedStatement stmt = mStatements.add("L" + i, sql);
+            SynchronizedStatement stmt = mStatements.add("L" + i, summarySql);
+            if (BuildConfig.DEBUG) {
+                Logger.info(this, "Adding summarySql L" + i + " to mLevelBuildStmts");
+                Logger.info(this, stmt.toString());
+            }
             mLevelBuildStmts.add(stmt);
             stmt.executeInsert();
             t_style[timer++] = System.currentTimeMillis();
@@ -1077,11 +1094,15 @@ public class BooklistBuilder implements AutoCloseable {
         // ENHANCE: ICS UNICODE: Consider adding a duplicate _lc (lower case) column to the SUMMARY table. Ugh.
         if (!collationIsCs) {
             SynchronizedStatement stmt = mStatements.add("ix1", ix1Sql);
+            if (BuildConfig.DEBUG) {
+                Logger.info(this, "Adding index ix1 to mLevelBuildStmts");
+                Logger.info(this, stmt.toString());
+            }
             mLevelBuildStmts.add(stmt);
             stmt.execute();
         }
 
-        if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG){
+        if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
             for (//noinspection UnusedAssignment
                     int i = 0; i < mStyle.size();
                 //noinspection UnusedAssignment
@@ -1100,7 +1121,7 @@ public class BooklistBuilder implements AutoCloseable {
      * ****************************************************************************************
      */
     private void build_processEachGroupInTheStyle(final @NonNull SummaryBuilder /* in/out */ summary,
-                                                  final @NonNull StyleInfo /* in/ou */ styleInfo,
+                                                  final @NonNull StyleInfo /* in/out */ styleInfo,
                                                   final @NonNull BooklistGroup /* in/out */ booklistGroup,
                                                   final int sortDescendingMask) {
 
@@ -1119,8 +1140,8 @@ public class BooklistBuilder implements AutoCloseable {
 
                 // Group by ID (we want the ID available and there is a *chance* two
                 // series will have the same name...with bad data
-                summary.addDomain(DOM_SERIES_ID,
-                        TBL_BOOK_SERIES.dot(DOM_SERIES_ID),
+                summary.addDomain(DOM_FK_SERIES_ID,
+                        TBL_BOOK_SERIES.dot(DOM_FK_SERIES_ID),
                         SummaryBuilder.FLAG_GROUPED);
 
                 // We want the series position in the base data
@@ -1130,7 +1151,7 @@ public class BooklistBuilder implements AutoCloseable {
 
                 // We want a counter of how many books use the series as a primary series,
                 // so we can skip some series
-                summary.addDomain(DOM_PRIMARY_SERIES_COUNT,
+                summary.addDomain(DOM_BL_PRIMARY_SERIES_COUNT,
                         "Case" +
                                 " When Coalesce(" + TBL_BOOK_SERIES.dot(DOM_BOOK_SERIES_POSITION) + ",1)==1" +
                                 "  Then 1" +
@@ -1140,7 +1161,7 @@ public class BooklistBuilder implements AutoCloseable {
 
                 // This group can be given a name of the form 's/<n>' where <n> is the
                 // series id, eg. 's/18'.
-                booklistGroup.setKeyComponents("s", DOM_SERIES_ID);
+                booklistGroup.setKeyComponents("s", DOM_FK_SERIES_ID);
                 break;
 
             case ROW_KIND_AUTHOR:
@@ -1162,13 +1183,13 @@ public class BooklistBuilder implements AutoCloseable {
                             SummaryBuilder.FLAG_GROUPED);
                 }
                 // We also want the ID
-                summary.addDomain(DOM_AUTHOR_ID,
-                        TBL_BOOK_AUTHOR.dot(DOM_AUTHOR_ID),
+                summary.addDomain(DOM_FK_AUTHOR_ID,
+                        TBL_BOOK_AUTHOR.dot(DOM_FK_AUTHOR_ID),
                         SummaryBuilder.FLAG_GROUPED);
 
                 // This group can be given a name of the form 'a/<n>' where <n> is the
                 // author id, eg. 's/18'.
-                booklistGroup.setKeyComponents("a", DOM_AUTHOR_ID);
+                booklistGroup.setKeyComponents("a", DOM_FK_AUTHOR_ID);
 
                 break;
 
@@ -1465,7 +1486,7 @@ public class BooklistBuilder implements AutoCloseable {
     private String build_whereClause(final boolean hasGroupBOOKSHELF) {
         StringBuilder where = new StringBuilder();
 
-        // expects a full where clause
+        // expects a full WHERE condition
         if (isNonBlank(mBookCriteria)) {
             if (where.length() != 0) {
                 where.append(" AND ");
@@ -1491,7 +1512,7 @@ public class BooklistBuilder implements AutoCloseable {
                 where.append(" AND ");
             }
             where.append("(")
-                    .append(TBL_SERIES.dot(DOM_TITLE))
+                    .append(TBL_BOOKS.dot(DOM_TITLE))
                     .append(" LIKE '%").append(CatalogueDBAdapter.encodeString(mTitleCriteria)).append("%'")
                     .append(")");
         }
@@ -1513,10 +1534,10 @@ public class BooklistBuilder implements AutoCloseable {
             if (hasGroupBOOKSHELF) {
                 where.append("EXISTS(SELECT NULL FROM ")
                         .append(TBL_BOOK_BOOKSHELF.ref()).append(" ").append(TBL_BOOK_BOOKSHELF.join(TBL_BOOKS))
-                        .append(" WHERE ").append(TBL_BOOK_BOOKSHELF.dot(DOM_BOOKSHELF_ID)).append("=").append(mBookshelfIdCriteria)
+                        .append(" WHERE ").append(TBL_BOOK_BOOKSHELF.dot(DOM_FK_BOOKSHELF_ID)).append("=").append(mBookshelfIdCriteria)
                         .append(")");
             } else {
-                where.append("(").append(TBL_BOOKSHELF.dot(DOM_ID)).append("=").append(mBookshelfIdCriteria).append(")");
+                where.append("(").append(TBL_BOOKSHELF.dot(DOM_PK_ID)).append("=").append(mBookshelfIdCriteria).append(")");
             }
         }
 
@@ -1525,7 +1546,7 @@ public class BooklistBuilder implements AutoCloseable {
                 where.append(" AND ");
             }
             where.append("(")
-                    .append(TBL_BOOKS.dot(DOM_ID)).append(" IN (").append(mBookIdListCriteria)
+                    .append(TBL_BOOKS.dot(DOM_PK_ID)).append(" IN (").append(mBookIdListCriteria)
                     .append("))");
         }
 
@@ -1536,14 +1557,14 @@ public class BooklistBuilder implements AutoCloseable {
             where.append("EXISTS(SELECT NULL FROM ").append(TBL_LOAN.ref())
                     .append(" WHERE ").append(TBL_LOAN.dot(DOM_LOANED_TO)).append("='").append(CatalogueDBAdapter.encodeString(mLoanedToCriteria)).append("'")
                     .append(" AND ").append(TBL_LOAN.fkMatch(TBL_BOOKS)).append(")");
-            // .and()    .op(TBL_LOAN.dot(DOM_BOOK_ID), "=", TBL_BOOKS.dot(DOM_ID)) + ")";
+            // .and()    .op(TBL_LOAN.dot(DOM_FK_BOOK_ID), "=", TBL_BOOKS.dot(DOM_PK_ID)) + ")";
         }
 
         if (isNonBlank(mFtsSearchTextCriteria)) {
             if (where.length() != 0) {
                 where.append(" AND ");
             }
-            where.append("(").append(TBL_BOOKS.dot(DOM_ID)).append(" IN (SELECT ").append(DOM_DOCID).append(" FROM ").append(TBL_BOOKS_FTS)
+            where.append("(").append(TBL_BOOKS.dot(DOM_PK_ID)).append(" IN (SELECT ").append(DOM_PK_DOCID).append(" FROM ").append(TBL_BOOKS_FTS)
                     .append(" WHERE ").append(TBL_BOOKS_FTS).append(" match '")
                     .append(CatalogueDBAdapter.encodeString(CatalogueDBAdapter.cleanupFtsCriterion(mFtsSearchTextCriteria)))
                     .append("'))");
@@ -1650,7 +1671,7 @@ public class BooklistBuilder implements AutoCloseable {
             int kind = mStyle.getGroupAt(0).kind;
             if (mDeleteListNodeSettingsStmt == null) {
                 mDeleteListNodeSettingsStmt = mStatements.add("mDeleteListNodeSettingsStmt",
-                        "DELETE FROM " + TBL_BOOK_LIST_NODE_SETTINGS + " WHERE " + DOM_ROW_KIND + "=?");
+                        "DELETE FROM " + TBL_BOOK_LIST_NODE_SETTINGS + " WHERE " + DOM_BL_NODE_ROW_KIND + "=?");
             }
             mDeleteListNodeSettingsStmt.bindLong(1, kind);
             mDeleteListNodeSettingsStmt.executeUpdateDelete();
@@ -1673,11 +1694,9 @@ public class BooklistBuilder implements AutoCloseable {
     @NonNull
     private String makeTriggers(final @NonNull SummaryBuilder summary, final boolean nestedTriggers) {
         if (nestedTriggers) {
-            // Nested triggers are compatible with Android 2.2+ and fast
-            // (or at least relatively fast when there are a 'reasonable'
-            // number of headings to be inserted).
-            makeNestedTriggers(summary);
-            return mListTable.getName();
+            // Nested triggers are compatible with Android 2.2+ and fast. (or at least relatively
+            // fast when there are a 'reasonable' number of headings to be inserted).
+            return makeNestedTriggers(summary);
         } else {
             // Flat triggers are compatible with Android 1.6+ but slower
             return makeSingleTrigger(summary);
@@ -1688,8 +1707,132 @@ public class BooklistBuilder implements AutoCloseable {
      * Build a collection of triggers on the list table designed to fill in the summary/header
      * records as the data records are added in sorted order.
      *
+     * This approach is both a performance improvement and a means to allow DESCENDING sort orders.
+     *
+     * It is the preferred option in Android 2.2+, but there is a chance that some vendor implemented
+     * a broken or old SQLite version.
+     *
+     * @return the mListTable table name
+     */
+    private String makeNestedTriggers(final @NonNull SummaryBuilder summary) {
+        // Name of a table to store the snapshot of the most recent/current row headings
+        final String currTblName = mListTable + "_curr";
+        // List of cols we sort by
+        StringBuilder sortedCols = new StringBuilder();
+        // SQL statement to update the 'current' table
+        StringBuilder currInsertSql = new StringBuilder();
+        // List of domain names for sorting
+        Set<String> sortedDomainNames = new HashSet<>();
+
+        // Build the 'current' header table definition and the sort column list
+        for (SortedDomainInfo domainInfo : summary.getSortedColumns()) {
+            if (!sortedDomainNames.contains(domainInfo.domain.name)) {
+                sortedDomainNames.add(domainInfo.domain.name);
+                if (sortedCols.length() > 0) {
+                    sortedCols.append(", ");
+                    currInsertSql.append(", ");
+                }
+                sortedCols.append(domainInfo.domain.name);
+                currInsertSql.append("new.").append(domainInfo.domain.name);
+            }
+        }
+
+        /*
+         * Create a temp table to store the most recent header details from the last row.
+         * We use this in determining what needs to be inserted as header records for
+         * any given row.
+         *
+         * This is just a simple technique to provide persistent context to the trigger.
+         */
+        mSyncedDb.execSQL("CREATE TEMP TABLE " + currTblName + " (" + sortedCols + ")");
+
+        /*
+         * For each grouping, starting with the lowest, build a trigger to update the next
+         * level up as necessary
+         */
+        for (int i = mStyle.size() - 1; i >= 0; i--) {
+            // Get the group
+            final BooklistGroup group = mStyle.getGroupAt(i);
+            // Get the level number for this group
+            final int levelId = i + 1;
+            // Create an INSERT statement for the next level up
+            StringBuilder insertSql = new StringBuilder(
+                    "INSERT INTO " + mListTable +
+                            " (" + DOM_BL_NODE_LEVEL + "," + DOM_BL_NODE_ROW_KIND + "," + DOM_ROOT_KEY + "\n");
+
+            // Create the VALUES statement for the next level up
+            StringBuilder valuesSql = new StringBuilder(
+                    " VALUES(" + levelId + ", " + group.kind + ", " + "new." + DOM_ROOT_KEY + "\n");
+
+            // Create the conditional to detect if next level up is already defined (by checking the 'current' record/table)
+            StringBuilder conditionSql = new StringBuilder();// "l." + DOM_BL_NODE_LEVEL + " = " + levelId + "\n";
+            // Update the statement components
+            for (DomainDefinition groupDomain : group.groupDomains) {
+                insertSql.append(",").append(groupDomain);
+                valuesSql.append(", new.").append(groupDomain);
+                // Only update the 'condition' part if it is part of the SORT list
+                if (sortedDomainNames.contains(groupDomain.name)) {
+                    if (conditionSql.length() > 0) {
+                        conditionSql.append(" AND ");
+                    }
+                    conditionSql.append("Coalesce(l.").append(groupDomain).append(",'') = Coalesce(new.").append(groupDomain).append(",'') ").append(DatabaseHelper.COLLATION).append("\n");
+                }
+            }
+            insertSql.append(")\n").append(valuesSql).append(")");
+
+            String tgName = "header_A_tgL" + i;
+            // Drop trigger if necessary
+            mSyncedDb.execSQL("DROP TRIGGER IF EXISTS " + tgName);
+
+            // Create the trigger
+            String tgSql = "CREATE TEMP TRIGGER " + tgName + " before INSERT ON " + mListTable + " for each row\n" +
+                    " when new." + DOM_BL_NODE_LEVEL + "=" + (levelId + 1) + "\n" +
+                    "      AND NOT EXISTS(SELECT 1 FROM " + currTblName + " l WHERE " + conditionSql + ")\n" +
+                    "	Begin\n" +
+                    "		" + insertSql + ";\n" +
+                    "	End";
+            SynchronizedStatement stmt = mStatements.add("TG " + tgName, tgSql);
+            if (BuildConfig.DEBUG) {
+                Logger.info(this, "Adding " + tgName + " to mLevelBuildStmts");
+                Logger.info(this, stmt.toString());
+            }
+            mLevelBuildStmts.add(stmt);
+            stmt.execute();
+        }
+
+        // Create a trigger to maintain the 'current' value -- just delete and insert
+        String currentValueTriggerName = mListTable + "_TG_ZZZ";
+        mSyncedDb.execSQL("DROP TRIGGER IF EXISTS " + currentValueTriggerName);
+        String tgSql = "CREATE TEMP TRIGGER " + currentValueTriggerName + " after INSERT ON " + mListTable + " for each row\n" +
+                " when new." + DOM_BL_NODE_LEVEL + "=" + mStyle.size() +
+                //" and not exists(Select 1 From " + currTblName + " l where " + conditionSql + ")\n" +
+                "	Begin\n" +
+                "		DELETE FROM " + currTblName + ";\n" +
+                "		INSERT INTO " + currTblName + " VALUES (" + currInsertSql + ");\n" +
+                "	End";
+
+        SynchronizedStatement stmt = mStatements.add(currentValueTriggerName, tgSql);
+        if (BuildConfig.DEBUG) {
+            Logger.info(this, "Adding " + currentValueTriggerName + " to mLevelBuildStmts");
+            Logger.info(this, stmt.toString());
+        }
+        mLevelBuildStmts.add(stmt);
+        stmt.execute();
+
+        return mListTable.getName();
+    }
+
+    /**
+     * Build a collection of triggers on the list table designed to fill in the summary/header
+     * records as the data records are added in sorted order.
+     *
      * This approach is allows DESCENDING sort orders but is slightly slower than the old-style
      * manually generated lists.
+     *
+     * 2018-11-12: this seems to be broken. See the drop/creation of the one big trigger.
+     * Not pursuing for now as nested triggers should be used anyhow.
+     *
+     * @return the view table name
      */
     @NonNull
     private String makeSingleTrigger(final @NonNull SummaryBuilder summary) {
@@ -1709,7 +1852,7 @@ public class BooklistBuilder implements AutoCloseable {
             StringBuilder fullValues = new StringBuilder("VALUES (");
             boolean firstCol = true;
             for (DomainDefinition d : mListTable.getDomains()) {
-                if (!d.equals(DOM_ID)) {
+                if (!d.equals(DOM_PK_ID)) {
                     if (firstCol) {
                         firstCol = false;
                     } else {
@@ -1724,7 +1867,7 @@ public class BooklistBuilder implements AutoCloseable {
         }
 
         // We just create one big trigger
-        StringBuilder trigger = new StringBuilder("CREATE TRIGGER " + tgForwardName + " instead of insert ON " + viewTblName + " for each row \n" +
+        StringBuilder oneBigTrigger = new StringBuilder("CREATE TRIGGER " + tgForwardName + " instead of insert ON " + viewTblName + " for each row \n" +
                 "	Begin\n");
 
         // List of cols we sort by
@@ -1755,7 +1898,7 @@ public class BooklistBuilder implements AutoCloseable {
         mSyncedDb.execSQL("CREATE TEMP TABLE " + currTblName + " (" + sortedCols + ")");
         mSyncedDb.execSQL("CREATE TEMP VIEW " + viewTblName + " AS SELECT * FROM " + mListTable);
 
-        //mSyncedDb.execSQL("Create Unique Index " + mListTable + "_IX_TG1 on " + mListTable + "(" + DOM_LEVEL + ", " + sortedCols + ", " + DOM_BOOK_ID + ")");
+        //mSyncedDb.execSQL("Create Unique Index " + mListTable + "_IX_TG1 on " + mListTable + "(" + DOM_BL_NODE_LEVEL + ", " + sortedCols + ", " + DOM_FK_BOOK_ID + ")");
 
         // For each grouping, starting with the lowest, build a trigger to update the next level up as necessary
         for (int i = 0; i < mStyle.size(); i++) {
@@ -1764,12 +1907,12 @@ public class BooklistBuilder implements AutoCloseable {
             // Get the level number for this group
             final int levelId = i + 1;
             // Create an INSERT statement for the next level up
-            StringBuilder insertSql = new StringBuilder("INSERT INTO " + mListTable + "( " + DOM_LEVEL + "," + DOM_ROW_KIND + ", " + DOM_ROOT_KEY + "\n");
+            StringBuilder insertSql = new StringBuilder("INSERT INTO " + mListTable + "( " + DOM_BL_NODE_LEVEL + "," + DOM_BL_NODE_ROW_KIND + ", " + DOM_ROOT_KEY + "\n");
 
             // Create the VALUES statement for the next level up
             StringBuilder valuesSql = new StringBuilder(" SELECT " + levelId + ", " + booklistGroup.kind + ", " + "new." + DOM_ROOT_KEY + "\n");
             // Create the conditional to detect if next level up is already defined (by checking the 'current' record/table)
-            StringBuilder conditionSql = new StringBuilder();// "booklistGroup." + DOM_LEVEL + " = " + levelId + "\n";
+            StringBuilder conditionSql = new StringBuilder();// "booklistGroup." + DOM_BL_NODE_LEVEL + " = " + levelId + "\n";
             // Update the statement components
             for (DomainDefinition d : booklistGroup.groupDomains) {
                 insertSql.append(", ").append(d);
@@ -1786,121 +1929,39 @@ public class BooklistBuilder implements AutoCloseable {
             //tgLines[i] = insertSql;
 
             insertSql.append(")\n").append(valuesSql).append(" WHERE NOT EXISTS(SELECT 1 FROM ").append(currTblName).append(" l WHERE ").append(conditionSql).append(")\n");
-            trigger.append("		").append(insertSql).append(";\n");
+            oneBigTrigger.append("		").append(insertSql).append(";\n");
         }
 
         // Finalize the main trigger; insert the full row and update the 'current' header
-        trigger.append("		").append(fullInsert).append("\n")
+        oneBigTrigger.append("		").append(fullInsert).append("\n")
                 .append("		DELETE FROM ").append(currTblName).append(";\n")
                 .append("		INSERT INTO ").append(currTblName).append(" VALUES (").append(currInsertSql).append(");\n")
                 .append("	End");
 
         {
-            mSyncedDb.execSQL("DROP TRIGGER IF EXISTS " + tgForwardName);
-            SynchronizedStatement stmt = mStatements.add(tgForwardName, trigger.toString());
+            // rebuild(): SQLiteException: trigger book_list_tmp_2_TG_AAA already exists (code 1):
+            //2018-11-12: added DROP to mLevelBuildStmts
+            // but... then it fails with
+            // SQLiteException: Cannot execute this statement because it might modify the database but the connection is read-only.
+//            SynchronizedStatement dropStmt = mStatements.add("Drop_" + tgForwardName,
+//                    "DROP TRIGGER IF EXISTS " + tgForwardName);
+//            if (BuildConfig.DEBUG) {
+//                Logger.info(this, "Adding Drop_" + tgForwardName + " to mLevelBuildStmts");
+//                Logger.info(this, dropStmt.toString());
+//            }
+//            mLevelBuildStmts.add(dropStmt);
+//            dropStmt.execute();
+
+            SynchronizedStatement stmt = mStatements.add("Create_" + tgForwardName, oneBigTrigger.toString());
+            if (BuildConfig.DEBUG) {
+                Logger.info(this, "Adding " + tgForwardName + " to mLevelBuildStmts");
+                Logger.info(this, stmt.toString());
+            }
             mLevelBuildStmts.add(stmt);
             stmt.execute();
         }
 
         return viewTblName;
-    }
-
-    /**
-     * Build a collection of triggers on the list table designed to fill in the summary/header
-     * records as the data records are added in sorted order.
-     *
-     * This approach is both a performance improvement and a means to allow DESCENDING sort orders.
-     *
-     * It is the preferred option in Android 2.2+, but there is a chance that some vendor implemented
-     * a broken or old SQLite version.
-     */
-    private void makeNestedTriggers(final @NonNull SummaryBuilder summary) {
-        // Name of a table to store the snapshot of the most recent/current row headings
-        final String currTblName = mListTable + "_curr";
-        // List of cols we sort by
-        StringBuilder sortedCols = new StringBuilder();
-        // SQL statement to update the 'current' table
-        StringBuilder currInsertSql = new StringBuilder();
-        // List of domain names for sorting
-        Set<String> sortedDomainNames = new HashSet<>();
-        // Build the 'current' header table definition and the sort column list
-        for (SortedDomainInfo domainInfo : summary.getSortedColumns()) {
-            if (!sortedDomainNames.contains(domainInfo.domain.name)) {
-                sortedDomainNames.add(domainInfo.domain.name);
-                if (sortedCols.length() > 0) {
-                    sortedCols.append(", ");
-                    currInsertSql.append(", ");
-                }
-                sortedCols.append(domainInfo.domain.name);
-                currInsertSql.append("new.").append(domainInfo.domain.name);
-            }
-        }
-
-        /*
-         * Create a temp table to store the most recent header details from the last row.
-         * We use this in determining what needs to be inserted as header records for
-         * any given row.
-         *
-         * This is just a simple technique to provide persistent context to the trigger.
-         */
-        mSyncedDb.execSQL("CREATE TEMP TABLE " + currTblName + " (" + sortedCols + ")");
-
-        // For each grouping, starting with the lowest, build a trigger to update the next
-        // level up as necessary
-        for (int i = mStyle.size() - 1; i >= 0; i--) {
-            // Get the group
-            final BooklistGroup l = mStyle.getGroupAt(i);
-            // Get the level number for this group
-            final int levelId = i + 1;
-            // Create an INSERT statement for the next level up
-            StringBuilder insertSql = new StringBuilder("INSERT INTO " + mListTable + "( " + DOM_LEVEL + "," + DOM_ROW_KIND + ", " + DOM_ROOT_KEY + "\n");
-
-            // Create the VALUES statement for the next level up
-            StringBuilder valuesSql = new StringBuilder("VALUES (" + levelId + ", " + l.kind + ", " + "new." + DOM_ROOT_KEY + "\n");
-            // Create the conditional to detect if next level up is already defined (by checking the 'current' record/table)
-            StringBuilder conditionSql = new StringBuilder();// "l." + DOM_LEVEL + " = " + levelId + "\n";
-            // Update the statement components
-            for (DomainDefinition d : l.groupDomains) {
-                insertSql.append(", ").append(d);
-                valuesSql.append(", new.").append(d);
-                // Only update the 'condition' part if it is part of the SORT list
-                if (sortedDomainNames.contains(d.name)) {
-                    if (conditionSql.length() > 0) {
-                        conditionSql.append("	AND ");
-                    }
-                    conditionSql.append("Coalesce(l.").append(d).append(",'') = Coalesce(new.").append(d).append(",'') ").append(DatabaseHelper.COLLATION).append("\n");
-                }
-            }
-
-            insertSql.append(")\n").append(valuesSql).append(")");
-            String tgName = "header_A_tgL" + i;
-            // Drop trigger if necessary
-            mSyncedDb.execSQL("DROP TRIGGER IF EXISTS " + tgName);
-
-            // Create the trigger
-            String tgSql = "CREATE TEMP TRIGGER " + tgName + " before INSERT ON " + mListTable + " for each row when new." + DOM_LEVEL + "=" + (levelId + 1) +
-                    " AND NOT EXISTS(SELECT 1 FROM " + currTblName + " l WHERE " + conditionSql + ")\n" +
-                    "	Begin\n" +
-                    "		" + insertSql + ";\n" +
-                    "	End";
-            SynchronizedStatement stmt = mStatements.add("TG " + tgName, tgSql);
-            mLevelBuildStmts.add(stmt);
-            stmt.execute();
-        }
-
-        // Create a trigger to maintain the 'current' value -- just delete and insert
-        String currTgName = mListTable + "_TG_ZZZ";
-        mSyncedDb.execSQL("DROP TRIGGER IF EXISTS " + currTgName);
-        String tgSql = "CREATE TEMP TRIGGER " + currTgName + " after INSERT ON " + mListTable + " for each row when new." + DOM_LEVEL + "=" + mStyle.size() +
-                //" and not exists(Select 1 From " + currTblName + " l where " + conditionSql + ")\n" +
-                "	Begin\n" +
-                "		DELETE FROM " + currTblName + ";\n" +
-                "		INSERT INTO " + currTblName + " VALUES (" + currInsertSql + ");\n" +
-                "	End";
-
-        SynchronizedStatement stmt = mStatements.add(currTgName, tgSql);
-        mLevelBuildStmts.add(stmt);
-        stmt.execute();
     }
 
     /**
@@ -1918,9 +1979,9 @@ public class BooklistBuilder implements AutoCloseable {
             if (mDeleteListNodeSettingStmt == null) {
                 mDeleteListNodeSettingStmt = mStatements.add("mDeleteListNodeSettingStmt",
                         "DELETE FROM " + TBL_BOOK_LIST_NODE_SETTINGS +
-                                " WHERE " + DOM_ROW_KIND + "=? AND " +
+                                " WHERE " + DOM_BL_NODE_ROW_KIND + "=? AND " +
                                 DOM_ROOT_KEY + " IN (SELECT DISTINCT " + DOM_ROOT_KEY +
-                                " FROM " + mNavTable + " WHERE " + DOM_ID + "=?)");
+                                " FROM " + mNavTable + " WHERE " + DOM_PK_ID + "=?)");
             }
             mDeleteListNodeSettingStmt.bindLong(1, kind);
             mDeleteListNodeSettingStmt.bindLong(2, rowId);
@@ -1947,9 +2008,9 @@ public class BooklistBuilder implements AutoCloseable {
 
             if (mSaveAllListNodeSettingsStmt == null) {
                 mSaveAllListNodeSettingsStmt = mStatements.add("mSaveAllListNodeSettingsStmt",
-                        TBL_BOOK_LIST_NODE_SETTINGS.getInsert(DOM_ROW_KIND, DOM_ROOT_KEY) +
+                        TBL_BOOK_LIST_NODE_SETTINGS.getInsert(DOM_BL_NODE_ROW_KIND, DOM_ROOT_KEY) +
                                 " SELECT DISTINCT ?, " + DOM_ROOT_KEY + " FROM " + mNavTable +
-                                " WHERE " + DOM_EXPANDED + "=1 AND " + DOM_LEVEL + "=1");
+                                " WHERE " + DOM_BL_NODE_EXPANDED + "=1 AND " + DOM_BL_NODE_LEVEL + "=1");
             }
             int kind = mStyle.getGroupAt(0).kind;
 
@@ -1978,10 +2039,10 @@ public class BooklistBuilder implements AutoCloseable {
             deleteListNodeSetting(rowId);
 
             if (mSaveListNodeSettingStmt == null) {
-                String sql = TBL_BOOK_LIST_NODE_SETTINGS.getInsert(DOM_ROW_KIND, DOM_ROOT_KEY) +
+                String sql = TBL_BOOK_LIST_NODE_SETTINGS.getInsert(DOM_BL_NODE_ROW_KIND, DOM_ROOT_KEY) +
                         " SELECT ?, " + DOM_ROOT_KEY + " FROM " + mNavTable +
-                        " WHERE " + DOM_EXPANDED + "=1 AND " + DOM_LEVEL + "=1" +
-                        " AND " + DOM_ID + "=?";
+                        " WHERE " + DOM_BL_NODE_EXPANDED + "=1 AND " + DOM_BL_NODE_LEVEL + "=1" +
+                        " AND " + DOM_PK_ID + "=?";
                 mSaveListNodeSettingStmt = mStatements.add("mSaveListNodeSettingStmt", sql);
             }
             int kind = mStyle.getGroupAt(0).kind;
@@ -2004,10 +2065,10 @@ public class BooklistBuilder implements AutoCloseable {
      */
     @Nullable
     public ArrayList<BookRowInfo> getBookAbsolutePositions(final long bookId) {
-        String sql = "SELECT " + mNavTable.dot(DOM_ID) + "," +
-                mNavTable.dot(DOM_VISIBLE) +
+        String sql = "SELECT " + mNavTable.dot(DOM_PK_ID) + "," +
+                mNavTable.dot(DOM_BL_NODE_VISIBLE) +
                 " FROM " + mListTable + " bl " + mListTable.join(mNavTable) +
-                " WHERE " + mListTable.dot(DOM_BOOK_ID) + "=?";
+                " WHERE " + mListTable.dot(DOM_FK_BOOK_ID) + "=?";
 
         try (Cursor cursor = mSyncedDb.rawQuery(sql, new String[]{Long.toString(bookId)})) {
             ArrayList<BookRowInfo> rows = new ArrayList<>();
@@ -2055,9 +2116,9 @@ public class BooklistBuilder implements AutoCloseable {
         }
 
         // Build the SQL, adding ABS POS.
-        final String sql = "SELECT " + domains + " (" + mNavTable.dot(DOM_ID) + " - 1) AS " + DOM_ABSOLUTE_POSITION +
+        final String sql = "SELECT " + domains + " (" + mNavTable.dot(DOM_PK_ID) + " - 1) AS " + DOM_ABSOLUTE_POSITION +
                 " FROM " + mListTable.ref() + mListTable.join(mNavTable) +
-                " WHERE " + mNavTable.dot(DOM_VISIBLE) + "=1 ORDER BY " + mNavTable.dot(DOM_ID) +
+                " WHERE " + mNavTable.dot(DOM_BL_NODE_VISIBLE) + "=1 ORDER BY " + mNavTable.dot(DOM_PK_ID) +
                 " LIMIT " + size + " Offset " + position;
 
         // Get and return the cursor
@@ -2078,7 +2139,7 @@ public class BooklistBuilder implements AutoCloseable {
      */
     int getPseudoCount() {
         return pseudoCount("NavTable",
-                "SELECT COUNT(*) FROM " + mNavTable + " WHERE " + DOM_VISIBLE + "=1");
+                "SELECT COUNT(*) FROM " + mNavTable + " WHERE " + DOM_BL_NODE_VISIBLE + "=1");
     }
 
     /**
@@ -2086,7 +2147,7 @@ public class BooklistBuilder implements AutoCloseable {
      */
     int getBookCount() {
         return pseudoCount("ListTableBooks",
-                "SELECT COUNT(*) FROM " + mListTable + " WHERE " + DOM_LEVEL + "=" + (mStyle.size() + 1));
+                "SELECT COUNT(*) FROM " + mListTable + " WHERE " + DOM_BL_NODE_LEVEL + "=" + (mStyle.size() + 1));
     }
 
     /**
@@ -2094,23 +2155,22 @@ public class BooklistBuilder implements AutoCloseable {
      */
     int getUniqueBookCount() {
         return pseudoCount("ListTableUniqueBooks",
-                "SELECT COUNT(DISTINCT " + DOM_BOOK_ID + ") FROM " + mListTable +
-                        " WHERE " + DOM_LEVEL + "=" + (mStyle.size() + 1));
+                "SELECT COUNT(DISTINCT " + DOM_FK_BOOK_ID + ") FROM " + mListTable +
+                        " WHERE " + DOM_BL_NODE_LEVEL + "=" + (mStyle.size() + 1));
     }
 
     /**
      * Utility routine to perform a single count query.
      */
     private int pseudoCount(final @NonNull String name, final @NonNull String countSql) {
-        @SuppressWarnings("UnusedAssignment")
-        final long t0 = System.currentTimeMillis();
+        @SuppressWarnings("UnusedAssignment") final long t0 = System.currentTimeMillis();
         int cnt;
         try (SynchronizedStatement stmt = mSyncedDb.compileStatement(countSql)) {
             cnt = (int) stmt.count();
         }
 
         if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
-            Logger.info(this,"Pseudo-count (" + name + ") = " + cnt + " completed in " + (System.currentTimeMillis() - t0) + "ms");
+            Logger.info(this, "Pseudo-count (" + name + ") = " + cnt + " completed in " + (System.currentTimeMillis() - t0) + "ms");
         }
         return cnt;
     }
@@ -2122,6 +2182,7 @@ public class BooklistBuilder implements AutoCloseable {
      *
      * @return Name of the display field for this level
      */
+    @NonNull
     public DomainDefinition getDisplayDomain(final int level) {
         return mStyle.getGroupAt(level - 1).displayDomain;
     }
@@ -2144,7 +2205,7 @@ public class BooklistBuilder implements AutoCloseable {
     public int getPosition(final int absolutePosition) {
         if (mGetPositionCheckVisibleStmt == null) {
             mGetPositionCheckVisibleStmt = mStatements.add("mGetPositionCheckVisibleStmt",
-                    "SELECT " + DOM_VISIBLE + " FROM " + mNavTable + " WHERE " + DOM_ID + "=?");
+                    "SELECT " + DOM_BL_NODE_VISIBLE + " FROM " + mNavTable + " WHERE " + DOM_PK_ID + "=?");
         }
         // Check the absolute position is visible
         final long rowId = absolutePosition + 1;
@@ -2153,7 +2214,7 @@ public class BooklistBuilder implements AutoCloseable {
 
         if (mGetPositionStmt == null) {
             mGetPositionStmt = mStatements.add("mGetPositionStmt",
-                    "SELECT COUNT(*) FROM " + mNavTable + " WHERE " + DOM_VISIBLE + "=1 AND " + DOM_ID + " < ?");
+                    "SELECT COUNT(*) FROM " + mNavTable + " WHERE " + DOM_BL_NODE_VISIBLE + "=1 AND " + DOM_PK_ID + " < ?");
         }
         // Count the number of *visible* rows *before* the specified one.
         mGetPositionStmt.bindLong(1, rowId);
@@ -2180,9 +2241,9 @@ public class BooklistBuilder implements AutoCloseable {
 
         if (mGetNodeRootStmt == null) {
             mGetNodeRootStmt = mStatements.add("mGetNodeRootStmt",
-                    "SELECT " + DOM_ID + "||'/'||" + DOM_EXPANDED + " FROM " + mNavTable +
-                            " WHERE " + DOM_LEVEL + "=1 AND " + DOM_ID + " <= ?" +
-                            " ORDER BY " + DOM_ID + " DESC LIMIT 1");
+                    "SELECT " + DOM_PK_ID + "||'/'||" + DOM_BL_NODE_EXPANDED + " FROM " + mNavTable +
+                            " WHERE " + DOM_BL_NODE_LEVEL + "=1 AND " + DOM_PK_ID + " <= ?" +
+                            " ORDER BY " + DOM_PK_ID + " DESC LIMIT 1");
         }
 
         // Get the root node, and expanded flag
@@ -2206,27 +2267,27 @@ public class BooklistBuilder implements AutoCloseable {
     private void buildExpandNodeStatements() {
         if (mGetNodeLevelStmt == null) {
             mGetNodeLevelStmt = mStatements.add("mGetNodeLevelStmt",
-                    "SELECT " + DOM_LEVEL + "||'/'||" + DOM_EXPANDED +
-                            " FROM " + mNavTable.ref() + " WHERE " + mNavTable.dot(DOM_ID) + "=?");
+                    "SELECT " + DOM_BL_NODE_LEVEL + "||'/'||" + DOM_BL_NODE_EXPANDED +
+                            " FROM " + mNavTable.ref() + " WHERE " + mNavTable.dot(DOM_PK_ID) + "=?");
         }
         if (mGetNextAtSameLevelStmt == null) {
             mGetNextAtSameLevelStmt = mStatements.add("mGetNextAtSameLevelStmt",
-                    "SELECT Coalesce( max(" + DOM_ID + "), -1) FROM " +
-                            "(SELECT " + DOM_ID + " FROM " + mNavTable.ref() +
-                            " WHERE " + mNavTable.dot(DOM_ID) + " > ? AND " + mNavTable.dot(DOM_LEVEL) + "=?" +
-                            " ORDER BY " + DOM_ID + " LIMIT 1" +
+                    "SELECT Coalesce( max(" + DOM_PK_ID + "), -1) FROM " +
+                            "(SELECT " + DOM_PK_ID + " FROM " + mNavTable.ref() +
+                            " WHERE " + mNavTable.dot(DOM_PK_ID) + " > ? AND " + mNavTable.dot(DOM_BL_NODE_LEVEL) + "=?" +
+                            " ORDER BY " + DOM_PK_ID + " LIMIT 1" +
                             ")" +
                             " zzz");
         }
         if (mShowStmt == null) {
             mShowStmt = mStatements.add("mShowStmt",
                     "UPDATE " + mNavTable +
-                            " SET " + DOM_VISIBLE + "=?," + DOM_EXPANDED + "=?" +
-                            " WHERE " + DOM_ID + " > ? AND " + DOM_LEVEL + " > ? AND " + DOM_ID + " < ?");
+                            " SET " + DOM_BL_NODE_VISIBLE + "=?," + DOM_BL_NODE_EXPANDED + "=?" +
+                            " WHERE " + DOM_PK_ID + " > ? AND " + DOM_BL_NODE_LEVEL + " > ? AND " + DOM_PK_ID + " < ?");
         }
         if (mExpandStmt == null) {
             mExpandStmt = mStatements.add("mExpandStmt",
-                    "UPDATE " + mNavTable + " SET " + DOM_EXPANDED + "=? WHERE " + DOM_ID + "=?");
+                    "UPDATE " + mNavTable + " SET " + DOM_BL_NODE_EXPANDED + "=? WHERE " + DOM_PK_ID + "=?");
         }
     }
 
@@ -2235,22 +2296,21 @@ public class BooklistBuilder implements AutoCloseable {
      * For COLLAPSE: Set all non-root rows as invisible/unexpanded and mark all root nodes as visible/unexpanded.
      */
     public void expandAll(final boolean expand) {
-        @SuppressWarnings("UnusedAssignment")
-        final long t0 = System.currentTimeMillis();
+        @SuppressWarnings("UnusedAssignment") final long t0 = System.currentTimeMillis();
         if (expand) {
-            String sql = "UPDATE " + mNavTable + " SET " + DOM_EXPANDED + "=1," + DOM_VISIBLE + "=1";
+            String sql = "UPDATE " + mNavTable + " SET " + DOM_BL_NODE_EXPANDED + "=1," + DOM_BL_NODE_VISIBLE + "=1";
             mSyncedDb.execSQL(sql);
             saveListNodeSettings();
         } else {
-            String sql = "UPDATE " + mNavTable + " SET " + DOM_EXPANDED + "=0," + DOM_VISIBLE + "=0 WHERE " + DOM_LEVEL + " > 1";
+            String sql = "UPDATE " + mNavTable + " SET " + DOM_BL_NODE_EXPANDED + "=0," + DOM_BL_NODE_VISIBLE + "=0 WHERE " + DOM_BL_NODE_LEVEL + " > 1";
             mSyncedDb.execSQL(sql);
-            sql = "UPDATE " + mNavTable + " SET " + DOM_EXPANDED + "=0 WHERE " + DOM_LEVEL + "=1";
+            sql = "UPDATE " + mNavTable + " SET " + DOM_BL_NODE_EXPANDED + "=0 WHERE " + DOM_BL_NODE_LEVEL + "=1";
             mSyncedDb.execSQL(sql);
             deleteListNodeSettings();
         }
 
         if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
-            Logger.info(this,"Expand All: " + (System.currentTimeMillis() - t0));
+            Logger.info(this, "Expand All: " + (System.currentTimeMillis() - t0));
         }
     }
 
@@ -2312,16 +2372,16 @@ public class BooklistBuilder implements AutoCloseable {
     }
 
     /**
-     * General cleanup routine called by both 'close()' and 'finalize()'
+     * General cleanup routine called by both {@link #close()} and {@link #finalize()}
      *
      * @param isFinalize set in the finalize[] method call
      */
     private void cleanup(final boolean isFinalize) {
         if (mStatements.size() != 0) {
             if (DEBUG_SWITCHES.BOOKLIST_BUILDER && BuildConfig.DEBUG && isFinalize) {
-                Logger.info(this,"Finalizing with active mStatements (this is not an error): ");
+                Logger.info(this, "Finalizing with active mStatements (this is not an error): ");
                 for (String name : mStatements.getNames()) {
-                    Logger.info(this,name);
+                    Logger.info(this, name);
                 }
             }
             mStatements.close();
@@ -2329,7 +2389,7 @@ public class BooklistBuilder implements AutoCloseable {
 
         if (mNavTable != null) {
             if (DEBUG_SWITCHES.BOOKLIST_BUILDER && BuildConfig.DEBUG && isFinalize) {
-                Logger.info(this,"Finalizing with mNavTable (this is not an error)");
+                Logger.info(this, "Finalizing with mNavTable (this is not an error)");
             }
             try {
                 mNavTable.close();
@@ -2340,7 +2400,7 @@ public class BooklistBuilder implements AutoCloseable {
         }
         if (mListTable != null) {
             if (DEBUG_SWITCHES.BOOKLIST_BUILDER && BuildConfig.DEBUG && isFinalize) {
-                Logger.info(this,"Finalizing with mListTable (this is not an error)");
+                Logger.info(this, "Finalizing with mListTable (this is not an error)");
             }
             try {
                 mListTable.close();
@@ -2355,7 +2415,7 @@ public class BooklistBuilder implements AutoCloseable {
                 // Only de-reference once!
                 synchronized (mDebugInstanceCount) {
                     mDebugInstanceCount--;
-                    Logger.info(this,"instances: " + mDebugInstanceCount);
+                    Logger.info(this, "instances: " + mDebugInstanceCount);
                 }
             }
             mDebugReferenceDecremented = true;
@@ -2560,22 +2620,20 @@ public class BooklistBuilder implements AutoCloseable {
          * Drop and recreate the underlying temp table
          */
         void recreateTable() {
-            @SuppressWarnings("UnusedAssignment")
-            final long t0 = System.currentTimeMillis();
+            @SuppressWarnings("UnusedAssignment") final long t0 = System.currentTimeMillis();
             mListTable.drop(mSyncedDb);
-            @SuppressWarnings("UnusedAssignment")
-            final long t1 = System.currentTimeMillis();
+            @SuppressWarnings("UnusedAssignment") final long t1 = System.currentTimeMillis();
             mListTable.create(mSyncedDb, false);
 
             if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
-                Logger.info(this,"Drop   = " + (t1 - t0));
-                Logger.info(this,"Create = " + (System.currentTimeMillis() - t1));
+                Logger.info(this, "Drop   = " + (t1 - t0));
+                Logger.info(this, "Create = " + (System.currentTimeMillis() - t1));
             }
         }
 
         /**
          * Using the collected domain info, create the various SQL phrases used to build the resulting
-         * flat list table and build the 'INSERT...SELECT...From'  portion of the SQL that does the
+         * flat list table and build the 'INSERT...SELECT...FROM'  portion of the SQL that does the
          * initial table load.
          *
          * @param rootKey The key for the root level group. Stored in each row and used
@@ -2668,11 +2726,11 @@ public class BooklistBuilder implements AutoCloseable {
 //		SummaryBuilder summary = new SummaryBuilder();
 //		// Add the minimum required domains
 //
-//		summary.addDomain(DOM_ID);
-//		summary.addDomain(DOM_LEVEL, Integer.toString(mLevels.size()+1), SummaryBuilder.FLAG_NONE);
-//		summary.addDomain(DOM_ROW_KIND, "" + ROW_KIND_BOOK, SummaryBuilder.FLAG_NONE);
-//		summary.addDomain(DOM_BOOK_ID, TBL_BOOKS.dot(DOM_ID), SummaryBuilder.FLAG_NONE);
-//		summary.addDomain(DOM_BOOK_COUNT, "1", SummaryBuilder.FLAG_NONE);
+//		summary.addDomain(DOM_PK_ID);
+//		summary.addDomain(DOM_BL_NODE_LEVEL, Integer.toString(mLevels.size()+1), SummaryBuilder.FLAG_NONE);
+//		summary.addDomain(DOM_BL_NODE_ROW_KIND, "" + ROW_KIND_BOOK, SummaryBuilder.FLAG_NONE);
+//		summary.addDomain(DOM_FK_BOOK_ID, TBL_BOOKS.dot(DOM_PK_ID), SummaryBuilder.FLAG_NONE);
+//		summary.addDomain(DOM_BL_BOOK_COUNT, "1", SummaryBuilder.FLAG_NONE);
 //		summary.addDomain(DOM_ROOT_KEY);
 //		//summary.addDomain(DOM_PARENT_KEY);		
 //		
@@ -2697,13 +2755,13 @@ public class BooklistBuilder implements AutoCloseable {
 //				l.displayDomain = DOM_SERIES_NAME;
 //				seriesLevel = (BooklistSeriesLevel) l; // getLevel(ROW_KIND_SERIES);
 //				summary.addDomain(DOM_SERIES_NAME, TBL_SERIES.dot(DOM_SERIES_NAME), SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
-//				summary.addDomain(DOM_SERIES_ID, TBL_BOOK_SERIES.dot(DOM_SERIES_ID), SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_KEY);
+//				summary.addDomain(DOM_FK_SERIES_ID, TBL_BOOK_SERIES.dot(DOM_FK_SERIES_ID), SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_KEY);
 //				summary.addDomain(DOM_BOOK_SERIES_NUM, TBL_BOOK_SERIES.dot(DOM_BOOK_SERIES_NUM), SummaryBuilder.FLAG_NONE);
 //				summary.addDomain(DOM_BOOK_SERIES_POSITION, TBL_BOOK_SERIES.dot(DOM_BOOK_SERIES_POSITION), SummaryBuilder.FLAG_NONE);
-//				summary.addDomain(DOM_PRIMARY_SERIES_COUNT,"case when Coalesce(" + TBL_BOOK_SERIES.dot(DOM_BOOK_SERIES_POSITION) + ",1) == 1 then 1 else 0 end", SummaryBuilder.FLAG_NONE);
+//				summary.addDomain(DOM_BL_PRIMARY_SERIES_COUNT,"case when Coalesce(" + TBL_BOOK_SERIES.dot(DOM_BOOK_SERIES_POSITION) + ",1) == 1 then 1 else 0 end", SummaryBuilder.FLAG_NONE);
 //				summary.addDomain(DOM_BOOK_SERIES_NUM, TBL_BOOK_SERIES.dot(DOM_BOOK_SERIES_NUM), SummaryBuilder.FLAG_SORTED);
-//				//summary.addKeyComponents("'s'", TBL_BOOK_SERIES.dot(DOM_SERIES_ID));
-//				l.setKeyComponents("s", DOM_SERIES_ID);
+//				//summary.addKeyComponents("'s'", TBL_BOOK_SERIES.dot(DOM_FK_SERIES_ID));
+//				l.setKeyComponents("s", DOM_FK_SERIES_ID);
 //				break;
 //
 //			case ROW_KIND_AUTHOR:
@@ -2715,10 +2773,10 @@ public class BooklistBuilder implements AutoCloseable {
 //				else
 //					summary.addDomain(DOM_AUTHOR_FORMATTED, AUTHOR_FORMATTED_LAST_FIRST_EXPRESSION, SummaryBuilder.FLAG_GROUPED);
 //
-//				summary.addDomain(DOM_AUTHOR_ID, TBL_BOOK_AUTHOR.dot(DOM_AUTHOR_ID), SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_KEY);
+//				summary.addDomain(DOM_FK_AUTHOR_ID, TBL_BOOK_AUTHOR.dot(DOM_FK_AUTHOR_ID), SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_KEY);
 //
-//				//summary.addKeyComponents("'a'", TBL_BOOK_AUTHOR.dot(DOM_AUTHOR_ID));
-//				l.setKeyComponents("a", DOM_AUTHOR_ID);
+//				//summary.addKeyComponents("'a'", TBL_BOOK_AUTHOR.dot(DOM_FK_AUTHOR_ID));
+//				l.setKeyComponents("a", DOM_FK_AUTHOR_ID);
 //
 //				break;
 //
@@ -2774,7 +2832,7 @@ public class BooklistBuilder implements AutoCloseable {
 //		final long t0b = System.currentTimeMillis();
 //
 //		if (previouslySelectedBookId != 0) {
-//			summary.addDomain(DOM_SELECTED, TBL_BOOKS.dot(DOM_ID) + " = " + previouslySelectedBookId, SummaryBuilder.FLAG_NONE);
+//			summary.addDomain(DOM_SELECTED, TBL_BOOKS.dot(DOM_PK_ID) + " = " + previouslySelectedBookId, SummaryBuilder.FLAG_NONE);
 //		}
 //
 //		// Ensure any caller-specified extras (eg. title) are added at the end.
@@ -2882,7 +2940,7 @@ public class BooklistBuilder implements AutoCloseable {
 //				where += " and ";
 //			where += "Exists(Select NULL From " + TBL_LOAN.ref() + " Where " + TBL_LOAN.dot(DOM_LOANED_TO) + " = '" + encodeString(loaned_to) + "'" +
 //					" and " + TBL_LOAN.fkMatch(TBL_BOOKS) + ")";
-//					// .and()    .op(TBL_LOAN.dot(DOM_BOOK_ID), "=", TBL_BOOKS.dot(DOM_ID)) + ")";
+//					// .and()    .op(TBL_LOAN.dot(DOM_FK_BOOK_ID), "=", TBL_BOOKS.dot(DOM_PK_ID)) + ")";
 //		}
 //		if (!seriesName.equals("")) {
 //			if (!where.equals(""))
@@ -2892,7 +2950,7 @@ public class BooklistBuilder implements AutoCloseable {
 //		if(!searchText.equals("")) {
 //			if (!where.equals(""))
 //				where += " and ";
-//			where += "(" + TBL_BOOKS.dot(DOM_ID) + " in (select docid from " + DB_TB_BOOKS_FTS + " where " + DB_TB_BOOKS_FTS + " match '" + encodeString(searchText) + "'))";
+//			where += "(" + TBL_BOOKS.dot(DOM_PK_ID) + " in (select docid from " + DB_TB_BOOKS_FTS + " where " + DB_TB_BOOKS_FTS + " match '" + encodeString(searchText) + "'))";
 //		}
 //
 //		// If we got any conditions, add them to the initial insert statement
@@ -2908,7 +2966,7 @@ public class BooklistBuilder implements AutoCloseable {
 //				sortCols.append(d.name);
 //				sortCols.append(CatalogueDBAdapter.COLLATION + ", ");
 //			}
-//			sortCols.append(DOM_LEVEL.name);
+//			sortCols.append(DOM_BL_NODE_LEVEL.name);
 //			mSortColumnList = sortCols.toString();
 //		}
 //
@@ -2919,7 +2977,7 @@ public class BooklistBuilder implements AutoCloseable {
 //				groupCols.append(d.name);
 //				groupCols.append(CatalogueDBAdapter.COLLATION + ", ");
 //			}
-//			groupCols.append( DOM_LEVEL.name );
+//			groupCols.append( DOM_BL_NODE_LEVEL.name );
 //			mGroupColumnList = groupCols.toString();
 //		}
 //
@@ -2930,7 +2988,7 @@ public class BooklistBuilder implements AutoCloseable {
 //				keyCols.append(d.name);
 //				keyCols.append(CatalogueDBAdapter.COLLATION + ", ");
 //			}
-//			keyCols.append( DOM_LEVEL.name );
+//			keyCols.append( DOM_BL_NODE_LEVEL.name );
 //			mKeyColumnList = keyCols.toString();
 //		}
 //
@@ -2947,8 +3005,8 @@ public class BooklistBuilder implements AutoCloseable {
 //		//mSyncedDb.execSQL("Create View " + TBL_BOOK_LIST + " as select * from " + mListTable);
 //
 //		// Make sure triggers can check easily
-//		//mSyncedDb.execSQL("Create Index " + mListTable + "_IX_TG on " + mListTable + "(" + DOM_LEVEL + ", " + mGroupColumnList + ")");
-//		mSyncedDb.execSQL("Create Unique Index " + mListTable + "_IX_TG1 on " + mListTable + "(" + DOM_LEVEL + ", " + mKeyColumnList + ", " + DOM_BOOK_ID + ")");
+//		//mSyncedDb.execSQL("Create Index " + mListTable + "_IX_TG on " + mListTable + "(" + DOM_BL_NODE_LEVEL + ", " + mGroupColumnList + ")");
+//		mSyncedDb.execSQL("Create Unique Index " + mListTable + "_IX_TG1 on " + mListTable + "(" + DOM_BL_NODE_LEVEL + ", " + mKeyColumnList + ", " + DOM_FK_BOOK_ID + ")");
 //
 //		/*
 //		 * Create a trigger to forward all row details to real table
@@ -2959,7 +3017,7 @@ public class BooklistBuilder implements AutoCloseable {
 //			String fullValues = "Values (";
 //			boolean firstCol = true;
 //			for (DomainDefinition d: mListTable.domains) {
-//				if (!d.equals(DOM_ID)) {
+//				if (!d.equals(DOM_PK_ID)) {
 //					if (firstCol)
 //						firstCol = false;
 //					else {
@@ -2990,11 +3048,11 @@ public class BooklistBuilder implements AutoCloseable {
 //		for (int i = mLevels.size()-1; i >= 0; i--) {
 //			final BooklistLevel l = mLevels.get(i);
 //			final int levelId = i + 1;
-//			String insertSql = "Insert into " + mListTable + "( " + DOM_LEVEL + "," + DOM_ROW_KIND + ", " + DOM_ROOT_KEY + "\n";
-//			// If inserting with forwarding table: String insertSql = "Insert into " + TBL_BOOK_LIST + "( " + DOM_LEVEL + "," + DOM_ROW_KIND + ", " + DOM_ROOT_KEY + "\n";
+//			String insertSql = "Insert into " + mListTable + "( " + DOM_BL_NODE_LEVEL + "," + DOM_BL_NODE_ROW_KIND + ", " + DOM_ROOT_KEY + "\n";
+//			// If inserting with forwarding table: String insertSql = "Insert into " + TBL_BOOK_LIST + "( " + DOM_BL_NODE_LEVEL + "," + DOM_BL_NODE_ROW_KIND + ", " + DOM_ROOT_KEY + "\n";
 //			// If inserting in one trigger using multiple 'exists': String valuesSql = levelId + ", " + l.kind + ", " + "new." + DOM_ROOT_KEY + "\n";
 //			String valuesSql = "Values (" + levelId + ", " + l.kind + ", " + "new." + DOM_ROOT_KEY + "\n";
-//			String conditionSql = "l." + DOM_LEVEL + " = " + levelId + "\n";
+//			String conditionSql = "l." + DOM_BL_NODE_LEVEL + " = " + levelId + "\n";
 //			for(DomainDefinition d  : l.groupDomains) {
 //				insertSql += ", " + d;
 //				valuesSql += ", new." + d;
@@ -3084,16 +3142,16 @@ public class BooklistBuilder implements AutoCloseable {
 //					//collatedCols += ",\n	" + d.name + CatalogueDBAdapter.COLLATION;
 //					collatedCols += "\n	" + d.name + CatalogueDBAdapter.COLLATION;
 //				}
-//				sql = "INSERT INTO " + mListTable + "(\n	" + DOM_LEVEL + ",\n	" + DOM_ROW_KIND +
+//				sql = "INSERT INTO " + mListTable + "(\n	" + DOM_BL_NODE_LEVEL + ",\n	" + DOM_BL_NODE_ROW_KIND +
 //						//",\n	" + DOM_PARENT_KEY +
 //						cols + "," + DOM_ROOT_KEY +
 //						")" +
-//						"\n SELECT " + levelId + " AS " + DOM_LEVEL + ",\n	" + l.kind + " AS " + DOM_ROW_KIND +
+//						"\n SELECT " + levelId + " AS " + DOM_BL_NODE_LEVEL + ",\n	" + l.kind + " AS " + DOM_BL_NODE_ROW_KIND +
 //						//l.getKeyExpression() +
 //						cols + "," + DOM_ROOT_KEY +
 //						"\n FROM " + mListTable + "\n " + " WHERE level = " + (levelId+1) +
 //						"\n GROUP BY " + collatedCols + "," + DOM_ROOT_KEY + CatalogueDBAdapter.COLLATION;
-//						//"\n GROUP BY " + DOM_LEVEL + ", " + DOM_ROW_KIND + collatedCols;
+//						//"\n GROUP BY " + DOM_BL_NODE_LEVEL + ", " + DOM_BL_NODE_ROW_KIND + collatedCols;
 //
 //				SQLiteStatement stmt = mStatements.add("L" + i, sql);
 //				mLevelBuildStmts.add(stmt);
@@ -3117,14 +3175,14 @@ public class BooklistBuilder implements AutoCloseable {
 //			// book (or other row in result set) to a position directly.
 //			mNavTable.drop(mSyncedDb);
 //			mNavTable.create(mSyncedDb, true);
-//			sql = mNavTable.getInsert(DOM_REAL_ROW_ID, DOM_LEVEL, DOM_ROOT_KEY, DOM_VISIBLE, DOM_EXPANDED) + 
-//					" Select " + mListTable.dot(DOM_ID) + "," + mListTable.dot(DOM_LEVEL) + "," + mListTable.dot(DOM_ROOT_KEY) +
-//					" ,\n	Case When " + DOM_LEVEL + " = 1 Then 1 \n" +
+//			sql = mNavTable.getInsert(DOM_REAL_ROW_ID, DOM_BL_NODE_LEVEL, DOM_ROOT_KEY, DOM_BL_NODE_VISIBLE, DOM_BL_NODE_EXPANDED) +
+//					" Select " + mListTable.dot(DOM_PK_ID) + "," + mListTable.dot(DOM_BL_NODE_LEVEL) + "," + mListTable.dot(DOM_ROOT_KEY) +
+//					" ,\n	Case When " + DOM_BL_NODE_LEVEL + " = 1 Then 1 \n" +
 //					"	When " + TBL_BOOK_LIST_NODE_SETTINGS.dot(DOM_ROOT_KEY) + " is null Then 0\n	Else 1 end,\n "+ 
 //					"	Case When " + TBL_BOOK_LIST_NODE_SETTINGS.dot(DOM_ROOT_KEY) + " is null Then 0 Else 1 end\n"+
 //					" From " + mListTable.ref() + "\n	left outer join " + TBL_BOOK_LIST_NODE_SETTINGS.ref() + 
 //					"\n		On " + TBL_BOOK_LIST_NODE_SETTINGS.dot(DOM_ROOT_KEY) + " = " + mListTable.dot(DOM_ROOT_KEY) +
-//					"\n			And " + TBL_BOOK_LIST_NODE_SETTINGS.dot(DOM_ROW_KIND) + " = " + mLevels.get(0).kind +
+//					"\n			And " + TBL_BOOK_LIST_NODE_SETTINGS.dot(DOM_BL_NODE_ROW_KIND) + " = " + mLevels.get(0).kind +
 //					"\n	Order by " + mSortColumnList;
 //
 //			stmt = mStatements.add("InsNav", sql);
@@ -3132,7 +3190,7 @@ public class BooklistBuilder implements AutoCloseable {
 //			stmt.execute();
 //
 //			long t4 = System.currentTimeMillis();
-//			mSyncedDb.execSQL("Create Index " + mNavTable + "_IX1" + " On " + mNavTable + "(" + DOM_LEVEL + "," + DOM_EXPANDED + "," + DOM_ROOT_KEY + ")");
+//			mSyncedDb.execSQL("Create Index " + mNavTable + "_IX1" + " On " + mNavTable + "(" + DOM_BL_NODE_LEVEL + "," + DOM_BL_NODE_EXPANDED + "," + DOM_ROOT_KEY + ")");
 //			long t4a = System.currentTimeMillis();
 //			// Essential for main query! If not present, will make getCount() take ages because main query is a cross with no index.
 //			mSyncedDb.execSQL("Create Unique Index " + mNavTable + "_IX2" + " On " + mNavTable + "(" + DOM_REAL_ROW_ID + ")");

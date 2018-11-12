@@ -199,6 +199,7 @@ public class GetThumbnailTask implements SimpleTask {
         }
 
 
+        // try cache
         if (!mCacheWasChecked) {
             File originalFile = StorageUtils.getCoverFile(mUuid);
             try (CoversDbHelper coversDbHelper = CoversDbHelper.getInstance(mContext)) {
@@ -208,6 +209,7 @@ public class GetThumbnailTask implements SimpleTask {
             mWasInCache = (mBitmap != null);
         }
 
+        // wasn't in cache, try file system
         if (mBitmap == null) {
             mBitmap = ImageUtils.fetchBookCoverIntoImageView(null, mUuid,
                     mWidth, mHeight, true, false, false);

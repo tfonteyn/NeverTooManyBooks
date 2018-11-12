@@ -34,8 +34,8 @@ import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exception
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsUtils;
 import com.eleybourn.bookcatalogue.searches.goodreads.api.XmlFilter.ElementContext;
 import com.eleybourn.bookcatalogue.searches.goodreads.api.XmlFilter.XmlHandler;
-import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
+import com.eleybourn.bookcatalogue.utils.StringList;
 
 import org.apache.http.client.methods.HttpGet;
 
@@ -55,7 +55,7 @@ import oauth.signpost.exception.OAuthMessageSignerException;
  */
 public abstract class ShowBookApiHandler extends ApiHandler {
 
-    /** extracted from {@link #buildFilters}  to avoid duplication */
+    /** XML tags we look for */
     private static final String XML_GOODREADS_RESPONSE = "GoodreadsResponse";
     private static final String XML_AUTHOR = "author";
     private static final String XML_AUTHORS = "authors";
@@ -265,22 +265,6 @@ public abstract class ShowBookApiHandler extends ApiHandler {
 
     /** Transient global data for current work in search results. */
     private Bundle mBookData;
-
-    /** Local storage for series book appears in */
-    @Nullable
-    private ArrayList<Series> mSeries = null;
-
-    /** Local storage for author names */
-    @Nullable
-    private ArrayList<Author> mAuthors = null;
-
-    /** Local storage for shelf names */
-    @Nullable
-    private ArrayList<String> mShelves = null;
-
-    // Current author being processed
-    //private long mCurrAuthorId = 0;
-
     private final XmlHandler mHandleText = new XmlHandler() {
 
         @Override
@@ -317,6 +301,9 @@ public abstract class ShowBookApiHandler extends ApiHandler {
             }
         }
     };
+
+    // Current author being processed
+    //private long mCurrAuthorId = 0;
     private final XmlHandler mHandleBoolean = new XmlHandler() {
 
         @Override
@@ -344,8 +331,15 @@ public abstract class ShowBookApiHandler extends ApiHandler {
             }
         }
     };
-
-
+    /** Local storage for series book appears in */
+    @Nullable
+    private ArrayList<Series> mSeries = null;
+    /** Local storage for author names */
+    @Nullable
+    private ArrayList<Author> mAuthors = null;
+    /** Local storage for shelf names */
+    @Nullable
+    private ArrayList<String> mShelves = null;
     /**
      * Create a new shelves collection when the "shelves" tag is encountered.
      */
@@ -487,9 +481,9 @@ public abstract class ShowBookApiHandler extends ApiHandler {
                 }
             }
             if (bestImage != null) {
-                String fileSpec = ImageUtils.saveThumbnailFromUrl(bestImage, GoodreadsUtils.GOODREADS_FILENAME_SUFFIX);
+                String fileSpec = ImageUtils.saveThumbnailFromUrl(bestImage, GoodreadsUtils.FILENAME_SUFFIX);
                 if (fileSpec.length() > 0) {
-                    ArrayUtils.addOrAppend(mBookData, UniqueId.BKEY_THUMBNAIL_FILES_SPEC, fileSpec);
+                    StringList.addOrAppend(mBookData, UniqueId.BKEY_THUMBNAIL_FILE_SPEC, fileSpec);
                 }
             }
         }
@@ -544,11 +538,11 @@ public abstract class ShowBookApiHandler extends ApiHandler {
         }
 
         if (mAuthors != null && mAuthors.size() > 0) {
-            mBookData.putString(UniqueId.BKEY_AUTHOR_STRING_LIST, ArrayUtils.getAuthorUtils().encodeList(mAuthors));
+            mBookData.putString(UniqueId.BKEY_AUTHOR_STRING_LIST, StringList.getAuthorUtils().encode(mAuthors));
         }
 
         if (mSeries != null && mSeries.size() > 0) {
-            mBookData.putString(UniqueId.BKEY_SERIES_STRING_LIST, ArrayUtils.getSeriesUtils().encodeList(mSeries));
+            mBookData.putString(UniqueId.BKEY_SERIES_STRING_LIST, StringList.getSeriesUtils().encode(mSeries));
         }
 
         if (mShelves != null && mShelves.size() > 0) {

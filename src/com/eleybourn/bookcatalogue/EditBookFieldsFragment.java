@@ -44,7 +44,7 @@ import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.BookManager;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.entities.Series;
-import com.eleybourn.bookcatalogue.utils.ArrayUtils;
+import com.eleybourn.bookcatalogue.utils.BundleUtils;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
@@ -492,7 +492,9 @@ public class EditBookFieldsFragment extends BookAbstractFragmentWithCoverImage i
         switch (requestCode) {
             case EditAuthorListActivity.REQUEST_CODE: /* dd74343a-50ff-4ce9-a2e4-a75f7bcf9e36 */
                 if (resultCode == Activity.RESULT_OK && data != null && data.hasExtra(UniqueId.BKEY_AUTHOR_ARRAY)) {
-                    book.putAuthorList(ArrayUtils.getAuthorListFromIntentExtras(data));
+                    ArrayList<Author> list = BundleUtils.getListFromBundle(UniqueId.BKEY_AUTHOR_ARRAY, data.getExtras());
+                    book.putAuthorList(list != null ? list : new ArrayList<Author>());
+
                     getBookManager().setDirty(true);
                 } else {
                     // Even though the dialog was terminated, some authors MAY have been updated/added.
@@ -508,7 +510,9 @@ public class EditBookFieldsFragment extends BookAbstractFragmentWithCoverImage i
 
             case EditSeriesListActivity.REQUEST_CODE: /* bca659b6-dfb9-4a97-b651-5b05ad102400 */
                 if (resultCode == Activity.RESULT_OK && data != null && data.hasExtra(UniqueId.BKEY_SERIES_ARRAY)) {
-                    book.putSeriesList(ArrayUtils.getSeriesListFromIntentExtras(data));
+                    ArrayList<Series> list = BundleUtils.getListFromBundle(UniqueId.BKEY_SERIES_ARRAY, data.getExtras());
+                    book.putSeriesList(list != null ? list : new ArrayList<Series>());
+
                     populateSeriesListField(book);
                     getBookManager().setDirty(true);
                 }

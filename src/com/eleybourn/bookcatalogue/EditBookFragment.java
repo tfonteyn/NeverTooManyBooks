@@ -57,8 +57,6 @@ import java.util.List;
  * 2. Notes
  * 3. Anthology titles
  * 4. Loan Book -> ENHANCE: remove this from this activity into either its own, or into a DialogFragment
- *
- * @author Evan Leybourn
  */
 public class EditBookFragment extends BookAbstractFragment implements
         CheckListEditorDialogFragment.OnCheckListEditorResultsListener,

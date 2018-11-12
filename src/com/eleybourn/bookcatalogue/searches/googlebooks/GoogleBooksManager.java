@@ -16,7 +16,6 @@ import org.xml.sax.SAXException;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Objects;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -38,17 +37,24 @@ public class GoogleBooksManager {
         BookCatalogueApp.Prefs.putString(PREFS_HOST_URL, url);
     }
 
+    /**
+     *
+     * @param isbn for book cover to find
+     *
+     * @return found & saved File, or null when none
+     */
     @Nullable
     static public File getCoverImage(final @NonNull String isbn) {
-        Bundle mBookData = new Bundle();
+        Bundle bookData = new Bundle();
         try {
-            search(isbn, "", "", mBookData, true);
-            if (mBookData.containsKey(UniqueId.BKEY_THUMBNAIL_FILES_SPEC)
-                    && mBookData.getString(UniqueId.BKEY_THUMBNAIL_FILES_SPEC) != null) {
-                File fromFile = new File(Objects.requireNonNull(mBookData.getString(UniqueId.BKEY_THUMBNAIL_FILES_SPEC)));
-                File toFile = new File(fromFile.getAbsolutePath() + "_" + isbn);
-                StorageUtils.renameFile(fromFile, toFile);
-                return toFile;
+            search(isbn, "", "", bookData, true);
+
+            String fileSpec = bookData.getString(UniqueId.BKEY_THUMBNAIL_FILE_SPEC);
+            if (fileSpec != null) {
+                File found = new File(fileSpec);
+                File coverFile = new File(found.getAbsolutePath() + "_" + isbn);
+                StorageUtils.renameFile(found, coverFile);
+                return coverFile;
             } else {
                 return null;
             }
@@ -59,8 +65,8 @@ public class GoogleBooksManager {
     }
 
     public static void search(final @NonNull String isbn,
-                              @NonNull String author,
-                              @NonNull String title,
+                              final @NonNull String author,
+                              final @NonNull String title,
                               final @NonNull Bundle /* out */ book,
                               final boolean fetchThumbnail) throws IOException {
 
@@ -72,10 +78,8 @@ public class GoogleBooksManager {
             if (author.isEmpty() && title.isEmpty()) {
                 return;
             }
-            //replace spaces with %20
-            author = author.replace(" ", "%20");
-            title = title.replace(" ", "%20");
-            path += "?q=" + "intitle%3A" + title + "%2Binauthor%3A" + author + "";
+            //replace spaces in author/title with %20
+            path += "?q=" + "intitle%3A" + title.replace(" ", "%20") + "%2Binauthor%3A" + author.replace(" ", "%20") + "";
         }
 
         SAXParserFactory factory = SAXParserFactory.newInstance();

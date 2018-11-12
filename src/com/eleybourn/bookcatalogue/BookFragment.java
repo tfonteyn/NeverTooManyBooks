@@ -31,6 +31,7 @@ import com.eleybourn.bookcatalogue.entities.BookManager;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.entities.TOCEntry;
 import com.eleybourn.bookcatalogue.utils.BookUtils;
+import com.eleybourn.bookcatalogue.utils.BundleUtils;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
@@ -271,14 +272,8 @@ public class BookFragment extends BookAbstractFragmentWithCoverImage implements 
         }
 
         // ok, we absolutely have a list, get the position we need to be on.
-        int pos;
-        if (savedInstanceState != null && savedInstanceState.containsKey(REQUEST_BKEY_FLATTENED_BOOKLIST_POSITION)) {
-            pos = savedInstanceState.getInt(REQUEST_BKEY_FLATTENED_BOOKLIST_POSITION);
-        } else if (args.containsKey(REQUEST_BKEY_FLATTENED_BOOKLIST_POSITION)) {
-            pos = args.getInt(REQUEST_BKEY_FLATTENED_BOOKLIST_POSITION);
-        } else {
-            pos = 0;
-        }
+        int pos = BundleUtils.getIntFromBundles(REQUEST_BKEY_FLATTENED_BOOKLIST_POSITION, savedInstanceState,args);
+
         mFlattenedBooklist.moveTo(pos);
         // the book might have moved around. So see if we can find it.
         while (mFlattenedBooklist.getBookId() != getBook().getBookId()) {

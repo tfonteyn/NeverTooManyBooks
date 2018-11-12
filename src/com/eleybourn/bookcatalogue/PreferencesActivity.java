@@ -244,7 +244,7 @@ public class PreferencesActivity extends PreferencesBaseActivity {
      * Display current preferences and set handlers to catch changes.
      */
     @Override
-    protected void initViews(@NonNull Properties globalProps) {
+    protected void initFields(@NonNull Properties globalProps) {
         // Add the locally constructed properties
         for (Property p : mProperties)
             globalProps.add(p);

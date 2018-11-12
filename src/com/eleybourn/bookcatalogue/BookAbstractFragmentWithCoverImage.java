@@ -28,8 +28,8 @@ import com.eleybourn.bookcatalogue.database.CoversDbHelper;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
-import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.dialogs.SelectOneDialog;
+import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.IsbnUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
@@ -85,8 +85,10 @@ public abstract class BookAbstractFragmentWithCoverImage extends BookAbstractFra
         // See how big the display is and use that to set bitmap sizes
         initThumbSize(requireActivity());
 
-        // add the cover image.
-        mFields.add(R.id.coverImage, "", UniqueId.KEY_BOOK_THUMBNAIL);
+        // add the cover image
+        mFields.add(R.id.coverImage, "", UniqueId.BKEY_HAVE_THUMBNAIL)
+                .setDoNotFetch(true);
+
         // We need the view in many places. Cache it, to avoid clutter & casting
         mCoverView = mFields.getField(R.id.coverImage).getView();
         if (mFields.getField(R.id.coverImage).visible) {

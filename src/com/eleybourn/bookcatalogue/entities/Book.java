@@ -42,8 +42,8 @@ import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.editordialog.CheckListItem;
 import com.eleybourn.bookcatalogue.dialogs.editordialog.CheckListItemBase;
-import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
+import com.eleybourn.bookcatalogue.utils.Utils;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -292,7 +292,7 @@ public class Book extends DataManager {
         for (Bookshelf bookshelf : getBookshelfList()) {
             list.add(bookshelf.name);
         }
-        return ArrayUtils.toDisplayString(list);
+        return Utils.toDisplayString(list);
     }
 
     /**

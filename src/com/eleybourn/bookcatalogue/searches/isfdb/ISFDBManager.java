@@ -38,17 +38,24 @@ public class ISFDBManager {
         BookCatalogueApp.Prefs.putString(PREFS_HOST_URL, url);
     }
 
+    /**
+     *
+     * @param isbn for book cover to find
+     *
+     * @return found & saved File, or null when none
+     */
     @Nullable
     static public File getCoverImage(final @NonNull String isbn) {
         Bundle bookData = new Bundle();
         try {
             search(isbn, "", "", bookData, true);
-            String fileSpec = bookData.getString(UniqueId.BKEY_THUMBNAIL_FILES_SPEC);
+            String fileSpec = bookData.getString(UniqueId.BKEY_THUMBNAIL_FILE_SPEC);
+
             if (fileSpec != null) {
-                File incomingFile = new File(fileSpec);
-                File newName = new File(incomingFile.getAbsolutePath() + "_" + isbn);
-                StorageUtils.renameFile(incomingFile, newName);
-                return newName;
+                File found = new File(fileSpec);
+                File coverFile = new File(found.getAbsolutePath() + "_" + isbn);
+                StorageUtils.renameFile(found, coverFile);
+                return coverFile;
             } else {
                 return null;
             }
@@ -59,14 +66,10 @@ public class ISFDBManager {
     }
 
     public static void search(final @NonNull String isbn,
-                              @NonNull String author,
-                              @NonNull String title,
+                              final @NonNull String author,
+                              final @NonNull String title,
                               final @NonNull Bundle /* out */ book,
                               final boolean fetchThumbnail) throws IOException {
-        //replace spaces with %20
-        author = author.replace(" ", "%20");
-        title = title.replace(" ", "%20");
-
         if (IsbnUtils.isValid(isbn)) {
             List<String> editions = new Editions(isbn).fetch();
             if (editions.size() > 0) {
@@ -74,8 +77,9 @@ public class ISFDBManager {
                 isfdbBook.fetch(book, fetchThumbnail);
             }
         } else {
+            //replace spaces in author/title with %20
             //TODO: implement ISFDB search by author/title
-            String path = getBaseURL() + "/cgi-bin/adv_search_results.cgi?title_title%3A" + title + "%2Bauthor_canonical%3A" + author;
+            String path = getBaseURL() + "/cgi-bin/adv_search_results.cgi?title_title%3A" + title.replace(" ", "%20") + "%2Bauthor_canonical%3A" + author.replace(" ", "%20");
             throw new UnsupportedOperationException(path);
         }
         //TODO: only let IOExceptions out (except RTE's)

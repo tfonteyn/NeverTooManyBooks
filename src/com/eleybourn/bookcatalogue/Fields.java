@@ -52,9 +52,9 @@ import com.eleybourn.bookcatalogue.datamanager.Datum;
 import com.eleybourn.bookcatalogue.datamanager.validators.ValidatorException;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Book;
-import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.RTE;
+import com.eleybourn.bookcatalogue.utils.Utils;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -349,11 +349,60 @@ public class Fields extends ArrayList<Fields.Field> {
     }
 
     /**
+     * Reset all field visibility based on user preferences
+     */
+    @SuppressWarnings("WeakerAccess")
+    public void resetVisibility() {
+        FieldsContext context = getContext();
+        for (Field field : this) {
+            field.resetVisibility(context);
+        }
+    }
+
+    /**
+     * Loop through and apply validators, generating a Bundle collection as a by-product.
+     * The Bundle collection is then used in cross-validation as a second pass, and finally
+     * passed to each defined cross-validator.
+     *
+     * 2018-11-11: this and all related code is not used at all in the original code.
+     *
+     * {@link ValidatorException} are added to {@link #mValidationExceptions}
+     *
+     * @param values The Bundle collection to fill
+     *
+     * @return boolean True if all validation passed.
+     */
+    @SuppressWarnings("unused")
+    public boolean validateAllFields(final @NonNull Bundle values) {
+        boolean isOk = true;
+        mValidationExceptions.clear();
+
+        // First, just validate all fields with the cross-val flag set false
+        if (!validateAllFields(values, false)) {
+            isOk = false;
+        }
+
+        // Now re-run with cross-val set to true.
+        if (!validateAllFields(values, true)) {
+            isOk = false;
+        }
+
+        // Finally run the local cross-validation
+        for (FieldCrossValidator validator : mCrossValidators) {
+            try {
+                validator.validate(this, values);
+            } catch (ValidatorException e) {
+                mValidationExceptions.add(e);
+                isOk = false;
+            }
+        }
+        return isOk;
+    }
+
+    /**
      * Internal utility routine to perform one loop validating all fields.
      *
-     * TOMF: as it turns out, the original code never set the {@link FieldValidator} at all.
-     * But leaving this in place for now.
-     * Called by {@link #validateAllFields(Bundle)} which however is not even called at all
+     * 2018-11-11: Called by {@link #validateAllFields(Bundle)} which however is not called at all
      *
      * {@link ValidatorException} are added to {@link #mValidationExceptions}
      *
@@ -382,56 +431,6 @@ public class Fields extends ArrayList<Fields.Field> {
                 if (!field.column.isEmpty()) {
                     field.putValueInto(values);
                 }
-            }
-        }
-        return isOk;
-    }
-
-    /**
-     * Reset all field visibility based on user preferences
-     */
-    @SuppressWarnings("WeakerAccess")
-    public void resetVisibility() {
-        FieldsContext context = getContext();
-        for (Field field : this) {
-            field.resetVisibility(context);
-        }
-    }
-
-    /**
-     * Loop through and apply validators, generating a Bundle collection as a by-product.
-     * The Bundle collection is then used in cross-validation as a second pass, and finally
-     * passed to each defined cross-validator.
-     *
-     * TOMF: as it turns out, the original code never set the {@link FieldValidator} at all. and also never called this method even.
-     *
-     * {@link ValidatorException} are added to {@link #mValidationExceptions}
-     *
-     * @param values The Bundle collection to fill
-     *
-     * @return boolean True if all validation passed.
-     */
-    public boolean validateAllFields(final @NonNull Bundle values) {
-        boolean isOk = true;
-        mValidationExceptions.clear();
-
-        // First, just validate all fields with the cross-val flag set false
-        if (!validateAllFields(values, false)) {
-            isOk = false;
-        }
-
-        // Now re-run with cross-val set to true.
-        if (!validateAllFields(values, true)) {
-            isOk = false;
-        }
-
-        // Finally run the local cross-validation
-        for (FieldCrossValidator validator : mCrossValidators) {
-            try {
-                validator.validate(this, values);
-            } catch (ValidatorException e) {
-                mValidationExceptions.add(e);
-                isOk = false;
             }
         }
         return isOk;
@@ -471,6 +470,9 @@ public class Fields extends ArrayList<Fields.Field> {
         mCrossValidators.add(validator);
     }
 
+    /**
+     * added to the Fields collection with (2018-11-11) a simple call to setDirty(true)
+     */
     public interface AfterFieldChangeListener {
         void afterFieldChange(final @NonNull Field field, final @Nullable String newValue);
     }
@@ -557,7 +559,7 @@ public class Fields extends ArrayList<Fields.Field> {
      * This is done in {@link #validateAllFields(Bundle)}
      *
      * This is an alternate method of applying cross-validation.
-     * TOMF: as it turns out, the original code never used this.
+     * 2018-11-11: the original code never actively used this.
      *
      * It basically seems {@link DataManager} replaced/implemented validation instead
      *
@@ -1150,7 +1152,7 @@ public class Fields extends ArrayList<Fields.Field> {
                     list.add(BookCatalogueApp.getResourceString(Book.EDITIONS.get(edition)));
                 }
             }
-            return ArrayUtils.toDisplayString(list);
+            return Utils.toDisplayString(list);
         }
 
         @NonNull
@@ -1342,7 +1344,6 @@ public class Fields extends ArrayList<Fields.Field> {
         }
 
         /**
-         * TOMF: as it turns out, the original code never used this.
          *
          * @param validator to use
          *

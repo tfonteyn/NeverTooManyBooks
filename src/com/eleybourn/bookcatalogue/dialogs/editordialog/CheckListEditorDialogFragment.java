@@ -24,7 +24,7 @@ import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.utils.ArrayUtils;
+import com.eleybourn.bookcatalogue.utils.BundleUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,17 +75,7 @@ public class CheckListEditorDialogFragment<T> extends EditorDialogFragment {
         initStandardArgs(savedInstanceState);
 
         // Restore saved state info
-        if (savedInstanceState != null) {
-            if (savedInstanceState.containsKey(BKEY_CHECK_LIST)) {
-                mList = ArrayUtils.getListFromBundle(savedInstanceState, BKEY_CHECK_LIST);
-            }
-        } else {
-            Bundle args = getArguments();
-            //noinspection ConstantConditions
-            if (args.containsKey(BKEY_CHECK_LIST)) {
-                mList = ArrayUtils.getListFromBundle(args, BKEY_CHECK_LIST);
-            }
-        }
+        mList = BundleUtils.getListFromBundles(BKEY_CHECK_LIST, savedInstanceState, getArguments());
 
         CheckListEditorDialog<T> editor = new CheckListEditorDialog<>(requireActivity());
         if (mTitleId != 0) {

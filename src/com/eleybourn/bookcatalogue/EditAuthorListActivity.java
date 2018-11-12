@@ -221,28 +221,16 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
             return true;
         }
 
-        final AlertDialog dialog = new AlertDialog.Builder(this)
-                .setMessage(getString(R.string.unsaved_edits))
-                .setTitle(R.string.unsaved_edits_title)
-                .setIconAttribute(android.R.attr.alertDialogIcon)
-                .create();
-
-        dialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.yes),
-                new DialogInterface.OnClickListener() {
-                    public void onClick(final DialogInterface dialog, final int which) {
+        StandardDialogs.showConfirmUnsavedEditsDialog(this,
+                /* run when user clicks 'exit' */
+                new Runnable() {
+                    @Override
+                    public void run() {
                         view.setText("");
                         findViewById(R.id.confirm).performClick();
                     }
+                    /* if they click 'cancel', the dialog just closes without further actions */
                 });
-
-        dialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.no),
-                new DialogInterface.OnClickListener() {
-                    public void onClick(final DialogInterface dialog, final int which) {
-                        //do nothing
-                    }
-                });
-
-        dialog.show();
         return false;
     }
 

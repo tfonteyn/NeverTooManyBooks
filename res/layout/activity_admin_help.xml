@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -23,23 +24,16 @@
             android:paddingStart="@dimen/padding_border">
 
             <TextView
-                android:id="@+id/help_instructions"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:paddingTop="@dimen/padding_border_double"
                 android:text="@string/help"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
-
-            <TextView
-                android:id="@+id/click_here"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/about_help_click_here"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <TextView
                 android:id="@+id/help_page"
                 style="@style/link_url"
-                android:text="@string/url_help" />
+                tools:text="help page url"/>
 
             <TextView
                 android:layout_width="match_parent"

@@ -71,8 +71,7 @@ public class BackupChooserActivity extends FileChooserBaseActivity implements
     public void onCreate(final @Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Set the correct title
-        this.setTitle(isSaveDialog() ? R.string.backup_to_archive : R.string.import_from_archive);
+        setTitle(isSaveDialog() ? R.string.backup_to_archive : R.string.import_from_archive);
 
         if (savedInstanceState != null && savedInstanceState.containsKey(UniqueId.BKEY_FILE_SPEC)) {
             mBackupFile = new File(Objects.requireNonNull(savedInstanceState.getString(UniqueId.BKEY_FILE_SPEC)));

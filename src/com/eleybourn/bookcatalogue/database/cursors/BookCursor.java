@@ -54,9 +54,9 @@ public class BookCursor extends TrackedCursor implements AutoCloseable {
 
     public final long getId() {
         if (mIdCol < 0) {
-            mIdCol = getColumnIndex(DatabaseDefinitions.DOM_ID.name);
+            mIdCol = getColumnIndex(DatabaseDefinitions.DOM_PK_ID.name);
             if (mIdCol < 0)
-                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_ID.name);
+                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_PK_ID.name);
         }
         return getLong(mIdCol);
     }

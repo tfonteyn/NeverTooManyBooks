@@ -763,7 +763,7 @@ public class BooksOnBookshelf extends BaseListActivity implements
                 int last = lv.getLastVisiblePosition();
                 int centre = (last + first) / 2;
                 if (DEBUG_SWITCHES.BOOKS_ON_BOOKSHELF && BuildConfig.DEBUG) {
-                    Logger.info(this, " New List: (" + first + ", " + last + ")<-" + centre);
+                    Logger.info("", " New List: (" + first + ", " + last + ")<-" + centre);
                 }
                 // Get the first 'target' and make it 'best candidate'
                 BookRowInfo best = targetRows.get(0);
@@ -779,12 +779,12 @@ public class BooksOnBookshelf extends BaseListActivity implements
                 }
 
                 if (DEBUG_SWITCHES.BOOKS_ON_BOOKSHELF && BuildConfig.DEBUG) {
-                    Logger.info(this, " Best listPosition @" + best.listPosition);
+                    Logger.info("", " Best listPosition @" + best.listPosition);
                 }
                 // Try to put at top if not already visible, or only partially visible
                 if (first >= best.listPosition || last <= best.listPosition) {
                     if (DEBUG_SWITCHES.BOOKS_ON_BOOKSHELF && BuildConfig.DEBUG) {
-                        Logger.info(this, " Adjusting position");
+                        Logger.info("", " Adjusting position");
                     }
                     // setSelectionFromTop does not seem to always do what is expected.
                     // But adding smoothScrollToPosition seems to get the job done reasonably well.
@@ -1239,7 +1239,12 @@ public class BooksOnBookshelf extends BaseListActivity implements
      * @param isFullRebuild Indicates whole table structure needs rebuild, vs. just do a reselect of underlying data
      */
     private void initBookList(final boolean isFullRebuild) {
-        mTaskQueue.enqueue(new GetBookListTask(isFullRebuild,
+
+        //TOMF: FIXME: now confirmed, this is one from the original code. isFullRebuild=false is BROKEN.
+        // Hardcoded override to always do a full rebuild.
+
+//        mTaskQueue.enqueue(new GetBookListTask(isFullRebuild,
+                mTaskQueue.enqueue(new GetBookListTask(true,
                 mCurrentBookshelf.id,
                 mSearchText,
                 mAuthorSearchText,
@@ -1295,9 +1300,7 @@ public class BooksOnBookshelf extends BaseListActivity implements
             if (!isFullRebuild && BuildConfig.DEBUG) {
                 Logger.info(this, " constructor, isFullRebuild=false");
             }
-            //TOMF isFullRebuild=false failing
-            //isFullRebuild = isFullRebuild;
-            this.isFullRebuild = true;
+            this.isFullRebuild = isFullRebuild;
 
             // If not a full rebuild then just use the current builder to re-query the underlying data
             //noinspection ConstantConditions

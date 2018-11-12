@@ -63,7 +63,9 @@ public class SqlStatementManager implements AutoCloseable {
     }
 
     @NonNull
-    public SynchronizedStatement add(final @NonNull  SynchronizedDb db, final @NonNull  String name, final @NonNull  String sql) {
+    public SynchronizedStatement add(final @NonNull SynchronizedDb db,
+                                     final @NonNull String name,
+                                     final @NonNull String sql) {
         SynchronizedStatement stmt = db.compileStatement(sql);
         SynchronizedStatement old = mStatements.get(name);
         mStatements.put(name, stmt);

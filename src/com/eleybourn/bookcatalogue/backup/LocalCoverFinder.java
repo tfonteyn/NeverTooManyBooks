@@ -116,7 +116,7 @@ public class LocalCoverFinder implements Importer.CoverFinder {
 
     /**
      * Copy a specified source file into the default cover location for a new file.
-     * DO NO OVERWRITE EXISTING FILES.
+     * DO NO Overwrite EXISTING FILES.
      */
     private void copyFileToCoverImageIfMissing(final @Nullable File orig, final @NonNull String newUuid) throws IOException {
         // Nothing to copy?
@@ -135,7 +135,7 @@ public class LocalCoverFinder implements Importer.CoverFinder {
 
     /**
      * Rename/move a specified source file into the default cover location for a new file.
-     * DO NO OVERWRITE EXISTING FILES.
+     * DO NO Overwrite EXISTING FILES.
      */
     private void renameFileToCoverImageIfMissing(final @Nullable File orig, final @NonNull String newUuid) {
         // Nothing to copy?

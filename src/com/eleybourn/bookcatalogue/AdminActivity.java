@@ -42,11 +42,11 @@ import com.eleybourn.bookcatalogue.booklist.BooklistStylesActivity;
 import com.eleybourn.bookcatalogue.database.CoversDbHelper;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
-import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
+import com.eleybourn.bookcatalogue.dialogs.SelectOneDialog;
 import com.eleybourn.bookcatalogue.dialogs.SelectOneDialog.SimpleDialogFileItem;
 import com.eleybourn.bookcatalogue.dialogs.SelectOneDialog.SimpleDialogItem;
 import com.eleybourn.bookcatalogue.dialogs.SelectOneDialog.SimpleDialogOnClickListener;
-import com.eleybourn.bookcatalogue.dialogs.SelectOneDialog;
+import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.filechooser.BackupChooserActivity;
 import com.eleybourn.bookcatalogue.searches.SearchAdminActivity;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsRegisterActivity;
@@ -54,6 +54,7 @@ import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsUtils;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingAdminActivity;
 import com.eleybourn.bookcatalogue.tasks.ManagedTask;
 import com.eleybourn.bookcatalogue.tasks.TaskListActivity;
+import com.eleybourn.bookcatalogue.utils.BundleUtils;
 import com.eleybourn.bookcatalogue.utils.GenericFileProvider;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
@@ -94,20 +95,18 @@ public class AdminActivity extends BaseActivityWithTasks {
         super.onCreate(savedInstanceState);
         this.setTitle(R.string.menu_administration_long);
 
-        Bundle extras = getIntent().getExtras();
-        if (extras != null && extras.containsKey(BKEY_DO_AUTO)) {
-            String val = extras.getString(BKEY_DO_AUTO);
-            if (val != null) {
-                switch (val) {
-                    case BVAL_DO_AUTO_EXPORT:
-                        mExportToCsvOnStartup = true;
-                        mFinishAfterExport = true;
-                        break;
-                    default:
-                        throw new IllegalArgumentException("Unsupported BKEY_DO_AUTO option: " + val);
-                }
+        String val = BundleUtils.getStringFromBundles(BKEY_DO_AUTO, getIntent().getExtras());
+        if (val != null) {
+            switch (val) {
+                case BVAL_DO_AUTO_EXPORT:
+                    mExportToCsvOnStartup = true;
+                    mFinishAfterExport = true;
+                    break;
+                default:
+                    throw new IllegalArgumentException("Unsupported BKEY_DO_AUTO option: " + val);
             }
         }
+
         setupAdminPage();
     }
 
@@ -147,6 +146,19 @@ public class AdminActivity extends BaseActivityWithTasks {
             });
         }
 
+        /* Preferences */
+        {
+            View v = findViewById(R.id.lbl_preferences);
+            // Make line flash when clicked.
+            v.setBackgroundResource(android.R.drawable.list_selector_background);
+            v.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(AdminActivity.this, PreferencesActivity.class);
+                    startActivityForResult(intent, PreferencesActivity.REQUEST_CODE); /* 46f41e7b-f49c-465d-bea0-80ec85330d1c */
+                }
+            });
+        }
         /* Export (backup) to Archive */
         {
             View v = findViewById(R.id.lbl_backup_catalogue);
@@ -432,7 +444,7 @@ public class AdminActivity extends BaseActivityWithTasks {
     @CallSuper
     protected void onActivityResult(final int requestCode, final int resultCode, final @Nullable Intent data) {
         if (BuildConfig.DEBUG) {
-            Logger.info(this,"onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
+            Logger.info(this, "onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
         }
 
         switch (requestCode) {
@@ -471,7 +483,7 @@ public class AdminActivity extends BaseActivityWithTasks {
         if (task.isCancelled()) {
             if (mFinishAfterExport)
                 setResult(Activity.RESULT_OK);
-                finish();
+            finish();
             return;
         }
 
@@ -521,7 +533,7 @@ public class AdminActivity extends BaseActivityWithTasks {
             public void onDismiss(DialogInterface dialog) {
                 if (mFinishAfterExport)
                     setResult(Activity.RESULT_OK);
-                    finish();
+                finish();
             }
         });
 

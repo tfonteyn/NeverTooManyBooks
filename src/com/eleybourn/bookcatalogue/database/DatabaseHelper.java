@@ -17,14 +17,16 @@ import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 import java.io.File;
 
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ANTHOLOGY_ID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_ANTHOLOGY_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FAMILY_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_GIVEN_NAMES;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_ID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_AUTHOR_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_POSITION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKSHELF;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKSHELF_ID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_BOOKSHELF_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ANTHOLOGY_BITMASK;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ISFDB_ID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LIBRARY_THING_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_TOC_ENTRY_POSITION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_ADDED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_PUBLISHED;
@@ -33,7 +35,7 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_GENRE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_GOODREADS_BOOK_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_GOODREADS_LAST_SYNC_DATE;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_BOOK_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ISBN;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LANGUAGE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PRICE_LISTED;
@@ -54,10 +56,10 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_UUID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DESCRIPTION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FIRST_PUBLICATION;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PK_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LAST_UPDATE_DATE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LOANED_TO;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_ID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_SERIES_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_ANTHOLOGY;
@@ -131,13 +133,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     static final String DATABASE_CREATE_LOAN =
             "CREATE TABLE " + TBL_LOAN + " (_id integer primary key autoincrement, " +
-                    DOM_BOOK_ID + " integer REFERENCES " + TBL_BOOKS + " ON DELETE SET NULL ON UPDATE SET NULL, " +
+                    DOM_FK_BOOK_ID + " integer REFERENCES " + TBL_BOOKS + " ON DELETE SET NULL ON UPDATE SET NULL, " +
                     DOM_LOANED_TO + " text " +
                     ")";
     static final String DATABASE_CREATE_BOOK_BOOKSHELF_WEAK =
             "CREATE TABLE " + TBL_BOOK_BOOKSHELF + "(" +
-                    DOM_BOOK_ID + " integer REFERENCES " + TBL_BOOKS + " ON DELETE SET NULL ON UPDATE SET NULL, " +
-                    DOM_BOOKSHELF_ID + " integer REFERENCES " + TBL_BOOKSHELF + " ON DELETE SET NULL ON UPDATE SET NULL" +
+                    DOM_FK_BOOK_ID + " integer REFERENCES " + TBL_BOOKS + " ON DELETE SET NULL ON UPDATE SET NULL, " +
+                    DOM_FK_BOOKSHELF_ID + " integer REFERENCES " + TBL_BOOKSHELF + " ON DELETE SET NULL ON UPDATE SET NULL" +
                     ")";
     static final String DATABASE_CREATE_SERIES =
             "CREATE TABLE " + TBL_SERIES + " (_id integer primary key autoincrement, " +
@@ -145,29 +147,29 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     ")";
     static final String DATABASE_CREATE_BOOK_SERIES =
             "CREATE TABLE " + TBL_BOOK_SERIES + "(" +
-                    DOM_BOOK_ID + " integer REFERENCES " + TBL_BOOKS + " ON DELETE CASCADE ON UPDATE CASCADE, " +
-                    DOM_SERIES_ID + " integer REFERENCES " + TBL_SERIES + " ON DELETE SET NULL ON UPDATE CASCADE, " +
+                    DOM_FK_BOOK_ID + " integer REFERENCES " + TBL_BOOKS + " ON DELETE CASCADE ON UPDATE CASCADE, " +
+                    DOM_FK_SERIES_ID + " integer REFERENCES " + TBL_SERIES + " ON DELETE SET NULL ON UPDATE CASCADE, " +
                     DOM_BOOK_SERIES_NUM + " text, " +
                     DOM_BOOK_SERIES_POSITION + " integer," +
-                    "PRIMARY KEY(" + DOM_BOOK_ID + ", " + DOM_BOOK_SERIES_POSITION + ")" +
+                    "PRIMARY KEY(" + DOM_FK_BOOK_ID + ", " + DOM_BOOK_SERIES_POSITION + ")" +
                     ")";
     static final String DATABASE_CREATE_BOOK_AUTHOR =
             "CREATE TABLE " + TBL_BOOK_AUTHOR + "(" +
-                    DOM_BOOK_ID + " integer REFERENCES " + TBL_BOOKS + " ON DELETE CASCADE ON UPDATE CASCADE, " +
-                    DOM_AUTHOR_ID + " integer REFERENCES " + TBL_AUTHORS + " ON DELETE SET NULL ON UPDATE CASCADE, " +
+                    DOM_FK_BOOK_ID + " integer REFERENCES " + TBL_BOOKS + " ON DELETE CASCADE ON UPDATE CASCADE, " +
+                    DOM_FK_AUTHOR_ID + " integer REFERENCES " + TBL_AUTHORS + " ON DELETE SET NULL ON UPDATE CASCADE, " +
                     DOM_AUTHOR_POSITION + " integer NOT NULL, " +
-                    "PRIMARY KEY(" + DOM_BOOK_ID + ", " + DOM_AUTHOR_POSITION + ")" +
+                    "PRIMARY KEY(" + DOM_FK_BOOK_ID + ", " + DOM_AUTHOR_POSITION + ")" +
                     ")";
     private static final String DATABASE_CREATE_ANTHOLOGY =
             "CREATE TABLE " + TBL_ANTHOLOGY + " (_id integer primary key autoincrement, " +
-                    DOM_AUTHOR_ID + " integer not null REFERENCES " + TBL_AUTHORS + ", " +
+                    DOM_FK_AUTHOR_ID + " integer not null REFERENCES " + TBL_AUTHORS + ", " +
                     DOM_TITLE + " text not null, " +
                     DOM_FIRST_PUBLICATION + " date" +
                     ")";
     private static final String DATABASE_CREATE_BOOK_TOC_ENTRIES =
             "CREATE TABLE " + TBL_BOOK_TOC_ENTRIES + "(_id integer primary key autoincrement, " +
-                    DOM_BOOK_ID + " integer REFERENCES " + TBL_BOOKS + " ON DELETE SET NULL ON UPDATE SET NULL, " +
-                    DOM_ANTHOLOGY_ID + " integer REFERENCES " + TBL_ANTHOLOGY + " ON DELETE CASCADE ON UPDATE CASCADE, " +
+                    DOM_FK_BOOK_ID + " integer REFERENCES " + TBL_BOOKS + " ON DELETE SET NULL ON UPDATE SET NULL, " +
+                    DOM_FK_ANTHOLOGY_ID + " integer REFERENCES " + TBL_ANTHOLOGY + " ON DELETE CASCADE ON UPDATE CASCADE, " +
                     DOM_BOOK_TOC_ENTRY_POSITION + " integer" +
                     ")";
 
@@ -199,8 +201,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     DOM_BOOK_GENRE + " text, " +
                     DOM_BOOK_LANGUAGE + " text default '', " +
                     DOM_BOOK_DATE_ADDED + " datetime default current_timestamp, " +
+
+                    DOM_BOOK_ISFDB_ID + " integer, " +
+                    DOM_BOOK_LIBRARY_THING_ID + " integer, " +
                     DOM_BOOK_GOODREADS_BOOK_ID + " integer, " +
                     DOM_BOOK_GOODREADS_LAST_SYNC_DATE + " date default '0000-00-00', " +
+
                     DOM_BOOK_UUID + " text not null default (lower(hex(randomblob(16)))), " +
                     DOM_LAST_UPDATE_DATE + " datetime not null default current_timestamp " +
                     ")";
@@ -220,24 +226,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             "CREATE UNIQUE INDEX IF NOT EXISTS books_uuid ON " + TBL_BOOKS + " (" + DOM_BOOK_UUID + ");",
             "CREATE INDEX IF NOT EXISTS books_gr_book ON " + TBL_BOOKS + " (" + DOM_BOOK_GOODREADS_BOOK_ID + ");",
 
-            "CREATE UNIQUE INDEX IF NOT EXISTS series_series ON " + TBL_SERIES + " (" + DOM_ID + ");",
+            "CREATE UNIQUE INDEX IF NOT EXISTS series_series ON " + TBL_SERIES + " (" + DOM_PK_ID + ");",
 
-            "CREATE UNIQUE INDEX IF NOT EXISTS loan_book_loaned_to ON " + TBL_LOAN + " (" + DOM_BOOK_ID + ");",
+            "CREATE UNIQUE INDEX IF NOT EXISTS loan_book_loaned_to ON " + TBL_LOAN + " (" + DOM_FK_BOOK_ID + ");",
 
-            "CREATE INDEX IF NOT EXISTS anthology_author ON " + TBL_ANTHOLOGY + " (" + DOM_AUTHOR_ID + ");",
+            "CREATE INDEX IF NOT EXISTS anthology_author ON " + TBL_ANTHOLOGY + " (" + DOM_FK_AUTHOR_ID + ");",
             "CREATE INDEX IF NOT EXISTS anthology_title ON " + TBL_ANTHOLOGY + " (" + DOM_TITLE + ");",
-            "CREATE UNIQUE INDEX IF NOT EXISTS anthology_pk_idx ON " + TBL_ANTHOLOGY + " (" + DOM_AUTHOR_ID + ", " + DOM_TITLE + ")",
 
-            "CREATE INDEX IF NOT EXISTS book_anthology_anthology ON " + TBL_BOOK_TOC_ENTRIES + " (" + DOM_ANTHOLOGY_ID + ");",
-            "CREATE INDEX IF NOT EXISTS book_anthology_book ON " + TBL_BOOK_TOC_ENTRIES + " (" + DOM_BOOK_ID + ");",
+            "CREATE UNIQUE INDEX IF NOT EXISTS anthology_pk_idx ON " + TBL_ANTHOLOGY + " (" + DOM_FK_AUTHOR_ID + ", " + DOM_TITLE + ")",
 
-            "CREATE INDEX IF NOT EXISTS book_bookshelf_weak_book ON " + TBL_BOOK_BOOKSHELF + " (" + DOM_BOOK_ID + ");",
-            "CREATE INDEX IF NOT EXISTS book_bookshelf_weak_bookshelf ON " + TBL_BOOK_BOOKSHELF + " (" + DOM_BOOKSHELF_ID + ");",
+            "CREATE INDEX IF NOT EXISTS book_anthology_anthology ON " + TBL_BOOK_TOC_ENTRIES + " (" + DOM_FK_ANTHOLOGY_ID + ");",
+            "CREATE INDEX IF NOT EXISTS book_anthology_book ON " + TBL_BOOK_TOC_ENTRIES + " (" + DOM_FK_BOOK_ID + ");",
 
-            "CREATE UNIQUE INDEX IF NOT EXISTS book_series_series ON " + TBL_BOOK_SERIES + " (" + DOM_SERIES_ID + ", " + DOM_BOOK_ID + ", " + DOM_BOOK_SERIES_NUM + ");",
-            "CREATE UNIQUE INDEX IF NOT EXISTS book_series_book ON " + TBL_BOOK_SERIES + " (" + DOM_BOOK_ID + ", " + DOM_SERIES_ID + ", " + DOM_BOOK_SERIES_NUM + ");",
-            "CREATE UNIQUE INDEX IF NOT EXISTS book_author_author ON " + TBL_BOOK_AUTHOR + " (" + DOM_AUTHOR_ID + ", " + DOM_BOOK_ID + ");",
-            "CREATE UNIQUE INDEX IF NOT EXISTS book_author_book ON " + TBL_BOOK_AUTHOR + " (" + DOM_BOOK_ID + ", " + DOM_AUTHOR_ID + ");",
+            "CREATE INDEX IF NOT EXISTS book_bookshelf_weak_book ON " + TBL_BOOK_BOOKSHELF + " (" + DOM_FK_BOOK_ID + ");",
+            "CREATE INDEX IF NOT EXISTS book_bookshelf_weak_bookshelf ON " + TBL_BOOK_BOOKSHELF + " (" + DOM_FK_BOOKSHELF_ID + ");",
+
+            "CREATE UNIQUE INDEX IF NOT EXISTS book_series_series ON " + TBL_BOOK_SERIES + " (" + DOM_FK_SERIES_ID + ", " + DOM_FK_BOOK_ID + ", " + DOM_BOOK_SERIES_NUM + ");",
+            "CREATE UNIQUE INDEX IF NOT EXISTS book_series_book ON " + TBL_BOOK_SERIES + " (" + DOM_FK_BOOK_ID + ", " + DOM_FK_SERIES_ID + ", " + DOM_BOOK_SERIES_NUM + ");",
+            "CREATE UNIQUE INDEX IF NOT EXISTS book_author_author ON " + TBL_BOOK_AUTHOR + " (" + DOM_FK_AUTHOR_ID + ", " + DOM_FK_BOOK_ID + ");",
+            "CREATE UNIQUE INDEX IF NOT EXISTS book_author_book ON " + TBL_BOOK_AUTHOR + " (" + DOM_FK_BOOK_ID + ", " + DOM_FK_AUTHOR_ID + ");",
     };
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -336,7 +343,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "		    goodreads_book_id = 0,\n" +
                 "		    last_goodreads_sync_date = ''\n" +
                 "		WHERE\n" +
-                "			" + DOM_ID + " = new." + DOM_ID + ";\n" +
+                "			" + DOM_PK_ID + " = new." + DOM_PK_ID + ";\n" +
                 "	End";
         db.execSQL("DROP TRIGGER if Exists " + name);
         db.execSQL("CREATE TRIGGER " + name + body);
@@ -419,12 +426,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             mMessage += "* Cover thumbnails are moved to a 'covers' sub folder to clean up the root folder.\n\n";
             mMessage += "* Configurable website search order.\n";
             mMessage += "* New Search website: ISFDB.\n";
-            mMessage += "* Better Anthology support (Edit/View)\n";
+            mMessage += "* Better Anthology support (Edit/View/cross-book)\n";
             mMessage += "* Anthology titles auto populated (ISFDB site only!)\n";
-            mMessage += "* Books & Anthology titles now have a 'first published' field\n";
-            mMessage += "* Books Editions\n";
-            mMessage += "* Book paid price field\n";
-            mMessage += "* Currency support for prices\n";
+            mMessage += "* New fields:\n";
+            mMessage += "*   Books & Anthology titles now have a 'first published' field\n";
+            mMessage += "*   Books Editions (1st, book-club, etc)\n";
+            mMessage += "*   Book paid price field\n";
+            mMessage += "*   Currency support for prices\n";
+            mMessage += "*   LibraryThing & ISFDB local id\n";
 
             // cleanup of obsolete preferences
             BookCatalogueApp.Prefs.remove("StartupActivity.FAuthorSeriesFixupRequired");
@@ -441,11 +450,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             // move the existing book-anthology links to the new table
             db.execSQL(DATABASE_CREATE_BOOK_TOC_ENTRIES);
             db.execSQL("INSERT INTO " + TBL_BOOK_TOC_ENTRIES +
-                    " SELECT " + DOM_BOOK_ID + ", " + DOM_ID + ", " + DOM_BOOK_TOC_ENTRY_POSITION + " FROM " + TBL_ANTHOLOGY);
+                    " SELECT " + DOM_FK_BOOK_ID + ", " + DOM_PK_ID + ", " + DOM_BOOK_TOC_ENTRY_POSITION + " FROM " + TBL_ANTHOLOGY);
 
             // reorganise the original table
             UpgradeDatabase.recreateAndReloadTable(syncedDb, TBL_ANTHOLOGY.getName(), DATABASE_CREATE_ANTHOLOGY,
-                    /* remove fields: */ DOM_BOOK_ID.name, DOM_BOOK_TOC_ENTRY_POSITION.name);
+                    /* remove fields: */ DOM_FK_BOOK_ID.name, DOM_BOOK_TOC_ENTRY_POSITION.name);
 
             // add new fields
             db.execSQL("ALTER TABLE " + TBL_BOOKS + " ADD " + DOM_FIRST_PUBLICATION + " date");
@@ -454,6 +463,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             db.execSQL("ALTER TABLE " + TBL_BOOKS + " ADD " + DOM_BOOK_PRICE_LISTED_CURRENCY + " text default ''");
             db.execSQL("ALTER TABLE " + TBL_BOOKS + " ADD " + DOM_BOOK_PRICE_PAID + " text default ''");
             db.execSQL("ALTER TABLE " + TBL_BOOKS + " ADD " + DOM_BOOK_PRICE_PAID_CURRENCY + " text default ''");
+
+            db.execSQL("ALTER TABLE " + TBL_BOOKS + " ADD " + DOM_BOOK_ISFDB_ID + " integer");
+            db.execSQL("ALTER TABLE " + TBL_BOOKS + " ADD " + DOM_BOOK_LIBRARY_THING_ID + " integer");
+
 
             // all books with a list price are assumed to be USD based on the only search up to v82 being Amazon US.
             // FIXME upgrade if a user has manually edited the list price, ouch....

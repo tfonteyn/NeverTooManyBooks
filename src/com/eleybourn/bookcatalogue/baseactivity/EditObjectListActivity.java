@@ -40,7 +40,7 @@ import com.eleybourn.bookcatalogue.adapters.SimpleListAdapterRowActionListener;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
-import com.eleybourn.bookcatalogue.utils.ArrayUtils;
+import com.eleybourn.bookcatalogue.utils.BundleUtils;
 import com.eleybourn.bookcatalogue.widgets.TouchListView;
 import com.eleybourn.bookcatalogue.widgets.TouchListViewWithDropListener;
 
@@ -175,7 +175,7 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Bas
             mDb = new CatalogueDBAdapter(this);
             mDb.open();
 
-            // see getList for full details as to where we "get" the list
+            // see getList for full details as to where we "get" the list from
             mList = getList(mBKey, savedInstanceState);
             initListAdapter(mList);
 
@@ -211,15 +211,9 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Bas
 
         // we need the ArrayList before building the adapter.
         if (key != null) {
-            if (savedInstanceState != null && savedInstanceState.containsKey(key)) {
-                list = ArrayUtils.getListFromBundle(savedInstanceState, key);
-            }
-            // not in savedInstanceState ? check the intent
-            if (list == null) {
-                list = ArrayUtils.getListFromIntentExtras(getIntent(), key);
-            }
+            list = BundleUtils.getListFromBundles(key, savedInstanceState, getIntent().getExtras());
         }
-        // still nothing ? Then ask the subclass to setup the list
+        // nothing ? Then ask the subclass to setup the list
         if (list == null) {
             list = getList();
         }

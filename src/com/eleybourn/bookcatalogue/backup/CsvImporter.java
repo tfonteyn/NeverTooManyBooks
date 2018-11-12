@@ -33,7 +33,7 @@ import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.entities.Series;
-import com.eleybourn.bookcatalogue.utils.ArrayUtils;
+import com.eleybourn.bookcatalogue.utils.StringList;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
@@ -48,7 +48,7 @@ import java.util.List;
 /**
  * Implementation of Importer that reads a CSV file.
  *
- * reminder: use UniqueId.KEY, not DOM.
+ * reminder: use UniqueId.KEY, not DOM. We are reading from file, putting into objects.
  *
  * @author pjw
  */
@@ -201,7 +201,7 @@ public class CsvImporter implements Importer {
                 }
 
                 // v5 has columns
-                // "bookshelf_id" == UniqueId.DOM_BOOKSHELF_ID => see CsvExporter EXPORT_FIELD_HEADERS
+                // "bookshelf_id" == UniqueId.DOM_FK_BOOKSHELF_ID => see CsvExporter EXPORT_FIELD_HEADERS
                 // "bookshelf" == UniqueId.KEY_BOOKSHELF_NAME
                 // I suspect "bookshelf_text" is from older versions and obsolete now (Classic ?)
                 if (book.containsKey(UniqueId.KEY_BOOKSHELF_NAME) && !book.containsKey("bookshelf_text")) {
@@ -350,36 +350,24 @@ public class CsvImporter implements Importer {
                                    final @NonNull Book book) {
         String encodedList = book.getString(UniqueId.KEY_BOOKSHELF_NAME);
 
-        book.putBookshelfList(ArrayUtils.getBookshelfUtils().decodeList(Bookshelf.SEPARATOR, encodedList, false));
+        book.putBookshelfList(StringList.getBookshelfUtils().decode(Bookshelf.SEPARATOR, encodedList, false));
 
         book.remove(UniqueId.KEY_BOOKSHELF_NAME);
     }
 
     /**
      * Database access is strictly limited to fetching id's
-     * TODO:  can we use ? ArrayUtils.getTOCUtils().decodeList(tocEntriesAsStringList, false);
      */
     private void handleAnthology(final @NonNull CatalogueDBAdapter db,
                                  final @NonNull Book book) {
 
         String encodedList = book.getString(UniqueId.BKEY_TOC_STRING_LIST);
         if (!encodedList.isEmpty()) {
-            ArrayList<String> list = ArrayUtils.decodeList(encodedList);
-            // There is *always* one; but it will be empty if no titles present
-            if (!list.get(0).isEmpty()) {
-                ArrayList<TOCEntry> ata = new ArrayList<>();
-                long bookId = book.getLong(UniqueId.KEY_ID);
-                for (String title : list) {
-                    // as titles are saved as a repeated "title|", the 'last' one is also an empty one.
-                    // "Islands In The Sky * Clarke, Arthur C.|The Sands Of Mars * Clarke, Arthur C.|Earth light * Clarke, Arthur C.|"
-                    //  But let's not assume and keep this general
-                    if (!title.isEmpty()) {
-                        ata.add(new TOCEntry(title));
-                    }
-                }
+            ArrayList<TOCEntry> list = StringList.getTOCUtils().decode(encodedList,false);
+            if (!list.isEmpty()) {
                 // fixup the id's
-                Utils.pruneList(db, ata);
-                book.putTOC(ata);
+                Utils.pruneList(db, list);
+                book.putTOC(list);
             }
         }
 
@@ -408,7 +396,7 @@ public class CsvImporter implements Importer {
             }
         }
         // Handle the series
-        final ArrayList<Series> list = ArrayUtils.getSeriesUtils().decodeList(encodedList, false);
+        final ArrayList<Series> list = StringList.getSeriesUtils().decode(encodedList, false);
         Series.pruneSeriesList(list);
         Utils.pruneList(db, list);
         book.putSeriesList(list);
@@ -450,7 +438,7 @@ public class CsvImporter implements Importer {
         }
 
         // Now build the array for authors
-        final ArrayList<Author> list = ArrayUtils.getAuthorUtils().decodeList(encodedList, false);
+        final ArrayList<Author> list = StringList.getAuthorUtils().decode(encodedList, false);
         Utils.pruneList(db, list);
         book.putAuthorList(list);
         book.remove(UniqueId.BKEY_AUTHOR_STRING_LIST);

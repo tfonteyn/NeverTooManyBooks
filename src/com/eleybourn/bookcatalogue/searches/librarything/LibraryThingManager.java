@@ -28,16 +28,14 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.BuildConfig;
-import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
-import com.eleybourn.bookcatalogue.utils.ArrayUtils;
 import com.eleybourn.bookcatalogue.utils.BundleUtils;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.IsbnUtils;
 import com.eleybourn.bookcatalogue.utils.RTE;
+import com.eleybourn.bookcatalogue.utils.StringList;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 import org.xml.sax.Attributes;
@@ -59,18 +57,43 @@ import javax.xml.parsers.SAXParserFactory;
  *
  * The basic URLs are:
  *
- * Details via ISBN: http://www.librarything.com/services/rest/1.1/?method=librarything.ck.getwork&apikey=<DEVKEY>&isbn=<ISBN>
  * Covers via ISBN: http://covers.librarything.com/devkey/<DEVKEY>/large/isbn/<ISBN>
+ *
+ *
+ * Editions via ISBN: http://www.librarything.com/api/thingISBN/%s
+ *
+ * <idlist>
+ * <isbn>0441172717</isbn>
+ * <isbn>0441013597</isbn>
+ * <isbn>0340839937</isbn>
+ * ...
+ *
+ * REST api: http://www.librarything.com/services/rest/documentation/1.1/
+ *
+ * Details via ISBN: http://www.librarything.com/services/rest/1.1/?method=librarything.ck.getwork&apikey=<DEVKEY>&isbn=<ISBN>
+ *
+ * xml see {@link #search} header
  *
  * ENHANCE: extend the use of LibraryThing:
  * - Lookup title using keywords: http://www.librarything.com/api/thingTitle/hand oberon
+ *
  * - consider scraping html for covers: http://www.librarything.com/work/18998/covers
+ * with 18998 being the 'work' identifier.
+ *
+ * selector:
+ * #coverlist_customcovers
+ * then all 'img'
+ * and use the href.
  *
  * @author Philip Warner
  */
 public class LibraryThingManager {
-    /** Name of preference that controls display of alert about LT */
+    /** Name of preference that controls display of alert about LibraryThing */
     public static final String PREFS_LT_HIDE_ALERT = "lt_hide_alert";
+
+    /** file suffix for cover files */
+    public static final String FILENAME_SUFFIX = "_LT";
+
     /** Name of preference that contains the dev key for the user */
     static final String PREFS_LT_DEV_KEY = "lt_devkey";
 
@@ -78,30 +101,40 @@ public class LibraryThingManager {
     private static final String LT_PLACES = "__places";
     private static final String LT_CHARACTERS = "__characters";
 
-    /** Words in XML */
-    @NonNull
-    private static String XML_ID = "id";
-    private static final String XML_FIELD = "field";
-    private static final String XML_FACT = "fact";
-    private static final String XML_AUTHOR = "author";
-    private static final String XML_ISBN = "isbn";
-    private static final String XML_CANONICAL_TITLE = "canonicaltitle";
-    private static final String XML_NAME = "name";
-    private static final String XML_SERIES = "series";
-    private static final String XML_PLACES = "placesmentioned";
-    private static final String XML_CHARACTERS = "characternames";
+    /** some common XML attributes */
+    private static final String XML_ATTR_ID = "id";
+    private static final String XML_ATTR_TYPE = "type";
+    private static final String XML_ATTR_NAME = "name";
 
+    /** XML tags we look for */
+    //private static final String XML_RESPONSE = "response";
+    private static final String XML_AUTHOR = "author";
+    /** <item id="5196084" type="work"> */
+    private static final String XML_ITEM = "item";
+    /** a 'field' (see below) */
+    private static final String XML_FIELD = "field";
+    /** a 'fact' in a 'factlist' of a 'field' */
+    private static final String XML_FACT = "fact";
+    /** fields */
+    private static final String XML_FIELD_SERIES = "series";
+    private static final String XML_FIELD_CANONICAL_TITLE = "canonicaltitle";
+    private static final String XML_FIELD_CHARACTERS = "characternames";
+    private static final String XML_FIELD_PLACES = "placesmentioned";
+
+    /** isbn tag in an editions xml response */
+    private static final String XML_EDITIONS_ISBN = "isbn";
+
+    /** base urls */
     private static final String BASE_URL = "https://www.librarything.com";
     private static final String BASE_URL_COVERS = "https://covers.librarything.com";
+    /** book details urls */
+    private static final String DETAIL_URL = BASE_URL + "/services/rest/1.1/?method=librarything.ck.getwork&apikey=%1$s&isbn=%2$s";
+    /** fetches all isbn's from editions related to the requested isbn */
+    private static final String EDITIONS_URL = BASE_URL + "/api/thingISBN/%s";
+    /** cover size specific urls */
     private static final String COVER_URL_LARGE = BASE_URL_COVERS + "/devkey/%1$s/large/isbn/%2$s";
     private static final String COVER_URL_MEDIUM = BASE_URL_COVERS + "/devkey/%1$s/medium/isbn/%2$s";
     private static final String COVER_URL_SMALL = BASE_URL_COVERS + "/devkey/%1$s/small/isbn/%2$s";
-    private static final String DETAIL_URL = BASE_URL + "/services/rest/1.1/?method=librarything.ck.getwork&apikey=%1$s&isbn=%2$s";
-    private static final String EDITIONS_URL = BASE_URL + "/api/thingISBN/%s";
-
-    // don't remove,  see SearchLibraryThingEntryHandler
-//	private static final String RESPONSE = "response";
-//	private static final String ITEM = "item";
 
     @NonNull
     private static Long mLastRequestTime = 0L;
@@ -198,6 +231,7 @@ public class LibraryThingManager {
      *
      * A typical (and thorough) LibraryThing ISBN response looks like:
      *
+     * <pre>
      * <?xml version="1.0" encoding="UTF-8"?>
      * <response stat="ok">
      * <ltml xmlns="http://www.librarything.com/" version="1.1">
@@ -466,6 +500,8 @@ public class LibraryThingManager {
      * </ltml>
      * </response>
      *
+     * </pre>
+     *
      * A less well-known work produces rather less data:
      *
      * <?xml version="1.0" encoding="UTF-8"?>
@@ -525,9 +561,11 @@ public class LibraryThingManager {
         }
 
         if (fetchThumbnail) {
-            getCoverImage(isbn, book, ImageSizes.LARGE);
+            File file = getCoverImage(isbn, ImageSizes.LARGE);
+            if (file != null) {
+                StringList.addOrAppend(book, UniqueId.BKEY_THUMBNAIL_FILE_SPEC, file.getAbsolutePath());
+            }
         }
-
     }
 
     /**
@@ -536,7 +574,7 @@ public class LibraryThingManager {
      * call {@link #isAvailable()} before calling this method
      */
     @NonNull
-    private String getCoverImageUrl(final @NonNull String isbn, final @NonNull ImageSizes size) {
+    private String prepareCoverImageUrl(final @NonNull String isbn, final @NonNull ImageSizes size) {
         String devKey = getDevKey();
         if (devKey.isEmpty()) {
             throw new RTE.DeveloperKeyMissingException();
@@ -562,26 +600,26 @@ public class LibraryThingManager {
     }
 
     /**
-     * Get the cover image using the ISBN
+     * @param isbn for book cover to find
+     * @param size the LT {@link ImageSizes} size to get
      *
-     * @return the file
-     **/
+     * @return found/saved File, or null when none found (or any other failure)
+     */
     @Nullable
-    public File getCoverImage(final @NonNull String isbn, final @Nullable Bundle book, final @NonNull ImageSizes size) {
-        String url = getCoverImageUrl(isbn, size);
-        if (DEBUG_SWITCHES.LIBRARY_THING_MANAGER && BuildConfig.DEBUG) {
-            Logger.info(this,url + " " + isbn + " " + size);
-        }
+    public File getCoverImage(final @NonNull String isbn, final @NonNull ImageSizes size) {
+        String url = prepareCoverImageUrl(isbn, size);
 
         // Make sure we follow LibraryThing ToS (no more than 1 request/second).
         waitUntilRequestAllowed();
 
-        // Save it with an _LT suffix
-        String fileSpec = ImageUtils.saveThumbnailFromUrl(url, "_LT_" + size + "_" + isbn);
-        if (!fileSpec.isEmpty() && book != null) {
-            ArrayUtils.addOrAppend(book, UniqueId.BKEY_THUMBNAIL_FILES_SPEC, fileSpec);
+        // Save it with a suffix
+        String fileSpec = ImageUtils.saveThumbnailFromUrl(url, FILENAME_SUFFIX + "_" + isbn + "_" + size);
+
+        if (fileSpec.isEmpty()) {
+            return null;
         }
-        return fileSpec.isEmpty() ? null : new File(fileSpec);
+
+        return new File(fileSpec);
     }
 
     /**
@@ -650,7 +688,7 @@ public class LibraryThingManager {
         public void endElement(final String uri, final @NonNull String localName, final String name) throws SAXException {
             super.endElement(uri, localName, name);
 
-            if (localName.equalsIgnoreCase(XML_ISBN)) {
+            if (localName.equalsIgnoreCase(XML_EDITIONS_ISBN)) {
                 // Add the isbn
                 String isbn = mBuilder.toString();
                 mEditions.add(isbn);
@@ -700,29 +738,31 @@ public class LibraryThingManager {
             if (localName.equalsIgnoreCase(XML_FIELD)) {
                 // FIELDs are the main things we want. Once we are in a field we wait for a XML_FACT; these
                 // are read in the endElement() method.
-                String fieldName = attributes.getValue("", XML_NAME);
+                String fieldName = attributes.getValue("", XML_ATTR_NAME);
                 if (fieldName != null) {
-                    if (fieldName.equalsIgnoreCase(XML_CANONICAL_TITLE)) {
+                    if (fieldName.equalsIgnoreCase(XML_FIELD_CANONICAL_TITLE)) {
                         mFieldType = FieldTypes.TITLE;
-                    } else if (fieldName.equalsIgnoreCase(XML_SERIES)) {
+                    } else if (fieldName.equalsIgnoreCase(XML_FIELD_SERIES)) {
                         mFieldType = FieldTypes.SERIES;
-                    } else if (fieldName.equalsIgnoreCase(XML_PLACES)) {
+                    } else if (fieldName.equalsIgnoreCase(XML_FIELD_PLACES)) {
                         mFieldType = FieldTypes.PLACES;
-                    } else if (fieldName.equalsIgnoreCase(XML_CHARACTERS)) {
+                    } else if (fieldName.equalsIgnoreCase(XML_FIELD_CHARACTERS)) {
                         mFieldType = FieldTypes.CHARACTERS;
                     }
                 }
-            } //	else if (localName.equalsIgnoreCase(RESPONSE)){
-//			// Not really much to do; we *could* look for the <err> element, then report it.
+            } else if (localName.equalsIgnoreCase(XML_ITEM)) {
+                String type = attributes.getValue("", XML_ATTR_TYPE);
+                if (type != null && type.equalsIgnoreCase("work")) { // leave hardcoded, it's a value.
+                    try {
+                        long id = Long.parseLong(attributes.getValue("", XML_ATTR_ID));
+                        mBookData.putLong(UniqueId.KEY_BOOK_LIBRARY_THING_ID, id );
+                    } catch (NumberFormatException ignore) {
+                    }
+                }
+//          } else if (localName.equalsIgnoreCase(XML_RESPONSE)){
+//			    // Not really much to do; we *could* look for the <err> element, then report it.
 //				String stat = attributes.getValue("", "stat");
-//			} else if (localName.equalsIgnoreCase(ITEM)){
-//			// We don't use it yet, but this contains the Work ID. LibraryThing supports
-//			// retrieval of other editions etc via the Work ID.
-//				String type = attributes.getValue("","type");
-//				if (type != null && type.equalsIgnoreCase("work")) {
-//					mWorkId = attributes.getValue("", "id");
-//				}
-//			}
+            }
         }
 
         @Override
@@ -735,7 +775,7 @@ public class LibraryThingManager {
                 mFieldType = FieldTypes.NONE;
 
             } else if (localName.equalsIgnoreCase(XML_AUTHOR)) {
-                ArrayUtils.addOrAppend(mBookData, UniqueId.BKEY_AUTHOR_STRING_LIST, mBuilder.toString());
+                StringList.addOrAppend(mBookData, UniqueId.BKEY_AUTHOR_STRING_LIST, mBuilder.toString());
 
             } else if (localName.equalsIgnoreCase(XML_FACT)) {
                 // Process the XML_FACT according to the active XML_FIELD type.
@@ -747,15 +787,15 @@ public class LibraryThingManager {
                         break;
 
                     case SERIES:
-                        ArrayUtils.addOrAppend(mBookData, UniqueId.BKEY_SERIES_STRING_LIST, mBuilder.toString());
+                        StringList.addOrAppend(mBookData, UniqueId.BKEY_SERIES_STRING_LIST, mBuilder.toString());
                         break;
 
                     case PLACES:
-                        ArrayUtils.addOrAppend(mBookData, LT_PLACES, mBuilder.toString());
+                        StringList.addOrAppend(mBookData, LT_PLACES, mBuilder.toString());
                         break;
 
                     case CHARACTERS:
-                        ArrayUtils.addOrAppend(mBookData, LT_CHARACTERS, mBuilder.toString());
+                        StringList.addOrAppend(mBookData, LT_CHARACTERS, mBuilder.toString());
                         break;
                 }
             }

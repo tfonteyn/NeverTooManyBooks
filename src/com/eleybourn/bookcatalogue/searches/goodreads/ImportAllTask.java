@@ -42,7 +42,7 @@ import com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler;
 import com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames;
 import com.eleybourn.bookcatalogue.taskqueue.QueueManager;
 import com.eleybourn.bookcatalogue.tasks.BCQueueManager;
-import com.eleybourn.bookcatalogue.utils.ArrayUtils;
+import com.eleybourn.bookcatalogue.utils.StringList;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
@@ -298,8 +298,8 @@ class ImportAllTask extends GenericTask {
     @NonNull
     private List<String> extractIsbnList(final @NonNull Bundle review) {
         List<String> list = new ArrayList<>();
-        ArrayUtils.addIfHasValue(list, review.getString(ListReviewsFieldNames.ISBN13));
-        ArrayUtils.addIfHasValue(list, review.getString(UniqueId.KEY_BOOK_ISBN));
+        StringList.addIfHasValue(list, review.getString(ListReviewsFieldNames.ISBN13));
+        StringList.addIfHasValue(list, review.getString(UniqueId.KEY_BOOK_ISBN));
         return list;
     }
 
@@ -335,7 +335,7 @@ class ImportAllTask extends GenericTask {
         Book book = buildBundle(db, null, review);
         long id = db.insertBook(book);
         if (id > 0) {
-            if (book.getBoolean(UniqueId.KEY_BOOK_THUMBNAIL)) {
+            if (book.getBoolean(UniqueId.BKEY_HAVE_THUMBNAIL)) {
                 String uuid = db.getBookUuid(id);
                 File thumb = StorageUtils.getTempCoverFile();
                 File real = StorageUtils.getCoverFile(uuid);
@@ -443,9 +443,9 @@ class ImportAllTask extends GenericTask {
             }
 
             if (thumbnail != null) {
-                String fileSpec = ImageUtils.saveThumbnailFromUrl(thumbnail, GoodreadsUtils.GOODREADS_FILENAME_SUFFIX);
+                String fileSpec = ImageUtils.saveThumbnailFromUrl(thumbnail, GoodreadsUtils.FILENAME_SUFFIX);
                 if (!fileSpec.isEmpty()) {
-                    book.appendOrAdd(UniqueId.BKEY_THUMBNAIL_FILES_SPEC, fileSpec);
+                    book.appendOrAdd(UniqueId.BKEY_THUMBNAIL_FILE_SPEC, fileSpec);
                 }
                 book.cleanupThumbnails();
             }

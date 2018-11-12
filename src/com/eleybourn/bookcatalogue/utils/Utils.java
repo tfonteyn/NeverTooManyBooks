@@ -278,7 +278,8 @@ public class Utils {
      * Linkify partial HTML. Linkify methods remove all spans before building links, this
      * method preserves them.
      *
-     * See: http://stackoverflow.com/questions/14538113/using-linkify-addlinks-combine-with-html-fromhtml
+     * See:
+     * http://stackoverflow.com/questions/14538113/using-linkify-addlinks-combine-with-html-fromhtml
      *
      * @param html        Partial HTML
      * @param linkifyMask Linkify mask to use in Linkify.addLinks
@@ -390,6 +391,25 @@ public class Utils {
     public static String currencyToISO(@NonNull String datum) {
         datum = datum.trim().toLowerCase();
         return CURRENCY_MAP.get(datum);
+    }
+
+    /**
+     * Convert a array of objects to a csv string fit for user displaying
+     *
+     * @param list with items. toString() will be used to make the item displayable.
+     *
+     * @return Resulting string
+     */
+    @NonNull
+    public static <T> String toDisplayString(final @NonNull List<T> list) {
+        if (list.isEmpty()) {
+            return "";
+        }
+        StringBuilder details = new StringBuilder(list.get(0).toString().trim());
+        for (int i = 1; i < list.size(); i++) {
+            details.append(", ").append(list.get(i).toString().trim());
+        }
+        return details.toString();
     }
 
 

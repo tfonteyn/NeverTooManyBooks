@@ -40,7 +40,7 @@ import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.tasks.ManagedTask;
 import com.eleybourn.bookcatalogue.tasks.TaskManager;
-import com.eleybourn.bookcatalogue.utils.ArrayUtils;
+import com.eleybourn.bookcatalogue.utils.BundleUtils;
 import com.eleybourn.bookcatalogue.utils.RTE;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
@@ -140,7 +140,7 @@ public class UpdateFromInternetThread extends ManagedTask {
         ArrayList<T> newList = null;
         // Get the list from the original, if present.
         if (origData.containsKey(key)) {
-            origList = ArrayUtils.getListFromBundle(origData, key);
+            origList = BundleUtils.getListFromBundle(key, origData);
         }
         // Otherwise an empty list
         if (origList == null) {
@@ -149,7 +149,7 @@ public class UpdateFromInternetThread extends ManagedTask {
 
         // Get the list from the new data
         if (newData.containsKey(key)) {
-            newList = ArrayUtils.getListFromBundle(newData, key);
+            newList = BundleUtils.getListFromBundle(key, newData);
         }
         if (newList == null) {
             newList = new ArrayList<>();
@@ -172,7 +172,7 @@ public class UpdateFromInternetThread extends ManagedTask {
      */
     public void setBookId(final long bookId) {
         //TODO: not really happy exposing the DOM's here, but it will do for now. Ideally the sql behind this becomes static and uses binds
-        mBookWhereClause = DatabaseDefinitions.TBL_BOOKS.dot(DatabaseDefinitions.DOM_ID) + "=" + bookId;
+        mBookWhereClause = DatabaseDefinitions.TBL_BOOKS.dot(DatabaseDefinitions.DOM_PK_ID) + "=" + bookId;
     }
 
     @Override
@@ -186,7 +186,7 @@ public class UpdateFromInternetThread extends ManagedTask {
         // the 'order by' makes sure we update the 'oldest' book to 'newest'
         // So if we get interrupted, we can pick up the thread (arf...) again later.
         try (Cursor books = mDb.fetchBooksWhere(mBookWhereClause, new String[]{},
-                DatabaseDefinitions.TBL_BOOKS.dot(DatabaseDefinitions.DOM_ID))) {
+                DatabaseDefinitions.TBL_BOOKS.dot(DatabaseDefinitions.DOM_PK_ID))) {
 
             mTaskManager.setMax(this, books.getCount());
             while (books.moveToNext() && !isCancelled()) {
@@ -223,7 +223,7 @@ public class UpdateFromInternetThread extends ManagedTask {
                 checkIfWeShouldSearch();
 
                 // Cache the value to indicate we need thumbnails (or not).
-                boolean tmpThumbWanted = mCurrentBookFieldUsages.containsKey(UniqueId.KEY_BOOK_THUMBNAIL);
+                boolean tmpThumbWanted = mCurrentBookFieldUsages.containsKey(UniqueId.BKEY_HAVE_THUMBNAIL);
                 if (tmpThumbWanted) {
                     // delete any temporary thumbnails //
                     StorageUtils.deleteFile(StorageUtils.getTempCoverFile());
@@ -284,16 +284,16 @@ public class UpdateFromInternetThread extends ManagedTask {
             // Not selected, we don't want it
             if (usage.isSelected()) {
                 switch (usage.usage) {
-                    case ADD_EXTRA:
-                    case OVERWRITE:
+                    case AddExtra:
+                    case Overwrite:
                         // Add and Overwrite mean we always get the data
                         mCurrentBookFieldUsages.put(usage);
                         break;
-                    case COPY_IF_BLANK:
+                    case CopyIfBlank:
                         // Handle special cases first, 'default:' for the rest
                         switch (usage.key) {
                             // - If it's a thumbnail, then see if it's missing or empty.
-                            case UniqueId.KEY_BOOK_THUMBNAIL:
+                            case UniqueId.BKEY_HAVE_THUMBNAIL:
                                 File file = StorageUtils.getCoverFile(mCurrentUuid);
                                 if (!file.exists() || file.length() == 0) {
                                     mCurrentBookFieldUsages.put(usage);
@@ -301,9 +301,9 @@ public class UpdateFromInternetThread extends ManagedTask {
                                 break;
 
                             case UniqueId.BKEY_AUTHOR_ARRAY:
-                                // We should never have a book with no authors, but lets be paranoid
+                                // We should never have a book without authors, but lets be paranoid
                                 if (mOriginalBookData.containsKey(usage.key)) {
-                                    List<Author> list = ArrayUtils.getAuthorListFromBundle(mOriginalBookData);
+                                    ArrayList<Author> list = BundleUtils.getListFromBundle(UniqueId.BKEY_AUTHOR_ARRAY, mOriginalBookData);
                                     if (list == null || list.size() == 0) {
                                         mCurrentBookFieldUsages.put(usage);
                                     }
@@ -312,7 +312,7 @@ public class UpdateFromInternetThread extends ManagedTask {
 
                             case UniqueId.BKEY_SERIES_ARRAY:
                                 if (mOriginalBookData.containsKey(usage.key)) {
-                                    List<Series> list = ArrayUtils.getSeriesListFromBundle(mOriginalBookData);
+                                    ArrayList<Series> list = BundleUtils.getListFromBundle(UniqueId.BKEY_SERIES_ARRAY, mOriginalBookData);
                                     if (list == null || list.size() == 0) {
                                         mCurrentBookFieldUsages.put(usage);
                                     }
@@ -321,7 +321,7 @@ public class UpdateFromInternetThread extends ManagedTask {
 
                             case UniqueId.BKEY_TOC_TITLES_ARRAY:
                                 if (mOriginalBookData.containsKey(usage.key)) {
-                                    List<TOCEntry> list = ArrayUtils.getTOCFromBundle(mOriginalBookData);
+                                    ArrayList<TOCEntry> list = BundleUtils.getListFromBundle(UniqueId.BKEY_TOC_TITLES_ARRAY, mOriginalBookData);
                                     if (list == null || list.size() == 0) {
                                         mCurrentBookFieldUsages.put(usage);
                                     }
@@ -420,13 +420,13 @@ public class UpdateFromInternetThread extends ManagedTask {
         for (UpdateFromInternetActivity.FieldUsage usage : requestedFields.values()) {
             if (newBookData.containsKey(usage.key)) {
                 // Handle thumbnail specially
-                if (usage.key.equals(UniqueId.KEY_BOOK_THUMBNAIL)) {
+                if (usage.key.equals(UniqueId.BKEY_HAVE_THUMBNAIL)) {
                     File downloadedFile = StorageUtils.getTempCoverFile();
                     boolean copyThumb = false;
-                    if (usage.usage == UpdateFromInternetActivity.FieldUsage.Usage.COPY_IF_BLANK) {
+                    if (usage.usage == UpdateFromInternetActivity.FieldUsage.Usage.CopyIfBlank) {
                         File file = StorageUtils.getCoverFile(uuid);
                         copyThumb = (!file.exists() || file.length() == 0);
-                    } else if (usage.usage == UpdateFromInternetActivity.FieldUsage.Usage.OVERWRITE) {
+                    } else if (usage.usage == UpdateFromInternetActivity.FieldUsage.Usage.Overwrite) {
                         copyThumb = true;
                     }
                     if (copyThumb) {
@@ -437,15 +437,15 @@ public class UpdateFromInternetThread extends ManagedTask {
                     }
                 } else {
                     switch (usage.usage) {
-                        case OVERWRITE:
+                        case Overwrite:
                             // Nothing to do; just use new data
                             break;
-                        case COPY_IF_BLANK:
+                        case CopyIfBlank:
                             // Handle special cases
                             switch (usage.key) {
                                 case UniqueId.BKEY_AUTHOR_ARRAY:
                                     if (originalBookData.containsKey(usage.key)) {
-                                        ArrayList<Author> list = ArrayUtils.getAuthorListFromBundle(originalBookData);
+                                        ArrayList<Author> list = BundleUtils.getListFromBundle(UniqueId.BKEY_AUTHOR_ARRAY, originalBookData);
                                         if (list != null && list.size() > 0) {
                                             newBookData.remove(usage.key);
                                         }
@@ -453,7 +453,7 @@ public class UpdateFromInternetThread extends ManagedTask {
                                     break;
                                 case UniqueId.BKEY_SERIES_ARRAY:
                                     if (originalBookData.containsKey(usage.key)) {
-                                        ArrayList<Series> list = ArrayUtils.getSeriesListFromBundle(originalBookData);
+                                        ArrayList<Series> list = BundleUtils.getListFromBundle(UniqueId.BKEY_SERIES_ARRAY, originalBookData);
                                         if (list != null && list.size() > 0) {
                                             newBookData.remove(usage.key);
                                         }
@@ -461,7 +461,7 @@ public class UpdateFromInternetThread extends ManagedTask {
                                     break;
                                 case UniqueId.BKEY_TOC_TITLES_ARRAY:
                                     if (originalBookData.containsKey(usage.key)) {
-                                        ArrayList<TOCEntry> list = ArrayUtils.getTOCFromBundle(originalBookData);
+                                        ArrayList<TOCEntry> list = BundleUtils.getListFromBundle(UniqueId.BKEY_TOC_TITLES_ARRAY, originalBookData);
                                         if (list != null && list.size() > 0) {
                                             newBookData.remove(usage.key);
                                         }
@@ -477,7 +477,7 @@ public class UpdateFromInternetThread extends ManagedTask {
                             }
                             break;
 
-                        case ADD_EXTRA:
+                        case AddExtra:
                             // Handle arrays (note: before you're clever, and collapse this to one... Android Studio hides the type in the <~> notation!
                             switch (usage.key) {
                                 case UniqueId.BKEY_AUTHOR_ARRAY:

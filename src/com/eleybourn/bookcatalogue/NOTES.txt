@@ -25,7 +25,7 @@ ENHANCE instead of string encoding of lists, use JSON ? or at the very least Arr
  * con: fools / fields will be bigger due to json labels
  * => or... do a specific JSON Exporter / Importer as an alternative to the Csv model (con: not easy to get 'others' to provide import files)
 
-TOMF FIXME: all startactivityforresult target classes should define specific RESULT codes, so when passed 'up' along a chain, the top caller knows which class responded
+TOMF FIXME: all startActivityForResult target classes should define specific RESULT codes, so when passed 'up' along a chain, the top caller knows which class responded
 
 TOMF Parcelable ?  see FileChooserFragment example use
 
