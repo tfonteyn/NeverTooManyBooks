@@ -344,7 +344,7 @@ public class SearchManager implements TaskManagerListener {
                 // replace 'previous' date if it was useless
                 String curr = mBookData.getString(key);
                 if (curr != null && DateUtils.parseDate(curr) == null) {
-                    mBookData.putString(key, DateUtils.toSqlDateOnly(newDate));
+                    mBookData.putString(key, DateUtils.utcSqlDate(newDate));
                     if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
                         Logger.info(this, "replaced: key=" + key);
                     }
@@ -494,7 +494,7 @@ public class SearchManager implements TaskManagerListener {
      */
     private boolean startSearches(final int sources) {
         boolean atLeastOneStarted = false;
-        // Scan searches in priority order
+        // Loop searches in priority order
         for (SearchSites.Site source : SearchSites.getSiteSearchOrder()) {
             // If requested search contains this source...
             if (source.enabled && ((sources & source.id) != 0)) {

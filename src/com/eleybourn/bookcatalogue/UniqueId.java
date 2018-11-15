@@ -6,6 +6,7 @@ import com.eleybourn.bookcatalogue.entities.Book;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FAMILY_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FORMATTED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_GIVEN_NAMES;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_ACQUIRED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_AUTHOR_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKSHELF;
@@ -49,14 +50,15 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE
 public class UniqueId {
 
     // can't move these to res/values/ids.xml, as they need to be 16 bit values
-    // BEGIN Codes used for startActivityForResult / onActivityResult
+
+    // BEGIN RequestCodes used for startActivityForResult / onActivityResult
 
     /* Reminder: if doing startActivityForResult from a Fragment, then in
     * onActivityResult in your fragment,  the requestCode should be clipped to the lower 4 bytes.
     *
-    * OR.. simply use   getActivity().startActivityForResult
+    * OR.. use   getActivity().startActivityForResult
     */
-    // this first set should not be used directly, but via the REQUEST_CODE of the actual Activity.
+    // these should not be used directly, but via the REQUEST_CODE of the actual Activity.
     public static final int ACTIVITY_REQUEST_CODE_EDIT_BOOK = 101;
     public static final int ACTIVITY_REQUEST_CODE_EDIT_AUTHORS = 102;
     public static final int ACTIVITY_REQUEST_CODE_EDIT_SERIES = 103;
@@ -68,12 +70,11 @@ public class UniqueId {
     public static final int ACTIVITY_REQUEST_CODE_GOODREADS_SEARCH_CRITERIA = 203;
 
     public static final int ACTIVITY_REQUEST_CODE_SCANNER = 300;
-    public static final int ACTIVITY_REQUEST_CODE_ADD_BOOK_BY_SCAN = 301;
-    public static final int ACTIVITY_REQUEST_CODE_ADD_BOOK_BY_SEARCH = 302;
+    public static final int ACTIVITY_REQUEST_CODE_ADD_BOOK = 302;
 
     public static final int ACTIVITY_REQUEST_CODE_CROP_IMAGE = 401;
 
-    public static final int ACTIVITY_REQUEST_CODE_BOOKLIST_STYLES = 501;
+    public static final int ACTIVITY_REQUEST_CODE_BOOKLIST_PREFERRED_STYLES = 501;
     public static final int ACTIVITY_REQUEST_CODE_BOOKLIST_STYLE_PROPERTIES = 502;
     public static final int ACTIVITY_REQUEST_CODE_BOOKLIST_STYLE_GROUPS = 503;
     public static final int ACTIVITY_REQUEST_CODE_BOOKLIST_PREFERENCES = 504;
@@ -95,7 +96,23 @@ public class UniqueId {
     // External app
     public static final int ACTIVITY_REQUEST_CODE_EXTERNAL_CROP_IMAGE =1003;
 
-    // END Codes used for startActivityForResult / onActivityResult
+    // END Request Codes used for startActivityForResult / onActivityResult
+
+    // BEGIN Result Codes used for setResult / onActivityResult
+    public static final int ACTIVITY_RESULT_CODE_GLOBAL_CHANGES_FIELD_VISIBILITY = 10_001;
+    public static final int ACTIVITY_RESULT_CODE_GLOBAL_CHANGES_BOOKLIST_PREFERENCES = 10_002;
+    public static final int ACTIVITY_RESULT_CODE_GLOBAL_CHANGES_PREFERENCES = 10_003;
+
+    public static final int ACTIVITY_RESULT_CHANGES_MADE_EDIT_BOOKSHELF_LIST = 10_010;
+    public static final int ACTIVITY_RESULT_CHANGES_MADE_BOOKLIST_STYLES = 10_011;
+    public static final int ACTIVITY_RESULT_CHANGES_MADE_BOOKLIST_STYLE_PROPERTIES = 10_012;
+
+    public static final int ACTIVITY_RESULT_BOOK_DELETED = 10_020;
+    public static final int ACTIVITY_RESULT_CHANGES_MADE_EDIT_BOOK = 10_021;
+    public static final int ACTIVITY_RESULT_CHANGES_MADE_VIEW_BOOK = 10_022;
+    public static final int ACTIVITY_RESULT_CHANGES_MADE_ADD_BOOK_BY_SEARCH = 10_023;
+
+    // END Result Codes used for setResult / onActivityResult
 
 
     /** If set when calling startActivity, it will override the default layout for that activity.
@@ -185,6 +202,7 @@ public class UniqueId {
     public static final String KEY_BOOK_PRICE_LISTED_CURRENCY = DOM_BOOK_PRICE_LISTED_CURRENCY.name;
     public static final String KEY_BOOK_PRICE_PAID = DOM_BOOK_PRICE_PAID.name;
     public static final String KEY_BOOK_PRICE_PAID_CURRENCY = DOM_BOOK_PRICE_PAID_CURRENCY.name;
+    public static final String KEY_BOOK_DATE_ACQUIRED = DOM_BOOK_DATE_ACQUIRED.name;
 
     public static final String KEY_BOOK_LOCATION = DOM_BOOK_LOCATION.name;
     public static final String KEY_BOOK_PAGES = DOM_BOOK_PAGES.name;

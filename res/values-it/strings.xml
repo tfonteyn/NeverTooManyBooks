@@ -234,7 +234,7 @@
     <string name="gr_title_auth_access">Autorizza accesso</string>
     <string name="gr_auth_access_already_auth">Questa applicazione sembra già autorizzata. Tutte le funzionalità di GoodReads dovrebbero già essere utilizzabili</string>
     <string name="gr_access_error">Problema di rete nell\'accedere a GoodReads. Verifica che il sito di GoodReads sia accessibile, e, se il problema persiste, contatta il supporto</string>
-    <string name="menu_other_preferences">Altre Preferenze</string>
+    <string name="menu_preferences_other">Altre Preferenze</string>
     <string name="user_interface">Interfaccia Utente</string>
     <string name="background_tasks">Operazioni in background</string>
     <string name="cleanup_old_tasks">Cancella operazioni precedenti</string>
@@ -296,7 +296,7 @@
     <string name="style_builtin_added_date">Data di inserimento</string>
     <string name="style_builtin_author_year">Autore ed Anno</string>
     <string name="empty_with_brackets">(vuoto)</string>
-    <string name="booklist_preferences">Preferenze Elenchi Libri</string>
+    <string name="menu_preferences_booklist">Preferenze Elenchi Libri</string>
     <string name="extra_book_details">Dettagli libro aggiuntivi</string>
     <string name="general">Generale</string>
     <string name="lbl_bookshelves_long">Librerie</string>

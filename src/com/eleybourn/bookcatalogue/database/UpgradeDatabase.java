@@ -262,7 +262,7 @@ public class UpgradeDatabase {
             }
         }
         String colList = cols.toString();
-        String sql = "Insert INTO " + to + "(" + colList + ") SELECT " + colList + " FROM " + from;
+        String sql = "INSERT INTO " + to + "(" + colList + ") SELECT " + colList + " FROM " + from;
         sdb.execSQL(sql);
     }
 
@@ -1052,7 +1052,7 @@ public class UpgradeDatabase {
         if (curVersion == 61) {
             curVersion++;
             mMessage += "New in v3.8\n\n";
-            mMessage += "* Fixed several defects (including multiple author's and author prefix/suffix's)\n\n";
+            mMessage += "* Fixed several defects (including multiple author's and author getPrefix/suffix's)\n\n";
             mMessage += "* Fixed issue with thumbnail resolutions from LibraryThing\n\n";
             mMessage += "* Changed the 'Add Book' menu options to be submenu\n\n";
             mMessage += "* The database backup has been renamed for clarity\n\n";

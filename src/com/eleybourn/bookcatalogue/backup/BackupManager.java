@@ -88,7 +88,7 @@ public class BackupManager {
         final File tempFile = new File(resultingFile.getAbsolutePath() + ".tmp");
 
         final FragmentTask task = new FragmentTaskAbstract() {
-            private final String mBackupDate = DateUtils.toSqlDateTime(new Date());
+            private final String mBackupDate = DateUtils.utcSqlDateTimeForToday();
             private boolean mBackupOk = false;
 
             @Override

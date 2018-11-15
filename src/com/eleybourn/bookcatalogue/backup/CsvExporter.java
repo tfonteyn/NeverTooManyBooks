@@ -42,6 +42,7 @@ import java.util.Date;
 
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKSHELF;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ANTHOLOGY_BITMASK;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_ACQUIRED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_ADDED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_PUBLISHED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_EDITION_BITMASK;
@@ -120,6 +121,7 @@ public class CsvExporter implements Exporter {
                     '"' + DOM_BOOK_PRICE_LISTED_CURRENCY + "\"," +
                     '"' + DOM_BOOK_PRICE_PAID + "\"," +
                     '"' + DOM_BOOK_PRICE_PAID_CURRENCY + "\"," +
+                    '"' + DOM_BOOK_DATE_ACQUIRED + "\"," +
 
                     '"' + DOM_BOOK_ANTHOLOGY_BITMASK + "\"," +
                     '"' + DOM_BOOK_LOCATION + "\"," +
@@ -138,7 +140,7 @@ public class CsvExporter implements Exporter {
                     '"' + DOM_BOOK_GOODREADS_BOOK_ID + "\"," +
                     '"' + DOM_BOOK_GOODREADS_LAST_SYNC_DATE + "\"," +
                     '"' + DOM_LAST_UPDATE_DATE + "\"," +
-                    '"' + DOM_BOOK_UUID + "\"," +
+                    '"' + DOM_BOOK_UUID +
                     "\n";
 
     //FIXME: turn into a string resource + actually report somewhere
@@ -264,6 +266,7 @@ public class CsvExporter implements Exporter {
                         .append(formatCell(bookCursorRow.getListPriceCurrency()))
                         .append(formatCell(bookCursorRow.getPricePaid()))
                         .append(formatCell(bookCursorRow.getPricePaidCurrency()))
+                        .append(formatCell(bookCursorRow.getDateAcquired()))
 
                         .append(formatCell(bookCursorRow.getAnthologyBitMask()))
                         .append(formatCell(bookCursorRow.getLocation()))
@@ -284,8 +287,11 @@ public class CsvExporter implements Exporter {
                         .append(formatCell(bookCursorRow.getDateLastSyncedWithGoodReads()))
 
                         .append(formatCell(bookCursorRow.getDateLastUpdated()))
-                        .append(formatCell(bookCursorRow.getBookUuid()))
-                        .append("\n");
+                        .append(formatCell(bookCursorRow.getBookUuid()));
+
+                // replace the comma at the end of the line with a '\n'
+                row.replace(row.length()-1, row.length(), "\n");
+
                 out.write(row.toString());
 
                 long now = System.currentTimeMillis();

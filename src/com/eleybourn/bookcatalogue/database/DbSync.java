@@ -304,6 +304,16 @@ public class DbSync {
         @Nullable
         private SyncLock mTxLock = null;
 
+        private Boolean mIsCollationCaseSensitive;
+
+        public boolean isCollationCaseSensitive() {
+            if (mIsCollationCaseSensitive == null) {
+                mIsCollationCaseSensitive = checkIfCollationIsCaseSensitive();
+                Logger.info(this,"isCollationCaseSensitive=" + mIsCollationCaseSensitive);
+            }
+            return mIsCollationCaseSensitive;
+        }
+
         /**
          * Constructor. Use of this method is not recommended. It is better to use
          * the methods that take a {@link SQLiteOpenHelper} object since opening the database may block
@@ -742,6 +752,39 @@ public class DbSync {
         }
 
         /**
+         * Method to detect if collation implementations are case sensitive.
+         * This was built because ICS broke the UNICODE collation (making it CS) and we needed
+         * to check for collation case-sensitivity.
+         *
+         * This bug was introduced in ICS and present in 4.0-4.0.3, at least.
+         *
+         * Now the code has been generalized to allow for arbitrary changes to choice of collation.
+         *
+         * @author Philip Warner
+         */
+        private boolean checkIfCollationIsCaseSensitive() {
+            // Drop and create table
+            mSqlDb.execSQL("DROP TABLE If Exists collation_cs_check");
+            mSqlDb.execSQL("CREATE TABLE collation_cs_check (t text, i integer)");
+            try {
+                // Row that *should* be returned first assuming 'a' <=> 'A'
+                mSqlDb.execSQL("INSERT INTO collation_cs_check VALUES('a', 1)");
+                // Row that *should* be returned second assuming 'a' <=> 'A'; will be returned first if 'A' < 'a'.
+                mSqlDb.execSQL("INSERT INTO collation_cs_check VALUES('A', 2)");
+
+                String s;
+                try (Cursor c = mSqlDb.rawQuery("SELECT t, i FROM collation_cs_check ORDER BY t " + DatabaseHelper.COLLATION + ", i", new String[] {})) {
+                    c.moveToFirst();
+                    s = c.getString(0);
+                }
+                return !"a".equals(s);
+            } finally {
+                try { mSqlDb.execSQL("DROP TABLE If Exists collation_cs_check");
+                } catch (Exception ignored) {}
+            }
+        }
+
+        /**
          * Interface to an object that can return an open SQLite database object
          *
          * @author pjw
@@ -1037,7 +1080,7 @@ public class DbSync {
 
         public void finalize() {
             if (!mIsClosed && DEBUG_SWITCHES.DB_SYNC && BuildConfig.DEBUG) {
-                Logger.info(this,"Finalizing non-closed statement (potential error/normal)");
+                Logger.info(this,"Finalizing non-closed statement (potential error/small)");
                 if (DEBUG_SWITCHES.SQL) {
                     Logger.debug(mSql);
                 }

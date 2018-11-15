@@ -91,7 +91,7 @@ public class BackupInfo {
 
         info.putInt(INFO_ARCHVERSION, container.getVersion());
         info.putInt(INFO_COMPATARCHIVER, 1);
-        info.putString(INFO_CREATEDATE, DateUtils.toSqlDateTime(new Date()));
+        info.putString(INFO_CREATEDATE, DateUtils.utcSqlDateTimeForToday());
         info.putInt(INFO_NUMBOOKS, bookCount);
         info.putInt(INFO_NUMCOVERS, coverCount);
         try {

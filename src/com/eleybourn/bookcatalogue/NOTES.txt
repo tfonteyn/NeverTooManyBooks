@@ -12,20 +12,19 @@ TOMF FIXME database stuff
  * FIXME: catch NotFoundException (or not?)
  * bind variables versus string concat
 
-TOMF ENHANCE database using 'Upper()' when sorting (performance?). Replace by an extra table column with the value pre-upper'd? Uppercase Index ?
-  * pro: sorting faster
-  * con: more space
+TOMF ENHANCE database using 'lower()' in WHERE and ORDER BY clauses. Performance? Better 'Collation' setting?'.
+  * check indexes for all lower case, then eliminate the lower() for all that uses those indexes.
+  * force table creation to use NOCASE ? but what about current LOCALIZED then ?
 
 ENHANCE finish FTS searching {@link com.eleybourn.bookcatalogue.searches.SearchLocalActivity}
  * and {@link #searchFts(String, String, String)}
- * - what is android 'local' search ? ->research
+
+TOMF: research 'local' search. The code has some stuff enabled, but not tested. -> check BC 5.2.2 release (not master)
 
 ENHANCE instead of string encoding of lists, use JSON ? or at the very least ArrayList<String>
  * pro: easier / (sort of) foolproof / FLEXIBLE!
  * con: fools / fields will be bigger due to json labels
  * => or... do a specific JSON Exporter / Importer as an alternative to the Csv model (con: not easy to get 'others' to provide import files)
-
-TOMF FIXME: all startActivityForResult target classes should define specific RESULT codes, so when passed 'up' along a chain, the top caller knows which class responded
 
 TOMF Parcelable ?  see FileChooserFragment example use
 
@@ -35,3 +34,35 @@ TODO: onCreate exception catching or not
 -> catch, log, re-throw ?
 
 TODO: dialogs/* -> eliminate the pass up of the actual dialog. -> dismiss earlier
+
+
+Issues checked: 800 down to 695 (inc)
+ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/763 - Feature request: Series complete checkbox
+ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/753 - Add Edition, Print, and condition
+ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/723 - add book by search: allow publisher + present list of finds instead of using first found.
+ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/719 - "Language" field content should be translated -> store the ISO code in the database, displaying will always be ok then.
+ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/709 - Add 'date acquired' field
+
+
+
+FIXME: https://github.com/eleybourn/Book-Catalogue/issues/740 - Date prompt appears to be UCT, not local time
+--> set phone to EST, play with date published.
+
+TEST implemented, needs testing - https://github.com/eleybourn/Book-Catalogue/issues/725 - share-function
+
+
+Implemented:
+https://github.com/eleybourn/Book-Catalogue/issues/800 - Bulk edit (lang,pub)
+https://github.com/eleybourn/Book-Catalogue/issues/779 - Unneeded comma at end of line in CSV export
+https://github.com/eleybourn/Book-Catalogue/issues/770 - Make as read from long press
+https://github.com/eleybourn/Book-Catalogue/issues/761 - Surround ISBN with quotes on CSV export?
+https://github.com/eleybourn/Book-Catalogue/issues/751 - Different decimal separator for price (German)
+https://github.com/eleybourn/Book-Catalogue/issues/742 - Cannot Delete Title in Anthologies
+https://github.com/eleybourn/Book-Catalogue/issues/732 - Mark as read from the main list
+https://github.com/eleybourn/Book-Catalogue/issues/728 - Option to re-download the cover
+-> fixed by simply adding the current isbn to the 'alternative editions' list to search
+https://github.com/eleybourn/Book-Catalogue/issues/721 - The application directory should be cleaned
+-> covers done. After that, the rest of the files is <10
+https://github.com/eleybourn/Book-Catalogue/issues/720 - Moving user-created styles doesn't work
+https://github.com/eleybourn/Book-Catalogue/issues/713 - Completely switch to Android Studio project hierarchy
+

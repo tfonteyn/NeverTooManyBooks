@@ -27,23 +27,31 @@
     <item name="BLB_ROW_DETAILS" type="id" />
 
     <!-- BEGIN predefined menu items -->
+
     <item name="SUBMENU_BOOK_ADD" type="id"/>
     <item name="MENU_BOOK_ADD_BY_SCAN" type="id"/>
     <item name="MENU_BOOK_ADD_BY_SEARCH_ISBN" type="id"/>
     <item name="MENU_BOOK_ADD_BY_SEARCH_TEXT" type="id"/>
     <item name="MENU_BOOK_ADD_MANUALLY" type="id"/>
 
+    <item name="MENU_GROUP_BOOK" type="id"/>
     <item name="MENU_BOOK_DELETE" type="id"/>
     <item name="MENU_BOOK_DUPLICATE" type="id"/>
     <item name="MENU_BOOK_UPDATE_FROM_INTERNET" type="id"/>
+    <item name="MENU_SHARE" type="id"/>
+
     <item name="MENU_BOOK_EDIT" type="id"/>
     <item name="MENU_BOOK_EDIT_NOTES" type="id"/>
     <item name="MENU_BOOK_EDIT_LOAN" type="id"/>
     <item name="MENU_BOOK_LOAN_RETURNED" type="id"/>
     <item name="MENU_BOOK_SEND_TO_GOODREADS" type="id"/>
 
+    <item name="MENU_BOOK_READ" type="id"/>
+    <item name="MENU_BOOK_UNREAD" type="id"/>
+
     <item name="MENU_AUTHOR_DETAILS" type="id"/>
     <item name="MENU_AUTHOR_EDIT" type="id"/>
+
     <item name="MENU_FORMAT_EDIT" type="id"/>
     <item name="MENU_GENRE_EDIT" type="id"/>
     <item name="MENU_LANGUAGE_EDIT" type="id"/>
@@ -60,12 +68,7 @@
     <item name="MENU_STYLE_EDIT" type="id"/>
     <item name="MENU_STYLE_CLONE" type="id"/>
 
-    <item name="MENU_BOOK_READ" type="id"/>
-    <item name="MENU_BOOK_UNREAD" type="id"/>
-
     <item name="MENU_SEARCH" type="id"/>
-    <item name="MENU_SHARE" type="id"/>
-
     <item name="MENU_INSERT" type="id"/>
     <item name="MENU_EDIT" type="id"/>
     <item name="MENU_DELETE" type="id"/>
@@ -82,16 +85,16 @@
     <item name="MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES" type="id"/>
 
     <!-- Thumbnail context menu -->
-    <item name="MENU_DELETE_THUMB" type="id"/>
-    <item name="SUBMENU_REPLACE_THUMB" type="id"/>
-    <item name="MENU_ADD_THUMB_FROM_CAMERA" type="id"/>
-    <item name="MENU_ADD_THUMB_FROM_GALLERY" type="id"/>
-    <item name="MENU_ADD_THUMB_ALT_EDITIONS" type="id"/>
-    <item name="SUBMENU_ROTATE_THUMB" type="id"/>
-    <item name="MENU_ROTATE_THUMB_CW" type="id"/>
-    <item name="MENU_ROTATE_THUMB_CCW" type="id"/>
-    <item name="MENU_ROTATE_THUMB_180" type="id"/>
-    <item name="MENU_CROP_THUMB" type="id"/>
+    <item name="MENU_THUMB_DELETE" type="id"/>
+    <item name="SUBMENU_THUMB_REPLACE" type="id"/>
+    <item name="MENU_THUMB_ADD_FROM_CAMERA" type="id"/>
+    <item name="MENU_THUMB_ADD_FROM_GALLERY" type="id"/>
+    <item name="MENU_THUMB_ADD_ALT_EDITIONS" type="id"/>
+    <item name="SUBMENU_THUMB_ROTATE" type="id"/>
+    <item name="MENU_THUMB_ROTATE_CW" type="id"/>
+    <item name="MENU_THUMB_ROTATE_CCW" type="id"/>
+    <item name="MENU_THUMB_ROTATE_180" type="id"/>
+    <item name="MENU_THUMB_CROP" type="id"/>
 
     <!-- options menu: on-the-fly access to setting search order -->
     <item name="MENU_PREFS_SEARCH_SITES" type="id"/>

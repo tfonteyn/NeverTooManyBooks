@@ -24,6 +24,7 @@ import android.app.Activity;
 import android.content.ContentValues;
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.database.CursorIndexOutOfBoundsException;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.IdRes;
@@ -57,6 +58,7 @@ import com.eleybourn.bookcatalogue.utils.RTE;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 import java.lang.ref.WeakReference;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.Iterator;
@@ -251,7 +253,7 @@ public class Fields extends ArrayList<Fields.Field> {
     @NonNull
     public Field add(final @IdRes int fieldId,
                      final @NonNull String sourceColumn) {
-        return add(fieldId, sourceColumn, sourceColumn); //TOMF: stop doing this ! it's confusing
+        return add(fieldId, sourceColumn, sourceColumn);
     }
 
     /**
@@ -306,7 +308,10 @@ public class Fields extends ArrayList<Fields.Field> {
      * Load all fields from the passed cursor
      *
      * @param cursor Cursor to load Field objects from.
+     *
+     * @throws DBExceptions.ColumnNotPresent if the cursor does not have a required column
      */
+    @SuppressWarnings("unused")
     public void setAllFrom(final @NonNull Cursor cursor) {
         for (Field field : this) {
             field.setValueFrom(cursor);
@@ -318,6 +323,7 @@ public class Fields extends ArrayList<Fields.Field> {
      *
      * @param values Bundle to load Field objects from.
      */
+    @SuppressWarnings("unused")
     public void setAllFrom(final @NonNull Bundle values) {
         for (Field field : this) {
             field.setValueFrom(values);
@@ -336,7 +342,7 @@ public class Fields extends ArrayList<Fields.Field> {
     }
 
     /**
-     * Save all fields to the passed {@link DataManager} (ie. 'get' them *into* the {@link DataManager}).
+     * Save all fields to the passed {@link DataManager}
      *
      * @param data Cursor to load Field objects from.
      */
@@ -496,6 +502,8 @@ public class Fields extends ArrayList<Fields.Field> {
          *
          * @param field  which defines the View details
          * @param cursor with data to load.
+         *
+         * @throws CursorIndexOutOfBoundsException if the cursor does not have a required column
          */
         void setFieldValueFrom(final @NonNull Field field, final @NonNull Cursor cursor);
 
@@ -994,7 +1002,7 @@ public class Fields extends ArrayList<Fields.Field> {
      */
     static public class DateFieldFormatter implements FieldFormatter {
         /**
-         * Display as a human-friendly date
+         * Display as a human-friendly date, local timezone.
          */
         @NonNull
         public String format(final @NonNull Field field, final @Nullable String source) {
@@ -1013,14 +1021,14 @@ public class Fields extends ArrayList<Fields.Field> {
         }
 
         /**
-         * Extract as an SQL date.
+         * Extract as an SQL date, UTC timezone.
          */
         @NonNull
         public String extract(final @NonNull Field field, final @NonNull String source) {
             try {
                 java.util.Date d = DateUtils.parseDate(source);
                 if (d != null) {
-                    return DateUtils.toSqlDateOnly(d);
+                    return DateUtils.utcSqlDate(d);
                 }
             } catch (Exception ignore) {
             }
@@ -1110,15 +1118,12 @@ public class Fields extends ArrayList<Fields.Field> {
 
             try {
                 Float price = Float.parseFloat(source);
-                Currency currency = Currency.getInstance(currencyCode);
-                int decDigits = currency.getDefaultFractionDigits();
-
-                //ENHANCE order: symbol before/after amount
-                return currency.getSymbol() + " " + String.format("%." + decDigits + "f", price);
-
+                final NumberFormat currencyInstance = NumberFormat.getCurrencyInstance();
+                currencyInstance.setCurrency(Currency.getInstance(currencyCode));
+                return currencyInstance.format(price);
             } catch (IllegalArgumentException e) {
                 Logger.error(e, "currencyCode=`" + currencyCode + "`, source=`" + source + "`");
-                return source;
+                return currencyCode + " " + source;
             }
         }
 
@@ -1344,7 +1349,6 @@ public class Fields extends ArrayList<Fields.Field> {
         }
 
         /**
-         *
          * @param validator to use
          *
          * @return field (for chaining)
@@ -1435,7 +1439,7 @@ public class Fields extends ArrayList<Fields.Field> {
          */
         @SuppressWarnings("unchecked")
         @NonNull
-        <T extends View> T getView() {
+        public <T extends View> T getView() {
             Fields fields = mFields.get();
 
             T view = (T) fields.getContext().findViewById(this.id);
@@ -1533,6 +1537,8 @@ public class Fields extends ArrayList<Fields.Field> {
         /**
          * Set the value of this field from the passed cursor.
          * Useful for getting access to raw data values from the database.
+         *
+         * @throws DBExceptions.ColumnNotPresent if the cursor does not have a required column
          */
         public void setValueFrom(final @NonNull Cursor cursor) {
             if (!column.isEmpty() && !doNoFetch) {
@@ -1550,11 +1556,7 @@ public class Fields extends ArrayList<Fields.Field> {
          */
         public void setValueFrom(final @NonNull Bundle bundle) {
             if (!column.isEmpty() && !doNoFetch) {
-                try {
-                    accessor.setFieldValueFrom(this, bundle);
-                } catch (android.database.CursorIndexOutOfBoundsException e) {
-                    throw new DBExceptions.ColumnNotPresent(column, e);
-                }
+                accessor.setFieldValueFrom(this, bundle);
             }
         }
 
@@ -1564,11 +1566,8 @@ public class Fields extends ArrayList<Fields.Field> {
          */
         public void setValueFrom(final @NonNull DataManager dataManager) {
             if (!column.isEmpty() && !doNoFetch) {
-                try {
-                    accessor.setFieldValueFrom(this, dataManager);
-                } catch (android.database.CursorIndexOutOfBoundsException e) {
-                    throw new DBExceptions.ColumnNotPresent(column, e);
-                }
+                accessor.setFieldValueFrom(this, dataManager);
+
             }
         }
     }

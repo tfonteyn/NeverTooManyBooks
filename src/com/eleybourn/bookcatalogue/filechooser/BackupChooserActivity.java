@@ -84,7 +84,7 @@ public class BackupChooserActivity extends FileChooserBaseActivity implements
     @NonNull
     private String getDefaultFileName() {
         if (isSaveDialog()) {
-            final String sqlDate = DateUtils.toLocalSqlDateOnly(new Date());
+            final String sqlDate = DateUtils.localSqlDateForToday();
             return BackupFileDetails.ARCHIVE_PREFIX +
                     sqlDate.replace(" ", "-").replace(":", "") +
                     BackupFileDetails.ARCHIVE_EXTENSION;

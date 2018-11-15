@@ -86,7 +86,7 @@ public class StorageUtils {
             "DbUpgrade", "DbExport", "error.log", "tmp"};
 
     /**
-     * Scan all mount points for '/bookCatalogue' directory and collect a list
+     * Loop all mount points for '/bookCatalogue' directory and collect a list
      * of all CSV files.
      */
     private static final Pattern MOUNT_POINT_PATH = Pattern.compile("^\\s*[^\\s]+\\s+([^\\s]+)");
@@ -191,7 +191,7 @@ public class StorageUtils {
 
     /**
      * Get the 'standard' temp file name for new books, including a suffix
-     * Located in the normal Covers directory
+     * Located in the small Covers directory
      */
     public static File getTempCoverFile(final @NonNull String prefix, final @NonNull String name) {
         return new File(COVER_FILE_PATH + File.separator + prefix + name + ".jpg");
@@ -299,7 +299,7 @@ public class StorageUtils {
             debugInfo = new StringBuilder("Getting mounted file systems\n");
         }
 
-        // Scan all mounted file systems
+        // Loop all mounted file systems
         final List<File> dirs = new ArrayList<>();
 
         try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream("/proc/mounts")), 1024)) {
@@ -372,7 +372,7 @@ public class StorageUtils {
         for (File dir : dirs) {
             try {
                 if (dir.exists()) {
-                    // Scan for csv files
+                    // Loop for csv files
                     final File[] csvFiles = dir.listFiles(csvFilter);
                     if (csvFiles != null) {
                         if (DEBUG_SWITCHES.STORAGE_UTILS && BuildConfig.DEBUG) {

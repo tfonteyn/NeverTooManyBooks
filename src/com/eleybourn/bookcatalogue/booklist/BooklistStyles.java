@@ -26,7 +26,6 @@ import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.utils.StringList;
 
@@ -37,26 +36,29 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_AUTHOR;
-import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_BOOKSHELF;
-import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_DAY_ADDED;
-import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_FORMAT;
-import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_GENRE;
-import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_LANGUAGE;
-import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_LOANED;
-import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_LOCATION;
-import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_MONTH_ADDED;
-import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_MONTH_PUBLISHED;
-import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_MONTH_READ;
-import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_RATING;
-import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_READ_AND_UNREAD;
-import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_SERIES;
-import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_UPDATE_DAY;
-import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_UPDATE_MONTH;
-import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_UPDATE_YEAR;
-import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_YEAR_ADDED;
-import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_YEAR_PUBLISHED;
-import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_YEAR_READ;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_AUTHOR;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_BOOKSHELF;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_ACQUIRED_DAY;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_ACQUIRED_MONTH;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_ACQUIRED_YEAR;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_ADDED_DAY;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_FORMAT;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_GENRE;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_LANGUAGE;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_LOANED;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_LOCATION;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_ADDED_MONTH;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_PUBLISHED_MONTH;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_READ_MONTH;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_RATING;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_READ_AND_UNREAD;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_SERIES;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_LAST_UPDATE_DAY;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_LAST_UPDATE_MONTH;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_LAST_UPDATE_YEAR;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_ADDED_YEAR;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_PUBLISHED_YEAR;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_READ_YEAR;
 
 /**
  * Collection of system-defined and user-defined Book List styles.
@@ -153,17 +155,22 @@ public class BooklistStyles extends ArrayList<BooklistStyle> {
         // Publication date
         style = new BooklistStyle(R.string.style_builtin_publication_date);
         list.add(style);
-        style.addGroups(ROW_KIND_YEAR_PUBLISHED, ROW_KIND_MONTH_PUBLISHED, ROW_KIND_AUTHOR, ROW_KIND_SERIES);
+        style.addGroups(ROW_KIND_DATE_PUBLISHED_YEAR, ROW_KIND_DATE_PUBLISHED_MONTH, ROW_KIND_AUTHOR, ROW_KIND_SERIES);
 
         // Added date
         style = new BooklistStyle(R.string.style_builtin_added_date);
         list.add(style);
-        style.addGroups(ROW_KIND_YEAR_ADDED, ROW_KIND_MONTH_ADDED, ROW_KIND_DAY_ADDED, ROW_KIND_AUTHOR);
+        style.addGroups(ROW_KIND_DATE_ADDED_YEAR, ROW_KIND_DATE_ADDED_MONTH, ROW_KIND_DATE_ADDED_DAY, ROW_KIND_AUTHOR);
+
+        // Acquired date
+        style = new BooklistStyle(R.string.style_builtin_acquired_date);
+        list.add(style);
+        style.addGroups(ROW_KIND_DATE_ACQUIRED_YEAR, ROW_KIND_DATE_ACQUIRED_MONTH, ROW_KIND_DATE_ACQUIRED_DAY, ROW_KIND_AUTHOR);
 
         // Author/Publication date
         style = new BooklistStyle(R.string.style_builtin_author_year);
         list.add(style);
-        style.addGroups(ROW_KIND_AUTHOR, ROW_KIND_YEAR_PUBLISHED, ROW_KIND_SERIES);
+        style.addGroups(ROW_KIND_AUTHOR, ROW_KIND_DATE_PUBLISHED_YEAR, ROW_KIND_SERIES);
 
         // Format
         style = new BooklistStyle(R.string.lbl_format);
@@ -173,7 +180,7 @@ public class BooklistStyles extends ArrayList<BooklistStyle> {
         // Read date
         style = new BooklistStyle(R.string.style_builtin_read_date);
         list.add(style);
-        style.addGroups(ROW_KIND_YEAR_READ, ROW_KIND_MONTH_READ, ROW_KIND_AUTHOR);
+        style.addGroups(ROW_KIND_DATE_READ_YEAR, ROW_KIND_DATE_READ_MONTH, ROW_KIND_AUTHOR);
 
         // Location
         style = new BooklistStyle(R.string.lbl_location);
@@ -198,7 +205,7 @@ public class BooklistStyles extends ArrayList<BooklistStyle> {
         // Update date
         style = new BooklistStyle(R.string.update_date);
         list.add(style);
-        style.addGroups(ROW_KIND_UPDATE_YEAR, ROW_KIND_UPDATE_MONTH, ROW_KIND_UPDATE_DAY);
+        style.addGroups(ROW_KIND_DATE_LAST_UPDATE_YEAR, ROW_KIND_DATE_LAST_UPDATE_MONTH, ROW_KIND_DATE_LAST_UPDATE_DAY);
         style.setShowAuthor(true);
 
         // NEWKIND: BooklistStyle.
@@ -277,9 +284,7 @@ public class BooklistStyles extends ArrayList<BooklistStyle> {
     /**
      * Save the preferred style menu list.
      */
-    static void saveMenuOrder(final @Nullable List<BooklistStyle> list) {
-        Objects.requireNonNull(list);
-
+    static void saveMenuOrder(final @NonNull List<BooklistStyle> list) {
         StringBuilder items = new StringBuilder();
         for (BooklistStyle style : list) {
             if (style.isPreferred()) {

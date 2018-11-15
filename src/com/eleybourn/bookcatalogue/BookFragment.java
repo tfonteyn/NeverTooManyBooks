@@ -1,7 +1,7 @@
 package com.eleybourn.bookcatalogue;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
@@ -21,8 +21,9 @@ import android.widget.CheckedTextView;
 import android.widget.ListView;
 
 import com.eleybourn.bookcatalogue.Fields.Field;
-import com.eleybourn.bookcatalogue.baseactivity.CanBeDirty;
+import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.booklist.FlattenedBooklist;
+import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.entities.Author;
@@ -32,27 +33,30 @@ import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.entities.TOCEntry;
 import com.eleybourn.bookcatalogue.utils.BookUtils;
 import com.eleybourn.bookcatalogue.utils.BundleUtils;
-import com.eleybourn.bookcatalogue.utils.DateUtils;
+import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
+import com.eleybourn.bookcatalogue.widgets.CoverHandler;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 import static android.view.GestureDetector.SimpleOnGestureListener;
 
 /**
  * Class for representing read-only book details.
  */
-public class BookFragment extends BookAbstractFragmentWithCoverImage implements BookManager {
+public class BookFragment extends BookAbstractFragment implements BookManager {
 
     public static final String TAG = "BookFragment";
 
     public static final String REQUEST_BKEY_FLATTENED_BOOKLIST_POSITION = "FBLP";
     public static final String REQUEST_BKEY_FLATTENED_BOOKLIST = "FBL";
+
     private Book mBook;
-    @Nullable
+    private CoverHandler mCoverHandler;
+
+    private BaseActivity mActivity;
+
     private FlattenedBooklist mFlattenedBooklist = null;
-    @Nullable
     private GestureDetector mGestureDetector;
 
     /* ------------------------------------------------------------------------------------------ */
@@ -75,11 +79,11 @@ public class BookFragment extends BookAbstractFragmentWithCoverImage implements 
     }
 
     public boolean isDirty() {
-        return ((CanBeDirty) requireActivity()).isDirty();
+        return mActivity.isDirty();
     }
 
     public void setDirty(final boolean isDirty) {
-        ((CanBeDirty) requireActivity()).setDirty(isDirty);
+        mActivity.setDirty(isDirty);
     }
 
     //</editor-fold>
@@ -88,14 +92,13 @@ public class BookFragment extends BookAbstractFragmentWithCoverImage implements 
 
     //<editor-fold desc="Fragment startup">
 
-//    /**
-//     * Ensure activity supports interface
-//     */
-//    @Override
-//    @CallSuper
-//    public void onAttach(final @NonNull Context context) {
-//        super.onAttach(context);
-//    }
+    @Override
+    @CallSuper
+    public void onAttach(final @NonNull Context context) {
+        super.onAttach(context);
+
+        mActivity = (BaseActivity) context;
+    }
 
 //    @Override
 //    public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -122,11 +125,8 @@ public class BookFragment extends BookAbstractFragmentWithCoverImage implements 
 
         initBooklist(getArguments(), savedInstanceState);
 
-        // override parent as our Activity determines the 'right' dividing coefficient
-        initThumbSize(requireActivity());
-
         if (savedInstanceState == null) {
-            HintManager.displayHint(requireActivity().getLayoutInflater(), R.string.hint_view_only_help, null);
+            HintManager.displayHint(mActivity.getLayoutInflater(), R.string.hint_view_only_help, null);
         }
     }
 
@@ -143,7 +143,7 @@ public class BookFragment extends BookAbstractFragmentWithCoverImage implements 
         // ENHANCE: simplify the SQL and use a formatter instead.
         mFields.add(R.id.author, "", UniqueId.KEY_AUTHOR_FORMATTED);
 
-        mFields.add(R.id.series, UniqueId.KEY_SERIES_NAME);
+        mFields.add(R.id.filename, UniqueId.KEY_SERIES_NAME);
         mFields.add(R.id.title, UniqueId.KEY_TITLE);
         mFields.add(R.id.isbn, UniqueId.KEY_BOOK_ISBN);
         mFields.add(R.id.description, UniqueId.KEY_DESCRIPTION)
@@ -153,17 +153,28 @@ public class BookFragment extends BookAbstractFragmentWithCoverImage implements 
         mFields.add(R.id.pages, UniqueId.KEY_BOOK_PAGES);
         mFields.add(R.id.format, UniqueId.KEY_BOOK_FORMAT);
         mFields.add(R.id.publisher, UniqueId.KEY_BOOK_PUBLISHER);
-        mFields.add(R.id.date_published, UniqueId.KEY_BOOK_DATE_PUBLISHED);
-        mFields.add(R.id.first_publication, UniqueId.KEY_FIRST_PUBLICATION);
+
+        mFields.add(R.id.date_published, UniqueId.KEY_BOOK_DATE_PUBLISHED)
+                .setFormatter(new Fields.DateFieldFormatter());
+
+        mFields.add(R.id.first_publication, UniqueId.KEY_FIRST_PUBLICATION)
+                .setFormatter(new Fields.DateFieldFormatter());
 
         mFields.add(R.id.price_listed, UniqueId.KEY_BOOK_PRICE_LISTED)
                 .setFormatter(new Fields.PriceFormatter(getBook().getString(UniqueId.KEY_BOOK_PRICE_LISTED_CURRENCY)));
+
+        // add the cover image
+        Field coverField = mFields.add(R.id.coverImage, "", UniqueId.BKEY_HAVE_THUMBNAIL)
+                .setDoNotFetch(true);
+        mCoverHandler = new CoverHandler(mActivity, mDb, getBookManager(),
+                coverField, mFields.getField(R.id.isbn));
+
 
         // Personal fields
         mFields.add(R.id.bookshelves, UniqueId.KEY_BOOKSHELF_NAME)
                 .setDoNotFetch(true);
 
-        mFields.add(R.id.date_purchased, UniqueId.KEY_BOOK_DATE_ADDED)
+        mFields.add(R.id.date_acquired, UniqueId.KEY_BOOK_DATE_ACQUIRED)
                 .setFormatter(new Fields.DateFieldFormatter());
 
         mFields.add(R.id.price_paid, UniqueId.KEY_BOOK_PRICE_PAID)
@@ -207,7 +218,7 @@ public class BookFragment extends BookAbstractFragmentWithCoverImage implements 
      * At this point we're told to load our local (to the fragment) fields from the Book.
      *
      * @param book       to load from
-     * @param setAllFrom flag indicating {@link Fields#setAllFrom} has already been called or not
+     * @param setAllFrom flag indicating {@link Fields#setAllFrom(DataManager)} has already been called or not
      */
     @Override
     @CallSuper
@@ -217,8 +228,9 @@ public class BookFragment extends BookAbstractFragmentWithCoverImage implements 
         populateAuthorListField(book);
         populateSeriesListField(book);
 
-        // override setting the cover as we want specific sizes.
-        populateCoverImage(book.getBookId(), mThumbSize.normal, mThumbSize.normal * 2);
+        // override setting the cover as we want a bigger size.
+        ImageUtils.ThumbSize ts = ImageUtils.getThumbSizes(mActivity);
+        mCoverHandler.populateCoverView(ts.small, ts.standard);
 
         // handle 'text' DoNotFetch fields
         mFields.getField(R.id.bookshelves).setValue(book.getBookshelfListAsText());
@@ -235,7 +247,7 @@ public class BookFragment extends BookAbstractFragmentWithCoverImage implements 
         // hide unwanted and empty fields
         showHideFields(true);
 
-        if (BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.FIELD_BOOK_TRANSFERS && BuildConfig.DEBUG) {
             Logger.info(this, "onLoadFieldsFromBook done");
         }
     }
@@ -272,7 +284,7 @@ public class BookFragment extends BookAbstractFragmentWithCoverImage implements 
         }
 
         // ok, we absolutely have a list, get the position we need to be on.
-        int pos = BundleUtils.getIntFromBundles(REQUEST_BKEY_FLATTENED_BOOKLIST_POSITION, savedInstanceState,args);
+        int pos = BundleUtils.getIntFromBundles(REQUEST_BKEY_FLATTENED_BOOKLIST_POSITION, savedInstanceState, args);
 
         mFlattenedBooklist.moveTo(pos);
         // the book might have moved around. So see if we can find it.
@@ -371,7 +383,7 @@ public class BookFragment extends BookAbstractFragmentWithCoverImage implements 
     protected void populateSeriesListField(final @NonNull Book book) {
         ArrayList<Series> list = book.getSeriesList();
         int seriesCount = list.size();
-        boolean visible = seriesCount != 0 && mFields.getField(R.id.series).visible;
+        boolean visible = seriesCount != 0 && mFields.getField(R.id.filename).visible;
         if (visible) {
             Series.pruneSeriesList(list);
             Utils.pruneList(mDb, list);
@@ -383,11 +395,11 @@ public class BookFragment extends BookAbstractFragmentWithCoverImage implements 
                 }
             }
 
-            mFields.getField(R.id.series).setValue(builder.toString());
+            mFields.getField(R.id.filename).setValue(builder.toString());
         }
         //noinspection ConstantConditions
         getView().findViewById(R.id.lbl_series).setVisibility(visible ? View.VISIBLE : View.GONE);
-        getView().findViewById(R.id.series).setVisibility(visible ? View.VISIBLE : View.GONE);
+        getView().findViewById(R.id.filename).setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
     /**
@@ -417,15 +429,10 @@ public class BookFragment extends BookAbstractFragmentWithCoverImage implements 
      * Formats 'Publishing' section depending on values of 'publisher' and 'date published' fields.
      */
     private void populatePublishingSection(final @NonNull Book book) {
-        String date = book.getString(UniqueId.KEY_BOOK_DATE_PUBLISHED);
-        boolean hasPublishDate = !date.isEmpty();
-        // pretty format the date if we have one
-        if (hasPublishDate) {
-            Date d = DateUtils.parseDate(date);
-            if (d != null) {
-                date = DateUtils.toPrettyDate(d);
-            }
-        }
+
+        Field datePublishedField = mFields.getField(R.id.date_published);
+        String datePublished = datePublishedField.format(book.getString(UniqueId.KEY_BOOK_DATE_PUBLISHED));
+        boolean hasPublishDate = !datePublished.isEmpty();
 
         String pub = book.getString(UniqueId.KEY_BOOK_PUBLISHER);
         boolean hasPublisher = !pub.isEmpty();
@@ -433,11 +440,11 @@ public class BookFragment extends BookAbstractFragmentWithCoverImage implements 
         String result = "";
         if (hasPublisher && hasPublishDate) {
             // combine publisher and date into one field
-            result = pub + " (" + date + ")";
+            result = pub + " (" + datePublished + ")";
         } else if (hasPublisher) {
             result = pub;
         } else if (hasPublishDate) {
-            result = date;
+            result = datePublished;
         }
 
         mFields.getField(R.id.publisher).setValue(result);
@@ -513,7 +520,7 @@ public class BookFragment extends BookAbstractFragmentWithCoverImage implements 
             //noinspection ConstantConditions
             final ListView contentSection = getView().findViewById(R.id.toc);
 
-            ArrayAdapter<TOCEntry> adapter = new TOCListAdapter(requireActivity(),
+            ArrayAdapter<TOCEntry> adapter = new TOCListAdapter(mActivity,
                     R.layout.row_toc_entry_with_author, list);
             contentSection.setAdapter(adapter);
 
@@ -552,10 +559,13 @@ public class BookFragment extends BookAbstractFragmentWithCoverImage implements 
     public void onPause() {
         if (mFlattenedBooklist != null) {
             mFlattenedBooklist.close();
-            if (requireActivity().isFinishing()) {
+            if (mActivity.isFinishing()) {
                 mFlattenedBooklist.deleteData();
             }
         }
+
+        mCoverHandler.dismissCoverBrowser();
+
         super.onPause();
     }
 
@@ -570,7 +580,7 @@ public class BookFragment extends BookAbstractFragmentWithCoverImage implements 
         // don't call super, Don't save!
         // and don't remove this method... or the super *would* do the save!
 
-        if (BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.FIELD_BOOK_TRANSFERS && BuildConfig.DEBUG) {
             Logger.info(this, "onSaveFieldsToBook done");
         }
     }
@@ -635,7 +645,7 @@ public class BookFragment extends BookAbstractFragmentWithCoverImage implements 
     public boolean onOptionsItemSelected(final @NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.MENU_BOOK_EDIT:
-                EditBookActivity.startActivityForResult(requireActivity(),  /* a54a7e79-88c3-4b48-89df-711bb28935c5 */
+                EditBookActivity.startActivityForResult(mActivity,  /* a54a7e79-88c3-4b48-89df-711bb28935c5 */
                         getBook().getBookId(), EditBookFragment.TAB_EDIT);
                 return true;
         }
@@ -647,16 +657,23 @@ public class BookFragment extends BookAbstractFragmentWithCoverImage implements 
 
     @Override
     public void onActivityResult(final int requestCode, final int resultCode, final @Nullable Intent data) {
-        if (BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.ON_ACTIVITY_RESULT && BuildConfig.DEBUG) {
             Logger.info(this, "onActivityResult requestCode=" + requestCode + ", resultCode=" + resultCode);
         }
 
         switch (requestCode) {
             case EditBookFragment.REQUEST_CODE: {
-                if (resultCode == Activity.RESULT_OK)
-                // no need for anything, the book will get reloaded in onResume
+                if (resultCode == EditBookFragment.RESULT_CHANGES_MADE) {
+                    getBook().reload();
+                    mActivity.setChangesMade(true);
+                }
                 return;
             }
+        }
+
+        // handle any cover image result codes
+        if (mCoverHandler.onActivityResult(requestCode, resultCode, data)) {
+            return;
         }
 
         super.onActivityResult(requestCode, resultCode, data);

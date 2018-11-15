@@ -77,7 +77,7 @@ public class BookCatalogueTest extends ActivityInstrumentationTestCase2 {
 		t.clickOnMenuItem("Add Book...");
 		t.clickOnText("Add by ISBN");
 		t.assertCurrentActivity("Expected BookISBNSearch activity", "BookISBNSearch");
-		assertFalse("Did not expect onPartialDatePickerCancel button", t.searchButton("Cancel"));
+		assertFalse("Did not expect cancel button", t.searchButton("Cancel"));
 		t.goBack();
 		
 		//reset again

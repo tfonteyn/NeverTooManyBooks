@@ -152,8 +152,11 @@ public class DatabaseDefinitions {
     /** {@link #TBL_BOOKS} */
     public static final DomainDefinition DOM_BOOK_GOODREADS_BOOK_ID = new DomainDefinition("goodreads_book_id", TableInfo.TYPE_INTEGER);
 
-    /** {@link #TBL_BOOKS} added to the collection == date purchased */
+    /** {@link #TBL_BOOKS} added to the collection */
     public static final DomainDefinition DOM_BOOK_DATE_ADDED = new DomainDefinition("date_added", TableInfo.TYPE_DATETIME, "", "default current_timestamp");
+
+    /** {@link #TBL_BOOKS} */
+    public static final DomainDefinition DOM_BOOK_DATE_ACQUIRED = new DomainDefinition("date_acquired", TableInfo.TYPE_DATE);
 
     /** {@link #TBL_BOOKS} */
     public static final DomainDefinition DOM_BOOK_PUBLISHER = new DomainDefinition("publisher", TableInfo.TYPE_TEXT);
@@ -352,28 +355,37 @@ public class DatabaseDefinitions {
     public static final DomainDefinition DOM_READ_STATUS = new DomainDefinition("read_status", TableInfo.TYPE_TEXT, NOT_NULL, "");
     /** sorting and grouping in {@link BooklistBuilder} */
     public static final DomainDefinition DOM_TITLE_LETTER = new DomainDefinition("title_letter", TableInfo.TYPE_TEXT);
+
+
     /** sorting and grouping in {@link BooklistBuilder} */
-    public static final DomainDefinition DOM_ADDED_DAY = new DomainDefinition("added_day", TableInfo.TYPE_INTEGER);
+    public static final DomainDefinition DOM_DATE_ADDED_DAY = new DomainDefinition("added_day", TableInfo.TYPE_INTEGER);
     /** sorting and grouping in {@link BooklistBuilder} */
-    public static final DomainDefinition DOM_ADDED_MONTH = new DomainDefinition("added_month", TableInfo.TYPE_INTEGER);
+    public static final DomainDefinition DOM_DATE_ADDED_MONTH = new DomainDefinition("added_month", TableInfo.TYPE_INTEGER);
     /** sorting and grouping in {@link BooklistBuilder} */
-    public static final DomainDefinition DOM_ADDED_YEAR = new DomainDefinition("added_year", TableInfo.TYPE_INTEGER);
+    public static final DomainDefinition DOM_DATE_ADDED_YEAR = new DomainDefinition("added_year", TableInfo.TYPE_INTEGER);
     /** sorting and grouping in {@link BooklistBuilder} */
-    public static final DomainDefinition DOM_UPDATE_DAY = new DomainDefinition("update_day", TableInfo.TYPE_INTEGER);
+    public static final DomainDefinition DOM_DATE_UPDATE_DAY = new DomainDefinition("update_day", TableInfo.TYPE_INTEGER);
     /** sorting and grouping in {@link BooklistBuilder} */
-    public static final DomainDefinition DOM_UPDATE_MONTH = new DomainDefinition("update_month", TableInfo.TYPE_INTEGER);
+    public static final DomainDefinition DOM_DATE_UPDATE_MONTH = new DomainDefinition("update_month", TableInfo.TYPE_INTEGER);
     /** sorting and grouping in {@link BooklistBuilder} */
-    public static final DomainDefinition DOM_UPDATE_YEAR = new DomainDefinition("update_year", TableInfo.TYPE_INTEGER);
+    public static final DomainDefinition DOM_DATE_LAST_UPDATE_YEAR = new DomainDefinition("update_year", TableInfo.TYPE_INTEGER);
     /** sorting and grouping in {@link BooklistBuilder} */
-    public static final DomainDefinition DOM_READ_DAY = new DomainDefinition("read_day", TableInfo.TYPE_INTEGER);
+    public static final DomainDefinition DOM_DATE_READ_DAY = new DomainDefinition("read_day", TableInfo.TYPE_INTEGER);
     /** sorting and grouping in {@link BooklistBuilder} */
-    public static final DomainDefinition DOM_READ_MONTH = new DomainDefinition("read_month", TableInfo.TYPE_INTEGER);
+    public static final DomainDefinition DOM_DATE_READ_MONTH = new DomainDefinition("read_month", TableInfo.TYPE_INTEGER);
     /** sorting and grouping in {@link BooklistBuilder} */
-    public static final DomainDefinition DOM_READ_YEAR = new DomainDefinition("read_year", TableInfo.TYPE_INTEGER);
+    public static final DomainDefinition DOM_DATE_READ_YEAR = new DomainDefinition("read_year", TableInfo.TYPE_INTEGER);
     /** sorting and grouping in {@link BooklistBuilder} */
-    public static final DomainDefinition DOM_PUBLICATION_MONTH = new DomainDefinition("publication_month", TableInfo.TYPE_INTEGER);
+    public static final DomainDefinition DOM_DATE_ACQUIRED_DAY = new DomainDefinition("acquired_day", TableInfo.TYPE_INTEGER);
     /** sorting and grouping in {@link BooklistBuilder} */
-    public static final DomainDefinition DOM_PUBLICATION_YEAR = new DomainDefinition("publication_year", TableInfo.TYPE_INTEGER);
+    public static final DomainDefinition DOM_DATE_ACQUIRED_MONTH = new DomainDefinition("acquired_month", TableInfo.TYPE_INTEGER);
+    /** sorting and grouping in {@link BooklistBuilder} */
+    public static final DomainDefinition DOM_DATE_ACQUIRED_YEAR = new DomainDefinition("acquired_year", TableInfo.TYPE_INTEGER);
+
+    /** sorting and grouping in {@link BooklistBuilder} */
+    public static final DomainDefinition DOM_DATE_PUBLISHED_MONTH = new DomainDefinition("publication_month", TableInfo.TYPE_INTEGER);
+    /** sorting and grouping in {@link BooklistBuilder} */
+    public static final DomainDefinition DOM_DATE_PUBLISHED_YEAR = new DomainDefinition("publication_year", TableInfo.TYPE_INTEGER);
 
     /** {@link BooklistBuilder} */
     public static final DomainDefinition DOM_SELECTED = new DomainDefinition("selected", TableInfo.TYPE_BOOLEAN, "default 0");

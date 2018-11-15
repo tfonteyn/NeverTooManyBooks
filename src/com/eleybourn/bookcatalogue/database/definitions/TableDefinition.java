@@ -44,11 +44,12 @@ public class TableDefinition implements AutoCloseable, Cloneable {
     private final Map<TableDefinition, FkReference> mParents = Collections.synchronizedMap(new HashMap<TableDefinition, FkReference>());
     /** List of child tables (tables referring to by foreign keys to this table) */
     private final Map<TableDefinition, FkReference> mChildren = Collections.synchronizedMap(new HashMap<TableDefinition, FkReference>());
+
     /** Table name */
     private String mName;
     /** Table alias */
     private String mAlias;
-    /** Options indicating table is temporary */
+    /** Table type */
     @NonNull
     private TableTypes mType = TableTypes.Standard;
 
@@ -226,55 +227,56 @@ public class TableDefinition implements AutoCloseable, Cloneable {
     }
 
     /**
-     * Utility routine to return <table-alias>.<domain-name>.
+     * Utility routine to return "[table-alias].[domain-name]"
      *
-     * @param d Domain
+     * @param domain Domain
      *
      * @return SQL fragment
      */
     @NonNull
-    public String dot(final @NonNull DomainDefinition d) {
-        return getAlias() + "." + d.name;
+    public String dot(final @NonNull DomainDefinition domain) {
+        return getAlias() + "." + domain.name;
     }
 
     /**
-     * Utility routine to return [table-alias].[domain-name] as [domain_name]; this format
+     * Utility routine to return "[table-alias].[domain-name] as [domain_name]"; this format
      * is useful in older SQLite installations that add make the alias part of the output
      * column name.
      *
-     * @param d Domain
+     * @param domain Domain
      *
      * @return SQL fragment
      */
     @SuppressWarnings("unused")
     @NonNull
-    public String dotAs(final @NonNull DomainDefinition d) {
-        return getAlias() + "." + d.name + " AS " + d.name;
+    public String dotAs(final @NonNull DomainDefinition domain) {
+        return getAlias() + "." + domain.name + " AS " + domain.name;
     }
 
     /**
-     * Utility routine to return [table-alias].[domain-name] as [asDomain]; this format
+     * Utility routine to return "[table-alias].[domain-name] as [asDomain]"; this format
      * is useful when multiple differing versions of a domain are retrieved.
      *
-     * @param d Domain
+     * @param domain   Domain
+     * @param asDomain the alias to override the table alias
      *
      * @return SQL fragment
      */
     @NonNull
-    public String dotAs(final @NonNull DomainDefinition d, final @NonNull DomainDefinition asDomain) {
-        return getAlias() + "." + d.name + " AS " + asDomain.name;
+    public String dotAs(final @NonNull DomainDefinition domain, final @NonNull DomainDefinition asDomain) {
+        return getAlias() + "." + domain.name + " AS " + asDomain.name;
     }
 
     /**
-     * Utility routine to return <table-alias>.<name>.
+     * Utility routine to return "[table-alias].[name]".
      *
-     * @param s Domain name
+     * @param name Domain name
      *
      * @return SQL fragment
      */
     @NonNull
-    public String dot(final @NonNull String s) {
-        return getAlias() + "." + s;
+    public String dot(final @NonNull String name) {
+        return getAlias() + "." + name;
     }
 
     /**
@@ -824,7 +826,7 @@ public class TableDefinition implements AutoCloseable, Cloneable {
         }
 
         public String getUsingModifier() {
-            switch(this) {
+            switch (this) {
                 case FTS3:
                     return " USING fts3";
                 case FTS4:

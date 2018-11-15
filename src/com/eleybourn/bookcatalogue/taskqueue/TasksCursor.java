@@ -170,7 +170,7 @@ public class TasksCursor extends SQLiteCursor implements BindableItemCursor {
         return getLong(mIdCol);
     }
 
-    @Nullable
+    @NonNull
     public Date getQueuedDate() {
         if (mQueuedDateCol < 0) {
             mQueuedDateCol = this.getColumnIndex(DOM_QUEUED_DATE);
@@ -183,7 +183,7 @@ public class TasksCursor extends SQLiteCursor implements BindableItemCursor {
         return date;
     }
 
-    @Nullable
+    @NonNull
     public Date getRetryDate() {
         if (mRetryDateCol < 0) {
             mRetryDateCol = this.getColumnIndex(DOM_RETRY_DATE);

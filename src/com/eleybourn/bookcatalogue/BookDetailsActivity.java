@@ -26,18 +26,15 @@ import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.view.MotionEvent;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Book;
 
-/**
- * @author Evan Leybourn
- */
 public class BookDetailsActivity extends BaseActivity {
 
     public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_VIEW_BOOK;
+    public static final int RESULT_CHANGES_MADE = UniqueId.ACTIVITY_RESULT_CHANGES_MADE_VIEW_BOOK;
 
     @Override
     protected int getLayoutId() {
@@ -61,16 +58,27 @@ public class BookDetailsActivity extends BaseActivity {
     }
 
     private Book getBook() {
-        BookFragment frag = (BookFragment)getSupportFragmentManager().findFragmentByTag(BookFragment.TAG);
+        BookFragment frag = (BookFragment) getSupportFragmentManager().findFragmentByTag(BookFragment.TAG);
         return frag.getBookManager().getBook();
     }
 
-    /**
-     * Dispatch incoming result to the correct fragment.
-     */
+
     @Override
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-        if (BuildConfig.DEBUG) {
+
+        switch (requestCode) {
+            case EditBookActivity.REQUEST_CODE: {
+                if (resultCode == EditBookFragment.RESULT_CHANGES_MADE) {
+                    setChangesMade(true);
+                }
+                return;
+            }
+        }
+
+        /*
+         * Dispatch incoming result to the correct fragment.
+         */
+        if (DEBUG_SWITCHES.ON_ACTIVITY_RESULT && BuildConfig.DEBUG) {
             Logger.info(this, "onActivityResult: forwarding to fragment - requestCode=" + requestCode + ", resultCode=" + resultCode);
         }
 
@@ -85,6 +93,6 @@ public class BookDetailsActivity extends BaseActivity {
     public void setActivityResult() {
         Intent data = new Intent();
         data.putExtra(UniqueId.KEY_ID, getBook().getBookId());
-        setResult(Activity.RESULT_OK, data); /* e63944b6-b63a-42b1-897a-a0e8e0dabf8a */
+        setResult(changesMade() ? RESULT_CHANGES_MADE : Activity.RESULT_CANCELED, data); /* e63944b6-b63a-42b1-897a-a0e8e0dabf8a */
     }
 }

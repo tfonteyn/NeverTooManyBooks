@@ -73,11 +73,11 @@ public class About extends BaseActivity {
         }
 
         view = findViewById(R.id.website);
-        view.setText(Utils.linkifyHtml(getString(R.string.url_website, getString(R.string.about_lbl_website)), Linkify.ALL));
+        view.setText(Utils.linkifyHtml(getString(R.string.url_website, getString(R.string.about_lbl_website))));
         view.setMovementMethod(LinkMovementMethod.getInstance());
 
         view = findViewById(R.id.sourcecode);
-        view.setText(Utils.linkifyHtml(getString(R.string.url_sourcecode, getString(R.string.about_lbl_sourcecode)), Linkify.ALL));
+        view.setText(Utils.linkifyHtml(getString(R.string.url_sourcecode, getString(R.string.about_lbl_sourcecode))));
         view.setMovementMethod(LinkMovementMethod.getInstance());
 
         view = findViewById(R.id.contact1);
@@ -115,14 +115,14 @@ public class About extends BaseActivity {
                 getString(R.string.about_donate_paypal));
 
         view = findViewById(R.id.donate_url);
-        view.setText(Utils.linkifyHtml(paypalUrl, Linkify.ALL));
+        view.setText(Utils.linkifyHtml(paypalUrl));
         view.setMovementMethod(LinkMovementMethod.getInstance());
 
         view = findViewById(R.id.amazon_url);
         String text = String.format(
                 "<a href=\"https://www.amazon.com/gp/registry/wishlist/2A2E48ONH64HM?tag=bookcatalogue-20\">%1s</a>",
                 getString(R.string.about_donate_amazon));
-        view.setText(Utils.linkifyHtml(text, Linkify.ALL));
+        view.setText(Utils.linkifyHtml(text));
         view.setMovementMethod(LinkMovementMethod.getInstance());
 
         view = findViewById(R.id.amazon_links_info);
@@ -131,11 +131,12 @@ public class About extends BaseActivity {
                 getString(R.string.menu_amazon_books_in_series),
                 getString(R.string.menu_amazon_books_by_author_in_series),
                 getString(R.string.app_name));
-        view.setText(Utils.linkifyHtml(text, Linkify.ALL));
+        view.setText(Utils.linkifyHtml(text));
         view.setMovementMethod(LinkMovementMethod.getInstance());
 
     }
 
+    //TEST: do we need this ? is Linkify not doing email for us ?
     private void sendContactEmail(final @StringRes int stringId) {
         try {
             Intent msg = new Intent(Intent.ACTION_SEND);

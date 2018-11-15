@@ -234,7 +234,7 @@ anschließend auf eine leeren Seite landen. Klicken Sie einfach auf den "Zurück
     <string name="gr_title_auth_access">Zugriff autorisieren</string>
     <string name="gr_auth_access_already_auth">Scheinbar haben Sie diese App bereits autorisiert. Alle Funktionen von Goodreads sollten bereits verwendbar sein.</string>
     <string name="gr_access_error">Beim Zugriff auf Goodreads ist ein Netzwerkproblem aufgetreten. Bitte überprüfen Sie, ob die Website von Goodreads erreichbar ist. Falls das Problem nicht gelöst werden kann, kontaktieren Sie den Support.</string>
-    <string name="menu_other_preferences">Weitere Einstellungen</string>
+    <string name="menu_preferences_other">Weitere Einstellungen</string>
     <string name="user_interface">Benutzeroberfläche</string>
     <string name="background_tasks">Aufgaben im Hintergrund</string>
     <string name="cleanup_old_tasks">Alte Aufgaben bereinigen</string>
@@ -296,7 +296,7 @@ anschließend auf eine leeren Seite landen. Klicken Sie einfach auf den "Zurück
     <string name="style_builtin_added_date">Erfassungsdatum</string>
     <string name="style_builtin_author_year">Autor und Jahr</string>
     <string name="empty_with_brackets">(leer)</string>
-    <string name="booklist_preferences">Einstellungen der Bücherliste</string>
+    <string name="menu_preferences_booklist">Einstellungen der Bücherliste</string>
     <string name="extra_book_details">Zusätzliche Buchdetails</string>
     <string name="general">Allgemein</string>
     <string name="lbl_bookshelves_long">Bücherregale</string>

@@ -15,7 +15,6 @@ import android.widget.Button;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
-import com.eleybourn.bookcatalogue.utils.BundleUtils;
 
 import java.util.ArrayList;
 
@@ -92,7 +91,7 @@ public class SearchAdminActivity extends BaseActivity {
         frag.setArguments(args);
 
         Button confirmBtn = findViewById(R.id.confirm);
-        confirmBtn.setText(R.string.btn_confirm_use);
+        confirmBtn.setText(R.string.btn_use);
         confirmBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
@@ -118,7 +117,7 @@ public class SearchAdminActivity extends BaseActivity {
     }
 
     /**
-     * The 'normal' setup is for all tabs to show.
+     * The 'small' setup is for all tabs to show.
      */
     private void initAllTabs() {
         setTitle(R.string.search_internet);

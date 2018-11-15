@@ -21,6 +21,7 @@
 package com.eleybourn.bookcatalogue;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -31,10 +32,13 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.baseactivity.CanBeDirty;
 import com.eleybourn.bookcatalogue.datamanager.DataEditor;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -47,6 +51,8 @@ import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.BookManager;
 import com.eleybourn.bookcatalogue.utils.BundleUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
+
+import org.jsoup.Connection;
 
 import java.io.File;
 import java.util.List;
@@ -67,6 +73,7 @@ public class EditBookFragment extends BookAbstractFragment implements
     public static final String TAG = "EditBookFragment";
 
     public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_EDIT_BOOK;
+    public static final int RESULT_CHANGES_MADE = UniqueId.ACTIVITY_RESULT_CHANGES_MADE_EDIT_BOOK;
     /**
      * Tabs in order
      */
@@ -78,6 +85,9 @@ public class EditBookFragment extends BookAbstractFragment implements
 
     /** the one and only book we're editing */
     private Book mBook;
+
+    /** cache our activity to avoid multiple requireActivity and casting */
+    private BaseActivity mActivity;
 
     /** */
     private TabLayout mTabLayout;
@@ -104,11 +114,11 @@ public class EditBookFragment extends BookAbstractFragment implements
     }
 
     public boolean isDirty() {
-        return ((CanBeDirty) requireActivity()).isDirty();
+        return mActivity.isDirty();
     }
 
     public void setDirty(final boolean isDirty) {
-        ((CanBeDirty) requireActivity()).setDirty(isDirty);
+        mActivity.setDirty(isDirty);
     }
 
     //</editor-fold>
@@ -117,14 +127,16 @@ public class EditBookFragment extends BookAbstractFragment implements
 
     //<editor-fold desc="Fragment startup">
 
-//    /**
-//     * Ensure activity supports interface
-//     */
-//    @Override
-//    @CallSuper
-//    public void onAttach(final @NonNull Context context) {
-//        super.onAttach(context);
-//    }
+    /**
+     * Ensure activity supports interface
+     */
+    @Override
+    @CallSuper
+    public void onAttach(final @NonNull Context context) {
+        super.onAttach(context);
+
+        mActivity = (BaseActivity)context;
+    }
 
 //    @Override
 //    public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -146,7 +158,6 @@ public class EditBookFragment extends BookAbstractFragment implements
         boolean isExistingBook = (getBook().getBookId() > 0);
         initTabs(isExistingBook, savedInstanceState);
 
-
         //noinspection ConstantConditions
         Button confirmButton = getView().findViewById(R.id.confirm);
         confirmButton.setText(isExistingBook ? R.string.btn_confirm_save_book : R.string.btn_confirm_add_book);
@@ -162,8 +173,7 @@ public class EditBookFragment extends BookAbstractFragment implements
                 // 2018-11-02: no longer doing this explicitly now... sooner or later a purge will happen anyhow
 //                mDb.purgeAuthors();
 //                mDb.purgeSeries();
-                // cancel button == going 'up' => call onBackPressed as that will check the isDirty() status with a dialog
-                requireActivity().onBackPressed();
+                mActivity.finishIfClean();
             }
         });
     }
@@ -339,27 +349,35 @@ public class EditBookFragment extends BookAbstractFragment implements
 
     /* ------------------------------------------------------------------------------------------ */
 
+    @Override
+    public void onCreateOptionsMenu(@NonNull final Menu menu, @NonNull final MenuInflater inflater) {
+        // do nothing here. Child fragments will add their own menus
+    }
+
     /**
      * Dispatch incoming result to the correct fragment.
+     * Called from the hosting {@link EditBookActivity#onActivityResult(int, int, Intent)}
      */
     @Override
     public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-        if (BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.ON_ACTIVITY_RESULT && BuildConfig.DEBUG) {
             Logger.info(this, "onActivityResult: forwarding to fragment - requestCode=" + requestCode + ", resultCode=" + resultCode);
         }
 
+        // current visible child.
         Fragment frag = getChildFragmentManager().findFragmentById(R.id.tab_fragment);
         frag.onActivityResult(requestCode, resultCode, data);
     }
 
     /**
-     * setResult with the correct data set for this activity
+     * Default result: the id of the edited book
      */
     protected void setActivityResult() {
         Intent data = new Intent();
         data.putExtra(UniqueId.KEY_ID, getBook().getBookId());
-        // TODO: detect POTENTIAL global changes, and if none, return Activity.RESULT_CANCELLED instead
-        requireActivity().setResult(Activity.RESULT_OK, data); /* many places */
+//        mActivity.setResult(mActivity.changesMade() ? RESULT_CHANGES_MADE : Activity.RESULT_CANCELED, data); /* many places */
+        //ENHANCE: global changes not detected, so assume they happened.
+        mActivity.setResult(RESULT_CHANGES_MADE, data); /* many places */
     }
 
     /**
@@ -392,11 +410,11 @@ public class EditBookFragment extends BookAbstractFragment implements
 
         // However, there is some data that we really do require...
         if (book.getAuthorList().size() == 0) {
-            StandardDialogs.showUserMessage(requireActivity(), R.string.warning_required_author_long);
+            StandardDialogs.showUserMessage(mActivity, R.string.warning_required_author_long);
             return;
         }
         if (!book.containsKey(UniqueId.KEY_TITLE) || book.getString(UniqueId.KEY_TITLE).isEmpty()) {
-            StandardDialogs.showUserMessage(requireActivity(), R.string.warning_required_title);
+            StandardDialogs.showUserMessage(mActivity, R.string.warning_required_title);
             return;
         }
 
@@ -454,6 +472,9 @@ public class EditBookFragment extends BookAbstractFragment implements
         } else {
             mDb.updateBook(book.getBookId(), book, 0);
         }
+
+        // certainly made changes to the Book. Might be redundant, but I'm paranoid.
+        mActivity.setChangesMade(true);
     }
 
     @Override
@@ -513,7 +534,7 @@ public class EditBookFragment extends BookAbstractFragment implements
 
         public void onConfirm() {
             EditBookFragment.this.setActivityResult();
-            requireActivity().finish();
+            mActivity.finish();
         }
 
         public void onCancel() {

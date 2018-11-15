@@ -54,7 +54,7 @@ public class Logger {
     private static final String TAG = "BC_Logger";
 
     @SuppressLint("SimpleDateFormat")
-    private static final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     private Logger() {
     }
@@ -129,7 +129,7 @@ public class Logger {
      * @param message extra message
      */
     public static void error(final @Nullable Exception e, final @NonNull String message) {
-        String now = dateFormat.format(new Date());
+        String now = DATE_FORMAT.format(new Date());
         String exMsg = null;
         StringWriter stacktrace = new StringWriter();
         PrintWriter pw = new PrintWriter(stacktrace);

@@ -20,7 +20,6 @@
 
 package com.eleybourn.bookcatalogue;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.database.Cursor;
@@ -28,6 +27,7 @@ import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -45,7 +45,7 @@ import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.adapters.MultiTypeListCursorAdapter;
 import com.eleybourn.bookcatalogue.adapters.MultiTypeListHandler;
-import com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds;
+import com.eleybourn.bookcatalogue.booklist.RowKinds;
 import com.eleybourn.bookcatalogue.booklist.BooklistPreferencesActivity;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.booklist.BooklistSupportProvider;
@@ -57,6 +57,7 @@ import com.eleybourn.bookcatalogue.database.cursors.BooklistCursorRow;
 import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
+import com.eleybourn.bookcatalogue.dialogs.SelectOneDialog;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.dialogs.fieldeditdialogs.EditAuthorDialog;
 import com.eleybourn.bookcatalogue.dialogs.fieldeditdialogs.EditFormatDialog;
@@ -65,16 +66,11 @@ import com.eleybourn.bookcatalogue.dialogs.fieldeditdialogs.EditLanguageDialog;
 import com.eleybourn.bookcatalogue.dialogs.fieldeditdialogs.EditLocationDialog;
 import com.eleybourn.bookcatalogue.dialogs.fieldeditdialogs.EditPublisherDialog;
 import com.eleybourn.bookcatalogue.dialogs.fieldeditdialogs.EditSeriesDialog;
-import com.eleybourn.bookcatalogue.dialogs.SelectOneDialog;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Publisher;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.searches.amazon.AmazonUtils;
-import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
-import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.NetworkException;
-import com.eleybourn.bookcatalogue.searches.goodreads.SendOneBookTask;
-import com.eleybourn.bookcatalogue.taskqueue.QueueManager;
-import com.eleybourn.bookcatalogue.tasks.BCQueueManager;
+import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsUtils;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTask;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTaskContext;
@@ -88,9 +84,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ADDED_DAY;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ADDED_MONTH;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ADDED_YEAR;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FORMATTED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKSHELF;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_FORMAT;
@@ -99,18 +92,24 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LOCATION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PUBLISHER;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_RATING;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_ACQUIRED_DAY;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_ACQUIRED_MONTH;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_ACQUIRED_YEAR;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_ADDED_DAY;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_ADDED_MONTH;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_ADDED_YEAR;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_LAST_UPDATE_YEAR;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_PUBLISHED_MONTH;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_PUBLISHED_YEAR;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_READ_DAY;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_READ_MONTH;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_READ_YEAR;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_UPDATE_DAY;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_UPDATE_MONTH;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LOANED_TO;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PUBLICATION_MONTH;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PUBLICATION_YEAR;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_READ_DAY;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_READ_MONTH;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_READ_STATUS;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_READ_YEAR;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE_LETTER;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_UPDATE_DAY;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_UPDATE_MONTH;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_UPDATE_YEAR;
 
 /**
  * Handles all views in a multi-type ListView showing books, authors, series etc.
@@ -144,7 +143,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
      */
     @Override
     public int getViewTypeCount() {
-        return RowKinds.ROW_KIND_MAX + 1;
+        return RowKinds.size();
     }
 
     /**
@@ -327,6 +326,9 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                             .setIcon(R.drawable.ic_people);
                 }
 
+                menu.add(Menu.NONE, R.id.MENU_SHARE, 0, R.string.share)
+                        .setIcon(R.drawable.ic_share);
+
                 menu.add(Menu.NONE, R.id.MENU_BOOK_SEND_TO_GOODREADS, 0, R.string.gr_send_to_goodreads)
                         .setIcon(BookCatalogueApp.getAttr(R.attr.ic_goodreads));
                 break;
@@ -433,7 +435,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                                   final @NonNull View targetView,
                                   final @NonNull CatalogueDBAdapter db,
                                   final @NonNull BooklistCursorRow cursorRow,
-                                  final @NonNull Activity activity) {
+                                  final @NonNull FragmentActivity activity) {
 
         switch (menuItem.getItemId()) {
             case R.id.MENU_BOOK_DELETE: {
@@ -471,6 +473,10 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                         cursorRow.getBookId(), EditBookFragment.TAB_EDIT_LOANS);
                 return true;
             }
+            case R.id.MENU_SHARE: {
+                BookUtils.shareBook(activity, db, cursorRow.getBookId());
+                return true;
+            }
             case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR: {
                 AmazonUtils.openSearchPage(activity, getAuthorFromRow(db, cursorRow), null);
                 return true;
@@ -484,23 +490,8 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                 return true;
             }
             case R.id.MENU_BOOK_SEND_TO_GOODREADS: {
-                /* Get a GoodreadsManager and make sure we are authorized.
-                 * FIXME: This does network traffic on main thread and will ALWAYS die in Android 4.2+.
-                 * Should mimic code in
-                 * {@link com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsUtils#sendBooksToGoodreads}
-                 */
-                GoodreadsManager grMgr = new GoodreadsManager();
-                if (!grMgr.hasValidCredentials()) {
-                    try {
-                        grMgr.requestAuthorization(activity);
-                    } catch (NetworkException e) {
-                        StandardDialogs.showUserMessage(activity, e.getLocalizedMessage());
-                    }
-                }
-                // get a QueueManager and queue the task.
-                QueueManager qm = BookCatalogueApp.getQueueManager();
-                SendOneBookTask task = new SendOneBookTask(cursorRow.getBookId());
-                qm.enqueueTask(task, BCQueueManager.QUEUE_MAIN);
+                //TEST sendOneBookToGoodreads
+                GoodreadsUtils.sendOneBookToGoodreads(activity, cursorRow.getBookId());
                 return true;
             }
             case R.id.MENU_SERIES_EDIT: {
@@ -695,34 +686,46 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                 return new GenericStringHolder(rowView, DOM_READ_STATUS, R.string.empty_with_brackets);
             case RowKinds.ROW_KIND_LOANED:
                 return new GenericStringHolder(rowView, DOM_LOANED_TO, R.string.empty_with_brackets);
-            case RowKinds.ROW_KIND_YEAR_PUBLISHED:
-                return new GenericStringHolder(rowView, DOM_PUBLICATION_YEAR, R.string.empty_with_brackets);
-            case RowKinds.ROW_KIND_YEAR_ADDED:
-                return new GenericStringHolder(rowView, DOM_ADDED_YEAR, R.string.empty_with_brackets);
-            case RowKinds.ROW_KIND_DAY_ADDED:
-                return new GenericStringHolder(rowView, DOM_ADDED_DAY, R.string.empty_with_brackets);
-            case RowKinds.ROW_KIND_MONTH_PUBLISHED:
-                return new MonthHolder(rowView, DOM_PUBLICATION_MONTH.name);
-            case RowKinds.ROW_KIND_MONTH_ADDED:
-                return new MonthHolder(rowView, DOM_ADDED_MONTH.name);
-            case RowKinds.ROW_KIND_YEAR_READ:
-                return new GenericStringHolder(rowView, DOM_READ_YEAR, R.string.empty_with_brackets);
-            case RowKinds.ROW_KIND_MONTH_READ:
-                return new MonthHolder(rowView, DOM_READ_MONTH.name);
-            case RowKinds.ROW_KIND_DAY_READ:
-                return new GenericStringHolder(rowView, DOM_READ_DAY, R.string.empty_with_brackets);
             case RowKinds.ROW_KIND_LOCATION:
                 return new GenericStringHolder(rowView, DOM_BOOK_LOCATION, R.string.empty_with_brackets);
-            case RowKinds.ROW_KIND_UPDATE_YEAR:
-                return new GenericStringHolder(rowView, DOM_UPDATE_YEAR, R.string.empty_with_brackets);
-            case RowKinds.ROW_KIND_UPDATE_MONTH:
-                return new MonthHolder(rowView, DOM_UPDATE_MONTH.name);
-            case RowKinds.ROW_KIND_UPDATE_DAY:
-                return new GenericStringHolder(rowView, DOM_UPDATE_DAY, R.string.empty_with_brackets);
             case RowKinds.ROW_KIND_BOOKSHELF:
                 return new GenericStringHolder(rowView, DOM_BOOKSHELF, R.string.empty_with_brackets);
             case RowKinds.ROW_KIND_RATING:
                 return new RatingHolder(rowView, DOM_BOOK_RATING.name);
+
+            case RowKinds.ROW_KIND_DATE_PUBLISHED_YEAR:
+                return new GenericStringHolder(rowView, DOM_DATE_PUBLISHED_YEAR, R.string.empty_with_brackets);
+            case RowKinds.ROW_KIND_DATE_PUBLISHED_MONTH:
+                return new MonthHolder(rowView, DOM_DATE_PUBLISHED_MONTH.name);
+
+            case RowKinds.ROW_KIND_DATE_ACQUIRED_YEAR:
+                return new GenericStringHolder(rowView, DOM_DATE_ACQUIRED_YEAR, R.string.empty_with_brackets);
+            case RowKinds.ROW_KIND_DATE_ACQUIRED_MONTH:
+                return new MonthHolder(rowView, DOM_DATE_ACQUIRED_MONTH.name);
+            case RowKinds.ROW_KIND_DATE_ACQUIRED_DAY:
+                return new GenericStringHolder(rowView, DOM_DATE_ACQUIRED_DAY, R.string.empty_with_brackets);
+
+            case RowKinds.ROW_KIND_DATE_ADDED_YEAR:
+                return new GenericStringHolder(rowView, DOM_DATE_ADDED_YEAR, R.string.empty_with_brackets);
+            case RowKinds.ROW_KIND_DATE_ADDED_MONTH:
+                return new MonthHolder(rowView, DOM_DATE_ADDED_MONTH.name);
+            case RowKinds.ROW_KIND_DATE_ADDED_DAY:
+                return new GenericStringHolder(rowView, DOM_DATE_ADDED_DAY, R.string.empty_with_brackets);
+
+            case RowKinds.ROW_KIND_DATE_READ_YEAR:
+                return new GenericStringHolder(rowView, DOM_DATE_READ_YEAR, R.string.empty_with_brackets);
+            case RowKinds.ROW_KIND_DATE_READ_MONTH:
+                return new MonthHolder(rowView, DOM_DATE_READ_MONTH.name);
+            case RowKinds.ROW_KIND_DATE_READ_DAY:
+                return new GenericStringHolder(rowView, DOM_DATE_READ_DAY, R.string.empty_with_brackets);
+
+            case RowKinds.ROW_KIND_DATE_LAST_UPDATE_YEAR:
+                return new GenericStringHolder(rowView, DOM_DATE_LAST_UPDATE_YEAR, R.string.empty_with_brackets);
+            case RowKinds.ROW_KIND_DATE_LAST_UPDATE_MONTH:
+                return new MonthHolder(rowView, DOM_DATE_UPDATE_MONTH.name);
+            case RowKinds.ROW_KIND_DATE_LAST_UPDATE_DAY:
+                return new GenericStringHolder(rowView, DOM_DATE_UPDATE_DAY, R.string.empty_with_brackets);
+
 
             default:
                 throw new RTE.IllegalTypeException("" + k);
@@ -835,7 +838,8 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                             String tmpPubDate = rowView.getDatePublished();
 
                             if (tmpPubDate != null && tmpPubDate.length() >= 4) {
-                                mPublisher = BookCatalogueApp.getResourceString(R.string.a_bracket_b_bracket, tmpPublisher, tmpPubDate);
+                                mPublisher = BookCatalogueApp.getResourceString(R.string.a_bracket_b_bracket,
+                                        tmpPublisher, DateUtils.toPrettyDate(tmpPubDate));
                             } else {
                                 mPublisher = tmpPublisher;
                             }
@@ -1172,7 +1176,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
         @Override
         public void map(final @NonNull BooklistCursorRow rowView, final @NonNull View v) {
             rowInfo = v.findViewById(R.id.BLB_ROW_DETAILS);
-            text = v.findViewById(R.id.series);
+            text = v.findViewById(R.id.filename);
         }
 
         @Override
@@ -1225,7 +1229,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
         @Override
         public void map(final @NonNull BooklistCursorRow rowView, final @NonNull View view) {
             rowInfo = view.findViewById(R.id.BLB_ROW_DETAILS);
-            text = view.findViewById(R.id.series);
+            text = view.findViewById(R.id.filename);
         }
 
         @Override
@@ -1290,7 +1294,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
         @Override
         public void map(final @NonNull BooklistCursorRow rowView, final @NonNull View view) {
             rowInfo = view.findViewById(R.id.BLB_ROW_DETAILS);
-            text = view.findViewById(R.id.series);
+            text = view.findViewById(R.id.filename);
         }
 
         @Override

@@ -51,9 +51,9 @@ import com.eleybourn.bookcatalogue.taskqueue.Event;
 import com.eleybourn.bookcatalogue.taskqueue.EventsCursor;
 import com.eleybourn.bookcatalogue.taskqueue.QueueManager;
 import com.eleybourn.bookcatalogue.tasks.BCQueueManager;
+import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -182,7 +182,7 @@ public class BookEvents {
             holder.error.setText(this.getDescription());
 
             String date = String.format("(" + context.getString(R.string.occurred_at) + ")",
-                    DateFormat.getDateTimeInstance().format(cursor.getEventDate()));
+                    DateUtils.toPrettyDateTime(cursor.getEventDate()));
             holder.date.setText(date);
 
             holder.retry.setVisibility(View.GONE);

@@ -22,7 +22,7 @@
     </FrameLayout>
 
     <TextView
-        android:id="@+id/series"
+        android:id="@+id/filename"
         style="@style/lbl_property_name"
         android:layout_toStartOf="@id/frame"
         tools:text="name of property" />
@@ -30,7 +30,7 @@
     <TextView
         android:id="@+id/value"
         style="@style/txt_property_value"
-        android:layout_below="@id/series"
+        android:layout_below="@id/filename"
         android:layout_toStartOf="@id/frame"
         tools:text="yes/no" />
 

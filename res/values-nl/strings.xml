@@ -236,7 +236,7 @@
     <string name="gr_title_auth_access">Toegang autoriseren</string>
     <string name="gr_auth_access_already_auth">Het lijkt erop dat u deze applicatie al toegang heeft verleend. Alle goodreads functies moet reeds beschikbaar zijn</string>
     <string name="gr_access_error">Er was een netwerkprobleem terwijl u probeerde toegang te krijgen tot goodreads. controleer of de website van goodreads in de lucht is en als het probleem aanhoudt maak dan contact met ondersteuning</string>
-    <string name="menu_other_preferences">Meer voorkeuren</string>
+    <string name="menu_preferences_other">Meer voorkeuren</string>
     <string name="user_interface">Gebruikersinterface</string>
     <string name="background_tasks">Achtergrondtaken</string>
     <string name="cleanup_old_tasks">Opschonen oude taken</string>
@@ -298,7 +298,7 @@
     <string name="style_builtin_added_date">Datum toegevoegd</string>
     <string name="style_builtin_author_year">Auteur en jaar</string>
     <string name="empty_with_brackets">(leeg)</string>
-    <string name="booklist_preferences">Boekenlijst Voorkeuren</string>
+    <string name="menu_preferences_booklist">Boekenlijst Voorkeuren</string>
     <string name="extra_book_details">Extra boekdetails</string>
     <string name="general">Algemeen</string>
     <string name="lbl_bookshelves_long">Boekenplanken</string>
@@ -780,7 +780,7 @@ Zie "Meer voorkeuren" voor de relevante instelling.
     <string name="table_of_content">Inhouds tabel</string>
     <string name="try_again">Probeer opniew</string>
     <string name="search_sites_blurb">Locale paginas</string>
-    <string name="lbl_date_purchased">Datum aangekocht</string>
+    <string name="lbl_date_acquired">Datum aangekocht</string>
     <string name="lbl_edition">Editie</string>
     <string name="lbl_edition_book_club">Boekenclub</string>
     <string name="lbl_edition_first_edition">Eerste druk</string>
@@ -788,7 +788,7 @@ Zie "Meer voorkeuren" voor de relevante instelling.
     <string name="lbl_edition_limited">Gelimiteerd</string>
     <string name="lbl_price_paid">Betaald</string>
     <string name="saving_image">Scan wordt bewaard</string>
-    <string name="btn_confirm_use">Gebruik</string>
+    <string name="btn_use">Gebruik</string>
     <string name="usage_skip">Overslaan</string>
     <string name="share_book_im_reading">Ik lees %1$s door %2$s %3$s %4$s</string>
     <string name="gr_search_goodreads">Zoeken op Goodreads</string>

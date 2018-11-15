@@ -31,7 +31,7 @@ import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;
-import com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds;
+import com.eleybourn.bookcatalogue.booklist.RowKinds;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.database.DBExceptions;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
@@ -136,10 +136,11 @@ public class BooklistCursorRow extends BookCursorRowBase {
     @Nullable
     private String formatRowGroup(final int level, final @Nullable String s) {
         switch (mBuilder.getStyle().getGroupAt(level).kind) {
-            case RowKinds.ROW_KIND_MONTH_ADDED:
-            case RowKinds.ROW_KIND_MONTH_PUBLISHED:
-            case RowKinds.ROW_KIND_MONTH_READ:
-            case RowKinds.ROW_KIND_UPDATE_MONTH:
+            case RowKinds.ROW_KIND_DATE_ACQUIRED_MONTH:
+            case RowKinds.ROW_KIND_DATE_ADDED_MONTH:
+            case RowKinds.ROW_KIND_DATE_LAST_UPDATE_MONTH:
+            case RowKinds.ROW_KIND_DATE_PUBLISHED_MONTH:
+            case RowKinds.ROW_KIND_DATE_READ_MONTH:
                 try {
                     int i = Integer.parseInt(s);
                     // If valid, get the name

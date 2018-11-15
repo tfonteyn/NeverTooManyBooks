@@ -39,14 +39,13 @@ Small notes in addition:
     Use 'CompoundButton' and/or 'Checkable' where possible.
     This leaves the layout flexible to choose a different type without code changes
 
-* Instead of simply letting NullPointersException happen (and/or using a lint 'suppress'),
-  check it explicitly there *has* to be 'data':
-                    Objects.requireNonNull(data);
-   Main reason is a reminder to the developer that if it was null it's *their* fault.
-   But, nothing wrong with this:
-       if (resultCode == Activity.RESULT_OK && data != null && data.hasExtra(UniqueId.BKEY_AUTHOR_ARRAY)) {
+* NullPointersException:
+  If an object *must* be non-null, use Objects.requireNonNull(something);
+  Main reason is a reminder to the developer that if it was null it's *their* fault.
 
-   System stuff + not finding R.id fields in layout... just use lint suppress, will all show on first test run anyhow
+  If an Object comes from the system and it *can* be null (but should't), use a lint 'suppress'
+
+  findViewById: just use lint suppress, will all show on first test run anyhow
 
 * pedantic but I hope polite request:
   Single character variables names are best left to BASIC style from the 1980's

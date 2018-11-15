@@ -156,7 +156,7 @@ public class Tracker {
 
         @NonNull
         public String getInfo() {
-            return DateUtils.toSqlDateTime(date) + ": " + activityClass + " " + action + " " + state;
+            return DateUtils.utcSqlDateTime(date) + ": " + activityClass + " " + action + " " + state;
         }
     }
 }

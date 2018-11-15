@@ -316,9 +316,8 @@ public class StandardDialogs {
     /* ========================================================================================== */
 
     /**
-     * This class exists only for:
-     * - we use AppCompatDialog in ONE place (here) .. so any future removal is easy
-     * - optional Close Button, if your layout has a Button with id=android.R.id.closeButton
+     * This class exists temporarily so we use AppCompatDialog in ONE place (here)
+     * Gradually replacing the use.
      */
     public static class BasicDialog extends AppCompatDialog {
 
@@ -329,15 +328,6 @@ public class StandardDialogs {
         public BasicDialog(final @NonNull Context context, @StyleRes final int theme) {
             super(context, theme);
 
-            Button closeButton = findViewById(android.R.id.closeButton);
-            if (closeButton != null) {
-                closeButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        BasicDialog.this.dismiss();
-                    }
-                });
-            }
         }
     }
 }

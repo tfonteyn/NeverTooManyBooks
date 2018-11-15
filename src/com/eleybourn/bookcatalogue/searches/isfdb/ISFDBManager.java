@@ -23,7 +23,7 @@ public class ISFDBManager {
      * task queue for the searching/parsing of content (ant titles)
      * specifically used for direct search calls from {@link EditBookTOCFragment}
      *
-     * Not used for 'normal' search
+     * Not used for 'small' search
      */
     @Nullable
     private static SimpleTaskQueue taskQueue = null;

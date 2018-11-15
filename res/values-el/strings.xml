@@ -238,7 +238,7 @@
     <string name="gr_title_auth_access">Έγκριση Πρόσβασης</string>
     <string name="gr_auth_access_already_auth">Φαίνεται σαν να έχει ήδη εγκριθεί αυτή η εφαρμογή. Όλες οι λειτουργίες από το goodreads θα πρέπει να είναι ήδη διαθέσιμες</string>
     <string name="gr_access_error">Υπήρξε πρόβλημα σύνδεσης κατά την πρόσβαση στο goodreads. Παρακαλούμε ελέγξτε εαν υπάρχει σύνδεση στο διαδίκτυα και η ιστοσελίδα goodreads λειτουργεί. Αν το πρόβλημα συνεχίζεται επικοινωνήστε με την υποστήριξη</string>
-    <string name="menu_other_preferences">Άλλες Προτιμήσεις</string>
+    <string name="menu_preferences_other">Άλλες Προτιμήσεις</string>
     <string name="user_interface">Περιβάλλον Χρήστη</string>
     <string name="background_tasks">Εργασίες Παρασκηνίου</string>
     <string name="cleanup_old_tasks">Εκκαθάριση παλιών εργασιών</string>
@@ -302,7 +302,7 @@
     <string name="style_builtin_author_year">Συγγραφέας και χρονιά</string>
     <string name="empty_with_brackets">(άδειο)</string>
 
-    <string name="booklist_preferences">Προτιμήσεις λίστας βιβλίων</string>
+    <string name="menu_preferences_booklist">Προτιμήσεις λίστας βιβλίων</string>
     <string name="extra_book_details">Επιπλέον λεπτομέρειες βιβλίου</string>
     <string name="general">Γενικά</string>
     <string name="lbl_bookshelves_long">Ράφια Βιβλιοθήκης</string>

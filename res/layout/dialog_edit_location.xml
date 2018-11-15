@@ -4,7 +4,7 @@
     style="@style/dialogFrame">
 
     <AutoCompleteTextView
-        android:id="@+id/series"
+        android:id="@+id/filename"
         style="@style/simpleTextEntry"
         android:completionThreshold="2"
         android:hint="@string/not_set"

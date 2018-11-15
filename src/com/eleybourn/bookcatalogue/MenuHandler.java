@@ -93,19 +93,19 @@ public class MenuHandler {
             case R.id.MENU_BOOK_ADD_BY_SCAN: {
                 Intent intent = new Intent(activity, BookSearchActivity.class);
                 intent.putExtra(BookSearchActivity.REQUEST_BKEY_BY, BookSearchActivity.BY_SCAN);
-                activity.startActivityForResult(intent, BookSearchActivity.REQUEST_CODE_SCAN); /* f1e0d846-852e-451b-9077-6daa5d94f37d */
+                activity.startActivityForResult(intent, BookSearchActivity.REQUEST_CODE); /* f1e0d846-852e-451b-9077-6daa5d94f37d */
                 return true;
             }
             case R.id.MENU_BOOK_ADD_BY_SEARCH_ISBN: {
                 Intent intent = new Intent(activity, BookSearchActivity.class);
                 intent.putExtra(BookSearchActivity.REQUEST_BKEY_BY, BookSearchActivity.BY_ISBN);
-                activity.startActivityForResult(intent, BookSearchActivity.REQUEST_CODE_SEARCH); /* 59fd9653-f033-40b5-bee8-f1dfa5b5be6b */
+                activity.startActivityForResult(intent, BookSearchActivity.REQUEST_CODE); /* 59fd9653-f033-40b5-bee8-f1dfa5b5be6b */
                 return true;
             }
             case R.id.MENU_BOOK_ADD_BY_SEARCH_TEXT: {
                 Intent intent = new Intent(activity, BookSearchActivity.class);
                 intent.putExtra(BookSearchActivity.REQUEST_BKEY_BY, BookSearchActivity.BY_TEXT);
-                activity.startActivityForResult(intent, BookSearchActivity.REQUEST_CODE_SEARCH); /* 59fd9653-f033-40b5-bee8-f1dfa5b5be6b */
+                activity.startActivityForResult(intent, BookSearchActivity.REQUEST_CODE); /* 59fd9653-f033-40b5-bee8-f1dfa5b5be6b */
                 return true;
             }
             case R.id.MENU_BOOK_ADD_MANUALLY: {

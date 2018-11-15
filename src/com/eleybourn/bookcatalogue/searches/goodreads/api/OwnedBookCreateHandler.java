@@ -151,9 +151,9 @@ public class OwnedBookCreateHandler extends ApiHandler {
 	 *	Parameters:
 	 *	    owned_book[condition_code]: one of 10 (brand new), 20 (like new), 30 (very good), 40 (good), 50 (acceptable), 60 (poor)
 	 *	    owned_book[unique_code]: BookCrossing id (BCID)
-	 *	    owned_book[original_purchase_location]: where this book was purchased
+	 *	    owned_book[original_purchase_location]: where this book was acquired
 	 *	    owned_book[book_id]: id of the book (required)
-	 *	    owned_book[original_purchase_date]: when book was purchased
+	 *	    owned_book[original_purchase_date]: when book was acquired
 	 *	    owned_book[condition_description]: description of book's condition
 	 *	    owned_book[available_for_swap]: true or false, if book is available for swap
 	 */

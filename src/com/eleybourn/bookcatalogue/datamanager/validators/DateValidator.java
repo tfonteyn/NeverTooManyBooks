@@ -60,7 +60,7 @@ public class DateValidator extends DefaultFieldValidator {
             if (d == null) {
                 throw new ValidatorException(R.string.vldt_date_expected, new Object[]{datum.getKey()});
             }
-            data.putString(datum, DateUtils.toSqlDateTime(d));
+            data.putString(datum, DateUtils.utcSqlDateTime(d));
         } catch (Exception e) {
             throw new ValidatorException(R.string.vldt_date_expected, new Object[]{datum.getKey()});
         }

@@ -49,6 +49,7 @@ public class BookCursorRowBase {
     private int mAnthologyMaskCol = -2;
     private int mEditionMaskCol = -2;
     private int mDateAddedCol = -2;
+    private int mDateAcquiredCol = -2;
     private int mDateLastUpdatedCol = -2;
     private int mDatePublishedCol = -2;
 
@@ -367,6 +368,16 @@ public class BookCursorRowBase {
             }
         }
         return mCursor.getInt(mEditionMaskCol);
+    }
+
+    public final String getDateAcquired() {
+        if (mDateAcquiredCol < 0) {
+            mDateAcquiredCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_DATE_ACQUIRED.name);
+            if (mDateAcquiredCol < 0) {
+                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_BOOK_DATE_ACQUIRED.name);
+            }
+        }
+        return mCursor.getString(mDateAcquiredCol);
     }
 
     public final String getDateAdded() {

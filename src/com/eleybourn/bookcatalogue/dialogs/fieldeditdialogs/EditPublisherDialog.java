@@ -54,7 +54,7 @@ public class EditPublisherDialog {
         // Build the base dialog
         final View root = mContext.getLayoutInflater().inflate(R.layout.dialog_edit_publisher, null);
 
-        final EditText nameView = root.findViewById(R.id.series);
+        final EditText nameView = root.findViewById(R.id.filename);
         //noinspection ConstantConditions
         nameView.setText(publisher.name);
 

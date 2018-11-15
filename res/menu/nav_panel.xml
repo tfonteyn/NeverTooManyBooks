@@ -11,9 +11,9 @@
         android:title="@string/menu_edit_bookshelves" />
 
     <item
-        android:id="@+id/nav_booklist_prefs"
+        android:id="@+id/nav_edit_list_styles"
         android:icon="@drawable/ic_settings"
-        android:title="@string/booklist_preferences" />
+        android:title="@string/menu_edit_booklist_styles" />
 
     <item
         android:id="@+id/nav_admin"

@@ -233,7 +233,7 @@
     <string name="gr_title_auth_access">Autorizovat přístup</string>
     <string name="gr_auth_access_already_auth">Vypadá to, že aplikace již byla autorizována. Všechny funkce z Goodreads by již měly být dostupné</string>
     <string name="gr_access_error">Během autorizace aplikace došlo k problému s internetovým připojením. Zkontrolujte prosím přístup ke stránkám Goodreads a pokud problémy přetrvají, kontaktujte správce.</string>
-    <string name="menu_other_preferences">Další možnosti</string>
+    <string name="menu_preferences_other">Další možnosti</string>
     <string name="user_interface">Uživatelské rozhraní</string>
     <string name="background_tasks">Úlohy na pozadí</string>
     <string name="cleanup_old_tasks">Smazat staré úlohy</string>
@@ -295,7 +295,7 @@
     <string name="style_builtin_added_date">Datum přidání</string>
     <string name="style_builtin_author_year">Autor a rok</string>
     <string name="empty_with_brackets">(prázdné)</string>
-    <string name="booklist_preferences">Možnosti seznamu knih</string>
+    <string name="menu_preferences_booklist">Možnosti seznamu knih</string>
     <string name="extra_book_details">Podrobnosti o knize</string>
     <string name="general">Obecné</string>
     <string name="lbl_bookshelves">Police</string>

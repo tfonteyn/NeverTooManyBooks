@@ -36,10 +36,9 @@ import com.eleybourn.bookcatalogue.properties.PropertyGroup;
 import com.eleybourn.bookcatalogue.properties.StringListProperty;
 import com.eleybourn.bookcatalogue.scanner.ScannerManager;
 import com.eleybourn.bookcatalogue.utils.SoundManager;
+import com.eleybourn.bookcatalogue.widgets.CoverHandler;
 
 import java.util.Locale;
-
-import static com.eleybourn.bookcatalogue.BookAbstractFragmentWithCoverImage.PREF_AUTOROTATE_CAMERA_IMAGES_DEFAULT;
 
 /**
  * Activity to display the 'Preferences' dialog and maintain the preferences.
@@ -49,6 +48,7 @@ import static com.eleybourn.bookcatalogue.BookAbstractFragmentWithCoverImage.PRE
 public class PreferencesActivity extends PreferencesBaseActivity {
 
     public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_PREFERENCES;
+    public static final int RESULT_CODE_GLOBAL_CHANGES = UniqueId.ACTIVITY_RESULT_CODE_GLOBAL_CHANGES_PREFERENCES;
 
     /** Camera image rotation property values */
     private static final ItemEntries<Integer> mRotationListItems = new ItemEntries<Integer>()
@@ -144,22 +144,22 @@ public class PreferencesActivity extends PreferencesBaseActivity {
              * GRP_THUMBNAILS:
              ******************************************************************************/
 
-            .add(new BooleanProperty(BookAbstractFragmentWithCoverImage.PREF_CROP_FRAME_WHOLE_IMAGE,
+            .add(new BooleanProperty(CoverHandler.PREF_CROP_FRAME_WHOLE_IMAGE,
                     PropertyGroup.GRP_THUMBNAILS, R.string.thumbnails_default_crop_frame_is_whole_image)
                     .setDefaultValue(false)
-                    .setPreferenceKey(BookAbstractFragmentWithCoverImage.PREF_CROP_FRAME_WHOLE_IMAGE)
+                    .setPreferenceKey(CoverHandler.PREF_CROP_FRAME_WHOLE_IMAGE)
                     .setGlobal(true))
 
-            .add(new IntegerListProperty(mRotationListItems, BookAbstractFragmentWithCoverImage.PREF_AUTOROTATE_CAMERA_IMAGES,
+            .add(new IntegerListProperty(mRotationListItems, CoverHandler.PREF_AUTOROTATE_CAMERA_IMAGES,
                     PropertyGroup.GRP_THUMBNAILS, R.string.thumbnails_rotate_auto)
-                    .setDefaultValue(PREF_AUTOROTATE_CAMERA_IMAGES_DEFAULT)
-                    .setPreferenceKey(BookAbstractFragmentWithCoverImage.PREF_AUTOROTATE_CAMERA_IMAGES)
+                    .setDefaultValue(CoverHandler.PREF_AUTOROTATE_CAMERA_IMAGES_DEFAULT)
+                    .setPreferenceKey(CoverHandler.PREF_AUTOROTATE_CAMERA_IMAGES)
                     .setGlobal(true))
 
-            .add(new BooleanProperty(BookAbstractFragmentWithCoverImage.PREF_USE_EXTERNAL_IMAGE_CROPPER,
+            .add(new BooleanProperty(CoverHandler.PREF_USE_EXTERNAL_IMAGE_CROPPER,
                     PropertyGroup.GRP_THUMBNAILS, R.string.thumbnails_use_external_image_cropper)
                     .setDefaultValue(false)
-                    .setPreferenceKey(BookAbstractFragmentWithCoverImage.PREF_USE_EXTERNAL_IMAGE_CROPPER)
+                    .setPreferenceKey(CoverHandler.PREF_USE_EXTERNAL_IMAGE_CROPPER)
                     .setGlobal(true));
 
     /**

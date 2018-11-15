@@ -20,11 +20,15 @@ import com.eleybourn.bookcatalogue.About;
 import com.eleybourn.bookcatalogue.AdminActivity;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.EditBookshelfListActivity;
+import com.eleybourn.bookcatalogue.FieldVisibilityActivity;
 import com.eleybourn.bookcatalogue.Help;
+import com.eleybourn.bookcatalogue.PreferencesActivity;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.booklist.BooklistPreferencesActivity;
+import com.eleybourn.bookcatalogue.booklist.BooklistPreferredStylesActivity;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 
@@ -47,6 +51,8 @@ abstract public class BaseActivity extends AppCompatActivity
 
     /** universal flag used to indicate something was changed and not saved (yet) */
     private boolean mIsDirty = false;
+    /** we're not (or no longer) dirty, but we did potentially make (local/global/preferences) changes */
+    private boolean mChangesMadeAndSaved = false;
 
     public boolean isDirty() {
         return mIsDirty;
@@ -60,16 +66,19 @@ abstract public class BaseActivity extends AppCompatActivity
         }
     }
 
-    /** we're not (or no longer) dirty, but we did potentially make (local/global/preferences) changes */
-    private boolean mGlobalChangesMade = false;
-
     public boolean changesMade() {
-        return mGlobalChangesMade;
+        return mChangesMadeAndSaved;
     }
 
-    //TOMF ENHANCE: start using this as a sure way of detecting committed changes in setResult
+
+    /**
+     * If you are not dirty (e.g. nothing needs saving on exit) but have made (saved) changes,
+     * set this to 'true'. Always set to 'true' if at any time we have been dirty.
+     *
+     * TOMF ENHANCE: start using this as a sure way of detecting committed changes in setResult
+     */
     public void setChangesMade(final boolean changesMade) {
-        this.mGlobalChangesMade = changesMade;
+        this.mChangesMadeAndSaved = changesMade;
     }
 
     protected int getLayoutId() {
@@ -156,29 +165,35 @@ abstract public class BaseActivity extends AppCompatActivity
 
         Intent intent;
         switch (menuItem.getItemId()) {
-            case R.id.nav_search:
+            case R.id.nav_search: {
                 onSearchRequested();
                 return true;
-            case R.id.nav_manage_bookshelves:
+            }
+            case R.id.nav_manage_bookshelves: {
                 intent = new Intent(this, EditBookshelfListActivity.class);
                 startActivityForResult(intent, EditBookshelfListActivity.REQUEST_CODE); /* 41e84172-5833-4906-a891-8df302ecc190 */
                 break;
-            case R.id.nav_booklist_prefs:
-                intent = new Intent(this, BooklistPreferencesActivity.class);
-                startActivityForResult(intent, BooklistPreferencesActivity.REQUEST_CODE); /* 9cdb2cbe-1390-4ed8-a491-87b3b1a1edb9 */
+            }
+            case R.id.nav_edit_list_styles: {
+                intent = new Intent(this, BooklistPreferredStylesActivity.class);
+                startActivityForResult(intent, BooklistPreferredStylesActivity.REQUEST_CODE); /* 13854efe-e8fd-447a-a195-47678c0d87e7 */
                 return true;
-            case R.id.nav_admin:
+            }
+            case R.id.nav_admin: {
                 intent = new Intent(this, AdminActivity.class);
                 startActivityForResult(intent, AdminActivity.REQUEST_CODE); /* 7f46620d-7951-4637-8783-b410730cd460 */
                 return true;
-            case R.id.nav_about:
+            }
+            case R.id.nav_about: {
                 intent = new Intent(this, About.class);
                 startActivity(intent);
                 return true;
-            case R.id.nav_help:
+            }
+            case R.id.nav_help: {
                 intent = new Intent(this, Help.class);
                 startActivity(intent);
                 return true;
+            }
         }
 
         return false;
@@ -211,8 +226,8 @@ abstract public class BaseActivity extends AppCompatActivity
                         return true;
                     }
                 }
-                // otherwise, home is an 'up' event. So pretend the back button was pressed.
-                onBackPressed();
+                // otherwise, home is an 'up' event.
+                finishIfClean();
                 return true;
             }
         }
@@ -225,7 +240,33 @@ abstract public class BaseActivity extends AppCompatActivity
      */
     @Override
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-        if (BuildConfig.DEBUG) {
+
+        if (DEBUG_SWITCHES.ON_ACTIVITY_RESULT && BuildConfig.DEBUG) {
+            // these are not errors; but just a way to see if we missed catching them in one Activity or another
+            // 2018-11-14: all caught in BooksOnBookshelf, silently ignored in others
+            switch (requestCode) {
+                case EditBookshelfListActivity.REQUEST_CODE: /* 41e84172-5833-4906-a891-8df302ecc190 */
+                    Logger.info(this, "onActivityResult unhandled EditBookshelfListActivity");
+                    return;
+
+                case BooklistPreferredStylesActivity.REQUEST_CODE: /* 13854efe-e8fd-447a-a195-47678c0d87e7 */
+                    Logger.info(this, "onActivityResult unhandled BooklistPreferredStylesActivity");
+                    return;
+
+                case AdminActivity.REQUEST_CODE: /* 7f46620d-7951-4637-8783-b410730cd460 */
+                    Logger.info(this, "onActivityResult unhandled AdminActivity");
+                    return;
+                case FieldVisibilityActivity.REQUEST_CODE: /* 2f885b11-27f2-40d7-8c8b-fcb4d95a4151 */
+                    Logger.info(this, "onActivityResult unhandled FieldVisibilityActivity");
+                    return;
+                case BooklistPreferencesActivity.REQUEST_CODE: /* 9cdb2cbe-1390-4ed8-a491-87b3b1a1edb9 */
+                    Logger.info(this, "onActivityResult unhandled BooklistPreferencesActivity");
+                    return;
+                case PreferencesActivity.REQUEST_CODE: /* 46f41e7b-f49c-465d-bea0-80ec85330d1c */
+                    Logger.info(this, "onActivityResult unhandled PreferencesActivity");
+                    return;
+            }
+
             // lowest level of our Activities, see if we missed anything
             Logger.info(this, "onActivityResult: NOT HANDLED: requestCode=" + requestCode + ", resultCode=" + resultCode);
         }
@@ -243,27 +284,21 @@ abstract public class BaseActivity extends AppCompatActivity
     }
 
     /**
-     *  Check if edits need saving, and finish the activity if not
+     * Check if edits need saving, and finish the activity if not
      */
-    private void finishIfClean() {
+    public void finishIfClean() {
         if (isDirty()) {
             StandardDialogs.showConfirmUnsavedEditsDialog(this,
-                    /* run when user clicks 'exit' */
+                    /* run if user clicks 'exit' */
                     new Runnable() {
                         @Override
                         public void run() {
-                            // set default result
-                            setResult(Activity.RESULT_OK);
-                            // but allow overriding
                             setActivityResult();
                             finish();
                         }
                         /* if they click 'cancel', the dialog just closes without further actions */
                     });
         } else {
-            // set default result
-            setResult(Activity.RESULT_OK);
-            // but allow overriding
             setActivityResult();
             finish();
         }
@@ -272,12 +307,16 @@ abstract public class BaseActivity extends AppCompatActivity
     /**
      * Always called by {@link BaseActivity#finishIfClean()}
      *
-     * If your activity needs to send a result, override this call.
+     * If your activity needs to send a specific result, override this call.
      * If your activity does an actual finish() call it *must* take care of the result itself
-     * (of course it can still implement and call this method for the sake of uniformity
+     * Of course it can still implement and call this method for the sake of uniformity.
+     *
+     * returns:
+     * RESULT_OK if the caller should take some action;
+     * RESULT_CANCELED when the caller should do nothing
      */
     public void setActivityResult() {
-        // do nothing
+        setResult(changesMade() ? Activity.RESULT_OK : Activity.RESULT_CANCELED);
     }
 
 //    @Override
@@ -289,7 +328,6 @@ abstract public class BaseActivity extends AppCompatActivity
 //        // call super *after* setting the result, so we can override when needed in a fragment
 //        super.onPause();
 //    }
-
 
 
     /** saving on some typing */

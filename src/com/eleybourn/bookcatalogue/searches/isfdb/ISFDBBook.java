@@ -215,7 +215,7 @@ public class ISFDBBook extends AbstractBase {
                     // and we're paranoid...
                     java.util.Date d = DateUtils.parseDate(tmp);
                     if (d != null) {
-                        bookData.putString(UniqueId.KEY_BOOK_DATE_PUBLISHED, DateUtils.toSqlDateOnly(d));
+                        bookData.putString(UniqueId.KEY_BOOK_DATE_PUBLISHED, DateUtils.utcSqlDate(d));
                     }
 
                 } else if ("ISBN:".equalsIgnoreCase(fieldName)) {

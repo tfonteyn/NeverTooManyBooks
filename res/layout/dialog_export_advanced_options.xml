@@ -109,7 +109,7 @@
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <TextView
-            android:id="@+id/preferences"
+            android:id="@+id/lbl_preferences"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignBaseline="@id/preferences_check"
@@ -123,9 +123,9 @@
             android:id="@+id/preferences_blurb"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignEnd="@id/preferences"
-            android:layout_alignStart="@id/preferences"
-            android:layout_below="@id/preferences"
+            android:layout_alignEnd="@id/lbl_preferences"
+            android:layout_alignStart="@id/lbl_preferences"
+            android:layout_below="@id/lbl_preferences"
             android:text="@string/preferences_blurb"
             android:textAppearance="?android:attr/textAppearanceSmall" />
     </RelativeLayout>

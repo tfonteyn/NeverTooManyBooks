@@ -125,8 +125,6 @@ public class BooklistStyleGroupsActivity extends EditObjectListActivity<GroupWra
         return groups;
     }
 
-
-
     /**
      * Save the style in the resulting Intent
      */
@@ -173,7 +171,7 @@ public class BooklistStyleGroupsActivity extends EditObjectListActivity<GroupWra
             if (holder == null) {
                 // New view, so build the Holder
                 holder = new Holder();
-                holder.name = target.findViewById(R.id.series);
+                holder.name = target.findViewById(R.id.filename);
                 holder.present = target.findViewById(R.id.present);
                 // Tag the parts that need it
                 ViewTagger.setTag(target, R.id.TAG_HOLDER, holder);// value BooklistStyleGroupsActivity.Holder

@@ -224,7 +224,7 @@ public class BooklistPseudoCursor extends AbstractCursor implements BooklistSupp
     private void purgeOldCursors() {
         // List of cursors to purge
         ArrayList<Integer> toPurge = new ArrayList<>();
-        // Scan the hash
+        // Loop the hash
         for (Entry<Integer, BooklistCursor> cursorEntry : mCursors.entrySet()) {
             // If it is more than 3 'pages' from the current position, it's a candidate
             final Integer thisKey = cursorEntry.getKey();

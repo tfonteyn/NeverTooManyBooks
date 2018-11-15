@@ -33,6 +33,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
@@ -55,6 +56,8 @@ import com.eleybourn.bookcatalogue.utils.ViewTagger;
 public class BooklistStylePropertiesActivity extends BaseActivity {
 
     public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_BOOKLIST_STYLE_PROPERTIES;
+    public static final int RESULT_CHANGES_MADE = UniqueId.ACTIVITY_RESULT_CHANGES_MADE_BOOKLIST_STYLE_PROPERTIES;
+
 
     private static final String TAG = "BooklistStyleProperties";
     /** Parameter used to pass data to this activity */
@@ -98,7 +101,7 @@ public class BooklistStylePropertiesActivity extends BaseActivity {
                 }
                 Intent data = new Intent();
                 data.putExtra(REQUEST_BKEY_STYLE, mStyle);
-                setResult(Activity.RESULT_OK, data);  /* fadd7b9a-7eaf-4af9-90ce-6ffb7b93afe6 */
+                setResult(RESULT_CHANGES_MADE, data);  /* fadd7b9a-7eaf-4af9-90ce-6ffb7b93afe6 */
                 finish();
             }
         });
@@ -106,8 +109,7 @@ public class BooklistStylePropertiesActivity extends BaseActivity {
         findViewById(R.id.cancel).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                setResult(Activity.RESULT_CANCELED);
-                finish();
+                finishIfClean();
             }
         });
 
@@ -165,7 +167,7 @@ public class BooklistStylePropertiesActivity extends BaseActivity {
     @Override
     @CallSuper
     protected void onActivityResult(final int requestCode, final int resultCode, final @Nullable Intent data) {
-        if (BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.ON_ACTIVITY_RESULT && BuildConfig.DEBUG) {
             Logger.info(this, "onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
         }
         switch (requestCode) {
@@ -190,6 +192,13 @@ public class BooklistStylePropertiesActivity extends BaseActivity {
         }
 
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    /**
+     * Default result always cancel; the only positive result is when user clicked 'Save'
+     */
+    public void setActivityResult() {
+        setResult(Activity.RESULT_CANCELED);
     }
 
     /**
@@ -261,7 +270,7 @@ public class BooklistStylePropertiesActivity extends BaseActivity {
             ViewTagger.setTag(root, R.id.TAG_PROPERTY, this); // value: GroupsProperty
 
             // Set the initial values
-            final TextView name = root.findViewById(R.id.series);
+            final TextView name = root.findViewById(R.id.filename);
             name.setText(getName());
 
             final TextView value = root.findViewById(R.id.value);

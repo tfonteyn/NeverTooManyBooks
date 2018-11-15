@@ -163,7 +163,7 @@ public abstract class QueueManager {
         synchronized (mTaskChangeListeners) {
             list = new ArrayList<>(mTaskChangeListeners);
         }
-        // Scan through the list. If the ref is dead, delete from original, otherwise call it.
+        // Loop through the list. If the ref is dead, delete from original, otherwise call it.
         for (WeakReference<OnTaskChangeListener> wl : list) {
             final OnTaskChangeListener l = wl.get();
             if (l == null) {
@@ -192,7 +192,7 @@ public abstract class QueueManager {
         synchronized (mEventChangeListeners) {
             list = new ArrayList<>(mEventChangeListeners);
         }
-        // Scan through the list. If the ref is dead, delete from original, otherwise call it.
+        // Loop through the list. If the ref is dead, delete from original, otherwise call it.
         for (WeakReference<OnEventChangeListener> wl : list) {
             final OnEventChangeListener l = wl.get();
             if (l == null) {

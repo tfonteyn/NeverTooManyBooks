@@ -99,7 +99,7 @@
 
     <string name="error_unexpected_error">An unexpected error has occurred, please send the details to support using the \'Help\' option from the main menu</string>
     <string name="error_unknown">An unknown error occurred</string>
-    <string name="error_import_failed_is_location_correct">Import of data (from SDCard) failed. Is the file in the correct place?</string>
+    <string name="error_import_failed_is_location_correct">Import of data failed. Is the file in the correct place?</string>
     <string name="error_search_failed">Searching for the book failed. Please check your network settings.</string>
     <string name="error_search_exception">Search failed while %1$s: %2$s</string>
     <string name="error_backup_failed">Backup Failed</string>
@@ -110,7 +110,7 @@
     <string name="error_automatic_toc_population_failed">Automatic Population of Titles Failed</string>
     <string name="error_export_failed">Export failed - could not write to SD card</string>
     <string name="error_download_thumbnail_failed">Thumbnail Download Failed - Could not write to SDCard</string>
-    <string name="error_no_internet_connection">No Internet connection is available.</string>
+    <string name="error_no_internet_connection">Internet connection is not available.</string>
 
     <!-- ####################################################################################### -->
     <!-- ========== Info/help messages ========== -->
@@ -530,7 +530,7 @@
     <string name="booklist_generation_use_recommended_option">Automatically use recommended option</string>
 
     <!-- ========== Book list preferences ========== -->
-    <string name="booklist_preferences">Book List Preferences</string>
+    <string name="menu_preferences_booklist">Book List Preferences</string>
 
     <!-- Preference NAME for Book list state-related preferences -->
     <string name="book_list_state">Book list state</string>
@@ -674,7 +674,7 @@
     <string name="menu_administration_short">Admin</string>
     <string name="menu_administration_long">Administration Functions</string>
     <string name="menu_admin_and_prefs">Admin and Preferences</string>
-    <string name="menu_other_preferences">Other Preferences</string>
+    <string name="menu_preferences_other">Other Preferences</string>
 
     <string name="menu_manage_fields">Manage Field Visibility</string>
     <!-- Displayed in Admin menu advanced options (top make a copy of the internal database on the sdcard -->
@@ -1187,6 +1187,7 @@
     <string name="send_mail">Send email…</string>
     <string name="saving_image">Saving image</string>
 
+    <string name="error_email_failed">Sending the email failed.</string>
     <string name="error_storage_preparing_card">Preparing storage</string>
     <string name="error_storage_no_card">No storage ?</string>
     <string name="error_storage_no_space">Not enough space</string>
@@ -1242,12 +1243,15 @@
     <string name="initial_bookshelf">Default</string>
 
     <string name="table_of_content">Table Of Content</string>
-
     <string name="menu_populate_toc">Populate Titles (ISFDB only)</string>
+
+    <!-- "Usage" in Update Fields from internet:  'Skip field' versus 'copy,...' -->
     <string name="usage_skip">Skip</string>
 
+    <string name="btn_merge">Merge</string>
+    <string name="btn_use">Use</string>
+
     <string name="currency">Currency</string>
-    <string name="btn_confirm_use">Use</string>
 
     <string name="lbl_edition">Edition</string>
     <string name="lbl_edition_first_edition">First Edition</string>
@@ -1256,12 +1260,19 @@
     <string name="lbl_edition_limited">Limited Edition</string>
 
     <string name="lbl_first_publication">First Publication</string>
-    <string name="lbl_date_purchased">Date Purchased</string>
+    <string name="lbl_date_acquired">Date Acquired</string>
     <string name="lbl_price_paid">Price paid</string>
 
     <string name="progress_msg_process_cover">Processing Covers…</string>
     <string name="progress_msg_process_preferences">Preferences…</string>
     <string name="progress_msg_process_booklist_style">Booklist Styles…</string>
+
+    <!-- some unique field already exists; example: when trying to create a duplicate Bookshelf -->
+    <string name="warning_thing_already_exists">%1$s already exists</string>
+    <string name="lbl_date_acquired_day">Acquired Day</string>
+    <string name="lbl_date_acquired_month">Acquired Month</string>
+    <string name="lbl_date_acquired_year">Acquired Year</string>
+    <string name="style_builtin_acquired_date">Acquired date</string>
 
     <!-- End: Added/Updated in  [Next Version]  -->
 

@@ -64,18 +64,17 @@ import com.eleybourn.bookcatalogue.utils.BundleUtils;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 /**
- * Based class for all fragments that appear in {@link EditBookActivity}
+ * Based class for {@link BookFragment} and all fragments that appear in {@link EditBookActivity}
  *
- * {@link BookFragment} extends {@link BookAbstractFragmentWithCoverImage}
- *
- * {@link EditBookFieldsFragment} extends {@link BookAbstractFragmentWithCoverImage}
+ * Full list:
+ * {@link BookFragment}
+ * {@link EditBookFieldsFragment}
  * {@link EditBookNotesFragment}
  * {@link EditBookLoanedFragment}
  * {@link EditBookTOCFragment}
@@ -83,8 +82,6 @@ import java.util.Objects;
  * @author pjw
  */
 public abstract class BookAbstractFragment extends Fragment implements DataEditor {
-
-    private final int MENU_GROUP_BOOK = 1;
 
     /** Database instance */
     protected CatalogueDBAdapter mDb;
@@ -240,14 +237,14 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
      * in overrides.
      *
      * @param book       to load from
-     * @param setAllFrom flag indicating {@link Fields#setAllFrom} has already been called or not
+     * @param setAllFrom flag indicating {@link Fields#setAllFrom(DataManager)} has already been called or not
      */
     @CallSuper
     protected void onLoadFieldsFromBook(final @NonNull Book book, final boolean setAllFrom) {
         if (!setAllFrom) {
             mFields.setAllFrom(book);
         }
-        if (BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.FIELD_BOOK_TRANSFERS && BuildConfig.DEBUG) {
             Logger.info(this, "onLoadFieldsFromBook done");
         }
     }
@@ -287,7 +284,7 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
     protected void onSaveFieldsToBook(final @NonNull Book book) {
         mFields.putAllInto(book);
 
-        if (BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.FIELD_BOOK_TRANSFERS && BuildConfig.DEBUG) {
             Logger.info(this, "onSaveFieldsToBook done");
         }
     }
@@ -312,18 +309,17 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
      * @see #onOptionsItemSelected
      */
     @Override
-    @CallSuper
     public void onCreateOptionsMenu(final @NonNull Menu menu,
                                     final @NonNull MenuInflater inflater) {
 
-        menu.add(MENU_GROUP_BOOK, R.id.MENU_BOOK_DELETE, 0, R.string.menu_delete_book)
+        menu.add(R.id.MENU_GROUP_BOOK, R.id.MENU_BOOK_DELETE, 0, R.string.menu_delete_book)
                 .setIcon(R.drawable.ic_delete);
-        menu.add(MENU_GROUP_BOOK, R.id.MENU_BOOK_DUPLICATE, 0, R.string.menu_duplicate_book)
+        menu.add(R.id.MENU_GROUP_BOOK, R.id.MENU_BOOK_DUPLICATE, 0, R.string.menu_duplicate_book)
                 .setIcon(R.drawable.ic_content_copy);
-        menu.add(MENU_GROUP_BOOK, R.id.MENU_BOOK_UPDATE_FROM_INTERNET, 0, R.string.internet_update_fields)
+        menu.add(R.id.MENU_GROUP_BOOK, R.id.MENU_BOOK_UPDATE_FROM_INTERNET, 0, R.string.internet_update_fields)
                 .setIcon(R.drawable.ic_search);
         /* TODO: Consider allowing Tweets (or other sharing methods) to work on un-added books. */
-        menu.add(MENU_GROUP_BOOK, R.id.MENU_SHARE, 0, R.string.menu_share_this)
+        menu.add(R.id.MENU_GROUP_BOOK, R.id.MENU_SHARE, 0, R.string.menu_share_this)
                 .setIcon(R.drawable.ic_share);
 
         MenuHandler.addAmazonSearchSubMenu(menu);
@@ -343,7 +339,7 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
 
         boolean bookExists = getBookManager().getBook().getBookId() != 0;
 
-        menu.setGroupVisible(MENU_GROUP_BOOK, bookExists);
+        menu.setGroupVisible(R.id.MENU_GROUP_BOOK, bookExists);
 
         boolean hasAuthor = getBookManager().getBook().getAuthorList().size() > 0;
         boolean hasSeries = getBookManager().getBook().getSeriesList().size() > 0;
@@ -375,7 +371,7 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
                         new Runnable() {
                             @Override
                             public void run() {
-                                mActivity.setResult(Activity.RESULT_OK);
+                                mActivity.setResult(UniqueId.ACTIVITY_RESULT_BOOK_DELETED);
                                 mActivity.finish();
                             }
                         });
@@ -413,7 +409,7 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
                 menu.setGroupVisible(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR, hasAuthor);
                 menu.setGroupVisible(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES, hasAuthor && hasSeries);
                 menu.setGroupVisible(R.id.MENU_AMAZON_BOOKS_IN_SERIES, hasSeries);
-                // let the normal call flow go on, it will display the submenu
+                // let the small call flow go on, it will display the submenu
                 break;
             }
             case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR: {
@@ -488,6 +484,7 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
     /**
      * bind a field (button) to bring up a text editor in an overlapping dialog.
      *
+     * @param callerTag     the fragment class that is calling the editor
      * @param field         {@link Field} to edit
      * @param dialogTitleId title of the dialog box.
      * @param fieldButtonId field/button to bind the OnClickListener to (can be same as field.id)
@@ -521,6 +518,12 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
         });
     }
 
+    /**
+     * @param callerTag     the fragment class that is calling the editor
+     * @param field         {@link Field} to edit
+     * @param dialogTitleId title of the dialog box.
+     * @param todayIfNone   if true, and if the field was empty, pre-populate with today's date
+     */
     protected void initPartialDatePicker(final @NonNull String callerTag,
                                          final @NonNull Field field,
                                          final @StringRes int dialogTitleId,
@@ -535,9 +538,13 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
                 Object value = field.getValue();
                 String date;
                 if (todayIfNone && value.toString().isEmpty()) {
-                    date = DateUtils.toSqlDateTime(new Date());
+                    date = DateUtils.localSqlDateForToday();
                 } else {
                     date = value.toString();
+                }
+
+                if (DEBUG_SWITCHES.DATETIME && BuildConfig.DEBUG) {
+                    Logger.info(this, "initPartialDatePicker date.toString(): " + date);
                 }
 
                 PartialDatePickerDialogFragment frag = new PartialDatePickerDialogFragment();
@@ -552,10 +559,17 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
         });
     }
 
+    /**
+     * @param callerTag     the fragment class that is calling the editor
+     * @param field         {@link Field} to edit
+     * @param dialogTitleId title of the dialog box.
+     * @param listGetter    {@link CheckListEditorListGetter<T>} interface to get the *current* list
+     * @param <T>           type of the {@link CheckListItem}
+     */
     protected <T> void initCheckListEditor(final @NonNull String callerTag,
                                            final @NonNull Field field,
                                            final @StringRes int dialogTitleId,
-                                           final @NonNull ArrayList<CheckListItem<T>> list) {
+                                           final @NonNull CheckListEditorListGetter<T> listGetter) {
         // only bother when visible
         if (!field.visible) {
             return;
@@ -569,19 +583,16 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
                 args.putString(UniqueId.BKEY_CALLER_ID, callerTag);
                 args.putInt(UniqueId.BKEY_DIALOG_TITLE, dialogTitleId);
                 args.putInt(UniqueId.BKEY_FIELD_ID, field.id);
-                args.putSerializable(CheckListEditorDialogFragment.BKEY_CHECK_LIST, list);
+                args.putSerializable(CheckListEditorDialogFragment.BKEY_CHECK_LIST, listGetter.getList());
                 frag.setArguments(args);
                 frag.show(requireFragmentManager(), null);
             }
         });
     }
-    //</editor-fold>
-
-    /* ------------------------------------------------------------------------------------------ */
 
     @Override
     public void onActivityResult(final int requestCode, final int resultCode, final @Nullable Intent data) {
-        if (BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.ON_ACTIVITY_RESULT && BuildConfig.DEBUG) {
             Logger.info(this, "onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
         }
         switch (requestCode) {
@@ -602,7 +613,7 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
                 return;
 
             default:
-                if (BuildConfig.DEBUG) {
+                if (DEBUG_SWITCHES.ON_ACTIVITY_RESULT && BuildConfig.DEBUG) {
                     // lowest level of our Fragments, see if we missed anything
                     Logger.info(this, "onActivityResult: NOT HANDLED: requestCode=" + requestCode + ", resultCode=" + resultCode);
                 }
@@ -611,7 +622,9 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
 
         super.onActivityResult(requestCode, resultCode, data);
     }
+    //</editor-fold>
 
+    /* ------------------------------------------------------------------------------------------ */
 
     /**
      * Hides unused fields if they have no useful data.
@@ -653,7 +666,7 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
         showHideField(hideIfEmpty, R.id.edition, R.id.row_edition, R.id.lbl_edition);
         showHideField(hideIfEmpty, R.id.notes, R.id.row_notes);
         showHideField(hideIfEmpty, R.id.location, R.id.row_location, R.id.lbl_location);
-        showHideField(hideIfEmpty, R.id.date_purchased, R.id.row_date_purchased);
+        showHideField(hideIfEmpty, R.id.date_acquired, R.id.row_date_acquired);
         showHideField(hideIfEmpty, R.id.price_paid, R.id.row_price_paid, R.id.lbl_price_paid);
         showHideField(hideIfEmpty, R.id.read_start, R.id.row_read_start, R.id.lbl_read_start);
         showHideField(hideIfEmpty, R.id.read_end, R.id.row_read_end, R.id.lbl_read_end);
@@ -710,6 +723,14 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
     /** saving on some typing */
     protected SharedPreferences getPrefs() {
         return requireActivity().getSharedPreferences(BookCatalogueApp.APP_SHARED_PREFERENCES, Context.MODE_PRIVATE);
+    }
+
+    /**
+     * used to load the {@link CheckListEditorDialogFragment} with the *current* list
+     * e.g. not the state of the list at init time
+     */
+    public interface CheckListEditorListGetter<T> {
+        ArrayList<CheckListItem<T>> getList();
     }
 
     static class ViewUtils {

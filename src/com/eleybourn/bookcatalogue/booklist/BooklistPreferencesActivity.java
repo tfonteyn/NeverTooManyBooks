@@ -25,10 +25,10 @@ import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.eleybourn.bookcatalogue.BooksOnBookshelf;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.baseactivity.PreferencesBaseActivity;
-import com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.properties.BooleanListProperty;
@@ -42,13 +42,14 @@ import com.eleybourn.bookcatalogue.properties.ValuePropertyWithGlobalDefault;
 import java.util.Objects;
 
 /**
- * Activity to manage the preferences associate with Book lists (and the BooksOnBookshelf activity).
+ * Activity to manage the preferences associate with Book lists (and {@link BooksOnBookshelf} ).
  *
  * @author Philip Warner
  */
 public class BooklistPreferencesActivity extends PreferencesBaseActivity {
 
     public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_BOOKLIST_PREFERENCES;
+    public static final int RESULT_CODE_GLOBAL_CHANGES = UniqueId.ACTIVITY_RESULT_CODE_GLOBAL_CHANGES_BOOKLIST_PREFERENCES;
 
     // ID values for state preservation property
     public static final int BOOK_LIST_ALWAYS_EXPANDED = 1; // default
@@ -181,7 +182,7 @@ public class BooklistPreferencesActivity extends PreferencesBaseActivity {
     public void onCreate(final @Nullable Bundle savedInstanceState) {
         try {
             super.onCreate(savedInstanceState);
-            setTitle(R.string.booklist_preferences);
+            setTitle(R.string.menu_preferences_booklist);
             if (savedInstanceState == null) {
                 HintManager.displayHint(this.getLayoutInflater(), R.string.hint_booklist_global_properties, null);
             }
@@ -197,9 +198,9 @@ public class BooklistPreferencesActivity extends PreferencesBaseActivity {
     protected void initFields(final @NonNull Properties globalProperties) {
         // Create a dummy style and add one group of each kind
         BooklistStyle style = new BooklistStyle("");
-        for (int kind : BooklistGroup.getRowKinds()) {
-            if (kind != RowKinds.ROW_KIND_BOOK)
-                style.addGroup(kind);
+        // skip BOOK
+        for (int kind = 1; kind < RowKinds.size(); kind++) {
+            style.addGroup(kind);
         }
 
         // Get all the properties from the style that have global defaults.
@@ -217,5 +218,13 @@ public class BooklistPreferencesActivity extends PreferencesBaseActivity {
         globalProperties.add(mCacheThumbnailsProperty);
         globalProperties.add(mBackgroundThumbnailsProperty);
         globalProperties.add(mBooklistCompatibilityModeProperty);
+    }
+
+    /**
+     * For now, always signal that something (might have) changed
+     */
+    @Override
+    public void setActivityResult() {
+        setResult(RESULT_CODE_GLOBAL_CHANGES);
     }
 }

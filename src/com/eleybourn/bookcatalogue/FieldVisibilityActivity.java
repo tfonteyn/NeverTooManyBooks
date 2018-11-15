@@ -20,7 +20,6 @@
 
 package com.eleybourn.bookcatalogue;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
@@ -56,6 +55,7 @@ import java.util.List;
 public class FieldVisibilityActivity extends BaseActivity {
 
     public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_FIELD_VISIBILITY;
+    public static final int RESULT_CODE_GLOBAL_CHANGES = UniqueId.ACTIVITY_RESULT_CODE_GLOBAL_CHANGES_FIELD_VISIBILITY;
 
     private static final List<FieldInfo> mFields = new ArrayList<>();
 
@@ -159,7 +159,7 @@ public class FieldVisibilityActivity extends BaseActivity {
      */
     @Override
     public void setActivityResult() {
-        setResult(Activity.RESULT_OK); /* 2f885b11-27f2-40d7-8c8b-fcb4d95a4151 */
+        setResult(RESULT_CODE_GLOBAL_CHANGES); /* 2f885b11-27f2-40d7-8c8b-fcb4d95a4151 */
     }
 
     private static class FieldInfo {

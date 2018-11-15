@@ -1,5 +1,6 @@
 package com.eleybourn.bookcatalogue;
 
+import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressDialogFragment;
 
 /**
@@ -20,9 +21,12 @@ public final class DEBUG_SWITCHES {
 
     public static final boolean TMP_ANTHOLOGY = true;
 
-    public static final boolean BOOKLIST_BUILDER = true;
+    public static final boolean BOOKLIST_BUILDER = false;
 
-    public static final boolean BOOKS_ON_BOOKSHELF = true;
+    /** specific to debugging the broken {@link BooklistBuilder#rebuild()} */
+    public static final boolean BOOKLIST_BUILDER_REBUILD = false;
+
+    public static final boolean BOOKS_ON_BOOKSHELF = false;
 
     /** enable timers for performance measurements */
     public static final boolean TIMERS = false;
@@ -74,4 +78,12 @@ public final class DEBUG_SWITCHES {
     /** all things that can happen during startup only */
     public static final boolean STARTUP = false;
 
+    /** everything related to Dates/Timezone...*/
+    public static final boolean DATETIME = true;
+
+    /** track the flow & values on startActivityForResult & onActivityResult */
+    public static final boolean ON_ACTIVITY_RESULT = false;
+
+    /** track the flow of onLoadFieldsFromBook/onSaveFieldsToBook */
+    public static final boolean FIELD_BOOK_TRANSFERS = false;
 }

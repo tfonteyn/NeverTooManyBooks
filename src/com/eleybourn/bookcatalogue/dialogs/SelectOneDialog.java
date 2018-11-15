@@ -230,7 +230,7 @@ public class SelectOneDialog {
         @NonNull
         public View getView(final @NonNull LayoutInflater inflater) {
             @SuppressLint("InflateParams") View root = inflater.inflate(R.layout.row_simple_dialog_list_item, null);
-            TextView line = root.findViewById(R.id.series);
+            TextView line = root.findViewById(R.id.filename);
             line.setText(mMenuItem.getTitle());
             Drawable icon = mMenuItem.getIcon();
             Drawable subMenuPointer = null;
@@ -270,7 +270,7 @@ public class SelectOneDialog {
         @NonNull
         public View getView(final @NonNull LayoutInflater inflater) {
             @SuppressLint("InflateParams") View root = inflater.inflate(R.layout.dialog_file_list_item, null);
-            TextView name = root.findViewById(R.id.series);
+            TextView name = root.findViewById(R.id.filename);
             name.setText(mFile.getName());
 
             // Set the path
@@ -312,7 +312,7 @@ public class SelectOneDialog {
         @NonNull
         public View getView(final @NonNull LayoutInflater inflater) {
             @SuppressLint("InflateParams") View root = inflater.inflate(R.layout.row_simple_dialog_list_item, null);
-            TextView name = root.findViewById(R.id.series);
+            TextView name = root.findViewById(R.id.filename);
             name.setText(mObject.toString());
             return root;
         }

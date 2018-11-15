@@ -64,7 +64,7 @@ abstract class EditStringDialog {
         // Build the base dialog
         final View root = mActivity.getLayoutInflater().inflate(layout, null);
 
-        final EditText editView = root.findViewById(R.id.series);
+        final EditText editView = root.findViewById(R.id.filename);
         //noinspection ConstantConditions
         editView.setText(currentText);
         if (editView instanceof AutoCompleteTextView) {

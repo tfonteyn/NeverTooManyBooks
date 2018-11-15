@@ -33,7 +33,10 @@ import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
  * @author evan
  */
 public class SearchSuggestionProvider extends SearchRecentSuggestionsProvider {
-    private final static String AUTHORITY = BookCatalogueApp.getAppContext().getPackageName() + ".SearchSuggestionProvider";
+
+    private final static String AUTHORITY = BookCatalogueApp.getAppContext().getPackageName() +
+            ".SearchSuggestionProvider";
+
     private final static int MODE = DATABASE_MODE_QUERIES;
     @Nullable
     private CatalogueDBAdapter mDb = null;

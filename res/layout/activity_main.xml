@@ -7,7 +7,7 @@
     android:fitsSystemWindows="true"
     android:orientation="vertical">
 
-    <!-- Your normal content view (in the FrameLayout) must be enclosed by this LinearLayout
+    <!-- Your small content view (in the FrameLayout) must be enclosed by this LinearLayout
          or else it will overflow the toolbar -->
     <LinearLayout
         android:layout_width="match_parent"

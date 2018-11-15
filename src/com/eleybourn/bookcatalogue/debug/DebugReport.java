@@ -149,7 +149,7 @@ public class DebugReport {
                         } else if (r.serviceInfo != null) {
                             message.append(r.serviceInfo.packageName);
                         } else {
-                            message.append("UNKNOWN_MONTH");
+                            message.append("UNKNOWN");
                         }
                         message.append(" (priority ").append(r.priority).append(", preference ").append(r.preferredOrder).append(", match ").append(r.match).append(", default=").append(r.isDefault).append(")\n");
                     }
@@ -159,7 +159,7 @@ public class DebugReport {
             }
         } catch (Exception e) {
             // Don't lose the other debug info if scanner data dies for some reason
-            message.append("Scanner onPartialDatePickerCancel: ").append(e.getLocalizedMessage()).append("\n");
+            message.append("Scanner failure: ").append(e.getLocalizedMessage()).append("\n");
         }
         message.append("\n");
 
@@ -167,14 +167,14 @@ public class DebugReport {
 
         Logger.info(DebugReport.class, message.toString());
 
-        emailIntent.putExtra(Intent.EXTRA_TEXT, message.toString());
-        //has to be an ArrayList
-        ArrayList<Uri> uris = new ArrayList<>();
-        //convert from paths to Android friendly Parcelable Uri's
-        List<String> files = new ArrayList<>();
+        ArrayList<String> extraText = new ArrayList<>();
+        extraText.add(message.toString());
 
-        // Find all files of interest to send
+        emailIntent.putExtra(Intent.EXTRA_TEXT, extraText);
+
         try {
+            // Find all files of interest to send
+            List<String> files = new ArrayList<>();
             for (String name : StorageUtils.getSharedStorage().list()) {
                 boolean send = false;
                 for (String prefix : FILE_PREFIXES) {
@@ -189,22 +189,21 @@ public class DebugReport {
             }
 
             // Build the attachment list
-            for (String file : files) {
-                File fileIn = StorageUtils.getFile(file);
-                if (fileIn.exists() && fileIn.length() > 0) {
-                    Uri u = FileProvider.getUriForFile(activity, GenericFileProvider.AUTHORITY, fileIn);
-                    uris.add(u);
+            ArrayList<Uri> attachmentUris = new ArrayList<>();
+            for (String fileSpec : files) {
+                File file = StorageUtils.getFile(fileSpec);
+                if (file.exists() && file.length() > 0) {
+                    Uri u = FileProvider.getUriForFile(activity, GenericFileProvider.AUTHORITY, file);
+                    attachmentUris.add(u);
                 }
             }
 
-            // We used to only send it if there are any files to send, but later versions added
-            // useful debugging info. So now we always send.
-            emailIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
+            emailIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, attachmentUris);
             activity.startActivity(Intent.createChooser(emailIntent, activity.getString(R.string.send_mail)));
 
         } catch (NullPointerException e) {
             Logger.error(e);
-            StandardDialogs.showUserMessage(activity, R.string.error_export_failed);
+            StandardDialogs.showUserMessage(activity, R.string.error_email_failed);
         }
     }
 }

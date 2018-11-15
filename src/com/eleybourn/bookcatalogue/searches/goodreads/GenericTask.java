@@ -37,9 +37,9 @@ import com.eleybourn.bookcatalogue.database.cursors.BindableItemCursor;
 import com.eleybourn.bookcatalogue.taskqueue.QueueManager;
 import com.eleybourn.bookcatalogue.taskqueue.RunnableTask;
 import com.eleybourn.bookcatalogue.taskqueue.TasksCursor;
+import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
-import java.text.DateFormat;
 import java.util.List;
 
 /**
@@ -118,7 +118,7 @@ public abstract class GenericTask extends RunnableTask {
                         context.getString(R.string.retry_x_of_y_next_at_z,
                                 this.getRetries(),
                                 this.getRetryLimit(),
-                                DateFormat.getDateTimeInstance().format(cursor.getRetryDate())));
+                                DateUtils.toPrettyDateTime(cursor.getRetryDate())));
                 holder.retry_info.setVisibility(View.VISIBLE);
                 holder.retryButton.setVisibility(View.GONE);
                 break;
@@ -142,7 +142,7 @@ public abstract class GenericTask extends RunnableTask {
         //"Job ID 123, Queued at 20 Jul 2012 17:50:23 GMT"
         holder.job_info.setText(BookCatalogueApp.getResourceString(R.string.generic_task_info,
                 this.getId(),
-                DateFormat.getDateTimeInstance().format(cursor.getQueuedDate())));
+                DateUtils.toPrettyDateTime(cursor.getQueuedDate())));
         //view.requestLayout();
     }
 

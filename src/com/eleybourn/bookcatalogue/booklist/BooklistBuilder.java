@@ -36,7 +36,6 @@ import com.eleybourn.bookcatalogue.booklist.BooklistGroup.BooklistAuthorGroup;
 import com.eleybourn.bookcatalogue.booklist.BooklistGroup.BooklistSeriesGroup;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle.CompoundKey;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
-import com.eleybourn.bookcatalogue.database.CollationCaseSensitive;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.database.DatabaseHelper;
 import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedDb;
@@ -62,34 +61,40 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_AUTHOR;
-import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_BOOK;
-import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_BOOKSHELF;
-import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_DAY_ADDED;
-import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_DAY_READ;
-import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_FORMAT;
-import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_GENRE;
-import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_LANGUAGE;
-import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_LOANED;
-import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_LOCATION;
-import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_MONTH_ADDED;
-import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_MONTH_PUBLISHED;
-import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_MONTH_READ;
-import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_PUBLISHER;
-import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_RATING;
-import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_READ_AND_UNREAD;
-import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_SERIES;
-import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_TITLE_LETTER;
-import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_UPDATE_DAY;
-import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_UPDATE_MONTH;
-import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_UPDATE_YEAR;
-import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_YEAR_ADDED;
-import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_YEAR_PUBLISHED;
-import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKinds.ROW_KIND_YEAR_READ;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_AUTHOR;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_BOOK;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_BOOKSHELF;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_ACQUIRED_DAY;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_ACQUIRED_MONTH;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_ACQUIRED_YEAR;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_ADDED_DAY;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_READ_DAY;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_FORMAT;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_GENRE;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_LANGUAGE;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_LOANED;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_LOCATION;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_ADDED_MONTH;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_PUBLISHED_MONTH;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_READ_MONTH;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_PUBLISHER;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_RATING;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_READ_AND_UNREAD;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_SERIES;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_TITLE_LETTER;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_LAST_UPDATE_DAY;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_LAST_UPDATE_MONTH;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_LAST_UPDATE_YEAR;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_ADDED_YEAR;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_PUBLISHED_YEAR;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_READ_YEAR;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ABSOLUTE_POSITION;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ADDED_DAY;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ADDED_MONTH;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ADDED_YEAR;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_ACQUIRED_DAY;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_ACQUIRED_MONTH;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_ACQUIRED_YEAR;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_ADDED_DAY;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_ADDED_MONTH;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_ADDED_YEAR;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FAMILY_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FORMATTED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_GIVEN_NAMES;
@@ -103,6 +108,7 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BL_NO
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BL_PRIMARY_SERIES_COUNT;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKSHELF;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ANTHOLOGY_BITMASK;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_ACQUIRED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_ADDED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_PUBLISHED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_FORMAT;
@@ -126,12 +132,12 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LOANE
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LOANED_TO_SORT;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PK_DOCID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PK_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PUBLICATION_MONTH;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PUBLICATION_YEAR;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_READ_DAY;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_READ_MONTH;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_PUBLISHED_MONTH;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_PUBLISHED_YEAR;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_READ_DAY;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_READ_MONTH;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_READ_STATUS;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_READ_YEAR;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_READ_YEAR;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_REAL_ROW_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ROOT_KEY;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SELECTED;
@@ -139,9 +145,9 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIE
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_NUM_FLOAT;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE_LETTER;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_UPDATE_DAY;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_UPDATE_MONTH;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_UPDATE_YEAR;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_UPDATE_DAY;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_UPDATE_MONTH;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_LAST_UPDATE_YEAR;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_AUTHORS;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOKS;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOKSHELF;
@@ -389,7 +395,7 @@ public class BooklistBuilder implements AutoCloseable {
         mNavTable.drop(mSyncedDb);
         mNavTable.create(mSyncedDb, true);
 
-        if (BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD && BuildConfig.DEBUG) {
             Logger.info(this, "mBaseBuildStmt");
             Logger.info(this, mBaseBuildStmt.toString() + "\n\n");
         }
@@ -399,7 +405,7 @@ public class BooklistBuilder implements AutoCloseable {
 
         // Rebuild all the rest
         for (SynchronizedStatement stmt : mLevelBuildStmts) {
-            if (BuildConfig.DEBUG) {
+            if (DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD && BuildConfig.DEBUG) {
                 Logger.info(this, "mLevelBuildStmts");
                 Logger.info(this, stmt.toString() + "\n\n");
             }
@@ -628,7 +634,7 @@ public class BooklistBuilder implements AutoCloseable {
             // Build a sort mask based on if triggers are used; we can not reverse sort if they are not used.
             final int sortDescendingMask = (useTriggers ? SummaryBuilder.FLAG_SORT_DESCENDING : 0);
 
-            if (BuildConfig.DEBUG) {
+            if (DEBUG_SWITCHES.BOOKLIST_BUILDER && BuildConfig.DEBUG) {
                 Logger.info(this, "listMode          : " + listMode);
                 Logger.info(this, "useTriggers       : " + useTriggers);
                 Logger.info(this, "nestedTriggers    : " + nestedTriggers);
@@ -711,7 +717,7 @@ public class BooklistBuilder implements AutoCloseable {
              * Due to bugs in other language sorting, we are now forced to use a different
              * collation anyway, but we still check if it is CI.
              */
-            boolean collationIsCs = CollationCaseSensitive.isCaseSensitive(mSyncedDb.getUnderlyingDatabaseIfYouAreSureWhatYouAreDoing());
+            boolean collationIsCs = mSyncedDb.isCollationCaseSensitive();
 
             // List of column names appropriate for 'ORDER BY' clause
             String sortColNameList;
@@ -730,11 +736,9 @@ public class BooklistBuilder implements AutoCloseable {
 
                         // *If* collations is case-sensitive, handle it.
                         if (collationIsCs) {
-                            sortCols.append("lower(");
-                        }
-                        sortCols.append(sdi.domain.name);
-                        if (collationIsCs) {
-                            sortCols.append(")");
+                            sortCols.append("lower(").append(sdi.domain.name).append(")");
+                        } else {
+                            sortCols.append(sdi.domain.name);
                         }
                         sortCols.append(DatabaseHelper.COLLATION);
                     } else {
@@ -921,7 +925,7 @@ public class BooklistBuilder implements AutoCloseable {
 
                 // Always save the state-preserving navigator for rebuilds
                 SynchronizedStatement navStmt = mStatements.add("mNavTable.insert", insSql);
-                if (BuildConfig.DEBUG) {
+                if (DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD && BuildConfig.DEBUG) {
                     Logger.info(this, "Adding mNavTable.insert to mLevelBuildStmts");
                     Logger.info(this, navStmt.toString());
                 }
@@ -966,7 +970,7 @@ public class BooklistBuilder implements AutoCloseable {
                     // Create index on nav table
                     String navIx1Sql = "CREATE INDEX " + mNavTable + "_IX1" + " ON " + mNavTable + "(" + DOM_BL_NODE_LEVEL + "," + DOM_BL_NODE_EXPANDED + "," + DOM_ROOT_KEY + ")";
                     SynchronizedStatement ixStmt = mStatements.add("navIx1", navIx1Sql);
-                    if (BuildConfig.DEBUG) {
+                    if (DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD && BuildConfig.DEBUG) {
                         Logger.info(this, "Adding index navIx1 to mLevelBuildStmts");
                         Logger.info(this, ixStmt.toString());
                     }
@@ -979,7 +983,7 @@ public class BooklistBuilder implements AutoCloseable {
                     // Essential for main query! If not present, will make getCount() take ages because main query is a cross with no index.
                     String navIx2Sql = "CREATE UNIQUE INDEX " + mNavTable + "_IX2" + " ON " + mNavTable + "(" + DOM_REAL_ROW_ID + ")";
                     SynchronizedStatement ixStmt = mStatements.add("navIx2", navIx2Sql);
-                    if (BuildConfig.DEBUG) {
+                    if (DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD && BuildConfig.DEBUG) {
                         Logger.info(this, "Adding index navIx2 to mLevelBuildStmts");
                         Logger.info(this, ixStmt.toString());
                     }
@@ -1080,7 +1084,7 @@ public class BooklistBuilder implements AutoCloseable {
 
             // Save, compile and run this statement
             SynchronizedStatement stmt = mStatements.add("L" + i, summarySql);
-            if (BuildConfig.DEBUG) {
+            if (DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD && BuildConfig.DEBUG) {
                 Logger.info(this, "Adding summarySql L" + i + " to mLevelBuildStmts");
                 Logger.info(this, stmt.toString());
             }
@@ -1094,7 +1098,7 @@ public class BooklistBuilder implements AutoCloseable {
         // ENHANCE: ICS UNICODE: Consider adding a duplicate _lc (lower case) column to the SUMMARY table. Ugh.
         if (!collationIsCs) {
             SynchronizedStatement stmt = mStatements.add("ix1", ix1Sql);
-            if (BuildConfig.DEBUG) {
+            if (DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD && BuildConfig.DEBUG) {
                 Logger.info(this, "Adding index ix1 to mLevelBuildStmts");
                 Logger.info(this, stmt.toString());
             }
@@ -1127,9 +1131,7 @@ public class BooklistBuilder implements AutoCloseable {
 
         switch (booklistGroup.kind) {
 
-            // NEWKIND: ROW_KIND_x
-
-            case ROW_KIND_SERIES:
+            case ROW_KIND_SERIES: {
                 booklistGroup.displayDomain = DOM_SERIES_NAME;
                 // Save this for later use
                 styleInfo.seriesGroup = (BooklistSeriesGroup) booklistGroup;
@@ -1161,10 +1163,10 @@ public class BooklistBuilder implements AutoCloseable {
 
                 // This group can be given a name of the form 's/<n>' where <n> is the
                 // series id, eg. 's/18'.
-                booklistGroup.setKeyComponents("s", DOM_FK_SERIES_ID);
+                booklistGroup.setKeyComponents(RowKinds.getPrefix(ROW_KIND_SERIES), DOM_FK_SERIES_ID);
                 break;
-
-            case ROW_KIND_AUTHOR:
+            }
+            case ROW_KIND_AUTHOR: {
                 booklistGroup.displayDomain = DOM_AUTHOR_FORMATTED;
                 // Save this for later use
                 styleInfo.authorGroup = (BooklistAuthorGroup) booklistGroup;
@@ -1189,19 +1191,26 @@ public class BooklistBuilder implements AutoCloseable {
 
                 // This group can be given a name of the form 'a/<n>' where <n> is the
                 // author id, eg. 's/18'.
-                booklistGroup.setKeyComponents("a", DOM_FK_AUTHOR_ID);
-
+                booklistGroup.setKeyComponents(RowKinds.getPrefix(ROW_KIND_AUTHOR), DOM_FK_AUTHOR_ID);
                 break;
-
-            case ROW_KIND_GENRE:
+            }
+            case ROW_KIND_PUBLISHER: {
+                booklistGroup.displayDomain = DOM_BOOK_PUBLISHER;
+                summary.addDomain(DOM_BOOK_PUBLISHER,
+                        TBL_BOOKS.dot(DOM_BOOK_PUBLISHER),
+                        SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
+                booklistGroup.setKeyComponents(RowKinds.getPrefix(ROW_KIND_PUBLISHER), DOM_BOOK_PUBLISHER);
+                break;
+            }
+            case ROW_KIND_GENRE: {
                 booklistGroup.displayDomain = DOM_BOOK_GENRE;
                 summary.addDomain(DOM_BOOK_GENRE,
                         TBL_BOOKS.dot(DOM_BOOK_GENRE),
                         SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
-                booklistGroup.setKeyComponents("g", DOM_BOOK_GENRE);
+                booklistGroup.setKeyComponents(RowKinds.getPrefix(ROW_KIND_GENRE), DOM_BOOK_GENRE);
                 break;
-
-            case ROW_KIND_LANGUAGE:
+            }
+            case ROW_KIND_LANGUAGE: {
                 // The domain used to display the data on the screen (not always the underlying domain)
                 booklistGroup.displayDomain = DOM_BOOK_LANGUAGE;
                 // Define how the new field is retrieved and sorted/grouped
@@ -1209,51 +1218,43 @@ public class BooklistBuilder implements AutoCloseable {
                         TBL_BOOKS.dot(DOM_BOOK_LANGUAGE),
                         SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
                 // Unique name for this field and the source data field
-                booklistGroup.setKeyComponents("lang", DOM_BOOK_LANGUAGE);
+                booklistGroup.setKeyComponents(RowKinds.getPrefix(ROW_KIND_LANGUAGE), DOM_BOOK_LANGUAGE);
                 break;
-
-            case ROW_KIND_LOCATION:
+            }
+            case ROW_KIND_LOCATION: {
                 booklistGroup.displayDomain = DOM_BOOK_LOCATION;
                 summary.addDomain(DOM_BOOK_LOCATION,
                         "Coalesce(" + TBL_BOOKS.dot(DOM_BOOK_LOCATION) + ", '')",
                         SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
-                booklistGroup.setKeyComponents("loc", DOM_BOOK_LOCATION);
+                booklistGroup.setKeyComponents(RowKinds.getPrefix(ROW_KIND_LOCATION), DOM_BOOK_LOCATION);
                 break;
-
-            case ROW_KIND_BOOKSHELF:
-                booklistGroup.displayDomain = DOM_BOOKSHELF;
-                summary.addDomain(DOM_BOOKSHELF,
-                        "Coalesce(" + TBL_BOOKSHELF.dot(DOM_BOOKSHELF) + ", '')",
-                        SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
-                booklistGroup.setKeyComponents("shelf", DOM_BOOKSHELF);
-                styleInfo.hasGroupBOOKSHELF = true;
-                break;
-
-            case ROW_KIND_PUBLISHER:
-                booklistGroup.displayDomain = DOM_BOOK_PUBLISHER;
-                summary.addDomain(DOM_BOOK_PUBLISHER,
-                        TBL_BOOKS.dot(DOM_BOOK_PUBLISHER),
-                        SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
-                booklistGroup.setKeyComponents("p", DOM_BOOK_PUBLISHER);
-                break;
-
-            case ROW_KIND_RATING:
-                booklistGroup.displayDomain = DOM_BOOK_RATING;
-                summary.addDomain(DOM_BOOK_RATING,
-                        "Cast(" + TBL_BOOKS.dot(DOM_BOOK_RATING) + " AS Integer)",
-                        SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED | sortDescendingMask);
-                booklistGroup.setKeyComponents("rat", DOM_BOOK_RATING);
-                break;
-
-            case ROW_KIND_FORMAT:
+            }
+            case ROW_KIND_FORMAT: {
                 booklistGroup.displayDomain = DOM_BOOK_FORMAT;
                 summary.addDomain(DOM_BOOK_FORMAT,
                         "Coalesce(" + TBL_BOOKS.dot(DOM_BOOK_FORMAT) + ", '')",
                         SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
-                booklistGroup.setKeyComponents("fmt", DOM_BOOK_FORMAT);
+                booklistGroup.setKeyComponents(RowKinds.getPrefix(ROW_KIND_FORMAT), DOM_BOOK_FORMAT);
                 break;
-
-            case ROW_KIND_READ_AND_UNREAD:
+            }
+            case ROW_KIND_BOOKSHELF: {
+                booklistGroup.displayDomain = DOM_BOOKSHELF;
+                summary.addDomain(DOM_BOOKSHELF,
+                        "Coalesce(" + TBL_BOOKSHELF.dot(DOM_BOOKSHELF) + ", '')",
+                        SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
+                booklistGroup.setKeyComponents(RowKinds.getPrefix(ROW_KIND_BOOKSHELF), DOM_BOOKSHELF);
+                styleInfo.hasGroupBOOKSHELF = true;
+                break;
+            }
+            case ROW_KIND_TITLE_LETTER: {
+                booklistGroup.displayDomain = DOM_TITLE_LETTER;
+                summary.addDomain(DOM_TITLE_LETTER,
+                        "substr(" + TBL_BOOKS.dot(DOM_TITLE) + ",1,1)",
+                        SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
+                booklistGroup.setKeyComponents(RowKinds.getPrefix(ROW_KIND_TITLE_LETTER), DOM_TITLE_LETTER);
+                break;
+            }
+            case ROW_KIND_READ_AND_UNREAD: {
                 booklistGroup.displayDomain = DOM_READ_STATUS;
                 summary.addDomain(DOM_READ_STATUS,
                         "Case" +
@@ -1267,10 +1268,10 @@ public class BooklistBuilder implements AutoCloseable {
                 summary.addDomain(DOM_BOOK_READ,
                         TBL_BOOKS.dot(DOM_BOOK_READ),
                         SummaryBuilder.FLAG_NONE);
-                booklistGroup.setKeyComponents("r", DOM_READ_STATUS);
+                booklistGroup.setKeyComponents(RowKinds.getPrefix(ROW_KIND_READ_AND_UNREAD), DOM_READ_STATUS);
                 break;
-
-            case ROW_KIND_LOANED:
+            }
+            case ROW_KIND_LOANED: {
                 // Saved for later to indicate group was present
                 styleInfo.hasGroupLOANED = true;
                 booklistGroup.displayDomain = DOM_LOANED_TO;
@@ -1288,146 +1289,169 @@ public class BooklistBuilder implements AutoCloseable {
                                 "  Else '" + BookCatalogueApp.getResourceString(R.string.loaned_to_2) + "' || " + TBL_LOAN.dot(DOM_LOANED_TO) +
                                 " End",
                         SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
-                booklistGroup.setKeyComponents("l", DOM_LOANED_TO);
+                booklistGroup.setKeyComponents(RowKinds.getPrefix(ROW_KIND_LOANED), DOM_LOANED_TO);
                 break;
+            }
 
-            case ROW_KIND_TITLE_LETTER:
-                booklistGroup.displayDomain = DOM_TITLE_LETTER;
-                summary.addDomain(DOM_TITLE_LETTER,
-                        "substr(" + TBL_BOOKS.dot(DOM_TITLE) + ",1,1)",
-                        SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
-                booklistGroup.setKeyComponents("t", DOM_TITLE_LETTER);
+            case ROW_KIND_RATING: {
+                booklistGroup.displayDomain = DOM_BOOK_RATING;
+                summary.addDomain(DOM_BOOK_RATING,
+                        "Cast(" + TBL_BOOKS.dot(DOM_BOOK_RATING) + " AS Integer)",
+                        SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED | sortDescendingMask);
+                booklistGroup.setKeyComponents(RowKinds.getPrefix(ROW_KIND_RATING), DOM_BOOK_RATING);
                 break;
+            }
 
-            case ROW_KIND_YEAR_PUBLISHED:
-                booklistGroup.displayDomain = DOM_PUBLICATION_YEAR;
-                summary.addDomain(DOM_PUBLICATION_YEAR,
+            case ROW_KIND_DATE_PUBLISHED_YEAR: {
+                booklistGroup.displayDomain = DOM_DATE_PUBLISHED_YEAR;
+                summary.addDomain(DOM_DATE_PUBLISHED_YEAR,
                         yearGlob(TBL_BOOKS.dot(DOM_BOOK_DATE_PUBLISHED), false),
-                        SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
-                booklistGroup.setKeyComponents("yrp", DOM_PUBLICATION_YEAR);
+                        SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED | sortDescendingMask);
+                booklistGroup.setKeyComponents(RowKinds.getPrefix(ROW_KIND_DATE_PUBLISHED_YEAR), DOM_DATE_PUBLISHED_YEAR);
                 break;
-
-            case ROW_KIND_MONTH_PUBLISHED:
-                booklistGroup.displayDomain = DOM_PUBLICATION_MONTH;
-                summary.addDomain(DOM_PUBLICATION_MONTH,
+            }
+            case ROW_KIND_DATE_PUBLISHED_MONTH: {
+                booklistGroup.displayDomain = DOM_DATE_PUBLISHED_MONTH;
+                summary.addDomain(DOM_DATE_PUBLISHED_MONTH,
                         monthGlob(TBL_BOOKS.dot(DOM_BOOK_DATE_PUBLISHED), false),
-                        SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
-                booklistGroup.setKeyComponents("mnp", DOM_PUBLICATION_MONTH);
+                        SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED | sortDescendingMask);
+                booklistGroup.setKeyComponents(RowKinds.getPrefix(ROW_KIND_DATE_PUBLISHED_MONTH), DOM_DATE_PUBLISHED_MONTH);
                 break;
+            }
 
-
-            case ROW_KIND_YEAR_ADDED:
-                booklistGroup.displayDomain = DOM_ADDED_YEAR;
+            case ROW_KIND_DATE_ADDED_YEAR: {
+                booklistGroup.displayDomain = DOM_DATE_ADDED_YEAR;
                 // TODO: Handle 'DESCENDING'. Requires the navigator construction to use
                 // max/min for non-grouped domains that appear in sublevels based on desc/asc.
                 // We don't use DESCENDING sort yet because the 'header' ends up below
                 // the detail rows in the flattened table.
-                summary.addDomain(DOM_ADDED_YEAR,
+                summary.addDomain(DOM_DATE_ADDED_YEAR,
                         yearGlob(TBL_BOOKS.dot(DOM_BOOK_DATE_ADDED), true),
                         SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED | sortDescendingMask);
-                booklistGroup.setKeyComponents("yra", DOM_ADDED_YEAR);
+                booklistGroup.setKeyComponents(RowKinds.getPrefix(ROW_KIND_DATE_ADDED_YEAR), DOM_DATE_ADDED_YEAR);
                 break;
-
-            case ROW_KIND_MONTH_ADDED:
-                booklistGroup.displayDomain = DOM_ADDED_MONTH;
-                // We don't use DESCENDING sort yet because the 'header' ends up below
-                // the detail rows in the flattened table.
-                summary.addDomain(DOM_ADDED_MONTH,
+            }
+            case ROW_KIND_DATE_ADDED_MONTH: {
+                booklistGroup.displayDomain = DOM_DATE_ADDED_MONTH;
+                summary.addDomain(DOM_DATE_ADDED_MONTH,
                         monthGlob(TBL_BOOKS.dot(DOM_BOOK_DATE_ADDED), true),
                         SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED | sortDescendingMask);
-                booklistGroup.setKeyComponents("mna", DOM_ADDED_MONTH);
+                booklistGroup.setKeyComponents(RowKinds.getPrefix(ROW_KIND_DATE_ADDED_MONTH), DOM_DATE_ADDED_MONTH);
                 break;
-
-            case ROW_KIND_DAY_ADDED:
-                booklistGroup.displayDomain = DOM_ADDED_DAY;
-                // We don't use DESCENDING sort yet because the 'header' ends up below
-                // the detail rows in the flattened table.
-                summary.addDomain(DOM_ADDED_DAY,
+            }
+            case ROW_KIND_DATE_ADDED_DAY: {
+                booklistGroup.displayDomain = DOM_DATE_ADDED_DAY;
+                summary.addDomain(DOM_DATE_ADDED_DAY,
                         dayGlob(TBL_BOOKS.dot(DOM_BOOK_DATE_ADDED), true),
                         SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED | sortDescendingMask);
-                booklistGroup.setKeyComponents("dya", DOM_ADDED_DAY);
+                booklistGroup.setKeyComponents(RowKinds.getPrefix(ROW_KIND_DATE_ADDED_DAY), DOM_DATE_ADDED_DAY);
                 break;
+            }
 
-
-            case ROW_KIND_UPDATE_YEAR:
-                booklistGroup.displayDomain = DOM_UPDATE_YEAR;
+            case ROW_KIND_DATE_READ_YEAR: {
+                booklistGroup.displayDomain = DOM_DATE_READ_YEAR;
                 // TODO: Handle 'DESCENDING'. Requires the navigator construction to use
                 // max/min for non-grouped domains that appear in sublevels based on desc/asc.
                 // We don't use DESCENDING sort yet because the 'header' ends up below
                 // the detail rows in the flattened table.
-                summary.addDomain(DOM_UPDATE_YEAR,
-                        yearGlob(TBL_BOOKS.dot(DOM_LAST_UPDATE_DATE), true),
-                        SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED | sortDescendingMask);
-                booklistGroup.setKeyComponents("yru", DOM_UPDATE_YEAR);
-
-                summary.addDomain(DOM_LAST_UPDATE_DATE,
-                        null,
-                        SummaryBuilder.FLAG_SORTED | sortDescendingMask);
-                break;
-
-            case ROW_KIND_UPDATE_MONTH:
-                booklistGroup.displayDomain = DOM_UPDATE_MONTH;
-                // We don't use DESCENDING sort yet because the 'header' ends up below
-                // the detail rows in the flattened table.
-                summary.addDomain(DOM_UPDATE_MONTH,
-                        monthGlob(TBL_BOOKS.dot(DOM_LAST_UPDATE_DATE), true),
-                        SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED | sortDescendingMask);
-                booklistGroup.setKeyComponents("mnu", DOM_UPDATE_MONTH);
-
-                summary.addDomain(DOM_LAST_UPDATE_DATE,
-                        null,
-                        SummaryBuilder.FLAG_SORTED | sortDescendingMask);
-                break;
-
-            case ROW_KIND_UPDATE_DAY:
-                booklistGroup.displayDomain = DOM_UPDATE_DAY;
-                // We don't use DESCENDING sort yet because the 'header' ends up below
-                // the detail rows in the flattened table.
-                summary.addDomain(DOM_UPDATE_DAY,
-                        dayGlob(TBL_BOOKS.dot(DOM_LAST_UPDATE_DATE), true),
-                        SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED | sortDescendingMask);
-                booklistGroup.setKeyComponents("dyu", DOM_UPDATE_DAY);
-
-                summary.addDomain(DOM_LAST_UPDATE_DATE,
-                        null,
-                        SummaryBuilder.FLAG_SORTED | sortDescendingMask);
-                break;
-
-            case ROW_KIND_YEAR_READ:
-                booklistGroup.displayDomain = DOM_READ_YEAR;
-                // TODO: Handle 'DESCENDING'. Requires the navigator construction to use
-                // max/min for non-grouped domains that appear in sublevels based on desc/asc.
-                // We don't use DESCENDING sort yet because the 'header' ends up below
-                // the detail rows in the flattened table.
-                summary.addDomain(DOM_READ_YEAR,
+                summary.addDomain(DOM_DATE_READ_YEAR,
                         yearGlob(TBL_BOOKS.dot(DOM_BOOK_READ_END), false),
                         SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED); // | sortDescendingMask);
-                booklistGroup.setKeyComponents("yrr", DOM_READ_YEAR);
+                booklistGroup.setKeyComponents(RowKinds.getPrefix(ROW_KIND_DATE_READ_YEAR), DOM_DATE_READ_YEAR);
                 break;
-
-            case ROW_KIND_MONTH_READ:
-                booklistGroup.displayDomain = DOM_READ_MONTH;
-                // We don't use DESCENDING sort yet because the 'header' ends up below
-                // the detail rows in the flattened table.
-                summary.addDomain(DOM_READ_MONTH,
+            }
+            case ROW_KIND_DATE_READ_MONTH: {
+                booklistGroup.displayDomain = DOM_DATE_READ_MONTH;
+                summary.addDomain(DOM_DATE_READ_MONTH,
                         monthGlob(TBL_BOOKS.dot(DOM_BOOK_READ_END), false),
                         SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED); // | sortDescendingMask);
-                booklistGroup.setKeyComponents("mnr", DOM_READ_MONTH);
+                booklistGroup.setKeyComponents(RowKinds.getPrefix(ROW_KIND_DATE_READ_MONTH), DOM_DATE_READ_MONTH);
                 break;
-
-            case ROW_KIND_DAY_READ:
-                booklistGroup.displayDomain = DOM_READ_DAY;
-                // We don't use DESCENDING sort yet because the 'header' ends up below
-                // the detail rows in the flattened table.
-                summary.addDomain(DOM_READ_DAY,
+            }
+            case ROW_KIND_DATE_READ_DAY: {
+                booklistGroup.displayDomain = DOM_DATE_READ_DAY;
+                summary.addDomain(DOM_DATE_READ_DAY,
                         dayGlob(TBL_BOOKS.dot(DOM_BOOK_READ_END), false),
                         SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED); // | sortDescendingMask);
-                booklistGroup.setKeyComponents("dyr", DOM_READ_DAY);
+                booklistGroup.setKeyComponents(RowKinds.getPrefix(ROW_KIND_DATE_READ_DAY), DOM_DATE_READ_DAY);
                 break;
+            }
+
+            case ROW_KIND_DATE_ACQUIRED_YEAR: {
+                booklistGroup.displayDomain = DOM_DATE_ACQUIRED_YEAR;
+                // TODO: Handle 'DESCENDING'. Requires the navigator construction to use
+                // max/min for non-grouped domains that appear in sublevels based on desc/asc.
+                // We don't use DESCENDING sort yet because the 'header' ends up below
+                // the detail rows in the flattened table.
+                summary.addDomain(DOM_DATE_ACQUIRED_YEAR,
+                        yearGlob(TBL_BOOKS.dot(DOM_BOOK_DATE_ACQUIRED), true),
+                        SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED | sortDescendingMask);
+                booklistGroup.setKeyComponents(RowKinds.getPrefix(ROW_KIND_DATE_ACQUIRED_YEAR), DOM_DATE_ACQUIRED_YEAR);
+                break;
+            }
+            case ROW_KIND_DATE_ACQUIRED_MONTH: {
+                booklistGroup.displayDomain = DOM_DATE_ACQUIRED_MONTH;
+                summary.addDomain(DOM_DATE_ACQUIRED_MONTH,
+                        monthGlob(TBL_BOOKS.dot(DOM_BOOK_DATE_ACQUIRED), true),
+                        SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED | sortDescendingMask);
+                booklistGroup.setKeyComponents(RowKinds.getPrefix(ROW_KIND_DATE_ACQUIRED_MONTH), DOM_DATE_ACQUIRED_MONTH);
+                break;
+            }
+            case ROW_KIND_DATE_ACQUIRED_DAY: {
+                booklistGroup.displayDomain = DOM_DATE_ACQUIRED_DAY;
+                summary.addDomain(DOM_DATE_ACQUIRED_DAY,
+                        dayGlob(TBL_BOOKS.dot(DOM_BOOK_DATE_ACQUIRED), true),
+                        SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED | sortDescendingMask);
+                booklistGroup.setKeyComponents(RowKinds.getPrefix(ROW_KIND_DATE_ACQUIRED_DAY), DOM_DATE_ACQUIRED_DAY);
+                break;
+            }
+
+
+            case ROW_KIND_DATE_LAST_UPDATE_YEAR: {
+                booklistGroup.displayDomain = DOM_DATE_LAST_UPDATE_YEAR;
+                // TODO: Handle 'DESCENDING'. Requires the navigator construction to use
+                // max/min for non-grouped domains that appear in sublevels based on desc/asc.
+                // We don't use DESCENDING sort yet because the 'header' ends up below
+                // the detail rows in the flattened table.
+                summary.addDomain(DOM_DATE_LAST_UPDATE_YEAR,
+                        yearGlob(TBL_BOOKS.dot(DOM_LAST_UPDATE_DATE), true),
+                        SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED | sortDescendingMask);
+                booklistGroup.setKeyComponents(RowKinds.getPrefix(ROW_KIND_DATE_LAST_UPDATE_YEAR), DOM_DATE_LAST_UPDATE_YEAR);
+
+                summary.addDomain(DOM_LAST_UPDATE_DATE,
+                        null,
+                        SummaryBuilder.FLAG_SORTED | sortDescendingMask);
+                break;
+            }
+            case ROW_KIND_DATE_LAST_UPDATE_MONTH: {
+                booklistGroup.displayDomain = DOM_DATE_UPDATE_MONTH;
+                summary.addDomain(DOM_DATE_UPDATE_MONTH,
+                        monthGlob(TBL_BOOKS.dot(DOM_LAST_UPDATE_DATE), true),
+                        SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED | sortDescendingMask);
+                booklistGroup.setKeyComponents(RowKinds.getPrefix(ROW_KIND_DATE_LAST_UPDATE_MONTH), DOM_DATE_UPDATE_MONTH);
+
+                summary.addDomain(DOM_LAST_UPDATE_DATE,
+                        null,
+                        SummaryBuilder.FLAG_SORTED | sortDescendingMask);
+                break;
+            }
+            case ROW_KIND_DATE_LAST_UPDATE_DAY: {
+                booklistGroup.displayDomain = DOM_DATE_UPDATE_DAY;
+                summary.addDomain(DOM_DATE_UPDATE_DAY,
+                        dayGlob(TBL_BOOKS.dot(DOM_LAST_UPDATE_DATE), true),
+                        SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED | sortDescendingMask);
+                booklistGroup.setKeyComponents(RowKinds.getPrefix(ROW_KIND_DATE_LAST_UPDATE_DAY), DOM_DATE_UPDATE_DAY);
+
+                summary.addDomain(DOM_LAST_UPDATE_DATE,
+                        null,
+                        SummaryBuilder.FLAG_SORTED | sortDescendingMask);
+                break;
+            }
+
+            // NEWKIND: ROW_KIND_x
 
             default:
                 throw new RTE.IllegalTypeException("" + booklistGroup.kind);
-
         }
     }
 
@@ -1792,7 +1816,7 @@ public class BooklistBuilder implements AutoCloseable {
                     "		" + insertSql + ";\n" +
                     "	End";
             SynchronizedStatement stmt = mStatements.add("TG " + tgName, tgSql);
-            if (BuildConfig.DEBUG) {
+            if (DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD && BuildConfig.DEBUG) {
                 Logger.info(this, "Adding " + tgName + " to mLevelBuildStmts");
                 Logger.info(this, stmt.toString());
             }
@@ -1812,7 +1836,7 @@ public class BooklistBuilder implements AutoCloseable {
                 "	End";
 
         SynchronizedStatement stmt = mStatements.add(currentValueTriggerName, tgSql);
-        if (BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD && BuildConfig.DEBUG) {
             Logger.info(this, "Adding " + currentValueTriggerName + " to mLevelBuildStmts");
             Logger.info(this, stmt.toString());
         }
@@ -1945,7 +1969,7 @@ public class BooklistBuilder implements AutoCloseable {
             // SQLiteException: Cannot execute this statement because it might modify the database but the connection is read-only.
 //            SynchronizedStatement dropStmt = mStatements.add("Drop_" + tgForwardName,
 //                    "DROP TRIGGER IF EXISTS " + tgForwardName);
-//            if (BuildConfig.DEBUG) {
+//            if (DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD && BuildConfig.DEBUG) {
 //                Logger.info(this, "Adding Drop_" + tgForwardName + " to mLevelBuildStmts");
 //                Logger.info(this, dropStmt.toString());
 //            }
@@ -1953,7 +1977,7 @@ public class BooklistBuilder implements AutoCloseable {
 //            dropStmt.execute();
 
             SynchronizedStatement stmt = mStatements.add("Create_" + tgForwardName, oneBigTrigger.toString());
-            if (BuildConfig.DEBUG) {
+            if (DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD && BuildConfig.DEBUG) {
                 Logger.info(this, "Adding " + tgForwardName + " to mLevelBuildStmts");
                 Logger.info(this, stmt.toString());
             }
@@ -2646,7 +2670,7 @@ public class BooklistBuilder implements AutoCloseable {
             // Rebuild the data table
             recreateTable();
             // List of column names for the INSERT... part
-            StringBuilder columns = new StringBuilder();
+            StringBuilder destColumns = new StringBuilder();
             // List of expressions for the SELECT... part.
             StringBuilder expressions = new StringBuilder();
             // List of ?'s for the VALUES... part.
@@ -2655,15 +2679,15 @@ public class BooklistBuilder implements AutoCloseable {
             // Build the lists. mDomains and mExpressions were built in sync with each other.
             for (int i = 0; i < mDomains.size(); i++) {
                 DomainDefinition d = mDomains.get(i);
-                String e = mExpressions.get(i);
+                String expression = mExpressions.get(i);
                 if (i > 0) {
-                    columns.append(",");
+                    destColumns.append(",");
                     expressions.append(",");
                     values.append(",");
                 }
-                columns.append(d.name);
+                destColumns.append(d.name);
+                expressions.append(expression);
                 values.append("?");
-                expressions.append(e);
                 // This is not strictly necessary, but makes SQL more readable and debugging easier.
                 expressions.append(" AS ").append(d.name);
             }
@@ -2677,7 +2701,7 @@ public class BooklistBuilder implements AutoCloseable {
             // Setup the SQL phrases.
             SqlComponents cmp = new SqlComponents();
             cmp.rootKeyExpression = keyExpression.toString();
-            cmp.destinationColumns = columns + "," + DOM_ROOT_KEY;
+            cmp.destinationColumns = destColumns + "," + DOM_ROOT_KEY;
             cmp.insert = "INSERT INTO " + mListTable + " (" + cmp.destinationColumns + ")";
             cmp.select = "SELECT " + expressions + "," + keyExpression;
             cmp.insertSelect = cmp.insert + " " + cmp.select + " FROM ";

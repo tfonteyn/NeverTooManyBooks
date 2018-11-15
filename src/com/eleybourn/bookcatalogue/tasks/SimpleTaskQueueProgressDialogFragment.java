@@ -92,7 +92,7 @@ public class SimpleTaskQueueProgressDialogFragment extends DialogFragment {
     private boolean mSuccess = true;
     /** Options indicating a Refresher has been posted but not run yet */
     private boolean mRefresherQueued = false;
-    /** Runnable object to refresh the dialog */
+    /** Runnable object to reload the dialog */
     private final Runnable mRefresher = new Runnable() {
         @Override
         public void run() {
@@ -363,7 +363,7 @@ public class SimpleTaskQueueProgressDialogFragment extends DialogFragment {
     }
 
     /**
-     * Refresh the dialog, or post a refresh to the UI thread
+     * Refresh the dialog, or post a reload to the UI thread
      */
     private void requestUpdateProgress() {
         if (DEBUG_SWITCHES.SQPFragment && BuildConfig.DEBUG) {

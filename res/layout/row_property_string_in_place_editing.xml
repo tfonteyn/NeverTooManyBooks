@@ -5,7 +5,7 @@
     android:orientation="vertical">
 
     <TextView
-        android:id="@+id/series"
+        android:id="@+id/filename"
         style="@style/lbl_property_name"
         android:labelFor="@id/value"
         tools:ignore="LabelFor"

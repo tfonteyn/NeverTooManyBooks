@@ -136,16 +136,20 @@ public class EditBookNotesFragment extends BookAbstractFragment implements
 
         field = mFields.add(R.id.edition, UniqueId.KEY_BOOK_EDITION_BITMASK)
                 .setFormatter(new Fields.BookEditionsFormatter());
-        initCheckListEditor(TAG, field, R.string.lbl_edition, getBookManager().getBook().getEditableEditionList());
-
+        initCheckListEditor(TAG, field, R.string.lbl_edition, new CheckListEditorListGetter<Integer>() {
+            @Override
+            public ArrayList<CheckListItem<Integer>> getList() {
+                return getBookManager().getBook().getEditableEditionList();
+            }
+        });
 
         // ENHANCE: Add a partial date validator. Or not.
         //FieldValidator blankOrDateValidator = new Fields.OrValidator(new Fields.BlankValidator(), new Fields.DateValidator());
         FieldFormatter dateFormatter = new Fields.DateFieldFormatter();
 
-        field = mFields.add(R.id.date_purchased, UniqueId.KEY_BOOK_DATE_ADDED)
+        field = mFields.add(R.id.date_acquired, UniqueId.KEY_BOOK_DATE_ACQUIRED)
                 .setFormatter(dateFormatter);
-        initPartialDatePicker(TAG, field, R.string.lbl_date_purchased, true);
+        initPartialDatePicker(TAG, field, R.string.lbl_date_acquired, true);
 
         field = mFields.add(R.id.read_start, UniqueId.KEY_BOOK_READ_START)
                 .setFormatter(dateFormatter);
@@ -186,7 +190,7 @@ public class EditBookNotesFragment extends BookAbstractFragment implements
         // Restore default visibility
         showHideFields(false);
 
-        if (BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.FIELD_BOOK_TRANSFERS && BuildConfig.DEBUG) {
             Logger.info(this, "onLoadFieldsFromBook done");
         }
     }
@@ -211,7 +215,7 @@ public class EditBookNotesFragment extends BookAbstractFragment implements
     protected void onSaveFieldsToBook(final @NonNull Book book) {
         super.onSaveFieldsToBook(book);
 
-        if (BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.FIELD_BOOK_TRANSFERS && BuildConfig.DEBUG) {
             Logger.info(this, "onSaveFieldsToBook done");
         }
     }

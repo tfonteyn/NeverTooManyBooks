@@ -209,7 +209,7 @@ public class Book extends DataManager {
         return this.getLong(UniqueId.KEY_ID);
     }
 
-    public void refresh() {
+    public void reload() {
         reload(this.getBookId());
     }
 

@@ -198,7 +198,7 @@ abstract public class BaseListActivity extends BaseActivity implements
 //            @Override
 //            public boolean onItemLongClick(final AdapterView<?> parent, final View view, final int position, final long id) {
 //
-//                // SET THE TITLE
+//                // SET THE MENU TITLE
 //                String menuTitle = mList.get(position).getTitle();
 //
 //                // legal trick to get an instance of Menu.
@@ -206,7 +206,7 @@ abstract public class BaseListActivity extends BaseActivity implements
 //                // custom menuInfo
 //                SelectOneDialog.SimpleDialogMenuInfo menuInfo = new SelectOneDialog.SimpleDialogMenuInfo(menuTitle, view, position);
 //
-//                // POPULATE the menu
+//                // POPULATE THE MENU
 //                mListViewContextMenu.add(Menu.NONE, R.id.MENU_DELETE, 0, R.string.menu_delete_something)
 //                        .setIcon(R.drawable.ic_delete);
 //

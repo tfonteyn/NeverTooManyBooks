@@ -11,7 +11,7 @@
         android:orientation="horizontal">
 
         <AutoCompleteTextView
-            android:id="@+id/series"
+            android:id="@+id/filename"
             style="@style/titleTextEntry"
             android:layout_weight="2"
             android:completionThreshold="2"

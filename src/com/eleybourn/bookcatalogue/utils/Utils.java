@@ -275,6 +275,19 @@ public class Utils {
     }
 
     /**
+     * Only does web & email links. Most likely all we'll ever need.
+     *
+     * @param html        Partial HTML
+     * @return Spannable with all links
+     *
+     * @see #linkifyHtml(String, int)
+     */
+    @NonNull
+    public static Spannable linkifyHtml(final @NonNull String html) {
+        return linkifyHtml(html, Linkify.WEB_URLS | Linkify.EMAIL_ADDRESSES);
+    }
+
+    /**
      * Linkify partial HTML. Linkify methods remove all spans before building links, this
      * method preserves them.
      *
@@ -297,7 +310,7 @@ public class Utils {
         SpannableString buffer = new SpannableString(text);
         Linkify.addLinks(buffer, linkifyMask);
 
-        // Add back the HTML spannables
+        // Add back the HTML spannable's
         for (URLSpan span : currentSpans) {
             int end = text.getSpanEnd(span);
             int start = text.getSpanStart(span);
@@ -305,6 +318,8 @@ public class Utils {
         }
         return buffer;
     }
+
+
 
     /**
      * Join the passed array of strings, with 'delim' between them.

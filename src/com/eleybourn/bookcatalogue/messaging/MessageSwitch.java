@@ -292,7 +292,7 @@ public class MessageSwitch<T, U> {
             synchronized (mList) {
                 // List of refs to be removed
                 List<WeakReference<T>> toRemove = new ArrayList<>();
-                // Scan the list for matches or dead refs
+                // Loop the list for matches or dead refs
                 for (WeakReference<T> w : mList) {
                     T l = w.get();
                     if (l == null || l == listener) {

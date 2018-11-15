@@ -166,7 +166,7 @@ public class GoodreadsUtils {
     /**
      * Start a background task that exports all books to goodreads.
      */
-    private static void sendToGoodreads(final @NonNull FragmentActivity context, final boolean updatesOnly) {
+    private static void sendBooksToGoodreads(final @NonNull FragmentActivity context, final boolean updatesOnly) {
         FragmentTask task = new FragmentTaskAbstract() {
             @Override
             public void run(final @NonNull SimpleTaskQueueProgressDialogFragment fragment, final @NonNull SimpleTaskContext taskContext) {
@@ -200,12 +200,48 @@ public class GoodreadsUtils {
     }
 
     /**
+     * TEST  * Start a background task that exports a single books to goodreads.
+     */
+    public static void sendOneBookToGoodreads(final @NonNull FragmentActivity context, final long bookId) {
+        FragmentTask task = new FragmentTaskAbstract() {
+            @Override
+            public void run(final @NonNull SimpleTaskQueueProgressDialogFragment fragment, final @NonNull SimpleTaskContext taskContext) {
+                int msg = checkCanSendToGoodreads();
+                if (msg == 0) {
+                    QueueManager.getQueueManager().enqueueTask(new SendOneBookTask(bookId), BCQueueManager.QUEUE_MAIN);
+                    msg = R.string.task_has_been_queued_in_background;
+                }
+                setState(msg);
+            }
+
+            @Override
+            public void onFinish(final @NonNull SimpleTaskQueueProgressDialogFragment fragment,
+                                 final @Nullable Exception e) {
+                final int msg = getState();
+                if (msg == -1) {
+                    fragment.post(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            StandardDialogs.goodreadsAuthAlert(fragment.requireActivity());
+                        }
+                    });
+                } else {
+                    fragment.showUserMessage(fragment.getString(msg));
+                }
+
+            }
+        };
+        SimpleTaskQueueProgressDialogFragment.runTaskWithProgress(context, R.string.connecting_to_web_site, task, true, 0);
+    }
+
+    /**
      * Ask the user which books to send, then send them.
      *
      * Optionally, display a dialog warning the user that goodreads authentication is required; gives them
      * the options: 'request now', 'more info' or 'cancel'.
      */
-    public static void sendBooksToGoodreads(final @NonNull BaseActivity ctx) {
+    public static void sendBooksToGoodreads(final @NonNull FragmentActivity context) {
 
         FragmentTaskAbstract task = new FragmentTaskAbstract() {
             /**
@@ -237,7 +273,7 @@ public class GoodreadsUtils {
                                     new DialogInterface.OnClickListener() {
                                         public void onClick(final @NonNull DialogInterface dialog, final int which) {
                                             dialog.dismiss();
-                                            GoodreadsUtils.sendToGoodreads(context, true);
+                                            GoodreadsUtils.sendBooksToGoodreads(context, true);
                                         }
                                     });
 
@@ -246,7 +282,7 @@ public class GoodreadsUtils {
                                     new DialogInterface.OnClickListener() {
                                         public void onClick(final @NonNull DialogInterface dialog, final int which) {
                                             dialog.dismiss();
-                                            GoodreadsUtils.sendToGoodreads(context, false);
+                                            GoodreadsUtils.sendBooksToGoodreads(context, false);
                                         }
                                     });
 
@@ -280,7 +316,7 @@ public class GoodreadsUtils {
             }
         };
         // Run the task
-        SimpleTaskQueueProgressDialogFragment.runTaskWithProgress(ctx, R.string.connecting_to_web_site, task, true, 0);
+        SimpleTaskQueueProgressDialogFragment.runTaskWithProgress(context, R.string.connecting_to_web_site, task, true, 0);
 
     }
 

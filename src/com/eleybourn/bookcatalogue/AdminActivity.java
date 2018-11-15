@@ -38,7 +38,7 @@ import com.eleybourn.bookcatalogue.backup.CsvExporter;
 import com.eleybourn.bookcatalogue.backup.ExportThread;
 import com.eleybourn.bookcatalogue.backup.ImportThread;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivityWithTasks;
-import com.eleybourn.bookcatalogue.booklist.BooklistStylesActivity;
+import com.eleybourn.bookcatalogue.booklist.BooklistPreferencesActivity;
 import com.eleybourn.bookcatalogue.database.CoversDbHelper;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
@@ -70,6 +70,7 @@ import java.util.List;
 public class AdminActivity extends BaseActivityWithTasks {
 
     public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_ADMIN;
+    // no local result codes
 
     /**
      * This is not in use right now, but leaving it in place.
@@ -120,7 +121,7 @@ public class AdminActivity extends BaseActivityWithTasks {
     private void setupAdminPage() {
         /* Manage Field Visibility */
         {
-            View v = findViewById(R.id.lbl_fields);
+            View v = findViewById(R.id.lbl_field_visibility);
             // Make line flash when clicked.
             v.setBackgroundResource(android.R.drawable.list_selector_background);
             v.setOnClickListener(new OnClickListener() {
@@ -132,16 +133,16 @@ public class AdminActivity extends BaseActivityWithTasks {
             });
         }
 
-        /* Edit Book list styles */
+        /* Book list Preferences */
         {
-            View v = findViewById(R.id.lbl_edit_styles);
+            View v = findViewById(R.id.lbl_preferences_booklist);
             // Make line flash when clicked.
             v.setBackgroundResource(android.R.drawable.list_selector_background);
             v.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(AdminActivity.this, BooklistStylesActivity.class);
-                    startActivityForResult(intent, BooklistStylesActivity.REQUEST_CODE); /* 13854efe-e8fd-447a-a195-47678c0d87e7 */
+                    Intent intent = new Intent(AdminActivity.this, BooklistPreferencesActivity.class);
+                    startActivityForResult(intent, BooklistPreferencesActivity.REQUEST_CODE); /* 9cdb2cbe-1390-4ed8-a491-87b3b1a1edb9 */
                 }
             });
         }
@@ -443,16 +444,16 @@ public class AdminActivity extends BaseActivityWithTasks {
     @Override
     @CallSuper
     protected void onActivityResult(final int requestCode, final int resultCode, final @Nullable Intent data) {
-        if (BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.ON_ACTIVITY_RESULT && BuildConfig.DEBUG) {
             Logger.info(this, "onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
         }
 
         switch (requestCode) {
             case FieldVisibilityActivity.REQUEST_CODE: /* 2f885b11-27f2-40d7-8c8b-fcb4d95a4151 */
-            case BooklistStylesActivity.REQUEST_CODE: /* 13854efe-e8fd-447a-a195-47678c0d87e7 */
-                // no local action needed,
-                // pass results up
-                setResult(resultCode, data); /* 7f46620d-7951-4637-8783-b410730cd460 */
+            case BooklistPreferencesActivity.REQUEST_CODE: /* 9cdb2cbe-1390-4ed8-a491-87b3b1a1edb9 */
+            case PreferencesActivity.REQUEST_CODE: /* 46f41e7b-f49c-465d-bea0-80ec85330d1c */
+                // no local action needed, pass results up
+                setResult(resultCode, data);
                 return;
         }
 
@@ -504,16 +505,18 @@ public class AdminActivity extends BaseActivityWithTasks {
 
                         ArrayList<Uri> uris = new ArrayList<>();
                         try {
-                            File coverFile = StorageUtils.getFile(CsvExporter.EXPORT_FILE_NAME);
+                            File csvExportFile = StorageUtils.getFile(CsvExporter.EXPORT_FILE_NAME);
                             Uri coverURI = FileProvider.getUriForFile(AdminActivity.this,
-                                    GenericFileProvider.AUTHORITY, coverFile);
+                                    GenericFileProvider.AUTHORITY, csvExportFile);
 
                             uris.add(coverURI);
                             emailIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
+
+
                             startActivity(Intent.createChooser(emailIntent, getString(R.string.send_mail)));
                         } catch (NullPointerException e) {
                             Logger.error(e);
-                            StandardDialogs.showUserMessage(AdminActivity.this, R.string.error_export_failed);
+                            StandardDialogs.showUserMessage(AdminActivity.this, R.string.error_email_failed);
                         }
 
                         dialog.dismiss();

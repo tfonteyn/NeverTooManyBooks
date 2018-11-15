@@ -67,21 +67,23 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
- * This class will search the internet for
- * book details based on either a typed in or scanned ISBN.
+ * This class will search the internet for book details based on either
+ * a manually provided ISBN, or a scanned ISBN.
+ * Alternatively, it will search based on Author/Title.
  *
  * ISBN stands for International Standard Book Number.
  * Every book is assigned a unique ISBN-10 and ISBN-13 when published.
  *
  * ASIN stands for Amazon Standard Identification Number.
- * Almost every product on Amazon has its own ASIN, a unique code used to identify it.
- * For books, the ASIN is the same as the ISBN number, but for all other products a new ASIN
+ * Every product on Amazon has its own ASIN, a unique code used to identify it.
+ * For books, the ASIN is the same as the ISBN-10 number, but for all other products a new ASIN
  * is created when the item is uploaded to their catalogue.
  */
-public class BookSearchActivity extends BaseActivityWithTasks {
+public class BookSearchActivity extends BaseActivityWithTasks implements SearchManager.SearchListener {
 
-    public static final int REQUEST_CODE_SEARCH = UniqueId.ACTIVITY_REQUEST_CODE_ADD_BOOK_BY_SEARCH;
-    public static final int REQUEST_CODE_SCAN = UniqueId.ACTIVITY_REQUEST_CODE_ADD_BOOK_BY_SCAN;
+    public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_ADD_BOOK;
+
+    public static final int RESULT_CHANGES_MADE = UniqueId.ACTIVITY_RESULT_CHANGES_MADE_ADD_BOOK_BY_SEARCH;
 
     public static final String REQUEST_BKEY_BY = "by";
     public static final String BY_ISBN = "isbn";
@@ -96,7 +98,6 @@ public class BookSearchActivity extends BaseActivityWithTasks {
     private static final String LAST_BOOK_INTENT = "LastBookIntent";
     /** A list of author names we have already searched for in this session */
     private final ArrayList<String> mAuthorNames = new ArrayList<>();
-    private Mode mMode;
     private boolean mScannerStarted = false;
     private EditText mIsbnText;
     private EditText mTitleText;
@@ -106,6 +107,14 @@ public class BookSearchActivity extends BaseActivityWithTasks {
     private String mAuthor;
     private String mTitle;
     private String mIsbn;
+
+    /**
+     * Mode this activity is in:
+     * false = data entry, when done exit Activity
+     * true = data from scanner. Loop repeatedly starting the scanner until cancelled.
+     */
+    private boolean mLoopMode = false;
+
     /**
      * Options to indicate the Activity should not 'finish()' because an alert is being displayed.
      * The alert will call {@link #finish()}.
@@ -117,23 +126,16 @@ public class BookSearchActivity extends BaseActivityWithTasks {
 
     /** The last Intent returned as a result of creating a book. */
     @Nullable
-    private Intent mLastBookIntent = null;
+    private Intent mLastBookData = null;
 
-    /** Object managing current search. */
+    /** sites to search on. Can be overridden by the user (option menu) */
+    private int mSearchSites = SearchSites.SEARCH_ALL;
+
+    /** Objects managing current search. */
     private long mSearchManagerId = 0;
-    private final SearchManager.SearchListener mSearchHandler = new SearchManager.SearchListener() {
-        @Override
-        public boolean onSearchFinished(final @NonNull Bundle bookData, final boolean cancelled) {
-            return BookSearchActivity.this.onSearchFinished(bookData, cancelled);
-        }
 
-        public String toString() {
-            return "created by " + BookSearchActivity.this.getClass().getCanonicalName();
-        }
-    };
     private String mBy;
 
-    private int mSearchSites = SearchSites.SEARCH_ALL;
     /**
      * Return the layout to use for this subclass
      */
@@ -184,6 +186,7 @@ public class BookSearchActivity extends BaseActivityWithTasks {
                     .open();
 
             if (savedInstanceState != null) {
+                // the search at the moment the activity went to sleep
                 mSearchManagerId = savedInstanceState.getLong(SEARCH_MANAGER_ID);
 
                 if (savedInstanceState.containsKey(SCANNER_STARTED)) {
@@ -225,7 +228,7 @@ public class BookSearchActivity extends BaseActivityWithTasks {
             }
 
             // Default to MANUAL
-            mMode = Mode.Manual;
+            mLoopMode = false;
 
             if (mIsbn != null) {
                 onCreateWithISBN();
@@ -386,7 +389,7 @@ public class BookSearchActivity extends BaseActivityWithTasks {
         });
     }
 
-    /*
+    /**
      * Handle character insertion at cursor position in EditText
      */
     private void handleIsbnKey(final @NonNull String key) {
@@ -397,7 +400,7 @@ public class BookSearchActivity extends BaseActivityWithTasks {
     }
 
     private void onCreateByScan(final @Nullable Bundle savedInstanceState) {
-        mMode = Mode.Scan;
+        mLoopMode = true;
         mIsbnText = findViewById(R.id.isbn);
 
         /*
@@ -534,7 +537,7 @@ public class BookSearchActivity extends BaseActivityWithTasks {
         });
     }
 
-    /*
+    /**
      * Clear any data-entry fields that have been set.
      * Used when a book has been successfully added as we want to get ready for another.
      */
@@ -585,7 +588,7 @@ public class BookSearchActivity extends BaseActivityWithTasks {
                         msg = R.string.warning_x_is_not_a_valid_isbn;
                     }
                     StandardDialogs.showUserMessage(this, getString(msg, mIsbn));
-                    if (mMode == Mode.Scan) {
+                    if (mLoopMode) {
                         // Optionally beep if scan failed.
                         SoundManager.beepLow();
                         // reset the now-discarded details
@@ -596,11 +599,11 @@ public class BookSearchActivity extends BaseActivityWithTasks {
                     }
                     return;
                 } else {
-                    if (mMode == Mode.Scan) {
+                    if (mLoopMode) {
                         // Optionally beep if scan was valid.
                         SoundManager.beepHigh();
                     }
-                    // See if ISBN exists in catalogue
+                    // See if ISBN exists in our database
                     final long existingId = mDb.getIdFromIsbn(mIsbn, true);
                     if (existingId > 0) {
                         // Verify - this can be a dangerous operation
@@ -627,7 +630,7 @@ public class BookSearchActivity extends BaseActivityWithTasks {
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(final DialogInterface dialog, final int which) {
                                         //do nothing
-                                        if (mMode == Mode.Scan) {
+                                        if (mLoopMode) {
                                             // reset the now-discarded details
                                             mIsbn = "";
                                             mAuthor = "";
@@ -650,6 +653,10 @@ public class BookSearchActivity extends BaseActivityWithTasks {
         }
     }
 
+    /**
+     * Start the actual search with the {@link SearchManager} in the background.
+     * The results will arrive in {@link #onSearchFinished(Bundle, boolean)}
+     */
     private void doSearchBook() {
         // Delete any hanging around temporary thumbs
         StorageUtils.deleteFile(StorageUtils.getTempCoverFile());
@@ -659,11 +666,11 @@ public class BookSearchActivity extends BaseActivityWithTasks {
             /* Get the book */
             try {
                 // Start the lookup in background.
-                final SearchManager searchManager = new SearchManager(getTaskManager(), mSearchHandler);
+                final SearchManager searchManager = new SearchManager(getTaskManager(), this);
                 mSearchManagerId = searchManager.getSenderId();
                 Tracker.handleEvent(this, "Searching " + mSearchManagerId, Tracker.States.Running);
                 if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
-                    Logger.info(this, "doSearchBook, starting search for mSearchManagerId: " + mSearchManagerId);
+                    Logger.info(this, "doSearchBook, starting search with mSearchManagerId: " + mSearchManagerId);
                 }
 
                 getTaskManager().doProgress(getString(R.string.progress_msg_searching));
@@ -679,18 +686,21 @@ public class BookSearchActivity extends BaseActivityWithTasks {
                 finish();
             }
         } else {
-            if (mMode == Mode.Scan) {
+            if (mLoopMode) {
                 startScannerActivity();
             }
         }
     }
 
+    /**
+     * doSearchBook results.
+     */
     @SuppressWarnings("SameReturnValue")
-    private boolean onSearchFinished(final @NonNull Bundle bookData, final boolean cancelled) {
+    public boolean onSearchFinished(final @NonNull Bundle bookData, final boolean cancelled) {
         Tracker.handleEvent(this, "onSearchFinished" + mSearchManagerId, Tracker.States.Running);
         try {
             if (cancelled) {
-                if (mMode == Mode.Scan) {
+                if (mLoopMode) {
                     startScannerActivity();
                 }
             } else {
@@ -715,7 +725,7 @@ public class BookSearchActivity extends BaseActivityWithTasks {
     protected void onPause() {
         Tracker.enterOnPause(this);
         if (mSearchManagerId != 0) {
-            SearchManager.getMessageSwitch().removeListener(mSearchManagerId, mSearchHandler);
+            SearchManager.getMessageSwitch().removeListener(mSearchManagerId, this);
         }
         super.onPause();
         Tracker.exitOnPause(this);
@@ -727,7 +737,7 @@ public class BookSearchActivity extends BaseActivityWithTasks {
         Tracker.enterOnResume(this);
         super.onResume();
         if (mSearchManagerId != 0) {
-            SearchManager.getMessageSwitch().addListener(mSearchManagerId, mSearchHandler, true);
+            SearchManager.getMessageSwitch().addListener(mSearchManagerId, this, true);
         }
         Tracker.exitOnResume(this);
     }
@@ -746,7 +756,7 @@ public class BookSearchActivity extends BaseActivityWithTasks {
     @Override
     @CallSuper
     protected void onActivityResult(final int requestCode, final int resultCode, final @Nullable Intent data) {
-        if (BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.ON_ACTIVITY_RESULT && BuildConfig.DEBUG) {
             Logger.info(this, "onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
         }
         switch (requestCode) {
@@ -759,8 +769,8 @@ public class BookSearchActivity extends BaseActivityWithTasks {
                     mIsbnText.setText(isbn);
                     go(isbn, "", "");
                 } else {
-                    // Scanner Cancelled/failed. pass that up
-                    setResult(mLastBookIntent != null ? Activity.RESULT_OK : Activity.RESULT_CANCELED, mLastBookIntent);
+                    // Scanner Cancelled/failed. Pass the last book we got to our caller and finish here.
+                    setResult(mLastBookData != null ? RESULT_CHANGES_MADE : Activity.RESULT_CANCELED, mLastBookData);
                     // and exit if no dialog present.
                     if (!mDisplayingAlert) {
                         finish();
@@ -772,16 +782,19 @@ public class BookSearchActivity extends BaseActivityWithTasks {
                 return;
             }
             case EditBookActivity.REQUEST_CODE: {/* 341ace23-c2c8-42d6-a71e-909a3a19ba99, 9e2c0b04-8217-4b49-9937-96d160104265 */
-                if (data != null) {
-                    mLastBookIntent = data;
-                }
-                if (mMode == Mode.Scan) {
-                    // Created a book; save the intent and restart scanner if necessary.
-                    startScannerActivity();
-                } else {
-                    // If the 'Back' button is pressed on a normal activity,
-                    // set the default result to cancelled by passing it up
+                if (resultCode == EditBookActivity.RESULT_CHANGES_MADE) {
+                    // Created a book; save the intent
+                    mLastBookData = data;
+                    // and set that as the default result
+                    setResult(mLastBookData != null ? RESULT_CHANGES_MADE : Activity.RESULT_CANCELED, mLastBookData);
+                } else if (resultCode == Activity.RESULT_CANCELED) {
+                    // if the edit was cancelled, set that as the default result code
                     setResult(Activity.RESULT_CANCELED);
+                }
+
+                // restart scanner if necessary.
+                if (mLoopMode) {
+                    startScannerActivity();
                 }
 
                 initAuthorList();
@@ -801,11 +814,16 @@ public class BookSearchActivity extends BaseActivityWithTasks {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+    @Override
+    public void setActivityResult() {
+        setResult(changesMade() ? RESULT_CHANGES_MADE : Activity.RESULT_CANCELED);
+    }
+
     private void initAuthorList() {
         // Get the author field, if present
         mAuthorText = findViewById(R.id.author);
         if (mAuthorText != null) {
-            // Get all known authors and build a hash of the names
+            // Get all known authors and build a Set of the names
             final ArrayList<String> authors = mDb.getAuthorsFormattedName();
             final Set<String> uniqueNames = new HashSet<>();
             for (String s : authors) {
@@ -825,7 +843,7 @@ public class BookSearchActivity extends BaseActivityWithTasks {
         }
     }
 
-    /*
+    /**
      * Start scanner activity.
      */
     private void startScannerActivity() {
@@ -839,24 +857,44 @@ public class BookSearchActivity extends BaseActivityWithTasks {
     }
 
     /**
+     * This method is called after {@link #onStart} when the activity is
+     * being re-initialized from a previously saved state, given here in
+     * <var>savedInstanceState</var>.  Most implementations will simply use {@link #onCreate}
+     * to restore their state, but it is sometimes convenient to do it here
+     * after all of the initialization has been done or to allow subclasses to
+     * decide whether to use your default implementation.  The default
+     * implementation of this method performs a restore of any view state that
+     * had previously been frozen by {@link #onSaveInstanceState}.
+     *
+     * <p>This method is called between {@link #onStart} and {@link #onPostCreate}.
+     *
+     * @param savedInstanceState the data most recently supplied in {@link #onSaveInstanceState}.
+     *
+     * @see #onCreate
+     * @see #onPostCreate
+     * @see #onResume
+     * @see #onSaveInstanceState
+     *
+     *
+     *
      * Ensure the TaskManager is restored.
      */
     @Override
     @CallSuper
-    protected void onRestoreInstanceState(@NonNull Bundle instanceState) {
+    protected void onRestoreInstanceState(final @NonNull Bundle savedInstanceState) {
 
-        mSearchManagerId = instanceState.getLong(SEARCH_MANAGER_ID);
+        mSearchManagerId = savedInstanceState.getLong(SEARCH_MANAGER_ID);
 
         // Now do 'standard' stuff
-        mLastBookIntent = instanceState.getParcelable(LAST_BOOK_INTENT);
+        mLastBookData = savedInstanceState.getParcelable(LAST_BOOK_INTENT);
 
         // Call the super method only after we have the searchManager set up
-        super.onRestoreInstanceState(instanceState);
+        super.onRestoreInstanceState(savedInstanceState);
     }
 
     @Override
     @CallSuper
-    protected void onSaveInstanceState(@NonNull Bundle outState) {
+    protected void onSaveInstanceState(final @NonNull Bundle outState) {
         // Saving intent data is a kludge due to an apparent Android bug in some
         // handsets. Search for "BUG NOTE 1" in this source file for a discussion
         Bundle extras = getIntent().getExtras();
@@ -873,7 +911,7 @@ public class BookSearchActivity extends BaseActivityWithTasks {
         if (mSearchManagerId != 0) {
             outState.putLong(SEARCH_MANAGER_ID, mSearchManagerId);
         }
-        outState.putParcelable(LAST_BOOK_INTENT, mLastBookIntent);
+        outState.putParcelable(LAST_BOOK_INTENT, mLastBookData);
         outState.putBoolean(SCANNER_STARTED, mScannerStarted);
 
         // Save the current search details as this may be called as a result of a rotate during an alert dialog.
@@ -883,15 +921,5 @@ public class BookSearchActivity extends BaseActivityWithTasks {
         outState.putString(UniqueId.KEY_TITLE, mTitle);
 
         super.onSaveInstanceState(outState);
-    }
-
-    /**
-     * Mode this activity is in:
-     * Manual = data entry
-     * Scan = data from scanner.
-     * For Scan, it loops repeatedly starting the scanner.
-     */
-    private enum Mode {
-        Manual, Scan
     }
 }

@@ -46,7 +46,8 @@ public class ImageUtils {
     @Nullable
     public static Bitmap fetchFileIntoImageView(final @Nullable ImageView destView,
                                                 final @NonNull File file,
-                                                final int maxWidth, final int maxHeight,
+                                                final int maxWidth,
+                                                final int maxHeight,
                                                 final boolean exact) {
         // Get the file, if it exists. Otherwise set 'broken image' icon and exit.
         if (!file.exists()) {
@@ -65,7 +66,8 @@ public class ImageUtils {
     @Nullable
     public static Bitmap fetchFileIntoImageView(final @Nullable ImageView destView,
                                                 final @NonNull String fileSpec,
-                                                final int maxWidth, final int maxHeight,
+                                                final int maxWidth,
+                                                final int maxHeight,
                                                 final boolean exact) {
 
         // Read the file to get file size
@@ -307,7 +309,7 @@ public class ImageUtils {
         BitmapFactory.Options opt = new BitmapFactory.Options();
         opt.inJustDecodeBounds = true;
 
-        // Scan, finding biggest image
+        // Loop, finding biggest image
         for (int i = 0; i < files.size(); i++) {
             String fileSpec = files.get(i);
             if (new File(fileSpec).exists()) {
@@ -360,9 +362,10 @@ public class ImageUtils {
             if (opt.outHeight <= 0 || opt.outWidth <= 0) {
                 StandardDialogs.showUserMessage(activity, R.string.warning_cover_corrupt);
             } else {
-//                final Dialog dialog = new AlertDialog.Builder(activity,R.style.zoomedCoverImage)
+//                final Dialog dialog = new AlertDialog.Builder(activity, R.style.zoomedCoverImage)
 //                        .create();
                 final Dialog dialog = new StandardDialogs.BasicDialog(activity, R.style.zoomedCoverImage);
+
                 final ImageView cover = new ImageView(activity);
                 fetchFileIntoImageView(cover, thumbFile, thumbSizes.zoomed, thumbSizes.zoomed, true);
                 cover.setAdjustViewBounds(true);
@@ -382,7 +385,8 @@ public class ImageUtils {
     }
 
     /**
-     * normal:  Minimum of MAX_EDIT_THUMBNAIL_SIZE and 1/3rd of largest screen dimension
+     * small:  Minimum of MAX_EDIT_THUMBNAIL_SIZE and 1/3rd of largest screen dimension
+     * standard: small * 2
      * zoomed:  Minimum of MAX_ZOOM_THUMBNAIL_SIZE and largest screen dimension.
      */
     @NonNull
@@ -390,7 +394,8 @@ public class ImageUtils {
         final DisplayMetrics metrics = getDisplayMetrics(activity);
 
         ThumbSize sizes = new ThumbSize();
-        sizes.normal = Math.min(MAX_EDIT_THUMBNAIL_SIZE, Math.max(metrics.widthPixels, metrics.heightPixels) / 3);
+        sizes.small = Math.min(MAX_EDIT_THUMBNAIL_SIZE, Math.max(metrics.widthPixels, metrics.heightPixels) / 3);
+        sizes.standard = sizes.small * 2;
         sizes.zoomed = Math.min(MAX_ZOOM_THUMBNAIL_SIZE, Math.max(metrics.widthPixels, metrics.heightPixels));
         return sizes;
     }
@@ -406,7 +411,8 @@ public class ImageUtils {
      * NEWKIND: if we ever need more sizes, add a field here and set it in {@link #getThumbSizes}
      */
     public static class ThumbSize {
-        public int normal;
+        public int small;
+        public int standard;
         public int zoomed;
     }
 

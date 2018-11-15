@@ -55,6 +55,7 @@ import java.util.ArrayList;
 public class EditBookshelfListActivity extends BaseListActivity {
 
     public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_EDIT_BOOKSHELF_LIST;
+    public static final int RESULT_CHANGES_MADE = UniqueId.ACTIVITY_RESULT_CHANGES_MADE_EDIT_BOOKSHELF_LIST;
 
     private CatalogueDBAdapter mDb;
     private ArrayList<Bookshelf> mList;
@@ -189,7 +190,7 @@ public class EditBookshelfListActivity extends BaseListActivity {
 
     @Override
     public void setActivityResult() {
-        setResult(changesMade() ? Activity.RESULT_OK : Activity.RESULT_CANCELED); /* 41e84172-5833-4906-a891-8df302ecc190 */
+        setResult(changesMade() ? RESULT_CHANGES_MADE : Activity.RESULT_CANCELED); /* 41e84172-5833-4906-a891-8df302ecc190 */
     }
 
     @Override

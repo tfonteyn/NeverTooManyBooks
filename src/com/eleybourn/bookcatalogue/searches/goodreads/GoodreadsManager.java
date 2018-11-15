@@ -298,7 +298,7 @@ public class GoodreadsManager {
      * @param d Last date
      */
     static void setLastSyncDate(final @Nullable Date d) {
-        BookCatalogueApp.Prefs.putString(LAST_SYNC_DATE, d == null ? null : DateUtils.toSqlDateTime(d));
+        BookCatalogueApp.Prefs.putString(LAST_SYNC_DATE, d == null ? null : DateUtils.utcSqlDateTime(d));
     }
 
     /**

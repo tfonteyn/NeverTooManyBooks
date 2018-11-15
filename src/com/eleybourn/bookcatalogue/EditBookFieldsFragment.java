@@ -27,6 +27,9 @@ import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -47,18 +50,15 @@ import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.utils.BundleUtils;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
+import com.eleybourn.bookcatalogue.widgets.CoverHandler;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * This class is called by {@link EditBookFragment} and displays the main Books fields Tab
- *
- * Note it does not extends directly from {@link BookAbstractFragment}
- * but uses the {@link BookAbstractFragmentWithCoverImage} intermediate instead.
- * It shares the latter with {@link BookFragment}
  */
-public class EditBookFieldsFragment extends BookAbstractFragmentWithCoverImage implements
+public class EditBookFieldsFragment extends BookAbstractFragment implements
         CheckListEditorDialogFragment.OnCheckListEditorResultsListener,
         PartialDatePickerDialogFragment.OnPartialDatePickerResultsListener,
         TextFieldEditorDialogFragment.OnTextFieldEditorResultsListener {
@@ -73,6 +73,8 @@ public class EditBookFieldsFragment extends BookAbstractFragmentWithCoverImage i
     private List<String> mLanguages;
     private List<String> mPublishers;
     private List<String> mListPriceCurrencies;
+
+    private CoverHandler mCoverHandler;
 
     /* ------------------------------------------------------------------------------------------ */
     @NonNull
@@ -151,7 +153,7 @@ public class EditBookFieldsFragment extends BookAbstractFragmentWithCoverImage i
                     }
                 });
 
-        mFields.add(R.id.series, UniqueId.KEY_SERIES_NAME)
+        mFields.add(R.id.filename, UniqueId.KEY_SERIES_NAME)
                 .getView().setOnClickListener(
                 new OnClickListener() {
                     @Override
@@ -208,10 +210,22 @@ public class EditBookFieldsFragment extends BookAbstractFragmentWithCoverImage i
                     }
                 });
 
+        // add the cover image
+        Field coverField = mFields.add(R.id.coverImage, "", UniqueId.BKEY_HAVE_THUMBNAIL)
+                .setDoNotFetch(true);
+
+        mCoverHandler = new CoverHandler(requireActivity(), mDb, getBookManager(),
+                coverField, mFields.getField(R.id.isbn));
+
         // Personal fields
         field = mFields.add(R.id.bookshelves, UniqueId.KEY_BOOKSHELF_NAME)
                 .setDoNotFetch(true);
-        initCheckListEditor(TAG, field, R.string.lbl_bookshelves_long, getBookManager().getBook().getEditableBookshelvesList(mDb));
+        initCheckListEditor(TAG, field, R.string.lbl_bookshelves_long, new CheckListEditorListGetter<Bookshelf>() {
+            @Override
+            public ArrayList<CheckListItem<Bookshelf>> getList() {
+                return getBookManager().getBook().getEditableBookshelvesList(mDb);
+            }
+        });
     }
 
 //    @CallSuper
@@ -233,7 +247,7 @@ public class EditBookFieldsFragment extends BookAbstractFragmentWithCoverImage i
         populateAuthorListField(book);
         populateSeriesListField(book);
 
-        populateCoverImage(book.getBookId());
+        mCoverHandler.populateCoverView();
         mFields.getField(R.id.is_anthology).setValue(book.getString(Book.IS_ANTHOLOGY));
 
         mFields.getField(R.id.bookshelves).setValue(book.getBookshelfListAsText());
@@ -241,7 +255,7 @@ public class EditBookFieldsFragment extends BookAbstractFragmentWithCoverImage i
         // Restore default visibility
         showHideFields(false);
 
-        if (BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.FIELD_BOOK_TRANSFERS && BuildConfig.DEBUG) {
             Logger.info(this, "onLoadFieldsFromBook done");
         }
     }
@@ -307,7 +321,7 @@ public class EditBookFieldsFragment extends BookAbstractFragmentWithCoverImage i
     }
 
     private void populateSeriesListField(final @NonNull Book book) {
-        boolean visible = mFields.getField(R.id.series).visible;
+        boolean visible = mFields.getField(R.id.filename).visible;
         if (visible) {
             ArrayList<Series> list = book.getSeriesList();
             int seriesCount = list.size();
@@ -321,11 +335,11 @@ public class EditBookFieldsFragment extends BookAbstractFragmentWithCoverImage i
             if (newText.isEmpty()) {
                 newText = getString(R.string.btn_set_series);
             }
-            mFields.getField(R.id.series).setValue(newText);
+            mFields.getField(R.id.filename).setValue(newText);
         }
         //noinspection ConstantConditions
         getView().findViewById(R.id.lbl_series).setVisibility(visible ? View.VISIBLE : View.GONE);
-        getView().findViewById(R.id.series).setVisibility(visible ? View.VISIBLE : View.GONE);
+        getView().findViewById(R.id.filename).setVisibility(visible ? View.VISIBLE : View.GONE);
     }
     //</editor-fold>
 
@@ -333,17 +347,19 @@ public class EditBookFieldsFragment extends BookAbstractFragmentWithCoverImage i
 
     //<editor-fold desc="Fragment shutdown">
 
-//    @Override
-//    @CallSuper
-//    public void onPause() {
-//        super.onPause();
-//    }
+    @Override
+    @CallSuper
+    public void onPause() {
+        mCoverHandler.dismissCoverBrowser();
+
+        super.onPause();
+    }
 
     @Override
     protected void onSaveFieldsToBook(@NonNull final Book book) {
         super.onSaveFieldsToBook(book);
 
-        if (BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.FIELD_BOOK_TRANSFERS && BuildConfig.DEBUG) {
             Logger.info(this, "onSaveFieldsToBook done");
         }
     }
@@ -352,6 +368,47 @@ public class EditBookFieldsFragment extends BookAbstractFragmentWithCoverImage i
 //    public void onDestroy() {
 //        super.onDestroy();
 //    }
+    //</editor-fold>
+
+    /* ------------------------------------------------------------------------------------------ */
+
+    //<editor-fold desc="Menu handlers">
+
+    /**
+     * @see #setHasOptionsMenu
+     * @see #onPrepareOptionsMenu
+     * @see #onOptionsItemSelected
+     */
+    @Override
+    public void onCreateOptionsMenu(final @NonNull Menu menu, final @NonNull MenuInflater inflater) {
+        if (mFields.getField(R.id.coverImage).visible) {
+            menu.add(Menu.NONE, R.id.SUBMENU_THUMB_REPLACE, 0, R.string.menu_cover_replace)
+                    .setIcon(R.drawable.ic_add_a_photo)
+                    .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+        }
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    /**
+     * This will be called when a menu item is selected.
+     *
+     * @param item The item selected
+     *
+     * @return <tt>true</tt> if handled
+     */
+    @Override
+    @CallSuper
+    public boolean onOptionsItemSelected(final @NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.SUBMENU_THUMB_REPLACE:
+                // Show the context menu for the cover thumbnail
+                mCoverHandler.prepareCoverImageViewContextMenu();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
     //</editor-fold>
 
     /* ------------------------------------------------------------------------------------------ */
@@ -484,13 +541,13 @@ public class EditBookFieldsFragment extends BookAbstractFragmentWithCoverImage i
     @Override
     @CallSuper
     public void onActivityResult(final int requestCode, final int resultCode, final @Nullable Intent data) {
-        if (BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.ON_ACTIVITY_RESULT && BuildConfig.DEBUG) {
             Logger.info(this, "onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
         }
 
         Book book = getBookManager().getBook();
         switch (requestCode) {
-            case EditAuthorListActivity.REQUEST_CODE: /* dd74343a-50ff-4ce9-a2e4-a75f7bcf9e36 */
+            case EditAuthorListActivity.REQUEST_CODE: { /* dd74343a-50ff-4ce9-a2e4-a75f7bcf9e36 */
                 if (resultCode == Activity.RESULT_OK && data != null && data.hasExtra(UniqueId.BKEY_AUTHOR_ARRAY)) {
                     ArrayList<Author> list = BundleUtils.getListFromBundle(UniqueId.BKEY_AUTHOR_ARRAY, data.getExtras());
                     book.putAuthorList(list != null ? list : new ArrayList<Author>());
@@ -507,8 +564,8 @@ public class EditBookFieldsFragment extends BookAbstractFragmentWithCoverImage i
                 populateAuthorListField(book);
                 getBookManager().setDirty(wasDirty);
                 return;
-
-            case EditSeriesListActivity.REQUEST_CODE: /* bca659b6-dfb9-4a97-b651-5b05ad102400 */
+            }
+            case EditSeriesListActivity.REQUEST_CODE: { /* bca659b6-dfb9-4a97-b651-5b05ad102400 */
                 if (resultCode == Activity.RESULT_OK && data != null && data.hasExtra(UniqueId.BKEY_SERIES_ARRAY)) {
                     ArrayList<Series> list = BundleUtils.getListFromBundle(UniqueId.BKEY_SERIES_ARRAY, data.getExtras());
                     book.putSeriesList(list != null ? list : new ArrayList<Series>());
@@ -517,6 +574,12 @@ public class EditBookFieldsFragment extends BookAbstractFragmentWithCoverImage i
                     getBookManager().setDirty(true);
                 }
                 return;
+            }
+        }
+
+        // handle any cover image result codes
+        if (mCoverHandler.onActivityResult(requestCode,resultCode,data)) {
+            return;
         }
 
         super.onActivityResult(requestCode, resultCode, data);

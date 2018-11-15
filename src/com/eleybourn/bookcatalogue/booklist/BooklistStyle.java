@@ -61,7 +61,7 @@ import java.util.Map;
  *
  * How to add a new Group:
  *
- * 1. add it to {@link BooklistGroup.RowKinds} and update {@link BooklistGroup.RowKinds#ROW_KIND_MAX}
+ * 1. add it to {@link RowKinds} and update ROW_KIND_TOTAL
  *
  * 2. if necessary add new domain to {@link DatabaseDefinitions }
  *
@@ -96,11 +96,10 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
     static final int FILTER_NO = 2;
     private static final int FILTER_EITHER = 3;
 
-    public static final Integer SUMMARY_HIDE = 0;
+    private static final Integer SUMMARY_HIDE = 0;
     public static final Integer SUMMARY_SHOW_COUNT = 1;
-    public static final Integer SUMMARY_SHOW_LEVEL_1 = 2;
-    public static final Integer SUMMARY_SHOW_LEVEL_2 = 4;
-    public static final Integer SUMMARY_SHOW_LEVEL_1_AND_COUNT = SUMMARY_SHOW_COUNT ^ SUMMARY_SHOW_LEVEL_1;
+    public static final Integer SUMMARY_SHOW_LEVEL_1 = 1 << 1;
+    public static final Integer SUMMARY_SHOW_LEVEL_2 = 1 << 2;
     public static final Integer SUMMARY_SHOW_ALL = 0xff;
 
     private static final long serialVersionUID = 6615877148246388549L;
@@ -173,7 +172,7 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
         mShowHeaderInfoListItems.add(null, R.string.use_default_setting);
         mShowHeaderInfoListItems.add(SUMMARY_HIDE, R.string.summary_details_hide);
         mShowHeaderInfoListItems.add(SUMMARY_SHOW_COUNT, R.string.summary_details_show_book_count);
-        mShowHeaderInfoListItems.add(SUMMARY_SHOW_LEVEL_1_AND_COUNT, R.string.summary_details_show_first_level_and_book_count);
+        mShowHeaderInfoListItems.add(SUMMARY_SHOW_COUNT ^ SUMMARY_SHOW_LEVEL_1, R.string.summary_details_show_first_level_and_book_count);
         mShowHeaderInfoListItems.add(SUMMARY_SHOW_ALL, R.string.summary_details_show_all);
 
         mReadFilterListItems.add(FILTER_NO, R.string.booklist_filters_unread);
@@ -644,9 +643,10 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
             version = ((Long) object);
             // Get the next object
             object = in.readObject();
-        } // else it's a pre-version object...just use it
-
+        } // else it's a pre-version object..
+        // just use it
         mXtraShowThumbnails.set((Boolean) object);
+
         mXtraLargeThumbnails.set((Boolean) in.readObject());
         mXtraShowBookshelves.set((Boolean) in.readObject());
         mXtraShowLocation.set((Boolean) in.readObject());
@@ -674,6 +674,7 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
         if (version > 3) {
             mShowHeaderInfo.set((Integer) in.readObject());
         }
+        // added in v4
         if (version > 4) {
             mXtraShowFormat.set((Boolean) in.readObject());
 
@@ -731,7 +732,7 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
      * @author Philip Warner
      */
     static class CompoundKey {
-        /** Unique prefix used to represent a key in the hierarchy */
+        /** Unique getPrefix used to represent a key in the hierarchy */
         @NonNull
         final String prefix;
         /** List of domains in key */

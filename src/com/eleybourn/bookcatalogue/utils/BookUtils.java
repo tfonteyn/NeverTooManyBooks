@@ -162,7 +162,7 @@ public class BookUtils {
             }
         }
 
-        File image = StorageUtils.getCoverFile(db.getBookUuid(bookId));
+        File coverFile = StorageUtils.getCoverFile(db.getBookUuid(bookId));
 
         if (!series.isEmpty()) {
             series = " (" + series.replace("#", "%23") + ")";
@@ -186,7 +186,7 @@ public class BookUtils {
 
 
         // prepare the cover to post
-        Uri coverURI = FileProvider.getUriForFile(activity, GenericFileProvider.AUTHORITY, image);
+        Uri coverURI = FileProvider.getUriForFile(activity, GenericFileProvider.AUTHORITY, coverFile);
 
         /*
         TEST: There's a problem with the facebook app in android,
@@ -218,7 +218,7 @@ public class BookUtils {
         String prevReadEnd = book.getString(UniqueId.KEY_BOOK_READ_END);
 
         book.putInt(UniqueId.KEY_BOOK_READ, read ? 1 : 0);
-        book.putString(UniqueId.KEY_BOOK_READ_END, DateUtils.todaySqlDateOnly());
+        book.putString(UniqueId.KEY_BOOK_READ_END, DateUtils.localSqlDateForToday());
 
         if (db.updateBook(book.getBookId(), book, 0) != 1) {
             book.putInt(UniqueId.KEY_BOOK_READ, prevRead);
@@ -235,7 +235,7 @@ public class BookUtils {
         // load from database
         Book book = new Book(bookId, null);
         book.putBoolean(UniqueId.KEY_BOOK_READ, read);
-        book.putString(UniqueId.KEY_BOOK_READ_END, DateUtils.todaySqlDateOnly());
+        book.putString(UniqueId.KEY_BOOK_READ_END, DateUtils.localSqlDateForToday());
         return (db.updateBook(bookId, book, 0) == 1);
     }
 

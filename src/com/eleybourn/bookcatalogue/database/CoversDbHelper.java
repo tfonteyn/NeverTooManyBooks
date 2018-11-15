@@ -248,7 +248,7 @@ public class CoversDbHelper implements AutoCloseable {
         try (Cursor cursor = mSyncedDb.query(TBL_IMAGE.getName(),
                 new String[]{DOM_IMAGE.name},
                 DOM_FILENAME + "=? AND " + DOM_DATE + " > ?",
-                new String[]{filename, DateUtils.toSqlDateTime(lastModified)},
+                new String[]{filename, DateUtils.utcSqlDateTime(lastModified)},
                 null,
                 null,
                 null)) {
@@ -292,7 +292,7 @@ public class CoversDbHelper implements AutoCloseable {
         ContentValues cv = new ContentValues();
         cv.put(DOM_FILENAME.name, filename);
         cv.put(DOM_IMAGE.name, bytes);
-        cv.put(DOM_DATE.name, DateUtils.toSqlDateTime(new Date()));
+        cv.put(DOM_DATE.name, DateUtils.utcSqlDateTimeForToday());
         cv.put(DOM_TYPE.name, "T");
         cv.put(DOM_WIDTH.name, height);
         cv.put(DOM_HEIGHT.name, width);

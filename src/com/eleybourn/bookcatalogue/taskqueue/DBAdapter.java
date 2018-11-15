@@ -156,7 +156,7 @@ class DBAdapter {
     @Nullable
     ScheduledTask getNextTask(final @NonNull String queueName) {
         Date currentTime = new Date();
-        String currTimeStr = DateUtils.toSqlDateTime(currentTime);
+        String currTimeStr = DateUtils.utcSqlDate(currentTime);
 
         SQLiteDatabase db = getDb();
 
@@ -290,7 +290,7 @@ class DBAdapter {
     void cleanupOldTasks(final int ageInDays) {
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DATE, -ageInDays);
-        String oneWeekAgo = DateUtils.toSqlDateTime(cal.getTime());
+        String oneWeekAgo = DateUtils.utcSqlDateTime(cal.getTime());
         SQLiteDatabase db = getDb();
 
 
@@ -314,7 +314,7 @@ class DBAdapter {
     void cleanupOldEvents(final int ageInDays) {
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DATE, -ageInDays);
-        String oneWeekAgo = DateUtils.toSqlDateTime(cal.getTime());
+        String oneWeekAgo = DateUtils.utcSqlDateTime(cal.getTime());
         SQLiteDatabase db = getDb();
 
 
@@ -365,7 +365,7 @@ class DBAdapter {
             cal.add(Calendar.SECOND, task.getRetryDelay());
             // Update record
             ContentValues cv = new ContentValues();
-            cv.put(DOM_RETRY_DATE, DateUtils.toSqlDateTime(cal.getTime()));
+            cv.put(DOM_RETRY_DATE, DateUtils.utcSqlDateTime(cal.getTime()));
             cv.put(DOM_RETRY_COUNT, task.getRetries() + 1);
             cv.put(DOM_TASK, SerializationUtils.serializeObject(task));
             getDb().update(TBL_TASK, cv, DOM_ID + "=?",  new String[]{Long.toString(task.getId())});

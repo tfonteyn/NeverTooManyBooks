@@ -234,7 +234,7 @@
     <string name="gr_title_auth_access">Авторизация</string>
     <string name="gr_auth_access_already_auth">Кажется, вы уже авторизованы. Все функции Goodreads уже должны быть доступны</string>
     <string name="gr_access_error">Возникли проблемы с соединением во время доступа к Goodreads. Пожалуйста, проверьте работает ли сайт Goodreads и если проблема останется сообщите в поддержку</string>
-    <string name="menu_other_preferences">Другие настройки</string>
+    <string name="menu_preferences_other">Другие настройки</string>
     <string name="user_interface">Пользовательский интерфейс</string>
     <string name="background_tasks">Фоновые задачи</string>
     <string name="cleanup_old_tasks">Очистить старые задачи</string>
@@ -296,7 +296,7 @@
     <string name="style_builtin_added_date">Дата добавления</string>
     <string name="style_builtin_author_year">Автор и год</string>
     <string name="empty_with_brackets">(пусто)</string>
-    <string name="booklist_preferences">Список книг</string>
+    <string name="menu_preferences_booklist">Список книг</string>
     <string name="extra_book_details">Дополнительная информация</string>
     <string name="general">Основные</string>
     <string name="lbl_bookshelves_long">Книжные полки</string>

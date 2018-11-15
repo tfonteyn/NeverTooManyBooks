@@ -36,6 +36,7 @@ import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
@@ -99,7 +100,7 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
         }
 
         // Set the initial values
-        TextView text = root.findViewById(R.id.series);
+        TextView text = root.findViewById(R.id.filename);
         text.setText(getName());
         setValueInView(root, currentlyStored);
 
@@ -112,8 +113,9 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
         });
         root.findViewById(R.id.btn_edit).setOnClickListener(new OnClickListener() {
             @Override
-            public void onClick(View view) {
-                handleClick(view, inflater);
+            public void onClick(View /* the button view */ view) {
+                // note we use the 'root' here. We're editing the property and not the "button"
+                handleClick(root, inflater);
             }
         });
 

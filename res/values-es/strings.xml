@@ -239,7 +239,7 @@
     <string name="gr_title_auth_access">Autorizar acceso</string>
     <string name="gr_auth_access_already_auth">Parece que usted ya había autorizado esta aplicación. Todas las funciones de goodreads deberían estar ya disponibles</string>
     <string name="gr_access_error">Se ha producido un problema de red al acceder a goodreads. Compruebe si el sitio web de goodreads está operativo, y si el problema persiste póngase en contacto con su servicio de soporte</string>
-    <string name="menu_other_preferences">Otras preferencias</string>
+    <string name="menu_preferences_other">Otras preferencias</string>
     <string name="user_interface">Interfaz de usuario</string>
     <string name="background_tasks">Tareas en segundo plano</string>
     <string name="cleanup_old_tasks">Eliminar tareas antiguas</string>
@@ -303,7 +303,7 @@
     <string name="style_builtin_author_year">Autor y Año</string>
     <string name="empty_with_brackets">(vacío)</string>
 
-    <string name="booklist_preferences">Preferencias para listas de libros</string>
+    <string name="menu_preferences_booklist">Preferencias para listas de libros</string>
     <string name="extra_book_details">Detalles adicionales</string>
     <string name="general">General</string>
     <string name="lbl_bookshelves_long">Biblioteca</string>

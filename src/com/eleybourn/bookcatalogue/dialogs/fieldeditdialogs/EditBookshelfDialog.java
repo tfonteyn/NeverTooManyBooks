@@ -21,7 +21,9 @@
 package com.eleybourn.bookcatalogue.dialogs.fieldeditdialogs;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.EditText;
@@ -32,10 +34,14 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 
+import java.util.Objects;
+
 /**
  *  Dialog to edit a single bookshelf.
  *
  * Calling point is a List.
+ *
+ * TEST new 'merge' behaviour
  */
 public class EditBookshelfDialog {
     @NonNull
@@ -57,7 +63,7 @@ public class EditBookshelfDialog {
         // Build the base dialog
         final View root = mContext.getLayoutInflater().inflate(R.layout.dialog_edit_bookshelf, null);
 
-        final EditText nameView = root.findViewById(R.id.series);
+        final EditText nameView = root.findViewById(R.id.filename);
         //noinspection ConstantConditions
         nameView.setText(bookshelf.name);
 
@@ -75,9 +81,19 @@ public class EditBookshelfDialog {
                     StandardDialogs.showUserMessage(mContext, R.string.warning_required_name);
                     return;
                 }
-                Bookshelf newBookshelf = new Bookshelf(newName);
+
+                // check if already exists (null if not)
+                Bookshelf existingShelf = mDb.getBookshelfByName(newName);
+
+                // adding a new Bookshelf, and trying to use an existing name?
+                if ((bookshelf.id == 0) && (existingShelf != null)) {
+                    StandardDialogs.showUserMessage(mContext,
+                            mContext.getString(R.string.warning_thing_already_exists, mContext.getString(R.string.lbl_bookshelf)));
+                    return;
+                }
+
                 dialog.dismiss();
-                confirmEdit(bookshelf, newBookshelf);
+                confirmEdit(bookshelf, existingShelf, newName);
             }
         });
 
@@ -92,20 +108,55 @@ public class EditBookshelfDialog {
         dialog.show();
     }
 
-    private void confirmEdit(final @NonNull Bookshelf from, final @NonNull Bookshelf to) {
+    private void confirmEdit(final @NonNull Bookshelf from,
+                             final @Nullable Bookshelf existingShelf,
+                             final @NonNull String newName) {
         // case sensitive equality
-        if (to.equals(from)) {
+        if (from.name.equals(newName)) {
             return;
         }
+
+        // are we adding a new shelf?
         if (from.id == 0) {
-            long id = mDb.insertBookshelf(to.name);
+            long id = mDb.insertBookshelf(newName);
             if (id < 0) {
                 Logger.error("insert failed?");
+            } else {
+                mOnChanged.run();
             }
-        } else {
-            mDb.updateBookshelf(from.id, to.name);
+            return;
         }
 
-        mOnChanged.run();
+        // we are renaming 'from' to 'newName' which already exists.
+        // check if we should merge them.
+        Objects.requireNonNull(existingShelf);
+
+        final AlertDialog dialog = new AlertDialog.Builder(mContext)
+                .setMessage("The shelf you are renaming already exists. Would you like to merge them?")
+                .setTitle(R.string.menu_edit_bookshelf)
+                .create();
+
+        dialog.setButton(DialogInterface.BUTTON_POSITIVE, mContext.getString(R.string.btn_confirm_update), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(final DialogInterface dialog, final int which) {
+                dialog.dismiss();
+
+                // just update
+                mDb.updateBookshelf(from.id, newName);
+                mOnChanged.run();
+            }
+        });
+
+        dialog.setButton(DialogInterface.BUTTON_NEUTRAL, mContext.getString(R.string.btn_merge), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(final DialogInterface dialog, final int which) {
+                dialog.dismiss();
+
+                mDb.mergeBookshelves(from.id, existingShelf.id);
+                mOnChanged.run();
+            }
+        });
+
+        dialog.show();
     }
 }

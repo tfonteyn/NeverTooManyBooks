@@ -231,7 +231,7 @@
     <string name="gr_title_auth_access">Erişime izin ver</string>
     <string name="gr_auth_access_already_auth">Bu uygulamayı zaten önceden yetkilendirmişsiniz. Tüm Goodreads işlevleri halihazırda kullanılabilir olmalı</string>
     <string name="gr_access_error">Goodreads\'e erişmeye çalışırken bir ağ sorunu oluştu. Lütfen Goodreads ağ sayfasının çalışıyor olduğundan emin olun, sorun sürerse lütfen destek bölümü ile iletişime geçin.</string>
-    <string name="menu_other_preferences">Diğer seçenekler</string>
+    <string name="menu_preferences_other">Diğer seçenekler</string>
     <string name="user_interface">Kullanıcı arayüzü</string>
     <string name="background_tasks">Ardalan görevleri</string>
     <string name="cleanup_old_tasks">Eski görevleri temizle</string>
@@ -293,7 +293,7 @@
     <string name="style_builtin_added_date">Eklenen günay</string>
     <string name="style_builtin_author_year">Önce yazar sonra yıl</string>
     <string name="empty_with_brackets">(boş)</string>
-    <string name="booklist_preferences">Kitap dizelgesi yeğlenenleri</string>
+    <string name="menu_preferences_booklist">Kitap dizelgesi yeğlenenleri</string>
     <string name="extra_book_details">Ek kitap ayarları</string>
     <string name="general">Genel</string>
     <string name="lbl_bookshelves_long">Kitap rafları</string>

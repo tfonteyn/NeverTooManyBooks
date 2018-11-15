@@ -13,10 +13,10 @@ import android.widget.TextView;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.BackupInfo;
 import com.eleybourn.bookcatalogue.filechooser.FileChooserFragment.FileDetails;
+import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 import java.io.File;
-import java.text.DateFormat;
 import java.util.Date;
 
 /**
@@ -111,38 +111,40 @@ public class BackupFileDetails implements FileDetails {
     public void onGetView(final @NonNull View convertView, final @NonNull Context context) {
 
         // Set the basic data
-        TextView name = convertView.findViewById(R.id.series);
-        name.setText(mFile.getName());
-        TextView date = convertView.findViewById(R.id.date);
-        ImageView image = convertView.findViewById(R.id.icon);
-        TextView details = convertView.findViewById(R.id.details);
+        TextView filenameView = convertView.findViewById(R.id.filename);
+        filenameView.setText(mFile.getName());
 
+        TextView dateView = convertView.findViewById(R.id.date);
+        ImageView imageView = convertView.findViewById(R.id.icon);
+        TextView detailsView = convertView.findViewById(R.id.details);
 
         // For directories, hide the extra data
         if (mFile.isDirectory()) {
-            date.setVisibility(View.GONE);
-            details.setVisibility(View.GONE);
-            image.setImageDrawable(context.getDrawable(R.drawable.ic_folder));
+            dateView.setVisibility(View.GONE);
+            detailsView.setVisibility(View.GONE);
+            imageView.setImageDrawable(context.getDrawable(R.drawable.ic_folder));
         } else {
             // Display date and backup details
-            image.setImageDrawable(context.getDrawable(R.drawable.bc_archive));
-            date.setVisibility(View.VISIBLE);
+            imageView.setImageDrawable(context.getDrawable(R.drawable.bc_archive));
+            dateView.setVisibility(View.VISIBLE);
             String formattedFleSize = Utils.formatFileSize(mFile.length());
             Resources res = context.getResources();
             if (mInfo != null) {
                 String books = res.getQuantityString(R.plurals.n_books, mInfo.getBookCount(), mInfo.getBookCount());
                 if (mInfo.hasCoverCount()) {
                     String covers = res.getQuantityString(R.plurals.n_covers, mInfo.getCoverCount(), mInfo.getCoverCount());
-                    details.setText(res.getString(R.string.a_comma_b, books, covers));
+                    detailsView.setText(res.getString(R.string.a_comma_b, books, covers));
                 } else {
-                    details.setText(books);
+                    detailsView.setText(books);
                 }
-                date.setText(res.getString(R.string.a_comma_b, formattedFleSize,
-                        DateFormat.getDateTimeInstance().format(mInfo.getCreateDate())));
-                details.setVisibility(View.VISIBLE);
+                //noinspection ConstantConditions
+                dateView.setText(res.getString(R.string.a_comma_b, formattedFleSize,
+                        DateUtils.toPrettyDateTime(mInfo.getCreateDate())));
+                detailsView.setVisibility(View.VISIBLE);
             } else {
-                date.setText(res.getString(R.string.a_comma_b, formattedFleSize, DateFormat.getDateTimeInstance().format(new Date(mFile.lastModified()))));
-                details.setVisibility(View.GONE);
+                dateView.setText(res.getString(R.string.a_comma_b, formattedFleSize,
+                        DateUtils.toPrettyDateTime(new Date(mFile.lastModified()))));
+                detailsView.setVisibility(View.GONE);
             }
         }
     }

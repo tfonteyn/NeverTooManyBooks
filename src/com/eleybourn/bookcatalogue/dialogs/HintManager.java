@@ -50,9 +50,9 @@ import java.util.Map;
  * @author Philip Warner
  */
 public class HintManager {
-    /** Preferences prefix */
+    /** Preferences getPrefix */
     private final static String TAG = "HintManager";
-    /** Preferences prefix for hints */
+    /** Preferences getPrefix for hints */
     private final static String PREF_HINT = TAG + ".Hint.";
     /** All hints managed by this class */
     @SuppressLint("UseSparseArrays")
@@ -118,7 +118,7 @@ public class HintManager {
         final TextView msgField = root.findViewById(R.id.hint);
         if (msgField != null) {
             String hintText = BookCatalogueApp.getResourceString(stringId, args);
-            msgField.setText(Utils.linkifyHtml(hintText, Linkify.ALL));
+            msgField.setText(Utils.linkifyHtml(hintText));
 
             // Automatically start a browser (or whatever)
             msgField.setMovementMethod(LinkMovementMethod.getInstance());

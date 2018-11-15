@@ -29,22 +29,22 @@
                 android:text="@string/general" />
 
             <TextView
-                android:id="@+id/lbl_fields"
+                android:id="@+id/lbl_field_visibility"
                 style="@style/row_option_text"
                 android:drawableStart="@drawable/ic_visibility"
                 android:text="@string/menu_manage_fields" />
 
             <TextView
-                android:id="@+id/lbl_edit_styles"
+                android:id="@+id/lbl_preferences_booklist"
                 style="@style/row_option_text"
-                android:drawableStart="@drawable/ic_style"
-                android:text="@string/menu_edit_booklist_styles" />
+                android:drawableStart="@drawable/ic_settings"
+                android:text="@string/menu_preferences_booklist" />
 
             <TextView
                 android:id="@+id/lbl_preferences"
                 style="@style/row_option_text"
                 android:drawableStart="@drawable/ic_settings"
-                android:text="@string/title_preferences" />
+                android:text="@string/menu_preferences_other" />
 
             <View style="@style/divider_horizontalList" />
 

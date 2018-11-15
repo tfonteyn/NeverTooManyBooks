@@ -91,7 +91,7 @@
         <item name="android:textStyle">italic</item>
     </style>
 
-    <!-- 'normal' detail text field; for example series title, ... -->
+    <!-- 'small' detail text field; for example series title, ... -->
     <style name="txt_row_bookDetail">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>

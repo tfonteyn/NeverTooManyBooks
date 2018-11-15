@@ -104,7 +104,7 @@ class ImportAllTask extends GenericTask {
             if (lastSync == null) {
                 mUpdatesAfter = null;
             } else {
-                mUpdatesAfter = DateUtils.toSqlDateTime(lastSync);
+                mUpdatesAfter = DateUtils.utcSqlDateTime(lastSync);
             }
         } else {
             mUpdatesAfter = null;
@@ -370,6 +370,7 @@ class ImportAllTask extends GenericTask {
 
         Double rating = addDoubleIfPresent(review, ListReviewsFieldNames.DB_RATING, book, ListReviewsFieldNames.DB_RATING);
         String readEnd = addDateIfValid(review, ListReviewsFieldNames.DB_READ_END, book, ListReviewsFieldNames.DB_READ_END);
+
         // If it has a rating or a 'read_end' date, assume it's read. If these are missing then
         // DO NOT overwrite existing data since it *may* be read even without these fields.
         if ((rating != null && rating > 0) || (readEnd != null && !readEnd.isEmpty())) {
@@ -494,7 +495,7 @@ class ImportAllTask extends GenericTask {
 
         // We need to set BOTH of these fields, otherwise the add/update method will set the
         // last_update_date for us, and that will most likely be set ahead of the GR update date
-        String now = DateUtils.toSqlDateTime(new Date());
+        String now = DateUtils.utcSqlDateTimeForToday();
         book.putString(UniqueId.KEY_BOOK_GOODREADS_LAST_SYNC_DATE, now);
         book.putString(UniqueId.KEY_LAST_UPDATE_DATE, now);
 
@@ -510,14 +511,14 @@ class ImportAllTask extends GenericTask {
      */
     @Nullable
     private String addDateIfValid(final @NonNull Bundle source,
-                                  final @NonNull String sourceField,
+                                  final @NonNull String sourceKey,
                                   final @NonNull Book book,
-                                  final @NonNull String destField) {
-        if (!source.containsKey(sourceField)) {
+                                  final @NonNull String destKey) {
+        if (!source.containsKey(sourceKey)) {
             return null;
         }
 
-        String val = source.getString(sourceField);
+        String val = source.getString(sourceKey);
         if (val == null || val.isEmpty()) {
             return null;
         }
@@ -527,8 +528,8 @@ class ImportAllTask extends GenericTask {
             return null;
         }
 
-        val = DateUtils.toSqlDateTime(d);
-        book.putString(destField, val);
+        val = DateUtils.utcSqlDateTime(d);
+        book.putString(destKey, val);
         return val;
     }
 
@@ -536,13 +537,13 @@ class ImportAllTask extends GenericTask {
      * Utility to copy a non-blank string to the book bundle.
      */
     private void addStringIfNonBlank(final @NonNull Bundle source,
-                                     final @NonNull String sourceField,
+                                     final @NonNull String sourceKey,
                                      final @NonNull Book dest,
-                                     final @NonNull String destField) {
-        if (source.containsKey(sourceField)) {
-            String val = source.getString(sourceField);
+                                     final @NonNull String destKey) {
+        if (source.containsKey(sourceKey)) {
+            String val = source.getString(sourceKey);
             if (val != null && !val.isEmpty()) {
-                dest.putString(destField, val);
+                dest.putString(destKey, val);
             }
         }
     }
@@ -551,12 +552,12 @@ class ImportAllTask extends GenericTask {
      * Utility to copy a Long value to the book bundle.
      */
     private void addLongIfPresent(final @NonNull Bundle source,
-                                  final @NonNull String sourceField,
+                                  final @NonNull String sourceKey,
                                   final @NonNull Book book,
-                                  final @NonNull String destField) {
-        if (source.containsKey(sourceField)) {
-            long val = source.getLong(sourceField);
-            book.putLong(destField, val);
+                                  final @NonNull String destKey) {
+        if (source.containsKey(sourceKey)) {
+            long val = source.getLong(sourceKey);
+            book.putLong(destKey, val);
         }
     }
 
@@ -565,12 +566,12 @@ class ImportAllTask extends GenericTask {
      */
     @Nullable
     private Double addDoubleIfPresent(final @NonNull Bundle source,
-                                      @SuppressWarnings("SameParameterValue") final @NonNull String sourceField,
+                                      @SuppressWarnings("SameParameterValue") final @NonNull String sourceKey,
                                       final @NonNull Book book,
-                                      @SuppressWarnings("SameParameterValue") final @NonNull String destField) {
-        if (source.containsKey(sourceField)) {
-            double val = source.getDouble(sourceField);
-            book.putDouble(destField, val);
+                                      @SuppressWarnings("SameParameterValue") final @NonNull String destKey) {
+        if (source.containsKey(sourceKey)) {
+            double val = source.getDouble(sourceKey);
+            book.putDouble(destKey, val);
             return val;
         } else {
             return null;

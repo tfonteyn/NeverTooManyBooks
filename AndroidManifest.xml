@@ -46,7 +46,6 @@
             android:authorities="${packageName}.SearchSuggestionProvider"
             android:exported="false" />
 
-        <!-- Authority same as set in GenericFileProvider.class -->
         <provider
             android:name=".utils.GenericFileProvider"
             android:authorities="${packageName}.GenericFileProvider"
@@ -112,7 +111,7 @@
         <activity android:name=".FieldVisibilityActivity" />
 
         <!-- Edit book list styles -->
-        <activity android:name=".booklist.BooklistStylesActivity" />
+        <activity android:name=".booklist.BooklistPreferredStylesActivity" />
         <activity
             android:name=".booklist.BooklistStylePropertiesActivity"
             android:windowSoftInputMode="stateHidden" />

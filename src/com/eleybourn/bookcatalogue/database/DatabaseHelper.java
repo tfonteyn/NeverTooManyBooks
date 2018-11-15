@@ -17,6 +17,7 @@ import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 import java.io.File;
 
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_ACQUIRED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_ANTHOLOGY_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FAMILY_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_GIVEN_NAMES;
@@ -90,7 +91,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     /** the one and only */
     private static final String DATABASE_NAME = "book_catalogue";
 
-    /** We tried 'Collate UNICODE' but it seemed to be case sensitive. We ended
+    /**
+     * In addition to SQLite's default BINARY collator (others: NOCASE and RTRIM)
+     * Android supplies two more:
+     * LOCALIZED: using the system's current locale,
+     * UNICODE  : Unicode Collation Algorithm and not tailored to the current locale.
+     *
+     *
+     * We tried 'Collate UNICODE' but it seemed to be case sensitive. We ended
      * up with 'Ursula Le Guin' and 'Ursula le Guin'.
      *
      * We now use Collate LOCALE and check to see if it is case sensitive. We *hope* in the
@@ -108,11 +116,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      *
      * Making changes:
      * 1. copy the create statement to a renamed version in {@link UpgradeDatabase#doUpgrade}
-     * 2. Find all uses in {@link UpgradeDatabase} and make sure upgrades use the 'old' version of the statement
-     * 3. modify the current, and if not already so, make it 'private'. (tables that have never changed since conception will be package-private)
+     * 2. Find all uses in {@link UpgradeDatabase} and make sure upgrades use the 'old/renamed' version of the statement
+     * 3. modify the current statement, and if not already so, make it 'private'.
+     *    (tables that have never changed since conception will be package-private)
      * 4. modify {@link DomainDefinition} if needed to reflect the new version
+     * 5. Check and check again, that *everything* EXCEPT {@link UpgradeDatabase} is using the current version
      *
-     * Reminder: do NOT use {@link DomainDefinition} here ! Those can change in newer versions.
+     * Reminder: do NOT use {@link DomainDefinition} in create statements !
+     * Those can change in newer versions.
      */
 
     /* Database creation sql statement */
@@ -180,6 +191,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     DOM_BOOK_PUBLISHER + " text, " +
                     DOM_BOOK_DATE_PUBLISHED + " date, " +
                     DOM_FIRST_PUBLICATION +  " date default '', " +
+
                     DOM_BOOK_EDITION_BITMASK + " integer not null default 0, " +
                     DOM_BOOK_RATING + " real not null default 0, " +
                     DOM_BOOK_READ + " boolean not null default 0, " +
@@ -190,6 +202,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     DOM_BOOK_PRICE_LISTED_CURRENCY + " text default '', " +
                     DOM_BOOK_PRICE_PAID + " text default '', " +
                     DOM_BOOK_PRICE_PAID_CURRENCY + " text default '', " +
+                    DOM_BOOK_DATE_ACQUIRED + " date default '', " +
 
                     DOM_BOOK_ANTHOLOGY_BITMASK + " integer not null default 0, " +
                     DOM_BOOK_LOCATION + " text, " +
@@ -211,40 +224,68 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     DOM_LAST_UPDATE_DATE + " datetime not null default current_timestamp " +
                     ")";
 
+
     private static final String[] DATABASE_CREATE_INDICES = {
-            "CREATE INDEX IF NOT EXISTS authors_given_names ON " + TBL_AUTHORS + " (" + DOM_AUTHOR_GIVEN_NAMES + ");",
-            "CREATE INDEX IF NOT EXISTS authors_given_names_ci ON " + TBL_AUTHORS + " (" + DOM_AUTHOR_GIVEN_NAMES + " " + COLLATION + ");",
-            "CREATE INDEX IF NOT EXISTS authors_family_name ON " + TBL_AUTHORS + " (" + DOM_AUTHOR_FAMILY_NAME + ");",
-            "CREATE INDEX IF NOT EXISTS authors_family_name_ci ON " + TBL_AUTHORS + " (" + DOM_AUTHOR_FAMILY_NAME + " " + COLLATION + ");",
+            "CREATE INDEX IF NOT EXISTS authors_given_names ON " + TBL_AUTHORS +
+                    " (" + DOM_AUTHOR_GIVEN_NAMES + ");",
+            "CREATE INDEX IF NOT EXISTS authors_given_names_ci ON " + TBL_AUTHORS +
+                    " (" + DOM_AUTHOR_GIVEN_NAMES + " " + COLLATION + ");",
 
-            "CREATE INDEX IF NOT EXISTS bookshelf_bookshelf ON " + TBL_BOOKSHELF + " (" + DOM_BOOKSHELF + ");",
+            "CREATE INDEX IF NOT EXISTS authors_family_name ON " + TBL_AUTHORS +
+                    " (" + DOM_AUTHOR_FAMILY_NAME + ");",
+            "CREATE INDEX IF NOT EXISTS authors_family_name_ci ON " + TBL_AUTHORS +
+                    " (" + DOM_AUTHOR_FAMILY_NAME + " " + COLLATION + ");",
 
-            "CREATE INDEX IF NOT EXISTS books_title ON " + TBL_BOOKS + " (" + DOM_TITLE + ");",
-            "CREATE INDEX IF NOT EXISTS books_title_ci ON " + TBL_BOOKS + " (" + DOM_TITLE + " " + COLLATION + ");",
-            "CREATE INDEX IF NOT EXISTS books_isbn ON " + TBL_BOOKS + " (" + DOM_BOOK_ISBN + ");",
-            "CREATE INDEX IF NOT EXISTS books_publisher ON " + TBL_BOOKS + " (" + DOM_BOOK_PUBLISHER + ");",
-            "CREATE UNIQUE INDEX IF NOT EXISTS books_uuid ON " + TBL_BOOKS + " (" + DOM_BOOK_UUID + ");",
-            "CREATE INDEX IF NOT EXISTS books_gr_book ON " + TBL_BOOKS + " (" + DOM_BOOK_GOODREADS_BOOK_ID + ");",
+            "CREATE INDEX IF NOT EXISTS bookshelf_bookshelf ON " + TBL_BOOKSHELF +
+                    " (" + DOM_BOOKSHELF + ");",
 
-            "CREATE UNIQUE INDEX IF NOT EXISTS series_series ON " + TBL_SERIES + " (" + DOM_PK_ID + ");",
+            "CREATE INDEX IF NOT EXISTS books_title ON " + TBL_BOOKS +
+                    " (" + DOM_TITLE + ");",
+            "CREATE INDEX IF NOT EXISTS books_title_ci ON " + TBL_BOOKS +
+                    " (" + DOM_TITLE + " " + COLLATION + ");",
 
-            "CREATE UNIQUE INDEX IF NOT EXISTS loan_book_loaned_to ON " + TBL_LOAN + " (" + DOM_FK_BOOK_ID + ");",
+            "CREATE INDEX IF NOT EXISTS books_isbn ON " + TBL_BOOKS +
+                    " (" + DOM_BOOK_ISBN + ");",
+            "CREATE INDEX IF NOT EXISTS books_publisher ON " + TBL_BOOKS +
+                    " (" + DOM_BOOK_PUBLISHER + ");",
+            "CREATE UNIQUE INDEX IF NOT EXISTS books_uuid ON " + TBL_BOOKS +
+                    " (" + DOM_BOOK_UUID + ");",
+            "CREATE INDEX IF NOT EXISTS books_gr_book ON " + TBL_BOOKS +
+                    " (" + DOM_BOOK_GOODREADS_BOOK_ID + ");",
 
-            "CREATE INDEX IF NOT EXISTS anthology_author ON " + TBL_ANTHOLOGY + " (" + DOM_FK_AUTHOR_ID + ");",
-            "CREATE INDEX IF NOT EXISTS anthology_title ON " + TBL_ANTHOLOGY + " (" + DOM_TITLE + ");",
+            "CREATE UNIQUE INDEX IF NOT EXISTS series_series ON " + TBL_SERIES +
+                    " (" + DOM_PK_ID + ");",
 
-            "CREATE UNIQUE INDEX IF NOT EXISTS anthology_pk_idx ON " + TBL_ANTHOLOGY + " (" + DOM_FK_AUTHOR_ID + ", " + DOM_TITLE + ")",
+            "CREATE UNIQUE INDEX IF NOT EXISTS loan_book_loaned_to ON " + TBL_LOAN +
+                    " (" + DOM_FK_BOOK_ID + ");",
 
-            "CREATE INDEX IF NOT EXISTS book_anthology_anthology ON " + TBL_BOOK_TOC_ENTRIES + " (" + DOM_FK_ANTHOLOGY_ID + ");",
-            "CREATE INDEX IF NOT EXISTS book_anthology_book ON " + TBL_BOOK_TOC_ENTRIES + " (" + DOM_FK_BOOK_ID + ");",
+            "CREATE INDEX IF NOT EXISTS anthology_author ON " + TBL_ANTHOLOGY +
+                    " (" + DOM_FK_AUTHOR_ID + ");",
+            "CREATE INDEX IF NOT EXISTS anthology_title ON " + TBL_ANTHOLOGY +
+                    " (" + DOM_TITLE + ");",
 
-            "CREATE INDEX IF NOT EXISTS book_bookshelf_weak_book ON " + TBL_BOOK_BOOKSHELF + " (" + DOM_FK_BOOK_ID + ");",
-            "CREATE INDEX IF NOT EXISTS book_bookshelf_weak_bookshelf ON " + TBL_BOOK_BOOKSHELF + " (" + DOM_FK_BOOKSHELF_ID + ");",
+            "CREATE UNIQUE INDEX IF NOT EXISTS anthology_pk_idx ON " + TBL_ANTHOLOGY +
+                    " (" + DOM_FK_AUTHOR_ID + ", " + DOM_TITLE + ")",
 
-            "CREATE UNIQUE INDEX IF NOT EXISTS book_series_series ON " + TBL_BOOK_SERIES + " (" + DOM_FK_SERIES_ID + ", " + DOM_FK_BOOK_ID + ", " + DOM_BOOK_SERIES_NUM + ");",
-            "CREATE UNIQUE INDEX IF NOT EXISTS book_series_book ON " + TBL_BOOK_SERIES + " (" + DOM_FK_BOOK_ID + ", " + DOM_FK_SERIES_ID + ", " + DOM_BOOK_SERIES_NUM + ");",
-            "CREATE UNIQUE INDEX IF NOT EXISTS book_author_author ON " + TBL_BOOK_AUTHOR + " (" + DOM_FK_AUTHOR_ID + ", " + DOM_FK_BOOK_ID + ");",
-            "CREATE UNIQUE INDEX IF NOT EXISTS book_author_book ON " + TBL_BOOK_AUTHOR + " (" + DOM_FK_BOOK_ID + ", " + DOM_FK_AUTHOR_ID + ");",
+            "CREATE INDEX IF NOT EXISTS book_anthology_anthology ON " + TBL_BOOK_TOC_ENTRIES +
+                    " (" + DOM_FK_ANTHOLOGY_ID + ");",
+            "CREATE INDEX IF NOT EXISTS book_anthology_book ON " + TBL_BOOK_TOC_ENTRIES + " " +
+                    "(" + DOM_FK_BOOK_ID + ");",
+
+            "CREATE INDEX IF NOT EXISTS book_bookshelf_weak_book ON " + TBL_BOOK_BOOKSHELF +
+                    " (" + DOM_FK_BOOK_ID + ");",
+            "CREATE INDEX IF NOT EXISTS book_bookshelf_weak_bookshelf ON " + TBL_BOOK_BOOKSHELF +
+                    " (" + DOM_FK_BOOKSHELF_ID + ");",
+
+            "CREATE UNIQUE INDEX IF NOT EXISTS book_series_series ON " + TBL_BOOK_SERIES +
+                    " (" + DOM_FK_SERIES_ID + ", " + DOM_FK_BOOK_ID + ", " + DOM_BOOK_SERIES_NUM + ");",
+            "CREATE UNIQUE INDEX IF NOT EXISTS book_series_book ON " + TBL_BOOK_SERIES +
+                    " (" + DOM_FK_BOOK_ID + ", " + DOM_FK_SERIES_ID + ", " + DOM_BOOK_SERIES_NUM + ");",
+
+            "CREATE UNIQUE INDEX IF NOT EXISTS book_author_author ON " + TBL_BOOK_AUTHOR +
+                    " (" + DOM_FK_AUTHOR_ID + ", " + DOM_FK_BOOK_ID + ");",
+            "CREATE UNIQUE INDEX IF NOT EXISTS book_author_book ON " + TBL_BOOK_AUTHOR +
+                    " (" + DOM_FK_BOOK_ID + ", " + DOM_FK_AUTHOR_ID + ");",
     };
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -427,13 +468,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             mMessage += "* Configurable website search order.\n";
             mMessage += "* New Search website: ISFDB.\n";
             mMessage += "* Better Anthology support (Edit/View/cross-book)\n";
-            mMessage += "* Anthology titles auto populated (ISFDB site only!)\n";
+            mMessage += "* Anthology titles auto populated (ISFDB site only!)\n\n";
             mMessage += "* New fields:\n";
             mMessage += "*   Books & Anthology titles now have a 'first published' field\n";
             mMessage += "*   Books Editions (1st, book-club, etc)\n";
-            mMessage += "*   Book paid price field\n";
+            mMessage += "*   Book paid price\n";
+            mMessage += "*   Book date acquired\n";
             mMessage += "*   Currency support for prices\n";
-            mMessage += "*   LibraryThing & ISFDB local id\n";
+            mMessage += "*   LibraryThing & ISFDB local id for future usage\n";
 
             // cleanup of obsolete preferences
             BookCatalogueApp.Prefs.remove("StartupActivity.FAuthorSeriesFixupRequired");
@@ -456,7 +498,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             UpgradeDatabase.recreateAndReloadTable(syncedDb, TBL_ANTHOLOGY.getName(), DATABASE_CREATE_ANTHOLOGY,
                     /* remove fields: */ DOM_FK_BOOK_ID.name, DOM_BOOK_TOC_ENTRY_POSITION.name);
 
+            // could use UpgradeDatabase.recreateAndReloadTable
+            // but how does that react to large tables ? memory ? storage space ? ...
             // add new fields
+            db.execSQL("ALTER TABLE " + TBL_BOOKS + " ADD " + DOM_BOOK_DATE_ACQUIRED + " date");
             db.execSQL("ALTER TABLE " + TBL_BOOKS + " ADD " + DOM_FIRST_PUBLICATION + " date");
             db.execSQL("ALTER TABLE " + TBL_BOOKS + " ADD " + DOM_BOOK_EDITION_BITMASK + " integer NOT NULL default 0");
 
@@ -467,9 +512,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             db.execSQL("ALTER TABLE " + TBL_BOOKS + " ADD " + DOM_BOOK_ISFDB_ID + " integer");
             db.execSQL("ALTER TABLE " + TBL_BOOKS + " ADD " + DOM_BOOK_LIBRARY_THING_ID + " integer");
 
-
             // all books with a list price are assumed to be USD based on the only search up to v82 being Amazon US.
-            // FIXME upgrade if a user has manually edited the list price, ouch....
+            // FIXME if a user has manually edited the list price, ouch....
             db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_PRICE_LISTED_CURRENCY + "='USD' WHERE NOT " + DOM_BOOK_PRICE_LISTED + "=''");
         }
 

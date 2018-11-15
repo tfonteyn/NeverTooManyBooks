@@ -130,7 +130,7 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
             tellActivityPathChanged();
         }
 
-        // Handle the 'up' item; go to the next directory up
+        // 'up' directory
         getView().findViewById(R.id.row_path_up).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {

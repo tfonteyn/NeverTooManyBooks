@@ -60,7 +60,7 @@ public class Help extends BaseActivity {
             TextView view;
 
             view = findViewById(R.id.help_page);
-            view.setText(Utils.linkifyHtml(getString(R.string.url_help, getString(R.string.about_help_click_here)), Linkify.ALL));
+            view.setText(Utils.linkifyHtml(getString(R.string.url_help, getString(R.string.about_help_click_here))));
             view.setMovementMethod(LinkMovementMethod.getInstance());
 
             findViewById(R.id.send_info).setOnClickListener(new OnClickListener() {

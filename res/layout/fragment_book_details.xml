@@ -153,7 +153,7 @@
             android:text="@string/series" />
 
         <TextView
-            android:id="@+id/series"
+            android:id="@+id/filename"
             style="@style/txt_row_bookDetail"
             android:textIsSelectable="true"
             tools:text="Series name (1)\nSeries name (2)" />
@@ -351,18 +351,17 @@
 
             </TableRow>
 
-            <!-- Date added == Date purchased -->
             <TableRow
-                android:id="@+id/row_date_purchased"
+                android:id="@+id/row_date_acquired"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
                 <TextView
                     style="@style/lbl_textField"
-                    android:text="@string/lbl_date_purchased" />
+                    android:text="@string/lbl_date_acquired" />
 
                 <TextView
-                    android:id="@+id/date_purchased"
+                    android:id="@+id/date_acquired"
                     style="@style/txt_row_bookDetail"
                     android:layout_weight="1"
                     android:textIsSelectable="true"

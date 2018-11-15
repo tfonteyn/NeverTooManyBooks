@@ -37,6 +37,7 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter;
@@ -54,12 +55,15 @@ import java.util.Objects;
 
 /**
  * Activity to edit the list of styles and enable/disable their presence in the styles menu.
+ * Individual context menus allow cloning/editing/deleting of styles.
  *
  * @author Philip Warner
  */
-public class BooklistStylesActivity extends EditObjectListActivity<BooklistStyle> implements SelectOneDialog.hasListViewContextMenu {
+public class BooklistPreferredStylesActivity extends EditObjectListActivity<BooklistStyle>
+        implements SelectOneDialog.hasListViewContextMenu {
 
-    public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_BOOKLIST_STYLES;
+    public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_BOOKLIST_PREFERRED_STYLES;
+    public static final int RESULT_CHANGES_MADE = UniqueId.ACTIVITY_RESULT_CHANGES_MADE_BOOKLIST_STYLES;
 
     /** The row being edited. Set when an individual style is edited */
     private int mEditedRow;
@@ -67,7 +71,7 @@ public class BooklistStylesActivity extends EditObjectListActivity<BooklistStyle
     /**
      * Constructor
      */
-    public BooklistStylesActivity() {
+    public BooklistPreferredStylesActivity() {
         super(R.layout.activity_booklist_styles_edit_list, R.layout.row_edit_booklist_style_groups, null);
     }
 
@@ -78,7 +82,7 @@ public class BooklistStylesActivity extends EditObjectListActivity<BooklistStyle
             super.onCreate(savedInstanceState);
             this.setTitle(R.string.title_preferred_styles);
 
-            // We want context menus to be available
+            // We want context menus on the ListView
             registerForContextMenu(getListView());
 
             if (savedInstanceState == null) {
@@ -109,6 +113,7 @@ public class BooklistStylesActivity extends EditObjectListActivity<BooklistStyle
             case R.id.MENU_STYLE_DELETE: {
                 mList.get(menuInfo.position).delete(mDb);
                 setList(getList()); // Refresh the list
+                setChangesMade(true);
                 return true;
             }
             case R.id.MENU_STYLE_EDIT: {
@@ -154,20 +159,18 @@ public class BooklistStylesActivity extends EditObjectListActivity<BooklistStyle
     @Override
     @CallSuper
     protected void onActivityResult(final int requestCode, final int resultCode, final @Nullable Intent data) {
-        if (BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.ON_ACTIVITY_RESULT && BuildConfig.DEBUG) {
             Logger.info(this, "onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
         }
         switch (requestCode) {
             case BooklistStylePropertiesActivity.REQUEST_CODE:  /* fadd7b9a-7eaf-4af9-90ce-6ffb7b93afe6 */
-                if (resultCode == Activity.RESULT_OK) {
+                if (resultCode == BooklistStylePropertiesActivity.RESULT_CHANGES_MADE) {
                     /* there *has* to be 'data' */
                     Objects.requireNonNull(data);
                     BooklistStyle style = (BooklistStyle) data.getSerializableExtra(BooklistStylePropertiesActivity.REQUEST_BKEY_STYLE);
-                    // style can be null (when it was deleted)
-                    handleStyleResult(style);
+                    handleStyleChange(style);
+                    setChangesMade(true);
                 }
-                // pass the result code up
-                setResult(resultCode);
                 return;
         }
 
@@ -179,16 +182,16 @@ public class BooklistStylesActivity extends EditObjectListActivity<BooklistStyle
      *
      * @param style as received from onActivityResult
      */
-    private void handleStyleResult(final @Nullable BooklistStyle style) {
+    private void handleStyleChange(final @Nullable BooklistStyle style) {
         try {
             if (style == null) {
                 // Style was deleted. Refresh.
-                setList(getList());
+                mList = getList();
 
             } else if (mEditedRow < 0) {
                 // Was added. So put at top and set as preferred
-                style.setPreferred(true);
                 mList.add(0, style);
+                style.setPreferred(true);
                 BooklistStyles.saveMenuOrder(mList);
 
             } else {
@@ -218,11 +221,16 @@ public class BooklistStylesActivity extends EditObjectListActivity<BooklistStyle
                 }
             }
             setList(mList);
+
         } catch (Exception e) {
             Logger.error(e);
             // Do our best to recover
             setList(getList());
         }
+    }
+
+    public void setActivityResult() {
+        setResult(changesMade() ? RESULT_CHANGES_MADE : Activity.RESULT_CANCELED);
     }
 
     protected SimpleListAdapter<BooklistStyle> createListAdapter(final @LayoutRes int rowViewId, final @NonNull ArrayList<BooklistStyle> list) {
@@ -242,22 +250,22 @@ public class BooklistStylesActivity extends EditObjectListActivity<BooklistStyle
 
         @Override
         public void onGetView(final @NonNull View target, final @NonNull BooklistStyle style) {
-            Holder holder = ViewTagger.getTag(target, R.id.TAG_HOLDER);// value: BooklistStylesActivity.Holder
+            Holder holder = ViewTagger.getTag(target, R.id.TAG_HOLDER);// value: BooklistPreferredStylesActivity.Holder
             if (holder == null) {
                 holder = new Holder();
                 holder.preferred = target.findViewById(R.id.preferred);
-                holder.name = target.findViewById(R.id.series);
+                holder.name = target.findViewById(R.id.filename);
                 holder.groups = target.findViewById(R.id.groups);
                 holder.kind = target.findViewById(R.id.kind);
                 // Tag relevant views
-                ViewTagger.setTag(holder.preferred, R.id.TAG_HOLDER, holder);// value: BooklistStylesActivity.Holder
-                ViewTagger.setTag(target, R.id.TAG_HOLDER, holder);// value: BooklistStylesActivity.Holder
+                ViewTagger.setTag(holder.preferred, R.id.TAG_HOLDER, holder);// value: BooklistPreferredStylesActivity.Holder
+                ViewTagger.setTag(target, R.id.TAG_HOLDER, holder);// value: BooklistPreferredStylesActivity.Holder
 
                 // Handle clicks on the CheckedTextView
                 holder.preferred.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(@NonNull View v) {
-                        Holder h = ViewTagger.getTagOrThrow(v, R.id.TAG_HOLDER);// value: BooklistStylesActivity.Holder
+                        Holder h = ViewTagger.getTagOrThrow(v, R.id.TAG_HOLDER);// value: BooklistPreferredStylesActivity.Holder
                         boolean newStatus = !h.style.isPreferred();
                         h.style.setPreferred(newStatus);
                         h.preferred.setChecked(newStatus);
@@ -301,8 +309,8 @@ public class BooklistStylesActivity extends EditObjectListActivity<BooklistStyle
             mListViewContextMenu.add(Menu.NONE, R.id.MENU_STYLE_CLONE, 0, R.string.menu_clone_style)
                     .setIcon(R.drawable.ic_content_copy);
 
-            // display
-            BooklistStylesActivity.this.onCreateListViewContextMenu(mListViewContextMenu, target, menuInfo);
+            // display the menu
+            BooklistPreferredStylesActivity.this.onCreateListViewContextMenu(mListViewContextMenu, target, menuInfo);
             return true;
 
         }
@@ -310,6 +318,7 @@ public class BooklistStylesActivity extends EditObjectListActivity<BooklistStyle
         @Override
         public void onListChanged() {
             BooklistStyles.saveMenuOrder(mList);
+            setChangesMade(true);
         }
     }
 

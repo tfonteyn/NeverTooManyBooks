@@ -402,8 +402,7 @@ public class ListReviewsApiHandler extends ApiHandler {
             String date = b.getString(key);
             try {
                 Date d = mUpdateDateFmt.parse(date);
-                date = DateUtils.toSqlDateTime(d);
-                b.putString(key, date);
+                b.putString(key, DateUtils.utcSqlDateTime(d));
             } catch (Exception e) {
                 b.remove(key);
             }
@@ -413,7 +412,7 @@ public class ListReviewsApiHandler extends ApiHandler {
     /**
      * Field names we add to the bundle based on parsed XML data.
      *
-     * We duplicate the CatalogueDBAdapter names (and give them a DB_ prefix) so
+     * We duplicate the CatalogueDBAdapter names (and give them a DB_ getPrefix) so
      * that (a) it is clear which fields are provided by this call, and (b) it is clear
      * which fields directly relate to DB fields.
      *

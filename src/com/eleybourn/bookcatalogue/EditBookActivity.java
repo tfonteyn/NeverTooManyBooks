@@ -34,6 +34,8 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 public class EditBookActivity extends BaseActivity {
 
     public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_EDIT_BOOK;
+    // no local results, actual ones passed up from EditBookFragment
+    public static final int RESULT_CHANGES_MADE = EditBookFragment.RESULT_CHANGES_MADE;
 
     /**
      * Load with the provided book id. Also open to the provided tab.
@@ -72,12 +74,14 @@ public class EditBookActivity extends BaseActivity {
                 .commit();
     }
 
-    /**
-     * Dispatch incoming result to the correct fragment.
-     */
+
     @Override
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-        if (BuildConfig.DEBUG) {
+
+        /*
+         * Dispatch incoming result to the correct fragment.
+         */
+        if (DEBUG_SWITCHES.ON_ACTIVITY_RESULT && BuildConfig.DEBUG) {
             Logger.info(this, "onActivityResult: forwarding to fragment - requestCode=" + requestCode + ", resultCode=" + resultCode);
         }
 

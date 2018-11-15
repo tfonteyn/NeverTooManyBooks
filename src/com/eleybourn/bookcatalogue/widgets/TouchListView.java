@@ -326,7 +326,7 @@ public class TouchListView extends ListView {
      * and other items are making room for it:
      *
      * If dropping the item would result in it still being in the same place, then make the
-     * dragged list item's size normal, but make the item invisible.
+     * dragged list item's size small, but make the item invisible.
      *
      * Otherwise, if the dragged list item is still on screen, make it as small as possible
      * and expand the item below the insert point.

@@ -32,6 +32,7 @@ import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -235,7 +236,7 @@ public class EditBookTOCFragment extends BookAbstractFragment implements Handles
         // Restore default visibility
         //showHideFields(false);
 
-        if (BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.FIELD_BOOK_TRANSFERS && BuildConfig.DEBUG) {
             Logger.info(this, "onLoadFieldsFromBook done");
         }
     }
@@ -294,7 +295,7 @@ public class EditBookTOCFragment extends BookAbstractFragment implements Handles
                         DatabaseDefinitions.DOM_IS_ANTHOLOGY
                         : DatabaseDefinitions.DOM_BOOK_WITH_MULTIPLE_AUTHORS ^ DatabaseDefinitions.DOM_IS_ANTHOLOGY);
 
-        if (BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.FIELD_BOOK_TRANSFERS && BuildConfig.DEBUG) {
             Logger.info(this, "onSaveFieldsToBook done");
         }
     }
@@ -309,17 +310,12 @@ public class EditBookTOCFragment extends BookAbstractFragment implements Handles
 
     //<editor-fold desc="Menu Handlers">
 
-    /**
-     * Run each time the menu button is pressed. This will setup the options menu
-     * Need to use this (and NOT {@link #onCreateOptionsMenu}as we want the menu cleared before.
-     */
+
     @Override
-    @CallSuper
-    public void onPrepareOptionsMenu(final @NonNull Menu menu) {
-        menu.clear();
+    public void onCreateOptionsMenu(@NonNull final Menu menu, @NonNull final MenuInflater inflater) {
         menu.add(Menu.NONE, R.id.MENU_POPULATE_TOC_FROM_ISFDB, 0, R.string.menu_populate_toc)
                 .setIcon(R.drawable.ic_autorenew);
-        super.onPrepareOptionsMenu(menu);
+        // don't call super.
     }
 
     /**
