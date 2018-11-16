@@ -420,7 +420,7 @@ class ImportAllTask extends GenericTask {
         }
 
         for (Bundle grAuthor : grAuthors) {
-            String name = grAuthor.getString(ListReviewsFieldNames.DB_AUTHOR_NAME);
+            String name = grAuthor.getString(ListReviewsFieldNames.AUTHOR_NAME_GF);
             if (name != null && !name.trim().isEmpty()) {
                 authors.add(new Author(name));
             }

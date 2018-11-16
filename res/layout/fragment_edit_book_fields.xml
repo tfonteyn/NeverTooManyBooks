@@ -120,7 +120,7 @@
             android:layout_height="wrap_content">
 
             <TextView
-                android:id="@+id/lbl_publisher"
+                android:id="@+id/lbl_publishing"
                 style="@style/lbl_editField"
                 android:labelFor="@id/publisher"
                 android:text="@string/lbl_publisher" />
@@ -128,7 +128,7 @@
             <AutoCompleteTextView
                 android:id="@+id/publisher"
                 style="@style/personalNameTextEntry"
-                android:layout_below="@id/lbl_publisher"
+                android:layout_below="@id/lbl_publishing"
                 android:layout_centerVertical="true"
                 android:layout_toStartOf="@id/btn_publisher"
                 android:completionThreshold="2" />

@@ -221,6 +221,7 @@ public class BookUtils {
         book.putString(UniqueId.KEY_BOOK_READ_END, DateUtils.localSqlDateForToday());
 
         if (db.updateBook(book.getBookId(), book, 0) != 1) {
+            //rollback
             book.putInt(UniqueId.KEY_BOOK_READ, prevRead);
             book.putString(UniqueId.KEY_BOOK_READ_END, prevReadEnd);
             return false;

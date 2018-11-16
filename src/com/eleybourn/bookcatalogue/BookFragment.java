@@ -3,6 +3,7 @@ package com.eleybourn.bookcatalogue;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
@@ -57,6 +58,7 @@ public class BookFragment extends BookAbstractFragment implements BookManager {
     private BaseActivity mActivity;
 
     private FlattenedBooklist mFlattenedBooklist = null;
+    //FIXME: broken since moved to fragment
     private GestureDetector mGestureDetector;
 
     /* ------------------------------------------------------------------------------------------ */
@@ -92,13 +94,11 @@ public class BookFragment extends BookAbstractFragment implements BookManager {
 
     //<editor-fold desc="Fragment startup">
 
-    @Override
-    @CallSuper
-    public void onAttach(final @NonNull Context context) {
-        super.onAttach(context);
-
-        mActivity = (BaseActivity) context;
-    }
+//    @Override
+//    @CallSuper
+//    public void onAttach(final @NonNull Context context) {
+//        super.onAttach(context);
+//    }
 
 //    @Override
 //    public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -123,6 +123,9 @@ public class BookFragment extends BookAbstractFragment implements BookManager {
     public void onActivityCreated(final @Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        // cache to avoid multiple calls to requireActivity()
+        mActivity = (BaseActivity)requireActivity();
+
         initBooklist(getArguments(), savedInstanceState);
 
         if (savedInstanceState == null) {
@@ -130,13 +133,13 @@ public class BookFragment extends BookAbstractFragment implements BookManager {
         }
     }
 
-    /**
-     * Some fields are only present (or need specific handling) on {@link EditBookFieldsFragment}
-     */
     @Override
     @CallSuper
     protected void initFields() {
         super.initFields();
+        // multiple use
+        Fields.FieldFormatter dateFormatter = new Fields.DateFieldFormatter();
+
         // not added here are the two non-text fields: TOC & Read.
 
         // book fields
@@ -149,16 +152,19 @@ public class BookFragment extends BookAbstractFragment implements BookManager {
         mFields.add(R.id.description, UniqueId.KEY_DESCRIPTION)
                 .setShowHtml(true);
         mFields.add(R.id.genre, UniqueId.KEY_BOOK_GENRE);
-        mFields.add(R.id.language, UniqueId.KEY_BOOK_LANGUAGE);
+
+        mFields.add(R.id.language, UniqueId.KEY_BOOK_LANGUAGE)
+                .setFormatter(new Fields.LanguageFormatter());
+
         mFields.add(R.id.pages, UniqueId.KEY_BOOK_PAGES);
         mFields.add(R.id.format, UniqueId.KEY_BOOK_FORMAT);
         mFields.add(R.id.publisher, UniqueId.KEY_BOOK_PUBLISHER);
 
         mFields.add(R.id.date_published, UniqueId.KEY_BOOK_DATE_PUBLISHED)
-                .setFormatter(new Fields.DateFieldFormatter());
+                .setFormatter(dateFormatter);
 
         mFields.add(R.id.first_publication, UniqueId.KEY_FIRST_PUBLICATION)
-                .setFormatter(new Fields.DateFieldFormatter());
+                .setFormatter(dateFormatter);
 
         mFields.add(R.id.price_listed, UniqueId.KEY_BOOK_PRICE_LISTED)
                 .setFormatter(new Fields.PriceFormatter(getBook().getString(UniqueId.KEY_BOOK_PRICE_LISTED_CURRENCY)));
@@ -175,7 +181,7 @@ public class BookFragment extends BookAbstractFragment implements BookManager {
                 .setDoNotFetch(true);
 
         mFields.add(R.id.date_acquired, UniqueId.KEY_BOOK_DATE_ACQUIRED)
-                .setFormatter(new Fields.DateFieldFormatter());
+                .setFormatter(dateFormatter);
 
         mFields.add(R.id.price_paid, UniqueId.KEY_BOOK_PRICE_PAID)
                 .setFormatter(new Fields.PriceFormatter(getBook().getString(UniqueId.KEY_BOOK_PRICE_PAID_CURRENCY)));
@@ -192,9 +198,9 @@ public class BookFragment extends BookAbstractFragment implements BookManager {
                 .setShowHtml(true);
 
         mFields.add(R.id.read_start, UniqueId.KEY_BOOK_READ_START)
-                .setFormatter(new Fields.DateFieldFormatter());
+                .setFormatter(dateFormatter);
         mFields.add(R.id.read_end, UniqueId.KEY_BOOK_READ_END)
-                .setFormatter(new Fields.DateFieldFormatter());
+                .setFormatter(dateFormatter);
 
         mFields.add(R.id.loaned_to, UniqueId.KEY_LOAN_LOANED_TO)
                 .setDoNotFetch(true);
@@ -244,8 +250,17 @@ public class BookFragment extends BookAbstractFragment implements BookManager {
         populateTOC(book);
         populateReadStatus(book);
 
-        // hide unwanted and empty fields
+        // hide unwanted and empty text fields
         showHideFields(true);
+
+        // non-text fields
+        Field editionsField =  mFields.getField(R.id.edition);
+        if ("0".equals(editionsField.getValue().toString())) {
+            //noinspection ConstantConditions
+            getView().findViewById(R.id.row_edition).setVisibility(View.GONE);
+            // can't do this as our field is a number field
+            //showHideField(hideIfEmpty, R.id.edition, R.id.row_edition, R.id.lbl_edition);
+        }
 
         if (DEBUG_SWITCHES.FIELD_BOOK_TRANSFERS && BuildConfig.DEBUG) {
             Logger.info(this, "onLoadFieldsFromBook done");
@@ -430,8 +445,7 @@ public class BookFragment extends BookAbstractFragment implements BookManager {
      */
     private void populatePublishingSection(final @NonNull Book book) {
 
-        Field datePublishedField = mFields.getField(R.id.date_published);
-        String datePublished = datePublishedField.format(book.getString(UniqueId.KEY_BOOK_DATE_PUBLISHED));
+        String datePublished = mFields.getField(R.id.date_published).format(book.getString(UniqueId.KEY_BOOK_DATE_PUBLISHED));
         boolean hasPublishDate = !datePublished.isEmpty();
 
         String pub = book.getString(UniqueId.KEY_BOOK_PUBLISHER);
@@ -490,16 +504,18 @@ public class BookFragment extends BookAbstractFragment implements BookManager {
         if (visible) {
             // set initial display state
             readField.setChecked(book.getBoolean(Book.IS_READ));
-            readField.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(final View v) {
-                    // allow flipping 'read' status quickly
-                    boolean newState = !readField.isChecked();
-                    if (BookUtils.setRead(mDb, book, newState)) {
-                        readField.setChecked(newState);
-                    }
-                }
-            });
+
+            // disabled. Not such a good idea. Instead adding an option to the options menu.
+//            readField.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(final View v) {
+//                    // allow flipping 'read' status quickly
+//                    boolean newState = !readField.isChecked();
+//                    if (BookUtils.setRead(mDb, book, newState)) {
+//                        readField.setChecked(newState);
+//                    }
+//                }
+//            });
         }
         readField.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
@@ -636,20 +652,20 @@ public class BookFragment extends BookAbstractFragment implements BookManager {
     /**
      * This will be called when a menu item is selected.
      *
-     * @param item The item selected
+     * @param menuItem The item selected
      *
      * @return <tt>true</tt> if handled
      */
     @Override
     @CallSuper
-    public boolean onOptionsItemSelected(final @NonNull MenuItem item) {
-        switch (item.getItemId()) {
+    public boolean onOptionsItemSelected(final @NonNull MenuItem menuItem) {
+        switch (menuItem.getItemId()) {
             case R.id.MENU_BOOK_EDIT:
                 EditBookActivity.startActivityForResult(mActivity,  /* a54a7e79-88c3-4b48-89df-711bb28935c5 */
                         getBook().getBookId(), EditBookFragment.TAB_EDIT);
                 return true;
         }
-        return super.onOptionsItemSelected(item);
+        return super.onOptionsItemSelected(menuItem);
     }
     //</editor-fold>
 

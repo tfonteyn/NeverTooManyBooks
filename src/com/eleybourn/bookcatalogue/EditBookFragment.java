@@ -127,16 +127,14 @@ public class EditBookFragment extends BookAbstractFragment implements
 
     //<editor-fold desc="Fragment startup">
 
-    /**
-     * Ensure activity supports interface
-     */
-    @Override
-    @CallSuper
-    public void onAttach(final @NonNull Context context) {
-        super.onAttach(context);
-
-        mActivity = (BaseActivity)context;
-    }
+//    /**
+//     * Ensure activity supports interface
+//     */
+//    @Override
+//    @CallSuper
+//    public void onAttach(final @NonNull Context context) {
+//        super.onAttach(context);
+//    }
 
 //    @Override
 //    public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -154,6 +152,9 @@ public class EditBookFragment extends BookAbstractFragment implements
     @CallSuper
     public void onActivityCreated(final @Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        // cache to avoid multiple calls to requireActivity()
+        mActivity = (BaseActivity) requireActivity();
 
         boolean isExistingBook = (getBook().getBookId() > 0);
         initTabs(isExistingBook, savedInstanceState);

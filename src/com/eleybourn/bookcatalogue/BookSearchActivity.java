@@ -99,14 +99,18 @@ public class BookSearchActivity extends BaseActivityWithTasks implements SearchM
     /** A list of author names we have already searched for in this session */
     private final ArrayList<String> mAuthorNames = new ArrayList<>();
     private boolean mScannerStarted = false;
-    private EditText mIsbnText;
-    private EditText mTitleText;
-    private AutoCompleteTextView mAuthorText;
+
+    /** */
+    private EditText mIsbnView;
+    private EditText mTitleView;
+    private AutoCompleteTextView mAuthorView;
+    /** */
     private ArrayAdapter<String> mAuthorAdapter = null;
     private CatalogueDBAdapter mDb;
-    private String mAuthor;
-    private String mTitle;
-    private String mIsbn;
+    /** */
+    private String mAuthorSearchText;
+    private String mTitleSearchText;
+    private String mIsbnSearchText;
 
     /**
      * Mode this activity is in:
@@ -141,7 +145,7 @@ public class BookSearchActivity extends BaseActivityWithTasks implements SearchM
      */
     @Override
     public int getLayoutId() {
-        if (mIsbn == null) {
+        if (mIsbnSearchText == null) {
             switch (mBy) {
                 case BY_ISBN:
                     return R.layout.booksearch_by_isbn;
@@ -172,7 +176,7 @@ public class BookSearchActivity extends BaseActivityWithTasks implements SearchM
             // Must do this before super.onCreate as getLayoutId() needs them
             Bundle extras = getIntent().getExtras();
             Objects.requireNonNull(extras);
-            mIsbn = extras.getString(UniqueId.KEY_BOOK_ISBN);
+            mIsbnSearchText = extras.getString(UniqueId.KEY_BOOK_ISBN);
             mBy = extras.getString(REQUEST_BKEY_BY);
 
             super.onCreate(savedInstanceState);
@@ -209,18 +213,18 @@ public class BookSearchActivity extends BaseActivityWithTasks implements SearchM
              *
              * So...we save the extras in savedInstanceState, and look for it when missing
              */
-            if (mIsbn == null && (mBy == null || mBy.isEmpty())) {
+            if (mIsbnSearchText == null && (mBy == null || mBy.isEmpty())) {
                 Logger.error("Empty args for BookSearchActivity");
                 if (savedInstanceState != null) {
-                    if (mIsbn == null && savedInstanceState.containsKey(UniqueId.KEY_BOOK_ISBN)) {
-                        mIsbn = savedInstanceState.getString(UniqueId.KEY_BOOK_ISBN);
+                    if (mIsbnSearchText == null && savedInstanceState.containsKey(UniqueId.KEY_BOOK_ISBN)) {
+                        mIsbnSearchText = savedInstanceState.getString(UniqueId.KEY_BOOK_ISBN);
                     }
                     if (savedInstanceState.containsKey(REQUEST_BKEY_BY)) {
                         mBy = savedInstanceState.getString(REQUEST_BKEY_BY);
                     }
                 }
                 // If they are still null, we can't proceed.
-                if (mIsbn == null && (mBy == null || mBy.isEmpty())) {
+                if (mIsbnSearchText == null && (mBy == null || mBy.isEmpty())) {
                     setResult(Activity.RESULT_CANCELED);
                     finish();
                     return;
@@ -230,7 +234,7 @@ public class BookSearchActivity extends BaseActivityWithTasks implements SearchM
             // Default to MANUAL
             mLoopMode = false;
 
-            if (mIsbn != null) {
+            if (mIsbnSearchText != null) {
                 onCreateWithISBN();
             } else if (BY_ISBN.equals(mBy)) {
                 onCreateByISBN();
@@ -278,16 +282,16 @@ public class BookSearchActivity extends BaseActivityWithTasks implements SearchM
      * ISBN has been passed by another component
      */
     private void onCreateWithISBN() {
-        mIsbnText = findViewById(R.id.isbn);
-        mIsbnText.setText(mIsbn);
-        go(mIsbn, "", "");
+        mIsbnView = findViewById(R.id.isbn);
+        mIsbnView.setText(mIsbnSearchText);
+        go(mIsbnSearchText, "", "");
     }
 
     /**
      * present keypad to enter an ISBN
      */
     private void onCreateByISBN() {
-        mIsbnText = findViewById(R.id.isbn);
+        mIsbnView = findViewById(R.id.isbn);
 
         // Try stopping the soft input keyboard to pop up at all cost when entering isbn....
 
@@ -296,23 +300,23 @@ public class BookSearchActivity extends BaseActivityWithTasks implements SearchM
 //        imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0, null);
 
         // doesn't work, as soon as field gets focus, up it pops
-//        mIsbnText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+//        mIsbnView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 //            @Override
 //            public void onFocusChange(final View v, final boolean hasFocus) {
-//                if (v.equals(mIsbnText)) {
+//                if (v.equals(mIsbnView)) {
 //                    InputMethodManager imm = (InputMethodManager)
 //                            getSystemService(Context.INPUT_METHOD_SERVICE);
-//                    imm.showSoftInput(mIsbnText, InputMethodManager.HIDE_IMPLICIT_ONLY);
+//                    imm.showSoftInput(mIsbnView, InputMethodManager.HIDE_IMPLICIT_ONLY);
 //                }
 //            }
 //        });
 
         // doesn't work, as soon as field gets focus, up it pops
-//        mIsbnText.setShowSoftInputOnFocus(false);
+//        mIsbnView.setShowSoftInputOnFocus(false);
         // works but prevents the user from select/copy/past
-//        mIsbnText.setInputType(InputType.TYPE_NULL);
-//        mIsbnText.setTextIsSelectable(true);
-//        mIsbnText.setCursorVisible(true); // no effect
+//        mIsbnView.setInputType(InputType.TYPE_NULL);
+//        mIsbnView.setTextIsSelectable(true);
+//        mIsbnView.setCursorVisible(true); // no effect
         // doesn't work, as soon as field gets focus, up it pops
 //        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         // hide on entry, but it will still pop up when focused
@@ -326,15 +330,15 @@ public class BookSearchActivity extends BaseActivityWithTasks implements SearchM
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
-                    mIsbnText.setKeyListener(DigitsKeyListener.getInstance("1234567890qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"));
-                    mIsbnText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
+                    mIsbnView.setKeyListener(DigitsKeyListener.getInstance("1234567890qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"));
+                    mIsbnView.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
                 } else {
                     getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-                    mIsbnText.setKeyListener(DigitsKeyListener.getInstance("0123456789xX"));
-                    mIsbnText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
+                    mIsbnView.setKeyListener(DigitsKeyListener.getInstance("0123456789xX"));
+                    mIsbnView.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
 
-                    String txt = mIsbnText.getText().toString(); // leave xX
-                    mIsbnText.setText(txt.replaceAll("[qwertyuiopasdfghjklzcvbnmQWERTYUIOPASDFGHJKLZCVBNM]", ""));
+                    String txt = mIsbnView.getText().toString(); // leave xX
+                    mIsbnView.setText(txt.replaceAll("[qwertyuiopasdfghjklzcvbnmQWERTYUIOPASDFGHJKLZCVBNM]", ""));
                 }
             }
         });
@@ -354,17 +358,17 @@ public class BookSearchActivity extends BaseActivityWithTasks implements SearchM
         findViewById(R.id.isbn_del).setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 try {
-                    int start = mIsbnText.getSelectionStart();
-                    int end = mIsbnText.getSelectionEnd();
+                    int start = mIsbnView.getSelectionStart();
+                    int end = mIsbnView.getSelectionEnd();
                     if (start < end) {
                         // We have a selection. Delete it.
-                        mIsbnText.getText().replace(start, end, "");
-                        mIsbnText.setSelection(start, start);
+                        mIsbnView.getText().replace(start, end, "");
+                        mIsbnView.setSelection(start, start);
                     } else {
                         // Delete char before cursor
                         if (start > 0) {
-                            mIsbnText.getText().replace(start - 1, start, "");
-                            mIsbnText.setSelection(start - 1, start - 1);
+                            mIsbnView.getText().replace(start - 1, start, "");
+                            mIsbnView.setSelection(start - 1, start - 1);
                         }
                     }
                 } catch (StringIndexOutOfBoundsException ignore) {
@@ -375,7 +379,7 @@ public class BookSearchActivity extends BaseActivityWithTasks implements SearchM
 
         findViewById(R.id.search).setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                String mIsbn = mIsbnText.getText().toString().trim();
+                String mIsbn = mIsbnView.getText().toString().trim();
                 go(mIsbn, "", "");
             }
         });
@@ -393,15 +397,15 @@ public class BookSearchActivity extends BaseActivityWithTasks implements SearchM
      * Handle character insertion at cursor position in EditText
      */
     private void handleIsbnKey(final @NonNull String key) {
-        int start = mIsbnText.getSelectionStart();
-        int end = mIsbnText.getSelectionEnd();
-        mIsbnText.getText().replace(start, end, key);
-        mIsbnText.setSelection(start + 1, start + 1);
+        int start = mIsbnView.getSelectionStart();
+        int end = mIsbnView.getSelectionEnd();
+        mIsbnView.getText().replace(start, end, key);
+        mIsbnView.setSelection(start + 1, start + 1);
     }
 
     private void onCreateByScan(final @Nullable Bundle savedInstanceState) {
         mLoopMode = true;
-        mIsbnText = findViewById(R.id.isbn);
+        mIsbnView = findViewById(R.id.isbn);
 
         /*
          * Use the preferred barcode scanner to search for a isbn
@@ -505,12 +509,12 @@ public class BookSearchActivity extends BaseActivityWithTasks implements SearchM
         setTitle(R.string.search_hint);
         initAuthorList();
 
-        mTitleText = findViewById(R.id.title);
+        mTitleView = findViewById(R.id.title);
 
         findViewById(R.id.search).setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                String author = mAuthorText.getText().toString().trim();
-                String title = mTitleText.getText().toString().trim();
+                String author = mAuthorView.getText().toString().trim();
+                String title = mTitleView.getText().toString().trim();
 
                 if (mAuthorAdapter.getPosition(author) < 0) {
                     // Based on code from filipeximenes we also need to update the adapter here in
@@ -542,14 +546,14 @@ public class BookSearchActivity extends BaseActivityWithTasks implements SearchM
      * Used when a book has been successfully added as we want to get ready for another.
      */
     private void clearFields() {
-        if (mIsbnText != null) {
-            mIsbnText.setText("");
+        if (mIsbnView != null) {
+            mIsbnView.setText("");
         }
-        if (mAuthorText != null) {
-            mAuthorText.setText("");
+        if (mAuthorView != null) {
+            mAuthorView.setText("");
         }
-        if (mTitleText != null) {
-            mTitleText.setText("");
+        if (mTitleView != null) {
+            mTitleView.setText("");
         }
     }
 
@@ -569,32 +573,32 @@ public class BookSearchActivity extends BaseActivityWithTasks implements SearchM
         }
 
         // Save the details because we will do some async processing or an alert
-        mAuthor = author;
-        mTitle = title;
+        mAuthorSearchText = author;
+        mTitleSearchText = title;
         // intercept UPC numbers
-        mIsbn = IsbnUtils.upc2isbn(isbn);
+        mIsbnSearchText = IsbnUtils.upc2isbn(isbn);
 
         try {
-            if (!mIsbn.isEmpty()) {
+            if (!mIsbnSearchText.isEmpty()) {
                 // If the layout has an 'Allow ASIN' checkbox, see if it is checked.
                 final Checkable allowAsinCb = findViewById(R.id.allow_asin);
                 final boolean allowAsin = allowAsinCb != null && allowAsinCb.isChecked();
 
-                if (!IsbnUtils.isValid(mIsbn) && (!allowAsin || !AsinUtils.isValid(mIsbn))) {
+                if (!IsbnUtils.isValid(mIsbnSearchText) && (!allowAsin || !AsinUtils.isValid(mIsbnSearchText))) {
                     int msg;
                     if (allowAsin) {
                         msg = R.string.warning_x_is_not_a_valid_isbn_or_asin;
                     } else {
                         msg = R.string.warning_x_is_not_a_valid_isbn;
                     }
-                    StandardDialogs.showUserMessage(this, getString(msg, mIsbn));
+                    StandardDialogs.showUserMessage(this, getString(msg, mIsbnSearchText));
                     if (mLoopMode) {
                         // Optionally beep if scan failed.
                         SoundManager.beepLow();
                         // reset the now-discarded details
-                        mIsbn = "";
-                        mAuthor = "";
-                        mTitle = "";
+                        mIsbnSearchText = "";
+                        mAuthorSearchText = "";
+                        mTitleSearchText = "";
                         startScannerActivity();
                     }
                     return;
@@ -604,7 +608,7 @@ public class BookSearchActivity extends BaseActivityWithTasks implements SearchM
                         SoundManager.beepHigh();
                     }
                     // See if ISBN exists in our database
-                    final long existingId = mDb.getIdFromIsbn(mIsbn, true);
+                    final long existingId = mDb.getIdFromIsbn(mIsbnSearchText, true);
                     if (existingId > 0) {
                         // Verify - this can be a dangerous operation
                         AlertDialog dialog = new AlertDialog.Builder(this)
@@ -632,9 +636,9 @@ public class BookSearchActivity extends BaseActivityWithTasks implements SearchM
                                         //do nothing
                                         if (mLoopMode) {
                                             // reset the now-discarded details
-                                            mIsbn = "";
-                                            mAuthor = "";
-                                            mTitle = "";
+                                            mIsbnSearchText = "";
+                                            mAuthorSearchText = "";
+                                            mTitleSearchText = "";
                                             startScannerActivity();
                                         }
                                     }
@@ -662,7 +666,7 @@ public class BookSearchActivity extends BaseActivityWithTasks implements SearchM
         StorageUtils.deleteFile(StorageUtils.getTempCoverFile());
 
         // need at least one of the three. Normally none of these will be null ... paranoia strikes again...
-        if ((mAuthor != null && !mAuthor.isEmpty()) || (mTitle != null && !mTitle.isEmpty()) || (mIsbn != null && !mIsbn.isEmpty())) {
+        if ((mAuthorSearchText != null && !mAuthorSearchText.isEmpty()) || (mTitleSearchText != null && !mTitleSearchText.isEmpty()) || (mIsbnSearchText != null && !mIsbnSearchText.isEmpty())) {
             /* Get the book */
             try {
                 // Start the lookup in background.
@@ -674,11 +678,11 @@ public class BookSearchActivity extends BaseActivityWithTasks implements SearchM
                 }
 
                 getTaskManager().doProgress(getString(R.string.progress_msg_searching));
-                searchManager.search(mSearchSites, mAuthor, mTitle, mIsbn, true);
+                searchManager.search(mSearchSites, mAuthorSearchText, mTitleSearchText, mIsbnSearchText, true);
                 // reset the details so we don't restart the search unnecessarily
-                mAuthor = "";
-                mTitle = "";
-                mIsbn = "";
+                mAuthorSearchText = "";
+                mTitleSearchText = "";
+                mIsbnSearchText = "";
             } catch (Exception e) {
                 Logger.error(e);
                 StandardDialogs.showUserMessage(this, R.string.error_search_failed);
@@ -766,7 +770,7 @@ public class BookSearchActivity extends BaseActivityWithTasks implements SearchM
                     /* there *has* to be 'data' */
                     Objects.requireNonNull(data);
                     String isbn = mScanner.getBarcode(data);
-                    mIsbnText.setText(isbn);
+                    mIsbnView.setText(isbn);
                     go(isbn, "", "");
                 } else {
                     // Scanner Cancelled/failed. Pass the last book we got to our caller and finish here.
@@ -821,8 +825,8 @@ public class BookSearchActivity extends BaseActivityWithTasks implements SearchM
 
     private void initAuthorList() {
         // Get the author field, if present
-        mAuthorText = findViewById(R.id.author);
-        if (mAuthorText != null) {
+        mAuthorView = findViewById(R.id.author);
+        if (mAuthorView != null) {
             // Get all known authors and build a Set of the names
             final ArrayList<String> authors = mDb.getAuthorsFormattedName();
             final Set<String> uniqueNames = new HashSet<>();
@@ -839,7 +843,7 @@ public class BookSearchActivity extends BaseActivityWithTasks implements SearchM
 
             // Now get an adapter based on the combined names
             mAuthorAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, authors);
-            mAuthorText.setAdapter(mAuthorAdapter);
+            mAuthorView.setAdapter(mAuthorAdapter);
         }
     }
 
@@ -916,9 +920,9 @@ public class BookSearchActivity extends BaseActivityWithTasks implements SearchM
 
         // Save the current search details as this may be called as a result of a rotate during an alert dialog.
         // note: these don't actually are getting read ? TODO: make 100% sure, then delete
-        outState.putString(UniqueId.KEY_AUTHOR_NAME, mAuthor);
-        outState.putString(UniqueId.KEY_BOOK_ISBN, mIsbn);
-        outState.putString(UniqueId.KEY_TITLE, mTitle);
+        outState.putString(UniqueId.BKEY_SEARCH_AUTHOR, mAuthorSearchText);
+        outState.putString(UniqueId.KEY_BOOK_ISBN, mIsbnSearchText);
+        outState.putString(UniqueId.KEY_TITLE, mTitleSearchText);
 
         super.onSaveInstanceState(outState);
     }

@@ -213,7 +213,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textIsSelectable="true"
-                tools:text="Publisher name, Jan 25, 2012" />
+                tools:text="Publisher name (Jan 25, 2012)" />
         </LinearLayout>
 
         <!-- Book Shelves -->
@@ -320,6 +320,7 @@
                 android:layout_height="wrap_content">
 
                 <TextView
+                    android:id="@+id/lbl_edition"
                     style="@style/lbl_textField"
                     android:layout_width="wrap_content"
                     android:text="@string/lbl_edition" />

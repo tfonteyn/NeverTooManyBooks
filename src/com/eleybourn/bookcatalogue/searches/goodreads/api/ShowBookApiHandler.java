@@ -24,6 +24,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Series;
@@ -511,7 +513,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
 
         /* is it an eBook ? Overwrite the format key */
         if (mBookData.containsKey(ShowBookFieldNames.IS_EBOOK) && mBookData.getBoolean(ShowBookFieldNames.IS_EBOOK)) {
-            mBookData.putString(UniqueId.KEY_BOOK_FORMAT, UniqueId.BVAL_FORMAT_EBOOK);
+            mBookData.putString(UniqueId.KEY_BOOK_FORMAT, BookCatalogueApp.getResourceString(R.string.book_format_ebook));
         }
 
         /*

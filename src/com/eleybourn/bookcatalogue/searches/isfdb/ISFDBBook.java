@@ -4,8 +4,10 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
+import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -54,17 +56,16 @@ public class ISFDBBook extends AbstractBase {
     private static final Pattern YEAR_FROM_LI = Pattern.compile("&#x2022; \\(([1|2]\\d\\d\\d)\\)");
     
 
-
     //TODO: externalise this and make some common mapper for all searches using localised resource strings
     static {
         FORMAT_MAP.put("pb", "Paperback");
         FORMAT_MAP.put("tp", "Trade Paperback");
         FORMAT_MAP.put("hc", "Hardcover");
-        FORMAT_MAP.put("ebook", UniqueId.BVAL_FORMAT_EBOOK);
+        FORMAT_MAP.put("ebook", BookCatalogueApp.getResourceString(R.string.book_format_ebook));
         FORMAT_MAP.put("digest", "Digest");
-        FORMAT_MAP.put("unknown", "Unknown");
-        FORMAT_MAP.put("audio cassette", UniqueId.BVAL_FORMAT_AUDIO);
-        FORMAT_MAP.put("audio CD", UniqueId.BVAL_FORMAT_AUDIO);
+        FORMAT_MAP.put("unknown", BookCatalogueApp.getResourceString(R.string.unknown));
+        FORMAT_MAP.put("audio cassette", BookCatalogueApp.getResourceString(R.string.book_format_audiobook));
+        FORMAT_MAP.put("audio CD", BookCatalogueApp.getResourceString(R.string.book_format_audiobook));
     }
 
     static {

@@ -61,6 +61,9 @@ public class CsvImporter implements Importer {
 
     private final static String STRINGED_ID = UniqueId.KEY_ID;
 
+    /** as used in older versions, or from arbitrarily constructed CSV files */
+    private static final String OLD_STYLE_AUTHOR_NAME = "author_name";
+
     @NonNull
     private final CatalogueDBAdapter mDb;
 
@@ -109,18 +112,22 @@ public class CsvImporter implements Importer {
         // make an attempt at escaping characters etc to preserve formatting.
         boolean fullEscaping = !book.containsKey(UniqueId.KEY_AUTHOR_ID) || !book.containsKey(UniqueId.KEY_AUTHOR_FAMILY_NAME);
 
-        // Make sure required fields are present.
+        // Make sure required fields in Book bundle are present.
         // ENHANCE: Rationalize import to allow updates using 1 or 2 columns. For now we require complete data.
         // ENHANCE: Do a search if mandatory columns missing (eg. allow 'import' of a list of ISBNs).
         // ENHANCE: Only make some columns mandatory if the ID is not in import, or not in DB (ie. if not an update)
         // ENHANCE: Export/Import should use GUIDs for book IDs, and put GUIDs on Image file names.
+
+        // need either ID or UUID
+        requireColumnOrThrow(book, UniqueId.KEY_ID, UniqueId.KEY_BOOK_UUID);
+        // need some type of author name.
         requireColumnOrThrow(book,
-                UniqueId.KEY_ID,
-                UniqueId.KEY_BOOK_UUID,
+                UniqueId.BKEY_AUTHOR_STRING_LIST, // aka author_details: preferred one as used in latest versions
+
                 UniqueId.KEY_AUTHOR_FAMILY_NAME,
                 UniqueId.KEY_AUTHOR_FORMATTED,
-                UniqueId.KEY_AUTHOR_NAME,
-                UniqueId.BKEY_AUTHOR_STRING_LIST);
+                OLD_STYLE_AUTHOR_NAME
+                );
 
         final boolean updateOnlyIfNewer;
         if ((importFlags & Importer.IMPORT_NEW_OR_UPDATED) != 0) {
@@ -410,9 +417,11 @@ public class CsvImporter implements Importer {
      */
     private void handleAuthors(final @NonNull CatalogueDBAdapter db,
                                final @NonNull Book book) {
+        // preferred & used in latest versions
         String encodedList = book.getString(UniqueId.BKEY_AUTHOR_STRING_LIST);
         if (encodedList.isEmpty()) {
-            // Need to build it from other fields.
+            // Need to build it from other/older fields.
+
             if (book.containsKey(UniqueId.KEY_AUTHOR_FAMILY_NAME)) {
                 // Build from family/given
                 encodedList = book.getString(UniqueId.KEY_AUTHOR_FAMILY_NAME);
@@ -423,10 +432,12 @@ public class CsvImporter implements Importer {
                 if (!given.isEmpty()) {
                     encodedList += ", " + given;
                 }
-            } else if (book.containsKey(UniqueId.KEY_AUTHOR_NAME)) {
-                encodedList = book.getString(UniqueId.KEY_AUTHOR_NAME);
+
             } else if (book.containsKey(UniqueId.KEY_AUTHOR_FORMATTED)) {
                 encodedList = book.getString(UniqueId.KEY_AUTHOR_FORMATTED);
+
+            } else if (book.containsKey(OLD_STYLE_AUTHOR_NAME)) {
+                encodedList = book.getString(OLD_STYLE_AUTHOR_NAME);
             }
         }
 
@@ -563,7 +574,9 @@ public class CsvImporter implements Importer {
         }
     }
 
-    /** Require a column */
+    /**
+     * Require a column to be present. First one found; remainders are not needed
+     */
     private void requireColumnOrThrow(final @NonNull Book book,
                                       String... names) throws ImportException {
         for (String name : names) {

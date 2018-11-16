@@ -90,44 +90,31 @@ import java.util.Set;
                 ReportField.USER_APP_START_DATE,
                 ReportField.USER_CRASH_DATE,
                 ReportField.THREAD_DETAILS,
-                //ReportField.APPLICATION_LOG,
-                },
+//                ReportField.APPLICATION_LOG,
+        }
         //optional, displayed as soon as the crash occurs, before collecting data which can take a few seconds
-        resToastText = R.string.crash_message_text,
-        resNotifTickerText = R.string.crash_notif_ticker_text,
-        resNotifTitle = R.string.crash_notif_title,
-        resNotifText = R.string.crash_notif_text,
-        resDialogText = R.string.crash_dialog_text,
+        , resToastText = R.string.crash_message_text
+        , resNotifTickerText = R.string.crash_notif_ticker_text
+        , resNotifTitle = R.string.crash_notif_title
+        , resNotifText = R.string.crash_notif_text
+        , resDialogText = R.string.crash_dialog_text
         // optional. default is your application name
-        resDialogTitle = R.string.crash_dialog_title,
+        , resDialogTitle = R.string.crash_dialog_title
         // optional. when defined, adds a user text field input with this text resource as a label
-        resDialogCommentPrompt = R.string.crash_dialog_comment_prompt,
+        , resDialogCommentPrompt = R.string.crash_dialog_comment_prompt
         // optional. displays a message when the user accepts to send a report.
-        resDialogOkToast = R.string.crash_dialog_ok_message
-        //applicationLogFile = ""
+        , resDialogOkToast = R.string.crash_dialog_ok_message
+//        ,applicationLogFile = ""
+//        ,applicationLogFileLines = 1000
 )
 
 public class BookCatalogueApp extends Application {
     /** the name used for calls to Context.getSharedPreferences(name, ...) */
     public static final String APP_SHARED_PREFERENCES = "bookCatalogue";
-    private static final String TAG = "App";
-
-    /** Preferred interface locale */
-    public static final String PREF_APP_LOCALE = TAG + ".Locale";
-    /** Theme */
-    public static final String PREF_APP_THEME = TAG + ".Theme";
-
-    /** Implementation to use for {@link com.eleybourn.bookcatalogue.dialogs.StandardDialogs#showUserMessage} */
-    public static final String PREF_APP_USER_MESSAGE = TAG + ".UserMessage";
-
     /** Last full backup date */
     public static final String PREF_LAST_BACKUP_DATE = "Backup.LastDate";
     /** Last full backup file path */
     public static final String PREF_LAST_BACKUP_FILE = "Backup.LastFile";
-
-    // we really only use the one */
-    private static final int NOTIFICATION_ID = 0;
-
     /**
      * NEWKIND: APP THEME
      * Also add new themes in R.array.supported_themes,
@@ -135,7 +122,15 @@ public class BookCatalogueApp extends Application {
      * The preferences choice will be build according to the string-array list/order.
      */
     public static final int DEFAULT_THEME = 0;
-
+    private static final String TAG = "App";
+    /** Preferred interface locale */
+    public static final String PREF_APP_LOCALE = TAG + ".Locale";
+    /** Theme */
+    public static final String PREF_APP_THEME = TAG + ".Theme";
+    /** Implementation to use for {@link com.eleybourn.bookcatalogue.dialogs.StandardDialogs#showUserMessage} */
+    public static final String PREF_APP_USER_MESSAGE = TAG + ".UserMessage";
+    // we really only use the one */
+    private static final int NOTIFICATION_ID = 0;
     private static final int[] APP_THEMES = {
             R.style.AppTheme,
             R.style.AppTheme_Light
@@ -184,12 +179,7 @@ public class BookCatalogueApp extends Application {
                 public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
                     switch (key) {
                         case PREF_APP_LOCALE:
-                            String prefLocale = getSharedPreferences().getString(PREF_APP_LOCALE, null);
-                            if (prefLocale != null && !prefLocale.isEmpty()) {
-                                mPreferredLocale = localeFromName(prefLocale);
-                            } else {
-                                mPreferredLocale = getSystemLocal();
-                            }
+                            mPreferredLocale = Prefs.getPreferredLocale(getSystemLocal());
                             applyPreferredLocaleIfNecessary(getBaseContext().getResources());
                             notifyLocaleChanged();
                             break;
@@ -203,6 +193,7 @@ public class BookCatalogueApp extends Application {
                     }
                 }
             };
+
     @SuppressWarnings("unused")
     public BookCatalogueApp() {
         super();
@@ -447,21 +438,33 @@ public class BookCatalogueApp extends Application {
      * There are also: cs, pl but those are not complete.
      * (2018-11-10: pt_BR was removed altogether as it was pure english)
      *
-     * @return ArrayList of locale names
+     * Original code had full "land_country string"
+     * "de_DE","en_AU","fr_FR","nl_NL","it_IT","el_GR","ru_RU","tr_TR"
+     *
+     * But this is artificially limiting, for example:
+     * "fr_FR" gets you the language French + all 'french' locale 'things'
+     * But french is spoken in other countries, which share the language, but not the locale 'things'
+     *
+     * By only specifying the language, we leave the pick of the country to the system locale.
+     *
+     * @return ArrayList of Locale codes
      */
     @NonNull
     public static List<String> getSupportedLocales() {
         if (mSupportedLocales == null) {
             mSupportedLocales = new ArrayList<>();
-            mSupportedLocales.add("de_DE");
-            mSupportedLocales.add("en_AU");
-            mSupportedLocales.add("es_ES");
-            mSupportedLocales.add("fr_FR");
-            mSupportedLocales.add("it_IT");
-            mSupportedLocales.add("nl_NL");
-            mSupportedLocales.add("ru_RU");
-            mSupportedLocales.add("tr_TR");
-            mSupportedLocales.add("el_GR");
+
+            mSupportedLocales.add("de");
+            mSupportedLocales.add("en");
+            mSupportedLocales.add("fr");
+            mSupportedLocales.add("nl");
+
+            mSupportedLocales.add("es");
+            mSupportedLocales.add("it");
+            mSupportedLocales.add("el");
+
+            mSupportedLocales.add("ru");
+            mSupportedLocales.add("tr");
         }
         return mSupportedLocales;
     }
@@ -551,11 +554,8 @@ public class BookCatalogueApp extends Application {
         // Get the preferred locale as soon as possible
         try {
             mInitialLocale = Locale.getDefault();
-            String prefLocale = Prefs.getString(PREF_APP_LOCALE, null);
-            if (prefLocale != null && !prefLocale.isEmpty()) {
-                mPreferredLocale = localeFromName(prefLocale);
-                applyPreferredLocaleIfNecessary(getBaseContext().getResources());
-            }
+            mPreferredLocale = Prefs.getPreferredLocale(mInitialLocale);
+            applyPreferredLocaleIfNecessary(getBaseContext().getResources());
         } catch (Exception e) {
             // Not much we can do...we want locale set early, but not fatal if it fails.
             Logger.error(e);
@@ -577,8 +577,8 @@ public class BookCatalogueApp extends Application {
         super.onCreate();
 
         // Watch the preferences and handle changes as necessary
-        SharedPreferences p = getSharedPreferences();
-        p.registerOnSharedPreferenceChangeListener(mPrefsListener);
+        SharedPreferences sharedPreferences = getSharedPreferences();
+        sharedPreferences.registerOnSharedPreferenceChangeListener(mPrefsListener);
     }
 
     /**
@@ -630,6 +630,15 @@ public class BookCatalogueApp extends Application {
     public static class Prefs {
 
         private Prefs() {
+        }
+
+        public static Locale getPreferredLocale(final @NonNull Locale defaultValue) {
+            String prefLocaleName = getString(PREF_APP_LOCALE, null);
+            if (prefLocaleName != null && !prefLocaleName.isEmpty()) {
+                return localeFromName(prefLocaleName);
+            } else {
+                return defaultValue;
+            }
         }
 
         /** Get a named boolean preference */

@@ -63,6 +63,8 @@ import java.util.ArrayList;
 import java.util.Currency;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
+import java.util.MissingResourceException;
 import java.util.Objects;
 
 /**
@@ -483,11 +485,52 @@ public class Fields extends ArrayList<Fields.Field> {
         void afterFieldChange(final @NonNull Field field, final @Nullable String newValue);
     }
 
-    private interface FieldsContext {
-        Object dbgGetOwnerContext();
+    /**
+     * Interface for all field-level validators. Each field validator is called twice; once
+     * with the crossValidating flag set to false, then, if all validations were successful,
+     * they are all called a second time with the flag set to true.
+     * This is done in {@link #validateAllFields(Bundle)}
+     *
+     * This is an alternate method of applying cross-validation.
+     * 2018-11-11: the original code never actively used this.
+     *
+     * It basically seems {@link DataManager} replaced/implemented validation instead
+     *
+     * @author Philip Warner
+     */
+    public interface FieldValidator {
+        /**
+         * Validation method. Must throw a {@link ValidatorException} if validation fails.
+         *
+         * @param fields          The Fields object containing the Field being validated
+         * @param field           The Field to validate
+         * @param values          A ContentValues collection to store the validated value.
+         *                        On a cross-validation pass this collection will have all
+         *                        field values set and can be read.
+         * @param crossValidating Options indicating if this is the cross-validation pass.
+         *
+         * @throws ValidatorException For any validation failure.
+         */
+        void validate(final @NonNull Fields fields,
+                      final @NonNull Field field,
+                      final @NonNull Bundle values,
+                      final boolean crossValidating) throws ValidatorException;
+    }
 
-        @Nullable
-        View findViewById(@IdRes int id);
+    /**
+     * Interface for all cross-validators; these are applied after all field-level validators
+     * have succeeded.
+     *
+     * @author Philip Warner
+     */
+    public interface FieldCrossValidator {
+        /**
+         * @param fields The Fields object containing the Field being validated
+         * @param values A Bundle collection with all validated field values.
+         *
+         * @throws ValidatorException For any validation failure.
+         */
+        void validate(final @NonNull Fields fields, final @NonNull Bundle values) throws ValidatorException;
     }
 
     /**
@@ -561,61 +604,13 @@ public class Fields extends ArrayList<Fields.Field> {
     }
 
     /**
-     * Interface for all field-level validators. Each field validator is called twice; once
-     * with the crossValidating flag set to false, then, if all validations were successful,
-     * they are all called a second time with the flag set to true.
-     * This is done in {@link #validateAllFields(Bundle)}
-     *
-     * This is an alternate method of applying cross-validation.
-     * 2018-11-11: the original code never actively used this.
-     *
-     * It basically seems {@link DataManager} replaced/implemented validation instead
-     *
-     * @author Philip Warner
-     */
-    public interface FieldValidator {
-        /**
-         * Validation method. Must throw a {@link ValidatorException} if validation fails.
-         *
-         * @param fields          The Fields object containing the Field being validated
-         * @param field           The Field to validate
-         * @param values          A ContentValues collection to store the validated value.
-         *                        On a cross-validation pass this collection will have all
-         *                        field values set and can be read.
-         * @param crossValidating Options indicating if this is the cross-validation pass.
-         *
-         * @throws ValidatorException For any validation failure.
-         */
-        void validate(final @NonNull Fields fields,
-                      final @NonNull Field field,
-                      final @NonNull Bundle values,
-                      final boolean crossValidating) throws ValidatorException;
-    }
-
-    /**
-     * Interface for all cross-validators; these are applied after all field-level validators
-     * have succeeded.
-     *
-     * @author Philip Warner
-     */
-    public interface FieldCrossValidator {
-        /**
-         * @param fields The Fields object containing the Field being validated
-         * @param values A Bundle collection with all validated field values.
-         *
-         * @throws ValidatorException For any validation failure.
-         */
-        void validate(final @NonNull Fields fields, final @NonNull Bundle values) throws ValidatorException;
-    }
-
-    /**
      * Interface definition for Field formatters.
      *
      * @author Philip Warner
      */
     public interface FieldFormatter {
         /**
-         * // Format a string for applying to a View
+         * Format a string for applying to a View
          *
          * @param source Input value
          *
@@ -625,7 +620,9 @@ public class Fields extends ArrayList<Fields.Field> {
         String format(final @NonNull Field field, final @Nullable String source);
 
         /**
-         * Extract a formatted string from the display version
+         * This method is intended to be called from a {@link FieldDataAccessor}
+         *
+         * Extract a formatted string from the displayed version.
          *
          * @param source The value to be back-translated
          *
@@ -635,16 +632,17 @@ public class Fields extends ArrayList<Fields.Field> {
         String extract(final @NonNull Field field, final @NonNull String source);
     }
 
-    /**
-     * Implementation that stores and retrieves data from a string variable.
-     * Only used when a Field fails to find a layout.
-     *
-     * @author Philip Warner
-     */
-    static public class StringDataAccessor implements FieldDataAccessor {
-        @NonNull
-        private String mLocalValue = "";
+    /** fronts an Activity/Fragment context */
+    private interface FieldsContext {
+        /** DEBUG only */
+        Object dbgGetOwnerContext();
 
+        @Nullable
+        View findViewById(@IdRes int id);
+    }
+
+    /** Base implementation */
+    private static abstract class BaseDataAccessor implements FieldDataAccessor {
         @Override
         public void setFieldValueFrom(final @NonNull Field field, final @NonNull Cursor cursor) {
             set(field, cursor.getString(cursor.getColumnIndex(field.column)));
@@ -661,6 +659,17 @@ public class Fields extends ArrayList<Fields.Field> {
         public void setFieldValueFrom(final @NonNull Field field, final @NonNull DataManager values) {
             set(field, values.getString(field.column));
         }
+    }
+
+    /**
+     * Implementation that stores and retrieves data from a local string variable.
+     * Only used when a Field fails to find a layout.
+     *
+     * @author Philip Warner
+     */
+    static public class StringDataAccessor extends BaseDataAccessor {
+        @NonNull
+        private String mLocalValue = "";
 
         @Override
         public void set(final @NonNull Field field, final @NonNull String value) {
@@ -686,32 +695,17 @@ public class Fields extends ArrayList<Fields.Field> {
 
     /**
      * Implementation that stores and retrieves data from a TextView.
-     * This is treated differently to an EditText in that HTML is
-     * displayed properly.
+     * This is treated differently to an EditText in that HTML is (optionally) displayed properly.
+     *
+     * The actual value is stored in a local variable.
+     * Does not use a {@link FieldFormatter}
      *
      * @author Philip Warner
      */
-    static public class TextViewAccessor implements FieldDataAccessor {
+    static public class TextViewAccessor extends BaseDataAccessor {
         private boolean mFormatHtml;
         @NonNull
         private String mRawValue = "";
-
-        TextViewAccessor() {
-        }
-
-        public void setFieldValueFrom(final @NonNull Field field, final @NonNull Cursor cursor) {
-            set(field, cursor.getString(cursor.getColumnIndex(field.column)));
-        }
-
-        public void setFieldValueFrom(final @NonNull Field field, final @NonNull Bundle values) {
-            String v = values.getString(field.column);
-            Objects.requireNonNull(v);
-            set(field, v);
-        }
-
-        public void setFieldValueFrom(final @NonNull Field field, final @NonNull DataManager values) {
-            set(field, values.getString(field.column));
-        }
 
         public void set(final @NonNull Field field, final @NonNull String value) {
             mRawValue = value;
@@ -752,26 +746,12 @@ public class Fields extends ArrayList<Fields.Field> {
 
     /**
      * Implementation that stores and retrieves data from an EditText.
-     * Just uses for defined formatter and setText() and getText().
+     * Uses the defined {@link FieldFormatter} and setText() and getText().
      *
      * @author Philip Warner
      */
-    static public class EditTextAccessor implements FieldDataAccessor {
+    static public class EditTextAccessor extends BaseDataAccessor {
         private boolean mIsSetting = false;
-
-        public void setFieldValueFrom(final @NonNull Field field, final @NonNull Cursor cursor) {
-            set(field, cursor.getString(cursor.getColumnIndex(field.column)));
-        }
-
-        public void setFieldValueFrom(final @NonNull Field field, final @NonNull Bundle values) {
-            String v = values.getString(field.column);
-            Objects.requireNonNull(v);
-            set(field, v);
-        }
-
-        public void setFieldValueFrom(final @NonNull Field field, final @NonNull DataManager values) {
-            set(field, values.getString(field.column));
-        }
 
         public void set(final @NonNull Field field, final @NonNull String value) {
             synchronized (this) {
@@ -825,18 +805,7 @@ public class Fields extends ArrayList<Fields.Field> {
      *
      * @author Philip Warner
      */
-    static public class CheckableAccessor implements FieldDataAccessor {
-        public void setFieldValueFrom(final @NonNull Field field, final @NonNull Cursor cursor) {
-            set(field, cursor.getString(cursor.getColumnIndex(field.column)));
-        }
-
-        public void setFieldValueFrom(final @NonNull Field field, final @NonNull Bundle values) {
-            set(field, values.getString(field.column));
-        }
-
-        public void setFieldValueFrom(final @NonNull Field field, final @NonNull DataManager values) {
-            set(field, values.getString(field.column));
-        }
+    static public class CheckableAccessor extends BaseDataAccessor {
 
         public void set(final @NonNull Field field, final @Nullable String value) {
             Checkable cb = field.getView();
@@ -854,7 +823,7 @@ public class Fields extends ArrayList<Fields.Field> {
         public void putFieldValueInto(final @NonNull Field field, final @NonNull Bundle values) {
             Checkable cb = field.getView();
             if (field.formatter != null) {
-                values.putString(field.column, field.extract(cb.isChecked() ? "1" : "0"));
+                values.putString(field.column, field.formatter.extract(field, cb.isChecked() ? "1" : "0"));
             } else {
                 values.putBoolean(field.column, cb.isChecked());
             }
@@ -864,7 +833,7 @@ public class Fields extends ArrayList<Fields.Field> {
         public void putFieldValueInto(final @NonNull Field field, final @NonNull DataManager dataManager) {
             Checkable cb = field.getView();
             if (field.formatter != null) {
-                dataManager.putString(field.column, field.extract(cb.isChecked() ? "1" : "0"));
+                dataManager.putString(field.column, field.formatter.extract(field, cb.isChecked() ? "1" : "0"));
             } else {
                 dataManager.putBoolean(field.column, cb.isChecked());
             }
@@ -886,7 +855,7 @@ public class Fields extends ArrayList<Fields.Field> {
      *
      * @author Philip Warner
      */
-    static public class RatingBarAccessor implements FieldDataAccessor {
+    static public class RatingBarAccessor extends BaseDataAccessor {
         public void setFieldValueFrom(final @NonNull Field field, final @NonNull Cursor cursor) {
             RatingBar ratingBar = field.getView();
             if (field.formatter != null) {
@@ -894,14 +863,6 @@ public class Fields extends ArrayList<Fields.Field> {
             } else {
                 ratingBar.setRating(cursor.getFloat(cursor.getColumnIndex(field.column)));
             }
-        }
-
-        public void setFieldValueFrom(final @NonNull Field field, final @NonNull Bundle values) {
-            set(field, values.getString(field.column));
-        }
-
-        public void setFieldValueFrom(final @NonNull Field field, final @NonNull DataManager values) {
-            set(field, values.getString(field.column));
         }
 
         public void set(final @NonNull Field field, final @Nullable String value) {
@@ -917,7 +878,7 @@ public class Fields extends ArrayList<Fields.Field> {
         public void putFieldValueInto(final @NonNull Field field, final @NonNull Bundle bundle) {
             RatingBar ratingBar = field.getView();
             if (field.formatter != null) {
-                bundle.putString(field.column, field.extract("" + ratingBar.getRating()));
+                bundle.putString(field.column, field.formatter.extract(field, "" + ratingBar.getRating()));
             } else {
                 bundle.putFloat(field.column, ratingBar.getRating());
             }
@@ -926,7 +887,7 @@ public class Fields extends ArrayList<Fields.Field> {
         public void putFieldValueInto(final @NonNull Field field, final @NonNull DataManager dataManager) {
             RatingBar ratingBar = field.getView();
             if (field.formatter != null) {
-                dataManager.putString(field.column, field.extract("" + ratingBar.getRating()));
+                dataManager.putString(field.column, field.formatter.extract(field, "" + ratingBar.getRating()));
             } else {
                 dataManager.putFloat(field.column, ratingBar.getRating());
             }
@@ -945,18 +906,7 @@ public class Fields extends ArrayList<Fields.Field> {
      *
      * @author Philip Warner
      */
-    static public class SpinnerAccessor implements FieldDataAccessor {
-        public void setFieldValueFrom(final @NonNull Field field, final @NonNull Cursor cursor) {
-            set(field, cursor.getString(cursor.getColumnIndex(field.column)));
-        }
-
-        public void setFieldValueFrom(final @NonNull Field field, final @NonNull Bundle values) {
-            set(field, values.getString(field.column));
-        }
-
-        public void setFieldValueFrom(final @NonNull Field field, final @NonNull DataManager values) {
-            set(field, values.getString(field.column));
-        }
+    static public class SpinnerAccessor extends BaseDataAccessor {
 
         public void set(final @NonNull Field field, final @Nullable String value) {
             Spinner spinner = field.getView();
@@ -1006,8 +956,7 @@ public class Fields extends ArrayList<Fields.Field> {
          */
         @NonNull
         public String format(final @NonNull Field field, final @Nullable String source) {
-            if (source == null) {
-                Logger.error("source was null");
+            if (source == null || source.isEmpty()) {
                 return "";
             }
             try {
@@ -1047,7 +996,7 @@ public class Fields extends ArrayList<Fields.Field> {
         private final Resources mRes;
 
         /**
-         * @param res resources so we can get 'yes'/'no'
+         * @param res resources so we can get the strings to display
          */
         @SuppressWarnings("WeakerAccess")
         public BinaryYesNoEmptyFormatter(final @NonNull Resources res) {
@@ -1060,7 +1009,6 @@ public class Fields extends ArrayList<Fields.Field> {
         @NonNull
         public String format(final @NonNull Field field, final @Nullable String source) {
             if (source == null) {
-                Logger.error("source was null");
                 return "";
             }
             try {
@@ -1086,6 +1034,8 @@ public class Fields extends ArrayList<Fields.Field> {
 
     /**
      * Formatter for price fields.
+     *
+     * Does not support {@link FieldFormatter#extract}
      */
     static public class PriceFormatter implements FieldFormatter {
 
@@ -1129,12 +1079,59 @@ public class Fields extends ArrayList<Fields.Field> {
 
         @NonNull
         public String extract(final @NonNull Field field, final @NonNull String source) {
+            throw new UnsupportedOperationException();
+        }
+    }
+
+    /**
+     * Formatter for language fields.
+     *
+     * The implementation if fairly simplistic.
+     * If the database column contains a standard ISO language code, then 'format'
+     * will return a current Locale based display name of that language.
+     *
+     * Otherwise, we just get what was stored.
+     *
+     * Does not support {@link FieldFormatter#extract}
+     */
+    static public class LanguageFormatter implements FieldFormatter {
+
+        /**
+         * If the source is a valid Locale language code, returns the full display
+         * name of that language in the currently active locale.
+         * Otherwise, simply return the source string itself.
+         */
+        @NonNull
+        public String format(final @NonNull Field field, final @Nullable String source) {
+            if (source == null || source.isEmpty()) {
+                return "";
+            }
+
+            Locale locale = new Locale(source);
+            if (isValid(locale)) {
+                return locale.getDisplayLanguage();
+            }
             return source;
+        }
+
+        private boolean isValid(Locale locale) {
+            try {
+                return locale.getISO3Language() != null && locale.getISO3Country() != null;
+            } catch (MissingResourceException e) {
+                return false;
+            }
+        }
+
+        @NonNull
+        public String extract(final @NonNull Field field, final @NonNull String source) {
+            throw new UnsupportedOperationException();
         }
     }
 
     /**
      * Formatter for a bitmask based Book Editions field.
+     *
+     * Does not support {@link FieldFormatter#extract}
      */
     static public class BookEditionsFormatter implements FieldFormatter {
         @NonNull
@@ -1163,10 +1160,11 @@ public class Fields extends ArrayList<Fields.Field> {
         @NonNull
         @Override
         public String extract(@NonNull final Field field, @NonNull final String source) {
-            return source;
+            throw new UnsupportedOperationException();
         }
     }
 
+    /** fronts an Activity context */
     private class ActivityContext implements FieldsContext {
         @NonNull
         private final WeakReference<Activity> mActivity;
@@ -1186,6 +1184,7 @@ public class Fields extends ArrayList<Fields.Field> {
         }
     }
 
+    /** fronts a Fragment context */
     private class FragmentContext implements FieldsContext {
         @NonNull
         private final WeakReference<Fragment> mFragment;
@@ -1223,7 +1222,7 @@ public class Fields extends ArrayList<Fields.Field> {
     /**
      * Field definition contains all information and methods necessary to manage display and
      * extraction of data in a view.
-     * ENHANCE: make generic?
+     * ENHANCE: make generic? and use an actual type
      *
      * @author Philip Warner
      */
@@ -1287,14 +1286,15 @@ public class Fields extends ArrayList<Fields.Field> {
             } else {
                 if (view instanceof Spinner) {
                     accessor = new SpinnerAccessor();
+
                 } else if (view instanceof Checkable) {
                     accessor = new CheckableAccessor();
                     addTouchSignalsDirty(view);
+
                 } else if (view instanceof EditText) {
                     accessor = new EditTextAccessor();
                     EditText et = (EditText) view;
-                    et.addTextChangedListener(
-                            new TextWatcher() {
+                    et.addTextChangedListener(new TextWatcher() {
                                 @Override
                                 public void afterTextChanged(@NonNull Editable arg0) {
                                     Field.this.setValue(arg0.toString());
@@ -1307,14 +1307,15 @@ public class Fields extends ArrayList<Fields.Field> {
                                 @Override
                                 public void onTextChanged(final CharSequence arg0, final int arg1, final int arg2, final int arg3) {
                                 }
-                            }
-                    );
-                } else if (view instanceof Button) {
+                            });
+
+                } else if (view instanceof Button) { // a Button *is* a TextView, but this is cleaner
                     accessor = new TextViewAccessor();
                 } else if (view instanceof TextView) {
                     accessor = new TextViewAccessor();
                 } else if (view instanceof ImageView) {
                     accessor = new TextViewAccessor();
+
                 } else if (view instanceof RatingBar) {
                     accessor = new RatingBarAccessor();
                     addTouchSignalsDirty(view);
@@ -1329,6 +1330,8 @@ public class Fields extends ArrayList<Fields.Field> {
         }
 
         /**
+         * Allows overriding the automatic assigned accessor.
+         *
          * @param accessor to use
          *
          * @return field (for chaining)
@@ -1504,37 +1507,6 @@ public class Fields extends ArrayList<Fields.Field> {
         }
 
         /**
-         * Utility function to call the formatters format() method if present,
-         * or just return the raw value.
-         *
-         * @param s String to format
-         *
-         * @return The formatted value. If the source is null, should return "" (and log an error)
-         */
-        @NonNull
-        public String format(final @Nullable String s) {
-            if (s == null) {
-                return "";
-            }
-            if (formatter == null) {
-                return s;
-            }
-            return formatter.format(this, s);
-        }
-
-        /**
-         * Utility function to call the formatters extract() method if present,
-         * or just return the raw value.
-         */
-        @SuppressWarnings("WeakerAccess")
-        public String extract(final @NonNull String s) {
-            if (formatter == null) {
-                return s;
-            }
-            return formatter.extract(this, s);
-        }
-
-        /**
          * Set the value of this field from the passed cursor.
          * Useful for getting access to raw data values from the database.
          *
@@ -1569,6 +1541,37 @@ public class Fields extends ArrayList<Fields.Field> {
                 accessor.setFieldValueFrom(this, dataManager);
 
             }
+        }
+
+        /**
+         * Utility function to call the formatters format() method if present,
+         * or just return the raw value.
+         *
+         * @param s String to format
+         *
+         * @return The formatted value. If the source is null, should return "" (and log an error)
+         */
+        @NonNull
+        public String format(final @Nullable String s) {
+            if (s == null) {
+                return "";
+            }
+            if (formatter == null) {
+                return s;
+            }
+            return formatter.format(this, s);
+        }
+
+        /**
+         * Utility function to call the formatters extract() method if present,
+         * or just return the raw value.
+         */
+        @SuppressWarnings("WeakerAccess")
+        public String extract(final @NonNull String s) {
+            if (formatter == null) {
+                return s;
+            }
+            return formatter.extract(this, s);
         }
     }
 }

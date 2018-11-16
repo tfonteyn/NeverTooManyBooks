@@ -136,6 +136,9 @@ public class EditBookFieldsFragment extends BookAbstractFragment implements
     @CallSuper
     protected void initFields() {
         super.initFields();
+        // multiple use
+        Fields.FieldFormatter dateFormatter = new Fields.DateFieldFormatter();
+
         Field field;
 
         // book fields
@@ -187,11 +190,11 @@ public class EditBookFieldsFragment extends BookAbstractFragment implements
         initValuePicker(field, R.string.lbl_publisher, R.id.btn_publisher, getPublishers());
 
         field = mFields.add(R.id.date_published, UniqueId.KEY_BOOK_DATE_PUBLISHED)
-                .setFormatter(new Fields.DateFieldFormatter());
+                .setFormatter(dateFormatter);
         initPartialDatePicker(TAG, field, R.string.lbl_date_published, false);
 
         field = mFields.add(R.id.first_publication, UniqueId.KEY_FIRST_PUBLICATION)
-                .setFormatter(new Fields.DateFieldFormatter());
+                .setFormatter(dateFormatter);
         initPartialDatePicker(TAG, field, R.string.lbl_first_publication, false);
 
         mFields.add(R.id.price_listed, UniqueId.KEY_BOOK_PRICE_LISTED);
@@ -392,21 +395,21 @@ public class EditBookFieldsFragment extends BookAbstractFragment implements
     /**
      * This will be called when a menu item is selected.
      *
-     * @param item The item selected
+     * @param menuItem The item selected
      *
      * @return <tt>true</tt> if handled
      */
     @Override
     @CallSuper
-    public boolean onOptionsItemSelected(final @NonNull MenuItem item) {
-        switch (item.getItemId()) {
+    public boolean onOptionsItemSelected(final @NonNull MenuItem menuItem) {
+        switch (menuItem.getItemId()) {
             case R.id.SUBMENU_THUMB_REPLACE:
                 // Show the context menu for the cover thumbnail
                 mCoverHandler.prepareCoverImageViewContextMenu();
                 return true;
         }
 
-        return super.onOptionsItemSelected(item);
+        return super.onOptionsItemSelected(menuItem);
     }
 
     //</editor-fold>

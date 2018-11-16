@@ -321,20 +321,20 @@ public class EditBookTOCFragment extends BookAbstractFragment implements Handles
     /**
      * This will be called when a menu item is selected.
      *
-     * @param item The item selected
+     * @param menuItem The item selected
      *
      * @return <tt>true</tt> if handled
      */
     @Override
     @CallSuper
-    public boolean onOptionsItemSelected(final @NonNull MenuItem item) {
-        switch (item.getItemId()) {
+    public boolean onOptionsItemSelected(final @NonNull MenuItem menuItem) {
+        switch (menuItem.getItemId()) {
             case R.id.MENU_POPULATE_TOC_FROM_ISFDB:
                 StandardDialogs.showUserMessage(requireActivity(), R.string.connecting_to_web_site);
                 ISFDBManager.searchEditions(mIsbn, this);
                 return true;
         }
-        return super.onOptionsItemSelected(item);
+        return super.onOptionsItemSelected(menuItem);
     }
 
     /**

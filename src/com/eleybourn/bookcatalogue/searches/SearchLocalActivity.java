@@ -76,9 +76,9 @@ public class SearchLocalActivity extends BaseActivity {
             finish();
         }
     };
-    private EditText mAuthorTextView;
-    private EditText mTitleTextView;
-    private EditText mCSearchTextView;
+    private EditText mAuthorView;
+    private EditText mTitleView;
+    private EditText mCSearchView;
 
     private Button mShowResultsBtn;
     private Button mFtsRebuildBtn;
@@ -137,23 +137,23 @@ public class SearchLocalActivity extends BaseActivity {
     public void onCreate(final @Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mAuthorTextView = this.findViewById(R.id.author);
-        mTitleTextView = this.findViewById(R.id.title);
-        mCSearchTextView = this.findViewById(R.id.criteria);
+        mAuthorView = this.findViewById(R.id.author);
+        mTitleView = this.findViewById(R.id.title);
+        mCSearchView = this.findViewById(R.id.criteria);
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
-            String author = extras.getString(UniqueId.KEY_AUTHOR_NAME);
-            if (author != null) {
-                mAuthorTextView.setText(author);
+            String authorSearchText = extras.getString(UniqueId.BKEY_SEARCH_AUTHOR);
+            if (authorSearchText != null) {
+                mAuthorView.setText(authorSearchText);
             }
-            String title = extras.getString(UniqueId.KEY_TITLE);
-            if (title != null) {
-                mTitleTextView.setText(title);
+            String titleSearchText = extras.getString(UniqueId.KEY_TITLE);
+            if (titleSearchText != null) {
+                mTitleView.setText(titleSearchText);
             }
-            String text = extras.getString(UniqueId.BKEY_SEARCH_TEXT);
-            if (text != null) {
-                mCSearchTextView.setText(text);
+            String genericSearchText = extras.getString(UniqueId.BKEY_SEARCH_TEXT);
+            if (genericSearchText != null) {
+                mCSearchView.setText(genericSearchText);
             }
         }
 
@@ -168,9 +168,9 @@ public class SearchLocalActivity extends BaseActivity {
         findViewById(R.id.root).setOnTouchListener(mOnTouchListener);
 
         // If the user changes any text, it's not idle
-        mAuthorTextView.addTextChangedListener(mTextWatcher);
-        mTitleTextView.addTextChangedListener(mTextWatcher);
-        mCSearchTextView.addTextChangedListener(mTextWatcher);
+        mAuthorView.addTextChangedListener(mTextWatcher);
+        mTitleView.addTextChangedListener(mTextWatcher);
+        mCSearchView.addTextChangedListener(mTextWatcher);
 
         // Handle button presses
         mFtsRebuildBtn.setOnClickListener(mFtsRebuildListener);
@@ -216,9 +216,9 @@ public class SearchLocalActivity extends BaseActivity {
      */
     private void doSearch() {
         // Get search criteria
-        String author = mAuthorTextView.getText().toString().trim();
-        String title = mTitleTextView.getText().toString().trim();
-        String criteria = mCSearchTextView.getText().toString().trim();
+        String author = mAuthorView.getText().toString().trim();
+        String title = mTitleView.getText().toString().trim();
+        String criteria = mCSearchView.getText().toString().trim();
 
         // Save time to log how long query takes.
         long t0 = System.currentTimeMillis();

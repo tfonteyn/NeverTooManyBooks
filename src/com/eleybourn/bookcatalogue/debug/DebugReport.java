@@ -13,7 +13,6 @@ import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.content.FileProvider;
 
-import com.eleybourn.bookcatalogue.AdminActivity;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
@@ -30,7 +29,7 @@ import java.util.List;
 
 public class DebugReport {
 
-    /** files with these prefixes in the standard External Storage Directory will be bundled in the report */
+    /** files with these prefixes will be bundled in the report */
     private static final String[] FILE_PREFIXES = new String[]{
             "DbUpgrade", "DbExport", "error.log", "export.csv"};
 
@@ -173,20 +172,8 @@ public class DebugReport {
         emailIntent.putExtra(Intent.EXTRA_TEXT, extraText);
 
         try {
-            // Find all files of interest to send
-            List<String> files = new ArrayList<>();
-            for (String name : StorageUtils.getSharedStorage().list()) {
-                boolean send = false;
-                for (String prefix : FILE_PREFIXES) {
-                    if (name.startsWith(prefix)) {
-                        send = true;
-                        break;
-                    }
-                }
-                if (send) {
-                    files.add(name);
-                }
-            }
+            // Find all files of interest to send, root and log dirs
+            List<String> files = collectFiles(StorageUtils.getSharedStorage(), StorageUtils.getLogStorage());
 
             // Build the attachment list
             ArrayList<Uri> attachmentUris = new ArrayList<>();
@@ -205,5 +192,24 @@ public class DebugReport {
             Logger.error(e);
             StandardDialogs.showUserMessage(activity, R.string.error_email_failed);
         }
+    }
+
+    private static List<String> collectFiles(final @NonNull File... dirs) {
+        List<String> files = new ArrayList<>();
+        for (File dir : dirs) {
+            for (String name : dir.list()) {
+                boolean send = false;
+                for (String prefix : FILE_PREFIXES) {
+                    if (name.startsWith(prefix)) {
+                        send = true;
+                        break;
+                    }
+                }
+                if (send) {
+                    files.add(name);
+                }
+            }
+        }
+        return files;
     }
 }

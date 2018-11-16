@@ -213,7 +213,11 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
     private transient BooleanProperty mXtraShowFormat;
     private transient BooleanProperty mXtraShowAuthor;
 
-    /** filters */
+    /** filters
+     * ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/686 - Filter by signed
+     * ==> adding ISortableField and IFilterableField so that we (theoretically) just need to create a new
+     * ==> object that implements one or both of these for each such field.
+     */
     private transient IntegerListProperty mXtraReadFilter;
     private transient IntegerListProperty mXtraSignedFilter;
     private transient IntegerListProperty mXtraAnthologyFilter;
@@ -522,7 +526,10 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
     }
 
     /**
-     * Accessor.
+     * A quicker way of getting the status of all extra-fields in one go instead of implementing
+     * individual getters for each.
+     *
+     * @return bitmask with the 'extra' fields that are in use (visible) for this style.
      */
     public int getExtraFieldsStatus() {
         int extras = 0;

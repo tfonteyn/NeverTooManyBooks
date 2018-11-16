@@ -37,8 +37,9 @@ import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
  *
  * @author pjw
  */
-abstract public class BaseActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, CanBeDirty {
+abstract public class BaseActivity extends AppCompatActivity implements
+        NavigationView.OnNavigationItemSelectedListener,
+        CanBeDirty {
 
     /** The side/navigation panel */
     @Nullable
@@ -69,7 +70,6 @@ abstract public class BaseActivity extends AppCompatActivity
     public boolean changesMade() {
         return mChangesMadeAndSaved;
     }
-
 
     /**
      * If you are not dirty (e.g. nothing needs saving on exit) but have made (saved) changes,
@@ -362,7 +362,9 @@ abstract public class BaseActivity extends AppCompatActivity
      */
     private void updateThemeIfChanged() {
         if (BookCatalogueApp.hasThemeChanged()) {
+            // can change immediately
             setTheme(BookCatalogueApp.getThemeResId());
+            // but lets make sure it sticks.
             mReloadOnResume = true;
         }
     }
@@ -379,5 +381,4 @@ abstract public class BaseActivity extends AppCompatActivity
             startActivity(getIntent());
         }
     }
-
 }

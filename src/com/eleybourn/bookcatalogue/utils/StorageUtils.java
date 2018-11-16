@@ -71,14 +71,23 @@ public class StorageUtils {
     private static final String UTF8 = "utf8";
     /** root external storage */
     private static final String EXTERNAL_FILE_PATH = Environment.getExternalStorageDirectory() + File.separator + DIRECTORY_NAME;
-    /** sub directory for temporary images */
+
+    /** sub directory for temporary images TODO: Not properly used really */
     private static final String TEMP_FILE_PATH = EXTERNAL_FILE_PATH + File.separator + "tmp_images";
 
     /** permanent location for cover files. For now hardcoded, but the intention is to allow user-defined. */
     private static final String COVER_FILE_PATH = EXTERNAL_FILE_PATH + File.separator + "covers";
+
+    /** permanent location for log files. */
+    private static final String LOG_FILE_PATH = EXTERNAL_FILE_PATH + File.separator + "log";
+
     /** serious errors are written to this file */
     private static final String ERROR_LOG_FILE = "error.log";
-    /** written to root external storage as 'writable' test + prevent 'detection' by apps who want to 'do things' with media */
+
+    /**
+     * written to root external storage as 'writable' test + prevent 'detection' by apps who
+     * want to 'do things' with media
+     */
     private static final String NOMEDIA_FILE_PATH = EXTERNAL_FILE_PATH + File.separator + MediaStore.MEDIA_IGNORE_FILENAME;
 
 
@@ -95,7 +104,7 @@ public class StorageUtils {
     }
 
     public static String getErrorLog() throws SecurityException {
-        return EXTERNAL_FILE_PATH + File.separator + ERROR_LOG_FILE;
+        return LOG_FILE_PATH + File.separator + ERROR_LOG_FILE;
     }
 
     private static void createDir(final @NonNull String name) throws SecurityException {
@@ -134,6 +143,7 @@ public class StorageUtils {
         }
 
         createDir(EXTERNAL_FILE_PATH);
+        createDir(LOG_FILE_PATH);
         createDir(COVER_FILE_PATH);
         createDir(TEMP_FILE_PATH);
 
@@ -146,10 +156,13 @@ public class StorageUtils {
         }
     }
 
-    private static File getTempStorage() {
+    public static File getTempStorage() {
         return new File(TEMP_FILE_PATH);
     }
 
+    public static File getLogStorage() {
+        return new File(LOG_FILE_PATH);
+    }
     /**
      * @return the shared root Directory object
      */
@@ -232,11 +245,53 @@ public class StorageUtils {
         return jpg;
     }
 
+    /**
+     * Count size + (optional) Cleanup any purgeable files.
+     *
+     * @param reallyDelete if true, delete files, if false only count bytes
+     *
+     * @return the total size in bytes of purgeable/purged files.
+     */
+    public static long purgeFiles(final boolean reallyDelete) {
+        long totalSize = 0;
+        try {
+            for (String name : getCoverStorage().list()) {
+                totalSize += purgeFile(name, reallyDelete);
+            }
+            for (String name : getLogStorage().list()) {
+                totalSize += purgeFile(name, reallyDelete);
+            }
+            for (String name : getTempStorage().list()) {
+                totalSize += purgeFile(name, reallyDelete);
+            }
+            // and the root.
+            for (String name : getSharedStorage().list()) {
+                totalSize += purgeFile(name, reallyDelete);
+            }
+        } catch (SecurityException e) {
+            Logger.error(e);
+        }
+        return totalSize;
+    }
+
+    private static long purgeFile(final @NonNull String name, final boolean reallyDelete) {
+        long totalSize = 0;
+        for (String prefix : mPurgeableFilePrefixes) {
+            if (name.startsWith(prefix)) {
+                final File file = getFile(name);
+                totalSize += file.length();
+                if (reallyDelete) {
+                    deleteFile(file);
+                }
+            }
+        }
+        return totalSize;
+    }
 
     /**
      * Delete *everything* in the temp file directory
      */
-    public static void cleanupTempDirectory() {
+    public static void purgeTempStorage() {
         try {
             File dir = getTempStorage();
             if (dir.exists() && dir.isDirectory()) {
@@ -251,35 +306,6 @@ public class StorageUtils {
             Logger.error(e);
         }
     }
-
-    /**
-     * Count size + (optional) Cleanup any purgeable files.
-     *
-     * @param reallyDelete if true, delete files, if false only count bytes
-     *
-     * @return the total size in bytes of purgeable/purged files.
-     */
-    public static long purgeFiles(final boolean reallyDelete) {
-        long totalSize = 0;
-        try {
-
-            for (String name : getCoverStorage().list()) {
-                for (String prefix : mPurgeableFilePrefixes) {
-                    if (name.startsWith(prefix)) {
-                        final File file = getFile(name);
-                        totalSize += file.length();
-                        if (reallyDelete) {
-                            deleteFile(file);
-                        }
-                    }
-                }
-            }
-        } catch (SecurityException e) {
-            Logger.error(e);
-        }
-        return totalSize;
-    }
-
 
     @NonNull
     public static List<File> findCsvFiles() {

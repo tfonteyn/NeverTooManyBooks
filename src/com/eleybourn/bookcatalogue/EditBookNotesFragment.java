@@ -28,6 +28,7 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Checkable;
 
 import com.eleybourn.bookcatalogue.Fields.Field;
 import com.eleybourn.bookcatalogue.Fields.FieldFormatter;
@@ -116,10 +117,28 @@ public class EditBookNotesFragment extends BookAbstractFragment implements
     @Override
     protected void initFields() {
         super.initFields();
+        // multiple use
+        Fields.FieldFormatter dateFormatter = new Fields.DateFieldFormatter();
+        // ENHANCE: Add a partial date validator. Or not.
+        //FieldValidator blankOrDateValidator = new Fields.OrValidator(new Fields.BlankValidator(), new Fields.DateValidator());
+
         Field field;
 
         // non-text; simple checkbox
-        mFields.add(R.id.read, UniqueId.KEY_BOOK_READ);
+        field = mFields.add(R.id.read, UniqueId.KEY_BOOK_READ);
+        // when clicked to 'read', set the read-end date to today (unless set before)
+        field.getView().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                Checkable cb = (Checkable)v;
+                if (cb.isChecked()) {
+                    Field end = mFields.getField(R.id.read_end);
+                    if (end.getValue().toString().trim().isEmpty()) {
+                        end.setValue(DateUtils.localSqlDateForToday());
+                    }
+                }
+            }
+        });
 
         mFields.add(R.id.signed, UniqueId.KEY_BOOK_SIGNED);
         mFields.add(R.id.rating, UniqueId.KEY_BOOK_RATING);
@@ -142,10 +161,6 @@ public class EditBookNotesFragment extends BookAbstractFragment implements
                 return getBookManager().getBook().getEditableEditionList();
             }
         });
-
-        // ENHANCE: Add a partial date validator. Or not.
-        //FieldValidator blankOrDateValidator = new Fields.OrValidator(new Fields.BlankValidator(), new Fields.DateValidator());
-        FieldFormatter dateFormatter = new Fields.DateFieldFormatter();
 
         field = mFields.add(R.id.date_acquired, UniqueId.KEY_BOOK_DATE_ACQUIRED)
                 .setFormatter(dateFormatter);

@@ -309,7 +309,7 @@ public class CoverHandler implements SelectOneDialog.hasViewContextMenu {
     private void getCoverFromCamera() {
         // Increment the temp counter and cleanup the temp directory
         mTempImageCounter++;
-        StorageUtils.cleanupTempDirectory();
+        StorageUtils.purgeTempStorage();
         Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
     /*
         We don't do the next bit of code here because we have no reliable way to rotate a

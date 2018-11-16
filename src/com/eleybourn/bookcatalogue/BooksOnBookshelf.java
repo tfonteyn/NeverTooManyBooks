@@ -59,13 +59,13 @@ import com.eleybourn.bookcatalogue.adapters.MultiTypeListCursorAdapter;
 import com.eleybourn.bookcatalogue.baseactivity.BaseListActivity;
 import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;
 import com.eleybourn.bookcatalogue.booklist.BooklistBuilder.BookRowInfo;
-import com.eleybourn.bookcatalogue.booklist.RowKinds;
 import com.eleybourn.bookcatalogue.booklist.BooklistPreferencesActivity;
 import com.eleybourn.bookcatalogue.booklist.BooklistPreferredStylesActivity;
 import com.eleybourn.bookcatalogue.booklist.BooklistPseudoCursor;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.booklist.BooklistStylePropertiesActivity;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
+import com.eleybourn.bookcatalogue.booklist.RowKinds;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.database.cursors.TrackedCursor;
@@ -267,7 +267,7 @@ public class BooksOnBookshelf extends BaseListActivity implements
     public boolean onSearchRequested() {
         Intent intent = new Intent(this, SearchLocalActivity.class);
         intent.putExtra(UniqueId.BKEY_SEARCH_TEXT, mSearchText);
-        intent.putExtra(UniqueId.KEY_AUTHOR_NAME, mAuthorSearchText);
+        intent.putExtra(UniqueId.BKEY_SEARCH_AUTHOR, mAuthorSearchText);
         intent.putExtra(UniqueId.KEY_TITLE, mTitleSearchText);
         startActivityForResult(intent, SearchLocalActivity.REQUEST_CODE); /* 6f6e83e1-10fb-445c-8e35-fede41eba03b */
         return true;
@@ -389,6 +389,8 @@ public class BooksOnBookshelf extends BaseListActivity implements
 
     /**
      * Using {@link SelectOneDialog#showContextMenuDialog} for context menus
+     *
+     * Called by {@link BaseListActivity#onCreate}
      */
     @Override
     public void initListViewContextMenuListener(final @NonNull Context context) {
@@ -396,6 +398,7 @@ public class BooksOnBookshelf extends BaseListActivity implements
             @Override
             public boolean onItemLongClick(final AdapterView<?> parent, final View view, final int position, final long id) {
                 mListCursor.moveToPosition(position);
+
                 String menuTitle = mListCursor.getCursorRow().getTitle();
 
                 // legal trick to get an instance of Menu.
@@ -497,7 +500,7 @@ public class BooksOnBookshelf extends BaseListActivity implements
             }
         }
 
-        return MenuHandler.onOptionsItemSelectedBookSubMenu(this, item) || super.onOptionsItemSelected(item);
+        return MenuHandler.handleBookSubMenu(this, item) || super.onOptionsItemSelected(item);
     }
 
     /**
@@ -532,7 +535,7 @@ public class BooksOnBookshelf extends BaseListActivity implements
                 return;
             }
             case BookSearchActivity.REQUEST_CODE: /* 59fd9653-f033-40b5-bee8-f1dfa5b5be6b, f1e0d846-852e-451b-9077-6daa5d94f37d */
-                if (resultCode ==BookSearchActivity.RESULT_CHANGES_MADE) {
+                if (resultCode == BookSearchActivity.RESULT_CHANGES_MADE) {
                     /* don't enforce having an id. We might not have found or added anything.
                      * but if we do, the data will be what EditBookActivity returns. */
                     if (data != null) {
@@ -551,7 +554,7 @@ public class BooksOnBookshelf extends BaseListActivity implements
                     /* there *has* to be 'data' */
                     Objects.requireNonNull(data);
                     mSearchText = initSearchField(data.getStringExtra(UniqueId.BKEY_SEARCH_TEXT));
-                    mAuthorSearchText = initSearchField(data.getStringExtra(UniqueId.KEY_AUTHOR_NAME));
+                    mAuthorSearchText = initSearchField(data.getStringExtra(UniqueId.BKEY_SEARCH_AUTHOR));
                     mTitleSearchText = initSearchField(data.getStringExtra(UniqueId.KEY_TITLE));
                     mSearchBookIdList = data.getIntegerArrayListExtra(UniqueId.BKEY_BOOK_ID_LIST);
                     initBookList(true);
@@ -996,35 +999,45 @@ public class BooksOnBookshelf extends BaseListActivity implements
     }
 
     /**
-     * @param flags bitmask
+     * FIXME: rather brutal; check the {@link BooklistChangeListener} flags and see what can be done to avoid full rebuild?
      *
-     *              FIXME: rather brutal; check the {@link BooklistChangeListener} flags and see what can be done to avoid full rebuild?
-     *              int FLAG_AUTHOR = 1;
-     *              int FLAG_SERIES = (1 << 1);
-     *              int FLAG_FORMAT = (1 << 2);
-     *              int FLAG_PUBLISHER = (1 << 3);
-     *              int FLAG_LANGUAGE = (1 << 4);
-     *              int FLAG_LOCATION = (1 << 5);
-     *              int FLAG_GENRE = (1 << 6);
+     * Called if global changes were made that (potentially) affect the whole list.
      *
-     *              Can we check the 'extra' fields being listed ? e.g. if not visible, then don't rebuild ?
-     *
-     *              {@link BooklistStyle}
-     *              public static final int EXTRAS_BOOKSHELVES = 1;
-     *              public static final int EXTRAS_LOCATION = (1 << 1);
-     *              public static final int EXTRAS_PUBLISHER = (1 << 3);
-     *              public static final int EXTRAS_AUTHOR = (1 << 4);
-     *              public static final int EXTRAS_THUMBNAIL = (1 << 5);
-     *              public static final int EXTRAS_THUMBNAIL_LARGE = (1 << 6);
-     *              public static final int EXTRAS_FORMAT = (1 << 7);
+     * @param extraFieldsInUse a bitmask with the Extra fields being used (visible) in the current
+     *                         {@link BooklistStyle} as configured by the user
+     * @param fieldsChanged    a bitmask build from the flags of {@link BooklistChangeListener}
      */
     @Override
-    public void onBooklistChange(final int extraFieldsInUse, int flags) {
-        //Something changed. Just regenerate.
-        if (flags != 0) {
+    public void onBooklistChange(final int extraFieldsInUse, int fieldsChanged) {
+        //Something changed. Just regenerate the list.
+        if (fieldsChanged != 0) {
             savePosition();
             initBookList(true);
         }
+    }
+
+    /**
+     * Called if changes were made to a single book. *Try* not to do a full rebuild.
+     *
+     * @param extraFieldsInUse a bitmask with the Extra fields being used (visible) in the current
+     *                         {@link BooklistStyle} as configured by the user
+     * @param fieldsChanged    a bitmask build from the flags of {@link BooklistChangeListener}
+     * @param rowPosition      the absolute position of the row in the cursor view
+     * @param bookId           the book that was changed
+     */
+    @Override
+    public void onBooklistChange(final int extraFieldsInUse, final int fieldsChanged,
+                                 final int rowPosition, final long bookId) {
+
+        if ((fieldsChanged & BooklistChangeListener.FLAG_BOOK_READ) != 0) {
+            //ENHANCE: avoid the rebuild altogether ?
+            savePosition();
+            initBookList(false);
+            return;
+        }
+
+        //Something changed and we have no special handling for the row
+        onBooklistChange(extraFieldsInUse, fieldsChanged);
     }
 
     /**
@@ -1249,8 +1262,12 @@ public class BooksOnBookshelf extends BaseListActivity implements
     private void initBookList(final boolean isFullRebuild) {
 
         //TOMF: FIXME: now confirmed, this is one from the original code. isFullRebuild=false is BROKEN.
-        // Hardcoded override to always do a full rebuild.
+        // basically all group headers are no longer in the TBL_BOOK_LIST.
+        // See DatabaseDefinitions#TBL_BOOK_LIST for an example of the correct table content
+        // After rebuild(false) all rows which don't show an expanded node are gone.
+        //
 
+        // Hardcoded override to always do a full rebuild.
 //        mTaskQueue.enqueue(new GetBookListTask(isFullRebuild,
         mTaskQueue.enqueue(new GetBookListTask(true,
                 mCurrentBookshelf.id,

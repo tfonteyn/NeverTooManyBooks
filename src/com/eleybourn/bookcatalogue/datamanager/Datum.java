@@ -136,7 +136,7 @@ public class Datum {
     }
 
     /**
-     * Translate the passed object to a String value
+     * Translate the passed Object to a String value
      *
      * @param o Object
      *
@@ -148,7 +148,7 @@ public class Datum {
     }
 
     /**
-     * Utility function to convert string to boolean
+     * Utility function to convert a String to a boolean value
      *
      * @param s            String to convert
      * @param emptyIsFalse if true, null and empty string is handled as false
@@ -187,7 +187,7 @@ public class Datum {
     }
 
     /**
-     * Translate the passed object to a boolean value
+     * Translate the passed Object to a boolean value
      *
      * @param o Object
      *

@@ -128,9 +128,9 @@ public class DatabaseDefinitions {
     public static final DomainDefinition DOM_AUTHOR_FAMILY_NAME = new DomainDefinition("family_name", TableInfo.TYPE_TEXT);
     /** {@link #TBL_AUTHORS} */
     public static final DomainDefinition DOM_AUTHOR_GIVEN_NAMES = new DomainDefinition("given_names", TableInfo.TYPE_TEXT);
-    /** {@link #TBL_AUTHORS} "FamilyName, GivenName" */
+    /** "FamilyName, GivenName" */
     public static final DomainDefinition DOM_AUTHOR_FORMATTED = new DomainDefinition("author_formatted", TableInfo.TYPE_TEXT, NOT_NULL, "");
-    /** {@link #TBL_AUTHORS} "GivenName FamilyName" */
+    /** "GivenName FamilyName" */
     public static final DomainDefinition DOM_AUTHOR_FORMATTED_GIVEN_FIRST = new DomainDefinition("author_formatted_given_first", TableInfo.TYPE_TEXT, NOT_NULL, "");
     /** Partial representation of AUTHORS table */
     public static final TableDefinition TBL_AUTHORS =
@@ -327,15 +327,15 @@ public class DatabaseDefinitions {
             .addReference(TBL_ANTHOLOGY, DOM_FK_ANTHOLOGY_ID);
 
     /* ========================================================================================== */
-    /** {@link #TBL_BOOKS_FTS} */
-    public static final DomainDefinition DOM_AUTHOR_NAME = new DomainDefinition("author_name", TableInfo.TYPE_TEXT, NOT_NULL, "");
+    /** {@link #TBL_BOOKS_FTS} specific formatted list; example: "stephen baxter;arthur c. clarke;" */
+    public static final DomainDefinition DOM_FTS_AUTHOR_NAME = new DomainDefinition("author_name", TableInfo.TYPE_TEXT, NOT_NULL, "");
 
     /**
      * FULL representation of BOOKS_FTS table
      */
     public static final TableDefinition TBL_BOOKS_FTS =
             new TableDefinition(DB_TB_FTS_BOOKS)
-            .addDomains(DOM_AUTHOR_NAME, DOM_TITLE, DOM_DESCRIPTION, DOM_BOOK_NOTES,
+            .addDomains(DOM_FTS_AUTHOR_NAME, DOM_TITLE, DOM_DESCRIPTION, DOM_BOOK_NOTES,
                     DOM_BOOK_PUBLISHER, DOM_BOOK_GENRE, DOM_BOOK_LOCATION, DOM_BOOK_ISBN)
             .setType(TableTypes.FTS3);
 

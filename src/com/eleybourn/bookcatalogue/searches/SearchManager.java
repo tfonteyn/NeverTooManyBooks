@@ -568,7 +568,7 @@ public class SearchManager implements TaskManagerListener {
                     mWaitingForIsbn = true;
                 } else {
                     // See if we got author/title
-                    mAuthor = bookData.getString(UniqueId.KEY_AUTHOR_NAME);
+                    mAuthor = bookData.getString(UniqueId.BKEY_SEARCH_AUTHOR);
                     mTitle = bookData.getString(UniqueId.KEY_TITLE);
                     if (mAuthor != null && !mAuthor.isEmpty() && mTitle != null && !mTitle.isEmpty()) {
                         // We got them, so pretend we are searching by author/title now, and waiting for an ASIN...

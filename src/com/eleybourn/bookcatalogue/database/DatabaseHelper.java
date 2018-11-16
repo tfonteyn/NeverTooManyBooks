@@ -484,8 +484,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             BookCatalogueApp.Prefs.remove("App.DisableBackgroundImage");
             BookCatalogueApp.Prefs.remove("App.BooklistStyle");
 
-
+            // move cover files
             v83_moveCoversToDedicatedDirectory(syncedDb);
+
+            // there is a dedicated log directory now. Any left over files will be cleaned by a Help/purge.
 
             //TEST a proper upgrade from 82 to 83
 

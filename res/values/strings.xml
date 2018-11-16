@@ -1274,6 +1274,12 @@
     <string name="lbl_date_acquired_year">Acquired Year</string>
     <string name="style_builtin_acquired_date">Acquired date</string>
 
+    <!--  book format string used if a search site indicates in any form it's an eBook -->
+    <string name="book_format_ebook">eBook</string>
+
+    <!-- book format string used if a search site indicates in any form it's some sort of Audio (tape, cd, etc..) -->
+    <string name="book_format_audiobook">AudioBook</string>
+
     <!-- End: Added/Updated in  [Next Version]  -->
 
 </resources>

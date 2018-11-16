@@ -27,6 +27,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 
+import com.eleybourn.bookcatalogue.entities.Book;
+import com.eleybourn.bookcatalogue.searches.amazon.AmazonUtils;
+
 /**
  * Handles re-usable menu items; both to create and to handle
  */
@@ -59,36 +62,15 @@ public class MenuHandler {
     }
 
     /**
-     * Add SubMenu for book creation.
-     *
-     * @param menu Root menu
-     */
-    public static void addAmazonSearchSubMenu(final @NonNull Menu menu) {
-        SubMenu subMenu = menu.addSubMenu(R.id.SUBMENU_AMAZON_SEARCH, R.id.SUBMENU_AMAZON_SEARCH,
-                Menu.NONE,
-                BookCatalogueApp.getResourceString(R.string.amazon_ellipsis));
-
-        subMenu.setIcon(R.drawable.ic_search);
-        // we use the group to make the entry visible/invisible, hence it's == the actual id.
-        subMenu.add(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR, R.id.MENU_AMAZON_BOOKS_BY_AUTHOR, Menu.NONE, R.string.menu_amazon_books_by_author)
-                .setIcon(R.drawable.ic_search);
-        subMenu.add(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES, R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES, Menu.NONE, R.string.menu_amazon_books_by_author_in_series)
-                .setIcon(R.drawable.ic_search);
-        subMenu.add(R.id.MENU_AMAZON_BOOKS_IN_SERIES, R.id.MENU_AMAZON_BOOKS_IN_SERIES, Menu.NONE, R.string.menu_amazon_books_in_series)
-                .setIcon(R.drawable.ic_search);
-
-    }
-
-    /**
-     * Handle the menu items created here.
+     * Handle the menu items created by {@link #addCreateBookSubMenu(Menu)}.
      *
      * @param activity Calling activity
      * @param menuItem The item selected
      *
      * @return <tt>true</tt> if handled
      */
-    public static boolean onOptionsItemSelectedBookSubMenu(final @NonNull Activity activity,
-                                                           final @NonNull MenuItem menuItem) {
+    public static boolean handleBookSubMenu(final @NonNull Activity activity,
+                                            final @NonNull MenuItem menuItem) {
         switch (menuItem.getItemId()) {
             case R.id.MENU_BOOK_ADD_BY_SCAN: {
                 Intent intent = new Intent(activity, BookSearchActivity.class);
@@ -111,6 +93,66 @@ public class MenuHandler {
             case R.id.MENU_BOOK_ADD_MANUALLY: {
                 Intent intent = new Intent(activity, EditBookActivity.class);
                 activity.startActivityForResult(intent, EditBookActivity.REQUEST_CODE); /* 88a6c414-2d3b-4637-9044-b7291b6b9100 */
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Add SubMenu for Amazon searches.
+     *
+     * @param menu Root menu
+     */
+    public static void addAmazonSearchSubMenu(final @NonNull Menu menu) {
+        SubMenu subMenu = menu.addSubMenu(R.id.SUBMENU_AMAZON_SEARCH, R.id.SUBMENU_AMAZON_SEARCH,
+                Menu.NONE,
+                BookCatalogueApp.getResourceString(R.string.amazon_ellipsis));
+
+        subMenu.setIcon(R.drawable.ic_search);
+        // we use the group to make the entry visible/invisible, hence it's == the actual id.
+        subMenu.add(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR, R.id.MENU_AMAZON_BOOKS_BY_AUTHOR, Menu.NONE, R.string.menu_amazon_books_by_author)
+                .setIcon(R.drawable.ic_search);
+        subMenu.add(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES, R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES, Menu.NONE, R.string.menu_amazon_books_by_author_in_series)
+                .setIcon(R.drawable.ic_search);
+        subMenu.add(R.id.MENU_AMAZON_BOOKS_IN_SERIES, R.id.MENU_AMAZON_BOOKS_IN_SERIES, Menu.NONE, R.string.menu_amazon_books_in_series)
+                .setIcon(R.drawable.ic_search);
+    }
+
+    /**
+     * Handle the menu items created by {@link #addAmazonSearchSubMenu(Menu)}.
+     *
+     * @param activity Calling activity
+     * @param menuItem The item selected
+     * @param book     the book upon to act
+     *
+     * @return <tt>true</tt> if handled
+     */
+    public static boolean handleAmazonSearchSubMenu(final @NonNull Activity activity,
+                                                    final @NonNull MenuItem menuItem,
+                                                    final @NonNull Book book) {
+        switch (menuItem.getItemId()) {
+            case R.id.SUBMENU_AMAZON_SEARCH: {
+                Menu menu = menuItem.getSubMenu();
+                boolean hasAuthor = book.getAuthorList().size() > 0;
+                boolean hasSeries = book.getSeriesList().size() > 0;
+
+                menu.setGroupVisible(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR, hasAuthor);
+                menu.setGroupVisible(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES, hasAuthor && hasSeries);
+                menu.setGroupVisible(R.id.MENU_AMAZON_BOOKS_IN_SERIES, hasSeries);
+                // let the small call flow go on, it will display the submenu
+               return false;
+            }
+            case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR: {
+                AmazonUtils.openSearchPage(activity, book.getPrimaryAuthor(), null);
+                return true;
+            }
+            case R.id.MENU_AMAZON_BOOKS_IN_SERIES: {
+                AmazonUtils.openSearchPage(activity, null, book.getPrimarySeries());
+                return true;
+            }
+            case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES: {
+                AmazonUtils.openSearchPage(activity, book.getPrimaryAuthor(), book.getPrimarySeries());
                 return true;
             }
         }

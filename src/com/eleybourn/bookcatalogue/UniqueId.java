@@ -8,7 +8,7 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHO
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_GIVEN_NAMES;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_ACQUIRED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_AUTHOR_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_NAME;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FTS_AUTHOR_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKSHELF;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ANTHOLOGY_BITMASK;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_ADDED;
@@ -147,13 +147,14 @@ public class UniqueId {
     public static final String BKEY_CALLER_ID = "dialogCallerId";
 
     public static final String BKEY_NO_COVER = "noCover";
-    public static final String BKEY_FILE_SPEC = "fileSpec";
-    public static final String BKEY_SEARCH_TEXT = "searchText";
 
-    /** If a search site indicates in any form it's an eBook, we store it as eBook */
-    public static final String BVAL_FORMAT_EBOOK = "eBook";
-    /** If a search site indicates in any form it's some sort of Audio (tape, cd, etc..), we store it as AudioBook */
-    public static final String BVAL_FORMAT_AUDIO = "AudioBook";
+    /** a filename or uri */
+    public static final String BKEY_FILE_SPEC = "fileSpec";
+
+    /** generic search text */
+    public static final String BKEY_SEARCH_TEXT = "searchText";
+    /** author search text */
+    public static final String BKEY_SEARCH_AUTHOR = "searchAuthor";
 
     /** boolean indicating if we have a thumbnail or not.
      * Also used in {@link com.eleybourn.bookcatalogue.UpdateFromInternetActivity.FieldUsage.Usage} */
@@ -164,6 +165,7 @@ public class UniqueId {
 
     /** to return the status of a startActivityForResult when a task was 'isCancelled' */
     public static final String BKEY_CANCELED = "cancelled";
+
 
     //^^^^ all verified & used correctly
 
@@ -185,7 +187,6 @@ public class UniqueId {
     public static final String KEY_AUTHOR_FAMILY_NAME = DOM_AUTHOR_FAMILY_NAME.name;
     public static final String KEY_AUTHOR_GIVEN_NAMES = DOM_AUTHOR_GIVEN_NAMES.name;
 
-    public static final String KEY_AUTHOR_NAME = DOM_AUTHOR_NAME.name;
     public static final String KEY_AUTHOR_FORMATTED = DOM_AUTHOR_FORMATTED.name;
 
     public static final String KEY_BOOKSHELF_NAME = DOM_BOOKSHELF.name;

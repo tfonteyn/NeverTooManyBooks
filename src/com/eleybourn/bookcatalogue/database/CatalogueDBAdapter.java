@@ -77,7 +77,7 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHO
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FORMATTED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FORMATTED_GIVEN_FIRST;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_GIVEN_NAMES;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_NAME;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FTS_AUTHOR_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_POSITION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKSHELF;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ANTHOLOGY_BITMASK;
@@ -906,15 +906,12 @@ public class CatalogueDBAdapter implements AutoCloseable {
             sql = "SELECT " +
                     TBL_ANTHOLOGY.dotAs(DOM_PK_ID) + "," +
                     TBL_ANTHOLOGY.dotAs(DOM_TITLE) + "," +
-                    TBL_ANTHOLOGY.dotAs(DOM_FK_AUTHOR_ID) + "," +
                     TBL_ANTHOLOGY.dotAs(DOM_FIRST_PUBLICATION) + "," +
 
-                    //TBL_BOOK_TOC_ENTRIES.dotAs(DOM_FK_BOOK_ID) + "," +
-                    //TBL_BOOK_TOC_ENTRIES.dotAs(DOM_BOOK_TOC_ENTRY_POSITION) + "," +
-
+                    // for convenience, we fetch 'full' Author objects here
+                    TBL_ANTHOLOGY.dotAs(DOM_FK_AUTHOR_ID) + "," +
                     TBL_AUTHORS.dotAs(DOM_AUTHOR_FAMILY_NAME) + "," +
-                    TBL_AUTHORS.dotAs(DOM_AUTHOR_GIVEN_NAMES) + "," +
-                    TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME) + " || ', ' || " + TBL_AUTHORS.dotAs(DOM_AUTHOR_GIVEN_NAMES, DOM_AUTHOR_NAME) +
+                    TBL_AUTHORS.dotAs(DOM_AUTHOR_GIVEN_NAMES) +
 
                     " FROM " + TBL_ANTHOLOGY.ref() + TBL_ANTHOLOGY.join(TBL_BOOK_TOC_ENTRIES) + TBL_ANTHOLOGY.join(TBL_AUTHORS) +
 
@@ -942,6 +939,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
                     TBL_ANTHOLOGY.dotAs(DOM_PK_ID) + "," +
                     TBL_ANTHOLOGY.dotAs(DOM_TITLE) + "," +
                     TBL_ANTHOLOGY.dotAs(DOM_FIRST_PUBLICATION) +
+
                     " FROM " + TBL_ANTHOLOGY.ref() +
                     " WHERE " + TBL_ANTHOLOGY.dot(DOM_FK_AUTHOR_ID) + "=?" +
                     " ORDER BY lower(" + TBL_ANTHOLOGY.dot(DOM_TITLE) + ")" + COLLATION;
@@ -2271,11 +2269,12 @@ public class CatalogueDBAdapter implements AutoCloseable {
                 return list;
             }
 
+            final int authorIdCol = cursor.getColumnIndex(DOM_FK_AUTHOR_ID.name);
             final int familyNameCol = cursor.getColumnIndex(DOM_AUTHOR_FAMILY_NAME.name);
             final int givenNameCol = cursor.getColumnIndex(DOM_AUTHOR_GIVEN_NAMES.name);
-            final int authorIdCol = cursor.getColumnIndex(DOM_FK_AUTHOR_ID.name);
 
             final int titleCol = cursor.getColumnIndex(DOM_TITLE.name);
+
             final int pubDateCol = cursor.getColumnIndex(DOM_FIRST_PUBLICATION.name);
 
             //final int positionCol = cursor.getColumnIndex(DOM_BOOK_TOC_ENTRY_POSITION.name);
@@ -2381,7 +2380,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
 
         // there is no 'real' FROM table set. The 'from' is a combo of three sub-selects
         String fullSql = "SELECT b.*, " +
-                // these two SQL macros use "a." due to TBL_AUTHOR being "a." but that is just a happy coincidence.
+                // these two SQL macros use "a." due to TBL_AUTHOR being "a." but that is just a happy (on purpose) coincidence.
                 // Here, the "a." refers to the JOIN "Get the 'default' author" (see below)
                 SQL_FIELDS_FOR_AUTHOR + "," +
                 SQL_FIELDS_AUTHOR_FORMATTED_GIVEN_FIRST + "," +
@@ -3794,7 +3793,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
                 // Build the FTS insert statement base. The parameter order MUST match the order expected in {@link #ftsSendBooks}.
                 mInsertFtsStmt = mStatements.add("mInsertFtsStmt",
                         TBL_BOOKS_FTS.getInsert(
-                                DOM_AUTHOR_NAME, DOM_TITLE, DOM_DESCRIPTION,
+                                DOM_FTS_AUTHOR_NAME, DOM_TITLE, DOM_DESCRIPTION,
                                 DOM_BOOK_NOTES, DOM_BOOK_PUBLISHER, DOM_BOOK_GENRE,
                                 DOM_BOOK_LOCATION, DOM_BOOK_ISBN, DOM_PK_DOCID)
                                 + " VALUES (?,?,?,?,?,?,?,?,?)");
@@ -3835,7 +3834,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
                 // Build the FTS update statement base. The parameter order MUST match the order expected in ftsSendBooks().
                 mUpdateFtsStmt = mStatements.add("mUpdateFtsStmt",
                         TBL_BOOKS_FTS.getUpdate(
-                                DOM_AUTHOR_NAME, DOM_TITLE, DOM_DESCRIPTION,
+                                DOM_FTS_AUTHOR_NAME, DOM_TITLE, DOM_DESCRIPTION,
                                 DOM_BOOK_NOTES, DOM_BOOK_PUBLISHER, DOM_BOOK_GENRE,
                                 DOM_BOOK_LOCATION, DOM_BOOK_ISBN) + " WHERE " + DOM_PK_DOCID + "=?");
             }
@@ -3909,7 +3908,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
         // Build the FTS update statement base. The parameter order MUST match the order expected in ftsSendBooks().
         // reminder (to me) .. don't re-use in mStatements as the table is temporary.
         final String sql = ftsTemp.getInsert(
-                DOM_AUTHOR_NAME, DOM_TITLE, DOM_DESCRIPTION,
+                DOM_FTS_AUTHOR_NAME, DOM_TITLE, DOM_DESCRIPTION,
                 DOM_BOOK_NOTES, DOM_BOOK_PUBLISHER, DOM_BOOK_GENRE,
                 DOM_BOOK_LOCATION, DOM_BOOK_ISBN, DOM_PK_DOCID)
                 + " VALUES (?,?,?,?,?,?,?,?,?)";
@@ -3975,7 +3974,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
 
         for (String w : author.split(" ")) {
             if (!w.isEmpty()) {
-                sql.append(" ").append(DOM_AUTHOR_NAME).append(":").append(w);
+                sql.append(" ").append(DOM_FTS_AUTHOR_NAME).append(":").append(w);
             }
         }
         for (String w : title.split(" ")) {

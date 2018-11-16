@@ -210,7 +210,7 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
                 // Listen for clicks
                 sel.setOnClickListener(clickListener);
 
-                // Set the tacks used by the listeners
+                // Set the tags used by the listeners
                 ViewTagger.setTag(sel, R.id.TAG_HOLDER, new Holder<>(entry, baseView));// value: ListProperty.Holder
 
                 // Add it to the group
@@ -244,12 +244,14 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
         /** Actual value */
         @Nullable
         final T value;
-        /** Test description of the meaning of that value */
+        /** Text description of the meaning of that value */
+        @StringRes
         int stringId;
+        @Nullable
         Object[] textArgs;
 
         /** Constructor. Instantiates string. */
-        ItemEntry(final @Nullable T value, final @StringRes int stringId, final Object... args) {
+        ItemEntry(final @Nullable T value, final @StringRes int stringId, final @Nullable Object... args) {
             this.value = value;
             this.stringId = stringId;
             this.textArgs = args;
@@ -265,7 +267,7 @@ public abstract class ListProperty<T> extends ValuePropertyWithGlobalDefault<T> 
             return value;
         }
 
-        public void setString(int value, Object... args) {
+        public void setString(final int value, final @Nullable Object... args) {
             stringId = value;
             textArgs = args;
         }

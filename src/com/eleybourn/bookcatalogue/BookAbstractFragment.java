@@ -58,7 +58,6 @@ import com.eleybourn.bookcatalogue.dialogs.editordialog.PartialDatePickerDialogF
 import com.eleybourn.bookcatalogue.dialogs.editordialog.TextFieldEditorDialogFragment;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.BookManager;
-import com.eleybourn.bookcatalogue.searches.amazon.AmazonUtils;
 import com.eleybourn.bookcatalogue.utils.BookUtils;
 import com.eleybourn.bookcatalogue.utils.BundleUtils;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
@@ -324,6 +323,9 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
 
         MenuHandler.addAmazonSearchSubMenu(menu);
 
+        menu.add(R.id.MENU_BOOK_READ, R.id.MENU_BOOK_READ, 0, R.string.set_as_read);
+        menu.add(R.id.MENU_BOOK_UNREAD, R.id.MENU_BOOK_UNREAD, 0, R.string.set_as_unread);
+
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -336,34 +338,33 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
     @Override
     public void onPrepareOptionsMenu(final Menu menu) {
         super.onPrepareOptionsMenu(menu);
+        Book book = getBookManager().getBook();
 
-        boolean bookExists = getBookManager().getBook().getBookId() != 0;
-
+        boolean bookExists = book.getBookId() != 0;
         menu.setGroupVisible(R.id.MENU_GROUP_BOOK, bookExists);
 
-        boolean hasAuthor = getBookManager().getBook().getAuthorList().size() > 0;
-        boolean hasSeries = getBookManager().getBook().getSeriesList().size() > 0;
+        boolean isRead = (0 != book.getInt(UniqueId.KEY_BOOK_READ));
+        menu.setGroupVisible(R.id.MENU_BOOK_READ, bookExists && !isRead);
+        menu.setGroupVisible(R.id.MENU_BOOK_UNREAD, bookExists && isRead);
 
+        boolean hasAuthor = book.getAuthorList().size() > 0;
+        boolean hasSeries = book.getSeriesList().size() > 0;
         menu.setGroupVisible(R.id.SUBMENU_AMAZON_SEARCH, hasAuthor || hasSeries);
-        // now done as submenu, see onOptionsItemSelected
-//        menu.setGroupVisible(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR, hasAuthor);
-//        menu.setGroupVisible(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES, hasAuthor && hasSeries);
-//        menu.setGroupVisible(R.id.MENU_AMAZON_BOOKS_IN_SERIES, hasSeries);
     }
 
     /**
      * This will be called when a menu item is selected.
      *
-     * @param item The item selected
+     * @param menuItem The item selected
      *
      * @return <tt>true</tt> if handled
      */
     @Override
     @CallSuper
-    public boolean onOptionsItemSelected(final @NonNull MenuItem item) {
+    public boolean onOptionsItemSelected(final @NonNull MenuItem menuItem) {
         final Book book = getBookManager().getBook();
 
-        switch (item.getItemId()) {
+        switch (menuItem.getItemId()) {
 
             case R.id.MENU_BOOK_DELETE: {
                 BookUtils.deleteBook(mActivity, mDb, book.getBookId(),
@@ -400,32 +401,25 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
                 BookUtils.shareBook(mActivity, mDb, book.getBookId());
                 return true;
             }
-
-            case R.id.SUBMENU_AMAZON_SEARCH: {
-                Menu menu = item.getSubMenu();
-                boolean hasAuthor = book.getAuthorList().size() > 0;
-                boolean hasSeries = book.getSeriesList().size() > 0;
-
-                menu.setGroupVisible(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR, hasAuthor);
-                menu.setGroupVisible(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES, hasAuthor && hasSeries);
-                menu.setGroupVisible(R.id.MENU_AMAZON_BOOKS_IN_SERIES, hasSeries);
-                // let the small call flow go on, it will display the submenu
-                break;
-            }
-            case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR: {
-                AmazonUtils.openSearchPage(mActivity, book.getPrimaryAuthor(), null);
+            case R.id.MENU_BOOK_READ: {
+                if (BookUtils.setRead(mDb, book, true)) {
+                    mFields.getField(R.id.read).setValue("1");
+                }
                 return true;
             }
-            case R.id.MENU_AMAZON_BOOKS_IN_SERIES: {
-                AmazonUtils.openSearchPage(mActivity, null, book.getPrimarySeries());
-                return true;
-            }
-            case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES: {
-                AmazonUtils.openSearchPage(mActivity, book.getPrimaryAuthor(), book.getPrimarySeries());
+            case R.id.MENU_BOOK_UNREAD: {
+                if (BookUtils.setRead(mDb, book, false)) {
+                    mFields.getField(R.id.read).setValue("0");
+                }
                 return true;
             }
         }
-        return super.onOptionsItemSelected(item);
+
+        if (MenuHandler.handleAmazonSearchSubMenu(mActivity, menuItem, book)) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(menuItem);
     }
 
     //</editor-fold>
@@ -681,7 +675,7 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
 
     /**
      * Text fields:
-     * Hide text field if it has not any useful data.
+     * Hide text field if it does not have any useful data.
      * Don't show a field if it is already hidden (assumed by user preference)
      *
      * ImageView:
@@ -721,6 +715,7 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
     }
 
     /** saving on some typing */
+    @NonNull
     protected SharedPreferences getPrefs() {
         return requireActivity().getSharedPreferences(BookCatalogueApp.APP_SHARED_PREFERENCES, Context.MODE_PRIVATE);
     }

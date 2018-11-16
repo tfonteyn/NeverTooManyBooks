@@ -75,7 +75,7 @@ abstract class AbstractBase {
                 throw e;
             } catch (IOException e) {
                 if (BuildConfig.DEBUG) {
-                    //FIXME: nothing wrong here, but need to debug the JSoup leaking issue
+                    //FIXME: need to debug the JSoup leaking issue
                     if (response != null) {
                         Logger.info(this,"charset      : " + response.charset());
                         Logger.info(this,"contentType  : " + response.contentType());
