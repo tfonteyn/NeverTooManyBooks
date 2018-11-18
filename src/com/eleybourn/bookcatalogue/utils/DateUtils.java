@@ -91,7 +91,7 @@ public class DateUtils {
 
         // create the parser list. These will be tried IN THE ORDER DEFINED HERE.
         // the reasoning is (I think...) that only english speaking countries even consider using Month first formatting.
-        final boolean userSpeaksEnglish = (Locale.getDefault().getLanguage().equals(Locale.ENGLISH.getLanguage()));
+        final boolean userSpeaksEnglish = (Locale.getDefault().getISO3Language().equals(Locale.ENGLISH.getISO3Language()));
 
         addParseDateFormat("dd-MMM-yyyy HH:mm:ss", !userSpeaksEnglish);
         addParseDateFormat("dd-MMM-yyyy HH:mm", !userSpeaksEnglish);
@@ -280,6 +280,7 @@ public class DateUtils {
      *
      * @return localised name of Month
      */
+    @SuppressWarnings("WeakerAccess")
     @NonNull
     public static String getMonthName(final @IntRange(from = 1, to = 12) int month, final boolean shortName) {
         if (mMonthNameFormatter == null) {

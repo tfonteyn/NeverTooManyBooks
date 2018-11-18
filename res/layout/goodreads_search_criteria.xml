@@ -30,7 +30,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/author"
+                    android:text="@string/lbl_author"
                     android:textAppearance="?android:attr/textAppearanceSmall" />
 
                 <TextView
@@ -38,7 +38,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="0dip"
                     android:layout_weight="1"
-                    android:hint="@string/author"
+                    android:hint="@string/lbl_author"
                     android:singleLine="false"
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:textIsSelectable="true" />
@@ -52,7 +52,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/title"
+                    android:text="@string/lbl_title"
                     android:textAppearance="?android:attr/textAppearanceSmall" />
 
                 <TextView
@@ -60,7 +60,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="0dip"
                     android:layout_weight="1"
-                    android:hint="@string/title"
+                    android:hint="@string/lbl_title"
                     android:singleLine="false"
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:textIsSelectable="true" />
@@ -74,7 +74,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/isbn"
+                    android:text="@string/lbl_isbn"
                     android:textAppearance="?android:attr/textAppearanceSmall" />
 
                 <TextView
@@ -82,7 +82,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="0dip"
                     android:layout_weight="1"
-                    android:hint="@string/isbn"
+                    android:hint="@string/lbl_isbn"
                     android:singleLine="false"
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:textIsSelectable="true" />

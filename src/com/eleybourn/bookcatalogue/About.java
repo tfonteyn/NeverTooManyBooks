@@ -24,14 +24,12 @@ import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.text.method.LinkMovementMethod;
-import android.text.util.Linkify;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
@@ -62,12 +60,9 @@ public class About extends BaseActivity {
 
         /* Version Number */
         TextView view = findViewById(R.id.version);
-        PackageManager manager = this.getPackageManager();
-        PackageInfo info;
         try {
-            info = manager.getPackageInfo(this.getPackageName(), 0);
-            String versionName = info.versionName;
-            view.setText(versionName);
+            PackageInfo info = this.getPackageManager().getPackageInfo(this.getPackageName(), 0);
+            view.setText(info.versionName);
         } catch (NameNotFoundException e) {
             Logger.error(e);
         }

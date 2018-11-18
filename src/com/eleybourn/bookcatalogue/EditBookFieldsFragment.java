@@ -58,7 +58,7 @@ import java.util.List;
 /**
  * This class is called by {@link EditBookFragment} and displays the main Books fields Tab
  */
-public class EditBookFieldsFragment extends BookAbstractFragment implements
+public class EditBookFieldsFragment extends BookBaseFragment implements
         CheckListEditorDialogFragment.OnCheckListEditorResultsListener,
         PartialDatePickerDialogFragment.OnPartialDatePickerResultsListener,
         TextFieldEditorDialogFragment.OnTextFieldEditorResultsListener {
@@ -80,7 +80,7 @@ public class EditBookFieldsFragment extends BookAbstractFragment implements
     @NonNull
     protected BookManager getBookManager() {
         //noinspection ConstantConditions
-        return ((EditBookFragment)this.getParentFragment()).getBookManager();
+        return ((EditBookFragment) this.getParentFragment()).getBookManager();
     }
 
     /* ------------------------------------------------------------------------------------------ */
@@ -180,7 +180,8 @@ public class EditBookFieldsFragment extends BookAbstractFragment implements
         field = mFields.add(R.id.genre, UniqueId.KEY_BOOK_GENRE);
         initValuePicker(field, R.string.lbl_genre, R.id.btn_genre, getGenres());
 
-        field = mFields.add(R.id.language, UniqueId.KEY_BOOK_LANGUAGE);
+        field = mFields.add(R.id.language, UniqueId.KEY_BOOK_LANGUAGE)
+                .setFormatter(new Fields.LanguageFormatter());
         initValuePicker(field, R.string.lbl_language, R.id.btn_language, getLanguages());
 
         field = mFields.add(R.id.format, UniqueId.KEY_BOOK_FORMAT);
@@ -292,8 +293,8 @@ public class EditBookFieldsFragment extends BookAbstractFragment implements
         final List<Bookshelf> list = book.getBookshelfList();
         if (list.isEmpty()) {
             Bookshelf bookshelf = null;
-            String name = BookCatalogueApp.Prefs.getStringOrEmpty(BooksOnBookshelf.PREF_BOOKSHELF);
-            if (!name.isEmpty()) {
+            String name = BookCatalogueApp.getStringPreference(BooksOnBookshelf.PREF_BOOKSHELF, null);
+            if (name != null && !name.isEmpty()) {
                 bookshelf = mDb.getBookshelfByName(name);
             }
             if (bookshelf == null) /* || name.isEmpty() */ {
@@ -468,6 +469,7 @@ public class EditBookFieldsFragment extends BookAbstractFragment implements
     //</editor-fold>
 
     //<editor-fold desc="Field drop down lists">
+
     /**
      * Load a publisher list; reloading this list every time a tab changes is slow.
      * So we cache it.
@@ -500,7 +502,7 @@ public class EditBookFieldsFragment extends BookAbstractFragment implements
      * Load a language list; reloading this list every time a tab changes is slow.
      * So we cache it.
      *
-     * @return List of languages
+     * @return List of languages; full displayName
      */
     @NonNull
     private List<String> getLanguages() {
@@ -581,7 +583,7 @@ public class EditBookFieldsFragment extends BookAbstractFragment implements
         }
 
         // handle any cover image result codes
-        if (mCoverHandler.onActivityResult(requestCode,resultCode,data)) {
+        if (mCoverHandler.onActivityResult(requestCode, resultCode, data)) {
             return;
         }
 

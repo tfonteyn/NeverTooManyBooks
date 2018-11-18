@@ -31,7 +31,7 @@
             <TextView
                 android:id="@+id/lbl_author"
                 style="@style/lbl_editField"
-                android:text="@string/author" />
+                android:text="@string/lbl_author" />
 
             <Button
                 android:id="@+id/author"
@@ -55,7 +55,7 @@
                 android:id="@+id/lbl_title"
                 style="@style/lbl_editField"
                 android:labelFor="@id/title"
-                android:text="@string/title" />
+                android:text="@string/lbl_title" />
 
             <EditText
                 android:id="@+id/title"
@@ -75,7 +75,7 @@
                 android:layout_alignParentTop="false"
                 android:layout_centerVertical="true"
                 android:labelFor="@+id/isbn"
-                android:text="@string/isbn" />
+                android:text="@string/lbl_isbn" />
 
             <!-- not using style isbnEntryField -->
             <EditText
@@ -102,7 +102,7 @@
             <TextView
                 android:id="@+id/lbl_series"
                 style="@style/lbl_editField"
-                android:text="@string/series" />
+                android:text="@string/lbl_series" />
 
             <Button
                 android:id="@+id/filename"

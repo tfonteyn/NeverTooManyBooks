@@ -1,6 +1,7 @@
 package com.eleybourn.bookcatalogue.database;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -14,21 +15,16 @@ import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
+import com.eleybourn.bookcatalogue.utils.UpgradeMessageManager;
 
 import java.io.File;
 
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_ACQUIRED;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_ANTHOLOGY_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FAMILY_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_GIVEN_NAMES;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_AUTHOR_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_POSITION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKSHELF;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_BOOKSHELF_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ANTHOLOGY_BITMASK;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ISFDB_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LIBRARY_THING_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_TOC_ENTRY_POSITION;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_ACQUIRED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_ADDED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_PUBLISHED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_EDITION_BITMASK;
@@ -36,13 +32,14 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_GENRE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_GOODREADS_BOOK_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_GOODREADS_LAST_SYNC_DATE;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_BOOK_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ISBN;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ISFDB_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LANGUAGE;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PRICE_LISTED;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LIBRARY_THING_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LOCATION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_NOTES;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PAGES;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PRICE_LISTED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PRICE_LISTED_CURRENCY;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PRICE_PAID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PRICE_PAID_CURRENCY;
@@ -54,23 +51,28 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_SERIES_NUM;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_SERIES_POSITION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_SIGNED;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_TOC_ENTRY_POSITION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_UUID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DESCRIPTION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FIRST_PUBLICATION;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PK_ID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_ANTHOLOGY_ID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_AUTHOR_ID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_BOOKSHELF_ID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_BOOK_ID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_SERIES_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LAST_UPDATE_DATE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LOANED_TO;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_SERIES_ID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PK_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_ANTHOLOGY;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_AUTHORS;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOKS;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOKSHELF;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOK_TOC_ENTRIES;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOK_AUTHOR;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOK_BOOKSHELF;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOK_SERIES;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOK_TOC_ENTRIES;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_LOAN;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_SERIES;
 
@@ -79,17 +81,11 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_SERIE
  * This is a specific version of {@link SQLiteOpenHelper}. It handles {@link #onCreate} and {@link #onUpgrade}
  *
  * This used to be an inner class of {@link CatalogueDBAdapter}
- * Externalised ONLY because of the size of the class.
- * ONLY used by {@link CatalogueDBAdapter}
+ * Externalised because of the size of the class. ONLY used by {@link CatalogueDBAdapter}
  *
  * @author evan
  */
 public class DatabaseHelper extends SQLiteOpenHelper {
-
-    /** RELEASE: Update database version */
-    private static final int DATABASE_VERSION = 83; // last official version was 82
-    /** the one and only */
-    private static final String DATABASE_NAME = "book_catalogue";
 
     /**
      * In addition to SQLite's default BINARY collator (others: NOCASE and RTRIM)
@@ -110,7 +106,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * NOTE: Important to have start/end spaces!
      */
     public static final String COLLATION = " Collate LOCALIZED ";
-
     /**
      * NOTE: ***BEFORE*** changing any CREATE TABLE statement:
      *
@@ -118,7 +113,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * 1. copy the create statement to a renamed version in {@link UpgradeDatabase#doUpgrade}
      * 2. Find all uses in {@link UpgradeDatabase} and make sure upgrades use the 'old/renamed' version of the statement
      * 3. modify the current statement, and if not already so, make it 'private'.
-     *    (tables that have never changed since conception will be package-private)
+     * (tables that have never changed since conception will be package-private)
      * 4. modify {@link DomainDefinition} if needed to reflect the new version
      * 5. Check and check again, that *everything* EXCEPT {@link UpgradeDatabase} is using the current version
      *
@@ -136,12 +131,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             "CREATE table " + TBL_BOOKSHELF + " (_id integer primary key autoincrement, " +
                     DOM_BOOKSHELF + " text not null " +
                     ")";
-
     /** this inserts a 'Default' bookshelf with _id==1, see {@link Bookshelf} */
     static final String DATABASE_CREATE_BOOKSHELF_DATA =
             "INSERT INTO " + TBL_BOOKSHELF + " (" + DOM_BOOKSHELF + ") VALUES ('" + BookCatalogueApp.getResourceString(R.string.initial_bookshelf) +
                     "')";
-
     static final String DATABASE_CREATE_LOAN =
             "CREATE TABLE " + TBL_LOAN + " (_id integer primary key autoincrement, " +
                     DOM_FK_BOOK_ID + " integer REFERENCES " + TBL_BOOKS + " ON DELETE SET NULL ON UPDATE SET NULL, " +
@@ -171,6 +164,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     DOM_AUTHOR_POSITION + " integer NOT NULL, " +
                     "PRIMARY KEY(" + DOM_FK_BOOK_ID + ", " + DOM_AUTHOR_POSITION + ")" +
                     ")";
+    /** RELEASE: Update database version */
+    private static final int DATABASE_VERSION = 83; // last official version was 82
+    /** the one and only */
+    private static final String DATABASE_NAME = "book_catalogue";
     private static final String DATABASE_CREATE_ANTHOLOGY =
             "CREATE TABLE " + TBL_ANTHOLOGY + " (_id integer primary key autoincrement, " +
                     DOM_FK_AUTHOR_ID + " integer not null REFERENCES " + TBL_AUTHORS + ", " +
@@ -190,7 +187,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     DOM_BOOK_ISBN + " text, " +
                     DOM_BOOK_PUBLISHER + " text, " +
                     DOM_BOOK_DATE_PUBLISHED + " date, " +
-                    DOM_FIRST_PUBLICATION +  " date default '', " +
+                    DOM_FIRST_PUBLICATION + " date default '', " +
 
                     DOM_BOOK_EDITION_BITMASK + " integer not null default 0, " +
                     DOM_BOOK_RATING + " real not null default 0, " +
@@ -291,7 +288,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     private static DbSync.Synchronizer mSynchronizer;
-    private static boolean mDbWasCreated;
     private static String mMessage = "";
 
     DatabaseHelper(final @NonNull Context context,
@@ -333,13 +329,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     /**
-     * @return a boolean indicating if this was a new install
-     */
-    boolean isNewInstall() {
-        return mDbWasCreated;
-    }
-
-    /**
      * This function is called when the database is first created
      *
      * @param db The database to be created
@@ -347,9 +336,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     @CallSuper
     public void onCreate(@NonNull SQLiteDatabase db) {
-        Logger.info(this,"Creating database: " + db.getPath());
+        Logger.info(this, "Creating database: " + db.getPath());
+        // indicate that this is new install; e.g. the 'upgrade' from not having our app before.
+        // this avoids messing with 'isNewInstall' etc...
+        UpgradeMessageManager.setUpgradeAcknowledged();
 
-        mDbWasCreated = true;
         db.execSQL(DATABASE_CREATE_AUTHORS);
         db.execSQL(DATABASE_CREATE_BOOKSHELF);
         db.execSQL(DATABASE_CREATE_BOOKS); // RELEASE: Make sure this is always DATABASE_CREATE_BOOKS after a rename of the original
@@ -377,12 +368,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      */
     private void createTriggers(DbSync.SynchronizedDb db) {
         String name = "books_tg_reset_goodreads";
-        String body = " after update of isbn ON books for each row\n" +
+        String body = " after update of " + DOM_BOOK_ISBN + " ON " + TBL_BOOKS + " for each row\n" +
                 " When New." + DOM_BOOK_ISBN + " <> Old." + DOM_BOOK_ISBN + "\n" +
                 "	Begin \n" +
-                "		UPDATE books SET \n" +
-                "		    goodreads_book_id = 0,\n" +
-                "		    last_goodreads_sync_date = ''\n" +
+                "		UPDATE " + TBL_BOOKS + " SET \n" +
+                "		    " + DOM_BOOK_GOODREADS_BOOK_ID + "=0,\n" +
+                "		    " + DOM_BOOK_GOODREADS_LAST_SYNC_DATE + "=''\n" +
                 "		WHERE\n" +
                 "			" + DOM_PK_ID + " = new." + DOM_PK_ID + ";\n" +
                 "	End";
@@ -426,16 +417,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * This function is called each time the database is upgraded. The function will run all
      * upgrade scripts between the oldVersion and the newVersion.
      *
-     * @see #DATABASE_VERSION
-     *
      * @param db         The database to be upgraded
      * @param oldVersion The current version number of the database
      * @param newVersion The new version number of the database
+     *
+     * @see #DATABASE_VERSION
      */
     @Override
     public void onUpgrade(final @NonNull SQLiteDatabase db, final int oldVersion, final int newVersion) {
-        Logger.info(this,"Upgrading database: " + db.getPath());
-        mDbWasCreated = false;
+        Logger.info(this, "Upgrading database: " + db.getPath());
 
         int curVersion = oldVersion;
 
@@ -455,8 +445,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         DbSync.SynchronizedDb syncedDb = new DbSync.SynchronizedDb(db, mSynchronizer);
 
         // older version upgrades archived/execute in UpgradeDatabase
-        curVersion = UpgradeDatabase.doUpgrade(db, syncedDb, curVersion);
-        mMessage += UpgradeDatabase.getMessage();
+        if (curVersion < 82) {
+            curVersion = UpgradeDatabase.doUpgrade(db, syncedDb, curVersion);
+            mMessage += UpgradeDatabase.getMessage();
+        }
 
         if (curVersion < newVersion && curVersion == 82) {
             //noinspection UnusedAssignment
@@ -464,11 +456,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             mMessage += "New in v83:\n\n";
             mMessage += "* Moved to base Android 5.0 bringing lots of new UI goodies.";
             mMessage += "* Removed the old 'Classic' view (sorry)\n";
-            mMessage += "* Cover thumbnails are moved to a 'covers' sub folder to clean up the root folder.\n\n";
+            mMessage += "* Cover thumbnails and log files are moved to dedicated sub folders to clean up the root folder.\n\n";
             mMessage += "* Configurable website search order.\n";
             mMessage += "* New Search website: ISFDB.\n";
             mMessage += "* Better Anthology support (Edit/View/cross-book)\n";
             mMessage += "* Anthology titles auto populated (ISFDB site only!)\n\n";
+            mMessage += "* The language field wil show the translated name for the current locale.\n";
             mMessage += "* New fields:\n";
             mMessage += "*   Books & Anthology titles now have a 'first published' field\n";
             mMessage += "*   Books Editions (1st, book-club, etc)\n";
@@ -478,16 +471,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             mMessage += "*   LibraryThing & ISFDB local id for future usage\n";
 
             // cleanup of obsolete preferences
-            BookCatalogueApp.Prefs.remove("StartupActivity.FAuthorSeriesFixupRequired");
-            BookCatalogueApp.Prefs.remove("start_in_my_books");
-            BookCatalogueApp.Prefs.remove("App.includeClassicView");
-            BookCatalogueApp.Prefs.remove("App.DisableBackgroundImage");
-            BookCatalogueApp.Prefs.remove("App.BooklistStyle");
+            SharedPreferences.Editor ed = BookCatalogueApp.getSharedPreferences().edit();
+            ed.remove("StartupActivity.FAuthorSeriesFixupRequired");
+            ed.remove("start_in_my_books");
+            ed.remove("App.includeClassicView");
+            ed.remove("App.DisableBackgroundImage");
+            ed.remove("App.BooklistStyle");
+            ed.apply();
 
             // move cover files
             v83_moveCoversToDedicatedDirectory(syncedDb);
-
-            // there is a dedicated log directory now. Any left over files will be cleaned by a Help/purge.
+            // there is also a dedicated log directory now. Any left over files will be cleaned by a Help/purge.
 
             //TEST a proper upgrade from 82 to 83
 

@@ -44,7 +44,7 @@ class DBHelper extends SQLiteOpenHelper {
 
     // Domain names for fields in tables. Yes, I mix nomenclatures.
 
-    protected static final String DOM_ID = "_id"; // Needs to start with '_' so CursorAdapter understands its an ID
+    static final String DOM_ID = "_id"; // Needs to start with '_' so CursorAdapter understands its an ID
     static final String DOM_CATEGORY = "category";
     static final String DOM_EXCEPTION = "exception";
     static final String DOM_FAILURE_REASON = "failure_reason";

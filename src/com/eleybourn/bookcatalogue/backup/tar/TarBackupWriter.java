@@ -61,6 +61,7 @@ public class TarBackupWriter extends BackupWriterAbstract {
      * @param container Parent
      */
     TarBackupWriter(final @NonNull TarBackupContainer container) throws IOException {
+        super(container.getContext());
         mContainer = container;
         // Open the archive for writing
         FileOutputStream out = new FileOutputStream(container.getFile());

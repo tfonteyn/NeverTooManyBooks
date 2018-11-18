@@ -43,7 +43,7 @@ import java.util.List;
  * checkbox to enable or disable the field on the main edit book screen.
  *
  * Places to add them:
- * {@link BookAbstractFragment#showHideFields(boolean)}
+ * {@link BookBaseFragment#showHideFields(boolean)}
  * {@link BookFragment#populateReadStatus} and similar show methods in that class
  * or the parent classes
  *
@@ -60,12 +60,12 @@ public class FieldVisibilityActivity extends BaseActivity {
     private static final List<FieldInfo> mFields = new ArrayList<>();
 
     static {
-        mFields.add(new FieldInfo(UniqueId.KEY_AUTHOR_ID, R.string.author, true));
-        mFields.add(new FieldInfo(UniqueId.KEY_TITLE, R.string.title, true));
-        mFields.add(new FieldInfo(UniqueId.BKEY_HAVE_THUMBNAIL, R.string.title_cover, false));
-        mFields.add(new FieldInfo(UniqueId.KEY_BOOK_ISBN, R.string.isbn, false));
-        mFields.add(new FieldInfo(UniqueId.KEY_SERIES_NAME, R.string.series, false));
-        mFields.add(new FieldInfo(UniqueId.KEY_SERIES_NUM, R.string.series_num, false));
+        mFields.add(new FieldInfo(UniqueId.KEY_AUTHOR_ID, R.string.lbl_author, true));
+        mFields.add(new FieldInfo(UniqueId.KEY_TITLE, R.string.lbl_title, true));
+        mFields.add(new FieldInfo(UniqueId.BKEY_HAVE_THUMBNAIL, R.string.lbl_cover, false));
+        mFields.add(new FieldInfo(UniqueId.KEY_BOOK_ISBN, R.string.lbl_isbn, false));
+        mFields.add(new FieldInfo(UniqueId.KEY_SERIES_NAME, R.string.lbl_series, false));
+        mFields.add(new FieldInfo(UniqueId.KEY_SERIES_NUM, R.string.lbl_series_num, false));
         mFields.add(new FieldInfo(UniqueId.KEY_DESCRIPTION, R.string.lbl_description, false));
 
         mFields.add(new FieldInfo(UniqueId.KEY_BOOK_PUBLISHER, R.string.lbl_publisher, false));
@@ -86,11 +86,11 @@ public class FieldVisibilityActivity extends BaseActivity {
         mFields.add(new FieldInfo(UniqueId.KEY_NOTES, R.string.lbl_notes, false));
         mFields.add(new FieldInfo(UniqueId.KEY_BOOK_LOCATION, R.string.lbl_location_long, false));
         mFields.add(new FieldInfo(UniqueId.KEY_BOOK_PRICE_PAID, R.string.lbl_price_paid, false));
-        mFields.add(new FieldInfo(UniqueId.KEY_BOOK_READ, R.string.lbl_read, false));
+        mFields.add(new FieldInfo(UniqueId.KEY_BOOK_READ, R.string.lbl_is_read, false));
         mFields.add(new FieldInfo(UniqueId.KEY_BOOK_READ_START, R.string.lbl_read_start, false));
         mFields.add(new FieldInfo(UniqueId.KEY_BOOK_READ_END, R.string.lbl_read_end, false));
         mFields.add(new FieldInfo(UniqueId.KEY_BOOK_EDITION_BITMASK, R.string.lbl_edition, false));
-        mFields.add(new FieldInfo(UniqueId.KEY_BOOK_SIGNED, R.string.lbl_signed, false));
+        mFields.add(new FieldInfo(UniqueId.KEY_BOOK_SIGNED, R.string.lbl_is_signed, false));
         mFields.add(new FieldInfo(UniqueId.KEY_BOOK_RATING, R.string.lbl_rating, false));
 
         //NEWKIND: new fields

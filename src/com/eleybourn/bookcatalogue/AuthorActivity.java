@@ -35,8 +35,7 @@ public class AuthorActivity extends BaseListActivity {
         Bundle extras = getIntent().getExtras();
         Objects.requireNonNull(extras);
         long authorId = extras.getLong(UniqueId.KEY_ID);
-        mDb = new CatalogueDBAdapter(this)
-                .open();
+        mDb = new CatalogueDBAdapter(this);
 
         Author author = mDb.getAuthor(authorId);
         Objects.requireNonNull(author);

@@ -361,7 +361,7 @@ Tip: You can find the correct barcode for many modern paperbacks on the inside c
 New in v2.8
 Don't forget you can hide any of the new fields that you do not want to see. 
 * Fixed several crashing defects when adding books
-* Added Autocompleting Location Field (For Cam)
+* Added AutoCompleting Location Field (For Cam)
 * Added Read Start & Read End Fields (For Robert)
 * Added an Audiobook Checkbox Field (For Ted)
 * Added a Book Signed Checkbox Field (For me)

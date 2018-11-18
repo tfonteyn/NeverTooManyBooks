@@ -166,14 +166,14 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
 
     static {
         mCondensedListItems.add(null, R.string.use_default_setting);
-        mCondensedListItems.add(false, R.string.normal);
-        mCondensedListItems.add(true, R.string.smaller);
+        mCondensedListItems.add(false, R.string.blp_item_size_normal);
+        mCondensedListItems.add(true, R.string.blp_item_size_smaller);
 
         mShowHeaderInfoListItems.add(null, R.string.use_default_setting);
-        mShowHeaderInfoListItems.add(SUMMARY_HIDE, R.string.summary_details_hide);
-        mShowHeaderInfoListItems.add(SUMMARY_SHOW_COUNT, R.string.summary_details_show_book_count);
-        mShowHeaderInfoListItems.add(SUMMARY_SHOW_COUNT ^ SUMMARY_SHOW_LEVEL_1, R.string.summary_details_show_first_level_and_book_count);
-        mShowHeaderInfoListItems.add(SUMMARY_SHOW_ALL, R.string.summary_details_show_all);
+        mShowHeaderInfoListItems.add(SUMMARY_HIDE, R.string.blp_summary_hide);
+        mShowHeaderInfoListItems.add(SUMMARY_SHOW_COUNT, R.string.blp_summary_book_count);
+        mShowHeaderInfoListItems.add(SUMMARY_SHOW_COUNT ^ SUMMARY_SHOW_LEVEL_1, R.string.blp_summary_first_level_and_book_count);
+        mShowHeaderInfoListItems.add(SUMMARY_SHOW_ALL, R.string.blp_summary_show_all);
 
         mReadFilterListItems.add(FILTER_NO, R.string.booklist_filters_unread);
         mReadFilterListItems.add(FILTER_YES, R.string.booklist_filters_read);
@@ -419,7 +419,7 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
                 .setPreferenceKey(PREF_SHOW_FORMAT);
 
         mXtraShowAuthor = new BooleanProperty("XAuthor",
-                PropertyGroup.GRP_EXTRA_BOOK_DETAILS,R.string.author)
+                PropertyGroup.GRP_EXTRA_BOOK_DETAILS,R.string.lbl_author)
                 .setPreferenceKey(PREF_SHOW_AUTHOR);
 
         mNameProperty = new StringProperty("StyleName",
@@ -428,11 +428,11 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
                 .setWeight(-100);
 
         mCondensed = new BooleanListProperty(mCondensedListItems, PREF_CONDENSED_TEXT,
-                PropertyGroup.GRP_GENERAL, R.string.size_of_booklist_items)
+                PropertyGroup.GRP_GENERAL, R.string.blp_item_size)
                 .setPreferenceKey(PREF_CONDENSED_TEXT);
 
         mShowHeaderInfo = new IntegerListProperty(mShowHeaderInfoListItems, PREF_SHOW_HEADER_INFO,
-                PropertyGroup.GRP_GENERAL, R.string.summary_details)
+                PropertyGroup.GRP_GENERAL, R.string.blp_summary)
                 .setPreferenceKey(PREF_SHOW_HEADER_INFO)
                 .setDefaultValue(SUMMARY_SHOW_ALL);
 

@@ -19,6 +19,7 @@
  */
 package com.eleybourn.bookcatalogue.backup;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -147,9 +148,8 @@ public class CsvExporter implements Exporter {
     @SuppressWarnings("FieldCanBeLocal")
     private String mLastError;
 
-    CsvExporter() {
-        mDb = new CatalogueDBAdapter(BookCatalogueApp.getAppContext())
-                .open();
+    CsvExporter(final @NonNull Context context) {
+        mDb = new CatalogueDBAdapter(context);
     }
 
     void renameFiles(final @NonNull File temp) {
@@ -171,7 +171,7 @@ public class CsvExporter implements Exporter {
                           final int backupFlags,
                           @Nullable Date since) throws IOException {
         final String UNKNOWN = BookCatalogueApp.getResourceString(R.string.unknown);
-        final String AUTHOR = BookCatalogueApp.getResourceString(R.string.author);
+        final String AUTHOR = BookCatalogueApp.getResourceString(R.string.lbl_author);
 
         if (StorageUtils.isWriteProtected()) {
             mLastError = "Export Failed - Could not write to Storage";
@@ -278,7 +278,7 @@ public class CsvExporter implements Exporter {
                         .append(formatCell(StringList.getTOCUtils().encode( mDb.getTOCEntriesByBook(bookId))))
                         .append(formatCell(bookCursorRow.getDescription()))
                         .append(formatCell(bookCursorRow.getGenre()))
-                        .append(formatCell(bookCursorRow.getLanguage()))
+                        .append(formatCell(bookCursorRow.getLanguageCode()))
                         .append(formatCell(bookCursorRow.getDateAdded()))
 
                         .append(formatCell(bookCursorRow.getLibraryThingBookId()))

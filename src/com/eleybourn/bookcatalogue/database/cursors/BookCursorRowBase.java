@@ -178,7 +178,7 @@ public class BookCursorRowBase {
      * Convenience function to retrieve column value.
      */
     @NonNull
-    public String getLanguage() {
+    public String getLanguageCode() {
         if (mLanguageCol < 0) {
             mLanguageCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_LANGUAGE.name);
             if (mLanguageCol < 0) {

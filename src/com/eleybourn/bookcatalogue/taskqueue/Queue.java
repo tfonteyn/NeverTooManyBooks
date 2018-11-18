@@ -160,7 +160,7 @@ public class Queue extends Thread {
             task.setException(null);
             task.setState(TaskState.running);
             mManager.notifyTaskChange(task, TaskActions.running);
-            result = mManager.runOneTask(task);
+            result = mManager.runOneTask(mApplicationContext, task);
             requeue = !result;
         } catch (Exception e) {
             // Don't overwrite exception set by handler

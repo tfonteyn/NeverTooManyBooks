@@ -30,7 +30,7 @@
             style="@style/titleTextEntry"
             android:layout_weight="2"
             android:completionThreshold="2"
-            android:hint="@string/series"
+            android:hint="@string/lbl_series"
             android:paddingEnd="@dimen/padding_border"
             android:paddingStart="@dimen/padding_border" />
 
@@ -40,7 +40,7 @@
             android:layout_width="150sp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:hint="@string/series_num"
+            android:hint="@string/lbl_series_num"
             tools:ignore="Autofill" />
 
         <Button

@@ -58,12 +58,12 @@ public class GoodreadsAuthorizationActivity extends BaseActivity {
 
             // Handle the auth response by passing it off to a background task to check.
             GoodreadsAuthorizationResultCheck task = new GoodreadsAuthorizationResultCheck();
-            QueueManager.getQueueManager().enqueueTask(task, BCQueueManager.QUEUE_SMALL_JOBS);
+            QueueManager.getQueueManager().enqueueTask(this, task, BCQueueManager.QUEUE_SMALL_JOBS);
         }
 
         // Bring the main app task back to the top
         Intent bcTop = new Intent(this, StartupActivity.class);
-        bcTop.setAction("android.intent.action.MAIN");
+        bcTop.setAction(Intent.ACTION_MAIN);
         bcTop.addCategory(Intent.CATEGORY_LAUNCHER);
         startActivity(bcTop);
 

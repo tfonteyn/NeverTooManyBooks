@@ -77,7 +77,6 @@ import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.searches.SearchLocalActivity;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue;
-import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTask;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTaskContext;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
@@ -191,12 +190,11 @@ public class BooksOnBookshelf extends BaseListActivity implements
                 mRebuildState = BooklistPreferencesActivity.BOOK_LIST_STATE_PRESERVED;
             }
 
-            mDb = new CatalogueDBAdapter(this)
-                    .open();
+            mDb = new CatalogueDBAdapter(this);
 
             // Restore bookshelf
-            String bookshelf_name = getPrefs().getString(PREF_BOOKSHELF, "");
-            if (bookshelf_name.isEmpty()) {
+            String bookshelf_name = BookCatalogueApp.getStringPreference(PREF_BOOKSHELF, null);
+            if (bookshelf_name == null || bookshelf_name.isEmpty()) {
                 // pref not set, start with initial shelf
                 mCurrentBookshelf = new Bookshelf(Bookshelf.DEFAULT_ID, getString(R.string.initial_bookshelf));
             } else {
@@ -209,8 +207,8 @@ public class BooksOnBookshelf extends BaseListActivity implements
             }
 
             // Restore list position on bookshelf
-            mTopRow = getPrefs().getInt(PREF_TOP_ROW, 0);
-            mTopRowTop = getPrefs().getInt(PREF_TOP_ROW_TOP, 0);
+            mTopRow = BookCatalogueApp.getIntPreference(PREF_TOP_ROW, 0);
+            mTopRowTop = BookCatalogueApp.getIntPreference(PREF_TOP_ROW_TOP, 0);
 
             // Restore view style
             refreshStyle();
@@ -360,7 +358,7 @@ public class BooksOnBookshelf extends BaseListActivity implements
             // If it's a book, view or edit it.
             case RowKinds.ROW_KIND_BOOK: {
                 long bookId = mListCursor.getCursorRow().getBookId();
-                boolean openInReadOnly = getPrefs().getBoolean(PREF_OPEN_BOOK_READ_ONLY, true);
+                boolean openInReadOnly = BookCatalogueApp.getBooleanPreference(PREF_OPEN_BOOK_READ_ONLY, true);
 
                 if (openInReadOnly) {
                     String listTable = mListCursor.getBuilder().createFlattenedBooklist().getTable().getName();
@@ -759,7 +757,7 @@ public class BooksOnBookshelf extends BaseListActivity implements
                         this.getString(R.string.displaying_n_books_in_m_entries, mUniqueBooks, mTotalBooks)));
             } else {
                 bookCounts.setText(getString(R.string.brackets,
-                        this.getString(R.string.displaying_n_books, mUniqueBooks)));
+                        this.getResources().getQuantityString(R.plurals.displaying_n_books, mUniqueBooks, mUniqueBooks)));
             }
             bookCounts.setVisibility(View.VISIBLE);
         } else {
@@ -884,7 +882,7 @@ public class BooksOnBookshelf extends BaseListActivity implements
 
         // Save position in list
         if (mListHasBeenLoaded) {
-            final SharedPreferences.Editor ed = getPrefs().edit();
+            final SharedPreferences.Editor ed = BookCatalogueApp.getSharedPreferences().edit();
             final ListView lv = getListView();
             mTopRow = lv.getFirstVisiblePosition();
             ed.putInt(PREF_TOP_ROW, mTopRow);
@@ -1044,7 +1042,7 @@ public class BooksOnBookshelf extends BaseListActivity implements
      * Save the bookshelf + it's style + the style as the new default.
      */
     private void saveBookShelfAndStyle(final @NonNull Bookshelf bookshelf, final @NonNull BooklistStyle style) {
-        SharedPreferences.Editor ed = getPrefs().edit();
+        SharedPreferences.Editor ed = BookCatalogueApp.getSharedPreferences().edit();
         // current bookshelf
         ed.putString(PREF_BOOKSHELF, bookshelf.name);
         // current global style, used as default if a bookshelf has no own style yet
@@ -1076,9 +1074,9 @@ public class BooksOnBookshelf extends BaseListActivity implements
      */
     @NonNull
     private BooklistStyle getBookshelfStyle(final @NonNull Bookshelf bookshelf, final @NonNull BooklistStyles styles) {
-        String globalDefaultStyle = getPrefs().getString(PREF_LIST_STYLE, getString(DEFAULT_STYLE));
+        String globalDefaultStyle = BookCatalogueApp.getStringPreference(PREF_LIST_STYLE, getString(DEFAULT_STYLE));
         String key = PREF_LIST_STYLE_FOR_BOOKSHELF + bookshelf.name;
-        String styleName = getPrefs().getString(key, globalDefaultStyle);
+        String styleName = BookCatalogueApp.getStringPreference(key, globalDefaultStyle);
 
         // styleName is never null, see above, always a default available.
         @SuppressWarnings("ConstantConditions")
@@ -1242,7 +1240,7 @@ public class BooksOnBookshelf extends BaseListActivity implements
         }
 
         // get a new builder and add the required extra domains
-        BooklistBuilder builder = new BooklistBuilder(mDb, mCurrentStyle);
+        BooklistBuilder builder = new BooklistBuilder(this, mCurrentStyle);
 
         builder.requireDomain(DatabaseDefinitions.DOM_TITLE,
                 DatabaseDefinitions.TBL_BOOKS.dot(DatabaseDefinitions.DOM_TITLE), true);
@@ -1279,7 +1277,7 @@ public class BooksOnBookshelf extends BaseListActivity implements
         if (mListDialog == null) {
             mListDialog = ProgressDialog.show(this,
                     "",
-                    getString(R.string.getting_books_ellipsis),
+                    getString(R.string.progress_msg_getting_books),
                     true,
                     true, new OnCancelListener() {
                         @Override
@@ -1298,7 +1296,7 @@ public class BooksOnBookshelf extends BaseListActivity implements
      *
      * @author Philip Warner
      */
-    private class GetBookListTask implements SimpleTask {
+    private class GetBookListTask implements SimpleTaskQueue.SimpleTask {
         /** Indicates whole table structure needs rebuild, vs. just do a reselect of underlying data */
         private final boolean isFullRebuild;
         /** the builder */

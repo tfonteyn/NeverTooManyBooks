@@ -107,7 +107,7 @@ public class EventsCursor extends SQLiteCursor implements BindableItemCursor {
         try {
             event = SerializationUtils.deserializeObject(blob);
         } catch (RTE.DeserializationException de) {
-            event = QueueManager.getQueueManager().newLegacyEvent();
+            event = new LegacyEvent();
         }
         event.setId(this.getId());
         return event;

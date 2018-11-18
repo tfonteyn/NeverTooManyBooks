@@ -3,13 +3,13 @@
     <string name="title_add_book">Dodaj książkę</string>
     <string name="menu_add_book">Dodaj książkę…</string>
     <string name="menu_delete_book">Usuń książkę</string>
-    <string name="author">Autor</string>
-    <string name="title">Tytuł</string>
+    <string name="lbl_author">Autor</string>
+    <string name="lbl_title">Tytuł</string>
     <string name="lbl_publisher">Wydawca</string>
     <string name="lbl_date_published">Data wydania</string>
     <string name="lbl_rating">Ocena</string>
-    <string name="lbl_read">Przeczytełeś tę książkę?</string>
-    <string name="series">Seria</string>
+    <string name="lbl_is_read">Przeczytełeś tę książkę?</string>
+    <string name="lbl_series">Seria</string>
     <string name="lbl_pages">Stron</string>
     <string name="btn_confirm_add_book">Dodaj!</string>
     <string name="btn_confirm_update">Aktualizuj</string>
@@ -35,15 +35,15 @@
     <string name="search_for_books">Szukaj książek</string>
     <string name="search_hint">Szukaj autora lub tytułu</string>
     <string name="warning_book_not_found">Zeskanowana książka nie została odnaleziona. Spóbuj ponownie z kodem, który może znajdować się w środku okładki lub wprowadź dane ręcznie.</string>
-    <string name="series_num">tom#</string>
+    <string name="lbl_series_num">tom#</string>
     <string name="title_import_data">Importuj książki</string>
     <string name="warning_import_be_cautious">Uwaga! Zaimportowane dane mogą nadpisać istniejące, jeśli pokryje się identyfikator (pole _id). Jest to zwykle oczekiwane zachowanie, gdy edytowałeś wyeksportowany wcześniej plik. Jeśli dodajesz nową książkę, pozostaw pole _id puste.</string>
     <string name="error_import_failed_is_location_correct">Błąd!: Import z karty SD nie powiódł się. Upewnij się, czy plik export.csv jest w prawidłowym miejscu.</string>
     <string name="search_title">Katalog książek: Wynik wyszukiwania</string>
     <string name="results_found">Znaleziono</string>
     <string name="menu_administration_long">Funkcje administracyjne</string>
-    <string name="menu_administration_short">Administracja</string>
-    <string name="install_scan">Do skanowania kodów kreskowych ISBN musisz zainstalować program Zxing Barcode Scanner. Naciśnij OK by to zrobić, lub Anuluj by zrezygnować z instalacji.</string>
+    <string name="menu_administration">Administracja</string>
+    <string name="info_install_scanner">Do skanowania kodów kreskowych ISBN musisz zainstalować program Zxing Barcode Scanner. Naciśnij OK by to zrobić, lub Anuluj by zrezygnować z instalacji.</string>
     <string name="title_install_scan">Zainstaluj Barcode Scanner</string>
     <string name="about_lbl_version_number">Wersja programu:</string>
     <string name="about_donate">Jeśli chciałbyś wesprzeć rozwój programu, zrób to poprzez mój Amazon Wishlist lub PayPal. Będąc obywatelem Australii nie mam póki co możliwości opublikowania &quot;płatnej&quot; wersji. :-) </string>
@@ -91,7 +91,7 @@
     <string name="menu_cover_rotate_cw">Obróć zgodnie ze wsk. zegara</string>
     <string name="menu_cover_rotate_ccw">Obróć odwrotnie do wsk. zegara</string>
     <string name="menu_cover_rotate_180">Do góry nogami</string>
-    <string name="lbl_signed">Czy książka jest podpisana</string>
+    <string name="lbl_is_signed">Czy książka jest podpisana</string>
     <string name="lbl_read_start">Data rozpoczęcia czytania</string>
     <string name="lbl_read_end">Data zakończenia czytania</string>
     <string name="lbl_location">Lokalizacja</string>
@@ -99,7 +99,7 @@
     <string name="warning_duplicate_book_message">Książka, którą próbujesz dodać już istnieje w katalogu, czy na pewno chcesz dodać jeszcze jeden egzemplarz?</string>
     <string name="menu_cover_add_from_gallery">Z galerii…</string>
     <string name="backup_request">Czy chcesz wykonac kopię zapasową na karcie SD?</string>
-    <string name="backup_title">Kopia?</string>
+    <string name="title_backup">Kopia?</string>
     <string name="searching_amazon_books">Przeszukiwanie Amazon</string>
     <string name="searching_google_books">Przeszukiwanie Google Books</string>
     <string name="searching_library_thing">Przeszukiwanie LibraryThing</string>
@@ -143,9 +143,9 @@
     <string name="warning_required_series">Pole serii(tomu) jest puste</string>
     <string name="error_export_failed">Eksport nie powiódł się - nie mogę zapisać na karcie SD</string>
     <string name="error_download_thumbnail_failed">Pobranie okładki nie powiodło się - nie mogę zapisać na karcie SD</string>
-    <string name="skip_title">Pomiń - %s</string>
-    <string name="num_books_searched">%s książek przeszukano</string>
-    <string name="cancelled_info">Przerwano - %s</string>
+    <string name="progress_msg_skip_title">Pomiń - %s</string>
+    <string name="progress_end_num_books_searched">%s książek przeszukano</string>
+    <string name="progress_end_cancelled_info">Przerwano - %s</string>
     <string name="title_edit_book_series">Edytuj serię</string>
     <string name="lbl_family_name">Nazwisko</string>
     <string name="lbl_given_names">Imiona</string>
@@ -195,7 +195,7 @@
     <string name="btn_more_info">Więcej informacji.</string>
     <string name="btn_disable_message">Wyłącz komunikat.</string>
     <string name="lt_reset_messages_info">Od czasu do czasu program może wyświetlać komunikaty z LibraryThing. Naciśnij przycisk poniżej, by przywrócić komunikaty, które były wyłączone.</string>
-    <string name="reset">Reset</string>
+    <string name="btn_reset">Reset</string>
     <string name="send_info_text">Naciśnij przycisk poniżej, by zebrać informacje o problemach i błędach i wysłać je do programistów. Zostanie wykonana kopia danych i logów. Jeśli nie chesz, by te dane były wysyłane, usuń je z przygotowanej wiadomości przed jej wysłaniem.</string>
     <string name="send_info">Wyślij</string>
     <string name="info_cleanup_files_text">Pliki pomocnicze możliwe do usunięcia zajmują %s na karcie SD. Logi i inne dane są zapisywane przy każdej aktualizacji, kopii danych i gdy program odmówi posłuszeństwa. Kliknij w przycisk poniżej by usunąć te pliki z karty SD. Jeśli pojawiają się problemy i program działa nieprawidłowo, rozważ wysłanie informacji do programistów - kliknij \'Wyślij \' najpierw.</string>
@@ -214,9 +214,5 @@
     <string name="a_comma_b">%1$s, %2$s</string>
     <string name="name_colon_value">%1$s: %2$s</string>
     <string name="preferred_language_x">%1$s (%2$s)</string>
-
-    <!-- Begin: Added/Updated in [Next Version] DO NOT TRANSLATE YET! MAY CHANGE OR BE DELETED! -->
-
-    <!-- End: Added/Updated in  [Next Version]  -->
 
 </resources>

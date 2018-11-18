@@ -20,7 +20,7 @@
             style="@style/personalNameTextEntry"
             android:layout_weight="1"
             android:completionThreshold="2"
-            android:hint="@string/author"
+            android:hint="@string/lbl_author"
             android:paddingEnd="@dimen/padding_border"
             android:paddingStart="@dimen/padding_border"
             android:textAppearance="?android:attr/textAppearanceLarge" />
@@ -29,7 +29,7 @@
             android:id="@+id/title"
             style="@style/titleTextEntry"
             android:layout_weight="1"
-            android:hint="@string/title"
+            android:hint="@string/lbl_title"
             android:padding="@dimen/padding_border_double"
             android:textAppearance="?android:attr/textAppearanceLarge"
             tools:ignore="Autofill"/>

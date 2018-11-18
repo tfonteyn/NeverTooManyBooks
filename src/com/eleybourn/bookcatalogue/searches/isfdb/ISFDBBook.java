@@ -115,10 +115,6 @@ public class ISFDBBook extends AbstractBase {
         mPath = path;
     }
 
-    public long getPublicationRecord() {
-        return mPublicationRecord;
-    }
-
     /* First "ContentBox" contains all basic details
 
         <div class="ContentBox">
@@ -158,7 +154,8 @@ public class ISFDBBook extends AbstractBase {
         </div>
      */
 
-    public void fetch(final @NonNull Bundle /* out */ bookData, final boolean withThumbnail) throws SocketTimeoutException {
+    public void fetch(final @NonNull Bundle /* out */ bookData,
+                      final boolean withThumbnail) throws SocketTimeoutException {
         if (!loadPage()) {
             return;
         }
@@ -331,8 +328,10 @@ public class ISFDBBook extends AbstractBase {
         }
 
         // ISFDB does not offer the books language on the main page (although they store it in their database)
-        // default to a localised 'English" as ISFDB is after all (I presume) 99% english
-        bookData.putString(UniqueId.KEY_BOOK_LANGUAGE, Locale.ENGLISH.getDisplayName());
+        // default to a localised 'English" as ISFDB is after all (I presume) 95% english
+//        bookData.putString(UniqueId.KEY_BOOK_LANGUAGE, Locale.ENGLISH.geDisplayNameDisplayName());
+        //V83: use the code
+        bookData.putString(UniqueId.KEY_BOOK_LANGUAGE, Locale.ENGLISH.getISO3Language());
 
         // the content for some local processing. The actual entries are already added to the book data bundle
         ArrayList<TOCEntry> toc = getTableOfContentList(bookData);

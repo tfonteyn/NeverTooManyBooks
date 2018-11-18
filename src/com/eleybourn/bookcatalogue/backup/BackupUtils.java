@@ -154,8 +154,8 @@ public class BackupUtils {
     /**
      * Internal routine to update the passed CollectionAccessor from an XML file.
      */
-    private static void collectionFromXml(final @NonNull BufferedReader in, final @NonNull CollectionAccessor<String> accessor) throws IOException {
-        final Bundle bundle = new Bundle();
+    private static void collectionFromXml(final @NonNull BufferedReader in,
+                                          final @NonNull CollectionAccessor<String> accessor) throws IOException {
         final XmlFilter rootFilter = new XmlFilter("");
         final ItemInfo info = new ItemInfo();
 
@@ -174,7 +174,7 @@ public class BackupUtils {
             @Override
             public void process(@NonNull ElementContext context) {
                 try {
-                    accessor.putItem(bundle, info.name, info.type, context.body);
+                    accessor.putItem(info.name, info.type, context.body);
                 } catch (IOException e) {
                     Logger.error(e);
                     throw new RuntimeException("Unable to process XML entity " + info.name + " (" + info.type + ")", e);
@@ -219,8 +219,9 @@ public class BackupUtils {
         Object get(final @NonNull T key);
 
         /** Process the passed item to store in the collection */
-        void putItem(final @NonNull Bundle bundle, final @NonNull String key,
-                     final @NonNull String type, final @NonNull String value) throws IOException;
+        void putItem(final @NonNull String key,
+                     final @NonNull String type,
+                     final @NonNull String value) throws IOException;
     }
 
     /**
@@ -232,8 +233,8 @@ public class BackupUtils {
         @NonNull
         private final Bundle mBundle;
 
-        BundleAccessor(final @NonNull Bundle b) {
-            mBundle = b;
+        BundleAccessor(final @NonNull Bundle bundle) {
+            mBundle = bundle;
         }
 
         @Override
@@ -248,8 +249,7 @@ public class BackupUtils {
         }
 
         @Override
-        public void putItem(final @NonNull Bundle bundle,
-                            final @NonNull String key,
+        public void putItem(final @NonNull String key,
                             final @NonNull String type,
                             final @NonNull String value) throws IOException {
             switch (type) {
@@ -321,8 +321,9 @@ public class BackupUtils {
         }
 
         @Override
-        public void putItem(final @NonNull Bundle bundle, final @NonNull String key,
-                            final @NonNull String type, final @NonNull String value) {
+        public void putItem(final @NonNull String key,
+                            final @NonNull String type,
+                            final @NonNull String value) {
             switch (type) {
                 case TYPE_INTEGER:
                     mEditor.putInt(key, Integer.parseInt(value));

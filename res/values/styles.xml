@@ -350,7 +350,7 @@
         <item name="android:adjustViewBounds">true</item>
         <item name="android:scaleType">centerInside</item>
         <item name="android:background">@drawable/border</item>
-        <item name="android:contentDescription">@string/title_cover</item>
+        <item name="android:contentDescription">@string/lbl_cover</item>
     </style>
 
     <style name="zoomedCoverImage">

@@ -35,11 +35,11 @@ import android.view.View;
 import android.view.View.OnClickListener;
 
 import com.eleybourn.bookcatalogue.backup.CsvExporter;
-import com.eleybourn.bookcatalogue.backup.ExportThread;
-import com.eleybourn.bookcatalogue.backup.ImportThread;
+import com.eleybourn.bookcatalogue.backup.ExportTask;
+import com.eleybourn.bookcatalogue.backup.ImportTask;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivityWithTasks;
 import com.eleybourn.bookcatalogue.booklist.BooklistPreferencesActivity;
-import com.eleybourn.bookcatalogue.database.CoversDbHelper;
+import com.eleybourn.bookcatalogue.database.CoversDbAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.dialogs.SelectOneDialog;
@@ -349,8 +349,8 @@ public class AdminActivity extends BaseActivityWithTasks {
             v.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    try (CoversDbHelper coversDbHelper = CoversDbHelper.getInstance(AdminActivity.this)) {
-                        coversDbHelper.eraseCoverCache();
+                    try (CoversDbAdapter coversDbAdapter = CoversDbAdapter.getInstance()) {
+                        coversDbAdapter.eraseCoverCache();
                     }
                 }
             });
@@ -364,7 +364,7 @@ public class AdminActivity extends BaseActivityWithTasks {
             v.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    StorageUtils.backupDatabaseFile();
+                    StorageUtils.backupDatabaseFile(AdminActivity.this);
                     //Snackbar.make(v, R.string.backup_success, Snackbar.LENGTH_LONG).show();
                     StandardDialogs.showUserMessage(AdminActivity.this, R.string.progress_end_backup_success);
                 }
@@ -377,7 +377,7 @@ public class AdminActivity extends BaseActivityWithTasks {
      * Export all data to a CSV file
      */
     private void exportToCSV() {
-        new ExportThread(getTaskManager()).start();
+        new ExportTask(getTaskManager()).start();
     }
 
     /**
@@ -437,7 +437,7 @@ public class AdminActivity extends BaseActivityWithTasks {
      * Import all data from the passed CSV file spec
      */
     private void importFromCSV(@NonNull String fileSpec) {
-        new ImportThread(getTaskManager(), fileSpec).start();
+        new ImportTask(getTaskManager(), fileSpec).start();
     }
 
 
@@ -475,12 +475,12 @@ public class AdminActivity extends BaseActivityWithTasks {
     @Override
     public void onTaskEnded(final @NonNull ManagedTask task) {
         // If it's an export, handle it
-        if (task instanceof ExportThread) {
-            onExportFinished((ExportThread) task);
+        if (task instanceof ExportTask) {
+            onExportFinished((ExportTask) task);
         }
     }
 
-    private void onExportFinished(final @NonNull ExportThread task) {
+    private void onExportFinished(final @NonNull ExportTask task) {
         if (task.isCancelled()) {
             if (mFinishAfterExport)
                 setResult(Activity.RESULT_OK);

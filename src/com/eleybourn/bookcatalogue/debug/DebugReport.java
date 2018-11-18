@@ -100,7 +100,7 @@ public class DebugReport {
         // Create a temp file, set to auto-delete at app close
         File tmpDbFile = StorageUtils.getFile("DbExport-tmp.db");
         tmpDbFile.deleteOnExit();
-        StorageUtils.backupDatabaseFile(tmpDbFile.getName());
+        StorageUtils.backupDatabaseFile(activity, tmpDbFile.getName());
 
         // setup the mail message
         final Intent emailIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
@@ -133,7 +133,7 @@ public class DebugReport {
 
         // Scanners installed
         try {
-            message.append("Pref. Scanner: ").append(BookCatalogueApp.Prefs.getInt(ScannerManager.PREF_PREFERRED_SCANNER, -1)).append("\n");
+            message.append("Pref. Scanner: ").append(BookCatalogueApp.getIntPreference(ScannerManager.PREF_PREFERRED_SCANNER, -1)).append("\n");
             String[] scanners = new String[]{ZxingScanner.ACTION, Pic2ShopScanner.Free.ACTION, Pic2ShopScanner.Pro.ACTION};
             for (String scanner : scanners) {
                 message.append("Scanner [").append(scanner).append("]:\n");

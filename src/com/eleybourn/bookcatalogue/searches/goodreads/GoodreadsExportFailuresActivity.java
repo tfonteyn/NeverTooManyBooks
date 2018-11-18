@@ -87,9 +87,7 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity {
     @Override
     @CallSuper
     public void onCreate(final @Nullable Bundle savedInstanceState) {
-        // Get a DB adapter
-        mDb = new CatalogueDBAdapter(this)
-                .open();
+        mDb = new CatalogueDBAdapter(this);
 
         Intent intent = getIntent();
         if (intent != null) {

@@ -121,24 +121,26 @@ public class Book extends DataManager {
 
 
     /**
-     * Constructor. All overloaded constructors MUST call this();
+     * Public Constructor. All overloaded constructors MUST call this();
      */
     public Book() {
         initValidatorsAndAccessors();
     }
 
-//    /** bad idea, always use {@link #Book(long, Bundle)} as that will attempt a reload.
-//     * Leaving commented as a reminder
-//     */
-//    public Book(final long bookId) {
-//        this();
-//        if (bookId > 0) {
-//            reload(bookId);
-//        }
-//    }
+    /**
+     * Private constructor.
+     *
+     * Either load from database if existing book, or a new Book.
+     */
+    private Book(final @NonNull CatalogueDBAdapter db, final long bookId) {
+        this();
+        if (bookId > 0) {
+            reload(db, bookId);
+        }
+    }
 
     /**
-     * Constructor
+     * Public Constructor
      *
      * @param cursor with book data
      */
@@ -148,19 +150,14 @@ public class Book extends DataManager {
     }
 
     /**
-     * Main Constructor
+     * Private constructor.
      *
      * @param bookId of book (may be 0 for new)
-     * @param bundle Bundle with book data (may be null)
+     * @param bundle Bundle with book data
      */
-    public Book(final long bookId, final @Nullable Bundle bundle) {
+    private Book(final long bookId, final @NonNull Bundle bundle) {
         this();
-        // Load from bundle or database
-        if (bundle != null) {
-            putAll(bundle);
-        } else if (bookId > 0) {
-            reload(bookId);
-        }
+        putAll(bundle);
     }
 
     /**
@@ -176,30 +173,35 @@ public class Book extends DataManager {
      * So *always* returns a valid Book.
      */
     @NonNull
-    public static Book getBook(final long bookId, final @Nullable Bundle bundle) {
-        Book book;
+    public static Book getBook(final @NonNull CatalogueDBAdapter db, final long bookId, final @Nullable Bundle bundle) {
+        // if we have a populated bundle, use that.
         if (bundle != null && bundle.containsKey(UniqueId.BKEY_BOOK_DATA)) {
-            // If we have saved book data, use it
-            book = new Book(bookId, bundle.getBundle(UniqueId.BKEY_BOOK_DATA));
-        } else {
-            // create new book and try to load the data from the database.
-            book = new Book(bookId, null);
+            Bundle bookData = bundle.getBundle(UniqueId.BKEY_BOOK_DATA);
+            if (bookData != null) {
+                // If we have saved book data, use it
+                return new Book(bookId, bookData);
+            }
         }
-        return book;
+        // otherwise, create a new book and try to load the data from the database.
+        return new Book(db, bookId);
+    }
+
+    /**
+     * shortcut if we you don't have a bundle
+     */
+    @NonNull
+    public static Book getBook(final @NonNull CatalogueDBAdapter db, final long bookId) {
+        return new Book(db, bookId);
     }
 
     /**
      * Erase everything in this instance and reset the special handlers
-     *
-     * @return self, for chaining
      */
     @Override
-    @NonNull
     @CallSuper
-    public DataManager clear() {
+    public void clear() {
         super.clear();
         initValidatorsAndAccessors();
-        return this;
     }
 
     /**
@@ -209,22 +211,19 @@ public class Book extends DataManager {
         return this.getLong(UniqueId.KEY_ID);
     }
 
-    public void reload() {
-        reload(this.getBookId());
+    public void reload(final @NonNull CatalogueDBAdapter db) {
+        reload(db, this.getBookId());
     }
 
     /**
      * Load the book details from the database
      */
-    public void reload(final long bookId) {
+    public void reload(final @NonNull CatalogueDBAdapter db, final long bookId) {
         // If ID = 0, no details in DB
         if (bookId == 0) {
             return;
         }
 
-        // Connect to DB and get cursor for book details
-        CatalogueDBAdapter db = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
-        db.open();
         try (BookCursor book = db.fetchBookById(bookId)) {
             if (book.moveToFirst()) {
                 // Put all cursor fields in collection
@@ -235,8 +234,6 @@ public class Book extends DataManager {
                 putSeriesList(db.getBookSeriesList(bookId));
                 putTOC(db.getTOCEntriesByBook(bookId));
             }
-        } finally {
-            db.close();
         }
     }
 

@@ -19,6 +19,7 @@
  */
 package com.eleybourn.bookcatalogue.booklist;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteCursorDriver;
 import android.database.sqlite.SQLiteDatabase;
@@ -60,6 +61,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_AUTHOR;
 import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_BOOK;
@@ -68,33 +70,27 @@ import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_ACQUIR
 import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_ACQUIRED_MONTH;
 import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_ACQUIRED_YEAR;
 import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_ADDED_DAY;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_ADDED_MONTH;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_ADDED_YEAR;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_LAST_UPDATE_DAY;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_LAST_UPDATE_MONTH;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_LAST_UPDATE_YEAR;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_PUBLISHED_MONTH;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_PUBLISHED_YEAR;
 import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_READ_DAY;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_READ_MONTH;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_READ_YEAR;
 import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_FORMAT;
 import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_GENRE;
 import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_LANGUAGE;
 import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_LOANED;
 import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_LOCATION;
-import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_ADDED_MONTH;
-import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_PUBLISHED_MONTH;
-import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_READ_MONTH;
 import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_PUBLISHER;
 import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_RATING;
 import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_READ_AND_UNREAD;
 import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_SERIES;
 import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_TITLE_LETTER;
-import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_LAST_UPDATE_DAY;
-import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_LAST_UPDATE_MONTH;
-import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_LAST_UPDATE_YEAR;
-import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_ADDED_YEAR;
-import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_PUBLISHED_YEAR;
-import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_READ_YEAR;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ABSOLUTE_POSITION;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_ACQUIRED_DAY;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_ACQUIRED_MONTH;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_ACQUIRED_YEAR;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_ADDED_DAY;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_ADDED_MONTH;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_ADDED_YEAR;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FAMILY_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FORMATTED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_GIVEN_NAMES;
@@ -123,6 +119,20 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_SERIES_POSITION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_SIGNED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_UUID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_ACQUIRED_DAY;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_ACQUIRED_MONTH;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_ACQUIRED_YEAR;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_ADDED_DAY;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_ADDED_MONTH;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_ADDED_YEAR;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_LAST_UPDATE_YEAR;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_PUBLISHED_MONTH;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_PUBLISHED_YEAR;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_READ_DAY;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_READ_MONTH;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_READ_YEAR;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_UPDATE_DAY;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_UPDATE_MONTH;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_AUTHOR_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_BOOKSHELF_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_BOOK_ID;
@@ -132,12 +142,7 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LOANE
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LOANED_TO_SORT;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PK_DOCID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PK_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_PUBLISHED_MONTH;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_PUBLISHED_YEAR;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_READ_DAY;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_READ_MONTH;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_READ_STATUS;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_READ_YEAR;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_REAL_ROW_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_ROOT_KEY;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SELECTED;
@@ -145,9 +150,6 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIE
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_NUM_FLOAT;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE_LETTER;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_UPDATE_DAY;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_UPDATE_MONTH;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_LAST_UPDATE_YEAR;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_AUTHORS;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOKS;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOKSHELF;
@@ -194,22 +196,31 @@ public class BooklistBuilder implements AutoCloseable {
 
     /** Counter for BooklistBuilder IDs */
     @NonNull
-    private static Integer mBooklistBuilderIdCounter = 0;
+    private static final AtomicInteger mIdCounter = new AtomicInteger();
     /** Counter for 'flattened' book temp tables */
     @NonNull
-    private static Integer mFlatNavCounter = 0;
-    /** Debug counter */
+    private static final AtomicInteger mFlatListIdCounter = new AtomicInteger();
+    /** DEBUG Instance counter */
     @NonNull
-    private static Integer mDebugInstanceCount = 0;
+    private static final AtomicInteger mDebugInstanceCounter = new AtomicInteger();
+
+    @NonNull
+    private Context mContext;
+
     /** Collection of statements created by this Builder */
     @NonNull
     private final SqlStatementManager mStatements;
     // not in use for now
     // List of columns for the group-by clause, including COLLATE clauses. Set by build() method.
     //private String mGroupColumnList;
+
+    /** Database to use */
+    @NonNull
+    private CatalogueDBAdapter mDb;
     /** Database to use */
     @NonNull
     private final SynchronizedDb mSyncedDb;
+
     /** Internal ID */
     private final int mBooklistBuilderId;
     /** Collection of 'extra' domains requested by caller */
@@ -239,8 +250,10 @@ public class BooklistBuilder implements AutoCloseable {
     /** used in debug */
     private boolean mDebugReferenceDecremented = false;
 
-    /** Local copy of the {@link DatabaseDefinitions#TBL_BOOK_LIST} table definition,
-     * 'book_list_tmp' but renamed by adding the instance number to the end to match this instance */
+    /**
+     * Local copy of the {@link DatabaseDefinitions#TBL_BOOK_LIST} table definition,
+     * 'book_list_tmp' but renamed by adding the instance number to the end to match this instance
+     */
     private TableDefinition mListTable;
 
     /** Local copy of the {@link DatabaseDefinitions#TBL_ROW_NAVIGATOR}, renamed to match this instance */
@@ -279,23 +292,21 @@ public class BooklistBuilder implements AutoCloseable {
     /**
      * Constructor
      *
-     * @param db    Database Adapter to use
+     * @param context    context for database
      * @param style Book list style to use
      */
-    public BooklistBuilder(final @NonNull CatalogueDBAdapter db, final @NonNull BooklistStyle style) {
+    public BooklistBuilder(final @NonNull Context context, final @NonNull BooklistStyle style) {
         if (DEBUG_SWITCHES.BOOKLIST_BUILDER && BuildConfig.DEBUG) {
-            synchronized (mDebugInstanceCount) {
-                mDebugInstanceCount++;
-                Logger.info(this, "instances: " + mDebugInstanceCount);
-            }
+            Logger.info(this, "instances: " + mDebugInstanceCounter.incrementAndGet());
         }
-
         // Allocate ID
-        synchronized (mBooklistBuilderIdCounter) {
-            mBooklistBuilderId = ++mBooklistBuilderIdCounter;
-        }
+        mBooklistBuilderId = mIdCounter.incrementAndGet();
+
+        mContext = context;
+
         // Get the database and create a statements collection
-        mSyncedDb = db.getUnderlyingDatabaseIfYouAreSureWhatYouAreDoing();
+        mDb = new CatalogueDBAdapter(mContext);
+        mSyncedDb = mDb.getUnderlyingDatabaseIfYouAreSureWhatYouAreDoing();
         mStatements = new SqlStatementManager(mSyncedDb);
         // Save the requested style
         mStyle = style;
@@ -324,10 +335,8 @@ public class BooklistBuilder implements AutoCloseable {
      */
     @NonNull
     public FlattenedBooklist createFlattenedBooklist() {
-        int flatId;
-        synchronized (mFlatNavCounter) {
-            flatId = mFlatNavCounter++;
-        }
+        int flatId = mFlatListIdCounter.getAndIncrement();
+
         TableDefinition flat = TBL_ROW_NAVIGATOR_FLATTENED.clone();
         flat.setName(flat.getName() + "_" + flatId);
         flat.setType(TableTypes.Temporary); //RELEASE Make sure is TEMPORARY
@@ -2395,6 +2404,11 @@ public class BooklistBuilder implements AutoCloseable {
         return mStyle;
     }
 
+    @NonNull
+    public Context getContext() {
+        return mContext;
+    }
+
     /**
      * General cleanup routine called by both {@link #close()} and {@link #finalize()}
      *
@@ -2408,6 +2422,7 @@ public class BooklistBuilder implements AutoCloseable {
                     Logger.info(this, name);
                 }
             }
+
             mStatements.close();
         }
 
@@ -2415,6 +2430,7 @@ public class BooklistBuilder implements AutoCloseable {
             if (DEBUG_SWITCHES.BOOKLIST_BUILDER && BuildConfig.DEBUG && isFinalize) {
                 Logger.info(this, "Finalizing with mNavTable (this is not an error)");
             }
+
             try {
                 mNavTable.close();
                 mNavTable.drop(mSyncedDb);
@@ -2426,6 +2442,7 @@ public class BooklistBuilder implements AutoCloseable {
             if (DEBUG_SWITCHES.BOOKLIST_BUILDER && BuildConfig.DEBUG && isFinalize) {
                 Logger.info(this, "Finalizing with mListTable (this is not an error)");
             }
+
             try {
                 mListTable.close();
                 mListTable.drop(mSyncedDb);
@@ -2434,13 +2451,12 @@ public class BooklistBuilder implements AutoCloseable {
             }
         }
 
+        mDb.close();
+
         if (DEBUG_SWITCHES.BOOKLIST_BUILDER && BuildConfig.DEBUG) {
             if (!mDebugReferenceDecremented) {
                 // Only de-reference once!
-                synchronized (mDebugInstanceCount) {
-                    mDebugInstanceCount--;
-                    Logger.info(this, "instances: " + mDebugInstanceCount);
-                }
+                Logger.info(this, "instances left: " + mDebugInstanceCounter.decrementAndGet());
             }
             mDebugReferenceDecremented = true;
         }

@@ -24,7 +24,7 @@
             <EditText
                 android:id="@+id/isbn"
                 style="@style/isbnEntryField"
-                android:hint="@string/isbn"
+                android:hint="@string/lbl_isbn"
                 tools:ignore="Autofill" />
 
             <CheckBox

@@ -35,7 +35,7 @@ public final class DEBUG_SWITCHES {
     public static final boolean SQL = false;
 
     /** {@link com.eleybourn.bookcatalogue.database.CatalogueDBAdapter} */
-    public static final boolean DB_ADAPTER = false;
+    public static final boolean DB_ADAPTER = true;
 
     /** {@link com.eleybourn.bookcatalogue.database.DbSync} */
     public static final boolean DB_SYNC = false;

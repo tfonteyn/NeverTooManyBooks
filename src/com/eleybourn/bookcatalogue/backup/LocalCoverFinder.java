@@ -19,6 +19,7 @@
  */
 package com.eleybourn.bookcatalogue.backup;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -42,11 +43,10 @@ public class LocalCoverFinder implements Importer.CoverFinder {
     @NonNull
     private final CatalogueDBAdapter mDb;
 
-    LocalCoverFinder(final @NonNull String srcPath, final @NonNull String dstPath) {
+    LocalCoverFinder(final @NonNull Context context, final @NonNull String srcPath, final @NonNull String dstPath) {
         mSrc = srcPath;
         mIsForeign = !mSrc.equals(dstPath);
-        mDb = new CatalogueDBAdapter(BookCatalogueApp.getAppContext())
-                .open();
+        mDb = new CatalogueDBAdapter(context);
     }
 
     @Override

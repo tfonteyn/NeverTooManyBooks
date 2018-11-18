@@ -19,6 +19,7 @@
  */
 package com.eleybourn.bookcatalogue.backup;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -72,9 +73,8 @@ public class CsvImporter implements Importer {
     @NonNull
     private Integer mUpdated = 0;
 
-    CsvImporter() {
-        mDb = new CatalogueDBAdapter(BookCatalogueApp.getAppContext())
-        .open();
+    CsvImporter(final @NonNull Context context) {
+        mDb = new CatalogueDBAdapter(context);
     }
 
     @SuppressWarnings("UnusedReturnValue")
@@ -234,7 +234,7 @@ public class CsvImporter implements Importer {
 
                 long now = System.currentTimeMillis();
                 if ((now - lastUpdate) > 200 && listener.isActive()) {
-                    listener.onProgress(title + "\n(" + BookCatalogueApp.getResourceString(R.string.n_created_m_updated, mCreated, mUpdated) + ")", row);
+                    listener.onProgress(title + "\n(" + BookCatalogueApp.getResourceString(R.string.progress_msg_n_created_m_updated, mCreated, mUpdated) + ")", row);
                     lastUpdate = now;
                 }
 
@@ -445,7 +445,7 @@ public class CsvImporter implements Importer {
         // (it seems a 'book' record gets written without an 'author' record; should not happen)
         // so we allow blank author_details and fill in a regional version of "Author, Unknown"
         if (encodedList.isEmpty()) {
-            encodedList = BookCatalogueApp.getResourceString(R.string.author) + ", " + BookCatalogueApp.getResourceString(R.string.unknown);
+            encodedList = BookCatalogueApp.getResourceString(R.string.lbl_author) + ", " + BookCatalogueApp.getResourceString(R.string.unknown);
         }
 
         // Now build the array for authors

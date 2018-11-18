@@ -26,7 +26,6 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v7.app.AlertDialog;
 import android.text.method.LinkMovementMethod;
-import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -192,14 +191,14 @@ public class HintManager {
          * @param visible Options indicating future visibility
          */
         public void setVisibility(final boolean visible) {
-            BookCatalogueApp.Prefs.putBoolean(getFullPrefName(), visible);
+            BookCatalogueApp.getSharedPreferences().edit().putBoolean(getFullPrefName(), visible).apply();
         }
 
         /**
          * Check if this hint should be shown
          */
         boolean shouldBeShown() {
-            return !hasBeenDisplayed() && BookCatalogueApp.Prefs.getBoolean(getFullPrefName(), true);
+            return !hasBeenDisplayed() && BookCatalogueApp.getBooleanPreference(getFullPrefName(), true);
         }
 
         boolean hasBeenDisplayed() {

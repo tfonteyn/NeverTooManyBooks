@@ -67,7 +67,7 @@ public class GoodreadsWork {
 
 		final ImageView imageView = mImageView.get();
 		if (imageView != null) {
-			synchronized(imageView) {
+			synchronized (imageView) {
 				// Make sure our view is still associated with us
 				if (this.equals(ViewTagger.getTag(imageView, R.id.TAG_GOODREADS_WORK))) {
 					imageView.setImageBitmap(ImageUtils.getBitmapFromBytes(imageBytes) );
@@ -83,7 +83,7 @@ public class GoodreadsWork {
 	 * @param imageView		ImageView to display cover image
 	 */
 	void fillImageView(final @NonNull SimpleTaskQueue queue, final @NonNull ImageView imageView) {
-		synchronized(this) {
+		synchronized (this) {
 			if (this.imageBytes == null) {
 				// Image not retrieved yet, so clear any existing image
 				imageView.setImageBitmap(null);

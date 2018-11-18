@@ -19,13 +19,13 @@
         android:id="@+id/add_author"
         style="@style/personalNameTextEntry"
         android:layout_below="@id/same_author"
-        android:hint="@string/author" />
+        android:hint="@string/lbl_author" />
 
     <EditText
         android:id="@+id/add_title"
         style="@style/titleTextEntry"
         android:layout_below="@id/add_author"
-        android:hint="@string/title"
+        android:hint="@string/lbl_title"
         tools:ignore="Autofill" />
 
     <EditText

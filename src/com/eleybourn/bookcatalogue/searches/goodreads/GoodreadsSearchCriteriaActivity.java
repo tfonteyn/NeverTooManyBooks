@@ -66,9 +66,7 @@ public class GoodreadsSearchCriteriaActivity extends BaseActivity {
     public void onCreate(final @Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Setup DB and layout.
         mDb = new CatalogueDBAdapter(this);
-        mDb.open();
 
         Bundle extras = this.getIntent().getExtras();
 

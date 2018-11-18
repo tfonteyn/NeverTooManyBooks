@@ -73,17 +73,12 @@ public class DataManager {
 
     /**
      * Erase everything in this instance
-     *
-     * @return self, for chaining
      */
-    @SuppressWarnings("UnusedReturnValue")
-    @NonNull
-    public DataManager clear() {
+    public void clear() {
         mBundle.clear();
         mData.clear();
         mValidationExceptions.clear();
         mCrossValidators.clear();
-        return this;
     }
 
     /**

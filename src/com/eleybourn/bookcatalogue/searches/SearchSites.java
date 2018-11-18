@@ -96,17 +96,17 @@ public class SearchSites {
         mPreferredCoverSearchOrder = new ArrayList<>(mCoverSearchOrderDefaults);
 
         for (Site searchSite : mSearchOrderDefaults) {
-            searchSite.enabled = BookCatalogueApp.Prefs.getBoolean(TAG + "." + searchSite.name + ".enabled", searchSite.enabled);
-            searchSite.order = BookCatalogueApp.Prefs.getInt(TAG + "." + searchSite.name + ".order", searchSite.order);
-            searchSite.reliability = BookCatalogueApp.Prefs.getInt(TAG + "." + searchSite.name + ".reliability", searchSite.reliability);
+            searchSite.enabled = BookCatalogueApp.getBooleanPreference(TAG + "." + searchSite.name + ".enabled", searchSite.enabled);
+            searchSite.order = BookCatalogueApp.getIntPreference(TAG + "." + searchSite.name + ".order", searchSite.order);
+            searchSite.reliability = BookCatalogueApp.getIntPreference(TAG + "." + searchSite.name + ".reliability", searchSite.reliability);
 
             mReliabilityOrder.set(searchSite.reliability, searchSite);
             mPreferredSearchOrder.set(searchSite.order, searchSite);
         }
 
         for (Site searchSite : mCoverSearchOrderDefaults) {
-            searchSite.enabled = BookCatalogueApp.Prefs.getBoolean(TAG + "." + searchSite.name + ".cover.enabled", searchSite.enabled);
-            searchSite.order = BookCatalogueApp.Prefs.getInt(TAG + "." + searchSite.name + ".cover.order", searchSite.order);
+            searchSite.enabled = BookCatalogueApp.getBooleanPreference(TAG + "." + searchSite.name + ".cover.enabled", searchSite.enabled);
+            searchSite.order = BookCatalogueApp.getIntPreference(TAG + "." + searchSite.name + ".cover.order", searchSite.order);
 
             mPreferredCoverSearchOrder.set(searchSite.order, searchSite);
         }
@@ -124,7 +124,7 @@ public class SearchSites {
 
     public static void setSearchOrder(final @NonNull ArrayList<Site> newList) {
         mPreferredSearchOrder = newList;
-        SharedPreferences.Editor e = BookCatalogueApp.Prefs.edit();
+        SharedPreferences.Editor e = BookCatalogueApp.getSharedPreferences().edit();
         for (Site site : newList) {
             e.putInt(TAG + "." + site.name + ".reliability", site.reliability);
             e.putBoolean(TAG + "." + site.name + ".enabled", site.enabled);
@@ -140,7 +140,7 @@ public class SearchSites {
 
     public static void setCoverSearchOrder(final @NonNull ArrayList<Site> newList) {
         mPreferredCoverSearchOrder = newList;
-        SharedPreferences.Editor e = BookCatalogueApp.Prefs.edit();
+        SharedPreferences.Editor e = BookCatalogueApp.getSharedPreferences().edit();
         for (Site site : newList) {
             e.putBoolean(TAG + "." + site.name + ".cover.enabled", site.enabled);
             e.putInt(TAG + "." + site.name + ".cover.order", site.order);

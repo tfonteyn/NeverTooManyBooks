@@ -76,7 +76,7 @@ public class GoodreadsRegisterActivity extends BaseActivity {
         };
 
         // Get the fragment to display task progress
-        SimpleTaskQueueProgressDialogFragment.runTaskWithProgress(activity, R.string.connecting_to_web_site, task, true, 0);
+        SimpleTaskQueueProgressDialogFragment.runTaskWithProgress(activity, R.string.progress_msg_connecting_to_web_site, task, true, 0);
     }
 
     /**

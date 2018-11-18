@@ -173,7 +173,6 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Bas
         try {
             // Setup the DB
             mDb = new CatalogueDBAdapter(this);
-            mDb.open();
 
             // see getList for full details as to where we "get" the list from
             mList = getList(mBKey, savedInstanceState);
@@ -300,7 +299,6 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Bas
     protected boolean onCancel() {
         return true;
     }
-
 
     /**
      * Utility routine to setup a listener for the specified view id

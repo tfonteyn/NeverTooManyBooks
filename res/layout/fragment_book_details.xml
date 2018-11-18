@@ -90,7 +90,7 @@
                         android:layout_height="wrap_content"
                         android:paddingStart="6dp"
                         android:paddingEnd="6dp"
-                        android:text="@string/isbn" />
+                        android:text="@string/lbl_isbn" />
 
                     <TextView
                         android:id="@+id/isbn"
@@ -150,7 +150,7 @@
         <TextView
             android:id="@+id/lbl_series"
             style="@style/lbl_textField"
-            android:text="@string/series" />
+            android:text="@string/lbl_series" />
 
         <TextView
             android:id="@+id/filename"
@@ -343,7 +343,7 @@
                 <TextView
                     style="@style/lbl_textField"
                     android:layout_width="wrap_content"
-                    android:text="@string/lbl_signed" />
+                    android:text="@string/lbl_is_signed" />
 
                 <TextView
                     android:id="@+id/signed"

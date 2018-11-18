@@ -20,6 +20,7 @@
 package com.eleybourn.bookcatalogue.utils;
 
 import android.Manifest;
+import android.content.Context;
 import android.os.Environment;
 import android.os.StatFs;
 import android.provider.MediaStore;
@@ -521,16 +522,16 @@ public class StorageUtils {
      * Create a copy of the database into the ExternalStorage location
      * with the name "DbExport.db"
      */
-    public static void backupDatabaseFile() {
-        backupDatabaseFile("DbExport.db");
+    public static void backupDatabaseFile(final @NonNull Context context) {
+        backupDatabaseFile(context,"DbExport.db");
     }
 
     /**
      * Create a copy of the database into the ExternalStorage location
      */
-    public static void backupDatabaseFile(final @NonNull String destFilename) {
+    public static void backupDatabaseFile(final @NonNull Context context, final @NonNull String destFilename) {
         try {
-            String dbPath = DatabaseHelper.getDatabasePath(BookCatalogueApp.getAppContext());
+            String dbPath = DatabaseHelper.getDatabasePath(context);
             backupFile(dbPath, destFilename);
         } catch (Exception e) {
             Logger.error(e);

@@ -33,6 +33,7 @@ import com.eleybourn.bookcatalogue.searches.goodreads.BookEvents.GrNoIsbnEvent;
 import com.eleybourn.bookcatalogue.searches.goodreads.BookEvents.GrNoMatchEvent;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.NotAuthorizedException;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.ExportDisposition;
+import com.eleybourn.bookcatalogue.taskqueue.GenericTask;
 import com.eleybourn.bookcatalogue.taskqueue.QueueManager;
 import com.eleybourn.bookcatalogue.tasks.BCQueueManager;
 import com.eleybourn.bookcatalogue.utils.Utils;
@@ -95,12 +96,9 @@ public class SendOneBookTask extends GenericTask {
         if (!grManager.hasValidCredentials()) {
             throw new NotAuthorizedException();
         }
-        // get the app context; the underlying activity may go away. Also get DB
-        Context ctx = context.getApplicationContext();
-        CatalogueDBAdapter db = new CatalogueDBAdapter(ctx);
-        db.open();
-
-        try (BookCursor books = db.fetchBookForGoodreadsCursor(mBookId)) {
+        // Use the app context; the calling activity may go away
+        try (CatalogueDBAdapter db = new CatalogueDBAdapter(context.getApplicationContext());
+             BookCursor books = db.fetchBookForGoodreadsCursor(mBookId)) {
             final BookCursorRow bookCursorRow = books.getCursorRow();
             while (books.moveToNext()) {
                 // Try to export one book
@@ -124,10 +122,10 @@ public class SendOneBookTask extends GenericTask {
                         db.setGoodreadsSyncDate(books.getId());
                         break;
                     case noIsbn:
-                        storeEvent(new GrNoIsbnEvent(books.getId()));
+                        storeEvent(new GrNoIsbnEvent(context, books.getId()));
                         break;
                     case notFound:
-                        storeEvent(new GrNoMatchEvent(books.getId()));
+                        storeEvent(new GrNoMatchEvent(context, books.getId()));
                         break;
                     case networkError:
                         // Only wait 5 minutes on network errors.
@@ -138,8 +136,6 @@ public class SendOneBookTask extends GenericTask {
                         return false;
                 }
             }
-        } finally {
-            db.close();
         }
         return true;
     }

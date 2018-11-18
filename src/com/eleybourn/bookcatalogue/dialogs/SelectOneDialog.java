@@ -18,6 +18,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.Fields;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.baseactivity.BaseListActivity;
@@ -121,8 +122,6 @@ public class SelectOneDialog {
     /**
      * Wrapper class to present a list of objects for selection.
      *
-     * {@link #toString()} is used for the displayed string
-     *
      * The objects get wrapped in {@link SimpleDialogObjectItem} which provides a RadioButton selector
      * for each row.
      *
@@ -132,14 +131,14 @@ public class SelectOneDialog {
      */
     public static <T> void selectObjectDialog(final @NonNull LayoutInflater inflater,
                                               final @Nullable String title,
+                                              final @NonNull Fields.Field field,
                                               final @NonNull List<T> list,
-                                              final @Nullable T current,
                                               final @NonNull SimpleDialogOnClickListener handler) {
         List<SimpleDialogItem> items = new ArrayList<>();
         SimpleDialogItem selectedItem = null;
-        for (T entry : list) {
-            SimpleDialogItem item = new SimpleDialogObjectItem(entry);
-            if (entry.equals(current))
+        for (T listEntry : list) {
+            SimpleDialogItem item = new SimpleDialogObjectItem(field, listEntry);
+            if (listEntry.equals(field.getValue()))
                 selectedItem = item;
             items.add(item);
         }
@@ -235,7 +234,7 @@ public class SelectOneDialog {
             Drawable icon = mMenuItem.getIcon();
             Drawable subMenuPointer = null;
             if (mMenuItem.hasSubMenu()) {
-                subMenuPointer = BookCatalogueApp.getAppContext().getDrawable(R.drawable.submenu_arrow_nofocus);
+                subMenuPointer = inflater.getContext().getDrawable(R.drawable.submenu_arrow_nofocus);
             }
             line.setCompoundDrawablesWithIntrinsicBounds(icon, null, subMenuPointer, null);
             return root;
@@ -294,26 +293,32 @@ public class SelectOneDialog {
     }
 
     /**
-     * Item to manage an Object in a list of items.
-     * {@link #toString()} is used for the displayed string
+     * Item to manage a Field value in a list of items.
+     *
+     * Uses the {@link Fields.FieldFormatter}, if the Field has one.
      */
     private static class SimpleDialogObjectItem implements SimpleDialogItem {
-        @NonNull
-        private final Object mObject;
 
-        SimpleDialogObjectItem(final @NonNull Object object) {
-            mObject = object;
+        @NonNull
+        final Fields.Field mField;
+
+        @NonNull
+        private final Object mRawValue;
+
+        SimpleDialogObjectItem( final @NonNull Fields.Field field, final @NonNull Object value) {
+            mField = field;
+            mRawValue = value;
         }
 
         /**
-         * Get a View to display the object -> toString() and put into CompoundButton.text
+         * Get a View to display the object
          */
         @Override
         @NonNull
         public View getView(final @NonNull LayoutInflater inflater) {
             @SuppressLint("InflateParams") View root = inflater.inflate(R.layout.row_simple_dialog_list_item, null);
             TextView name = root.findViewById(R.id.filename);
-            name.setText(mObject.toString());
+            name.setText(mField.format(mRawValue.toString()));
             return root;
         }
 
@@ -327,7 +332,7 @@ public class SelectOneDialog {
          */
         @Override
         public String toString() {
-            return mObject.toString();
+            return mRawValue.toString();
         }
     }
 

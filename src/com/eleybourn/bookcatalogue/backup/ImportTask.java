@@ -17,7 +17,9 @@ import java.io.IOException;
  *
  * @author Philip Warner
  */
-public class ImportThread extends ManagedTask {
+public class ImportTask extends ManagedTask {
+    @NonNull
+    private TaskManager mManager;
     @NonNull
     private final String mFileSpec;
     @NonNull
@@ -27,7 +29,7 @@ public class ImportThread extends ManagedTask {
         @Override
         public void onProgress(final @NonNull String message, final int position) {
             if (position > 0) {
-                mTaskManager.doProgress(ImportThread.this, message, position);
+                mTaskManager.doProgress(ImportTask.this, message, position);
             } else {
                 mTaskManager.doProgress(message);
             }
@@ -35,22 +37,24 @@ public class ImportThread extends ManagedTask {
 
 		@Override
 		public boolean isActive() {
-			return !ImportThread.this.isCancelled();
+			return !ImportTask.this.isCancelled();
 		}
 
         @Override
         public void setMax(final int max) {
-            mTaskManager.setMax(ImportThread.this, max);
+            mTaskManager.setMax(ImportTask.this, max);
         }
     };
 
-    public ImportThread(final @NonNull TaskManager manager, final @NonNull String fileSpec) {
-        super("ImportThread", manager);
+    public ImportTask(final @NonNull TaskManager manager, final @NonNull String fileSpec) {
+        super("ImportTask", manager);
+
+        mManager = manager;
 
         final File file = new File(fileSpec);
         mFileSpec = file.getAbsolutePath();
 
-        mCoverFinder = new LocalCoverFinder(
+        mCoverFinder = new LocalCoverFinder(mManager.getContext(),
                 // the source is the folder from which we are importing.
                 file.getParent(),
                 // If this is not the SharedStorage folder, we'll be doing copies, else renames (to 'cover' folder)
@@ -65,7 +69,7 @@ public class ImportThread extends ManagedTask {
         FileInputStream in = null;
         try {
             in = new FileInputStream(mFileSpec);
-            new CsvImporter().importBooks(in, mCoverFinder, mImportListener, Importer.IMPORT_ALL);
+            new CsvImporter(mManager.getContext()).importBooks(in, mCoverFinder, mImportListener, Importer.IMPORT_ALL);
 
             if (isCancelled()) {
                 showUserMessage(getString(R.string.progress_end_cancelled));

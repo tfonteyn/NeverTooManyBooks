@@ -22,7 +22,6 @@ package com.eleybourn.bookcatalogue;
 
 import android.Manifest;
 import android.content.ContentResolver;
-import android.content.Context;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -57,7 +56,7 @@ import java.util.ArrayList;
  *      {@link #initFields()}
  *      {@link #onLoadFieldsFromBook} and {@link #onSaveFieldsToBook}
  */
-public class EditBookLoanedFragment extends BookAbstractFragment {
+public class EditBookLoanedFragment extends BookBaseFragment {
 
     public static final String TAG = "EditBookLoanedFragment";
 
@@ -120,10 +119,10 @@ public class EditBookLoanedFragment extends BookAbstractFragment {
         }
     }
 
-    @Override
-    protected void initFields() {
-        super.initFields();
-    }
+//    @Override
+//    protected void initFields() {
+//        super.initFields();
+//    }
 
 //    @CallSuper
 //    @Override
@@ -131,10 +130,10 @@ public class EditBookLoanedFragment extends BookAbstractFragment {
 //        super.onResume();
 //    }
 
-    @Override
-    protected void onLoadFieldsFromBook(@NonNull final Book book, final boolean setAllFrom) {
-        super.onLoadFieldsFromBook(book, setAllFrom);
-    }
+//    @Override
+//    protected void onLoadFieldsFromBook(@NonNull final Book book, final boolean setAllFrom) {
+//        super.onLoadFieldsFromBook(book, setAllFrom);
+//    }
     //</editor-fold>
 
     /* ------------------------------------------------------------------------------------------ */
@@ -195,11 +194,11 @@ public class EditBookLoanedFragment extends BookAbstractFragment {
 //        super.onPause();
 //    }
 
-    @Override
-    @CallSuper
-    protected void onSaveFieldsToBook(final @NonNull Book book) {
-        super.onSaveFieldsToBook(book);
-    }
+//    @Override
+//    @CallSuper
+//    protected void onSaveFieldsToBook(final @NonNull Book book) {
+//        super.onSaveFieldsToBook(book);
+//    }
 
 //    @Override
 //    public void onDestroy() {

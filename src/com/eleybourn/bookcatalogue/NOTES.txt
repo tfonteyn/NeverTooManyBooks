@@ -37,15 +37,10 @@ TODO: dialogs/* -> eliminate the pass up of the actual dialog. -> dismiss earlie
 
 Issues checked: 800 down to 677 (inc)
 ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/763 - Feature request: Series complete checkbox
-ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/753 - Add Edition, Print, and condition
+ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/753 - Add Edition, Print, and condition (book / dustcover)
 ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/723 - add book by search: allow publisher + present list of finds instead of using first found.
-ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/719 - "Language" field content should be translated -> store the ISO code in the database, displaying will always be ok then.
 ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/696 - Order by author first name
 
-ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/493 - auto fill 'read end date' when checkbox "I've read this book" is clicked.
-
-ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/721 - The application directory should be cleaned
--> covers,logs done. anything else ?
 
 ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/686 - Filter by signed
 ==> adding ISortableField and IFilterableField so that we (theoretically) just need to create a new
@@ -58,8 +53,9 @@ FIXME: https://github.com/eleybourn/Book-Catalogue/issues/740 - Date prompt appe
 
 FIXME: https://github.com/eleybourn/Book-Catalogue/issues/587 - residual thumbnail after Cancel entry-by-isbn
 
-https://github.com/eleybourn/Book-Catalogue/issues/519
 
+Should be tested:
+TEST: how about goodreads sync ? https://github.com/eleybourn/Book-Catalogue/issues/719 - "Language" field content should be translated
 TEST implemented, needs testing - https://github.com/eleybourn/Book-Catalogue/issues/725 - share-function
 
 
@@ -83,4 +79,5 @@ https://github.com/eleybourn/Book-Catalogue/issues/690 - Currency for each book
 https://github.com/eleybourn/Book-Catalogue/issues/678 - List price needs to be listed to two decimal points.
 https://github.com/eleybourn/Book-Catalogue/issues/597 - Merging of bookshelves
 https://github.com/eleybourn/Book-Catalogue/issues/567 - Read-only display does not display anthology titles
-https://github.com/eleybourn/Book-Catalogue/issues/547 - UPC barcodes
+https://github.com/eleybourn/Book-Catalogue/issues/547 - UPC bar-codes
+https://github.com/eleybourn/Book-Catalogue/issues/493 - auto fill 'read end date' when checkbox "I've read this book" is clicked.

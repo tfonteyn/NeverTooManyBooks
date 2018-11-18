@@ -56,6 +56,7 @@ public class TarBackupReader extends BackupReaderAbstract {
      * @param container Parent
      */
     TarBackupReader(final @NonNull TarBackupContainer container) throws IOException {
+        super(container.getContext());
 
         // Open the file and create the archive stream
         final FileInputStream in = new FileInputStream(container.getFile());
@@ -110,7 +111,7 @@ public class TarBackupReader extends BackupReaderAbstract {
      *         *all* files which are not actually recognised.
      */
     @NonNull
-    public BackupEntityType getBackupEntityType(final @NonNull TarArchiveEntry entry) {
+    private BackupEntityType getBackupEntityType(final @NonNull TarArchiveEntry entry) {
         String name = entry.getName();
 
         if (name.equalsIgnoreCase(TarBackupContainer.BOOKS_FILE)

@@ -18,7 +18,7 @@
     <item
         android:id="@+id/nav_admin"
         android:icon="@drawable/ic_build"
-        android:title="@string/menu_administration_short" />
+        android:title="@string/menu_administration" />
 
     <item
         android:id="@+id/nav_help"

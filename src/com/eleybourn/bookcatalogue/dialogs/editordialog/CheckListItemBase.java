@@ -22,7 +22,7 @@ public class CheckListItemBase<T> implements CheckListItem<T> {
     protected CheckListItemBase() {
     }
 
-    public CheckListItemBase(final @NonNull T item, final boolean selected) {
+    protected CheckListItemBase(final @NonNull T item, final boolean selected) {
         this.item = item;
         this.selected = selected;
     }

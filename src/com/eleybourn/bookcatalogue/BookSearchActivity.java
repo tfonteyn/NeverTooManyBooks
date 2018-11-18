@@ -186,8 +186,7 @@ public class BookSearchActivity extends BaseActivityWithTasks implements SearchM
 
             LibraryThingManager.showLtAlertIfNecessary(this, false, "search");
 
-            mDb = new CatalogueDBAdapter(this)
-                    .open();
+            mDb = new CatalogueDBAdapter(this);
 
             if (savedInstanceState != null) {
                 // the search at the moment the activity went to sleep
@@ -459,7 +458,7 @@ public class BookSearchActivity extends BaseActivityWithTasks implements SearchM
             // so now enclosed in another try.
             try {
                 AlertDialog dialog = new AlertDialog.Builder(BookSearchActivity.this)
-                        .setMessage(R.string.install_scan)
+                        .setMessage(R.string.info_install_scanner)
                         .setTitle(R.string.title_install_scan)
                         .setIconAttribute(android.R.attr.alertDialogIcon)
                         .create();
@@ -594,7 +593,7 @@ public class BookSearchActivity extends BaseActivityWithTasks implements SearchM
                     StandardDialogs.showUserMessage(this, getString(msg, mIsbnSearchText));
                     if (mLoopMode) {
                         // Optionally beep if scan failed.
-                        SoundManager.beepLow();
+                        SoundManager.beepLow(this);
                         // reset the now-discarded details
                         mIsbnSearchText = "";
                         mAuthorSearchText = "";
@@ -605,7 +604,7 @@ public class BookSearchActivity extends BaseActivityWithTasks implements SearchM
                 } else {
                     if (mLoopMode) {
                         // Optionally beep if scan was valid.
-                        SoundManager.beepHigh();
+                        SoundManager.beepHigh(this);
                     }
                     // See if ISBN exists in our database
                     final long existingId = mDb.getIdFromIsbn(mIsbnSearchText, true);
@@ -852,7 +851,7 @@ public class BookSearchActivity extends BaseActivityWithTasks implements SearchM
      */
     private void startScannerActivity() {
         if (mScanner == null) {
-            mScanner = ScannerManager.getScanner();
+            mScanner = ScannerManager.getScanner(this);
         }
         if (!mScannerStarted) {
             mScannerStarted = true;

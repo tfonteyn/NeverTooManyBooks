@@ -39,7 +39,6 @@ import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
-import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTask;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTaskContext;
 
 import java.util.ArrayList;
@@ -112,7 +111,7 @@ public class SimpleTaskQueueProgressDialogFragment extends DialogFragment {
         SimpleTaskQueue.OnTaskFinishListener mTaskFinishListener = new SimpleTaskQueue.OnTaskFinishListener() {
 
             @Override
-            public void onTaskFinish(final @NonNull SimpleTask task, final @Nullable Exception e) {
+            public void onTaskFinish(final @NonNull SimpleTaskQueue.SimpleTask task, final @Nullable Exception e) {
                 // If there are no more tasks, close this dialog
                 if (!mQueue.hasActiveTasks()) {
                     queueAllTasksFinished();
@@ -613,7 +612,7 @@ public class SimpleTaskQueueProgressDialogFragment extends DialogFragment {
      *
      * @author pjw
      */
-    private class FragmentTaskWrapper implements SimpleTask {
+    private class FragmentTaskWrapper implements SimpleTaskQueue.SimpleTask {
         @NonNull
         private final FragmentTask mInnerTask;
 

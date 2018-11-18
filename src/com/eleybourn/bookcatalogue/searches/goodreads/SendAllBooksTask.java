@@ -34,6 +34,7 @@ import com.eleybourn.bookcatalogue.searches.goodreads.BookEvents.GrNoIsbnEvent;
 import com.eleybourn.bookcatalogue.searches.goodreads.BookEvents.GrNoMatchEvent;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.NotAuthorizedException;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.ExportDisposition;
+import com.eleybourn.bookcatalogue.taskqueue.GenericTask;
 import com.eleybourn.bookcatalogue.taskqueue.QueueManager;
 import com.eleybourn.bookcatalogue.tasks.BCQueueManager;
 import com.eleybourn.bookcatalogue.utils.Utils;
@@ -64,7 +65,7 @@ public class SendAllBooksTask extends GenericTask {
      * Constructor
      */
     SendAllBooksTask(final boolean updatesOnly) {
-        super(BookCatalogueApp.getResourceString(R.string.gr_send_book));
+        super(BookCatalogueApp.getResourceString(R.string.gr_title_send_book));
         mUpdatesOnly = updatesOnly;
     }
 
@@ -85,7 +86,8 @@ public class SendAllBooksTask extends GenericTask {
     /**
      * Do the mean of the task. Deal with restarts by using mLastId as starting point.
      */
-    private boolean sendAllBooks(final @NonNull QueueManager queueManager, final @NonNull Context context) throws NotAuthorizedException {
+    private boolean sendAllBooks(final @NonNull QueueManager queueManager,
+                                 final @NonNull Context context) throws NotAuthorizedException {
         //int lastSave = mCount;
         boolean needsRetryReset = true;
 
@@ -107,12 +109,9 @@ public class SendAllBooksTask extends GenericTask {
             throw new NotAuthorizedException();
         }
 
-        // Get the app context; the underlying activity may go away. And get DB.
-        Context ctx = context.getApplicationContext();
-        CatalogueDBAdapter db = new CatalogueDBAdapter(ctx.getApplicationContext());
-        db.open();
-
-        try (BookCursor books = db.fetchBooksForGoodreadsCursor(mLastId, mUpdatesOnly)) {
+        // Use the app context; the calling activity may go away
+        try (CatalogueDBAdapter db = new CatalogueDBAdapter(context.getApplicationContext());
+             BookCursor books = db.fetchBooksForGoodreadsCursor(mLastId, mUpdatesOnly)) {
             final BookCursorRow bookCursorRow = books.getCursorRow();
             mTotalBooks = books.getCount() + mCount;
 
@@ -140,11 +139,11 @@ public class SendAllBooksTask extends GenericTask {
                         mSent++;
                         break;
                     case noIsbn:
-                        storeEvent(new GrNoIsbnEvent(bookCursorRow.getId()));
+                        storeEvent(new GrNoIsbnEvent(context, bookCursorRow.getId()));
                         mNoIsbn++;
                         break;
                     case notFound:
-                        storeEvent(new GrNoMatchEvent(bookCursorRow.getId()));
+                        storeEvent(new GrNoMatchEvent(context, bookCursorRow.getId()));
                         mNotFound++;
                         break;
                     case networkError:
@@ -179,13 +178,10 @@ public class SendAllBooksTask extends GenericTask {
                 }
             }
 
-        } finally {
-            db.close();
         }
-
         // Notify the user: '15 books processed: 3 sent successfully, 5 with no ISBN and 7 with ISBN but not found in goodreads'
         BookCatalogueApp.showNotification(
-                context, context.getString(R.string.gr_send_book),
+                context, context.getString(R.string.gr_title_send_book),
                 context.getString(R.string.gr_send_all_books_results, mCount, mSent, mNoIsbn, mNotFound));
 
         return true;

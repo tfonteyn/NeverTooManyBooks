@@ -19,6 +19,7 @@
  */
 package com.eleybourn.bookcatalogue.dialogs.editordialog;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.support.annotation.NonNull;
@@ -54,6 +55,7 @@ class TextFieldEditorDialog extends AlertDialog {
         super(context);
 
         // Get the layout
+        @SuppressLint("InflateParams")
         View root = this.getLayoutInflater().inflate(R.layout.dialog_edit_textfield, null);
 
         // get the text view

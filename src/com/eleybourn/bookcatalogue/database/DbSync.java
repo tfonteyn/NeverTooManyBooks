@@ -398,6 +398,7 @@ public class DbSync {
                 SyncLock exclusiveLock = mSync.getExclusiveLock();
                 try {
                     db = opener.open();
+                    Logger.info(this, db.getPath() + " opened with retriesLeft:" + retriesLeft);
                     return db;
                 } catch (Exception e) {
                     exclusiveLock.unlock();
@@ -660,6 +661,12 @@ public class DbSync {
         @NonNull
         String getPath() {
             return mSqlDb.getPath();
+        }
+
+        void analyze() {
+            // Don't do VACUUM -- it's a complete rebuild
+            //mSyncedDb.execSQL("vacuum");
+            execSQL("analyze");
         }
 
         /**

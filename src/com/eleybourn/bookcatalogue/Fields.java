@@ -54,6 +54,7 @@ import com.eleybourn.bookcatalogue.datamanager.validators.ValidatorException;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
+import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.RTE;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
@@ -64,7 +65,6 @@ import java.util.Currency;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.MissingResourceException;
 import java.util.Objects;
 
 /**
@@ -205,11 +205,11 @@ public class Fields extends ArrayList<Fields.Field> {
 
     @SuppressWarnings("WeakerAccess")
     public static boolean isVisible(final @NonNull String fieldName) {
-        return BookCatalogueApp.Prefs.getBoolean(PREFS_FIELD_VISIBILITY + fieldName, true);
+        return BookCatalogueApp.getBooleanPreference(PREFS_FIELD_VISIBILITY + fieldName, true);
     }
 
     public static void setVisibility(final String fieldName, final boolean isVisible) {
-        BookCatalogueApp.Prefs.putBoolean(PREFS_FIELD_VISIBILITY + fieldName, isVisible);
+        BookCatalogueApp.getSharedPreferences().edit().putBoolean(PREFS_FIELD_VISIBILITY + fieldName, isVisible).apply();
     }
 
     /**
@@ -1086,13 +1086,15 @@ public class Fields extends ArrayList<Fields.Field> {
     /**
      * Formatter for language fields.
      *
-     * The implementation if fairly simplistic.
+     * The format implementation is fairly simplistic.
      * If the database column contains a standard ISO language code, then 'format'
      * will return a current Locale based display name of that language.
+     * Otherwise, we just use the source String
      *
-     * Otherwise, we just get what was stored.
+     * The extract implementation will attempt to convert the value string to an ISO language code.
      *
-     * Does not support {@link FieldFormatter#extract}
+     * Note: the use of extract is not actually needed, as the insert of the book into
+     * the database checks the ISO3 code. But at least this class works "correct".
      */
     static public class LanguageFormatter implements FieldFormatter {
 
@@ -1108,23 +1110,16 @@ public class Fields extends ArrayList<Fields.Field> {
             }
 
             Locale locale = new Locale(source);
-            if (isValid(locale)) {
+            if (LocaleUtils.isValid(locale)) {
                 return locale.getDisplayLanguage();
             }
             return source;
         }
 
-        private boolean isValid(Locale locale) {
-            try {
-                return locale.getISO3Language() != null && locale.getISO3Country() != null;
-            } catch (MissingResourceException e) {
-                return false;
-            }
-        }
-
         @NonNull
         public String extract(final @NonNull Field field, final @NonNull String source) {
-            throw new UnsupportedOperationException();
+            // we need to transform a localised language name to it's ISO equivalent.
+            return LocaleUtils.getISO3Language(source);
         }
     }
 

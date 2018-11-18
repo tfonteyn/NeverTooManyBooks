@@ -133,14 +133,14 @@ public class BooleanProperty extends ValuePropertyWithGlobalDefault<Boolean> imp
     @Override
     @NonNull
     protected Boolean getGlobalDefault() {
-        return BookCatalogueApp.Prefs.getBoolean(getPreferenceKey(), Objects.requireNonNull(getDefaultValue()));
+        return BookCatalogueApp.getBooleanPreference(getPreferenceKey(), Objects.requireNonNull(getDefaultValue()));
     }
 
     @Override
     @Nullable
     protected BooleanProperty setGlobalDefault(final @Nullable Boolean value) {
         Objects.requireNonNull(value);
-        BookCatalogueApp.Prefs.putBoolean(getPreferenceKey(), value);
+        BookCatalogueApp.getSharedPreferences().edit().putBoolean(getPreferenceKey(), value).apply();
         return this;
     }
 

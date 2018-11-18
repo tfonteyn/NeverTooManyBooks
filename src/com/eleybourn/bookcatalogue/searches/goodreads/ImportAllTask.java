@@ -40,6 +40,7 @@ import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler;
 import com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames;
+import com.eleybourn.bookcatalogue.taskqueue.GenericTask;
 import com.eleybourn.bookcatalogue.taskqueue.QueueManager;
 import com.eleybourn.bookcatalogue.tasks.BCQueueManager;
 import com.eleybourn.bookcatalogue.utils.StringList;
@@ -116,23 +117,19 @@ class ImportAllTask extends GenericTask {
      */
     @Override
     public boolean run(final @NonNull QueueManager qMgr, final @NonNull Context context) {
-        CatalogueDBAdapter db = new CatalogueDBAdapter(context);
-        db.open();
 
-        try {
+        try (CatalogueDBAdapter db = new CatalogueDBAdapter(context)) {
             // Load the goodreads reviews
             boolean ok = processReviews(qMgr, db);
             // If it's a sync job, then start the 'send' part and save last syn date
             if (mIsSync) {
                 GoodreadsManager.setLastSyncDate(mStartDate);
-                QueueManager.getQueueManager().enqueueTask(new SendAllBooksTask(true), BCQueueManager.QUEUE_MAIN);
+                QueueManager.getQueueManager().enqueueTask(context, new SendAllBooksTask(true), BCQueueManager.QUEUE_MAIN);
             }
             return ok;
         } catch (GoodreadsManager.Exceptions.NotAuthorizedException e) {
             Logger.error(e);
             throw new RuntimeException("Goodreads authorization failed");
-        } finally {
-            db.close();
         }
     }
 

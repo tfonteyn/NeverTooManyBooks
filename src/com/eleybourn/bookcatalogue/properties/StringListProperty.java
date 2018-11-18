@@ -43,13 +43,13 @@ public class StringListProperty extends ListProperty<String> implements Property
 
     @Override
     protected String getGlobalDefault() {
-        return BookCatalogueApp.Prefs.getString(getPreferenceKey(), getDefaultValue());
+        return BookCatalogueApp.getStringPreference(getPreferenceKey(), getDefaultValue());
     }
 
     @NonNull
     @Override
     protected StringListProperty setGlobalDefault(final @Nullable String value) {
-        BookCatalogueApp.Prefs.putString(getPreferenceKey(), value);
+        BookCatalogueApp.getSharedPreferences().edit().putString(getPreferenceKey(), value).apply();
         return this;
     }
 

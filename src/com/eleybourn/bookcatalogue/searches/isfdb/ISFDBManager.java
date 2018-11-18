@@ -31,11 +31,11 @@ public class ISFDBManager {
     @NonNull
     public static String getBaseURL() {
         //noinspection ConstantConditions
-        return BookCatalogueApp.Prefs.getString(PREFS_HOST_URL, "http://www.isfdb.org");
+        return BookCatalogueApp.getStringPreference(PREFS_HOST_URL, "http://www.isfdb.org");
     }
 
     public static void setBaseURL(final @NonNull String url) {
-        BookCatalogueApp.Prefs.putString(PREFS_HOST_URL, url);
+        BookCatalogueApp.getSharedPreferences().edit().putString(PREFS_HOST_URL, url).apply();
     }
 
     /**

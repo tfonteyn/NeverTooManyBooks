@@ -68,6 +68,7 @@ public class Datum {
      *
      * @return Resulting value (null or empty becomes 0)
      */
+    @SuppressWarnings("WeakerAccess")
     public static long toLong(final @Nullable Object o) {
         if (o == null) {
             return 0;
@@ -142,6 +143,7 @@ public class Datum {
      *
      * @return Resulting value (null becomes empty)
      */
+    @SuppressWarnings("WeakerAccess")
     @NonNull
     public static String toString(final @Nullable Object o) {
         return o == null ? "" : o.toString().trim();

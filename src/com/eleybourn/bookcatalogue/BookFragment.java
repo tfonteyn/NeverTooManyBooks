@@ -1,9 +1,7 @@
 package com.eleybourn.bookcatalogue;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
@@ -32,7 +30,6 @@ import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.BookManager;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.entities.TOCEntry;
-import com.eleybourn.bookcatalogue.utils.BookUtils;
 import com.eleybourn.bookcatalogue.utils.BundleUtils;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
@@ -45,7 +42,7 @@ import static android.view.GestureDetector.SimpleOnGestureListener;
 /**
  * Class for representing read-only book details.
  */
-public class BookFragment extends BookAbstractFragment implements BookManager {
+public class BookFragment extends BookBaseFragment implements BookManager {
 
     public static final String TAG = "BookFragment";
 
@@ -121,10 +118,10 @@ public class BookFragment extends BookAbstractFragment implements BookManager {
     @Override
     @CallSuper
     public void onActivityCreated(final @Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
         // cache to avoid multiple calls to requireActivity()
-        mActivity = (BaseActivity)requireActivity();
+        mActivity = (BaseActivity) requireActivity();
+
+        super.onActivityCreated(savedInstanceState);
 
         initBooklist(getArguments(), savedInstanceState);
 
@@ -214,7 +211,7 @@ public class BookFragment extends BookAbstractFragment implements BookManager {
     public void onResume() {
         long bookId = getBook().getBookId();
         if (bookId != 0) {
-            getBook().reload(bookId);
+            getBook().reload(mDb, bookId);
         }
         // this will kick of the process that triggers onLoadFieldsFromBook
         super.onResume();
@@ -254,7 +251,7 @@ public class BookFragment extends BookAbstractFragment implements BookManager {
         showHideFields(true);
 
         // non-text fields
-        Field editionsField =  mFields.getField(R.id.edition);
+        Field editionsField = mFields.getField(R.id.edition);
         if ("0".equals(editionsField.getValue().toString())) {
             //noinspection ConstantConditions
             getView().findViewById(R.id.row_edition).setVisibility(View.GONE);
@@ -347,7 +344,7 @@ public class BookFragment extends BookAbstractFragment implements BookManager {
                         long bookId = mFlattenedBooklist.getBookId();
                         // only reload if it's a new book
                         if (bookId != getBook().getBookId()) {
-                            getBook().reload(bookId);
+                            getBook().reload(mDb, bookId);
                         }
                     }
                     return true;
@@ -680,7 +677,7 @@ public class BookFragment extends BookAbstractFragment implements BookManager {
         switch (requestCode) {
             case EditBookFragment.REQUEST_CODE: {
                 if (resultCode == EditBookFragment.RESULT_CHANGES_MADE) {
-                    getBook().reload();
+                    getBook().reload(mDb);
                     mActivity.setChangesMade(true);
                 }
                 return;

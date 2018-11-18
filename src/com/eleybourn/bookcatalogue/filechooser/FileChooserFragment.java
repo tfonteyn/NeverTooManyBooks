@@ -153,7 +153,7 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
         String parent = mRootPath.getParent();
         if (parent == null) {
             //Snackbar.make(this.getView(), R.string.no_parent_directory_found, Snackbar.LENGTH_LONG).show();
-            StandardDialogs.showUserMessage(requireActivity(), R.string.no_parent_directory_found);
+            StandardDialogs.showUserMessage(requireActivity(), R.string.warning_no_parent_directory_found);
             return;
         }
         mRootPath = new File(parent);

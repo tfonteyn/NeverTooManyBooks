@@ -26,7 +26,6 @@ import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.DatabaseHelper;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
@@ -35,16 +34,19 @@ import java.util.ArrayList;
 /**
  * Class to manage the message that is displayed when the application is upgraded.
  *
- * The app version is stored in preferences and when there are messages to display,
- * the getUpgradeMessage() method returns a non-empty string. When the message has
- * been acknowledged by the user, the startup activity should call setMessageAcknowledged()
- * to store the current app version in preferences and so prevent re-display of the
- * messages.
+ * The app version is stored in preferences and when there are messages to display, the
+ * {@link #getUpgradeMessage()} method returns a non-empty string. When the message has been
+ * acknowledged by the user, the startup activity should call {@link #setUpgradeAcknowledged()}
+ * to store the current app version in preferences and so prevent re-display of the messages.
  *
  * @author pjw
  */
 public class UpgradeMessageManager {
-    private final static String PREF_LAST_MESSAGE = "UpgradeMessages.LastMessage";
+    /**
+     * the string is misleading (but backwards compatibility rules), this is actually the
+     * 'LastVersion' e.g. the version which was installed before the current one.
+     */
+    private final static String PREF_PREVIOUS_VERSION = "UpgradeMessages.LastMessage";
     /** List of version-specific messages */
     private static final UpgradeMessages mMessages = new UpgradeMessages()
 
@@ -64,6 +66,7 @@ public class UpgradeMessageManager {
             .add(166, R.string.new_in_511)
             .add(171, R.string.new_in_520)
             .add(179, R.string.new_in_522)
+
             .add(200, R.string.new_in_600);
 
     /** The message generated for this instance; will be set first time it is generated */
@@ -87,27 +90,16 @@ public class UpgradeMessageManager {
         // Builder for message
         final StringBuilder message = new StringBuilder();
 
-        // See if we have a saved version id. If not, it's either a new install, or  an older install.
-        long lastVersion = BookCatalogueApp.Prefs.getInt(PREF_LAST_MESSAGE, 0);
+        // See if we have a saved version id. If not, it's an pre-98 install.
+        long lastVersion = BookCatalogueApp.getIntPreference(PREF_PREVIOUS_VERSION, 0);
         if (lastVersion == 0) {
-            // It's either a new install, or an install using old database-based message system
-
-            // Up until version 98, messages were handled via the CatalogueDBAdapter object,
-            // so create one and see if there is a message. On new installs, there is no upgrade message
-            //Note: we're not calling open(), so not calling close() either.
-            if (new CatalogueDBAdapter(BookCatalogueApp.getAppContext()).isNewInstall()) {
-                mMessage = "";
-                setMessageAcknowledged();
-                return mMessage;
-            }
-            // It's not a new install, so we use the 'old' message format and set the version to the
-            // last installed version that used the old method.
+            // It was an old install using old database-based message system
+            // set the version to the last installed version that used the old method.
             lastVersion = 98;
             if (!DatabaseHelper.getMessage().isEmpty()) {
                 message.append("<p>").append(DatabaseHelper.getMessage()).append("</p>");
             }
         }
-
 
         boolean first = true;
         for (UpgradeMessage msg : mMessages) {
@@ -123,12 +115,12 @@ public class UpgradeMessageManager {
         return mMessage;
     }
 
-    public static void setMessageAcknowledged() {
+    public static void setUpgradeAcknowledged() {
         try {
             Context context = BookCatalogueApp.getAppContext();
             int currVersion = context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionCode;
 
-            BookCatalogueApp.Prefs.putInt(PREF_LAST_MESSAGE, currVersion);
+            BookCatalogueApp.getSharedPreferences().edit().putInt(PREF_PREVIOUS_VERSION, currVersion).apply();
         } catch (NameNotFoundException e) {
             Logger.error(e, "Failed to get package version code");
         }
@@ -160,8 +152,6 @@ public class UpgradeMessageManager {
      * @author pjw
      */
     private static class UpgradeMessages extends ArrayList<UpgradeMessage> {
-        private static final long serialVersionUID = -1646609828897186899L;
-
         @NonNull
         public UpgradeMessages add(final int version, final int messageId) {
             this.add(new UpgradeMessage(version, messageId));

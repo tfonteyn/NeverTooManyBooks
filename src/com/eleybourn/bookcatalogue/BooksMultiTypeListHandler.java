@@ -21,7 +21,6 @@
 package com.eleybourn.bookcatalogue;
 
 import android.content.Intent;
-import android.content.res.Resources;
 import android.database.Cursor;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
@@ -71,7 +70,6 @@ import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.searches.amazon.AmazonUtils;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsUtils;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue;
-import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTask;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTaskContext;
 import com.eleybourn.bookcatalogue.utils.BookUtils;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
@@ -328,12 +326,12 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                 menu.add(Menu.NONE, R.id.MENU_SHARE, 0, R.string.share)
                         .setIcon(R.drawable.ic_share);
 
-                menu.add(Menu.NONE, R.id.MENU_BOOK_SEND_TO_GOODREADS, 0, R.string.gr_send_to_goodreads)
+                menu.add(Menu.NONE, R.id.MENU_BOOK_SEND_TO_GOODREADS, 0, R.string.gr_menu_send_to_goodreads)
                         .setIcon(BookCatalogueApp.getAttr(R.attr.ic_goodreads));
                 break;
             }
             case RowKinds.ROW_KIND_AUTHOR: {
-                menu.add(Menu.NONE, R.id.MENU_AUTHOR_DETAILS, 0, R.string.author_details)
+                menu.add(Menu.NONE, R.id.MENU_AUTHOR_DETAILS, 0, R.string.menu_author_details)
                         .setIcon(R.drawable.ic_details);
                 menu.add(Menu.NONE, R.id.MENU_AUTHOR_EDIT, 0, R.string.menu_edit_author)
                         .setIcon(R.drawable.ic_mode_edit);
@@ -354,12 +352,11 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                 if (!s.isEmpty()) {
                     menu.add(Menu.NONE, R.id.MENU_PUBLISHER_EDIT, 0, R.string.menu_edit_publisher)
                             .setIcon(R.drawable.ic_mode_edit);
-
                 }
                 break;
             }
             case RowKinds.ROW_KIND_LANGUAGE: {
-                String s = cursorRow.getLanguage();
+                String s = cursorRow.getLanguageCode();
                 if (!s.isEmpty()) {
                     menu.add(Menu.NONE, R.id.MENU_LANGUAGE_EDIT, 0, R.string.menu_edit_language)
                             .setIcon(R.drawable.ic_mode_edit);
@@ -569,7 +566,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                 return true;
             }
             case R.id.MENU_LANGUAGE_EDIT: {
-                String language = cursorRow.getLanguage();
+                String languageCode = cursorRow.getLanguageCode();
                 EditLanguageDialog d = new EditLanguageDialog(activity, db, new Runnable() {
                     @Override
                     public void run() {
@@ -581,7 +578,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                         }
                     }
                 });
-                d.edit(language);
+                d.edit(languageCode);
                 return true;
             }
             case R.id.MENU_LOCATION_EDIT: {
@@ -787,7 +784,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
      *
      * @author Philip Warner
      */
-    private static class GetBookExtrasTask implements SimpleTask {
+    private static class GetBookExtrasTask implements SimpleTaskQueue.SimpleTask {
 
         static final int BKEY_HANDLED =
                 BooklistStyle.EXTRAS_AUTHOR |
@@ -797,13 +794,13 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                         BooklistStyle.EXTRAS_BOOKSHELVES;
 
         /** Bookshelves resource string */
-        static final String mShelvesRes = BookCatalogueApp.getResourceString(R.string.lbl_bookshelves);
+        final String mShelvesRes = BookCatalogueApp.getResourceString(R.string.lbl_bookshelves);
         /** Location resource string */
-        static final String mLocationRes = BookCatalogueApp.getResourceString(R.string.lbl_location);
+        final String mLocationRes = BookCatalogueApp.getResourceString(R.string.lbl_location);
         /** Publisher resource string */
-        static final String mPublisherRes = BookCatalogueApp.getResourceString(R.string.lbl_publisher);
+        final String mPublisherRes = BookCatalogueApp.getResourceString(R.string.lbl_publisher);
         /** Format resource string */
-        static final String mFormatRes = BookCatalogueApp.getResourceString(R.string.lbl_format);
+        final String mFormatRes = BookCatalogueApp.getResourceString(R.string.lbl_format);
 
         /** The filled-in view holder for the book view. */
         @NonNull
@@ -855,7 +852,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                     }
                 }
                 // Get a DB connection and find the book, do not close the database!
-                CatalogueDBAdapter db = taskContext.getOpenDb();
+                CatalogueDBAdapter db = taskContext.getDb();
 
                 try (BookCursor cursor = db.fetchBookById(mBookId)) {
                     // If we have a book, use it. Otherwise we are done.
@@ -1262,8 +1259,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                 int i = (int) Float.parseFloat(s);
                 // If valid, get the name
                 if (i >= 0 && i <= 5) {
-                    Resources r = BookCatalogueApp.getAppContext().getResources();
-                    s = r.getQuantityString(R.plurals.n_stars, i, i);
+                    s = view.getContext().getResources().getQuantityString(R.plurals.n_stars, i, i);
                 }
             } catch (Exception e) {
                 Logger.error(e);

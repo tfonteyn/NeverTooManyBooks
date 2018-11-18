@@ -209,7 +209,6 @@ public class BooklistStylePropertiesActivity extends BaseActivity {
         if (mDb == null) {
             mDb = new CatalogueDBAdapter(this);
         }
-        mDb.open();
         return mDb;
     }
 

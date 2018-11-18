@@ -19,6 +19,7 @@
  */
 package com.eleybourn.bookcatalogue.backup;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 
@@ -36,7 +37,6 @@ import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -48,17 +48,19 @@ import java.util.Date;
 public abstract class BackupReaderAbstract implements BackupReader {
     @NonNull
     private final CatalogueDBAdapter mDb;
+    @NonNull
+    private final Context mContext;
 
-    private static String processPreferences = BookCatalogueApp.getResourceString(R.string.progress_msg_process_preferences);
-    private static String processCover = BookCatalogueApp.getResourceString(R.string.progress_msg_process_cover);
-    private static String processBooklistStyle = BookCatalogueApp.getResourceString(R.string.progress_msg_process_booklist_style);
+    private final String processPreferences = BookCatalogueApp.getResourceString(R.string.progress_msg_process_preferences);
+    private final String processCover = BookCatalogueApp.getResourceString(R.string.progress_msg_process_cover);
+    private final String processBooklistStyle = BookCatalogueApp.getResourceString(R.string.progress_msg_process_booklist_style);
 
     /**
      * Constructor
      */
-    protected BackupReaderAbstract() {
-        mDb = new CatalogueDBAdapter(BookCatalogueApp.getAppContext())
-                .open();
+    protected BackupReaderAbstract(@NonNull final Context context) {
+        mContext = context;
+        mDb = new CatalogueDBAdapter(mContext);
     }
 
     /**
@@ -155,10 +157,10 @@ public abstract class BackupReaderAbstract implements BackupReader {
                 mLastPos = position;
             }
 
-			@Override
-			public boolean isActive() {
-				return !listener.isCancelled();
-			}
+            @Override
+            public boolean isActive() {
+                return !listener.isCancelled();
+            }
 
             @Override
             public void setMax(final int max) {
@@ -168,7 +170,7 @@ public abstract class BackupReaderAbstract implements BackupReader {
 
         // Now do the import
         InputStream in = entity.getStream();
-        CsvImporter importer = new CsvImporter();
+        CsvImporter importer = new CsvImporter(mContext);
         importer.importBooks(in, null, importListener, importFlags);
     }
 
@@ -235,6 +237,6 @@ public abstract class BackupReaderAbstract implements BackupReader {
      */
     @Override
     public void close() throws IOException {
-            mDb.close();
-        }
+        mDb.close();
+    }
 }

@@ -20,8 +20,6 @@
 
 package com.eleybourn.bookcatalogue;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -39,7 +37,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
-import com.eleybourn.bookcatalogue.baseactivity.CanBeDirty;
 import com.eleybourn.bookcatalogue.datamanager.DataEditor;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.editordialog.PartialDatePickerDialogFragment;
@@ -52,8 +49,6 @@ import com.eleybourn.bookcatalogue.entities.BookManager;
 import com.eleybourn.bookcatalogue.utils.BundleUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
-import org.jsoup.Connection;
-
 import java.io.File;
 import java.util.List;
 
@@ -64,7 +59,7 @@ import java.util.List;
  * 3. Anthology titles
  * 4. Loan Book -> ENHANCE: remove this from this activity into either its own, or into a DialogFragment
  */
-public class EditBookFragment extends BookAbstractFragment implements
+public class EditBookFragment extends BookBaseFragment implements
         CheckListEditorDialogFragment.OnCheckListEditorResultsListener,
         PartialDatePickerDialogFragment.OnPartialDatePickerResultsListener,
         TextFieldEditorDialogFragment.OnTextFieldEditorResultsListener,
@@ -151,10 +146,10 @@ public class EditBookFragment extends BookAbstractFragment implements
     @Override
     @CallSuper
     public void onActivityCreated(final @Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
         // cache to avoid multiple calls to requireActivity()
         mActivity = (BaseActivity) requireActivity();
+
+        super.onActivityCreated(savedInstanceState);
 
         boolean isExistingBook = (getBook().getBookId() > 0);
         initTabs(isExistingBook, savedInstanceState);
@@ -179,10 +174,10 @@ public class EditBookFragment extends BookAbstractFragment implements
         });
     }
 
-    @Override
-    protected void initFields() {
-        super.initFields();
-    }
+//    @Override
+//    protected void initFields() {
+//        super.initFields();
+//    }
 
 //    @CallSuper
 //    @Override
@@ -190,10 +185,10 @@ public class EditBookFragment extends BookAbstractFragment implements
 //        super.onResume();
 //    }
 
-    @Override
-    protected void onLoadFieldsFromBook(@NonNull final Book book, final boolean setAllFrom) {
-        super.onLoadFieldsFromBook(book, setAllFrom);
-    }
+//    @Override
+//    protected void onLoadFieldsFromBook(@NonNull final Book book, final boolean setAllFrom) {
+//        super.onLoadFieldsFromBook(book, setAllFrom);
+//    }
 
     //</editor-fold>
 
@@ -325,11 +320,11 @@ public class EditBookFragment extends BookAbstractFragment implements
 //        super.onPause();
 //    }
 
-    @Override
-    @CallSuper
-    protected void onSaveFieldsToBook(final @NonNull Book book) {
-        super.onSaveFieldsToBook(book);
-    }
+//    @Override
+//    @CallSuper
+//    protected void onSaveFieldsToBook(final @NonNull Book book) {
+//        super.onSaveFieldsToBook(book);
+//    }
 
     /**
      * the only thing on this level is the TAB we're on

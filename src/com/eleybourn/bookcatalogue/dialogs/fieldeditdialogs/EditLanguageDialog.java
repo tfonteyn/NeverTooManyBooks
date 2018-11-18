@@ -26,7 +26,15 @@ import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 
+import java.util.Locale;
+
+/**
+ * Edit the language field.
+ *
+ * FIXME: as we moved to ISO3 codes... how much use is this ?
+ */
 public class EditLanguageDialog extends EditStringDialog {
     public EditLanguageDialog(final @NonNull Activity activity,
                               final @NonNull CatalogueDBAdapter db,
@@ -35,8 +43,15 @@ public class EditLanguageDialog extends EditStringDialog {
     }
 
     @CallSuper
-    public void edit(final @NonNull String s) {
-        super.edit(s, R.layout.dialog_edit_language, R.string.title_edit_language);
+    public void edit(final @NonNull String lang) {
+        String editLang;
+        if (lang.length() > 3) {
+            editLang = lang;
+        } else {
+            Locale loc = new Locale(lang);
+            editLang = loc.getDisplayLanguage();
+        }
+        super.edit(editLang, R.layout.dialog_edit_language, R.string.title_edit_language);
     }
 
     @Override
@@ -45,7 +60,8 @@ public class EditLanguageDialog extends EditStringDialog {
         if (to.equals(from)) {
             return;
         }
-        mDb.globalReplaceLanguage(from, to);
+
+        mDb.globalReplaceLanguage(from, LocaleUtils.getISO3Language(to));
         mOnChanged.run();
     }
 }

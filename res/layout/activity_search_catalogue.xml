@@ -42,7 +42,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:labelFor="@id/author"
-                android:text="@string/author" />
+                android:text="@string/lbl_author" />
 
             <!-- no style used on purpose -->
             <EditText
@@ -58,7 +58,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:labelFor="@id/title"
-                android:text="@string/title" />
+                android:text="@string/lbl_title" />
 
             <!-- no style used on purpose -->
             <EditText

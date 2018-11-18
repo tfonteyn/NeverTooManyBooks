@@ -78,7 +78,7 @@ public class BooklistPreferencesActivity extends PreferencesBaseActivity {
     private static final ItemEntries<Integer> mBooklistStateListItems = new ItemEntries<>();
     private static final IntegerListProperty mBooklistStateProperty =
             new IntegerListProperty(mBooklistStateListItems, PREF_BOOK_LIST_STATE,
-                    PropertyGroup.GRP_GENERAL, R.string.book_list_state)
+                    PropertyGroup.GRP_GENERAL, R.string.blp_list_state)
                     .setPreferenceKey(PREF_BOOK_LIST_STATE)
                     .setDefaultValue(BOOK_LIST_ALWAYS_EXPANDED)
                     .setGlobal(true);
@@ -87,7 +87,7 @@ public class BooklistPreferencesActivity extends PreferencesBaseActivity {
     private static final ItemEntries<Integer> mBooklistCompatibilityModeListItems = new ItemEntries<>();
     private static final IntegerListProperty mBooklistCompatibilityModeProperty =
             new IntegerListProperty(mBooklistCompatibilityModeListItems, PREF_BOOKLIST_GENERATION_MODE,
-                    PropertyGroup.GRP_ADVANCED_OPTIONS, R.string.booklist_generation)
+                    PropertyGroup.GRP_ADVANCED_OPTIONS, R.string.blp_generation)
                     .setDefaultValue(BOOKLIST_GENERATE_AUTOMATIC)
                     .setPreferenceKey(PREF_BOOKLIST_GENERATION_MODE)
                     .setGlobal(true)
@@ -115,15 +115,15 @@ public class BooklistPreferencesActivity extends PreferencesBaseActivity {
 
     static {
         mBooklistStateListItems.add(null, R.string.use_default_setting)
-                .add(BOOK_LIST_ALWAYS_EXPANDED, R.string.book_list_state_always_start_expanded)
-                .add(BOOK_LIST_ALWAYS_COLLAPSED, R.string.book_list_state_always_start_collapsed)
-                .add(BOOK_LIST_STATE_PRESERVED, R.string.book_list_state_remember_state);
+                .add(BOOK_LIST_ALWAYS_EXPANDED, R.string.blp_state_start_expanded)
+                .add(BOOK_LIST_ALWAYS_COLLAPSED, R.string.blp_state_start_collapsed)
+                .add(BOOK_LIST_STATE_PRESERVED, R.string.blp_state_remember);
 
         mBooklistCompatibilityModeListItems.add(null, R.string.use_default_setting)
-                .add(BOOKLIST_GENERATE_OLD_STYLE, R.string.booklist_generation_force_compatibility_mode)
-                .add(BOOKLIST_GENERATE_FLAT_TRIGGER, R.string.booklist_generation_force_enhanced_compatibility_mode)
-                .add(BOOKLIST_GENERATE_NESTED_TRIGGER, R.string.booklist_generation_force_fully_featured)
-                .add(BOOKLIST_GENERATE_AUTOMATIC, R.string.booklist_generation_use_recommended_option);
+                .add(BOOKLIST_GENERATE_OLD_STYLE, R.string.blp_generation_force_compatibility_mode)
+                .add(BOOKLIST_GENERATE_FLAT_TRIGGER, R.string.blp_generation_force_enhanced_compatibility_mode)
+                .add(BOOKLIST_GENERATE_NESTED_TRIGGER, R.string.blp_generation_force_fully_featured)
+                .add(BOOKLIST_GENERATE_AUTOMATIC, R.string.blp_generation_use_recommended_option);
 
         mCacheThumbnailsListItems.add(null, R.string.use_default_setting)
                 .add(false, R.string.thumbnails_resizing_each_time)

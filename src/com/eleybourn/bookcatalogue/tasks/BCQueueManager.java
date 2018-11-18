@@ -23,7 +23,6 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.taskqueue.LegacyTask;
 import com.eleybourn.bookcatalogue.taskqueue.QueueManager;
 
 /**
@@ -55,17 +54,6 @@ public class BCQueueManager extends QueueManager {
         super(applicationContext);
         initializeQueue(QUEUE_MAIN);
         initializeQueue(QUEUE_SMALL_JOBS);
-    }
-
-    /**
-     * Get a new Task object capable of representing a non-deserializable Task object.
-     *
-     * @return a localized current LegacyTask object.
-     */
-    @NonNull
-    @Override
-    public LegacyTask newLegacyTask() {
-        return new LegacyTask();
     }
 
     @Override

@@ -17,13 +17,13 @@ import java.io.IOException;
  *
  * @author Philip Warner
  */
-public class ExportThread extends ManagedTask {
+public class ExportTask extends ManagedTask {
 
     private final Exporter.ExportListener mOnExportListener = new Exporter.ExportListener() {
         @Override
         public void onProgress(final @NonNull String message, final int position) {
             if (position > 0) {
-                mTaskManager.doProgress(ExportThread.this, message, position);
+                mTaskManager.doProgress(ExportTask.this, message, position);
             } else {
                 mTaskManager.doProgress(message);
             }
@@ -31,12 +31,12 @@ public class ExportThread extends ManagedTask {
 
         @Override
         public boolean isCancelled() {
-            return ExportThread.this.isCancelled();
+            return ExportTask.this.isCancelled();
         }
 
         @Override
         public void setMax(final int max) {
-            mTaskManager.setMax(ExportThread.this, max);
+            mTaskManager.setMax(ExportTask.this, max);
         }
 
     };
@@ -44,9 +44,9 @@ public class ExportThread extends ManagedTask {
     @NonNull
     private final CsvExporter mExporter;
 
-    public ExportThread(final @NonNull TaskManager manager) {
-        super("ExportThread", manager);
-        mExporter = new CsvExporter();
+    public ExportTask(final @NonNull TaskManager manager) {
+        super("ExportTask", manager);
+        mExporter = new CsvExporter(manager.getContext());
     }
 
     @Override

@@ -50,12 +50,12 @@ public class BooleanListProperty extends ListProperty<Boolean> implements Boolea
     protected Boolean getGlobalDefault() {
         Boolean value = getDefaultValue();
         Objects.requireNonNull(value);
-        return BookCatalogueApp.Prefs.getBoolean(getPreferenceKey(), value);
+        return BookCatalogueApp.getBooleanPreference(getPreferenceKey(), value);
     }
 
     @NonNull
     protected BooleanListProperty setGlobalDefault(final Boolean value) {
-        BookCatalogueApp.Prefs.putBoolean(getPreferenceKey(), value);
+        BookCatalogueApp.getSharedPreferences().edit().putBoolean(getPreferenceKey(), value).apply();
         return this;
     }
 

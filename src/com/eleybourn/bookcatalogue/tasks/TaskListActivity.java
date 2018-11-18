@@ -83,8 +83,7 @@ public class TaskListActivity extends BindableItemListActivity {
             super.onCreate(savedInstanceState);
             this.setTitle(R.string.background_tasks);
 
-            mDb = new CatalogueDBAdapter(this)
-                    .open();
+            mDb = new CatalogueDBAdapter(this);
 
             //When any Event is added/changed/deleted, update the list. Lazy, yes.
             BookCatalogueApp.getQueueManager().registerTaskListener(m_OnTaskChangeListener);

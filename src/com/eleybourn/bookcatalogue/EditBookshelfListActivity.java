@@ -70,8 +70,7 @@ public class EditBookshelfListActivity extends BaseListActivity {
         super.onCreate(savedInstanceState);
         setTitle(R.string.title_edit_bookshelves);
 
-        mDb = new CatalogueDBAdapter(this)
-                .open();
+        mDb = new CatalogueDBAdapter(this);
 
         populateList();
     }

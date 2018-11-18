@@ -92,7 +92,7 @@ public class ImportTypeSelectionDialogFragment extends DialogFragment {
         mFile = new File(Objects.requireNonNull(args.getString(UniqueId.BKEY_FILE_SPEC)));
 
         try {
-            BackupReader reader = BackupManager.readFrom(mFile);
+            BackupReader reader = BackupManager.readFrom(this.requireContext(), mFile);
             BackupInfo info = reader.getInfo();
             reader.close();
             mArchiveHasValidDates = info.getAppVersionCode() >= 152;

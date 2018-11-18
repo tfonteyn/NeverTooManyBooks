@@ -128,7 +128,7 @@ abstract class CropImageViewTouchBase extends AppCompatImageView {
     @CallSuper
     public boolean onKeyDown(final int keyCode, final KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK && getScale() > 1.0f) {
-            // If we're zoomed in, pressing Back jumps out to show the entire
+            // If we're large in, pressing Back jumps out to show the entire
             // image, otherwise Back returns the user to the gallery.
             zoomTo(1.0f);
             return true;

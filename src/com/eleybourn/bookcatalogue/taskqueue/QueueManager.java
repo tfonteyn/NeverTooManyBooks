@@ -46,8 +46,8 @@ import java.util.Map;
 /**
  * Class to handle service-level aspects of the queues.
  *
- * Each defined queue results in a fresh Queue object being created in its own thread; the QueueManager
- * creates these. Queue objects last until there are no entries left in the queue.
+ * Each defined queue results in a fresh Queue object being created in its own thread;
+ * the QueueManager creates these. Queue objects last until there are no entries left in the queue.
  *
  * ENHANCE: Split QueueManager into *Manager and *Service, and auto create QueueManager which will start Service when queues need to execute. Service stops after last queue.
  * ENHANCE: Add a 'requiresNetwork()' task property
@@ -64,7 +64,7 @@ public abstract class QueueManager {
     private static final String TOAST = "toast";
 
     /** Static reference to the active QueueManager */
-    private static QueueManager mQueueManager;
+    private static QueueManager mInstance;
     /** Database access layer */
     @NonNull
     private final DBAdapter mDb;
@@ -78,25 +78,30 @@ public abstract class QueueManager {
     /** Objects listening for Task operations */
     @NonNull
     private final List<WeakReference<OnTaskChangeListener>> mTaskChangeListeners;
+
     /** Handle inter-thread messages */
     private MessageHandler mMessageHandler;
 
 
-    protected QueueManager(final @NonNull Context applicationContext) {
+    /**
+     * Reminder: as we're a singleton, we cannot cache the Context.
+     * That would cause memory leaks according to Android docs.
+     */
+    protected QueueManager(final @NonNull Context context) {
         super();
-        if (mQueueManager != null) {
+        if (mInstance != null) {
             /* This is an essential requirement because (a) synchronization will not work with
              more than one and (b) we want to store a static reference in the class. */
             throw new IllegalStateException("Only one QueueManager can be present");
         }
-        mQueueManager = this;
+        mInstance = this;
 
         // Save the thread ... it is the UI thread
         mUIThread = new WeakReference<>(Thread.currentThread());
         // setup the handler with access to ourselves
         mMessageHandler = new MessageHandler(new WeakReference<>(this));
 
-        mDb = new DBAdapter(applicationContext);
+        mDb = new DBAdapter(context);
 
         // Get active queues.
         synchronized (this) {
@@ -106,7 +111,7 @@ public abstract class QueueManager {
     }
 
     public static QueueManager getQueueManager() {
-        return mQueueManager;
+        return mInstance;
     }
 
     public void registerEventListener(final @NonNull OnEventChangeListener listener) {
@@ -220,7 +225,7 @@ public abstract class QueueManager {
      * @param task      task to queue
      * @param queueName Name of queue
      */
-    public void enqueueTask(final @NonNull Task task, final @NonNull String queueName) {
+    public void enqueueTask(final @NonNull Context context, final @NonNull Task task, final @NonNull String queueName) {
         synchronized (this) {
             // Save it
             mDb.enqueueTask(task, queueName);
@@ -230,7 +235,7 @@ public abstract class QueueManager {
                 }
             } else {
                 // Create the queue; it will start and add itself to the manager
-                new Queue(this.getApplicationContext(), this, queueName);
+                new Queue(context, this, queueName);
             }
         }
         this.notifyTaskChange(task, TaskActions.created);
@@ -283,9 +288,9 @@ public abstract class QueueManager {
      *
      * @return Result from run(...) method
      */
-    boolean runOneTask(final @NonNull Task task) {
+    boolean runOneTask(final @NonNull Context context, final @NonNull Task task) {
         if (task instanceof RunnableTask) {
-            return ((RunnableTask) task).run(this, this.getApplicationContext());
+            return ((RunnableTask) task).run(this, context);
         } else {
             // Either extend RunnableTask, or override QueueManager.runOneTask()
             throw new IllegalStateException("Can not handle tasks that are not RunnableTasks");
@@ -310,7 +315,7 @@ public abstract class QueueManager {
         if (Thread.currentThread() == mUIThread.get()) {
             synchronized (this) {
                 if (DEBUG_SWITCHES.MESSAGING && BuildConfig.DEBUG) {
-                    Logger.info(this,"toasting: " + message);
+                    Logger.info(this, "toasting: " + message);
                 }
                 // this is basically 'showing' on the UI thread of the Application.onCreate()
                 Toast.makeText(this.getApplicationContext(), message, Toast.LENGTH_LONG).show();
@@ -465,22 +470,6 @@ public abstract class QueueManager {
     protected abstract Context getApplicationContext();
 
     /**
-     * Get a new Event object capable of representing a non-deserializable Event object.
-     */
-    @NonNull
-    LegacyEvent newLegacyEvent() {
-        return new LegacyEvent();
-    }
-
-    /**
-     * Get a new Task object capable of representing a non-deserializable Task object.
-     */
-    @NonNull
-    public LegacyTask newLegacyTask() {
-        return new LegacyTask();
-    }
-
-    /**
      * Handler for internal UI thread messages.
      */
     private static class MessageHandler extends Handler {
@@ -503,5 +492,4 @@ public abstract class QueueManager {
             }
         }
     }
-
 }

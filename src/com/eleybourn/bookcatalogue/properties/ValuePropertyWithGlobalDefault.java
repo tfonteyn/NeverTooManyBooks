@@ -165,6 +165,7 @@ public abstract class ValuePropertyWithGlobalDefault<T> extends Property {
         return mDefaultValue;
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     @NonNull
     public ValuePropertyWithGlobalDefault<T> setDefaultValue(final @Nullable T value) {
         mDefaultValue = value;

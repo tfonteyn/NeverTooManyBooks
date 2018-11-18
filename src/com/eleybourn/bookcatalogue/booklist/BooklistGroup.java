@@ -55,7 +55,7 @@ public class BooklistGroup implements Serializable {
     private static final String PREF_DISPLAY_FIRST_THEN_LAST_NAMES = "APP.DisplayFirstThenLast";
 
     /** The Row Kind of this group */
-    public int kind;
+    public final int kind;
     /** The domains represented by this group. Set at runtime by builder based on current group and outer groups */
     transient ArrayList<DomainDefinition> groupDomains;
     /** The domain used to display this group. Set at runtime by builder based on internal logic of builder */
@@ -149,7 +149,7 @@ public class BooklistGroup implements Serializable {
         private static final ItemEntries<Boolean> mAllSeriesItems = new ItemEntries<>();
 
         static {
-            String kind = BookCatalogueApp.getResourceString(R.string.series);
+            String kind = BookCatalogueApp.getResourceString(R.string.lbl_series);
             mAllSeriesItems.add(null, R.string.use_default_setting);
             mAllSeriesItems.add(false, R.string.books_with_multiple_show_book_under_primary_1s_only, kind);
             mAllSeriesItems.add(true, R.string.books_with_multiple_show_book_under_each_1s, kind);
@@ -222,12 +222,12 @@ public class BooklistGroup implements Serializable {
 
         static {
             mGivenNameFirstItems.add(null, R.string.use_default_setting);
-            mGivenNameFirstItems.add(false, R.string.family_name_first_eg);
-            mGivenNameFirstItems.add(true, R.string.given_name_first_eg);
+            mGivenNameFirstItems.add(false, R.string.blp_format_author_name_family_first);
+            mGivenNameFirstItems.add(true, R.string.blp_format_author_name_given_first);
         }
 
         static {
-            String kind = BookCatalogueApp.getResourceString(R.string.author);
+            String kind = BookCatalogueApp.getResourceString(R.string.lbl_author);
             mAllAuthorsItems.add(null, R.string.use_default_setting);
             mAllAuthorsItems.add(false, R.string.books_with_multiple_show_book_under_primary_1s_only, kind);
             mAllAuthorsItems.add(true, R.string.books_with_multiple_show_book_under_each_1s, kind);
@@ -256,7 +256,7 @@ public class BooklistGroup implements Serializable {
                     .setHint(R.string.hint_authors_book_may_appear_more_than_once);
 
             mGivenName = new BooleanListProperty(mGivenNameFirstItems, "GivenName",
-                    PropertyGroup.GRP_AUTHOR, R.string.format_of_author_names)
+                    PropertyGroup.GRP_AUTHOR, R.string.blp_format_author_name)
                     .setPreferenceKey(PREF_DISPLAY_FIRST_THEN_LAST_NAMES);
         }
 

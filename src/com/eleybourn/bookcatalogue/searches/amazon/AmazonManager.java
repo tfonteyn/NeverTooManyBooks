@@ -24,11 +24,11 @@ public class AmazonManager {
     @NonNull
     public static String getBaseURL() {
         //noinspection ConstantConditions
-        return BookCatalogueApp.Prefs.getString(PREFS_HOST_URL, "http://www.amazon.com");
+        return BookCatalogueApp.getStringPreference(PREFS_HOST_URL, "http://www.amazon.com");
     }
 
     public static void setBaseURL(final @NonNull String url) {
-        BookCatalogueApp.Prefs.putString(PREFS_HOST_URL, url);
+        BookCatalogueApp.getSharedPreferences().edit().putString(PREFS_HOST_URL, url).apply();
     }
 
     /**

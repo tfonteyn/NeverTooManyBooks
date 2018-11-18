@@ -157,8 +157,7 @@ public class SearchLocalActivity extends BaseActivity {
             }
         }
 
-        mDb = new CatalogueDBAdapter(this)
-                .open();
+        mDb = new CatalogueDBAdapter(this);
 
         mBooksFound = this.findViewById(R.id.books_found);
         mShowResultsBtn = this.findViewById(R.id.search);

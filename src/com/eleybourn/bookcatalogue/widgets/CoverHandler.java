@@ -3,7 +3,6 @@ package com.eleybourn.bookcatalogue.widgets;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
@@ -29,7 +28,7 @@ import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.cropper.CropIImage;
 import com.eleybourn.bookcatalogue.cropper.CropImageActivity;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
-import com.eleybourn.bookcatalogue.database.CoversDbHelper;
+import com.eleybourn.bookcatalogue.database.CoversDbAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
@@ -47,6 +46,10 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Handler for a displayed Cover ImageView element.
+ * Offers context menus and all operations applicable on a Cover image.
+ */
 public class CoverHandler implements SelectOneDialog.hasViewContextMenu {
 
     public static final String PREF_USE_EXTERNAL_IMAGE_CROPPER = "App.UseExternalImageCropper";
@@ -56,26 +59,26 @@ public class CoverHandler implements SelectOneDialog.hasViewContextMenu {
     public static final int PREF_AUTOROTATE_CAMERA_IMAGES_DEFAULT = 90;
 
     @NonNull
-    private Activity mActivity;
+    private final Activity mActivity;
 
     @NonNull
-    private CatalogueDBAdapter mDb;
+    private final CatalogueDBAdapter mDb;
 
     @NonNull
-    private BookManager mBookManager;
+    private final BookManager mBookManager;
 
     @Nullable
     private CoverBrowser mCoverBrowser = null;
 
-    private Fields.Field mCoverField;
+    private final Fields.Field mCoverField;
 
     /** keep a reference to the ISBN Field, so we can use the *current* value (instead of using getBook())*/
-    private Fields.Field mIsbnField;
+    private final Fields.Field mIsbnField;
 
     /** Counter used to prevent images being reused accidentally */
     private static int mTempImageCounter = 0;
 
-    private ImageUtils.ThumbSize mThumbSize;
+    private final ImageUtils.ThumbSize mThumbSize;
 
     /** Used to display a hint if user rotates a camera image */
     private boolean mGotCameraImage = false;
@@ -250,14 +253,16 @@ public class CoverHandler implements SelectOneDialog.hasViewContextMenu {
      *
      */
     public void populateCoverView() {
-        ImageUtils.fetchFileIntoImageView((ImageView) (mCoverField.getView()), getCoverFile(), mThumbSize.small, mThumbSize.small, true);
+        ImageUtils.fetchFileIntoImageView((ImageView) (mCoverField.getView()), getCoverFile(),
+                mThumbSize.small, mThumbSize.small, true);
     }
 
     /**
      * Load the image into the view, using custom dimensions
      */
     public void populateCoverView(final int maxWidth, final int maxHeight) {
-        ImageUtils.fetchFileIntoImageView((ImageView) (mCoverField.getView()), getCoverFile(), maxWidth, maxHeight, true);
+        ImageUtils.fetchFileIntoImageView((ImageView) (mCoverField.getView()), getCoverFile(),
+                maxWidth, maxHeight, true);
     }
 
     /**
@@ -265,7 +270,7 @@ public class CoverHandler implements SelectOneDialog.hasViewContextMenu {
      * If the book is new (0), return the standard temp file.
      */
     @NonNull
-    public File getCoverFile() {
+    private File getCoverFile() {
         if (mBookManager.getBook().getBookId() == 0) {
             return StorageUtils.getTempCoverFile();
         } else {
@@ -330,7 +335,7 @@ public class CoverHandler implements SelectOneDialog.hasViewContextMenu {
         Bitmap bitmap = (Bitmap) bundle.get(CropIImage.BKEY_DATA);
         if (bitmap != null && bitmap.getWidth() > 0 && bitmap.getHeight() > 0) {
             Matrix m = new Matrix();
-            m.postRotate(getPrefs().getInt(PREF_AUTOROTATE_CAMERA_IMAGES, PREF_AUTOROTATE_CAMERA_IMAGES_DEFAULT));
+            m.postRotate(BookCatalogueApp.getIntPreference(PREF_AUTOROTATE_CAMERA_IMAGES, PREF_AUTOROTATE_CAMERA_IMAGES_DEFAULT));
             bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), m, true);
 
             File cameraFile = StorageUtils.getTempCoverFile("camera", "" + CoverHandler.mTempImageCounter);
@@ -381,7 +386,7 @@ public class CoverHandler implements SelectOneDialog.hasViewContextMenu {
                 // Update the ImageView with the new image
                 populateCoverView();
             } else {
-                String s = mActivity.getString(R.string.warning_cover_copy_failed) + ". " + mActivity.getString(R.string.if_the_problem_persists);
+                String s = mActivity.getString(R.string.warning_cover_copy_failed) + ". " + mActivity.getString(R.string.error_if_the_problem_persists);
                 StandardDialogs.showUserMessage(mActivity, s);
             }
         } else {
@@ -407,7 +412,7 @@ public class CoverHandler implements SelectOneDialog.hasViewContextMenu {
                 File thumbFile = getCoverFile();
 
                 Bitmap bitmap = ImageUtils.fetchFileIntoImageView(null, thumbFile,
-                        mThumbSize.zoomed * 2, mThumbSize.zoomed * 2, true);
+                        mThumbSize.large * 2, mThumbSize.large * 2, true);
                 if (bitmap == null) {
                     return;
                 }
@@ -443,7 +448,7 @@ public class CoverHandler implements SelectOneDialog.hasViewContextMenu {
 
 
     private void cropCoverImage(final @NonNull File thumbFile) {
-        boolean external = getPrefs().getBoolean(PREF_USE_EXTERNAL_IMAGE_CROPPER, false);
+        boolean external = BookCatalogueApp.getBooleanPreference(PREF_USE_EXTERNAL_IMAGE_CROPPER, false);
         if (external) {
             cropCoverImageExternal(thumbFile);
         } else {
@@ -460,7 +465,7 @@ public class CoverHandler implements SelectOneDialog.hasViewContextMenu {
     }
 
     private void cropCoverImageInternal(final @NonNull File thumbFile) {
-        boolean cropFrameWholeImage = getPrefs().getBoolean(PREF_CROP_FRAME_WHOLE_IMAGE, false);
+        boolean cropFrameWholeImage = BookCatalogueApp.getBooleanPreference(PREF_CROP_FRAME_WHOLE_IMAGE, false);
 
         // Get the output file spec, and make sure it does not already exist.
         File cropped = this.getCroppedTempCoverFile();
@@ -533,8 +538,8 @@ public class CoverHandler implements SelectOneDialog.hasViewContextMenu {
     private void invalidateCachedThumbnail() {
         final long bookId = mBookManager.getBook().getBookId();
         if (bookId != 0) {
-            try (CoversDbHelper coversDbHelper = CoversDbHelper.getInstance(mActivity)) {
-                coversDbHelper.deleteBookCover(mDb.getBookUuid(bookId));
+            try (CoversDbAdapter coversDbAdapter = CoversDbAdapter.getInstance()) {
+                coversDbAdapter.deleteBookCover(mDb.getBookUuid(bookId));
             } catch (Exception e) {
                 Logger.error(e, "Error cleaning up cached cover images");
             }
@@ -606,9 +611,5 @@ public class CoverHandler implements SelectOneDialog.hasViewContextMenu {
         }
 
         return false;
-    }
-
-    private SharedPreferences getPrefs() {
-        return mActivity.getSharedPreferences(BookCatalogueApp.APP_SHARED_PREFERENCES, Context.MODE_PRIVATE);
     }
 }

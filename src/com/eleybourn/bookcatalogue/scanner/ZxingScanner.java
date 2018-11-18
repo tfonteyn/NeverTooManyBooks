@@ -42,8 +42,8 @@ public class ZxingScanner implements Scanner {
      *
      * @return <tt>true</tt>if present
      */
-    static boolean isIntentAvailable(final boolean mustBeZxing) {
-        return isIntentAvailable(BookCatalogueApp.getAppContext(), mustBeZxing ? PACKAGE : null);
+    static boolean isIntentAvailable(final @NonNull Context context, final boolean mustBeZxing) {
+        return isIntentAvailable(context, mustBeZxing ? PACKAGE : null);
     }
 
     /**

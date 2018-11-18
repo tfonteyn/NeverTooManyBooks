@@ -188,7 +188,7 @@ class CropImageView extends CropImageViewTouchBase {
                         ensureVisible(mMotionHighlightView);
                     }
                 }
-                // if we're not zoomed then there's no point in even allowing
+                // if we're not large then there's no point in even allowing
                 // the user to move the image around. This call to center puts
                 // it back to the normalized location (with false meaning don't
                 // animate).

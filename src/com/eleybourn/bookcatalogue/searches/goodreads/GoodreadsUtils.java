@@ -119,12 +119,12 @@ public class GoodreadsUtils {
                 }
 
                 if (!fragment.isCancelled()) {
-                    QueueManager.getQueueManager().enqueueTask(new ImportAllTask(isSync), BCQueueManager.QUEUE_MAIN);
+                    QueueManager.getQueueManager().enqueueTask(context, new ImportAllTask(isSync), BCQueueManager.QUEUE_MAIN);
                     fragment.showUserMessage(fragment.getString(R.string.task_has_been_queued_in_background));
                 }
             }
         };
-        SimpleTaskQueueProgressDialogFragment.runTaskWithProgress(context, R.string.connecting_to_web_site, task, true, 0);
+        SimpleTaskQueueProgressDialogFragment.runTaskWithProgress(context, R.string.progress_msg_connecting_to_web_site, task, true, 0);
     }
 
     /**
@@ -172,7 +172,7 @@ public class GoodreadsUtils {
             public void run(final @NonNull SimpleTaskQueueProgressDialogFragment fragment, final @NonNull SimpleTaskContext taskContext) {
                 int msg = checkCanSendToGoodreads();
                 if (msg == 0) {
-                    QueueManager.getQueueManager().enqueueTask(new SendAllBooksTask(updatesOnly), BCQueueManager.QUEUE_MAIN);
+                    QueueManager.getQueueManager().enqueueTask(context, new SendAllBooksTask(updatesOnly), BCQueueManager.QUEUE_MAIN);
                     msg = R.string.task_has_been_queued_in_background;
                 }
                 setState(msg);
@@ -196,7 +196,7 @@ public class GoodreadsUtils {
 
             }
         };
-        SimpleTaskQueueProgressDialogFragment.runTaskWithProgress(context, R.string.connecting_to_web_site, task, true, 0);
+        SimpleTaskQueueProgressDialogFragment.runTaskWithProgress(context, R.string.progress_msg_connecting_to_web_site, task, true, 0);
     }
 
     /**
@@ -208,7 +208,7 @@ public class GoodreadsUtils {
             public void run(final @NonNull SimpleTaskQueueProgressDialogFragment fragment, final @NonNull SimpleTaskContext taskContext) {
                 int msg = checkCanSendToGoodreads();
                 if (msg == 0) {
-                    QueueManager.getQueueManager().enqueueTask(new SendOneBookTask(bookId), BCQueueManager.QUEUE_MAIN);
+                    QueueManager.getQueueManager().enqueueTask(context, new SendOneBookTask(bookId), BCQueueManager.QUEUE_MAIN);
                     msg = R.string.task_has_been_queued_in_background;
                 }
                 setState(msg);
@@ -232,7 +232,7 @@ public class GoodreadsUtils {
 
             }
         };
-        SimpleTaskQueueProgressDialogFragment.runTaskWithProgress(context, R.string.connecting_to_web_site, task, true, 0);
+        SimpleTaskQueueProgressDialogFragment.runTaskWithProgress(context, R.string.progress_msg_connecting_to_web_site, task, true, 0);
     }
 
     /**
@@ -263,13 +263,13 @@ public class GoodreadsUtils {
                         if (context != null) {
                             // Get the title
                             final AlertDialog dialog = new AlertDialog.Builder(context)
-                                    .setTitle(R.string.gr_send_book)
+                                    .setTitle(R.string.gr_title_send_book)
                                     .setMessage(R.string.gr_send_books_to_goodreads_blurb)
                                     .setIconAttribute(android.R.attr.alertDialogIcon)
                                     .create();
 
                             dialog.setButton(DialogInterface.BUTTON_POSITIVE,
-                                    context.getString(R.string.send_updated),
+                                    context.getString(R.string.gr_btn_send_updated),
                                     new DialogInterface.OnClickListener() {
                                         public void onClick(final @NonNull DialogInterface dialog, final int which) {
                                             dialog.dismiss();
@@ -278,7 +278,7 @@ public class GoodreadsUtils {
                                     });
 
                             dialog.setButton(DialogInterface.BUTTON_NEUTRAL,
-                                    context.getString(R.string.send_all),
+                                    context.getString(R.string.gr_btn_send_all),
                                     new DialogInterface.OnClickListener() {
                                         public void onClick(final @NonNull DialogInterface dialog, final int which) {
                                             dialog.dismiss();
@@ -316,7 +316,7 @@ public class GoodreadsUtils {
             }
         };
         // Run the task
-        SimpleTaskQueueProgressDialogFragment.runTaskWithProgress(context, R.string.connecting_to_web_site, task, true, 0);
+        SimpleTaskQueueProgressDialogFragment.runTaskWithProgress(context, R.string.progress_msg_connecting_to_web_site, task, true, 0);
 
     }
 

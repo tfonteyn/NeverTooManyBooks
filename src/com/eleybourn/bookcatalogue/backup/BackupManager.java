@@ -19,6 +19,8 @@
  */
 package com.eleybourn.bookcatalogue.backup;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -51,6 +53,11 @@ import java.util.Date;
  * @author pjw
  */
 public class BackupManager {
+
+    /** Last full backup date */
+    public static final String PREF_LAST_BACKUP_DATE = "Backup.LastDate";
+    /** Last full backup file path */
+    public static final String PREF_LAST_BACKUP_FILE = "Backup.LastFile";
 
     /**
      * Ensure the file name extension is what we want
@@ -94,7 +101,7 @@ public class BackupManager {
             @Override
             public void run(final @NonNull SimpleTaskQueueProgressDialogFragment fragment, final @NonNull SimpleTaskContext taskContext) {
 
-                TarBackupContainer bkp = new TarBackupContainer(tempFile);
+                TarBackupContainer bkp = new TarBackupContainer(fragment.requireContext(), tempFile);
                 if (DEBUG_SWITCHES.BACKUP && BuildConfig.DEBUG) {
                     Logger.info(this, " Starting " + tempFile.getAbsolutePath());
                 }
@@ -158,10 +165,12 @@ public class BackupManager {
                 }
                 fragment.setSuccess(mBackupOk);
                 if (mBackupOk) {
+                    SharedPreferences.Editor ed = BookCatalogueApp.getSharedPreferences().edit();
                     if ((backupFlags == Exporter.EXPORT_ALL)) {
-                        BookCatalogueApp.Prefs.putString(BookCatalogueApp.PREF_LAST_BACKUP_DATE, mBackupDate);
+                        ed.putString(PREF_LAST_BACKUP_DATE, mBackupDate);
                     }
-                    BookCatalogueApp.Prefs.putString(BookCatalogueApp.PREF_LAST_BACKUP_FILE, resultingFile.getAbsolutePath());
+                    ed.putString(PREF_LAST_BACKUP_FILE, resultingFile.getAbsolutePath());
+                    ed.apply();
                 }
             }
 
@@ -189,7 +198,7 @@ public class BackupManager {
                     if (DEBUG_SWITCHES.BACKUP && BuildConfig.DEBUG) {
                         Logger.info(this, " Importing " + inputFile.getAbsolutePath());
                     }
-                    readFrom(inputFile).restore(new BackupReaderListener() {
+                    readFrom(context, inputFile).restore(new BackupReaderListener() {
                         @Override
                         public void setMax(int max) {
                             fragment.setMax(max);
@@ -227,14 +236,15 @@ public class BackupManager {
      *
      * @throws IOException (inaccessible, invalid other other errors)
      */
-    public static BackupReader readFrom(final @NonNull File file) throws IOException {
+    public static BackupReader readFrom(final @NonNull Context context,
+                                        final @NonNull File file) throws IOException {
         if (!file.exists()) {
             throw new FileNotFoundException("Attempt to open non-existent backup file");
         }
 
         // We only support one backup format; so we use that. In future we would need to
         // explore the file to determine which format to use
-        TarBackupContainer bkp = new TarBackupContainer(file);
+        TarBackupContainer bkp = new TarBackupContainer(context, file);
         // Each format should provide a validator of some kind
         if (!bkp.isValid()) {
             throw new IOException("Not a valid backup file");

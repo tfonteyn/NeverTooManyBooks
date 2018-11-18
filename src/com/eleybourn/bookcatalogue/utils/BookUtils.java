@@ -29,6 +29,7 @@ import android.support.annotation.StringRes;
 import android.support.v4.content.FileProvider;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.EditBookFragment;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
@@ -81,7 +82,7 @@ public class BookUtils {
 
                 bookData.putString(UniqueId.KEY_BOOK_FORMAT, bookCursorRow.getFormat());
                 bookData.putString(UniqueId.KEY_BOOK_GENRE, bookCursorRow.getGenre());
-                bookData.putString(UniqueId.KEY_BOOK_LANGUAGE, bookCursorRow.getLanguage());
+                bookData.putString(UniqueId.KEY_BOOK_LANGUAGE, bookCursorRow.getLanguageCode());
                 bookData.putString(UniqueId.KEY_BOOK_PAGES, bookCursorRow.getPages());
 
 
@@ -234,18 +235,9 @@ public class BookUtils {
                                   final long bookId,
                                   final boolean read) {
         // load from database
-        Book book = new Book(bookId, null);
+        Book book = Book.getBook(db, bookId);
         book.putBoolean(UniqueId.KEY_BOOK_READ, read);
         book.putString(UniqueId.KEY_BOOK_READ_END, DateUtils.localSqlDateForToday());
         return (db.updateBook(bookId, book, 0) == 1);
-    }
-
-    @SuppressWarnings("UnusedReturnValue")
-    public static boolean setRead(final long bookId, final boolean read) {
-        CatalogueDBAdapter db = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
-        db.open();
-        boolean ok = setRead(db, bookId, read);
-        db.close();
-        return ok;
     }
 }

@@ -23,7 +23,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.entities.Series;
@@ -296,7 +295,7 @@ public class StringList<T> {
      *
      * @return Converted string
      */
-    @SuppressWarnings("SameParameterValue")
+    @SuppressWarnings({"SameParameterValue", "WeakerAccess"})
     @NonNull
     public String encode(final char delim, final @NonNull List<T> list) {
         StringBuilder ns = new StringBuilder();

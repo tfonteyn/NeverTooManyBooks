@@ -18,7 +18,7 @@
  * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.eleybourn.bookcatalogue.searches.goodreads;
+package com.eleybourn.bookcatalogue.taskqueue;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -37,6 +37,7 @@ import com.eleybourn.bookcatalogue.database.cursors.BindableItemCursor;
 import com.eleybourn.bookcatalogue.taskqueue.QueueManager;
 import com.eleybourn.bookcatalogue.taskqueue.RunnableTask;
 import com.eleybourn.bookcatalogue.taskqueue.TasksCursor;
+import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
@@ -45,6 +46,8 @@ import java.util.List;
 /**
  * Base class for tasks in BookCatalogue. This builds and populates simple
  * View objects to display the task.
+ *
+ * TOMF: can we replace this with {@link SimpleTaskQueue.SimpleTask} ? Should we ?
  *
  * @author Philip Warner
  */
@@ -55,7 +58,7 @@ public abstract class GenericTask extends RunnableTask {
     private static final String STATUS_FAILED = "F";
     private static final String STATUS_QUEUED = "Q";
 
-    GenericTask(final @NonNull String description) {
+    public GenericTask(final @NonNull String description) {
         super(description);
     }
 

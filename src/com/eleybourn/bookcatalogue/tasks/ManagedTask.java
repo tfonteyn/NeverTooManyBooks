@@ -100,6 +100,11 @@ abstract public class ManagedTask extends Thread {
         return mMessageSwitch;
     }
 
+    @NonNull
+    public TaskManager getTaskManager() {
+        return mTaskManager;
+    }
+
     /**
      * Called when the task has finished, override if needed.
      */

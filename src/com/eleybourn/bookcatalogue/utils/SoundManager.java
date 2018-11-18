@@ -1,5 +1,6 @@
 package com.eleybourn.bookcatalogue.utils;
 
+import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -18,11 +19,11 @@ public class SoundManager {
     private SoundManager() {
     }
 
-    public static void beepLow() {
+    public static void beepLow(final @NonNull Context context) {
         try {
-            if (BookCatalogueApp.Prefs.getBoolean(PREF_BEEP_IF_SCANNED_ISBN_INVALID, true)) {
+            if (BookCatalogueApp.getBooleanPreference(PREF_BEEP_IF_SCANNED_ISBN_INVALID, true)) {
                 MediaPlayer player = initPlayer();
-                AssetFileDescriptor file = BookCatalogueApp.getAppContext().getResources().openRawResourceFd(R.raw.beep_low);
+                AssetFileDescriptor file = context.getResources().openRawResourceFd(R.raw.beep_low);
                 playFile(player, file);
             }
         } catch (Exception e) {
@@ -31,11 +32,11 @@ public class SoundManager {
         }
     }
 
-    public static void beepHigh() {
+    public static void beepHigh(final @NonNull Context context) {
         try {
-            if (BookCatalogueApp.Prefs.getBoolean(PREF_BEEP_IF_SCANNED_ISBN_VALID, false)) {
+            if (BookCatalogueApp.getBooleanPreference(PREF_BEEP_IF_SCANNED_ISBN_VALID, false)) {
                 MediaPlayer player = initPlayer();
-                AssetFileDescriptor file = BookCatalogueApp.getAppContext().getResources().openRawResourceFd(R.raw.beep_high);
+                AssetFileDescriptor file = context.getResources().openRawResourceFd(R.raw.beep_high);
                 playFile(player, file);
             }
         } catch (Exception e) {

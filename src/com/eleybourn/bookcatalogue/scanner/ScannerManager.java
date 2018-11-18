@@ -1,6 +1,7 @@
 package com.eleybourn.bookcatalogue.scanner;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
@@ -39,8 +40,8 @@ public class ScannerManager {
             }
 
             @Override
-            public boolean isIntentAvailable() {
-                return ZxingScanner.isIntentAvailable(false);
+            public boolean isIntentAvailable(final @NonNull Context context) {
+                return ZxingScanner.isIntentAvailable(context,false);
             }
         });
 
@@ -52,8 +53,8 @@ public class ScannerManager {
             }
 
             @Override
-            public boolean isIntentAvailable() {
-                return ZxingScanner.isIntentAvailable(true);
+            public boolean isIntentAvailable(final @NonNull Context context) {
+                return ZxingScanner.isIntentAvailable(context,true);
             }
         });
 
@@ -65,8 +66,8 @@ public class ScannerManager {
             }
 
             @Override
-            public boolean isIntentAvailable() {
-                return Pic2ShopScanner.isIntentAvailable();
+            public boolean isIntentAvailable(final @NonNull Context context) {
+                return Pic2ShopScanner.isIntentAvailable(context);
             }
         });
     }
@@ -77,19 +78,19 @@ public class ScannerManager {
      * @return A Scanner
      */
     @NonNull
-    public static Scanner getScanner() {
+    public static Scanner getScanner(final @NonNull Context context) {
         // Find out what the user prefers if any
-        int prefScanner = BookCatalogueApp.Prefs.getInt(PREF_PREFERRED_SCANNER, SCANNER_ZXING_COMPATIBLE);
+        int prefScanner = BookCatalogueApp.getIntPreference(PREF_PREFERRED_SCANNER, SCANNER_ZXING_COMPATIBLE);
 
         // See if preferred one is present, if so return a new instance
         ScannerFactory psf = myScannerFactories.get(prefScanner);
-        if (psf != null && psf.isIntentAvailable()) {
+        if (psf != null && psf.isIntentAvailable(context)) {
             return psf.newInstance();
         }
 
         // Search all supported scanners. If none, just return a Zxing one
         for (ScannerFactory sf : myScannerFactories.values()) {
-            if (sf != psf && sf.isIntentAvailable()) {
+            if (sf != psf && sf.isIntentAvailable(context)) {
                 return sf.newInstance();
             }
         }
@@ -107,7 +108,7 @@ public class ScannerManager {
         Scanner newInstance();
 
         /** Check if this scanner is available */
-        boolean isIntentAvailable();
+        boolean isIntentAvailable(final @NonNull Context context);
     }
 
 }

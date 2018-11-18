@@ -130,7 +130,7 @@ public class CheckListEditorDialog<T> extends AlertDialog {
     /**
      * Listener to receive notifications when dialog is closed by any means.
      */
-    protected interface OnCheckListEditorResultsListener {
+    interface OnCheckListEditorResultsListener {
         <T> void onCheckListEditorSave(final @NonNull CheckListEditorDialog dialog,
                                        final @NonNull List<CheckListItem<T>> list);
 

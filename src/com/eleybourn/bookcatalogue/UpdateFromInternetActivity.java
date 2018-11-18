@@ -43,7 +43,7 @@ import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.searches.SearchAdminActivity;
 import com.eleybourn.bookcatalogue.searches.SearchSites;
-import com.eleybourn.bookcatalogue.searches.UpdateFromInternetThread;
+import com.eleybourn.bookcatalogue.searches.UpdateFromInternetTask;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
 import com.eleybourn.bookcatalogue.tasks.ManagedTask;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
@@ -51,7 +51,7 @@ import com.eleybourn.bookcatalogue.utils.ViewTagger;
 import java.util.LinkedHashMap;
 
 /**
- * NEWKIND must stay in sync with {@link UpdateFromInternetThread}
+ * NEWKIND must stay in sync with {@link UpdateFromInternetTask}
  *
  * FIXME ... re-test and see why the progress stops. Seems we hit some limit in number of HTTP connections (server imposed ?)
  */
@@ -60,7 +60,7 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
     public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_UPDATE_FROM_INTERNET;
 
     /** optionally limit the sites to search on. By default uses {@link SearchSites#SEARCH_ALL} */
-    public static final String REQUEST_BKEY_SEARCH_SITES = "SearchSites";
+    private static final String REQUEST_BKEY_SEARCH_SITES = "SearchSites";
     /** */
     private final FieldUsages mFieldUsages = new FieldUsages();
     private int mSearchSites = SearchSites.SEARCH_ALL;
@@ -129,15 +129,15 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
 
     private void initFields() {
         addIfVisible(UniqueId.BKEY_AUTHOR_ARRAY, UniqueId.KEY_AUTHOR_ID,
-                R.string.author, true, FieldUsage.Usage.AddExtra);
+                R.string.lbl_author, true, FieldUsage.Usage.AddExtra);
         addIfVisible(UniqueId.KEY_TITLE, null,
-                R.string.title, false, FieldUsage.Usage.CopyIfBlank);
+                R.string.lbl_title, false, FieldUsage.Usage.CopyIfBlank);
         addIfVisible(UniqueId.KEY_BOOK_ISBN, null,
-                R.string.isbn, false, FieldUsage.Usage.CopyIfBlank);
+                R.string.lbl_isbn, false, FieldUsage.Usage.CopyIfBlank);
         addIfVisible(UniqueId.BKEY_HAVE_THUMBNAIL, null,
-                R.string.title_cover, false, FieldUsage.Usage.CopyIfBlank);
+                R.string.lbl_cover, false, FieldUsage.Usage.CopyIfBlank);
         addIfVisible(UniqueId.BKEY_SERIES_ARRAY, UniqueId.KEY_SERIES_NAME,
-                R.string.series, true, FieldUsage.Usage.AddExtra);
+                R.string.lbl_series, true, FieldUsage.Usage.AddExtra);
         addIfVisible(UniqueId.BKEY_TOC_TITLES_ARRAY, UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK,
                 R.string.table_of_content, true, FieldUsage.Usage.AddExtra);
         addIfVisible(UniqueId.KEY_BOOK_PUBLISHER, null,
@@ -267,7 +267,7 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
             @Override
             public void onClick(final View v) {
                 // not sure if needed... can't harm.
-                ManagedTask.TaskController tc = UpdateFromInternetThread.getMessageSwitch().getController(mUpdateSenderId);
+                ManagedTask.TaskController tc = UpdateFromInternetTask.getMessageSwitch().getController(mUpdateSenderId);
                 if (tc != null) {
                     tc.requestAbort();
                 }
@@ -340,14 +340,14 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
      * @param bookId 0 for all books, or a valid book id for one book
      */
     private void startUpdate(final long bookId) {
-        UpdateFromInternetThread updateThread = new UpdateFromInternetThread(getTaskManager(),
+        UpdateFromInternetTask updateThread = new UpdateFromInternetTask(getTaskManager(),
                 mFieldUsages, mSearchSites, mSearchTaskListener);
         if (bookId > 0) {
             updateThread.setBookId(bookId);
         }
 
         mUpdateSenderId = updateThread.getSenderId();
-        UpdateFromInternetThread.getMessageSwitch().addListener(mUpdateSenderId, mSearchTaskListener, false);
+        UpdateFromInternetTask.getMessageSwitch().addListener(mUpdateSenderId, mSearchTaskListener, false);
         updateThread.start();
     }
 
@@ -356,7 +356,7 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
     protected void onPause() {
         Tracker.enterOnPause(this);
         if (mUpdateSenderId != 0) {
-            UpdateFromInternetThread.getMessageSwitch().removeListener(mUpdateSenderId, mSearchTaskListener);
+            UpdateFromInternetTask.getMessageSwitch().removeListener(mUpdateSenderId, mSearchTaskListener);
         }
         super.onPause();
         Tracker.exitOnPause(this);
@@ -368,7 +368,7 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
         Tracker.enterOnResume(this);
         super.onResume();
         if (mUpdateSenderId != 0) {
-            UpdateFromInternetThread.getMessageSwitch().addListener(mUpdateSenderId, mSearchTaskListener, true);
+            UpdateFromInternetTask.getMessageSwitch().addListener(mUpdateSenderId, mSearchTaskListener, true);
         }
         Tracker.exitOnResume(this);
     }

@@ -28,14 +28,15 @@ import android.support.annotation.Nullable;
 import com.eleybourn.bookcatalogue.baseactivity.PreferencesBaseActivity;
 import com.eleybourn.bookcatalogue.properties.BooleanProperty;
 import com.eleybourn.bookcatalogue.properties.IntegerListProperty;
-import com.eleybourn.bookcatalogue.properties.ListProperty;
 import com.eleybourn.bookcatalogue.properties.ListProperty.ItemEntries;
 import com.eleybourn.bookcatalogue.properties.Properties;
 import com.eleybourn.bookcatalogue.properties.Property;
 import com.eleybourn.bookcatalogue.properties.PropertyGroup;
 import com.eleybourn.bookcatalogue.properties.StringListProperty;
 import com.eleybourn.bookcatalogue.scanner.ScannerManager;
+import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.SoundManager;
+import com.eleybourn.bookcatalogue.utils.ThemeUtils;
 import com.eleybourn.bookcatalogue.widgets.CoverHandler;
 
 import java.util.Locale;
@@ -64,9 +65,9 @@ public class PreferencesActivity extends PreferencesBaseActivity {
             .add(1, R.string.user_interface_messages_use_snackbar);
 
     /** List of supported locales */
-    private static final ItemEntries<String> mLocalesListItems = getLocalesListItems();
+    private static ItemEntries<String> mLocalesListItems = LocaleUtils.getLocalesPreferencesListItems();
     /** List of supported themes */
-    private static final ItemEntries<Integer> mAppThemeItems = getThemeListItems();
+    private static final ItemEntries<Integer> mAppThemeItems = ThemeUtils.getThemePreferencesListItems();
 
     /** Preferred Scanner property values */
     private static final ItemEntries<Integer> mScannerListItems = new ItemEntries<Integer>()
@@ -93,17 +94,17 @@ public class PreferencesActivity extends PreferencesBaseActivity {
                     .setPreferenceKey(BooksOnBookshelf.PREF_OPEN_BOOK_READ_ONLY)
                     .setGlobal(true))
 
-            .add(new StringListProperty(mLocalesListItems, BookCatalogueApp.PREF_APP_LOCALE,
+            .add(new StringListProperty(mLocalesListItems, LocaleUtils.PREF_APP_LOCALE,
                     PropertyGroup.GRP_USER_INTERFACE, R.string.user_interface_preferred_language)
-                    .setPreferenceKey(BookCatalogueApp.PREF_APP_LOCALE)
+                    .setPreferenceKey(LocaleUtils.PREF_APP_LOCALE)
                     .setGlobal(true)
                     .setWeight(200)
                     .setGroup(PropertyGroup.GRP_USER_INTERFACE))
 
-            .add(new IntegerListProperty(mAppThemeItems, BookCatalogueApp.PREF_APP_THEME,
+            .add(new IntegerListProperty(mAppThemeItems, ThemeUtils.PREF_APP_THEME,
                     PropertyGroup.GRP_USER_INTERFACE, R.string.user_interface_theme)
-                    .setDefaultValue(BookCatalogueApp.DEFAULT_THEME)
-                    .setPreferenceKey(BookCatalogueApp.PREF_APP_THEME)
+                    .setDefaultValue(ThemeUtils.DEFAULT_THEME)
+                    .setPreferenceKey(ThemeUtils.PREF_APP_THEME)
                     .setGlobal(true)
                     .setWeight(200)
                     .setGroup(PropertyGroup.GRP_USER_INTERFACE))
@@ -121,14 +122,14 @@ public class PreferencesActivity extends PreferencesBaseActivity {
              ******************************************************************************/
 
             .add(new BooleanProperty(SoundManager.PREF_BEEP_IF_SCANNED_ISBN_INVALID,
-                    PropertyGroup.GRP_SCANNER, R.string.beep_if_scanned_isbn_invalid)
+                    PropertyGroup.GRP_SCANNER, R.string.scanning_beep_if_isbn_invalid)
                     .setDefaultValue(true)
                     .setPreferenceKey(SoundManager.PREF_BEEP_IF_SCANNED_ISBN_INVALID)
                     .setGlobal(true)
                     .setWeight(300))
 
             .add(new BooleanProperty(SoundManager.PREF_BEEP_IF_SCANNED_ISBN_VALID,
-                    PropertyGroup.GRP_SCANNER, R.string.scanning_beep_if_scanned_isbn_valid)
+                    PropertyGroup.GRP_SCANNER, R.string.scanning_beep_if_isbn_valid)
                     .setDefaultValue(false)
                     .setPreferenceKey(SoundManager.PREF_BEEP_IF_SCANNED_ISBN_VALID)
                     .setGlobal(true)
@@ -163,50 +164,13 @@ public class PreferencesActivity extends PreferencesBaseActivity {
                     .setGlobal(true));
 
     /**
-     * Listener for Locale changes; update list and maybe reload
+     * Listener for Locale changes: update list
      */
-    private final BookCatalogueApp.OnLocaleChangedListener mLocaleListener = new BookCatalogueApp.OnLocaleChangedListener() {
-        @Override
-        public void onLocaleChanged() {
-            updateLocalesListItems();
-            updateLocaleIfChanged();
-            restartActivityIfNeeded();
-        }
-    };
-
-    /**
-     * Format the list of locales (languages)
-     *
-     * @return List of preference items
-     */
-    @NonNull
-    private static ItemEntries<String> getLocalesListItems() {
-        ItemEntries<String> items = new ItemEntries<>();
-
-        Locale locale = BookCatalogueApp.getSystemLocal();
-        items.add("", R.string.preferred_language_x, BookCatalogueApp.getResourceString(R.string.system_locale), locale.getDisplayLanguage());
-
-        for (String loc : BookCatalogueApp.getSupportedLocales()) {
-            locale = BookCatalogueApp.localeFromName(loc);
-            items.add(loc, R.string.preferred_language_x, locale.getDisplayLanguage(locale), locale.getDisplayLanguage());
-        }
-        return items;
-    }
-
-    /**
-     * Format the list of themes
-     *
-     * @return List of preference themes
-     */
-    @NonNull
-    private static ItemEntries<Integer> getThemeListItems() {
-        ItemEntries<Integer> items = new ItemEntries<>();
-
-        String[] themeList = BookCatalogueApp.getResourceStringArray(R.array.user_interface_theme_supported);
-        for (int i = 0; i < themeList.length; i++) {
-            items.add(i, R.string.single_string, themeList[i]);
-        }
-        return items;
+    @Override
+    @CallSuper
+    public void onLocaleChanged(final @NonNull Locale currentLocale) {
+        mLocalesListItems = LocaleUtils.getLocalesPreferencesListItems();
+        super.onLocaleChanged(currentLocale);
     }
 
     @Override
@@ -218,26 +182,7 @@ public class PreferencesActivity extends PreferencesBaseActivity {
     @CallSuper
     public void onCreate(final @Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Make sure the names are correct
-        updateLocalesListItems();
-
         setTitle(R.string.title_preferences);
-    }
-
-    @Override
-    @CallSuper
-    public void onPause() {
-        // Don't bother listening since we check for locale changes in onResume of super class
-        BookCatalogueApp.unregisterOnLocaleChangedListener(mLocaleListener);
-        super.onPause();
-    }
-
-    @Override
-    @CallSuper
-    public void onResume() {
-        super.onResume();
-        // Listen for locale changes (this activity CAN change it)
-        BookCatalogueApp.registerOnLocaleChangedListener(mLocaleListener);
     }
 
     /**
@@ -248,25 +193,5 @@ public class PreferencesActivity extends PreferencesBaseActivity {
         // Add the locally constructed properties
         for (Property p : mProperties)
             globalProps.add(p);
-    }
-
-    /**
-     * Utility routine to adjust the strings used in displaying a language list.
-     */
-    private void updateLocalesListItems() {
-        String name;
-        String lang;
-        for (ListProperty.ItemEntry<String> item : mLocalesListItems) {
-            String loc = item.getValue();
-            if (loc == null || loc.isEmpty()) {
-                name = getString(R.string.system_locale);
-                lang = BookCatalogueApp.getSystemLocal().getDisplayLanguage();
-            } else {
-                Locale locale = BookCatalogueApp.localeFromName(loc);
-                name = locale.getDisplayLanguage(locale);
-                lang = locale.getDisplayLanguage();
-            }
-            item.setString(R.string.preferred_language_x, name, lang);
-        }
     }
 }

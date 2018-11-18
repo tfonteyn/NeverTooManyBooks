@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * DEBUG CLASS to help com.eleybourn.bookcatalogue.debug cursor leakage.
@@ -52,22 +53,27 @@ import java.util.Set;
  */
 public class TrackedCursor extends SynchronizedCursor implements Closeable {
 
+    /** DEBUG instance counter, goes up and down */
+    @NonNull
+    private static final AtomicInteger mDebugInstanceCounter = new AtomicInteger();
+
     /** Used as a collection of known cursors */
     private static final Set<WeakReference<TrackedCursor>> mCursors = new HashSet<>();
-    /** Global counter for unique cursor IDs */
-    @NonNull
-    private static Long mIdCounter = 0L;
 
-    /** Debug counter */
+    /** Static counter for unique cursor IDs, only ever goes up*/
     @NonNull
-    private static Integer mInstanceCount = 0;
+    private static final AtomicInteger mIdCounter = new AtomicInteger();
+
     /** ID of the current cursor */
-    private Long mId;
+    private int mId;
+
     /** We record a stack track when a cursor is created. */
     private StackTraceElement[] mStackTrace;
+
     /** Weak reference to this object, used in cursor collection */
     @Nullable
     private WeakReference<TrackedCursor> mWeakRef;
+
     /** Already closed */
     private boolean mIsClosedFlg = false;
 
@@ -78,18 +84,12 @@ public class TrackedCursor extends SynchronizedCursor implements Closeable {
         super(driver, editTable, query, sync);
 
         if (DEBUG_SWITCHES.TRACKED_CURSOR && BuildConfig.DEBUG) {
-            synchronized (mInstanceCount) {
-                mInstanceCount++;
-                Logger.info(this,"Cursor instances: " + mInstanceCount);
-            }
-
+            Logger.info(this, "instances created: " + mDebugInstanceCounter.incrementAndGet());
             // Record who called us. It's only from about the 7th element that matters.
             mStackTrace = Thread.currentThread().getStackTrace();
 
             // Get the next ID
-            synchronized (mIdCounter) {
-                mId = ++mIdCounter;
-            }
+            mId = mIdCounter.incrementAndGet();
             // Save this cursor in the collection
             synchronized (mCursors) {
                 mWeakRef = new WeakReference<>(this);
@@ -99,6 +99,8 @@ public class TrackedCursor extends SynchronizedCursor implements Closeable {
     }
 
     /**
+     * DEBUG
+     *
      * Get the total number of cursors that have not called close(). This is subtly
      * different from the list of open cursors because non-referenced cursors may
      * have been deleted and the finalizer not called.
@@ -123,9 +125,8 @@ public class TrackedCursor extends SynchronizedCursor implements Closeable {
      */
     @SuppressWarnings({"unused", "UnusedAssignment"})
     public static long getCursorCount() {
-        long count = 0;
-
         if (DEBUG_SWITCHES.TRACKED_CURSOR && BuildConfig.DEBUG) {
+            long count = 0;
             List<WeakReference<TrackedCursor>> list = new ArrayList<>();
             synchronized (mCursors) {
                 for (WeakReference<TrackedCursor> r : mCursors) {
@@ -140,8 +141,9 @@ public class TrackedCursor extends SynchronizedCursor implements Closeable {
                     mCursors.remove(r);
                 }
             }
+            return count;
         }
-        return count;
+        return 0;
     }
 
     /**
@@ -152,12 +154,12 @@ public class TrackedCursor extends SynchronizedCursor implements Closeable {
             @SuppressWarnings("UnusedAssignment")
             List<TrackedCursor> cursors = getCursors();
             if (cursors == null) {
-                Logger.info(TrackedCursor.class,"No cursors");
+                Logger.info(TrackedCursor.class, "No cursors");
             } else {
                 for (TrackedCursor c : cursors) {
-                    Logger.info(TrackedCursor.class,"Cursor " + c.getCursorId());
+                    Logger.info(TrackedCursor.class, "Cursor " + c.getCursorId());
                     for (StackTraceElement s : c.getStackTrace()) {
-                        Logger.info(TrackedCursor.class,s.getFileName() + "    Line " + s.getLineNumber() + " Method " + s.getMethodName());
+                        Logger.info(TrackedCursor.class, s.getFileName() + "    Line " + s.getLineNumber() + " Method " + s.getMethodName());
                     }
                 }
             }
@@ -196,42 +198,37 @@ public class TrackedCursor extends SynchronizedCursor implements Closeable {
         super.close();
         if (DEBUG_SWITCHES.TRACKED_CURSOR && BuildConfig.DEBUG) {
             if (!mIsClosedFlg) {
-                synchronized (mInstanceCount) {
-                    mInstanceCount--;
-                    Logger.info(this,"Cursor instances: " + mInstanceCount);
-                }
-                if (mWeakRef != null)
-                    synchronized (mCursors) {
-                        mCursors.remove(mWeakRef);
-                        mWeakRef.clear();
-                        mWeakRef = null;
-                    }
+                removeCursor();
                 mIsClosedFlg = true;
             }
+            Logger.info(this, "instances left: " + mDebugInstanceCounter.decrementAndGet());
         }
     }
 
     /**
-     * Finalizer that does sanity check. Setting a break here can catch the exact moment that
+     * Setting a break here can catch the exact moment that
      * a cursor is deleted before being closed.
-     *
-     * Note this is not guaranteed to be called by the JVM !
      */
     @Override
     @CallSuper
     public void finalize() {
         if (DEBUG_SWITCHES.TRACKED_CURSOR && BuildConfig.DEBUG) {
-            if (mWeakRef != null) {
-                // This is a cursor that is being deleted before it is closed.
-                // Setting a break here is sometimes useful.
-                synchronized (mCursors) {
-                    mCursors.remove(mWeakRef);
-                    mWeakRef.clear();
-                    mWeakRef = null;
-                }
-            }
+            // This is a cursor that is being deleted before it is closed.
+            // Setting a break here is sometimes useful.
+            removeCursor();
         }
         super.finalize();
+    }
+
+    private void removeCursor() {
+        if (mWeakRef != null) {
+            synchronized (mCursors) {
+                mCursors.remove(mWeakRef);
+                mWeakRef.clear();
+                mWeakRef = null;
+            }
+
+        }
     }
 
     /**

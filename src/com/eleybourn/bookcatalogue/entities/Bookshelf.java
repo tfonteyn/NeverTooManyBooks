@@ -22,7 +22,7 @@ public class Bookshelf implements Serializable, Utils.ItemWithIdFixup {
 
     public long id;
     @NonNull
-    public String name;
+    public final String name;
 
     /**
      * Constructor

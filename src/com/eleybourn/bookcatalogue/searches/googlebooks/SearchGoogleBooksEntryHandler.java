@@ -32,8 +32,6 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import java.util.Locale;
-
 /*
  * An XML handler for the Google Books entry return
  *
@@ -189,8 +187,10 @@ class SearchGoogleBooksEntryHandler extends DefaultHandler {
             case XML_LANGUAGE: {
                 String lang = builder.toString();
                 if (!lang.isEmpty()) {
-                    Locale loc = new Locale(lang);
-                    addIfNotPresent(UniqueId.KEY_BOOK_LANGUAGE, loc.getDisplayLanguage());
+//                    Locale loc = new Locale(lang);
+//                    addIfNotPresent(UniqueId.KEY_BOOK_LANGUAGE, loc.getDisplayLanguage());
+                    //V83, use the code
+                    addIfNotPresent(UniqueId.KEY_BOOK_LANGUAGE, lang);
                 }
                 break;
             }

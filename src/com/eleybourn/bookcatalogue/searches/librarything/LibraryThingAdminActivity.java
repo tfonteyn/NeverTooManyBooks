@@ -31,6 +31,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.EditText;
 
+import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTaskContext;
@@ -79,7 +80,8 @@ public class LibraryThingAdminActivity extends BaseActivity {
         });
 
         EditText devKeyView = findViewById(R.id.dev_key);
-        devKeyView.setText(getPrefs().getString(LibraryThingManager.PREFS_LT_DEV_KEY, ""));
+        String key = BookCatalogueApp.getStringPreference(LibraryThingManager.PREFS_LT_DEV_KEY, "");
+        devKeyView.setText(key);
 
         /* Save Button */
         findViewById(R.id.confirm).setOnClickListener(new OnClickListener() {
@@ -87,9 +89,9 @@ public class LibraryThingAdminActivity extends BaseActivity {
             public void onClick(View v) {
                 EditText devKeyView = findViewById(R.id.dev_key);
                 String devKey = devKeyView.getText().toString().trim();
-                SharedPreferences.Editor ed = getPrefs().edit();
-                ed.putString(LibraryThingManager.PREFS_LT_DEV_KEY, devKey);
-                ed.apply();
+                BookCatalogueApp.getSharedPreferences().edit()
+                        .putString(LibraryThingManager.PREFS_LT_DEV_KEY, devKey)
+                        .apply();
 
                 if (!devKey.isEmpty()) {
                     FragmentTask task = new FragmentTask() {
@@ -120,7 +122,7 @@ public class LibraryThingAdminActivity extends BaseActivity {
                     };
 
                     // Get the fragment to display task progress
-                    SimpleTaskQueueProgressDialogFragment.runTaskWithProgress(LibraryThingAdminActivity.this, R.string.connecting_to_web_site, task, true, 0);
+                    SimpleTaskQueueProgressDialogFragment.runTaskWithProgress(LibraryThingAdminActivity.this, R.string.progress_msg_connecting_to_web_site, task, true, 0);
 
                 }
             }
@@ -130,7 +132,7 @@ public class LibraryThingAdminActivity extends BaseActivity {
         findViewById(R.id.reset_messages).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                SharedPreferences prefs = getPrefs();
+                SharedPreferences prefs = BookCatalogueApp.getSharedPreferences();
                 SharedPreferences.Editor ed = prefs.edit();
                 for (String key : prefs.getAll().keySet()) {
                     if (key.toLowerCase().startsWith(LibraryThingManager.PREFS_LT_HIDE_ALERT.toLowerCase()))
@@ -139,5 +141,8 @@ public class LibraryThingAdminActivity extends BaseActivity {
                 ed.apply();
             }
         });
+
+        // hide soft keyboard at first
+        getWindow().setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
     }
 }

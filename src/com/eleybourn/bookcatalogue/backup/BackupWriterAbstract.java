@@ -19,6 +19,7 @@
  */
 package com.eleybourn.bookcatalogue.backup;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
@@ -49,13 +50,14 @@ import java.util.Date;
 public abstract class BackupWriterAbstract implements BackupWriter {
     @NonNull
     private final CatalogueDBAdapter mDb;
-
+    @NonNull
+    private final Context mContext;
     /**
      * Constructor
      */
-    protected BackupWriterAbstract() {
-        mDb = new CatalogueDBAdapter(BookCatalogueApp.getAppContext())
-                .open();
+    protected BackupWriterAbstract(@NonNull final Context context) {
+        mContext = context;
+        mDb = new CatalogueDBAdapter(mContext);
     }
 
     /**
@@ -95,7 +97,7 @@ public abstract class BackupWriterAbstract implements BackupWriter {
 
             // Process each component of the Archive, unless we are cancelled, as in Nikita
             if (!listener.isCancelled()) {
-                writeInfo(listener, listener.getTotalBooks(), coverCount);
+                writeInfo(mContext, listener, listener.getTotalBooks(), coverCount);
             }
             if (!listener.isCancelled() && (backupFlags & Exporter.EXPORT_DETAILS) != 0) {
                 writeBooks(temp);
@@ -125,8 +127,11 @@ public abstract class BackupWriterAbstract implements BackupWriter {
     /**
      * Generate a bundle containing the INFO block, and send it to the archive
      */
-    private void writeInfo(final @NonNull BackupWriterListener listener, final int bookCount, final int coverCount) throws IOException {
-        final BackupInfo info = BackupInfo.createInfo(getContainer(), BookCatalogueApp.getAppContext(), bookCount, coverCount);
+    private void writeInfo(final @NonNull Context context,
+                           final @NonNull BackupWriterListener listener,
+                           final int bookCount,
+                           final int coverCount) throws IOException {
+        final BackupInfo info = BackupInfo.createInfo(getContainer(), context, bookCount, coverCount);
         putInfo(info);
         listener.step(null, 1);
     }
@@ -175,11 +180,11 @@ public abstract class BackupWriterAbstract implements BackupWriter {
         };
 
         // Get a temp file and set for delete
-        final File temp = File.createTempFile("bookcat", ".tmp");
+        final File temp = File.createTempFile("bc", ".tmp");
         temp.deleteOnExit();
         FileOutputStream output = null;
         try {
-            CsvExporter exporter = new CsvExporter();
+            CsvExporter exporter = new CsvExporter(mContext);
             output = new FileOutputStream(temp);
             exporter.export(output, exportListener, backupFlags, since);
             output.close();
@@ -206,8 +211,10 @@ public abstract class BackupWriterAbstract implements BackupWriter {
     /**
      * Write each cover file corresponding to a book to the archive
      */
-    private int writeCovers(final @NonNull BackupWriterListener listener, final int backupFlags,
-                            final @Nullable Date since, boolean dryRun) throws IOException {
+    private int writeCovers(final @NonNull BackupWriterListener listener,
+                            final int backupFlags,
+                            final @Nullable Date since,
+                            final boolean dryRun) throws IOException {
         long sinceTime = 0;
         if (since != null && (backupFlags & Exporter.EXPORT_SINCE) != 0) {
             try {
@@ -221,8 +228,8 @@ public abstract class BackupWriterAbstract implements BackupWriter {
         int ok = 0;
         int missing = 0;
         int skipped = 0;
-        String fmt_no_skip = BookCatalogueApp.getResourceString(R.string.progress_covers);
-        String fmt_skip = BookCatalogueApp.getResourceString(R.string.progress_covers_skip);
+        String fmt_no_skip = BookCatalogueApp.getResourceString(R.string.progress_msg_covers);
+        String fmt_skip = BookCatalogueApp.getResourceString(R.string.progress_msg_covers_skip);
 
         try (Cursor cursor = mDb.fetchBookUuidList()) {
             final int uuidCol = cursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_UUID.toString());

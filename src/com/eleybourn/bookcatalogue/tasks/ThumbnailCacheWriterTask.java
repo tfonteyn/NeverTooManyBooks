@@ -24,8 +24,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.database.CoversDbHelper;
-import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTask;
+import com.eleybourn.bookcatalogue.database.CoversDbAdapter;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTaskContext;
 
 /**
@@ -37,7 +36,7 @@ import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTaskContext;
  *
  * @author Philip Warner
  */
-public class ThumbnailCacheWriterTask implements SimpleTask {
+public class ThumbnailCacheWriterTask implements SimpleTaskQueue.SimpleTask {
 
     /**
      * Single-thread queue for writing data. There is no point in more than one thread since
@@ -104,9 +103,10 @@ public class ThumbnailCacheWriterTask implements SimpleTask {
             // Was probably recycled by rapid scrolling of view
             mBitmap = null;
         } else {
-            try (CoversDbHelper coversDbHelper = CoversDbHelper.getInstance(mContext)) {
-                coversDbHelper.saveFile(mBitmap, mCacheId);
-            }
+            // do not close this db.
+            CoversDbAdapter coversDbAdapter = taskContext.getCoversDb();
+            coversDbAdapter.saveFile(mBitmap, mCacheId);
+
             if (mCanRecycle) {
                 mBitmap.recycle();
                 mBitmap = null;

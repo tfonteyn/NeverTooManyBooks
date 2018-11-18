@@ -47,15 +47,15 @@ public class PropertyGroup {
 
     /** Global PropertyGroup definition */
     private static final int GRP_EXTRA_BOOK_DETAILS_ID = ++GRP_COUNT;
-    public static final PropertyGroup GRP_EXTRA_BOOK_DETAILS = mGroups.addGroup(GRP_EXTRA_BOOK_DETAILS_ID, R.string.extra_book_details, 100);
+    public static final PropertyGroup GRP_EXTRA_BOOK_DETAILS = mGroups.addGroup(GRP_EXTRA_BOOK_DETAILS_ID, R.string.blp_extra_book_details, 100);
 
     /** Global PropertyGroup definition */
     private static final int GRP_AUTHOR_ID = ++GRP_COUNT;
-    public static final PropertyGroup GRP_AUTHOR = mGroups.addGroup(GRP_AUTHOR_ID, R.string.author, 50);
+    public static final PropertyGroup GRP_AUTHOR = mGroups.addGroup(GRP_AUTHOR_ID, R.string.lbl_author, 50);
 
     /** Global PropertyGroup definition */
     private static final int GRP_SERIES_ID = ++GRP_COUNT;
-    public static final PropertyGroup GRP_SERIES = mGroups.addGroup(GRP_SERIES_ID, R.string.series, 50);
+    public static final PropertyGroup GRP_SERIES = mGroups.addGroup(GRP_SERIES_ID, R.string.lbl_series, 50);
 
     /** Global PropertyGroup definition */
     private static final int GRP_EXTRA_FILTERS_ID = ++GRP_COUNT;

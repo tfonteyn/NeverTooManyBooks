@@ -27,7 +27,7 @@
             android:id="@+id/lbl_send_books_to_goodreads"
             style="@style/row_option_text"
             android:drawableStart="@drawable/ic_send"
-            android:text="@string/gr_send_book" />
+            android:text="@string/gr_title_send_book" />
     </LinearLayout>
 
 </ScrollView>

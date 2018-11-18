@@ -31,7 +31,6 @@ import android.view.ViewGroup;
 import android.widget.Checkable;
 
 import com.eleybourn.bookcatalogue.Fields.Field;
-import com.eleybourn.bookcatalogue.Fields.FieldFormatter;
 import com.eleybourn.bookcatalogue.datamanager.validators.ValidatorException;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.editordialog.CheckListEditorDialogFragment;
@@ -48,7 +47,7 @@ import java.util.List;
 /**
  * This class is called by {@link EditBookFragment} and displays the Notes Tab
  */
-public class EditBookNotesFragment extends BookAbstractFragment implements
+public class EditBookNotesFragment extends BookBaseFragment implements
         CheckListEditorDialogFragment.OnCheckListEditorResultsListener,
         PartialDatePickerDialogFragment.OnPartialDatePickerResultsListener {
 

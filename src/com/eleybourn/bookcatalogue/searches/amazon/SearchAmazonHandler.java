@@ -330,6 +330,7 @@ public class SearchAmazonHandler extends DefaultHandler {
                     StringList.addOrAppend(mBookData, UniqueId.BKEY_AUTHOR_STRING_LIST, mBuilder.toString());
                 } else if (localName.equalsIgnoreCase(XML_TITLE)) {
                     addIfNotPresent(UniqueId.KEY_TITLE);
+
                 } else if (localName.equalsIgnoreCase(XML_EAN)
                         || localName.equalsIgnoreCase(XML_E_ISBN)
                         || localName.equalsIgnoreCase(XML_ISBN_OLD)) {
@@ -338,6 +339,7 @@ public class SearchAmazonHandler extends DefaultHandler {
                     if (test == null || test.length() < tmp.length()) {
                         mBookData.putString(UniqueId.KEY_BOOK_ISBN, tmp);
                     }
+
                 } else if (localName.equalsIgnoreCase(XML_PUBLISHER)) {
                     addIfNotPresent(UniqueId.KEY_BOOK_PUBLISHER);
                 } else if (localName.equalsIgnoreCase(XML_DATE_PUBLISHED)) {

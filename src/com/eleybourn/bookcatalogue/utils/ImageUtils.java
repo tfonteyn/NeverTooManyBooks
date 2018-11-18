@@ -16,7 +16,7 @@ import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
-import com.eleybourn.bookcatalogue.database.CoversDbHelper;
+import com.eleybourn.bookcatalogue.database.CoversDbAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.tasks.GetThumbnailTask;
@@ -30,9 +30,6 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 
 public class ImageUtils {
-    // Target size of a thumbnail in edit dialog and zoom dialog
-    private static final int MAX_EDIT_THUMBNAIL_SIZE = 256;
-    private static final int MAX_ZOOM_THUMBNAIL_SIZE = 1024;
 
     private ImageUtils() {
     }
@@ -92,7 +89,7 @@ public class ImageUtils {
         final float widthRatio = (float) maxWidth / opt.outWidth;
         final float heightRatio = (float) maxHeight / opt.outHeight;
 
-        // Work out SCALE so that it fit exactly
+        // Work out SCALE so that it fits exactly
         float ratio = widthRatio < heightRatio ? widthRatio : heightRatio;
 
         // Note that inSampleSize seems to ALWAYS be forced to a power of 2, no matter what we
@@ -124,7 +121,7 @@ public class ImageUtils {
                 final Bitmap tmpBm = BitmapFactory.decodeFile(fileSpec, opt);
                 if (tmpBm == null) {
                     // We ran out of memory, most likely
-                    // TODO: Need a way to try loading images after GC(). Otherwise, covers in cover browser wil stay blank.
+                    // TODO: Need a way to try loading images after GC(). Otherwise, covers in cover browser will stay blank.
                     Logger.error("Unexpectedly failed to decode bitmap; memory exhausted?");
                     return null;
                 }
@@ -194,8 +191,8 @@ public class ImageUtils {
         /* If we want to check the cache, AND we don't have cache building happening, then check it. */
         if (checkCache && destView != null
                 && !GetThumbnailTask.hasActiveTasks() && !ThumbnailCacheWriterTask.hasActiveTasks()) {
-            try (CoversDbHelper coversDbHelper = CoversDbHelper.getInstance(destView.getContext())) {
-                final Bitmap bm = coversDbHelper.fetchCachedImageIntoImageView(coverFile, destView, uuid, maxWidth, maxHeight);
+            try (CoversDbAdapter coversDbAdapter = CoversDbAdapter.getInstance()) {
+                final Bitmap bm = coversDbAdapter.fetchCachedImageIntoImageView(coverFile, destView, uuid, maxWidth, maxHeight);
                 if (bm != null) {
                     return bm;
                 }
@@ -344,7 +341,7 @@ public class ImageUtils {
     }
 
     /**
-     * Show zoomed thumbnail in dialog. Closed by click on image area.
+     * Show large thumbnail in dialog. Closed by click on image area.
      */
     public static void showZoomedThumb(final @NonNull Activity activity, final @Nullable File thumbFile) {
 
@@ -367,7 +364,7 @@ public class ImageUtils {
                 final Dialog dialog = new StandardDialogs.BasicDialog(activity, R.style.zoomedCoverImage);
 
                 final ImageView cover = new ImageView(activity);
-                fetchFileIntoImageView(cover, thumbFile, thumbSizes.zoomed, thumbSizes.zoomed, true);
+                fetchFileIntoImageView(cover, thumbFile, thumbSizes.large, thumbSizes.large, true);
                 cover.setAdjustViewBounds(true);
                 cover.setBackgroundResource(R.drawable.border);
                 cover.setOnClickListener(new View.OnClickListener() {
@@ -384,20 +381,9 @@ public class ImageUtils {
         }
     }
 
-    /**
-     * small:  Minimum of MAX_EDIT_THUMBNAIL_SIZE and 1/3rd of largest screen dimension
-     * standard: small * 2
-     * zoomed:  Minimum of MAX_ZOOM_THUMBNAIL_SIZE and largest screen dimension.
-     */
     @NonNull
     public static ThumbSize getThumbSizes(final @NonNull Activity activity) {
-        final DisplayMetrics metrics = getDisplayMetrics(activity);
-
-        ThumbSize sizes = new ThumbSize();
-        sizes.small = Math.min(MAX_EDIT_THUMBNAIL_SIZE, Math.max(metrics.widthPixels, metrics.heightPixels) / 3);
-        sizes.standard = sizes.small * 2;
-        sizes.zoomed = Math.min(MAX_ZOOM_THUMBNAIL_SIZE, Math.max(metrics.widthPixels, metrics.heightPixels));
-        return sizes;
+        return new ThumbSize(activity);
     }
 
     @NonNull
@@ -408,12 +394,29 @@ public class ImageUtils {
     }
 
     /**
-     * NEWKIND: if we ever need more sizes, add a field here and set it in {@link #getThumbSizes}
+     * NEWKIND: if we need more sizes, add a field here and set it in {@link #getThumbSizes}
+     *
+     * small:  Minimum of THUMBNAIL_MAX_SIZE_SMALL and 1/3rd of largest screen dimension
+     * standard: Minimum of THUMBNAIL_MAX_SIZE_STANDARD and 2/3rd of largest screen dimension
+     * large:  Minimum of THUMBNAIL_MAX_SIZE_LARGE and largest screen dimension.
      */
     public static class ThumbSize {
-        public int small;
-        public int standard;
-        public int zoomed;
+        // Target size of a thumbnail
+        private static final int MAX_SIZE_SMALL = 256; // on the Edit Screens
+        private static final int MAX_SIZE_STANDARD = 512; // on the View Screens
+        private static final int MAX_SIZE_LARGE = 1024; // in zoomed mode
+
+        public final int small;
+        public final int standard;
+        public final int large;
+
+        public ThumbSize(final @NonNull Activity activity) {
+            DisplayMetrics metrics = getDisplayMetrics(activity);
+            int maxMetric = Math.max(metrics.widthPixels, metrics.heightPixels);
+            small = Math.min(MAX_SIZE_SMALL, maxMetric / 3);
+            standard = Math.min(MAX_SIZE_STANDARD, maxMetric * 2 / 3);
+            large = Math.min(MAX_SIZE_LARGE, maxMetric);
+        }
     }
 
 

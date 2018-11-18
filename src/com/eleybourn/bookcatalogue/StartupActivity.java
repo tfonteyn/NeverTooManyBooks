@@ -44,18 +44,20 @@ import android.text.Html;
 
 import com.eleybourn.bookcatalogue.booklist.BooklistPreferencesActivity;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
-import com.eleybourn.bookcatalogue.database.CoversDbHelper;
+import com.eleybourn.bookcatalogue.database.CoversDbAdapter;
 import com.eleybourn.bookcatalogue.database.UpgradeDatabase;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.filechooser.BackupChooserActivity;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.OnTaskFinishListener;
-import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTask;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTaskContext;
+import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.UpgradeMessageManager;
 
 import java.lang.ref.WeakReference;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * Single Activity to be the 'Main' activity for the app. It does app-startup stuff which is initially
@@ -111,7 +113,7 @@ public class StartupActivity extends AppCompatActivity {
 
     /** Set the flag to indicate an FTS rebuild is required */
     public static void scheduleFtsRebuild() {
-        BookCatalogueApp.Prefs.putBoolean(PREF_FTS_REBUILD_REQUIRED, true);
+        BookCatalogueApp.getSharedPreferences().edit().putBoolean(PREF_FTS_REBUILD_REQUIRED, true).apply();
     }
 
     /**
@@ -161,7 +163,7 @@ public class StartupActivity extends AppCompatActivity {
     private void startNextStage() {
         // onCreate being stage 0
         mStartupStage++;
-        Logger.info(this,"Starting stage " + mStartupStage);
+        Logger.info(this, "Starting stage " + mStartupStage);
 
         switch (mStartupStage) {
             case 1: {
@@ -205,16 +207,14 @@ public class StartupActivity extends AppCompatActivity {
 
         mUiThread = Thread.currentThread();
 
-        // If it's a real application startup...cleanup old stuff
         if (mIsReallyStartup) {
             mStartupActivity = new WeakReference<>(this);
 
             updateProgress(R.string.starting);
 
             SimpleTaskQueue q = getQueue();
-
-            // Always enqueue it; it will get a DB and check if required...
             q.enqueue(new RebuildFtsTask());
+            q.enqueue(new BuildLanguageMappingsTask());
             q.enqueue(new AnalyzeDbTask());
 
             // Remove old logs
@@ -280,7 +280,7 @@ public class StartupActivity extends AppCompatActivity {
      * onCreate() completes, so a race condition is not possible. Equally well, tasks should only
      * be queued in onCreate().
      */
-    private void taskCompleted(@NonNull SimpleTask task) {
+    private void taskCompleted(@NonNull SimpleTaskQueue.SimpleTask task) {
         if (DEBUG_SWITCHES.STARTUP && BuildConfig.DEBUG) {
             Logger.info(task, "Task Completed");
         }
@@ -302,7 +302,7 @@ public class StartupActivity extends AppCompatActivity {
             // Listen for task completions
             mTaskQueue.setTaskFinishListener(new OnTaskFinishListener() {
                 @Override
-                public void onTaskFinish(final @NonNull SimpleTask task, final @Nullable Exception e) {
+                public void onTaskFinish(final @NonNull SimpleTaskQueue.SimpleTask task, final @Nullable Exception e) {
                     taskCompleted(task);
                 }
             });
@@ -316,27 +316,33 @@ public class StartupActivity extends AppCompatActivity {
     private void checkForUpgrades() {
         // Remove the weak reference. Only used by db onUpgrade.
         mStartupActivity.clear();
-
         // Display upgrade message if necessary, otherwise go on to next stage
-        if (mUpgradeMessageShown || UpgradeMessageManager.getUpgradeMessage().isEmpty()) {
+        if (mUpgradeMessageShown) {
             startNextStage();
-        } else {
-            AlertDialog dialog = new AlertDialog.Builder(this)
-                    .setMessage(Html.fromHtml(UpgradeMessageManager.getUpgradeMessage()))
-                    .setTitle(R.string.about_lbl_upgrade)
-                    .setIcon(R.drawable.ic_info_outline)
-                    .create();
-
-            dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(android.R.string.ok),
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(final DialogInterface dialog, final int which) {
-                            UpgradeMessageManager.setMessageAcknowledged();
-                            startNextStage();
-                        }
-                    });
-            dialog.show();
-            mUpgradeMessageShown = true;
+            return;
         }
+        // Display upgrade message if necessary, otherwise go on to next stage
+        String message = UpgradeMessageManager.getUpgradeMessage();
+        if (message.isEmpty()) {
+            startNextStage();
+            return;
+        }
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setMessage(Html.fromHtml(UpgradeMessageManager.getUpgradeMessage()))
+                .setTitle(R.string.about_lbl_upgrade)
+                .setIcon(R.drawable.ic_info_outline)
+                .create();
+
+        dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(android.R.string.ok),
+                new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, final int which) {
+                        UpgradeMessageManager.setUpgradeAcknowledged();
+                        startNextStage();
+                    }
+                });
+        dialog.show();
+        mUpgradeMessageShown = true;
     }
 
     private void backupRequired() {
@@ -345,7 +351,7 @@ public class StartupActivity extends AppCompatActivity {
         if (proposeBackup()) {
             AlertDialog dialog = new AlertDialog.Builder(this)
                     .setMessage(R.string.backup_request)
-                    .setTitle(R.string.backup_title)
+                    .setTitle(R.string.title_backup)
                     .setIcon(R.drawable.ic_help_outline)
                     .create();
 
@@ -383,10 +389,10 @@ public class StartupActivity extends AppCompatActivity {
      * @return true when counter reached 0
      */
     private boolean proposeBackup() {
-        int opened = BookCatalogueApp.Prefs.getInt(PREFS_STATE_OPENED, PROMPT_WAIT_BACKUP);
-        int startCount = BookCatalogueApp.Prefs.getInt(PREF_START_COUNT, 0) + 1;
+        int opened = BookCatalogueApp.getIntPreference(PREFS_STATE_OPENED, PROMPT_WAIT_BACKUP);
+        int startCount = BookCatalogueApp.getIntPreference(PREF_START_COUNT, 0) + 1;
 
-        final SharedPreferences.Editor ed = BookCatalogueApp.Prefs.edit();
+        final SharedPreferences.Editor ed = BookCatalogueApp.getSharedPreferences().edit();
         if (opened == 0) {
             ed.putInt(PREFS_STATE_OPENED, PROMPT_WAIT_BACKUP);
         } else {
@@ -459,51 +465,86 @@ public class StartupActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Task to rebuild FTS in background. Can take several seconds, so not done in onUpgrade().
-     *
-     * @author Philip Warner
-     */
-    public class RebuildFtsTask implements SimpleTask {
 
+    /**
+     * Build the dedicated SharedPreferences file with the language mappings.
+     * Only build once per Locale.
+     *
+     * Secondly, do a mass update of any languages not yet converted.
+     * This is done each startup. TODO: is that needed ?
+     */
+    public class BuildLanguageMappingsTask implements SimpleTaskQueue.SimpleTask {
         @Override
         public void run(final @NonNull SimpleTaskContext taskContext) {
-            // Get a DB to make sure the FTS rebuild flag is set appropriately, do not close the database!
-            CatalogueDBAdapter db = taskContext.getOpenDb();
-            if (BookCatalogueApp.Prefs.getBoolean(PREF_FTS_REBUILD_REQUIRED, false)) {
-                updateProgress(R.string.progress_msg_rebuilding_search_index);
-                db.rebuildFts();
-                BookCatalogueApp.Prefs.putBoolean(PREF_FTS_REBUILD_REQUIRED, false);
+            updateProgress(R.string.progress_msg_updating_languages);
+
+            // generate initial language2iso mappings.
+            LocaleUtils.createLanguageMappingCache(LocaleUtils.getSystemLocal());
+            // the one the user has configured our app into using
+            LocaleUtils.createLanguageMappingCache(Locale.getDefault());
+            LocaleUtils.createLanguageMappingCache(Locale.ENGLISH);
+
+            // Get a DB, do not close the database!
+            CatalogueDBAdapter db = taskContext.getDb();
+            List<String> names = db.getLanguageCodes();
+            for (String name : names) {
+                if (name != null && name.length() > 3) {
+                    String iso = LocaleUtils.getISO3Language(name);
+                    Logger.info(this, "Global language update of `" + name + "` to `" + iso + "`");
+                    if (!iso.equals(name)) {
+                        db.globalReplaceLanguage(name, iso);
+                    }
+                }
             }
         }
 
         @Override
         public void onFinish(Exception e) {
         }
-
     }
 
-    public class AnalyzeDbTask implements SimpleTask {
+    /**
+     * Task to rebuild FTS in background. Can take several seconds, so not done in onUpgrade().
+     *
+     * @author Philip Warner
+     */
+    public class RebuildFtsTask implements SimpleTaskQueue.SimpleTask {
+
+        @Override
+        public void run(final @NonNull SimpleTaskContext taskContext) {
+            // Get a DB to make sure the FTS rebuild flag is set appropriately, do not close the database!
+            CatalogueDBAdapter db = taskContext.getDb();
+            if (BookCatalogueApp.getBooleanPreference(PREF_FTS_REBUILD_REQUIRED, false)) {
+                updateProgress(R.string.progress_msg_rebuilding_search_index);
+                db.rebuildFts();
+                BookCatalogueApp.getSharedPreferences().edit().putBoolean(PREF_FTS_REBUILD_REQUIRED, false).apply();
+            }
+        }
+
+        @Override
+        public void onFinish(Exception e) {
+        }
+    }
+
+    public class AnalyzeDbTask implements SimpleTaskQueue.SimpleTask {
 
         @Override
         public void run(final @NonNull SimpleTaskContext taskContext) {
             updateProgress(R.string.progress_msg_optimizing_databases);
 
-            // Get a DB connection, do not close the database!
-            CatalogueDBAdapter db = taskContext.getOpenDb();
+            // Get a connection, do not close the databases!
+            CatalogueDBAdapter db = taskContext.getDb();
             db.analyzeDb();
 
             if (BooklistPreferencesActivity.isThumbnailCacheEnabled()) {
-                try (CoversDbHelper coversDbHelper = CoversDbHelper.getInstance(StartupActivity.this)) {
-                    coversDbHelper.analyze();
-                }
+                CoversDbAdapter coversDbAdapter = taskContext.getCoversDb();
+                coversDbAdapter.analyze();
             }
 
-            if (BookCatalogueApp.Prefs.getBoolean(V74_PREF_AUTHOR_SERIES_FIX_UP_REQUIRED, false)) {
+            if (BookCatalogueApp.getBooleanPreference(V74_PREF_AUTHOR_SERIES_FIX_UP_REQUIRED, false)) {
                 UpgradeDatabase.v74_fixupAuthorsAndSeries(db);
-                BookCatalogueApp.Prefs.remove(V74_PREF_AUTHOR_SERIES_FIX_UP_REQUIRED);
+                BookCatalogueApp.getSharedPreferences().edit().remove(V74_PREF_AUTHOR_SERIES_FIX_UP_REQUIRED).apply();
             }
-
         }
 
         @Override

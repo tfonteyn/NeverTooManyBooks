@@ -33,7 +33,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_AUTHOR;
@@ -67,6 +66,11 @@ import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_READ_Y
  */
 public class BooklistStyles extends ArrayList<BooklistStyle> {
     private static final String TAG = "BooklistStyles";
+    /**
+     * StringList encoded.
+     *
+     * ENHANCE: don't store as (localized) names; at least the builtin ones can be stored as an id.
+     */
     private static final String PREF_MENU_ITEMS = TAG + ".Menu.Items";
 
     /** Internal storage for preferred styles represented by this object */
@@ -86,7 +90,7 @@ public class BooklistStyles extends ArrayList<BooklistStyle> {
     @NonNull
     private static Set<String> getPreferredStyleNames() {
         Set<String> names = new HashSet<>();
-        String itemStr = BookCatalogueApp.Prefs.getString(PREF_MENU_ITEMS, null);
+        String itemStr = BookCatalogueApp.getStringPreference(PREF_MENU_ITEMS, null);
         if (itemStr != null && !itemStr.isEmpty()) {
             List<String> list = StringList.decode(itemStr);
             for (String name : list) {
@@ -223,7 +227,7 @@ public class BooklistStyles extends ArrayList<BooklistStyle> {
         BooklistStyles styles = new BooklistStyles();
 
         // Get the user preference
-        String itemStr = BookCatalogueApp.Prefs.getString(PREF_MENU_ITEMS, null);
+        String itemStr = BookCatalogueApp.getStringPreference(PREF_MENU_ITEMS, null);
         if (itemStr != null && !itemStr.isEmpty()) {
             // Break it up and process in order
             List<String> list = StringList.decode(itemStr);
@@ -294,7 +298,7 @@ public class BooklistStyles extends ArrayList<BooklistStyle> {
                 items.append(StringList.encodeListItem(style.getCanonicalName()));
             }
         }
-        BookCatalogueApp.Prefs.putString(PREF_MENU_ITEMS, items.toString());
+        BookCatalogueApp.getSharedPreferences().edit().putString(PREF_MENU_ITEMS, items.toString()).apply();
     }
 
     /**

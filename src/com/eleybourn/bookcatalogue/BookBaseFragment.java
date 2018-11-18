@@ -22,9 +22,7 @@ package com.eleybourn.bookcatalogue;
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.IdRes;
@@ -39,7 +37,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -47,6 +44,7 @@ import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.Fields.AfterFieldChangeListener;
 import com.eleybourn.bookcatalogue.Fields.Field;
+import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.datamanager.DataEditor;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
@@ -80,16 +78,16 @@ import java.util.Objects;
  *
  * @author pjw
  */
-public abstract class BookAbstractFragment extends Fragment implements DataEditor {
+public abstract class BookBaseFragment extends Fragment implements DataEditor {
 
     /** Database instance */
     protected CatalogueDBAdapter mDb;
     /** */
     protected Fields mFields;
     /** A link to the Activity, cached to avoid requireActivity() all over the place */
-    private Activity mActivity;
+    private BaseActivity mActivity;
 
-    public void setActivityTitle(final @NonNull Book book) {
+    protected void setActivityTitle(final @NonNull Book book) {
         ActionBar actionBar = requireActivity().getActionBar();
         if (actionBar != null) {
             if (book.getBookId() > 0) {
@@ -157,13 +155,12 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
     @Override
     @CallSuper
     public void onActivityCreated(final @Nullable Bundle savedInstanceState) {
+        // cache to avoid multiple calls to requireActivity()
+        mActivity = (BaseActivity) requireActivity();
+
         super.onActivityCreated(savedInstanceState);
 
-        // cache to avoid multiple calls to requireActivity()
-        mActivity = requireActivity();
-
-        mDb = new CatalogueDBAdapter(mActivity)
-                .open();
+        mDb = new CatalogueDBAdapter(mActivity);
 
         Bundle args = getArguments();
 
@@ -171,7 +168,7 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
             // load the Book from (in order) savedInstanceState; arg; database; or a new book
             long bookId = BundleUtils.getLongFromBundles(UniqueId.KEY_ID, savedInstanceState, args);
             Bundle bookData = BundleUtils.getBundleFromBundles(UniqueId.BKEY_BOOK_DATA, savedInstanceState, args);
-            Book book = new Book(bookId, bookData);
+            Book book = Book.getBook(mDb, bookId, bookData);
             getBookManager().setBook(book);
         }
 
@@ -200,6 +197,8 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
     @CallSuper
     public void onResume() {
         super.onResume();
+
+        //TOMF: reload locale if changed ! register as a listener
 
         // load the book, while disabling the AfterFieldChangeListener
         mFields.setAfterFieldChangeListener(null);
@@ -447,14 +446,10 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
             return;
         }
 
+        // Get the list to use in the AutoCompleteTextView
         ArrayAdapter<String> adapter = new ArrayAdapter<>(requireActivity(),
                 android.R.layout.simple_dropdown_item_1line, list);
         mFields.setAdapter(field.id, adapter);
-
-        // Get the list to use in the AutoComplete stuff
-        AutoCompleteTextView textView = field.getView();
-        textView.setAdapter(new ArrayAdapter<>(requireActivity(),
-                android.R.layout.simple_dropdown_item_1line, list));
 
         // Get the drop-down button for the list and setup dialog
         //noinspection ConstantConditions
@@ -462,9 +457,7 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
             @Override
             public void onClick(View v) {
                 SelectOneDialog.selectObjectDialog(requireActivity().getLayoutInflater(),
-                        getString(dialogTitleId),
-                        list,
-                        field.getValue().toString(),
+                        getString(dialogTitleId), field, list,
                         new SelectOneDialog.SimpleDialogOnClickListener() {
                             @Override
                             public void onClick(final @NonNull SelectOneDialog.SimpleDialogItem item) {
@@ -596,7 +589,7 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
                     long bookId = data.getLongExtra(UniqueId.KEY_ID, 0);
                     if (bookId > 0) {
                         // replace current book with the updated one, no attempt is made to merge if in edit mode.
-                        Book book = new Book(bookId, null);
+                        Book book = Book.getBook(mDb, bookId);
                         getBookManager().setBook(book);
                         loadFieldsFrom(book);
                     } else {
@@ -712,12 +705,6 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
                 }
             }
         }
-    }
-
-    /** saving on some typing */
-    @NonNull
-    protected SharedPreferences getPrefs() {
-        return requireActivity().getSharedPreferences(BookCatalogueApp.APP_SHARED_PREFERENCES, Context.MODE_PRIVATE);
     }
 
     /**
@@ -907,7 +894,7 @@ public abstract class BookAbstractFragment extends Fragment implements DataEdito
                 s = s.substring(0, Math.min(s.length(), 20));
                 sb.append(s);
             } else {
-                Logger.info(BookAbstractFragment.class, sb.toString());
+                Logger.info(BookBaseFragment.class, sb.toString());
             }
             if (view instanceof ViewGroup) {
                 ViewGroup g = (ViewGroup) view;

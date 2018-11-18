@@ -52,7 +52,6 @@ import com.eleybourn.bookcatalogue.searches.isfdb.ISFDBManager;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager.ImageSizes;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue;
-import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTask;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTaskContext;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.IsbnUtils;
@@ -104,18 +103,18 @@ public class CoverBrowser {
     /**
      * Constructor
      *
-     * @param a                       Calling context
+     * @param activity                Calling context
      * @param isbn                    ISBN of book
      * @param onImageSelectedListener Handler to call when book selected
      */
-    public CoverBrowser(final @NonNull Activity a,
+    public CoverBrowser(final @NonNull Activity activity,
                         final @NonNull String isbn,
                         final @NonNull OnImageSelectedListener onImageSelectedListener) {
-        mActivity = a;
+        mActivity = activity;
         mIsbn = isbn;
         mOnImageSelectedListener = onImageSelectedListener;
 
-        mMetric = ImageUtils.getDisplayMetrics(a);
+        mMetric = ImageUtils.getDisplayMetrics(activity);
 
         // Calculate some image sizes to display
         int previewSize = Math.max(mMetric.widthPixels, mMetric.heightPixels) / 5;
@@ -357,7 +356,7 @@ public class CoverBrowser {
      *
      * @author Philip Warner
      */
-    private class GetEditionsTask implements SimpleTask {
+    private class GetEditionsTask implements SimpleTaskQueue.SimpleTask {
         @NonNull
         final String isbn;
 
@@ -397,7 +396,7 @@ public class CoverBrowser {
      *
      * @author Philip Warner
      */
-    private class GetThumbnailTask implements SimpleTask {
+    private class GetThumbnailTask implements SimpleTaskQueue.SimpleTask {
         @NonNull
         private final ImageView imageView;
         private final int maxWidth;
@@ -458,7 +457,7 @@ public class CoverBrowser {
      *
      * @author Philip Warner
      */
-    private class GetFullImageTask implements SimpleTask {
+    private class GetFullImageTask implements SimpleTaskQueue.SimpleTask {
         // Switcher to use
         @NonNull
         private final ImageSwitcher switcher;

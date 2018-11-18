@@ -1142,8 +1142,7 @@ public class UpgradeDatabase {
 
         if (curVersion == 74) {
             curVersion++;
-            // StartupActivity.scheduleAuthorSeriesFixUp();
-            BookCatalogueApp.Prefs.putBoolean(StartupActivity.V74_PREF_AUTHOR_SERIES_FIX_UP_REQUIRED, true);
+            BookCatalogueApp.getSharedPreferences().edit().putBoolean(StartupActivity.V74_PREF_AUTHOR_SERIES_FIX_UP_REQUIRED, true).apply();
             mMessage += "New in v4.0.3\n\n";
             mMessage += "* ISBN validation when searching/scanning and error beep when scanning (with preference to turn it off)\n\n";
             mMessage += "* 'Loaned' list now shows available books under the heading 'Available'\n\n";

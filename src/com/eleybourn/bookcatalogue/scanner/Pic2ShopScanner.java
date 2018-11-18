@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.utils.RTE;
 
 import java.util.Arrays;
@@ -38,14 +37,8 @@ public class Pic2ShopScanner implements Scanner {
      *
      * @return <tt>true</tt>if present
      */
-    static boolean isIntentAvailable() {
-        return isFreeScannerAppInstalled(BookCatalogueApp.getAppContext())
-                || isProScannerAppInstalled(BookCatalogueApp.getAppContext());
-    }
-
-    private static boolean isIntentAvailable(final @NonNull Context context, final @NonNull String action) {
-        Intent test = new Intent(action);
-        return context.getPackageManager().resolveActivity(test, 0) != null;
+    static boolean isIntentAvailable(final @NonNull Context context) {
+        return isFreeScannerAppInstalled(context) || isProScannerAppInstalled(context);
     }
 
     private static boolean isFreeScannerAppInstalled(final @NonNull Context context) {
@@ -54,6 +47,11 @@ public class Pic2ShopScanner implements Scanner {
 
     private static boolean isProScannerAppInstalled(final @NonNull Context context) {
         return isIntentAvailable(context, Pro.ACTION);
+    }
+
+    private static boolean isIntentAvailable(final @NonNull Context context, final @NonNull String action) {
+        Intent test = new Intent(action);
+        return context.getPackageManager().resolveActivity(test, 0) != null;
     }
 
     /**

@@ -20,6 +20,7 @@
 
 package com.eleybourn.bookcatalogue.database.cursors;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
@@ -27,7 +28,6 @@ import android.support.annotation.Nullable;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;
@@ -81,10 +81,11 @@ public class BooklistCursorRow extends BookCursorRowBase {
         super(cursor);
         mBuilder = builder;
 
-        final int extras = mBuilder.getStyle().getExtraFieldsStatus();
+        final int extraFieldsInUse = mBuilder.getStyle().getExtraFieldsStatus();
 
         // Get thumbnail size
-        int maxSize = computeThumbnailSize(extras);
+        int maxSize = computeThumbnailSize(builder.getContext(), extraFieldsInUse);
+
         mMaxThumbnailWidth = maxSize;
         mMaxThumbnailHeight = maxSize;
     }
@@ -92,20 +93,19 @@ public class BooklistCursorRow extends BookCursorRowBase {
     /**
      * Return the thumbnail size in DP.
      *
-     * @param extras Flags for style
+     * @param extraFieldsInUse Flags for style
      *
      * @return Requested thumbnail size
      */
-    private int computeThumbnailSize(final int extras) {
+    private int computeThumbnailSize(final @NonNull Context context, final int extraFieldsInUse) {
         int maxSize;
 
-        if ((extras & BooklistStyle.EXTRAS_THUMBNAIL_LARGE) != 0) {
+        if ((extraFieldsInUse & BooklistStyle.EXTRAS_THUMBNAIL_LARGE) != 0) {
             maxSize = 90;
         } else {
             maxSize = 60;
         }
-
-        DisplayMetrics metrics = BookCatalogueApp.getAppContext().getResources().getDisplayMetrics();
+        DisplayMetrics metrics = context.getResources().getDisplayMetrics();
         maxSize = (int) (TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, maxSize, metrics));
         return maxSize;
     }
@@ -140,7 +140,7 @@ public class BooklistCursorRow extends BookCursorRowBase {
             case RowKinds.ROW_KIND_DATE_ADDED_MONTH:
             case RowKinds.ROW_KIND_DATE_LAST_UPDATE_MONTH:
             case RowKinds.ROW_KIND_DATE_PUBLISHED_MONTH:
-            case RowKinds.ROW_KIND_DATE_READ_MONTH:
+            case RowKinds.ROW_KIND_DATE_READ_MONTH: {
                 try {
                     int i = Integer.parseInt(s);
                     // If valid, get the name
@@ -151,21 +151,19 @@ public class BooklistCursorRow extends BookCursorRowBase {
                 } catch (Exception ignored) {
                 }
                 break;
-
-            case RowKinds.ROW_KIND_RATING:
+            }
+            case RowKinds.ROW_KIND_RATING: {
                 try {
                     int i = Integer.parseInt(s);
                     // If valid, get the name
                     if (i >= 0 && i <= 5) {
-                        Resources r = BookCatalogueApp.getAppContext().getResources();
+                        Resources r = mBuilder.getContext().getResources();
                         return r.getQuantityString(R.plurals.n_stars, i, i);
                     }
                 } catch (Exception ignored) {
                 }
                 break;
-
-            default:
-                break;
+            }
         }
         return s;
     }

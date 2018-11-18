@@ -58,7 +58,7 @@ import java.util.concurrent.locks.ReentrantLock;
  *
  * @author Philip Warner
  */
-public class UpdateFromInternetThread extends ManagedTask {
+public class UpdateFromInternetTask extends ManagedTask {
     /** The fields that the user requested to update */
     @NonNull
     private final UpdateFromInternetActivity.FieldUsages mRequestedFields;
@@ -98,7 +98,7 @@ public class UpdateFromInternetThread extends ManagedTask {
     private final SearchManager.SearchListener mSearchListener = new SearchManager.SearchListener() {
         @Override
         public boolean onSearchFinished(final @NonNull Bundle bookData, final boolean cancelled) {
-            return UpdateFromInternetThread.this.onSearchFinished(bookData, cancelled);
+            return UpdateFromInternetTask.this.onSearchFinished(bookData, cancelled);
         }
     };
 
@@ -115,14 +115,13 @@ public class UpdateFromInternetThread extends ManagedTask {
      * @param manager         Object to manage background tasks
      * @param requestedFields fields to update
      */
-    public UpdateFromInternetThread(final @NonNull TaskManager manager,
-                                    final @NonNull UpdateFromInternetActivity.FieldUsages requestedFields,
-                                    final int searchSites,
-                                    final @NonNull TaskListener listener) {
-        super("UpdateFromInternetThread", manager);
+    public UpdateFromInternetTask(final @NonNull TaskManager manager,
+                                  final @NonNull UpdateFromInternetActivity.FieldUsages requestedFields,
+                                  final int searchSites,
+                                  final @NonNull TaskListener listener) {
+        super("UpdateFromInternetTask", manager);
 
-        mDb = new CatalogueDBAdapter(BookCatalogueApp.getAppContext())
-                .open();
+        mDb = new CatalogueDBAdapter(manager.getContext());
 
         mRequestedFields = requestedFields;
 
@@ -233,7 +232,7 @@ public class UpdateFromInternetThread extends ManagedTask {
                 boolean wantSearch = false;
                 // Update the progress appropriately
                 if (mCurrentBookFieldUsages.size() == 0 || isbn.isEmpty() && (author.isEmpty() || title.isEmpty())) {
-                    mTaskManager.doProgress(String.format(getString(R.string.skip_title), title));
+                    mTaskManager.doProgress(String.format(getString(R.string.progress_msg_skip_title), title));
                 } else {
                     wantSearch = true;
                     if (!title.isEmpty()) {
@@ -266,9 +265,9 @@ public class UpdateFromInternetThread extends ManagedTask {
             // Empty/close the progress.
             mTaskManager.doProgress(null);
             // Make the final message (user message, not a Progress message)
-            mFinalMessage = String.format(getString(R.string.num_books_searched), "" + progressCounter);
+            mFinalMessage = String.format(getString(R.string.progress_end_num_books_searched), "" + progressCounter);
             if (isCancelled()) {
-                mFinalMessage = String.format(BookCatalogueApp.getResourceString(R.string.cancelled_info), mFinalMessage);
+                mFinalMessage = String.format(BookCatalogueApp.getResourceString(R.string.progress_end_cancelled_info), mFinalMessage);
                 Logger.info(this, " was cancelled");
             }
         }
@@ -481,13 +480,13 @@ public class UpdateFromInternetThread extends ManagedTask {
                             // Handle arrays (note: before you're clever, and collapse this to one... Android Studio hides the type in the <~> notation!
                             switch (usage.key) {
                                 case UniqueId.BKEY_AUTHOR_ARRAY:
-                                    UpdateFromInternetThread.<Author>combineArrays(usage.key, originalBookData, newBookData);
+                                    UpdateFromInternetTask.<Author>combineArrays(usage.key, originalBookData, newBookData);
                                     break;
                                 case UniqueId.BKEY_SERIES_ARRAY:
-                                    UpdateFromInternetThread.<Series>combineArrays(usage.key, originalBookData, newBookData);
+                                    UpdateFromInternetTask.<Series>combineArrays(usage.key, originalBookData, newBookData);
                                     break;
                                 case UniqueId.BKEY_TOC_TITLES_ARRAY:
-                                    UpdateFromInternetThread.<TOCEntry>combineArrays(usage.key, originalBookData, newBookData);
+                                    UpdateFromInternetTask.<TOCEntry>combineArrays(usage.key, originalBookData, newBookData);
                                     break;
                                 default:
                                     // No idea how to handle this for non-arrays
@@ -501,7 +500,7 @@ public class UpdateFromInternetThread extends ManagedTask {
 
         // Update
         if (!newBookData.isEmpty()) {
-            mDb.updateBook(bookId, new Book(bookId, newBookData), 0);
+            mDb.updateBook(bookId, Book.getBook(mDb, bookId, newBookData), 0);
         }
 
     }

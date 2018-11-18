@@ -20,6 +20,7 @@
 
 package com.eleybourn.bookcatalogue.tasks;
 
+import android.content.Context;
 import android.os.Handler;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
@@ -29,6 +30,7 @@ import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.CoversDbAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
 import java.util.ArrayList;
@@ -39,6 +41,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Class to perform time consuming but light-weight tasks in a worker thread. Users of this
@@ -344,38 +347,6 @@ public class SimpleTaskQueue {
     }
 
     /**
-     * SimpleTask interface.
-     *
-     * run() is called in worker thread
-     * finished() is called in UI thread.
-     *
-     * @author Philip Warner
-     */
-    public interface SimpleTask {
-        /**
-         * Method called in queue thread to perform the background task.
-         *
-         * 2018-10-14: added throws Exception to allow us to throw custom exceptions
-         * Based on  {@link #handleRequest} where we have:
-         * try {
-         *             task.run(taskWrapper);
-         *         } catch (Exception e) {
-         *             taskWrapper.exception = e;
-         *
-         * Otherwise onFinish can not get our thrown exceptions
-         *
-         * The alternative was to change the argument to being a {@link SimpleTaskWrapper}
-         * and access the {@link SimpleTaskWrapper#exception}
-         */
-        void run(final @NonNull SimpleTaskContext taskContext) throws Exception;
-
-        /**
-         * Method called in UI thread after the background task has finished.
-         */
-        void onFinish(final @Nullable Exception e);
-    }
-
-    /**
      * Interface for an object to listen for when tasks start.
      *
      * @author Philip Warner
@@ -393,9 +364,33 @@ public class SimpleTaskQueue {
         void onTaskFinish(final @NonNull SimpleTask task, final @Nullable Exception e);
     }
 
+    /**
+     * SimpleTask interface.
+     *
+     * run() is called in worker thread
+     * onFinish() is called in UI thread.
+     *
+     * @author Philip Warner
+     */
+    public interface SimpleTask {
+        /**
+         * Method called in queue thread to perform the background task.
+         */
+        void run(final @NonNull SimpleTaskContext taskContext) throws Exception;
+
+        /**
+         * Method called in UI thread after the background task has finished.
+         *
+         * @param e the exception (if any) thrown in the run()
+         */
+        void onFinish(final @Nullable Exception e);
+    }
+
     public interface SimpleTaskContext {
         @NonNull
-        CatalogueDBAdapter getOpenDb();
+        CatalogueDBAdapter getDb();
+        @NonNull
+        CoversDbAdapter getCoversDb();
 
         void setRequiresFinish(final boolean requiresFinish);
 
@@ -403,13 +398,13 @@ public class SimpleTaskQueue {
     }
 
     /**
-     * Class to wrap a simpleTask with more info needed by the queue.
+     * Class to wrap a simpleTask with info needed by the queue.
      *
      * @author Philip Warner
      */
     private static class SimpleTaskWrapper implements SimpleTaskContext {
         @NonNull
-        private static Long mCounter = 0L;
+        private static final AtomicInteger mIdCounter = new AtomicInteger();
         @NonNull
         public final SimpleTask task;
         public final long id;
@@ -424,9 +419,7 @@ public class SimpleTaskQueue {
         SimpleTaskWrapper(final @NonNull SimpleTaskQueue owner, final @NonNull SimpleTask task) {
             mOwner = owner;
             this.task = task;
-            synchronized (mCounter) {
-                this.id = ++mCounter;
-            }
+            this.id = mIdCounter.incrementAndGet();
         }
 
         /**
@@ -438,9 +431,23 @@ public class SimpleTaskQueue {
          */
         @NonNull
         @Override
-        public CatalogueDBAdapter getOpenDb() {
+        public CatalogueDBAdapter getDb() {
             Objects.requireNonNull(activeThread, "SimpleTaskWrapper can only be used in a context during the run() stage");
-            return activeThread.getOpenDb();
+            return activeThread.getDb();
+        }
+
+        /**
+         * Accessor when behaving as a context
+         *
+         * Do not close the database!
+         *
+         * Returns a {@link CoversDbAdapter} which it gets from the {@link SimpleTaskQueueThread}
+         */
+        @NonNull
+        @Override
+        public CoversDbAdapter getCoversDb() {
+            Objects.requireNonNull(activeThread, "SimpleTaskWrapper can only be used in a context during the run() stage");
+            return activeThread.getCoversDb();
         }
 
         @Override
@@ -458,28 +465,43 @@ public class SimpleTaskQueue {
      * Class to actually run the tasks. Can start more than one. They wait until there is
      * nothing left in the queue before terminating.
      *
+     * Databases are initialised with the application context.
+     *
      * @author Philip Warner
      */
     private class SimpleTaskQueueThread extends Thread {
         /** DB Connection, if task requests one. Survives while thread is alive */
         @Nullable
         CatalogueDBAdapter mDb = null;
+        @Nullable
+        CoversDbAdapter mCoversDbAdapter = null;
 
         /**
-         * Do not close the database!
+         * Do not close the database; we close it for you when the task finishes.
          *
          * @return a database connection associated with this Task
          */
         @NonNull
-        public CatalogueDBAdapter getOpenDb() {
+        public CatalogueDBAdapter getDb() {
             if (mDb == null) {
                 // Reminder: don't make/put the context in a static variable! -> Memory Leak!
-                mDb = new CatalogueDBAdapter(BookCatalogueApp.getAppContext())
-                        .open();
+                mDb = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
             }
             return mDb;
         }
 
+        /**
+         * Do not close the database; we close it for you when the task finishes.
+         *
+         * @return a database connection associated with this Task
+         */
+        @NonNull
+        public CoversDbAdapter getCoversDb() {
+            if (mCoversDbAdapter == null) {
+                mCoversDbAdapter = CoversDbAdapter.getInstance();
+            }
+            return mCoversDbAdapter;
+        }
         /**
          * Main worker thread logic
          */
@@ -513,6 +535,9 @@ public class SimpleTaskQueue {
             } finally {
                     if (mDb != null) {
                         mDb.close();
+                    }
+                    if (mCoversDbAdapter != null) {
+                        mCoversDbAdapter.close();
                     }
             }
         }

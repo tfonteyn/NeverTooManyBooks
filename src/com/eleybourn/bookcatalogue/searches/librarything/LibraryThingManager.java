@@ -136,6 +136,11 @@ public class LibraryThingManager {
     private static final String COVER_URL_MEDIUM = BASE_URL_COVERS + "/devkey/%1$s/medium/isbn/%2$s";
     private static final String COVER_URL_SMALL = BASE_URL_COVERS + "/devkey/%1$s/small/isbn/%2$s";
 
+    /** to control access to mLastRequestTime, we synchronize on this final Object */
+    @NonNull
+    private static final Object LAST_REQUEST_TIME_LOCK = new Object();
+    /** Stores the last time an API request was made to avoid breaking API rules.
+     * Only modify this value from inside a synchronized (LAST_REQUEST_TIME_LOCK) */
     @NonNull
     private static Long mLastRequestTime = 0L;
 
@@ -161,7 +166,7 @@ public class LibraryThingManager {
     private static void waitUntilRequestAllowed() {
         long now = System.currentTimeMillis();
         long wait;
-        synchronized (mLastRequestTime) {
+        synchronized (LAST_REQUEST_TIME_LOCK) {
             wait = 1000 - (now - mLastRequestTime);
             //
             // mLastRequestTime must be updated while synchronized. As soon as this
@@ -636,8 +641,11 @@ public class LibraryThingManager {
      */
     @NonNull
     private String getDevKey() {
-        String key = BookCatalogueApp.Prefs.getStringOrEmpty(PREFS_LT_DEV_KEY);
-        return key.replaceAll("[\\r\\t\\n\\s]*", "");
+        String key = BookCatalogueApp.getStringPreference(PREFS_LT_DEV_KEY, null);
+        if (key != null && !key.isEmpty()) {
+            return key.replaceAll("[\\r\\t\\n\\s]*", "");
+        }
+        return "";
     }
 
     // Field types we are interested in.

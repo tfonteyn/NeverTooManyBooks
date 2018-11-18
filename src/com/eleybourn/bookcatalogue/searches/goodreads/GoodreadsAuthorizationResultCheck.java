@@ -27,6 +27,7 @@ import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.NotAuthorizedException;
+import com.eleybourn.bookcatalogue.taskqueue.GenericTask;
 import com.eleybourn.bookcatalogue.taskqueue.QueueManager;
 import com.eleybourn.bookcatalogue.tasks.BCQueueManager;
 
@@ -70,7 +71,7 @@ class GoodreadsAuthorizationResultCheck extends GenericTask {
             Logger.error(e);
             BookCatalogueApp.showNotification(context, context.getString(R.string.not_authorized),
                     context.getString(R.string.gr_auth_error)
-                            + " " + context.getString(R.string.if_the_problem_persists));
+                            + " " + context.getString(R.string.error_if_the_problem_persists));
         }
 
         return true;

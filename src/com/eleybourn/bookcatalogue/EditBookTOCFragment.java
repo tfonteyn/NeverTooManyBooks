@@ -66,7 +66,7 @@ import java.util.List;
 /**
  * This class is called by {@link EditBookFragment} and displays the Content Tab
  */
-public class EditBookTOCFragment extends BookAbstractFragment implements HandlesISFDB {
+public class EditBookTOCFragment extends BookBaseFragment implements HandlesISFDB {
 
     public static final String TAG = "EditBookTOCFragment";
 
@@ -330,7 +330,7 @@ public class EditBookTOCFragment extends BookAbstractFragment implements Handles
     public boolean onOptionsItemSelected(final @NonNull MenuItem menuItem) {
         switch (menuItem.getItemId()) {
             case R.id.MENU_POPULATE_TOC_FROM_ISFDB:
-                StandardDialogs.showUserMessage(requireActivity(), R.string.connecting_to_web_site);
+                StandardDialogs.showUserMessage(requireActivity(), R.string.progress_msg_connecting_to_web_site);
                 ISFDBManager.searchEditions(mIsbn, this);
                 return true;
         }

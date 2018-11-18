@@ -30,11 +30,11 @@ public class GoogleBooksManager {
     @NonNull
     public static String getBaseURL() {
         //noinspection ConstantConditions
-        return BookCatalogueApp.Prefs.getString(PREFS_HOST_URL, "http://books.google.com");
+        return BookCatalogueApp.getStringPreference(PREFS_HOST_URL, "http://books.google.com");
     }
 
     public static void setBaseURL(final @NonNull String url) {
-        BookCatalogueApp.Prefs.putString(PREFS_HOST_URL, url);
+        BookCatalogueApp.getSharedPreferences().edit().putString(PREFS_HOST_URL, url).apply();
     }
 
     /**

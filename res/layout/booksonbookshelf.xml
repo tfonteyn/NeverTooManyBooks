@@ -76,7 +76,7 @@
                     android:paddingStart="@dimen/padding_border"
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     tools:ignore="SelectableText"
-                    tools:text="@string/displaying_n_books" />
+                    tools:text="displaying_n_books" />
 
                 <TextView
                     android:id="@+id/level_1_text"

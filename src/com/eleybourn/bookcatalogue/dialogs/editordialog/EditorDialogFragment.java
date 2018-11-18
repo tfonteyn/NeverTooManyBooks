@@ -20,7 +20,7 @@ public class EditorDialogFragment extends DialogFragment {
     protected int mDestinationFieldId;
 
     /** the fragment TAG who called us */
-    protected String mCallerTag;
+    private String mCallerTag;
 
     protected Fragment getCallerFragment() {
         //noinspection ConstantConditions

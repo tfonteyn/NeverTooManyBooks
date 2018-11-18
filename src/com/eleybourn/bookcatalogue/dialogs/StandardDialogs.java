@@ -33,8 +33,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatDialog;
-import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
@@ -47,6 +45,7 @@ import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsRegisterActivity;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingAdminActivity;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
 import com.eleybourn.bookcatalogue.taskqueue.QueueManager;
+import com.eleybourn.bookcatalogue.utils.ThemeUtils;
 
 import java.util.List;
 
@@ -60,13 +59,11 @@ import java.util.List;
  */
 public class StandardDialogs {
 
-    private static final String UNKNOWN = "<" + BookCatalogueApp.getResourceString(R.string.unknown_uc) + ">";
-
     /**
      * Shielding the actual implementation of Toast/Snackbar or whatever is next.
      */
     public static void showUserMessage(final @NonNull Activity activity, final @StringRes int message) {
-        if (0 == BookCatalogueApp.Prefs.getInt(BookCatalogueApp.PREF_APP_USER_MESSAGE, 0)) {
+        if (0 == BookCatalogueApp.getIntPreference(BookCatalogueApp.PREF_APP_USER_MESSAGE, 0)) {
             Toast.makeText(activity, message, Toast.LENGTH_LONG).show();
         } else {
             Snackbar.make(activity.getWindow().getDecorView(), message, Snackbar.LENGTH_LONG).show();
@@ -77,7 +74,7 @@ public class StandardDialogs {
      * Shielding the actual implementation of Toast/Snackbar or whatever is next.
      */
     public static void showUserMessage(final @NonNull Activity activity, final @NonNull String message) {
-        if (0 == BookCatalogueApp.Prefs.getInt(BookCatalogueApp.PREF_APP_USER_MESSAGE, 0)) {
+        if (0 == BookCatalogueApp.getIntPreference(BookCatalogueApp.PREF_APP_USER_MESSAGE, 0)) {
             Toast.makeText(activity, message, Toast.LENGTH_LONG).show();
         } else {
             Snackbar.make(activity.getWindow().getDecorView(), message, Snackbar.LENGTH_LONG).show();
@@ -98,7 +95,7 @@ public class StandardDialogs {
                 .setCancelable(false)
                 .create();
 
-        dialog.setButton(DialogInterface.BUTTON_POSITIVE, activity.getString(R.string.exit),
+        dialog.setButton(DialogInterface.BUTTON_POSITIVE, activity.getString(R.string.btn_confirm_exit),
                 new AlertDialog.OnClickListener() {
                     @Override
                     public void onClick(final @NonNull DialogInterface dialog, final int which) {
@@ -219,6 +216,7 @@ public class StandardDialogs {
                                       final long bookId,
                                       final @NonNull Runnable onDeleted) {
 
+        String UNKNOWN = "<" + BookCatalogueApp.getResourceString(R.string.unknown_uc) + ">";
         List<Author> authorList = db.getBookAuthorList(bookId);
 
         // get the book title
@@ -281,7 +279,7 @@ public class StandardDialogs {
     public static void goodreadsAuthAlert(final @NonNull FragmentActivity context) {
         final AlertDialog dialog = new AlertDialog.Builder(context)
                 .setTitle(R.string.gr_title_auth_access)
-                .setMessage(R.string.gr_action_cannot_blah_blah)
+                .setMessage(R.string.gr_action_cannot_be_completed)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .create();
 
@@ -322,7 +320,7 @@ public class StandardDialogs {
     public static class BasicDialog extends AppCompatDialog {
 
         public BasicDialog(final @NonNull Context context) {
-            this(context, BookCatalogueApp.getDialogThemeResId());
+            this(context, ThemeUtils.getDialogThemeResId());
         }
 
         public BasicDialog(final @NonNull Context context, @StyleRes final int theme) {

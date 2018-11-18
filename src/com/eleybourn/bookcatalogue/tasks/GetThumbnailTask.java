@@ -30,9 +30,8 @@ import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.booklist.BooklistPreferencesActivity;
-import com.eleybourn.bookcatalogue.database.CoversDbHelper;
+import com.eleybourn.bookcatalogue.database.CoversDbAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTask;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTaskContext;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
@@ -50,7 +49,7 @@ import java.lang.ref.WeakReference;
  *
  * @author Philip Warner
  */
-public class GetThumbnailTask implements SimpleTask {
+public class GetThumbnailTask implements SimpleTaskQueue.SimpleTask {
 
     /**
      * Queue for background thumbnail retrieval; allow 2 threads. More is nice, but with
@@ -62,6 +61,7 @@ public class GetThumbnailTask implements SimpleTask {
      */
     @NonNull
     private static final SimpleTaskQueue mQueue;
+
     static {
         int maxTasks = 1;
         int nr = Runtime.getRuntime().availableProcessors();
@@ -69,8 +69,8 @@ public class GetThumbnailTask implements SimpleTask {
             maxTasks = 3; // just a poke in the dark TODO: experiment more
         }
         if (DEBUG_SWITCHES.TASK_MANAGER && BuildConfig.DEBUG) {
-            Logger.info(GetThumbnailTask.class,"GetThumbnailTask: #cpu     : " + nr);
-            Logger.info(GetThumbnailTask.class,"GetThumbnailTask: #maxTasks: " + maxTasks);
+            Logger.info(GetThumbnailTask.class, "GetThumbnailTask: #cpu     : " + nr);
+            Logger.info(GetThumbnailTask.class, "GetThumbnailTask: #maxTasks: " + maxTasks);
         }
         mQueue = new SimpleTaskQueue("thumbnails", maxTasks);
     }
@@ -145,7 +145,7 @@ public class GetThumbnailTask implements SimpleTask {
      *
      * @param t Task to put in queue
      */
-    public static void enqueue(final @NonNull SimpleTask t) {
+    public static void enqueue(final @NonNull SimpleTaskQueue.SimpleTask t) {
         mQueue.enqueue(t);
     }
 
@@ -198,14 +198,13 @@ public class GetThumbnailTask implements SimpleTask {
             return;
         }
 
-
         // try cache
         if (!mCacheWasChecked) {
             File originalFile = StorageUtils.getCoverFile(mUuid);
-            try (CoversDbHelper coversDbHelper = CoversDbHelper.getInstance(mContext)) {
-                mBitmap = coversDbHelper.fetchCachedImageIntoImageView(originalFile,
-                        null, mUuid, mWidth, mHeight);
-            }
+            CoversDbAdapter coversDbAdapter = taskContext.getCoversDb();
+            mBitmap = coversDbAdapter.fetchCachedImageIntoImageView(originalFile,
+                    null, mUuid, mWidth, mHeight);
+
             mWasInCache = (mBitmap != null);
         }
 
@@ -244,7 +243,7 @@ public class GetThumbnailTask implements SimpleTask {
                 // Queue the image to be written to the cache. Do it in a separate queue to avoid
                 // delays in displaying image and to avoid contention -- the cache queue only has
                 // one thread. Tell the cache write it can be recycled if we don't have a valid view.
-                ThumbnailCacheWriterTask.writeToCache(mContext, CoversDbHelper.getThumbnailCoverCacheId(mUuid, mWidth, mHeight), mBitmap, !viewIsValid);
+                ThumbnailCacheWriterTask.writeToCache(mContext, CoversDbAdapter.getThumbnailCoverCacheId(mUuid, mWidth, mHeight), mBitmap, !viewIsValid);
             }
             if (viewIsValid) {
                 //LayoutParams lp = new LayoutParams(mBitmap.getWidth(), mBitmap.getHeight());

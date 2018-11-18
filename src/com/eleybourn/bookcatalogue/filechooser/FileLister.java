@@ -1,6 +1,7 @@
 package com.eleybourn.bookcatalogue.filechooser;
 
 import android.app.Activity;
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -40,14 +41,15 @@ public abstract class FileLister implements FragmentTask {
 
     /** Turn an array of Files into an ArrayList of FileDetails. */
     @NonNull
-    protected abstract ArrayList<FileDetails> processList(final @Nullable File[] files);
+    protected abstract ArrayList<FileDetails> processList(final @NonNull Context context, final @Nullable File[] files);
 
     @Override
-    public void run(final @NonNull SimpleTaskQueueProgressDialogFragment fragment, final @NonNull SimpleTaskContext taskContext) {
+    public void run(final @NonNull SimpleTaskQueueProgressDialogFragment fragment,
+                    final @NonNull SimpleTaskContext taskContext) {
         // Get a file list
         File[] files = mRoot.listFiles(getFilter());
         // Filter/fill-in using the subclass
-        mDirs = processList(files);
+        mDirs = processList(fragment.requireContext(), files);
         // Sort it
         Collections.sort(mDirs, mComparator);
     }

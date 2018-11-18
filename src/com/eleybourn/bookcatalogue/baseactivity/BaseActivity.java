@@ -1,9 +1,7 @@
 package com.eleybourn.bookcatalogue.baseactivity;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
@@ -18,7 +16,6 @@ import android.view.MenuItem;
 
 import com.eleybourn.bookcatalogue.About;
 import com.eleybourn.bookcatalogue.AdminActivity;
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.EditBookshelfListActivity;
@@ -31,6 +28,10 @@ import com.eleybourn.bookcatalogue.booklist.BooklistPreferencesActivity;
 import com.eleybourn.bookcatalogue.booklist.BooklistPreferredStylesActivity;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
+import com.eleybourn.bookcatalogue.utils.LocaleUtils;
+import com.eleybourn.bookcatalogue.utils.ThemeUtils;
+
+import java.util.Locale;
 
 /**
  * Base class for all (most) Activity's
@@ -39,6 +40,8 @@ import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
  */
 abstract public class BaseActivity extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener,
+        LocaleUtils.OnLocaleChangedListener,
+        ThemeUtils.OnThemeChangedListener,
         CanBeDirty {
 
     /** The side/navigation panel */
@@ -48,7 +51,7 @@ abstract public class BaseActivity extends AppCompatActivity implements
     private NavigationView mNavigationView;
 
     /** when a locale or theme is changed, a restart of the activity is needed */
-    private boolean mReloadOnResume = false;
+    private boolean mRestartActivityOnResume = false;
 
     /** universal flag used to indicate something was changed and not saved (yet) */
     private boolean mIsDirty = false;
@@ -89,8 +92,13 @@ abstract public class BaseActivity extends AppCompatActivity implements
     @CallSuper
     protected void onCreate(final @Nullable Bundle savedInstanceState) {
         // call setTheme before super.onCreate
-        setTheme(BookCatalogueApp.getThemeResId());
+        setTheme(ThemeUtils.getThemeResId());
+
         super.onCreate(savedInstanceState);
+
+        // we want to be notified of changes
+        ThemeUtils.addListener(this);
+        LocaleUtils.addListener(this);
 
         int layoutId = 0;
 
@@ -114,6 +122,14 @@ abstract public class BaseActivity extends AppCompatActivity implements
         setNavigationView((NavigationView) findViewById(R.id.nav_view));
 
         initToolbar();
+    }
+
+    @Override
+    protected void onDestroy() {
+        LocaleUtils.removeListener(this);
+        ThemeUtils.removeListener(this);
+
+        super.onDestroy();
     }
 
     private void initToolbar() {
@@ -275,7 +291,7 @@ abstract public class BaseActivity extends AppCompatActivity implements
     }
 
     /**
-     * When the user clicks 'back/up':
+     * When the user clicks 'back/up', check if we're clean to leave
      */
     @Override
     @CallSuper
@@ -315,70 +331,42 @@ abstract public class BaseActivity extends AppCompatActivity implements
      * RESULT_OK if the caller should take some action;
      * RESULT_CANCELED when the caller should do nothing
      */
-    public void setActivityResult() {
+    protected void setActivityResult() {
         setResult(changesMade() ? Activity.RESULT_OK : Activity.RESULT_CANCELED);
     }
 
-//    @Override
-//    protected void onPause() {
-//        if (isFinishing()) {
-//            // keep in mind the base method only does logging. Only overridden methods will actually set the result.
-//            setActivityResult();
-//        }
-//        // call super *after* setting the result, so we can override when needed in a fragment
-//        super.onPause();
-//    }
-
-
-    /** saving on some typing */
-    protected SharedPreferences getPrefs() {
-        return getSharedPreferences(BookCatalogueApp.APP_SHARED_PREFERENCES, Context.MODE_PRIVATE);
-    }
-
     /**
-     * When resuming, check and reload activity
+     * When resuming, restart activity if needed
      */
     @Override
     @CallSuper
     protected void onResume() {
         super.onResume();
 
-        updateLocaleIfChanged();
-        updateThemeIfChanged();
-        restartActivityIfNeeded();
-    }
-
-    /**
-     * Reload this activity if locale has changed.
-     */
-    protected void updateLocaleIfChanged() {
-        if (BookCatalogueApp.hasLocalChanged(this.getResources())) {
-            mReloadOnResume = true;
-        }
-    }
-
-    /**
-     * Reload this activity if theme has changed.
-     */
-    private void updateThemeIfChanged() {
-        if (BookCatalogueApp.hasThemeChanged()) {
-            // can change immediately
-            setTheme(BookCatalogueApp.getThemeResId());
-            // but lets make sure it sticks.
-            mReloadOnResume = true;
-        }
-    }
-
-    /**
-     * Restart controlled by setting local mReloadOnResume
-     */
-    protected void restartActivityIfNeeded() {
-        if (mReloadOnResume) {
+        if (mRestartActivityOnResume) {
             if (/* always show debug */ BuildConfig.DEBUG) {
                 Logger.info(this, "Restarting");
             }
             finish();
             startActivity(getIntent());
         }
+    }
+
+    /**
+     * Trigger a restart of this activity in onResume, if the locale has changed.
+     */
+    @Override
+    @CallSuper
+    public void onLocaleChanged(final @NonNull Locale currentLocale) {
+        mRestartActivityOnResume = true;
+    }
+
+    /**
+     * Apply Theme changes
+     */
+    @Override
+    @CallSuper
+    public void onThemeChanged(final int currentTheme) {
+            this.setTheme(currentTheme);
     }
 }

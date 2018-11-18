@@ -46,6 +46,7 @@ public class SearchAdminActivity extends BaseActivity {
     @CallSuper
     protected void onCreate(final @Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTitle(R.string.search_internet);
 
         int requestedTab;
         if (savedInstanceState != null) {

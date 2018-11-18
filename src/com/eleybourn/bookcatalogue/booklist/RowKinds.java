@@ -69,10 +69,10 @@ public final class RowKinds {
     private static final Map<Integer, RowKind> allKinds = new UniqueMap<>();
 
     static {
-        allKinds.put(ROW_KIND_BOOK, new RowKind(R.string.book, "" /* not used */));
+        allKinds.put(ROW_KIND_BOOK, new RowKind(R.string.lbl_book, "" /* not used */));
 
-        allKinds.put(ROW_KIND_AUTHOR, new RowKind(R.string.author, "a"));
-        allKinds.put(ROW_KIND_SERIES, new RowKind(R.string.series, "s"));
+        allKinds.put(ROW_KIND_AUTHOR, new RowKind(R.string.lbl_author, "a"));
+        allKinds.put(ROW_KIND_SERIES, new RowKind(R.string.lbl_series, "s"));
         allKinds.put(ROW_KIND_GENRE, new RowKind(R.string.lbl_genre, "g"));
         allKinds.put(ROW_KIND_PUBLISHER, new RowKind(R.string.lbl_publisher, "p"));
         allKinds.put(ROW_KIND_READ_AND_UNREAD, new RowKind(R.string.read_amp_unread, "r"));
@@ -124,8 +124,8 @@ public final class RowKinds {
 
     static class RowKind {
         @StringRes
-        int nameId;
-        String prefix;
+        final int nameId;
+        final String prefix;
 
         RowKind(final @StringRes int nameId, final @NonNull String prefix) {
             this.nameId = nameId;

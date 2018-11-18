@@ -23,7 +23,7 @@ package com.eleybourn.bookcatalogue.searches.goodreads;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTask;
+import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTaskContext;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 
@@ -33,7 +33,7 @@ import com.eleybourn.bookcatalogue.utils.ImageUtils;
  *
  * @author Philip Warner
  */
-public class GetImageTask implements SimpleTask {
+public class GetImageTask implements SimpleTaskQueue.SimpleTask {
 
     /** URL of image to fetch */
     @NonNull

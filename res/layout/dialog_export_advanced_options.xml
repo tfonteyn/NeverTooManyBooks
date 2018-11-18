@@ -46,7 +46,7 @@
             android:layout_alignEnd="@id/book_details"
             android:layout_alignStart="@id/book_details"
             android:layout_below="@id/book_details"
-            android:text="@string/book_details_blurb"
+            android:text="@string/info_book_details"
             android:textAppearance="?android:attr/textAppearanceSmall" />
     </RelativeLayout>
 
@@ -85,7 +85,7 @@
             android:layout_alignEnd="@+id/cover_images"
             android:layout_alignStart="@+id/cover_images"
             android:layout_below="@id/cover_images"
-            android:text="@string/cover_images_blurb"
+            android:text="@string/info_cover_images"
             android:textAppearance="?android:attr/textAppearanceSmall" />
     </RelativeLayout>
 
@@ -126,7 +126,7 @@
             android:layout_alignEnd="@id/lbl_preferences"
             android:layout_alignStart="@id/lbl_preferences"
             android:layout_below="@id/lbl_preferences"
-            android:text="@string/preferences_blurb"
+            android:text="@string/info_preferences"
             android:textAppearance="?android:attr/textAppearanceSmall" />
     </RelativeLayout>
 
@@ -154,7 +154,7 @@
             android:id="@+id/radioSinceLast"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/all_books_added_or_updated_since_last_full_backup" />
+            android:text="@string/info_all_books_added_or_updated_since_last_full_backup" />
 
         <!-- Disabled to reduce complexity of UI and app; may enable one day. Deemed to be too rarely of use. -->
         <RadioButton

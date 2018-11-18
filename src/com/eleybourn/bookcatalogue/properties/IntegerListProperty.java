@@ -48,14 +48,14 @@ public class IntegerListProperty extends ListProperty<Integer> implements Intege
     @Override
     @Nullable
     protected Integer getGlobalDefault() {
-        return BookCatalogueApp.Prefs.getInt(getPreferenceKey(), Objects.requireNonNull(getDefaultValue()));
+        return BookCatalogueApp.getIntPreference(getPreferenceKey(), Objects.requireNonNull(getDefaultValue()));
     }
 
     @Override
     @NonNull
     protected IntegerListProperty setGlobalDefault(final @Nullable Integer value) {
         Objects.requireNonNull(value);
-        BookCatalogueApp.Prefs.putInt(getPreferenceKey(), value);
+        BookCatalogueApp.getSharedPreferences().edit().putInt(getPreferenceKey(), value).apply();
         return this;
     }
 

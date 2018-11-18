@@ -3,13 +3,13 @@
     <string name="title_add_book">Přidat knihu</string>
     <string name="menu_add_book">Přidat knihu…</string>
     <string name="menu_delete_book">Smazat knihu</string>
-    <string name="author">Autor</string>
-    <string name="title">Titul</string>
+    <string name="lbl_author">Autor</string>
+    <string name="lbl_title">Titul</string>
     <string name="lbl_publisher">Vydavatel</string>
     <string name="lbl_date_published">Datum vydání</string>
     <string name="lbl_rating">Hodnocení</string>
-    <string name="lbl_read">Máte tuto knihu přečtenou?</string>
-    <string name="series">Série</string>
+    <string name="lbl_is_read">Máte tuto knihu přečtenou?</string>
+    <string name="lbl_series">Série</string>
     <string name="lbl_pages">Počet stran</string>
     <string name="btn_confirm_add_book">Přidat knihu</string>
     <string name="btn_confirm_update">Upravit</string>
@@ -35,15 +35,15 @@
     <string name="search_for_books">Hledat knihy</string>
     <string name="search_hint">Hledat autora nebo titul</string>
     <string name="warning_book_not_found">Nepodařilo se nalézt hledanou knihu. Zkuste prosím zadat potřebné údaje manuálně.</string>
-    <string name="series_num">#</string>
+    <string name="lbl_series_num">#</string>
     <string name="title_import_data">Importovat knihy</string>
     <string name="warning_import_be_cautious">Pozor: Importovaná data mohou upravit existující záznamy knih - k takové situaci dojde v případě, že není vyplněno uuid, a id v importovaném souboru je totožné s již existujícím id. Doporučujeme proto zkontrolovat - a případně upravit - toto pole v exportovaném souboru. Pokud byl vytvořen nový záznam, nebo jsou importovány další knihy, tak se ujistěte, že je vyplněno uuid, nebo že pole id je prázdné.</string>
     <string name="error_import_failed_is_location_correct">ERROR: Import dat (z SD karty) selhal. Je soubor na správném místě?</string>
     <string name="search_title">Book Catalogue: Výsledky vyhledávání</string>
     <string name="results_found">Nalezené výsledky</string>
     <string name="menu_administration_long">Administrační funkce</string>
-    <string name="menu_administration_short">Admin</string>
-    <string name="install_scan">Aby bylo možné přečíst čárový kód je nutné, aby ve Vašem telefonu byla nainstalována aplikace Google Goggles nebo zxing barcode scanner.</string>
+    <string name="menu_administration">Admin</string>
+    <string name="info_install_scanner">Aby bylo možné přečíst čárový kód je nutné, aby ve Vašem telefonu byla nainstalována aplikace Google Goggles nebo zxing barcode scanner.</string>
     <string name="title_install_scan">Instalovat čtečku čárových kódů</string>
     <string name="about_lbl_version_number">Číslo verze:</string>
     <string name="about_donate">Pokud chcete podpořit vývoj této aplikace, učiňte tak prosím prostřednictvím mého Amazon Wishlistu nebo přes paypal tlačítko níže. Vzhledem k tomu, že jsem z Austrálie, tak nemohu nabízet &quot;placenou&quot; verzi. :-) </string>
@@ -91,7 +91,7 @@
     <string name="menu_cover_rotate_cw">Otočit po směru hodinových ručiček</string>
     <string name="menu_cover_rotate_ccw">Otočit proti směru hodinových ručiček</string>
     <string name="menu_cover_rotate_180">Otočit o 180 stupňů</string>
-    <string name="lbl_signed">Byla tato kniha podepsána</string>
+    <string name="lbl_is_signed">Byla tato kniha podepsána</string>
     <string name="lbl_read_start">Datum začátku čtení</string>
     <string name="lbl_read_end">Datum ukončení čtení</string>
     <string name="lbl_location">Umístění knihy</string>
@@ -99,7 +99,7 @@
     <string name="warning_duplicate_book_message">Kniha, kterou se pokoušíte přidat, se již v databázi nachází - určitě si přejete přidat její další kopii?</string>
     <string name="menu_cover_add_from_gallery">Z galerie…</string>
     <string name="backup_request">Přejete si zálohovat Vaši databázi na SD kartu</string>
-    <string name="backup_title">Zálohovat?</string>
+    <string name="title_backup">Zálohovat?</string>
     <string name="searching_amazon_books">Vyhledávám na Amazonu</string>
     <string name="searching_google_books">Vyhledávám na Google Books</string>
     <string name="searching_library_thing">Vyhledávám na LibraryThing</string>
@@ -143,9 +143,9 @@
     <string name="warning_required_series">Pole pro sérii je prázdné</string>
     <string name="error_export_failed">Exportování selhalo - nelze zapisovat na SD kartu</string>
     <string name="error_download_thumbnail_failed">Stahování náhledu selhalo - nelze zapisovat na SD kartu</string>
-    <string name="skip_title">Vynechat - %s</string>
-    <string name="num_books_searched">%s knih nalezeno</string>
-    <string name="cancelled_info">Zrušeno - %s</string>
+    <string name="progress_msg_skip_title">Vynechat - %s</string>
+    <string name="progress_end_num_books_searched">%s knih nalezeno</string>
+    <string name="progress_end_cancelled_info">Zrušeno - %s</string>
     <string name="title_edit_book_series">Upravit sérii knihy</string>
     <string name="lbl_family_name">Příjmení</string>
     <string name="lbl_given_names">Křestní jméno</string>
@@ -195,7 +195,7 @@
     <string name="btn_more_info">Více informací.</string>
     <string name="btn_disable_message">Zakázat zprávu</string>
     <string name="lt_reset_messages_info">Čas od času zobrazí aplikace zprávu týkající se LibraryThing. Stiskněte tlačítko níže pro resetování všech těchto zpráv, které byly v minulosti zakázány.</string>
-    <string name="reset">Reset</string>
+    <string name="btn_reset">Reset</string>
     <string name="send_info_text">Stiskněte tlačítko níže pro získání informací o nedávných chybách nebo problémech s aplikací a jejich následné zaslání jednomu z našich vývojářů. Bude vytvořena záložní kopie Vaší databáze a všech logovacích souborů. Pokud si nepřejete poslat některý z těchto souborů, odstraňte jej z přílohy mailu ještě před jeho odesláním.</string>
     <string name="send_info">Poslat informace</string>
     <string name="info_cleanup_files_text">Dočasné soubory momentálně zabírají %s na SD kartě. Logovací soubory a další data jsou ukládána na SD kartu při každé aktualizaci, při zálohování databáze, nebo při pádu aplikace. Stiskněte tlačítko níže pro odstranění těchto dat. Pokud jste se však v minulosti setkal s pádem aplikace, nebo dalšími problémy při jejím používání, uvažujte prosím nejprve o zaslání těchto informací prostřednictvím tlačítka \'Poslat informace\'.</string>
@@ -218,7 +218,7 @@
     <string name="my_books">Moje knihy</string>
     <string name="loan_return_book">Půjčit, vrátit nebo upravit knihu</string>
     <string name="menu_admin_and_prefs">Administrace a možnosti</string>
-    <string name="gr_send_to_goodreads">Poslat do Goodreads</string>
+    <string name="gr_menu_send_to_goodreads">Poslat do Goodreads</string>
     <string name="gr_auth_blurb_part1">Goodreads je internetová síť, jejímž hlavním cílem je "pomoci lidem najít a sdílet knihy, které milují".
     										Mají velmi rozsáhlou databázi knih a recenzí, a pokud jste jejich registovaný uživatel, může 
     										BookCatalogue exportovat Vaše knihy, knihovny a recenze do Goodreads a naopak importovat Vaše knihy, knihovny 
@@ -244,12 +244,12 @@
     <string name="search_internet">Prohledat internet</string>
     <string name="show_results">Zobrazit výsledky</string>
     <string name="rebuild_fts">Obnovit FTS (neotestovaná funkce!)</string>
-    <string name="gr_send_book">Poslat knihu do Goodreads</string>
+    <string name="gr_title_send_book">Poslat knihu do Goodreads</string>
     <string name="legacy_task">Odkaz úlohy</string>
     <string name="occurred_at">nastal v %1$s</string>
     <string name="unknown_uc">NEZNÁMÉ</string>
     <string name="warning_book_was_deleted_uc">TATO KNIHA BYLA SMAZÁNA</string>
-    <string name="by">(kým) %1$s</string>
+    <string name="lbl_by_authors">(kým) %1$s</string>
     <string name="warning_no_matching_book_found">Nebyla nalezena odpovídající kniha</string>
     <string name="warning_no_isbn_stored_for_book">Kniha nemá uložen ISBN</string>
     <string name="select_an_action">Zvolte akci</string>
@@ -259,10 +259,10 @@
     <string name="authorized">Autorizováno</string>
     <string name="not_authorized">Neautorizováno</string>
     <string name="gr_auth_error">Goodreads autorizace skončila chybou.</string>
-    <string name="if_the_problem_persists">Pokud problémy přetrvají, kontaktujte správce.</string>
+    <string name="error_if_the_problem_persists">Pokud problémy přetrvají, kontaktujte správce.</string>
     <string name="warning_book_no_longer_exists">Zadaná kniha již neexistuje</string>
     <string name="please_enter_search_criteria">Prosím vložte kritéria pro vyhledávání</string>
-    <string name="error_while_searching">Během vyhledávání došlo k chybě.</string>
+    <string name="gr_error_while_searching">Během vyhledávání došlo k chybě.</string>
     <string name="gr_send_all_books_results">%1$d knih zpracováno: %2$d úspěšně odesláno, %3$d bez ISBN a %4$d s ISBN, které nebyly v Goodreads nalezeny.</string>
     <string name="x_of_y">%1$d z %2$d</string>
     <string name="gr_send_book_to_goodreads">Poslat knihu %1$s do Goodreads</string>
@@ -296,7 +296,7 @@
     <string name="style_builtin_author_year">Autor a rok</string>
     <string name="empty_with_brackets">(prázdné)</string>
     <string name="menu_preferences_booklist">Možnosti seznamu knih</string>
-    <string name="extra_book_details">Podrobnosti o knize</string>
+    <string name="blp_extra_book_details">Podrobnosti o knize</string>
     <string name="general">Obecné</string>
     <string name="lbl_bookshelves">Police</string>
     <string name="credentials">Volitelná rozšíření</string>
@@ -306,10 +306,10 @@
     <string name="progress_msg_optimizing_databases">Optimalizování databáze…</string>
     <string name="progress_msg_starting_up">Spouštění…</string>
     <string name="title_book_catalogue_startup">BookCatalogue spuštěn</string>
-    <string name="book_list_state">Stav seznamu knih</string>
-    <string name="book_list_state_always_start_expanded">Vždy otevřít seznam knih rozbalený</string>
-    <string name="book_list_state_always_start_collapsed">Vždy otevřít seznam knih sbalený</string>
-    <string name="book_list_state_remember_state">Zachovat stav seznamu knih</string>
+    <string name="blp_list_state">Stav seznamu knih</string>
+    <string name="blp_state_start_expanded">Vždy otevřít seznam knih rozbalený</string>
+    <string name="blp_state_start_collapsed">Vždy otevřít seznam knih sbalený</string>
+    <string name="blp_state_remember">Zachovat stav seznamu knih</string>
     <string name="searching_goodreads">Vyhledávám na Goodreads</string>
     <string name="menu_edit_booklist_styles">Spravovat styly pro seznam knih</string>
     <string name="menu_show_more_ellipsis">Zobrazit vše…</string>
@@ -356,13 +356,13 @@
     <string name="use_default_setting">Použít defaultní nastavení</string>
     <string name="books_with_multiple_show_book_under_each_1s">Pod každým %1$s</string>
     <string name="books_with_multiple_show_book_under_primary_1s_only">Pouze pod primárním %1$s</string>
-    <string name="format_of_author_names">Formát zobrazení jména autora</string>
-    <string name="given_name_first_eg">Zobrazovat nejprve křestní jméno, tj. \'Bill Smith\'</string>
-    <string name="family_name_first_eg">Zobrazovat nejprve příjmení, tj. \'Smith, Bill\'</string>
+    <string name="blp_format_author_name">Formát zobrazení jména autora</string>
+    <string name="blp_format_author_name_given_first">Zobrazovat nejprve křestní jméno, tj. \'Bill Smith\'</string>
+    <string name="blp_format_author_name_family_first">Zobrazovat nejprve příjmení, tj. \'Smith, Bill\'</string>
     <string name="thumbnails">Náhledy</string>
-    <string name="size_of_booklist_items">Velikost položek na seznamu knih</string>
-    <string name="normal">Normální</string>
-    <string name="smaller">Menší</string>
+    <string name="blp_item_size">Velikost položek na seznamu knih</string>
+    <string name="blp_item_size_normal">Normální</string>
+    <string name="blp_item_size_smaller">Menší</string>
     <string name="title_select_style">Zvolit styl</string>
     <string name="booklist_background_style">Styl pozadí seznamu knih</string>
     <string name="textured_background">Obrázek na pozadí</string>
@@ -375,7 +375,7 @@
     <string name="menu_delete_style">Smazat styl</string>
     <string name="menu_edit_booklist_style">Upravit styl</string>
     <string name="menu_clone_style">Klonovat styl</string>
-    <string name="dash_or_dash">- nebo -</string>
+    <string name="about_dash_or_dash">- nebo -</string>
     <string name="about_donate_paypal">Podpořit prostřednictvím PayPal</string>
     <string name="style_builtin_compact">Kompaktní</string>
     <string name="style_is_user_defined">Definován uživatelem</string>
@@ -385,7 +385,7 @@
     <string name="requested_task_is_already_queued">Požadovaná úloha je již ve frontě</string>
     <string name="export_task_is_already_queued">Úloha "export" je již v současné době ve frontě a musí být dokončena dříve, než může být tato úloha spuštěna</string>
     <string name="import_task_is_already_queued">Úloha "import" je již v současné době ve frontě a musí být dokončena dříve, než může být tato úloha spuštěna</string>
-    <string name="gr_action_cannot_blah_blah">Tato akce nemůže být dokončena, dokud nebude aplikace autorizována na webových stránkách Goodreads. Pokud jste již aplikaci autorizoval, opakujte prosím akci znovu. \n\nPřejete si autorizovat aplikaci nyní?</string>
+    <string name="gr_action_cannot_be_completed">Tato akce nemůže být dokončena, dokud nebude aplikace autorizována na webových stránkách Goodreads. Pokud jste již aplikaci autorizoval, opakujte prosím akci znovu. \n\nPřejete si autorizovat aplikaci nyní?</string>
     <string name="btn_tell_me_more">Dozvědět se více</string>
     <string name="retry_x_of_y_next_at_z">Opakovat %1$d z %2$d dále na %3$s</string>
     <string name="completed">Kompletní</string>
@@ -397,8 +397,8 @@
     										od chvíle, kdy jste naposledy kopíroval z nebo do Goodreads (spolu se všemi knihami,
     										které doposud nebyly odeslány) nebo můžete aktualizaci zrušit.
     										\n\nPokud jste doposud žádnou knihu neodeslal, pak mezi první a druhou volbou není žádký rozdíl.</string>
-    <string name="send_all">Odeslat vše</string>
-    <string name="send_updated">Odeslat aktualizované</string>
+    <string name="gr_btn_send_all">Odeslat vše</string>
+    <string name="gr_btn_send_updated">Odeslat aktualizované</string>
     <string name="gr_sync_with_goodreads">Synchronizovat s Goodreads</string>
     <string name="menu_cover_options">Možnosti obálky…</string>
     <string name="show_events_ellipsis">Zobrazit události…</string>
@@ -430,7 +430,7 @@
     <string name="added_year">Rok přidání</string>
     <string name="added_month">Měsíc přidání</string>
     <string name="added_day">Den přidání</string>
-    <string name="book">Kniha</string>
+    <string name="lbl_book">Kniha</string>
     <string name="in">V</string>
     <string name="size">Velikost</string>
     <string name="updated">Aktualizování</string>
@@ -442,6 +442,5 @@
     <string name="menu_edit_format">Upravit formát…</string>
     <string name="title_edit_format">Upravit jméno formátu</string>
     <string name="warning_required_name">Jméno nesmí být prázdné</string>
-    <string name="title_reorder">a|A|an|An|the|The</string>
     <string name="tab_lbl_content">Obsah</string>
 </resources>

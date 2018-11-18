@@ -25,7 +25,7 @@
         <TextView
             android:id="@+id/all_books_blurb"
             style="@style/row_option_blurb"
-            android:text="@string/all_books_blurb" />
+            android:text="@string/info_all_books_will_be_imported" />
     </LinearLayout>
 
     <LinearLayout

@@ -23,7 +23,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTask;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTaskContext;
 
 import java.io.Serializable;
@@ -109,7 +108,7 @@ public class Terminator {
      *
      * @author pjw
      */
-    private static class TerminatorTask implements SimpleTask {
+    private static class TerminatorTask implements SimpleTaskQueue.SimpleTask {
 
         @Override
         public void run(final @NonNull SimpleTaskContext taskContext) {

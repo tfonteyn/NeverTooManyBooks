@@ -113,33 +113,41 @@ public class GoodreadsManager {
     private static final String ACCESS_SECRET = "GoodReads.AccessToken.Secret";
     private static final String REQUEST_TOKEN = "GoodReads.RequestToken.Token";
     private static final String REQUEST_SECRET = "GoodReads.RequestToken.Secret";
-
+    /** the developer keys */
     private final static String DEV_KEY = BookCatalogueApp.getManifestString(GOODREADS_DEV_KEY);
     private final static String DEV_SECRET = BookCatalogueApp.getManifestString(GOODREADS_DEV_SECRET);
 
     /** Set to true when the credentials have been successfully verified. */
     private static boolean mHasValidCredentials = false;
+
     /** Cached when credentials have been verified. */
     @Nullable
     private static String mAccessToken = null;
     @Nullable
     private static String mAccessSecret = null;
-    /** Local copies of user data retrieved when the credentials were verified */
+    /** Local copy of user name retrieved when the credentials were verified */
     @Nullable
     private static String mUsername = null;
+    /** Local copy of user id retrieved when the credentials were verified */
     private static long mUserId = 0;
-    /** Stores the last time an API request was made to avoid breaking API rules. */
+
+    /** to control access to mLastRequestTime, we synchronize on this final Object */
+    @NonNull
+    private static final Object LAST_REQUEST_TIME_LOCK = new Object();
+    /** Stores the last time an API request was made to avoid breaking API rules.
+     * Only modify this value from inside a synchronized (LAST_REQUEST_TIME_LOCK) */
     @NonNull
     private static Long mLastRequestTime = 0L;
+
     /** OAuth helpers */
     private final CommonsHttpOAuthConsumer mConsumer;
+    /** OAuth helpers */
     private final OAuthProvider mProvider;
-    /** Local API object */
+
     @Nullable
     private IsbnToId mIsbnToId = null;
     @Nullable
     private GoodreadsBookshelves mBookshelfList = null;
-    /** Local API object */
     @Nullable
     private ShelfAddBookHandler mAddBookHandler = null;
     @Nullable
@@ -163,11 +171,6 @@ public class GoodreadsManager {
         }
     }
 
-    /** developer check. */
-    public boolean isAvailable() {
-        return !DEV_KEY.isEmpty() && !DEV_SECRET.isEmpty();
-    }
-
     /**
      * Clear the credentials from the preferences and local cache
      */
@@ -176,8 +179,10 @@ public class GoodreadsManager {
         mAccessSecret = "";
         mHasValidCredentials = false;
         // Get the stored token values from prefs, and setup the consumer if present
-        BookCatalogueApp.Prefs.putString(ACCESS_TOKEN, "");
-        BookCatalogueApp.Prefs.putString(ACCESS_SECRET, "");
+        SharedPreferences.Editor ed = BookCatalogueApp.getSharedPreferences().edit();
+        ed.putString(ACCESS_TOKEN, "");
+        ed.putString(ACCESS_SECRET, "");
+        ed.apply();
     }
 
     /**
@@ -191,10 +196,10 @@ public class GoodreadsManager {
 
         // Get the stored token values from prefs, and setup the consumer if present
 
-        mAccessToken = BookCatalogueApp.Prefs.getStringOrEmpty(ACCESS_TOKEN);
-        mAccessSecret = BookCatalogueApp.Prefs.getStringOrEmpty(ACCESS_SECRET);
+        mAccessToken = BookCatalogueApp.getStringPreference(ACCESS_TOKEN, null);
+        mAccessSecret = BookCatalogueApp.getStringPreference(ACCESS_SECRET, null);
 
-        return !(mAccessToken.isEmpty() || mAccessSecret.isEmpty());
+        return !(mAccessToken == null || mAccessToken.isEmpty() || mAccessSecret == null || mAccessSecret.isEmpty());
     }
 
     /**
@@ -211,7 +216,7 @@ public class GoodreadsManager {
     private static void waitUntilRequestAllowed() {
         long now = System.currentTimeMillis();
         long wait;
-        synchronized (mLastRequestTime) {
+        synchronized (LAST_REQUEST_TIME_LOCK) {
             wait = 1000 - (now - mLastRequestTime);
 
             // mLastRequestTime must be updated while synchronized. As soon as this
@@ -279,7 +284,7 @@ public class GoodreadsManager {
      */
     @Nullable
     static Date getLastSyncDate() {
-        String last = BookCatalogueApp.Prefs.getString(LAST_SYNC_DATE, null);
+        String last = BookCatalogueApp.getStringPreference(LAST_SYNC_DATE, null);
         if (last == null || last.isEmpty()) {
             return null;
         } else {
@@ -298,7 +303,12 @@ public class GoodreadsManager {
      * @param d Last date
      */
     static void setLastSyncDate(final @Nullable Date d) {
-        BookCatalogueApp.Prefs.putString(LAST_SYNC_DATE, d == null ? null : DateUtils.utcSqlDateTime(d));
+        BookCatalogueApp.getSharedPreferences().edit().putString(LAST_SYNC_DATE, d == null ? null : DateUtils.utcSqlDateTime(d)).apply();
+    }
+
+    /** developer check. */
+    public boolean isAvailable() {
+        return !DEV_KEY.isEmpty() && !DEV_SECRET.isEmpty();
     }
 
     /**
@@ -323,15 +333,14 @@ public class GoodreadsManager {
     }
 
     /**
-     * Check if the current credentials (either cached or in prefs) are valid, and cache the result.
-     * If cached credentials were used, call recursively after clearing the cached values.
+     * Check if the current credentials (from prefs) are valid, and cache the result.
      *
      * @author Philip Warner
      */
     private boolean validateCredentials() {
         // Get the stored token values from prefs, and setup the consumer
-        mAccessToken = BookCatalogueApp.Prefs.getStringOrEmpty(ACCESS_TOKEN);
-        mAccessSecret = BookCatalogueApp.Prefs.getStringOrEmpty(ACCESS_SECRET);
+        mAccessToken = BookCatalogueApp.getStringPreference(ACCESS_TOKEN, "");
+        mAccessSecret = BookCatalogueApp.getStringPreference(ACCESS_SECRET, "");
 
         mConsumer.setTokenWithSecret(mAccessToken, mAccessSecret);
 
@@ -342,22 +351,20 @@ public class GoodreadsManager {
                 return false;
             }
 
-            // Save result...
+            // Future usage
             mUsername = authUserApi.getUsername();
             mUserId = authUserApi.getUserId();
 
+            // Cache the result to avoid web checks later
+            mHasValidCredentials = true;
+            return true;
+
         } catch (Exception e) {
-            // Something went wrong. Clear the access token, set credentials as bad, and if we used
-            // cached values, retry by getting them from prefs.
+            // Something went wrong. Clear the access token, set credentials as bad
             mHasValidCredentials = false;
             mAccessToken = null;
             return false;
         }
-
-        // Cache the result to avoid web checks later
-        mHasValidCredentials = true;
-
-        return true;
     }
 
     /**
@@ -382,19 +389,19 @@ public class GoodreadsManager {
         }
 
         if (DEBUG_SWITCHES.GOODREADS && BuildConfig.DEBUG) {
-            Logger.info(this,"requestAuthorization authUrl: " + authUrl);
+            Logger.info(this, "requestAuthorization authUrl: " + authUrl);
         }
         //TEST: double check if this ever gives issues!
         if (!authUrl.startsWith("http://") && !authUrl.startsWith("https://")) {
             // Make a valid URL for the parser (some come back without a schema)
             authUrl = "http://" + authUrl;
             if (DEBUG_SWITCHES.GOODREADS && BuildConfig.DEBUG) {
-                Logger.info(this,"requestAuthorization: replacing with: " + authUrl);
+                Logger.info(this, "requestAuthorization: replacing with: " + authUrl);
             }
         }
 
         // Save the token; this object may well be destroyed before the web page has returned.
-        final SharedPreferences.Editor ed = BookCatalogueApp.Prefs.edit();
+        final SharedPreferences.Editor ed = BookCatalogueApp.getSharedPreferences().edit();
         ed.putString(REQUEST_TOKEN, mConsumer.getToken());
         ed.putString(REQUEST_SECRET, mConsumer.getTokenSecret());
         ed.apply();
@@ -405,18 +412,18 @@ public class GoodreadsManager {
     }
 
     /**
-     * Called by the callback activity, GoodReadsAuthorizationActivity, when a request has been
-     * authorized by the user.
+     * Called by the callback activity, {@link GoodreadsAuthorizationResultCheck},
+     * when a request has been authorized by the user.
      *
      * @author Philip Warner
      */
     void handleAuthentication(final @NonNull Context context) throws NotAuthorizedException {
         // Get the saved request tokens.
-        String tokenString = BookCatalogueApp.Prefs.getStringOrEmpty(REQUEST_TOKEN);
-        String secretString = BookCatalogueApp.Prefs.getStringOrEmpty(REQUEST_SECRET);
+        String tokenString = BookCatalogueApp.getStringPreference(REQUEST_TOKEN, null);
+        String secretString = BookCatalogueApp.getStringPreference(REQUEST_SECRET, null);
 
-        if (tokenString.isEmpty() || secretString.isEmpty()) {
-            throw new IllegalStateException("Expected a request token to be stored in preferences; none found");
+        if (tokenString == null || tokenString.isEmpty() || secretString == null || secretString.isEmpty()) {
+            throw new IllegalStateException("No request token found in preferences");
         }
 
         // Update the consumer.
@@ -436,7 +443,7 @@ public class GoodreadsManager {
         mAccessToken = mConsumer.getToken();
         mAccessSecret = mConsumer.getTokenSecret();
 
-        final SharedPreferences.Editor ed = BookCatalogueApp.Prefs.edit();
+        final SharedPreferences.Editor ed = BookCatalogueApp.getSharedPreferences().edit();
         ed.putString(ACCESS_TOKEN, mAccessToken);
         ed.putString(ACCESS_SECRET, mAccessSecret);
         ed.apply();
@@ -704,7 +711,7 @@ public class GoodreadsManager {
     /**
      * Wrapper to send an entire book, including shelves, to Goodreads.
      *
-     * @param db          DB connection
+     * @param db            DB connection
      * @param bookCursorRow single book to send
      *
      * @return Disposition of book

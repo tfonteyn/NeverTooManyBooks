@@ -44,10 +44,9 @@ import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 import java.io.File;
-import java.util.Date;
 import java.util.Objects;
 
-import static com.eleybourn.bookcatalogue.BookCatalogueApp.PREF_LAST_BACKUP_FILE;
+import static com.eleybourn.bookcatalogue.backup.BackupManager.PREF_LAST_BACKUP_FILE;
 
 /**
  * FileChooserBaseActivity activity to choose an archive file to open/save
@@ -99,7 +98,7 @@ public class BackupChooserActivity extends FileChooserBaseActivity implements
     @NonNull
     @Override
     protected FileChooserFragment getChooserFragment() {
-        String lastBackupFile = getPrefs().getString(PREF_LAST_BACKUP_FILE, StorageUtils.getSharedStorage().getAbsolutePath());
+        String lastBackupFile = BookCatalogueApp.getStringPreference(PREF_LAST_BACKUP_FILE, StorageUtils.getSharedStorage().getAbsolutePath());
         //TODO: what happens on very first backup ?
         return FileChooserFragment.newInstance(new File(Objects.requireNonNull(lastBackupFile)), getDefaultFileName());
     }
@@ -158,8 +157,8 @@ public class BackupChooserActivity extends FileChooserBaseActivity implements
             case IS_SAVE: {
                 if (!success) {
                     String msg = getString(R.string.error_backup_failed)
-                            + " " + getString(R.string.please_check_sd_writable)
-                            + "\n\n" + getString(R.string.if_the_problem_persists);
+                            + " " + getString(R.string.error_backup_failed_check_sd_writable)
+                            + "\n\n" + getString(R.string.error_if_the_problem_persists);
 
                     AlertDialog dialog = new AlertDialog.Builder(this)
                             .setTitle(R.string.backup_to_archive)
@@ -180,7 +179,7 @@ public class BackupChooserActivity extends FileChooserBaseActivity implements
                     return;
                 }
                 // Show a helpful message
-                String msg = getString(R.string.archive_complete_details,
+                String msg = getString(R.string.info_archive_complete_details,
                         mBackupFile.getParent(),
                         mBackupFile.getName(),
                         Utils.formatFileSize(mBackupFile.length()));
@@ -202,9 +201,9 @@ public class BackupChooserActivity extends FileChooserBaseActivity implements
 
             case IS_OPEN: {
                 if (!success) {
-                    String msg = getString(R.string.import_failed)
-                            + " " + getString(R.string.please_check_sd_readable)
-                            + "\n\n" + getString(R.string.if_the_problem_persists);
+                    String msg = getString(R.string.error_import_failed)
+                            + " " + getString(R.string.error_import_failed_check_sd_readable)
+                            + "\n\n" + getString(R.string.error_if_the_problem_persists);
                     AlertDialog dialog = new AlertDialog.Builder(this)
                             .setTitle(R.string.import_from_archive)
                             .setMessage(msg)
@@ -278,7 +277,7 @@ public class BackupChooserActivity extends FileChooserBaseActivity implements
 
             default:
                 if (settings.dateFrom == null) {
-                    String lastBackup = getPrefs().getString(BookCatalogueApp.PREF_LAST_BACKUP_DATE, null);
+                    String lastBackup = BookCatalogueApp.getStringPreference(BackupManager.PREF_LAST_BACKUP_DATE, null);
                     if (lastBackup != null && !lastBackup.isEmpty()) {
                         settings.dateFrom = DateUtils.parseDate(lastBackup);
                     } else {

@@ -25,6 +25,7 @@ import android.content.Intent;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -178,7 +179,7 @@ public class BookEvents {
             }
 
             holder.title.setText(title);
-            holder.author.setText(String.format(context.getString(R.string.by), author));
+            holder.author.setText(String.format(context.getString(R.string.lbl_by_authors), author));
             holder.error.setText(this.getDescription());
 
             String date = String.format("(" + context.getString(R.string.occurred_at) + ")",
@@ -274,8 +275,11 @@ public class BookEvents {
     private static class GrSendBookEvent extends BookEvent {
         private static final long serialVersionUID = 1L;
 
-        GrSendBookEvent(long bookId, @NonNull String message) {
-            super(bookId, message);
+        private @NonNull Context mContext;
+
+        GrSendBookEvent(final @NonNull Context context, long bookId, @StringRes int messageId) {
+            super(bookId, context.getResources().getString(messageId));
+            mContext = context;
         }
 
         /**
@@ -285,7 +289,7 @@ public class BookEvents {
             QueueManager qm = BookCatalogueApp.getQueueManager();
             SendOneBookTask task = new SendOneBookTask(mBookId);
             // TODO: MAKE IT USE THE SAME QUEUE? Why????
-            qm.enqueueTask(task, BCQueueManager.QUEUE_SMALL_JOBS);
+            qm.enqueueTask(mContext, task, BCQueueManager.QUEUE_SMALL_JOBS);
             qm.deleteEvent(this.getId());
         }
 
@@ -367,8 +371,8 @@ public class BookEvents {
     public static class GrNoMatchEvent extends GrSendBookEvent implements HintOwner {
         private static final long serialVersionUID = -7684121345325648066L;
 
-        public GrNoMatchEvent(final long bookId) {
-            super(bookId, BookCatalogueApp.getResourceString(R.string.warning_no_matching_book_found));
+        public GrNoMatchEvent(final @NonNull Context context, final long bookId) {
+            super(context, bookId, R.string.warning_no_matching_book_found);
         }
 
         @Override
@@ -386,8 +390,8 @@ public class BookEvents {
     public static class GrNoIsbnEvent extends GrSendBookEvent implements HintOwner {
         private static final long serialVersionUID = 7260496259505914311L;
 
-        public GrNoIsbnEvent(final long bookId) {
-            super(bookId, BookCatalogueApp.getResourceString(R.string.warning_no_isbn_stored_for_book));
+        public GrNoIsbnEvent(final @NonNull Context context, final long bookId) {
+            super(context, bookId, R.string.warning_no_isbn_stored_for_book);
         }
 
         @Override

@@ -19,6 +19,7 @@
  */
 package com.eleybourn.bookcatalogue.backup.tar;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.backup.BackupContainer;
@@ -73,11 +74,14 @@ public class TarBackupContainer implements BackupContainer {
     /** Backup file spec */
     @NonNull
     private final File mFile;
-
+    @NonNull
+    private final Context mContext;
     /**
      * Constructor
      */
-    public TarBackupContainer(final @NonNull File file) {
+    public TarBackupContainer(final @NonNull Context context,
+                              final @NonNull File file) {
+        mContext = context;
         mFile = file;
     }
 
@@ -115,5 +119,10 @@ public class TarBackupContainer implements BackupContainer {
         }
 
         return true;
+    }
+
+    @Override
+    public Context getContext() {
+        return mContext;
     }
 }

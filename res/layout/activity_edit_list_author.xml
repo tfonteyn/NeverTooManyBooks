@@ -32,7 +32,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:completionThreshold="2"
-            android:hint="@string/author"
+            android:hint="@string/lbl_author"
             android:nextFocusDown="@+id/title"
             android:paddingEnd="@dimen/padding_border"
             android:paddingStart="@dimen/padding_border" />

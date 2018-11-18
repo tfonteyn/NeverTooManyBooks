@@ -153,7 +153,7 @@ public abstract class FileChooserBaseActivity extends BaseActivity implements
             FileChooserFragment bf = (FileChooserFragment) frag;
             File file = bf.getSelectedFile();
             if (!file.exists() || !file.isFile()) {
-                StandardDialogs.showUserMessage(this, R.string.please_select_an_existing_file);
+                StandardDialogs.showUserMessage(this, R.string.warning_select_an_existing_file);
                 return;
             }
             onOpen(file);
@@ -169,7 +169,7 @@ public abstract class FileChooserBaseActivity extends BaseActivity implements
             FileChooserFragment bf = (FileChooserFragment) frag;
             File file = bf.getSelectedFile();
             if ((file.exists() && !file.isFile())) {
-                StandardDialogs.showUserMessage(this, R.string.please_select_a_non_directory);
+                StandardDialogs.showUserMessage(this, R.string.warning_select_a_non_directory);
                 return;
             }
             onSave(file);

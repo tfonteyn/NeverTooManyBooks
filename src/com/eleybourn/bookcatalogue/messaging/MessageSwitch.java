@@ -36,6 +36,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Switchboard class for disconnecting listener instances from task instances. Maintains
@@ -64,12 +65,15 @@ public class MessageSwitch<T, U> {
     private static final Handler mHandler = new Handler();
     /** ID counter for unique sender IDs; set > 0 to allow for possible future static senders **/
     @NonNull
-    private static Long mSenderIdCounter = 1024L;
+    private static final AtomicLong mSenderIdCounter = new AtomicLong(1024L);
+
     /** List of message sources */
     @SuppressLint("UseSparseArrays")
     private final Map<Long, MessageSender<U>> mSenders = Collections.synchronizedMap(new HashMap<Long, MessageSender<U>>());
+
     /** List of all messages in the message queue, both messages and replies */
     private final LinkedBlockingQueue<RoutingSlip> mMessageQueue = new LinkedBlockingQueue<>();
+
     /** List of message listener queues */
     @SuppressLint("UseSparseArrays")
     private final Map<Long, MessageListeners> mListeners = Collections.synchronizedMap(new HashMap<Long, MessageListeners>());
@@ -244,7 +248,6 @@ public class MessageSwitch<T, U> {
      * @author pjw
      */
     private interface MessageSender<U> extends AutoCloseable {
-        @NonNull
         Long getId();
 
         @Override
@@ -402,7 +405,8 @@ public class MessageSwitch<T, U> {
 
     /** Implementation of Message sender object */
     private class MessageSenderImpl implements MessageSender<U> {
-        private final Long mId = ++mSenderIdCounter;
+        // mId will be used as a key in maps, while 'long' would work, let's be consistent and use Long.
+        private final Long mId = mSenderIdCounter.incrementAndGet();
         @NonNull
         private final U mController;
 
@@ -411,7 +415,6 @@ public class MessageSwitch<T, U> {
             mController = controller;
         }
 
-        @NonNull
         @Override
         public Long getId() {
             return mId;

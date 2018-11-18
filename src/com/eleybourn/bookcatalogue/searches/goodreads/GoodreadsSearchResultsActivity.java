@@ -72,7 +72,6 @@ public class GoodreadsSearchResultsActivity extends BaseListActivity {
         super.onCreate(savedInstanceState);
 
         mDb = new CatalogueDBAdapter(this);
-        mDb.open();
 
         // Look for search criteria
         String criteria = getIntent().getStringExtra(BKEY_SEARCH_CRITERIA);
@@ -102,7 +101,7 @@ public class GoodreadsSearchResultsActivity extends BaseListActivity {
         } catch (Exception e) {
             Logger.error(e, "Failed when searching goodreads");
             StandardDialogs.showUserMessage(this,
-                    getString(R.string.error_while_searching) + " " + getString(R.string.if_the_problem_persists));
+                    getString(R.string.gr_error_while_searching) + " " + getString(R.string.error_if_the_problem_persists));
             setResult(Activity.RESULT_CANCELED);
             finish();
             return;

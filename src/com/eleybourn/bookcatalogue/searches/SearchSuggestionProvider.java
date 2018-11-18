@@ -34,6 +34,15 @@ import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
  */
 public class SearchSuggestionProvider extends SearchRecentSuggestionsProvider {
 
+    /**
+     * can't use getContext, because setupSuggestions() MUST be called from the constructor,
+     * at which point getContext == null
+     * alternative is hardcoding the package name of course
+     *
+     * Matches the Manifest entry:
+     *
+     * android:authorities="${packageName}.SearchSuggestionProvider"
+     */
     private final static String AUTHORITY = BookCatalogueApp.getAppContext().getPackageName() +
             ".SearchSuggestionProvider";
 
@@ -56,8 +65,7 @@ public class SearchSuggestionProvider extends SearchRecentSuggestionsProvider {
         }
         if (mDb == null) {
             //noinspection ConstantConditions
-            mDb = new CatalogueDBAdapter(this.getContext())
-                    .open();
+            mDb = new CatalogueDBAdapter(this.getContext());
         }
         return mDb.fetchSearchSuggestions(selectionArgs[0]);
     }
