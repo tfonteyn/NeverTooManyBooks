@@ -276,13 +276,8 @@
     <string name="crash_dialog_text">BookCatalogue завершился с ошибкой. Пожалуйста, если хотите, опишите что-нибудь, что, по вашему мнению, могло быть связано с этим. Нажмите "ОК", чтобы отправить по почте. Вы увидите e-mail перед отправлением.</string>
     <string name="crash_dialog_comment_prompt">Ваши комментарии (или оставьте пустым):</string>
     <string name="crash_dialog_ok_message">Спасибо!</string>
-    <string name="no_series">(без серии)</string>
     <string name="booklist_read">Прочитана</string>
     <string name="booklist_unread">Не прочитана</string>
-    <string name="no_genre">(без жанра)</string>
-    <string name="no_title">(без заголовка)</string>
-    <string name="no_publisher">(без издателя)</string>
-    <string name="no_author">(без автора)</string>
     <string name="no_date">(без даты)</string>
     <string name="thumbnails_show">Показывать миниатюры</string>
     <string name="thumbnails_prefer_large">Большие миниатюры предпочтительней</string>
@@ -295,7 +290,7 @@
     <string name="style_builtin_publication_date">Дата публикации</string>
     <string name="style_builtin_added_date">Дата добавления</string>
     <string name="style_builtin_author_year">Автор и год</string>
-    <string name="empty_with_brackets">(пусто)</string>
+    <string name="not_set_with_brackets">(пусто)</string>
     <string name="menu_preferences_booklist">Список книг</string>
     <string name="blp_extra_book_details">Дополнительная информация</string>
     <string name="general">Основные</string>

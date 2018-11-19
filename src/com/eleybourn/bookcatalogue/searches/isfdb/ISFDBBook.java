@@ -329,7 +329,7 @@ public class ISFDBBook extends AbstractBase {
 
         // ISFDB does not offer the books language on the main page (although they store it in their database)
         // default to a localised 'English" as ISFDB is after all (I presume) 95% english
-//        bookData.putString(UniqueId.KEY_BOOK_LANGUAGE, Locale.ENGLISH.geDisplayNameDisplayName());
+//        bookData.putString(UniqueId.KEY_BOOK_LANGUAGE, Locale.ENGLISH.getDisplayName());
         //V83: use the code
         bookData.putString(UniqueId.KEY_BOOK_LANGUAGE, Locale.ENGLISH.getISO3Language());
 

@@ -2944,7 +2944,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
     public ArrayList<String> getLanguages() {
         ArrayList<String> names = new ArrayList<>();
         for (String code : getLanguageCodes()) {
-            names.add(LocaleUtils.geDisplayNameDisplayName(code));
+            names.add(LocaleUtils.getDisplayName(code));
         }
 
         return names;

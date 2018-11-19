@@ -197,9 +197,15 @@ public abstract class BookBaseFragment extends Fragment implements DataEditor {
     @CallSuper
     public void onResume() {
         super.onResume();
-
         //TOMF: reload locale if changed ! register as a listener
 
+        populateFrame();
+    }
+
+    /**
+     * Populate all Fields with the data from the Book
+     */
+    protected void populateFrame() {
         // load the book, while disabling the AfterFieldChangeListener
         mFields.setAfterFieldChangeListener(null);
         Book book = getBookManager().getBook();

@@ -280,13 +280,8 @@
     <string name="crash_dialog_text">Φαίνεται πως το BookCatalogue σταμάτησε να λειτουργεί. Εαν είναι δυνατό περιγράψτε παρακάτω ό,τι πιστεύετε πως είναι σχετικό και πατήστε ΟΚ για μας στείλετε email με πληροφορίες για την βλάβη. Θα δείτε το email πρωτού αποσταλεί.</string>
     <string name="crash_dialog_comment_prompt">Τα σχόλιά σας (ή αφήστε το κενό):</string>
     <string name="crash_dialog_ok_message">Ευχαριστούμε!</string>
-    <string name="no_series">(χωρίς σειρά)</string>
     <string name="booklist_read">Αναγνωσμένα</string>
     <string name="booklist_unread">Μη αναγνωσμένα</string>
-    <string name="no_genre">(χωρίς είδος)</string>
-    <string name="no_title">(χωρίς τίτλο)</string>
-    <string name="no_publisher">(χωρίς εκδότη)</string>
-    <string name="no_author">(χωρίς συγγραφέα)</string>
     <string name="no_date">(χωρίς ημερομηνία)</string>
     <string name="thumbnails_show">Εμφάνιση μικρογραφιών</string>
     <string name="thumbnails_prefer_large">Προτίμησε μεγάλες μικρογραφίες</string>
@@ -299,7 +294,7 @@
     <string name="style_builtin_publication_date">Ημερομηνία έκδοσης</string>
     <string name="style_builtin_added_date">Ημερομηνία προσθήκης</string>
     <string name="style_builtin_author_year">Συγγραφέας και χρονιά</string>
-    <string name="empty_with_brackets">(άδειο)</string>
+    <string name="not_set_with_brackets">(άδειο)</string>
 
     <string name="menu_preferences_booklist">Προτιμήσεις λίστας βιβλίων</string>
     <string name="blp_extra_book_details">Επιπλέον λεπτομέρειες βιβλίου</string>

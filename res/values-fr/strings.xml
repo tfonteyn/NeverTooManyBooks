@@ -281,13 +281,8 @@
     <string name="crash_dialog_text">Book Catalogue a planté. Décrivez ci-dessous tout ce qui vous semble opportun et pressez « OK » pour nous envoyer un courriel à propos de ce plantage. Vous pourrez lire votre courriel avant son envoi.</string>
     <string name="crash_dialog_comment_prompt">Votre commentaire (ou laisser vide) :</string>
     <string name="crash_dialog_ok_message">Merci !</string>
-    <string name="no_series">(aucune série)</string>
     <string name="booklist_read">Lu</string>
     <string name="booklist_unread">Non lu</string>
-    <string name="no_genre">(Pas de genre)</string>
-    <string name="no_title">(Pas de titre)</string>
-    <string name="no_publisher">(Pas d\'éditeur)</string>
-    <string name="no_author">(Pas d\'auteur)</string>
     <string name="no_date">(Pas de date)</string>
     <string name="thumbnails_show">Montrer les miniatures</string>
     <string name="thumbnails_prefer_large">Preférer les grandes miniatures</string>
@@ -300,7 +295,7 @@
     <string name="style_builtin_publication_date">Date de publication</string>
     <string name="style_builtin_added_date">Ajouté le</string>
     <string name="style_builtin_author_year">Auteur et année</string>
-    <string name="empty_with_brackets">(vide)</string>
+    <string name="not_set_with_brackets">(vide)</string>
     <string name="menu_preferences_booklist">Préférences de la liste de livres</string>
     <string name="blp_extra_book_details">Détails supplémentaires</string>
     <string name="general">Général</string>

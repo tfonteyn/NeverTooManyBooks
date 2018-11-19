@@ -281,13 +281,8 @@
     <string name="crash_dialog_text">Parece que BookCatalogue se ha detenido. Si es posible, indique cualquier detalle que usted considere relevante y pulse OK para enviarnos un correo electrónico sobre el problema. Podrá revisar el correo antes de que se envíe.</string>
     <string name="crash_dialog_comment_prompt">Sus comentarios (puede dejarlos en blanco):</string>
     <string name="crash_dialog_ok_message">¡Muchas gracias!</string>
-    <string name="no_series">(sin serie)</string>
     <string name="booklist_read">Leídos</string>
     <string name="booklist_unread">No leídos</string>
-    <string name="no_genre">(sin género)</string>
-    <string name="no_title">(sin título)</string>
-    <string name="no_publisher">(sin Editorial)</string>
-    <string name="no_author">(sin autor)</string>
     <string name="no_date">(sin fecha)</string>
     <string name="thumbnails_show">Mostrar miniaturas</string>
     <string name="thumbnails_prefer_large">Mostrar miniaturas grandes</string>
@@ -300,7 +295,7 @@
     <string name="style_builtin_publication_date">Fecha de publicación</string>
     <string name="style_builtin_added_date">Fecha de inclusión</string>
     <string name="style_builtin_author_year">Autor y Año</string>
-    <string name="empty_with_brackets">(vacío)</string>
+    <string name="not_set_with_brackets">(vacío)</string>
 
     <string name="menu_preferences_booklist">Preferencias para listas de libros</string>
     <string name="blp_extra_book_details">Detalles adicionales</string>

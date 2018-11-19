@@ -420,7 +420,7 @@ public class BooksOnBookshelf extends BaseListActivity implements
                                                  final @NonNull SelectOneDialog.SimpleDialogMenuInfo menuInfo) {
         mListCursor.moveToPosition(menuInfo.position);
 
-        return mListHandler.onContextItemSelected(menuItem, menuInfo.targetView,
+        return mListHandler.onContextItemSelected(menuItem,
                 mDb, mListCursor.getCursorRow(), BooksOnBookshelf.this);
     }
 

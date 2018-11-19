@@ -123,7 +123,7 @@ public class LocaleUtils {
      * @return the display name for the language, or the input string if it was an invalid ISO3 code
      */
     @NonNull
-    public static String geDisplayNameDisplayName(final @NonNull String iso) {
+    public static String getDisplayName(final @NonNull String iso) {
         return new Locale(iso).getDisplayLanguage();
     }
 

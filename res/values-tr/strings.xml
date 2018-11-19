@@ -273,13 +273,8 @@
     <string name="crash_dialog_text">Sanırız BookCatalogue çöktü. Eğer bu çökme ile ilgili olabileceğini düşündüğünüz bir şeyler varsa lütfen "Tamam"a basarak bu çökme hakkında bir e-posta gönderin. Göndermeden önce e-postayı göreceksiniz.</string>
     <string name="crash_dialog_comment_prompt">Yorumlarınız (isteğe bağlı):</string>
     <string name="crash_dialog_ok_message">Sağ olun!</string>
-    <string name="no_series">(seri yok)</string>
     <string name="booklist_read">Okunmuş</string>
     <string name="booklist_unread">Okunmamış</string>
-    <string name="no_genre">(tür yok)</string>
-    <string name="no_title">(ad yok)</string>
-    <string name="no_publisher">(yayımcı yok)</string>
-    <string name="no_author">(yazar yok)</string>
     <string name="no_date">(günay yok)</string>
     <string name="thumbnails_show">Ufak resimleri göster</string>
     <string name="thumbnails_prefer_large">Büyük resimleri yeğle</string>
@@ -292,7 +287,7 @@
     <string name="style_builtin_publication_date">Yayın tarihi</string>
     <string name="style_builtin_added_date">Eklenen günay</string>
     <string name="style_builtin_author_year">Önce yazar sonra yıl</string>
-    <string name="empty_with_brackets">(boş)</string>
+    <string name="not_set_with_brackets">(boş)</string>
     <string name="menu_preferences_booklist">Kitap dizelgesi yeğlenenleri</string>
     <string name="blp_extra_book_details">Ek kitap ayarları</string>
     <string name="general">Genel</string>

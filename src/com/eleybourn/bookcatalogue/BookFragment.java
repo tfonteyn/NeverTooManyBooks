@@ -55,7 +55,6 @@ public class BookFragment extends BookBaseFragment implements BookManager {
     private BaseActivity mActivity;
 
     private FlattenedBooklist mFlattenedBooklist = null;
-    //FIXME: broken since moved to fragment
     private GestureDetector mGestureDetector;
 
     /* ------------------------------------------------------------------------------------------ */
@@ -324,6 +323,11 @@ public class BookFragment extends BookBaseFragment implements BookManager {
     private void initGestureDetector() {
         mGestureDetector = new GestureDetector(this.getContext(), new SimpleOnGestureListener() {
             @Override
+            public boolean onDown(MotionEvent e) {
+                return true;
+            }
+
+            @Override
             public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
                 if (mFlattenedBooklist == null) {
                     return false;
@@ -345,6 +349,7 @@ public class BookFragment extends BookBaseFragment implements BookManager {
                         // only reload if it's a new book
                         if (bookId != getBook().getBookId()) {
                             getBook().reload(mDb, bookId);
+                            populateFrame();
                         }
                     }
                     return true;
@@ -356,15 +361,10 @@ public class BookFragment extends BookBaseFragment implements BookManager {
 
         //noinspection ConstantConditions
         getView().setOnTouchListener(new View.OnTouchListener() {
-
             @SuppressLint("ClickableViewAccessibility")
             @Override
             public boolean onTouch(final @NonNull View v, final @NonNull MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_UP) {
-                    return mGestureDetector != null && mGestureDetector.onTouchEvent(event);
-                } else {
-                    return false;
-                }
+                return mGestureDetector.onTouchEvent(event);
             }
         });
     }

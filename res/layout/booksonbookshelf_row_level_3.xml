@@ -17,14 +17,14 @@
         tools:ignore="UselessParent">
 
         <TextView
-            android:id="@+id/filename"
+            android:id="@+id/name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingEnd="2dp"
             android:paddingStart="2dp"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textStyle="bold"
-            tools:text="third level ?"
+            tools:text="third level"
             android:textIsSelectable="false" />
 
         <View style="@style/divider_horizontalList" />

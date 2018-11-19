@@ -278,13 +278,8 @@
     <string name="crash_dialog_text">Het lijkt er op dat BookCatalogue is gecrasht. Beschrijf indien mogelijk hieronder wat de oorzaak kan zijn en druk op "OK" om ons een e-mail te sturen over deze crash. U kunt het bericht inzien voordat het wordt verzonden.</string>
     <string name="crash_dialog_comment_prompt">Uw commentaar (of laat dit leeg):</string>
     <string name="crash_dialog_ok_message">Dank u!</string>
-    <string name="no_series">(geen series)</string>
     <string name="booklist_read">Gelezen</string>
     <string name="booklist_unread">Ongelezen</string>
-    <string name="no_genre">(geen genre)</string>
-    <string name="no_title">(geen titel)</string>
-    <string name="no_publisher">(geen uitgever)</string>
-    <string name="no_author">(geen auteur)</string>
     <string name="no_date">(geen datum)</string>
     <string name="thumbnails_show">Toon Miniaturen</string>
     <string name="thumbnails_prefer_large">Prefereer grote miniaturen</string>
@@ -297,7 +292,7 @@
     <string name="style_builtin_publication_date">Publicatiedatum</string>
     <string name="style_builtin_added_date">Datum toegevoegd</string>
     <string name="style_builtin_author_year">Auteur en jaar</string>
-    <string name="empty_with_brackets">(leeg)</string>
+    <string name="not_set_with_brackets">(leeg)</string>
     <string name="menu_preferences_booklist">Boekenlijst Voorkeuren</string>
     <string name="blp_extra_book_details">Extra boekdetails</string>
     <string name="general">Algemeen</string>

@@ -276,13 +276,8 @@ anschließend auf eine leeren Seite landen. Klicken Sie einfach auf den "Zurück
     <string name="crash_dialog_text">Anscheinend ist BookCatalogue abgestürzt. Beschreiben Sie nach Möglichkeit alle relevanten Hinweise und drücken Sie "OK", um uns eine E-Mail zu diesem Absturz zu senden. Sie werden das E-Mail vor dem Versand sehen können.</string>
     <string name="crash_dialog_comment_prompt">Ihr Kommentar (darf auch leer bleiben):</string>
     <string name="crash_dialog_ok_message">Danke!</string>
-    <string name="no_series">(keine Serie)</string>
     <string name="booklist_read">Gelesen</string>
     <string name="booklist_unread">Ungelesen</string>
-    <string name="no_genre">(kein Genre)</string>
-    <string name="no_title">(kein Titel)</string>
-    <string name="no_publisher">(kein Verlag)</string>
-    <string name="no_author">(kein Autor)</string>
     <string name="no_date">(kein Datum)</string>
     <string name="thumbnails_show">Cover-Bilder anzeigen</string>
     <string name="thumbnails_prefer_large">Große Cover-Bilder bevorzugen</string>
@@ -295,7 +290,7 @@ anschließend auf eine leeren Seite landen. Klicken Sie einfach auf den "Zurück
     <string name="style_builtin_publication_date">Datum der Veröffentlichung</string>
     <string name="style_builtin_added_date">Erfassungsdatum</string>
     <string name="style_builtin_author_year">Autor und Jahr</string>
-    <string name="empty_with_brackets">(leer)</string>
+    <string name="not_set_with_brackets">(leer)</string>
     <string name="menu_preferences_booklist">Einstellungen der Bücherliste</string>
     <string name="blp_extra_book_details">Zusätzliche Buchdetails</string>
     <string name="general">Allgemein</string>

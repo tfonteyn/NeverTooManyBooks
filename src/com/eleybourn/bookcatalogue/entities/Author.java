@@ -30,6 +30,8 @@ import com.eleybourn.bookcatalogue.utils.Utils;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Class to hold author data. Used in lists and import/export.
@@ -37,8 +39,38 @@ import java.util.Objects;
  * @author Philip Warner
  */
 public class Author implements Serializable, Utils.ItemWithIdFixup {
+
     private static final char SEPARATOR = ',';
     private static final long serialVersionUID = 4597779234440821872L;
+
+    /**
+     * FIXME: author middle name; needs internationalisation ?
+     *
+     * Ursula Le Guin
+     * Marianne De Pierres
+     * A. E. Van Vogt
+     * Rip Von Ronkel
+     *
+     */
+    private static final Pattern FAMILY_NAME_PREFIX = Pattern.compile("[LlDd]e|[Vv][oa]n");
+
+    /**
+     * FIXME: author name suffixes; needs internationalisation ? probably not.
+     *
+     * Foo Bar Jr.
+     * Foo Bar Jr
+     * Foo Bar Junior
+     * Foo Bar Sr.
+     * Foo Bar Sr
+     * Foo Bar Senior
+     * (j/s lower or upper case)
+     *
+     * Not covered yet, and seen in the wild:
+     * "James Tiptree, Jr."  -> has comma which breaks algorithm
+     * "James jr. Tiptree" -> suffix as a middle name.
+     */
+    private static final Pattern FAMILY_NAME_SUFFIX = Pattern.compile("[Jj]r\\.|[Jj]r|[Jj]unior|[Ss]r\\.|[Ss]r|[Ss]enior");
+
     public long id;
     public String familyName;
     public String givenNames;
@@ -77,42 +109,62 @@ public class Author implements Serializable, Utils.ItemWithIdFixup {
      * This will return the parsed author name based on a String.
      * The name can be in either "family, given" or "given family" format.
      *
-     * @param name a String containing the name e.g. "Isaac Asimov" or "Asimov, Isaac"
+     * Special rules, see {@link #FAMILY_NAME_PREFIX} and {@link #FAMILY_NAME_SUFFIX}
      *
-     * @return a String array containing the family and given names. e.g. ['Asimov', 'Isaac']
+     * Not covered are people with multiple, and not concatenated, last names.
+     *
+     * @param name a String containing the name
+     *
+     * @return a String array containing the family and given names.
      */
     public static Author toAuthor(final @NonNull String name) {
         int commaIndex = name.indexOf(",");
+        // if we have a comma, assume the names are already formatted.
         if (commaIndex > 0) {
-            // we have a comma
             return new Author(name.substring(0, commaIndex).trim(), name.substring(commaIndex + 1).trim());
-        } else {
-            StringBuilder family = new StringBuilder();
-            int fLen = 1;
-            String[] names = name.split(" ");
-            if (names.length > 2) {
-                String sName = names[names.length - 2];
-                /* e.g. Ursula Le Guin or Marianne De Pierres FIXME: needs internationalisation or at least add some more like 'Van', 'Des' !*/
-                if (sName.matches("[LlDd]e")) {
-                    family.append(names[names.length - 2]).append(" ");
-                    fLen = 2;
-                }
-                sName = names[names.length - 1];
-                /* e.g. Foo Bar Jr  FIXME: needs internationalisation ?  */
-                if (sName.matches("[Jj]r|[Jj]unior|[Ss]r|[Ss]enior")) {
-                    family.append(names[names.length - 2]).append(" ");
-                    fLen = 2;
-                }
-            }
-            family.append(names[names.length - 1]);
-
-            StringBuilder given = new StringBuilder();
-            for (int i = 0; i < names.length - fLen; i++) {
-                given.append(names[i]).append(" ");
-            }
-
-            return new Author(family.toString().trim(), given.toString().trim());
         }
+
+        String[] names = name.split(" ");
+        // two easy cases
+        switch (names.length) {
+            case 1:
+                // reminder: don't call new Author(names[0]) as that would recurse.
+                return new Author(names[0], "");
+            case 2:
+                return new Author(names[1], names[0]);
+        }
+
+        // 3 or more parts, check the family name for any pre and suffixes
+        StringBuilder familyName = new StringBuilder();
+        // the position to check, start at the end.
+        int pos = names.length - 1;
+
+        Matcher matchSuffix = FAMILY_NAME_SUFFIX.matcher(names[pos]);
+        if (!matchSuffix.find()) {
+            // no suffix.
+            familyName.append(names[pos]);
+            pos--;
+        } else {
+            // suffix and the element before it are part of the last name.
+            familyName.append(names[pos - 1]).append(" ").append(names[pos]);
+            pos -= 2;
+        }
+
+        // the last name could also have a prefix
+        Matcher matchMiddleName = FAMILY_NAME_PREFIX.matcher(names[pos]);
+        if (matchMiddleName.find()) {
+            // insert it at the front of the family name
+            familyName.insert(0, names[pos] + " ");
+            pos--;
+        }
+
+        // everything else are considered given names
+        StringBuilder givenNames = new StringBuilder();
+        for (int i = 0; i <=pos; i++) {
+            givenNames.append(names[i]).append(" ");
+        }
+
+        return new Author(familyName.toString().trim(), givenNames.toString().trim());
     }
 
     /**

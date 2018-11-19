@@ -276,13 +276,8 @@
     <string name="crash_dialog_text">BookCatalogue sembra essersi bloccato. Se possibile, comunicaci qui sotto qualsiasi cosa ritieni pertinente e clicca \"OK\" per inviarci un\'email relativa al blocco. Potrai verificare l\'email prima dell\'invio.</string>
     <string name="crash_dialog_comment_prompt">I tuoi commenti (o lascia in bianco):</string>
     <string name="crash_dialog_ok_message">Grazie!</string>
-    <string name="no_series">(collana non indicata)</string>
     <string name="booklist_read">Letto</string>
     <string name="booklist_unread">Non letto</string>
-    <string name="no_genre">(genere non indicato)</string>
-    <string name="no_title">(titolo non indicato)</string>
-    <string name="no_publisher">(editore non indicato)</string>
-    <string name="no_author">(autore non indicato)</string>
     <string name="no_date">(data non indicata)</string>
     <string name="thumbnails_show">Mostra miniature</string>
     <string name="thumbnails_prefer_large">Mostra miniature grandi</string>
@@ -295,7 +290,7 @@
     <string name="style_builtin_publication_date">Data di pubblicazione</string>
     <string name="style_builtin_added_date">Data di inserimento</string>
     <string name="style_builtin_author_year">Autore ed Anno</string>
-    <string name="empty_with_brackets">(vuoto)</string>
+    <string name="not_set_with_brackets">(vuoto)</string>
     <string name="menu_preferences_booklist">Preferenze Elenchi Libri</string>
     <string name="blp_extra_book_details">Dettagli libro aggiuntivi</string>
     <string name="general">Generale</string>

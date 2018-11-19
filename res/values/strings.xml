@@ -987,11 +987,8 @@
     <string name="title_isbn_search">ISBN Search</string>
 
     <string name="not_set">Not Set</string>
-    <string name="no_series">(no series)</string>
-    <string name="no_genre">(no genre)</string>
-    <string name="no_title">(no title)</string>
-    <string name="no_publisher">(no publisher)</string>
-    <string name="no_author">(no author)</string>
+    <string name="not_set_with_brackets">(Not Set)</string>
+
     <string name="no_date">(no date)</string>
 
     <!-- name of virtual bookshelf which displays all books -->
@@ -1032,8 +1029,6 @@
     <string name="x_of_y">%1$d of %2$d</string>
     <string name="booklist_read">Read</string>
     <string name="booklist_unread">Unread</string>
-
-    <string name="empty_with_brackets">(empty)</string>
 
     <string name="credentials">Credentials</string>
 

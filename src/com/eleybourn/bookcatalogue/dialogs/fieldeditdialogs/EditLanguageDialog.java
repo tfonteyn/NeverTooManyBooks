@@ -36,6 +36,7 @@ import java.util.Locale;
  * FIXME: as we moved to ISO3 codes... how much use is this ?
  */
 public class EditLanguageDialog extends EditStringDialog {
+
     public EditLanguageDialog(final @NonNull Activity activity,
                               final @NonNull CatalogueDBAdapter db,
                               final @NonNull Runnable onChanged) {

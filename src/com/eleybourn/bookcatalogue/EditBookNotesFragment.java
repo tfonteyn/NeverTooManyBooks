@@ -301,7 +301,7 @@ public class EditBookNotesFragment extends BookBaseFragment implements
      * @return List of ISO currency codes
      */
     @NonNull
-    public List<String> getPricePaidCurrencyCodes() {
+    private List<String> getPricePaidCurrencyCodes() {
         if (mPricePaidCurrencies == null) {
             mPricePaidCurrencies = mDb.getCurrencyCodes(UniqueId.KEY_BOOK_PRICE_PAID_CURRENCY);
         }

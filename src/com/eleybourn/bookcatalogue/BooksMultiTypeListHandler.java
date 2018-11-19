@@ -52,7 +52,7 @@ import com.eleybourn.bookcatalogue.database.DBExceptions;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursorRow;
 import com.eleybourn.bookcatalogue.database.cursors.BooklistCursorRow;
-import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
+import com.eleybourn.bookcatalogue.datamanager.Datum;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.SelectOneDialog;
@@ -74,6 +74,7 @@ import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTaskContext;
 import com.eleybourn.bookcatalogue.utils.BookUtils;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
+import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.RTE;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
@@ -418,17 +419,15 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
      *
      * ENHANCE: Consider using {@link LocalBroadcastManager} instead to all BooklistChangeListener
      *
-     * @param menuItem   Related MenuItem
-     * @param targetView The view on which was clicked, only needed for 'read' status changes
-     * @param db         CatalogueDBAdapter
-     * @param cursorRow  Row view for affected cursor row
-     * @param activity   Calling Activity
+     * @param menuItem  Related MenuItem
+     * @param db        CatalogueDBAdapter
+     * @param cursorRow Row view for affected cursor row
+     * @param activity  Calling Activity
      *
      * @return <tt>true</tt> if handled.
      */
     @SuppressWarnings("UnusedReturnValue")
     boolean onContextItemSelected(final @NonNull MenuItem menuItem,
-                                  final @NonNull View targetView,
                                   final @NonNull CatalogueDBAdapter db,
                                   final @NonNull BooklistCursorRow cursorRow,
                                   final @NonNull FragmentActivity activity) {
@@ -668,7 +667,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
      *
      * @return a 'Holder' object for the row pointed to by rowView.
      */
-    private BooklistHolder newHolder(BooklistCursorRow rowView) {
+    private BooklistHolder newHolder(final @NonNull BooklistCursorRow rowView) {
         final int k = rowView.getRowKind();
 
         switch (k) {
@@ -676,64 +675,68 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
 
             case RowKinds.ROW_KIND_BOOK:
                 return new BookHolder();
-            case RowKinds.ROW_KIND_SERIES:
-                return new GenericStringHolder(rowView, DOM_SERIES_NAME, R.string.no_series);
-            case RowKinds.ROW_KIND_TITLE_LETTER:
-                return new GenericStringHolder(rowView, DOM_TITLE_LETTER, R.string.no_title);
-            case RowKinds.ROW_KIND_GENRE:
-                return new GenericStringHolder(rowView, DOM_BOOK_GENRE, R.string.no_genre);
-            case RowKinds.ROW_KIND_LANGUAGE:
-                return new GenericStringHolder(rowView, DOM_BOOK_LANGUAGE, R.string.empty_with_brackets);
-            case RowKinds.ROW_KIND_AUTHOR:
-                return new GenericStringHolder(rowView, DOM_AUTHOR_FORMATTED, R.string.no_author);
-            case RowKinds.ROW_KIND_FORMAT:
-                return new GenericStringHolder(rowView, DOM_BOOK_FORMAT, R.string.empty_with_brackets);
-            case RowKinds.ROW_KIND_PUBLISHER:
-                return new GenericStringHolder(rowView, DOM_BOOK_PUBLISHER, R.string.no_publisher);
-            case RowKinds.ROW_KIND_READ_AND_UNREAD:
-                return new GenericStringHolder(rowView, DOM_READ_STATUS, R.string.empty_with_brackets);
-            case RowKinds.ROW_KIND_LOANED:
-                return new GenericStringHolder(rowView, DOM_LOANED_TO, R.string.empty_with_brackets);
-            case RowKinds.ROW_KIND_LOCATION:
-                return new GenericStringHolder(rowView, DOM_BOOK_LOCATION, R.string.empty_with_brackets);
-            case RowKinds.ROW_KIND_BOOKSHELF:
-                return new GenericStringHolder(rowView, DOM_BOOKSHELF, R.string.empty_with_brackets);
-            case RowKinds.ROW_KIND_RATING:
-                return new RatingHolder(rowView, DOM_BOOK_RATING.name);
 
+            /* generic strings */
+            case RowKinds.ROW_KIND_AUTHOR:
+                return new GenericStringHolder(rowView, DOM_AUTHOR_FORMATTED.name, R.string.not_set_with_brackets);
+            case RowKinds.ROW_KIND_SERIES:
+                return new GenericStringHolder(rowView, DOM_SERIES_NAME.name, R.string.not_set_with_brackets);
+            case RowKinds.ROW_KIND_TITLE_LETTER:
+                return new GenericStringHolder(rowView, DOM_TITLE_LETTER.name, R.string.not_set_with_brackets);
+            case RowKinds.ROW_KIND_PUBLISHER:
+                return new GenericStringHolder(rowView, DOM_BOOK_PUBLISHER.name, R.string.not_set_with_brackets);
+            case RowKinds.ROW_KIND_GENRE:
+                return new GenericStringHolder(rowView, DOM_BOOK_GENRE.name, R.string.not_set_with_brackets);
+            case RowKinds.ROW_KIND_FORMAT:
+                return new GenericStringHolder(rowView, DOM_BOOK_FORMAT.name, R.string.not_set_with_brackets);
+            case RowKinds.ROW_KIND_LOCATION:
+                return new GenericStringHolder(rowView, DOM_BOOK_LOCATION.name, R.string.not_set_with_brackets);
+            case RowKinds.ROW_KIND_LOANED:
+                return new GenericStringHolder(rowView, DOM_LOANED_TO.name, R.string.not_set_with_brackets);
+            case RowKinds.ROW_KIND_BOOKSHELF:
+                return new GenericStringHolder(rowView, DOM_BOOKSHELF.name, R.string.not_set_with_brackets);
+
+            /* some special formatting holders */
+            case RowKinds.ROW_KIND_RATING:
+                return new RatingHolder(rowView, DOM_BOOK_RATING.name, R.string.not_set_with_brackets);
+            case RowKinds.ROW_KIND_LANGUAGE:
+                return new LanguageHolder(rowView, DOM_BOOK_LANGUAGE.name, R.string.not_set_with_brackets);
+            case RowKinds.ROW_KIND_READ_AND_UNREAD:
+                return new ReadUnreadHolder(rowView, DOM_READ_STATUS.name, R.string.not_set_with_brackets);
+
+            /* Dates */
             case RowKinds.ROW_KIND_DATE_PUBLISHED_YEAR:
-                return new GenericStringHolder(rowView, DOM_DATE_PUBLISHED_YEAR, R.string.empty_with_brackets);
+                return new GenericStringHolder(rowView, DOM_DATE_PUBLISHED_YEAR.name, R.string.not_set_with_brackets);
             case RowKinds.ROW_KIND_DATE_PUBLISHED_MONTH:
-                return new MonthHolder(rowView, DOM_DATE_PUBLISHED_MONTH.name);
+                return new MonthHolder(rowView, DOM_DATE_PUBLISHED_MONTH.name, R.string.not_set_with_brackets);
 
             case RowKinds.ROW_KIND_DATE_ACQUIRED_YEAR:
-                return new GenericStringHolder(rowView, DOM_DATE_ACQUIRED_YEAR, R.string.empty_with_brackets);
+                return new GenericStringHolder(rowView, DOM_DATE_ACQUIRED_YEAR.name, R.string.not_set_with_brackets);
             case RowKinds.ROW_KIND_DATE_ACQUIRED_MONTH:
-                return new MonthHolder(rowView, DOM_DATE_ACQUIRED_MONTH.name);
+                return new MonthHolder(rowView, DOM_DATE_ACQUIRED_MONTH.name, R.string.not_set_with_brackets);
             case RowKinds.ROW_KIND_DATE_ACQUIRED_DAY:
-                return new GenericStringHolder(rowView, DOM_DATE_ACQUIRED_DAY, R.string.empty_with_brackets);
+                return new GenericStringHolder(rowView, DOM_DATE_ACQUIRED_DAY.name, R.string.not_set_with_brackets);
 
             case RowKinds.ROW_KIND_DATE_ADDED_YEAR:
-                return new GenericStringHolder(rowView, DOM_DATE_ADDED_YEAR, R.string.empty_with_brackets);
+                return new GenericStringHolder(rowView, DOM_DATE_ADDED_YEAR.name, R.string.not_set_with_brackets);
             case RowKinds.ROW_KIND_DATE_ADDED_MONTH:
-                return new MonthHolder(rowView, DOM_DATE_ADDED_MONTH.name);
+                return new MonthHolder(rowView, DOM_DATE_ADDED_MONTH.name, R.string.not_set_with_brackets);
             case RowKinds.ROW_KIND_DATE_ADDED_DAY:
-                return new GenericStringHolder(rowView, DOM_DATE_ADDED_DAY, R.string.empty_with_brackets);
+                return new GenericStringHolder(rowView, DOM_DATE_ADDED_DAY.name, R.string.not_set_with_brackets);
 
             case RowKinds.ROW_KIND_DATE_READ_YEAR:
-                return new GenericStringHolder(rowView, DOM_DATE_READ_YEAR, R.string.empty_with_brackets);
+                return new GenericStringHolder(rowView, DOM_DATE_READ_YEAR.name, R.string.not_set_with_brackets);
             case RowKinds.ROW_KIND_DATE_READ_MONTH:
-                return new MonthHolder(rowView, DOM_DATE_READ_MONTH.name);
+                return new MonthHolder(rowView, DOM_DATE_READ_MONTH.name, R.string.not_set_with_brackets);
             case RowKinds.ROW_KIND_DATE_READ_DAY:
-                return new GenericStringHolder(rowView, DOM_DATE_READ_DAY, R.string.empty_with_brackets);
+                return new GenericStringHolder(rowView, DOM_DATE_READ_DAY.name, R.string.not_set_with_brackets);
 
             case RowKinds.ROW_KIND_DATE_LAST_UPDATE_YEAR:
-                return new GenericStringHolder(rowView, DOM_DATE_LAST_UPDATE_YEAR, R.string.empty_with_brackets);
+                return new GenericStringHolder(rowView, DOM_DATE_LAST_UPDATE_YEAR.name, R.string.not_set_with_brackets);
             case RowKinds.ROW_KIND_DATE_LAST_UPDATE_MONTH:
-                return new MonthHolder(rowView, DOM_DATE_UPDATE_MONTH.name);
+                return new MonthHolder(rowView, DOM_DATE_UPDATE_MONTH.name, R.string.not_set_with_brackets);
             case RowKinds.ROW_KIND_DATE_LAST_UPDATE_DAY:
-                return new GenericStringHolder(rowView, DOM_DATE_UPDATE_DAY, R.string.empty_with_brackets);
-
+                return new GenericStringHolder(rowView, DOM_DATE_UPDATE_DAY.name, R.string.not_set_with_brackets);
 
             default:
                 throw new RTE.IllegalTypeException("" + k);
@@ -983,6 +986,164 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
     }
 
     /**
+     * Holder to handle any field that can be displayed as a simple string.
+     * Assumes there is a 'name' TextView and an optional enclosing ViewGroup
+     * called ROW_INFO.
+     *
+     * @author Philip Warner
+     */
+    public static class GenericStringHolder extends BooklistHolder {
+        /** Index of related data column */
+        final int mSourceCol;
+        /** String ID to use when data is blank */
+        @StringRes
+        final int mNoDataId;
+
+        /*** View to populate */
+        TextView mTextView;
+
+        /**
+         * Constructor
+         *
+         * @param rowView  Row view that represents a typical row of this kind.
+         * @param source   Column name to use
+         * @param noDataId String ID to use when data is blank
+         */
+        private GenericStringHolder(final @NonNull BooklistCursorRow rowView,
+                                    final @NonNull String source,
+                                    final @StringRes int noDataId) {
+            mSourceCol = rowView.getColumnIndex(source);
+            if (mSourceCol < 0) {
+                throw new DBExceptions.ColumnNotPresent(source);
+            }
+            mNoDataId = noDataId;
+        }
+
+        @Override
+        public void map(final @NonNull BooklistCursorRow rowView, final @NonNull View view) {
+            rowInfo = view.findViewById(R.id.BLB_ROW_DETAILS);
+            mTextView = view.findViewById(R.id.name);
+        }
+
+        @Override
+        public void set(final @NonNull BooklistCursorRow rowView, final @NonNull View view, final int level) {
+            String s = rowView.getString(mSourceCol);
+            setText(mTextView, s, mNoDataId, level);
+        }
+
+        @Override
+        public View newView(final @NonNull BooklistCursorRow rowView,
+                            final @NonNull LayoutInflater inflater,
+                            final @NonNull ViewGroup parent,
+                            final int level) {
+            return inflater.inflate(getDefaultLayoutId(level), parent, false);
+        }
+    }
+
+    /**
+     * Holder for a row that displays a 'rating'.
+     *
+     * @author Philip Warner
+     */
+    public static class RatingHolder extends GenericStringHolder {
+
+        RatingHolder(final @NonNull BooklistCursorRow rowView,
+                     final @NonNull String source,
+                     final @StringRes int noDataId) {
+            super(rowView, source, noDataId);
+        }
+
+        @Override
+        public void set(final @NonNull BooklistCursorRow rowView, final @NonNull View view, final int level) {
+            String s = rowView.getString(mSourceCol);
+            try {
+                int i = (int) Float.parseFloat(s);
+                // If valid, get the name
+                if (i >= 0 && i <= 5) {
+                    s = view.getContext().getResources().getQuantityString(R.plurals.n_stars, i, i);
+                }
+            } catch (Exception e) {
+                Logger.error(e);
+            }
+            setText(mTextView, s, mNoDataId, level);
+        }
+    }
+
+    /**
+     * Holder for a row that displays a 'language'.
+     */
+    public static class LanguageHolder extends GenericStringHolder {
+
+        private LanguageHolder(final @NonNull BooklistCursorRow rowView,
+                               final @NonNull String source,
+                               final @StringRes int noDataId) {
+            super(rowView, source, noDataId);
+        }
+
+        @Override
+        public void set(final @NonNull BooklistCursorRow rowView, final @NonNull View view, final int level) {
+            String s = rowView.getString(mSourceCol);
+            if (s != null && !s.isEmpty()) {
+                s = LocaleUtils.getDisplayName(s);
+            }
+            setText(this.mTextView, s, mNoDataId, level);
+        }
+    }
+
+    /**
+     * Holder for a row that displays a 'language'.
+     */
+    public static class ReadUnreadHolder extends GenericStringHolder {
+
+        private ReadUnreadHolder(final @NonNull BooklistCursorRow rowView,
+                                 final @NonNull String source,
+                                 final @StringRes int noDataId) {
+            super(rowView, source, noDataId);
+        }
+
+        @Override
+        public void set(final @NonNull BooklistCursorRow rowView, final @NonNull View view, final int level) {
+            String s = rowView.getString(mSourceCol);
+            if (Datum.toBoolean(s, true)) {
+                s = BookCatalogueApp.getResourceString(R.string.booklist_read);
+            } else {
+                s = BookCatalogueApp.getResourceString(R.string.booklist_unread);
+            }
+            setText(this.mTextView, s, mNoDataId, level);
+        }
+    }
+
+    /**
+     * Holder for a row that displays a 'month'. This code turns a month number into a
+     * locale-based month name.
+     *
+     * @author Philip Warner
+     */
+    public static class MonthHolder extends GenericStringHolder {
+
+        private MonthHolder(final @NonNull BooklistCursorRow rowView,
+                            final @NonNull String source,
+                            final @StringRes int noDataId) {
+            super(rowView, source, noDataId);
+        }
+
+        @Override
+        public void set(final @NonNull BooklistCursorRow rowView, final @NonNull View v, final int level) {
+            String s = rowView.getString(mSourceCol);
+            try {
+                int i = Integer.parseInt(s);
+                // If valid, get the name
+                if (i > 0 && i <= 12) {
+                    s = DateUtils.getMonthName(i);
+                }
+            } catch (Exception e) {
+                Logger.error(e);
+            }
+            setText(mTextView, s, mNoDataId, level);
+        }
+    }
+
+    /**
      * Holder for a {@link RowKinds#ROW_KIND_BOOK} row.
      *
      * @author Philip Warner
@@ -1170,164 +1331,6 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                             final int level) {
             // All book rows have the same type of view.
             return inflater.inflate(R.layout.booksonbookshelf_row_book, parent, false);
-        }
-    }
-
-    /**
-     * Holder for a row that displays a 'month'. This code turns a month number into a
-     * locale-based month name.
-     *
-     * @author Philip Warner
-     */
-    public static class MonthHolder extends BooklistHolder {
-        /** Source column name */
-        @NonNull
-        private final String mSource;
-        /** Source column number */
-        private final int mSourceCol;
-        /** TextView for month name */
-        TextView text;
-
-        MonthHolder(final @NonNull BooklistCursorRow rowView, final @NonNull String source) {
-            mSource = source;
-            mSourceCol = rowView.getColumnIndex(mSource);
-        }
-
-        @Override
-        public void map(final @NonNull BooklistCursorRow rowView, final @NonNull View v) {
-            rowInfo = v.findViewById(R.id.BLB_ROW_DETAILS);
-            text = v.findViewById(R.id.filename);
-        }
-
-        @Override
-        public void set(final @NonNull BooklistCursorRow rowView, final @NonNull View v, final int level) {
-            // Get the month and try to format it.
-            String s = rowView.getString(mSourceCol);
-            try {
-                int i = Integer.parseInt(s);
-                // If valid, get the name
-                if (i > 0 && i <= 12) {
-                    // Create static formatter if necessary
-                    s = DateUtils.getMonthName(i);
-                }
-            } catch (Exception e) {
-                Logger.error(e);
-            }
-            // Display whatever text we have
-            setText(text, s, R.string.unknown_uc, level);
-        }
-
-        @Override
-        public View newView(final @NonNull BooklistCursorRow rowView,
-                            final @NonNull LayoutInflater inflater,
-                            final @NonNull ViewGroup parent,
-                            final int level) {
-            return inflater.inflate(getDefaultLayoutId(level), parent, false);
-        }
-    }
-
-    /**
-     * Holder for a row that displays a 'rating'.
-     *
-     * @author Philip Warner
-     */
-    public static class RatingHolder extends BooklistHolder {
-        /** Source column name */
-        @NonNull
-        private final String mSource;
-        /** Source column number */
-        private final int mSourceCol;
-        /** TextView for month name */
-        TextView text;
-
-        RatingHolder(final @NonNull BooklistCursorRow rowView,
-                     final @NonNull String source) {
-            mSource = source;
-            mSourceCol = rowView.getColumnIndex(mSource);
-        }
-
-        @Override
-        public void map(final @NonNull BooklistCursorRow rowView, final @NonNull View view) {
-            rowInfo = view.findViewById(R.id.BLB_ROW_DETAILS);
-            text = view.findViewById(R.id.filename);
-        }
-
-        @Override
-        public void set(final @NonNull BooklistCursorRow rowView, final @NonNull View view, final int level) {
-            String s = rowView.getString(mSourceCol);
-            try {
-                int i = (int) Float.parseFloat(s);
-                // If valid, get the name
-                if (i >= 0 && i <= 5) {
-                    s = view.getContext().getResources().getQuantityString(R.plurals.n_stars, i, i);
-                }
-            } catch (Exception e) {
-                Logger.error(e);
-            }
-            // Display whatever text we have
-            setText(text, s, R.string.unknown_uc, level);
-        }
-
-        @Override
-        public View newView(final @NonNull BooklistCursorRow rowView,
-                            final @NonNull LayoutInflater inflater,
-                            final @NonNull ViewGroup parent,
-                            final int level) {
-            return inflater.inflate(getDefaultLayoutId(level), parent, false);
-        }
-    }
-
-    /**
-     * Holder to handle any field that can be displayed as a simple string.
-     * Assumes there is a 'name' TextView and an optional enclosing ViewGroup
-     * called ROW_INFO.
-     *
-     * @author Philip Warner
-     */
-    public class GenericStringHolder extends BooklistHolder {
-        /** Index of related data column */
-        private final int mColIndex;
-        /** String ID to use when data is blank */
-        @StringRes
-        private final int mNoDataId;
-        /*** Field to use */
-        TextView text;
-
-        /**
-         * Constructor
-         *
-         * @param rowView  Row view that represents a typical row of this kind.
-         * @param domain   Domain name to use
-         * @param noDataId String ID to use when data is blank
-         */
-        private GenericStringHolder(final @NonNull BooklistCursorRow rowView,
-                                    final @NonNull DomainDefinition domain,
-                                    final @StringRes int noDataId) {
-            mColIndex = rowView.getColumnIndex(domain.name);
-            if (mColIndex < 0) {
-                throw new DBExceptions.ColumnNotPresent(domain.name);
-            }
-            mNoDataId = noDataId;
-        }
-
-        @Override
-        public void map(final @NonNull BooklistCursorRow rowView, final @NonNull View view) {
-            rowInfo = view.findViewById(R.id.BLB_ROW_DETAILS);
-            text = view.findViewById(R.id.filename);
-        }
-
-        @Override
-        public void set(final @NonNull BooklistCursorRow rowView, final @NonNull View view, final int level) {
-            String s = rowView.getString(mColIndex);
-            setText(text, s, mNoDataId, level);
-        }
-
-        @Override
-        public View newView(final @NonNull BooklistCursorRow rowView,
-                            final @NonNull LayoutInflater inflater,
-                            final @NonNull ViewGroup parent,
-                            final int level) {
-            return inflater.inflate(getDefaultLayoutId(level), parent, false);
         }
     }
 }
