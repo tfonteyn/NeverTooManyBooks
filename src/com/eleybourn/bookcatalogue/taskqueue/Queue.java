@@ -59,7 +59,9 @@ public class Queue extends Thread {
      *
      * @author Philip Warner
      */
-    public Queue(final @NonNull Context context, final @NonNull QueueManager manager, final @NonNull String queueName) {
+    public Queue(final @NonNull Context context,
+                 final @NonNull QueueManager manager,
+                 final @NonNull String queueName) {
         mApplicationContext = context.getApplicationContext();
         mName = queueName;
         mManager = manager;
@@ -69,7 +71,7 @@ public class Queue extends Thread {
         // Add this object to the active queues list in the manager. It is important
         // that this is done in the constructor AND that new queues are created inside
         // code synchronized on the manager.
-        mManager.queueStarting(this);
+        mManager.onQueueStarting(this);
 
         start();
     }
@@ -108,7 +110,7 @@ public class Queue extends Thread {
                     if (scheduledTask == null) {
                         // No more tasks. Remove from manager and terminate.
                         mTerminate = true;
-                        mManager.queueTerminating(this);
+                        mManager.onQueueTerminating(this);
                         return;
                     }
                     if (scheduledTask.timeUntilRunnable == 0) {
@@ -125,7 +127,7 @@ public class Queue extends Thread {
                 // ENHANCE: A future optimization might be to put an Alarm in the QueueManager
                 // for any wait that is longer than a minute.
                 if (task != null) {
-                    handleTask(task);
+                    runTask(task);
                 } else {
                     // Not ready, just wait. Allow for possible wake-up calls if something else gets queued.
                     synchronized (this) {
@@ -137,13 +139,12 @@ public class Queue extends Thread {
             Logger.error(e);
         } finally {
             try {
-                // Close the DB. SQLite will complain otherwise.
                 if (mDb != null) {
                     mDb.getDb().close();
                 }
                 // Just in case (the queue manager does check the queue before doing the delete).
                 synchronized (mManager) {
-                    mManager.queueTerminating(this);
+                    mManager.onQueueTerminating(this);
                 }
             } catch (Exception ignore) {
             }
@@ -153,14 +154,15 @@ public class Queue extends Thread {
     /**
      * Run the task then save the results.
      */
-    private void handleTask(final @NonNull Task task) {
+    private void runTask(final @NonNull Task task) {
         boolean result = false;
         boolean requeue = false;
         try {
             task.setException(null);
             task.setState(TaskState.running);
+            // notify here, as we allow mManager.runTask to be overridden
             mManager.notifyTaskChange(task, TaskActions.running);
-            result = mManager.runOneTask(mApplicationContext, task);
+            result = mManager.runTask(mApplicationContext, task);
             requeue = !result;
         } catch (Exception e) {
             // Don't overwrite exception set by handler
@@ -169,7 +171,7 @@ public class Queue extends Thread {
             }
             Logger.error(e,"Error running task " + task.getId());
         }
-        handleResult(task, result, requeue);
+        handleTaskResult(task, result, requeue);
     }
 
     /**
@@ -179,18 +181,22 @@ public class Queue extends Thread {
      * @param result  true on Save, false on cancel
      * @param requeue true if requeue needed
      */
-    private void handleResult(final @NonNull Task task, final boolean result, final boolean requeue) {
+    private void handleTaskResult(final @NonNull Task task, final boolean result, final boolean requeue) {
         TaskActions message;
         synchronized (mManager) {
+
             if (task.isAborting()) {
                 mDb.deleteTask(task.getId());
                 message = TaskActions.completed;
+
             } else if (result) {
                 mDb.setTaskOk(task);
                 message = TaskActions.completed;
+
             } else if (requeue) {
                 mDb.setTaskRequeue(task);
                 message = TaskActions.waiting;
+
             } else {
                 Exception e =  task.getException();
                 String msg = null;

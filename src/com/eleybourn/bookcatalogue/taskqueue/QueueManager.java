@@ -26,11 +26,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.widget.Toast;
 
-import com.eleybourn.bookcatalogue.BuildConfig;
-import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
-import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.taskqueue.Listeners.EventActions;
 import com.eleybourn.bookcatalogue.taskqueue.Listeners.OnEventChangeListener;
 import com.eleybourn.bookcatalogue.taskqueue.Listeners.OnTaskChangeListener;
@@ -63,8 +60,11 @@ public abstract class QueueManager {
     private static final String MESSAGE = "message";
     private static final String TOAST = "toast";
 
-    /** Static reference to the active QueueManager */
+    /**
+     * Static reference to the active QueueManager - singleton
+     */
     private static QueueManager mInstance;
+
     /** Database access layer */
     @NonNull
     private final DBAdapter mDb;
@@ -81,7 +81,6 @@ public abstract class QueueManager {
 
     /** Handle inter-thread messages */
     private MessageHandler mMessageHandler;
-
 
     /**
      * Reminder: as we're a singleton, we cannot cache the Context.
@@ -101,7 +100,7 @@ public abstract class QueueManager {
         // setup the handler with access to ourselves
         mMessageHandler = new MessageHandler(new WeakReference<>(this));
 
-        mDb = new DBAdapter(context);
+        mDb = new DBAdapter(context.getApplicationContext());
 
         // Get active queues.
         synchronized (this) {
@@ -118,8 +117,9 @@ public abstract class QueueManager {
         synchronized (mEventChangeListeners) {
             for (WeakReference<OnEventChangeListener> lr : mEventChangeListeners) {
                 OnEventChangeListener l = lr.get();
-                if (l != null && l.equals(listener))
+                if (l != null && l.equals(listener)) {
                     return;
+                }
             }
             mEventChangeListeners.add(new WeakReference<>(listener));
         }
@@ -129,8 +129,9 @@ public abstract class QueueManager {
         synchronized (mEventChangeListeners) {
             List<WeakReference<OnEventChangeListener>> ll = new ArrayList<>();
             for (WeakReference<OnEventChangeListener> l : mEventChangeListeners) {
-                if (l.get().equals(listener))
+                if (l.get().equals(listener)) {
                     ll.add(l);
+                }
             }
             for (WeakReference<OnEventChangeListener> l : ll) {
                 mEventChangeListeners.remove(l);
@@ -142,8 +143,9 @@ public abstract class QueueManager {
         synchronized (mTaskChangeListeners) {
             for (WeakReference<OnTaskChangeListener> lr : mTaskChangeListeners) {
                 OnTaskChangeListener l = lr.get();
-                if (l != null && l.equals(listener))
+                if (l != null && l.equals(listener)) {
                     return;
+                }
             }
             mTaskChangeListeners.add(new WeakReference<>(listener));
         }
@@ -153,8 +155,9 @@ public abstract class QueueManager {
         synchronized (mTaskChangeListeners) {
             List<WeakReference<OnTaskChangeListener>> ll = new ArrayList<>();
             for (WeakReference<OnTaskChangeListener> l : mTaskChangeListeners) {
-                if (l.get().equals(listener))
+                if (l.get().equals(listener)) {
                     ll.add(l);
+                }
             }
             for (WeakReference<OnTaskChangeListener> l : ll) {
                 mTaskChangeListeners.remove(l);
@@ -184,8 +187,7 @@ public abstract class QueueManager {
                         }
                     };
                     mMessageHandler.post(r);
-                } catch (Exception e) {
-                    // Throw away errors.
+                } catch (Exception ignore) {
                 }
             }
         }
@@ -222,10 +224,13 @@ public abstract class QueueManager {
     /**
      * Store a Task in the database to run on the specified Queue and start queue if necessary.
      *
+     * @param context   context to use for the database
      * @param task      task to queue
      * @param queueName Name of queue
      */
-    public void enqueueTask(final @NonNull Context context, final @NonNull Task task, final @NonNull String queueName) {
+    public void enqueueTask(final @NonNull Context context,
+                            final @NonNull Task task,
+                            final @NonNull String queueName) {
         synchronized (this) {
             // Save it
             mDb.enqueueTask(task, queueName);
@@ -235,7 +240,7 @@ public abstract class QueueManager {
                 }
             } else {
                 // Create the queue; it will start and add itself to the manager
-                new Queue(context, this, queueName);
+                new Queue(context.getApplicationContext(), this, queueName);
             }
         }
         this.notifyTaskChange(task, TaskActions.created);
@@ -255,7 +260,7 @@ public abstract class QueueManager {
      *
      * @param queue New queue object
      */
-    void queueStarting(final @NonNull Queue queue) {
+    void onQueueStarting(final @NonNull Queue queue) {
         synchronized (this) {
             mActiveQueues.put(queue.getQueueName(), queue);
         }
@@ -266,16 +271,16 @@ public abstract class QueueManager {
      *
      * @param queue Queue that is stopping
      */
-    void queueTerminating(final @NonNull Queue queue) {
+    void onQueueTerminating(final @NonNull Queue queue) {
         synchronized (this) {
             try {
                 // It's possible that a queue terminated and another started; make sure we are removing
                 // the one that called us.
                 Queue q = mActiveQueues.get(queue.getQueueName());
-                if (q.equals(queue))
+                if (q.equals(queue)) {
                     mActiveQueues.remove(queue.getQueueName());
-            } catch (Exception e) {
-                // Ignore failures.
+                }
+            } catch (Exception ignore) {
             }
         }
     }
@@ -288,11 +293,11 @@ public abstract class QueueManager {
      *
      * @return Result from run(...) method
      */
-    boolean runOneTask(final @NonNull Context context, final @NonNull Task task) {
+    boolean runTask(final @NonNull Context context, final @NonNull Task task) {
         if (task instanceof RunnableTask) {
             return ((RunnableTask) task).run(this, context);
         } else {
-            // Either extend RunnableTask, or override QueueManager.runOneTask()
+            // Either extend RunnableTask, or override QueueManager.runTask()
             throw new IllegalStateException("Can not handle tasks that are not RunnableTasks");
         }
     }
@@ -301,9 +306,9 @@ public abstract class QueueManager {
      * Save the passed task back to the database. The parameter must be a Task that
      * is already in the database. This method is used to preserve a task state.
      *
-     * @param task The task to be saved. Must exist in database.
+     * @param task The task to be updated. Must exist in database.
      */
-    public void saveTask(final @NonNull Task task) {
+    public void updateTask(final @NonNull Task task) {
         mDb.updateTask(task);
         this.notifyTaskChange(task, TaskActions.updated);
     }
@@ -314,11 +319,7 @@ public abstract class QueueManager {
     private void doToast(final @Nullable String message) {
         if (Thread.currentThread() == mUIThread.get()) {
             synchronized (this) {
-                if (DEBUG_SWITCHES.MESSAGING && BuildConfig.DEBUG) {
-                    Logger.info(this, "toasting: " + message);
-                }
-                // this is basically 'showing' on the UI thread of the Application.onCreate()
-                Toast.makeText(this.getApplicationContext(), message, Toast.LENGTH_LONG).show();
+                StandardDialogs.showUserMessage(message);
             }
         } else {
             /* Send message to the handler */
@@ -408,8 +409,9 @@ public abstract class QueueManager {
                     isActive = true;
                 }
             }
-            if (!isActive)
+            if (!isActive) {
                 mDb.deleteTask(id);
+            }
         }
         if (isActive) {
             this.notifyEventChange(null, EventActions.updated);
@@ -464,19 +466,28 @@ public abstract class QueueManager {
     }
 
     /**
-     * Return the running application context.
+     * Get a new Event object capable of representing a non-deserializable Event object.
+     *
+     * @param original	original serialization source
      */
-    @NonNull
-    protected abstract Context getApplicationContext();
+    public abstract LegacyEvent newLegacyEvent(byte[] original);
+
+    /**
+     * Get a new Task object capable of representing a non-deserializable Task object.
+     *
+     * @param original	original serialization source
+     */
+    public abstract LegacyTask newLegacyTask(byte[] original);
 
     /**
      * Handler for internal UI thread messages.
      */
     private static class MessageHandler extends Handler {
 
+        @NonNull
         private final WeakReference<QueueManager> mQueueManager;
 
-        MessageHandler(WeakReference<QueueManager> queueManager) {
+        MessageHandler(final @NonNull WeakReference<QueueManager> queueManager) {
             mQueueManager = queueManager;
         }
 

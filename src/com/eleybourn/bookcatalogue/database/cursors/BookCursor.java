@@ -30,20 +30,22 @@ import com.eleybourn.bookcatalogue.database.DBExceptions;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer;
 
+import java.io.Closeable;
+
 /**
  * Cursor implementation for book-related queries. The cursor wraps common
  * column lookups and reduces code clutter when accessing common columns by
- * providing a {@link BookCursorRow}
+ * providing a {@link BookRowView}
  *
  * @author Philip Warner
  */
-public class BookCursor extends TrackedCursor implements AutoCloseable {
+public class BookCursor extends TrackedCursor implements Closeable {
 
     /** Get the row ID; need a local implementation so that get/setSelected() works. */
     private int mIdCol = -2;
 
     @Nullable
-    private BookCursorRow mBookCursorRow;
+    private BookRowView mBookCursorRow;
 
     public BookCursor(final @NonNull SQLiteCursorDriver driver,
                       final @NonNull String editTable,
@@ -62,9 +64,9 @@ public class BookCursor extends TrackedCursor implements AutoCloseable {
     }
 
     @NonNull
-    public BookCursorRow getCursorRow() {
+    public BookRowView getCursorRow() {
         if (mBookCursorRow == null) {
-            mBookCursorRow = new BookCursorRow(this);
+            mBookCursorRow = new BookRowView(this);
         }
         return mBookCursorRow;
     }

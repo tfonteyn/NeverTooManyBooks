@@ -33,6 +33,7 @@ import android.widget.Checkable;
 import com.eleybourn.bookcatalogue.Fields.Field;
 import com.eleybourn.bookcatalogue.datamanager.validators.ValidatorException;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.editordialog.CheckListEditorDialogFragment;
 import com.eleybourn.bookcatalogue.dialogs.editordialog.CheckListItem;
 import com.eleybourn.bookcatalogue.dialogs.editordialog.CheckListItemBase;
@@ -100,6 +101,7 @@ public class EditBookNotesFragment extends BookBaseFragment implements
     @Override
     @CallSuper
     public void onActivityCreated(final @Nullable Bundle savedInstanceState) {
+        Tracker.enterOnActivityCreated(this);
         super.onActivityCreated(savedInstanceState);
 
         try {
@@ -110,6 +112,7 @@ public class EditBookNotesFragment extends BookBaseFragment implements
             // 'next' key is pressed and some views have been hidden.
             Logger.error(e);
         }
+        Tracker.exitOnActivityCreated(this);
     }
 
     @CallSuper
@@ -199,14 +202,13 @@ public class EditBookNotesFragment extends BookBaseFragment implements
     @Override
     @CallSuper
     protected void onLoadFieldsFromBook(final @NonNull Book book, final boolean setAllFrom) {
+        Tracker.enterOnLoadFieldsFromBook(this, book.getBookId());
         super.onLoadFieldsFromBook(book, setAllFrom);
 
         // Restore default visibility
         showHideFields(false);
 
-        if (DEBUG_SWITCHES.FIELD_BOOK_TRANSFERS && BuildConfig.DEBUG) {
-            Logger.info(this, "onLoadFieldsFromBook done");
-        }
+        Tracker.exitOnLoadFieldsFromBook(this, book.getBookId());
     }
 
     //</editor-fold>
@@ -218,8 +220,10 @@ public class EditBookNotesFragment extends BookBaseFragment implements
     @Override
     @CallSuper
     public void onPause() {
+        Tracker.enterOnPause(this);
         onSaveFieldsToBook(getBookManager().getBook());
         super.onPause();
+        Tracker.exitOnPause(this);
     }
 
     /**
@@ -227,11 +231,9 @@ public class EditBookNotesFragment extends BookBaseFragment implements
      */
     @Override
     protected void onSaveFieldsToBook(final @NonNull Book book) {
+        Tracker.enterOnSaveFieldsToBook(this, book.getBookId());
         super.onSaveFieldsToBook(book);
-
-        if (DEBUG_SWITCHES.FIELD_BOOK_TRANSFERS && BuildConfig.DEBUG) {
-            Logger.info(this, "onSaveFieldsToBook done");
-        }
+        Tracker.exitOnSaveFieldsToBook(this, book.getBookId());
     }
 
 //    @Override

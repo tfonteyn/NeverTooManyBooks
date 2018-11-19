@@ -43,12 +43,14 @@ import java.io.Serializable;
 public abstract class Task implements Serializable, BindableItemCursorAdapter.BindableItem {
 
     private static final long serialVersionUID = -1735892871810069L;
-    private final int mRetryLimit = 17;
+    private int mRetryLimit = 17;
     @NonNull
     private final String mDescription;
     private TaskState mState;
     private long mId;
     private int mRetries;
+    private int mTotalRetries = 0;
+
     @Nullable
     private Exception mException = null;
     private int mRetryDelay = 0;
@@ -76,6 +78,9 @@ public abstract class Task implements Serializable, BindableItemCursorAdapter.Bi
         return mDescription;
     }
 
+    public TaskState getState() {
+        return mState;
+    }
     public void setState(final @NonNull TaskState state) {
         mState = state;
     }
@@ -103,6 +108,9 @@ public abstract class Task implements Serializable, BindableItemCursorAdapter.Bi
     protected int getRetryLimit() {
         return mRetryLimit;
     }
+    public void setRetryLimit(final int limit) {
+        mRetryLimit = limit;
+    }
 
     protected int getRetryDelay() {
         return mRetryDelay;
@@ -118,6 +126,9 @@ public abstract class Task implements Serializable, BindableItemCursorAdapter.Bi
 
     protected int getRetries() {
         return mRetries;
+    }
+    public int getTotalRetries() {
+        return mTotalRetries;
     }
 
     void setRetries(final int retries) {
@@ -142,6 +153,7 @@ public abstract class Task implements Serializable, BindableItemCursorAdapter.Bi
     }
 
     protected void resetRetryCounter() {
+        mTotalRetries += mRetries;
         mRetries = 0;
         setRetryDelay();
     }

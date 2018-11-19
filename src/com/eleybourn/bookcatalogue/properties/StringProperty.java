@@ -64,7 +64,7 @@ public class StringProperty extends ValuePropertyWithGlobalDefault<String> imple
         ViewTagger.setTag(root, R.id.TAG_PROPERTY, this);// value: StringProperty
 
         // Set the initial values
-        final TextView name = root.findViewById(R.id.filename);
+        final TextView name = root.findViewById(R.id.name);
         name.setText(getName());
         final EditText value = root.findViewById(R.id.value);
         value.setHint(getName());

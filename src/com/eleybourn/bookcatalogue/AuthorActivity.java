@@ -30,6 +30,7 @@ public class AuthorActivity extends BaseListActivity {
     @Override
     @CallSuper
     protected void onCreate(final @Nullable Bundle savedInstanceState) {
+        Tracker.enterOnCreate(this);
         super.onCreate(savedInstanceState);
 
         Bundle extras = getIntent().getExtras();
@@ -45,6 +46,7 @@ public class AuthorActivity extends BaseListActivity {
 
         ArrayAdapter<TOCEntry> adapter = new TOCListAdapter(this, R.layout.row_anthology, mList);
         setListAdapter(adapter);
+        Tracker.exitOnCreate(this);
     }
 
     @Override

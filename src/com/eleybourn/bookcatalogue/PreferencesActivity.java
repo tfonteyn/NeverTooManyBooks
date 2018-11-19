@@ -26,6 +26,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.baseactivity.PreferencesBaseActivity;
+import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.properties.BooleanProperty;
 import com.eleybourn.bookcatalogue.properties.IntegerListProperty;
 import com.eleybourn.bookcatalogue.properties.ListProperty.ItemEntries;
@@ -181,8 +182,10 @@ public class PreferencesActivity extends PreferencesBaseActivity {
     @Override
     @CallSuper
     public void onCreate(final @Nullable Bundle savedInstanceState) {
+        Tracker.enterOnCreate(this);
         super.onCreate(savedInstanceState);
         setTitle(R.string.title_preferences);
+        Tracker.exitOnCreate(this);
     }
 
     /**

@@ -28,14 +28,13 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v4.content.FileProvider;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.EditBookFragment;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.DBExceptions;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
-import com.eleybourn.bookcatalogue.database.cursors.BookCursorRow;
+import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.entities.Book;
@@ -64,7 +63,7 @@ public class BookUtils {
         final Bundle bookData = new Bundle();
         try (BookCursor cursor = db.fetchBookById(bookId)) {
             if (cursor.moveToFirst()) {
-                BookCursorRow bookCursorRow = cursor.getCursorRow();
+                BookRowView bookCursorRow = cursor.getCursorRow();
 
                 bookData.putString(UniqueId.KEY_TITLE, bookCursorRow.getTitle());
                 bookData.putString(UniqueId.KEY_BOOK_ISBN, bookCursorRow.getIsbn());
@@ -152,7 +151,7 @@ public class BookUtils {
 
         try (BookCursor cursor = db.fetchBookById(bookId)) {
             if (cursor.moveToFirst()) {
-                BookCursorRow bookCursorRow = cursor.getCursorRow();
+                BookRowView bookCursorRow = cursor.getCursorRow();
                 title = bookCursorRow.getTitle();
                 rating = bookCursorRow.getRating();
                 author = bookCursorRow.getPrimaryAuthorNameFormattedGivenFirst();

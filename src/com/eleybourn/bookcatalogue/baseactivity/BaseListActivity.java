@@ -17,6 +17,7 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.SelectOneDialog;
 
 import java.util.Objects;
@@ -88,9 +89,11 @@ abstract public class BaseListActivity extends BaseActivity implements
 
     @Override
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
+        Tracker.enterOnCreate(this);
         super.onCreate(savedInstanceState);
         // enable context menu for the list view
         initListViewContextMenuListener(this);
+        Tracker.exitOnCreate(this);
     }
 
     /**
@@ -99,8 +102,10 @@ abstract public class BaseListActivity extends BaseActivity implements
     @Override
     @CallSuper
     protected void onDestroy() {
+        Tracker.enterOnDestroy(this);
         mHandler.removeCallbacks(mRequestFocus);
         super.onDestroy();
+        Tracker.exitOnDestroy(this);
     }
 
     /**

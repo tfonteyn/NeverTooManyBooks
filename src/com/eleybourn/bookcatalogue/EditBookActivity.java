@@ -30,6 +30,7 @@ import android.support.v4.app.Fragment;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.debug.Tracker;
 
 public class EditBookActivity extends BaseActivity {
 
@@ -61,6 +62,7 @@ public class EditBookActivity extends BaseActivity {
     @Override
     @CallSuper
     public void onCreate(final @Nullable Bundle savedInstanceState) {
+        Tracker.enterOnCreate(this);
         super.onCreate(savedInstanceState);
 
         Bundle extras = getIntent().getExtras();
@@ -72,20 +74,23 @@ public class EditBookActivity extends BaseActivity {
                 .beginTransaction()
                 .replace(R.id.main_fragment, frag, EditBookFragment.TAG)
                 .commit();
+        Tracker.exitOnCreate(this);
     }
 
 
     @Override
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-
+        Tracker.enterOnActivityResult(this,requestCode,resultCode);
         /*
          * Dispatch incoming result to the correct fragment.
          */
         if (DEBUG_SWITCHES.ON_ACTIVITY_RESULT && BuildConfig.DEBUG) {
-            Logger.info(this, "onActivityResult: forwarding to fragment - requestCode=" + requestCode + ", resultCode=" + resultCode);
+            Logger.info(this, "onActivityResult: forwarding to fragment " + EditBookFragment.TAG + " - requestCode=" + requestCode + ", resultCode=" + resultCode);
         }
 
         Fragment frag = getSupportFragmentManager().findFragmentByTag(EditBookFragment.TAG);
         frag.onActivityResult(requestCode, resultCode, data);
+
+        Tracker.exitOnActivityResult(this,requestCode,resultCode);
     }
 }

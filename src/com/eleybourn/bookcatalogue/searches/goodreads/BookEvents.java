@@ -42,7 +42,7 @@ import com.eleybourn.bookcatalogue.EditBookFragment;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
-import com.eleybourn.bookcatalogue.database.cursors.BookCursorRow;
+import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
 import com.eleybourn.bookcatalogue.dialogs.ContextDialogItem;
 import com.eleybourn.bookcatalogue.dialogs.HintManager.HintOwner;
@@ -312,7 +312,7 @@ public class BookEvents {
             try (BookCursor bookCursor = db.fetchBookForGoodreadsCursor(mBookId)) {
                 // Hide parts of view based on current book details.
                 if (bookCursor.moveToFirst()) {
-                    final BookCursorRow bookCursorRow = bookCursor.getCursorRow();
+                    final BookRowView bookCursorRow = bookCursor.getCursorRow();
                     if (bookCursorRow.getIsbn().isEmpty()) {
                         holder.retry.setVisibility(View.GONE);
                     } else {
@@ -342,7 +342,7 @@ public class BookEvents {
 
             final CatalogueDBAdapter db = (CatalogueDBAdapter) appInfo;
             try (BookCursor bookCursor = db.fetchBookForGoodreadsCursor(mBookId)) {
-                final BookCursorRow bookCursorRow = bookCursor.getCursorRow();
+                final BookRowView bookCursorRow = bookCursor.getCursorRow();
                 if (bookCursor.moveToFirst()) {
                     if (!bookCursorRow.getIsbn().isEmpty()) {
                         items.add(new ContextDialogItem(context.getString(R.string.retry), new Runnable() {

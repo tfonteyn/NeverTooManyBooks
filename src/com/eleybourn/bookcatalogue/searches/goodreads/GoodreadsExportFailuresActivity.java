@@ -87,6 +87,7 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity {
     @Override
     @CallSuper
     public void onCreate(final @Nullable Bundle savedInstanceState) {
+        Tracker.enterOnCreate(this);
         mDb = new CatalogueDBAdapter(this);
 
         Intent intent = getIntent();
@@ -113,6 +114,7 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity {
         if (savedInstanceState == null) {
             HintManager.displayHint(this.getLayoutInflater(), R.string.hint_background_task_events, null);
         }
+        Tracker.exitOnCreate(this);
     }
 
     /**
@@ -129,8 +131,10 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity {
     @Override
     @CallSuper
     protected void onResume() {
+        Tracker.enterOnResume(this);
         super.onResume();
         refreshData();
+        Tracker.exitOnResume(this);
     }
 
     /**

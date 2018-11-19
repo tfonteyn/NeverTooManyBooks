@@ -32,6 +32,7 @@ import android.widget.TextView;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.debug.DebugReport;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
@@ -50,35 +51,34 @@ public class Help extends BaseActivity {
     @Override
     @CallSuper
     public void onCreate(final @Nullable Bundle savedInstanceState) {
+        Tracker.enterOnCreate(this);
         super.onCreate(savedInstanceState);
-        try {
-            setTitle(R.string.app_name);
+        setTitle(R.string.app_name);
 
-            TextView view;
+        TextView view;
 
-            view = findViewById(R.id.help_page);
-            view.setText(Utils.linkifyHtml(getString(R.string.url_help, getString(R.string.about_help_click_here))));
-            view.setMovementMethod(LinkMovementMethod.getInstance());
+        view = findViewById(R.id.help_page);
+        view.setText(Utils.linkifyHtml(getString(R.string.url_help, getString(R.string.about_help_click_here))));
+        view.setMovementMethod(LinkMovementMethod.getInstance());
 
-            findViewById(R.id.send_info).setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    DebugReport.sendDebugInfo(Help.this);
-                }
-            });
+        findViewById(R.id.send_info).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DebugReport.sendDebugInfo(Help.this);
+            }
+        });
 
-            initCleanupButton();
-
-        } catch (Exception e) {
-            Logger.error(e);
-        }
+        initCleanupButton();
+        Tracker.exitOnCreate(this);
     }
 
     @Override
     @CallSuper
     protected void onResume() {
+        Tracker.enterOnResume(this);
         super.onResume();
         initCleanupButton();
+        Tracker.exitOnResume(this);
     }
 
     private void initCleanupButton() {

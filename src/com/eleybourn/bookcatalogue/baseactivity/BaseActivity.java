@@ -27,6 +27,7 @@ import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.booklist.BooklistPreferencesActivity;
 import com.eleybourn.bookcatalogue.booklist.BooklistPreferredStylesActivity;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.ThemeUtils;
@@ -91,6 +92,7 @@ abstract public class BaseActivity extends AppCompatActivity implements
     @Override
     @CallSuper
     protected void onCreate(final @Nullable Bundle savedInstanceState) {
+        Tracker.enterOnCreate(this);
         // call setTheme before super.onCreate
         setTheme(ThemeUtils.getThemeResId());
 
@@ -122,14 +124,18 @@ abstract public class BaseActivity extends AppCompatActivity implements
         setNavigationView((NavigationView) findViewById(R.id.nav_view));
 
         initToolbar();
+
+        Tracker.exitOnCreate(this);
     }
 
     @Override
     protected void onDestroy() {
+        Tracker.enterOnDestroy(this);
         LocaleUtils.removeListener(this);
         ThemeUtils.removeListener(this);
 
         super.onDestroy();
+        Tracker.exitOnDestroy(this);
     }
 
     private void initToolbar() {
@@ -256,6 +262,7 @@ abstract public class BaseActivity extends AppCompatActivity implements
      */
     @Override
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+        Tracker.enterOnActivityResult(this, requestCode, resultCode);
 
         if (DEBUG_SWITCHES.ON_ACTIVITY_RESULT && BuildConfig.DEBUG) {
             // these are not errors; but just a way to see if we missed catching them in one Activity or another
@@ -263,31 +270,31 @@ abstract public class BaseActivity extends AppCompatActivity implements
             switch (requestCode) {
                 case EditBookshelfListActivity.REQUEST_CODE: /* 41e84172-5833-4906-a891-8df302ecc190 */
                     Logger.info(this, "onActivityResult unhandled EditBookshelfListActivity");
-                    return;
-
+                    break;
                 case BooklistPreferredStylesActivity.REQUEST_CODE: /* 13854efe-e8fd-447a-a195-47678c0d87e7 */
                     Logger.info(this, "onActivityResult unhandled BooklistPreferredStylesActivity");
-                    return;
-
+                    break;
                 case AdminActivity.REQUEST_CODE: /* 7f46620d-7951-4637-8783-b410730cd460 */
                     Logger.info(this, "onActivityResult unhandled AdminActivity");
-                    return;
+                    break;
                 case FieldVisibilityActivity.REQUEST_CODE: /* 2f885b11-27f2-40d7-8c8b-fcb4d95a4151 */
                     Logger.info(this, "onActivityResult unhandled FieldVisibilityActivity");
-                    return;
+                    break;
                 case BooklistPreferencesActivity.REQUEST_CODE: /* 9cdb2cbe-1390-4ed8-a491-87b3b1a1edb9 */
                     Logger.info(this, "onActivityResult unhandled BooklistPreferencesActivity");
-                    return;
+                    break;
                 case PreferencesActivity.REQUEST_CODE: /* 46f41e7b-f49c-465d-bea0-80ec85330d1c */
                     Logger.info(this, "onActivityResult unhandled PreferencesActivity");
-                    return;
+                    break;
+                default:
+                    // lowest level of our Activities, see if we missed anything
+                    Logger.info(this, "onActivityResult: NOT HANDLED: requestCode=" + requestCode + ", resultCode=" + resultCode);
+                    super.onActivityResult(requestCode, resultCode, data);
+                    break;
             }
-
-            // lowest level of our Activities, see if we missed anything
-            Logger.info(this, "onActivityResult: NOT HANDLED: requestCode=" + requestCode + ", resultCode=" + resultCode);
         }
 
-        super.onActivityResult(requestCode, resultCode, data);
+        Tracker.exitOnActivityResult(this, requestCode, resultCode);
     }
 
     /**
@@ -341,6 +348,7 @@ abstract public class BaseActivity extends AppCompatActivity implements
     @Override
     @CallSuper
     protected void onResume() {
+        Tracker.enterOnResume(this);
         super.onResume();
 
         if (mRestartActivityOnResume) {
@@ -350,6 +358,7 @@ abstract public class BaseActivity extends AppCompatActivity implements
             finish();
             startActivity(getIntent());
         }
+        Tracker.exitOnResume(this);
     }
 
     /**
@@ -367,6 +376,6 @@ abstract public class BaseActivity extends AppCompatActivity implements
     @Override
     @CallSuper
     public void onThemeChanged(final int currentTheme) {
-            this.setTheme(currentTheme);
+        this.setTheme(currentTheme);
     }
 }

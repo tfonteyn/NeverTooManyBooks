@@ -27,7 +27,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.eleybourn.bookcatalogue.database.cursors.BookCursorRowBase;
+import com.eleybourn.bookcatalogue.database.cursors.BookRowViewBase;
 
 /**
  * Interface for handling the View-related tasks in a multi-type ListView.
@@ -80,7 +80,7 @@ public interface MultiTypeListHandler {
     /**
      * Abstract base class for 'holder' objects in a multi-type list view.
      *
-     * @param <T> Row context passed to each method. Typically a {@link BookCursorRowBase}.
+     * @param <T> Row context passed to each method. Typically a {@link BookRowViewBase}.
      *            Could be a cursor or any other object capable of representing the data
      *            in the current row.
      *

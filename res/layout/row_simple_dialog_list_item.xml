@@ -17,7 +17,7 @@
 
     <!-- what the user sees, with a drawable (icon) added from code -->
     <TextView
-        android:id="@+id/filename"
+        android:id="@+id/name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"

@@ -24,6 +24,7 @@ import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.utils.BundleUtils;
 
 import java.util.ArrayList;
@@ -103,12 +104,14 @@ public class CheckListEditorDialogFragment<T> extends EditorDialogFragment {
     @Override
     @CallSuper
     public void onPause() {
+        Tracker.enterOnPause(this);
         @SuppressWarnings("unchecked")
         CheckListEditorDialog<T> dialog = (CheckListEditorDialog<T>) getDialog();
         if (dialog != null) {
             mList = dialog.getList();
         }
         super.onPause();
+        Tracker.exitOnPause(this);
     }
 
     /**

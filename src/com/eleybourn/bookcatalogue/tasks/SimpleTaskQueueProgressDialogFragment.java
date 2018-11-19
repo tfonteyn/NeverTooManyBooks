@@ -38,6 +38,7 @@ import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTaskContext;
 
@@ -271,6 +272,7 @@ public class SimpleTaskQueueProgressDialogFragment extends DialogFragment {
     @Override
     @CallSuper
     public void onCreate(final @Nullable Bundle savedInstanceState) {
+        Tracker.enterOnCreate(this);
         super.onCreate(savedInstanceState);
 
         // Control whether a fragment instance is retained across Activity
@@ -280,11 +282,13 @@ public class SimpleTaskQueueProgressDialogFragment extends DialogFragment {
 
         //noinspection ConstantConditions
         mTaskId = getArguments().getInt(BKEY_TASK_ID);
+        Tracker.exitOnCreate(this);
     }
 
     @Override
     @CallSuper
     public void onActivityCreated(final @Nullable Bundle savedInstanceState) {
+        Tracker.enterOnActivityCreated(this);
         super.onActivityCreated(savedInstanceState);
 
         // Deliver any outstanding messages
@@ -297,6 +301,7 @@ public class SimpleTaskQueueProgressDialogFragment extends DialogFragment {
             }
             dismiss();
         }
+        Tracker.exitOnActivityCreated(this);
     }
 
     /**
@@ -346,11 +351,13 @@ public class SimpleTaskQueueProgressDialogFragment extends DialogFragment {
     @Override
     @CallSuper
     public void onResume() {
+        Tracker.enterOnResume(this);
         super.onResume();
         // If task finished, dismiss.
         if (!mQueue.hasActiveTasks()) {
             dismiss();
         }
+        Tracker.exitOnResume(this);
     }
 
     public boolean isCancelled() {

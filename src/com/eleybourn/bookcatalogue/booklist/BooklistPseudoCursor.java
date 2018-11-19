@@ -28,7 +28,7 @@ import android.support.annotation.Nullable;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.database.cursors.BooklistCursor;
-import com.eleybourn.bookcatalogue.database.cursors.BooklistCursorRow;
+import com.eleybourn.bookcatalogue.database.cursors.BooklistRowView;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 
@@ -87,7 +87,7 @@ public class BooklistPseudoCursor extends AbstractCursor implements BooklistSupp
     private final int[] mMruList;
     /** Cached RowView for this cursor */
     @Nullable
-    private BooklistCursorRow mRowView = null;
+    private BooklistRowView mRowView = null;
     /** The cursor to use for the last onMove() event */
     private BooklistCursor mActiveCursor = null;
     /** Current MRU ring buffer position */
@@ -123,9 +123,9 @@ public class BooklistPseudoCursor extends AbstractCursor implements BooklistSupp
      * Get a CursorRow for this cursor. Constructs one if necessary.
      */
     @NonNull
-    public BooklistCursorRow getCursorRow() {
+    public BooklistRowView getCursorRow() {
         if (mRowView == null)
-            mRowView = new BooklistCursorRow(this, mBuilder);
+            mRowView = new BooklistRowView(this, mBuilder);
         return mRowView;
     }
 

@@ -38,8 +38,11 @@ import java.util.Date;
 
 import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_CATEGORY;
 import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_EVENT_COUNT;
+import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_EXCEPTION;
+import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_FAILURE_REASON;
 import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_ID;
 import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_QUEUED_DATE;
+import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_QUEUE_ID;
 import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_RETRY_DATE;
 import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_STATUS_CODE;
 import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_TASK;
@@ -88,6 +91,8 @@ public class TasksCursor extends SQLiteCursor implements BindableItemCursor {
 
     /** Column number of date column. */
     private static int mQueuedDateCol = -2;
+    /** Column number of Queue_id column. */
+    private static int mQueueIdCol = -2;
     /** Column number of retry date column. */
     private static int mRetryDateCol = -2;
     /** Column number of retry count column. */
@@ -96,7 +101,10 @@ public class TasksCursor extends SQLiteCursor implements BindableItemCursor {
     private static int mTaskCol = -2;
     /** Column number of NoteCount column. */
     private static int mNoteCountCol = -2;
-
+    /** Column number of reason column. */
+    private static int mReasonCol = -2;
+    /** Column number of Exception column. */
+    private static int mExceptionCol = -2;
     /**
      * Constructor, based on SQLiteCursor constructor
      */
@@ -169,6 +177,12 @@ public class TasksCursor extends SQLiteCursor implements BindableItemCursor {
         return getLong(mIdCol);
     }
 
+    public long getQueueId() {
+        if (mQueueIdCol == -1)
+            mQueueIdCol = this.getColumnIndex(DOM_QUEUE_ID);
+        return getLong(mQueueIdCol);
+    }
+
     @NonNull
     public Date getQueuedDate() {
         if (mQueuedDateCol < 0) {
@@ -202,6 +216,29 @@ public class TasksCursor extends SQLiteCursor implements BindableItemCursor {
         return getString(mStatusCodeCol);
     }
 
+    /**
+     * Accessor for reason field.
+     *
+     * @return reason
+     */
+    public String getReason() {
+        if (mReasonCol == -1)
+            mReasonCol = this.getColumnIndex(DOM_FAILURE_REASON);
+        return getString(mReasonCol);
+    }
+
+    /**
+     * Accessor for Exception field.
+     *
+     * @return TaskException object
+     * @throws  RTE.DeserializationException f
+     */
+    public Exception getException() throws RTE.DeserializationException {
+        if (mExceptionCol == -1)
+            mExceptionCol = this.getColumnIndex(DOM_EXCEPTION);
+        return (Exception) SerializationUtils.deserializeObject(getBlob(mExceptionCol));
+    }
+
     @NonNull
     private Task getTask() {
         if (mTaskCol < 0) {
@@ -212,7 +249,7 @@ public class TasksCursor extends SQLiteCursor implements BindableItemCursor {
         try {
             task = SerializationUtils.deserializeObject(blob);
         } catch (RTE.DeserializationException de) {
-            task = new LegacyTask();
+            task = QueueManager.getQueueManager().newLegacyTask(blob);
         }
         task.setId(this.getId());
         return task;

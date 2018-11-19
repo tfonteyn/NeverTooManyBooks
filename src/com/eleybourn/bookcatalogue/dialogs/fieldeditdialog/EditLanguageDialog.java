@@ -18,7 +18,7 @@
  * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.eleybourn.bookcatalogue.dialogs.fieldeditdialogs;
+package com.eleybourn.bookcatalogue.dialogs.fieldeditdialog;
 
 import android.app.Activity;
 import android.support.annotation.CallSuper;

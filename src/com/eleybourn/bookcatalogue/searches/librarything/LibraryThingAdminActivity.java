@@ -34,6 +34,7 @@ import android.widget.EditText;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
+import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTaskContext;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressDialogFragment;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressDialogFragment.FragmentTask;
@@ -58,6 +59,7 @@ public class LibraryThingAdminActivity extends BaseActivity {
     @Override
     @CallSuper
     public void onCreate(final @Nullable Bundle savedInstanceState) {
+        Tracker.enterOnCreate(this);
         super.onCreate(savedInstanceState);
         setTitle(R.string.library_thing);
 
@@ -144,5 +146,7 @@ public class LibraryThingAdminActivity extends BaseActivity {
 
         // hide soft keyboard at first
         getWindow().setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+
+        Tracker.exitOnCreate(this);
     }
 }

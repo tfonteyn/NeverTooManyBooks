@@ -18,7 +18,7 @@
  * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.eleybourn.bookcatalogue.dialogs.fieldeditdialogs;
+package com.eleybourn.bookcatalogue.dialogs.fieldeditdialog;
 
 import android.app.Activity;
 import android.support.annotation.NonNull;
@@ -54,7 +54,7 @@ public class EditPublisherDialog {
         // Build the base dialog
         final View root = mContext.getLayoutInflater().inflate(R.layout.dialog_edit_publisher, null);
 
-        final EditText nameView = root.findViewById(R.id.filename);
+        final EditText nameView = root.findViewById(R.id.name);
         //noinspection ConstantConditions
         nameView.setText(publisher.name);
 

@@ -36,6 +36,7 @@ import android.widget.TextView;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.NetworkException;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTaskContext;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressDialogFragment;
@@ -106,6 +107,7 @@ public class GoodreadsRegisterActivity extends BaseActivity {
     @Override
     @CallSuper
     public void onCreate(final @Nullable Bundle savedInstanceState) {
+        Tracker.enterOnCreate(this);
         super.onCreate(savedInstanceState);
         setTitle(R.string.goodreads);
 
@@ -146,5 +148,6 @@ public class GoodreadsRegisterActivity extends BaseActivity {
             blurb.setVisibility(View.GONE);
             blurb_button.setVisibility(View.GONE);
         }
+        Tracker.exitOnCreate(this);
     }
 }

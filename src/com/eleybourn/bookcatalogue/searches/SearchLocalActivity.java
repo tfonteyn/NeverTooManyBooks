@@ -135,6 +135,7 @@ public class SearchLocalActivity extends BaseActivity {
     @Override
     @CallSuper
     public void onCreate(final @Nullable Bundle savedInstanceState) {
+        Tracker.enterOnCreate(this);
         super.onCreate(savedInstanceState);
 
         mAuthorView = this.findViewById(R.id.author);
@@ -176,6 +177,7 @@ public class SearchLocalActivity extends BaseActivity {
         mShowResultsBtn.setOnClickListener(mShowResultsListener);
 
         // Note: Timer will be started in OnResume().
+        Tracker.exitOnCreate(this);
     }
 
     /**
@@ -281,8 +283,10 @@ public class SearchLocalActivity extends BaseActivity {
     @Override
     @CallSuper
     protected void onPause() {
+        Tracker.enterOnPause(this);
         stopIdleTimer();
         super.onPause();
+        Tracker.exitOnPause(this);
     }
 
     /**
@@ -291,8 +295,10 @@ public class SearchLocalActivity extends BaseActivity {
     @Override
     @CallSuper
     protected void onResume() {
+        Tracker.enterOnResume(this);
         super.onResume();
         userIsActive(true);
+        Tracker.exitOnResume(this);
     }
 
     /**

@@ -44,9 +44,10 @@ import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter;
 import com.eleybourn.bookcatalogue.adapters.SimpleListAdapterRowActionListener;
 import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
-import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.dialogs.SelectOneDialog;
+import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.utils.RTE;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
@@ -78,19 +79,17 @@ public class BooklistPreferredStylesActivity extends EditObjectListActivity<Book
     @Override
     @CallSuper
     protected void onCreate(final @Nullable Bundle savedInstanceState) {
-        try {
-            super.onCreate(savedInstanceState);
-            this.setTitle(R.string.title_preferred_styles);
+        Tracker.enterOnCreate(this);
+        super.onCreate(savedInstanceState);
+        this.setTitle(R.string.title_preferred_styles);
 
-            // We want context menus on the ListView
-            registerForContextMenu(getListView());
+        // We want context menus on the ListView
+        registerForContextMenu(getListView());
 
-            if (savedInstanceState == null) {
-                HintManager.displayHint(this.getLayoutInflater(), R.string.hint_booklist_styles_editor, null);
-            }
-        } catch (Exception e) {
-            Logger.error(e);
+        if (savedInstanceState == null) {
+            HintManager.displayHint(this.getLayoutInflater(), R.string.hint_booklist_styles_editor, null);
         }
+        Tracker.exitOnCreate(this);
     }
 
     /**
@@ -159,11 +158,9 @@ public class BooklistPreferredStylesActivity extends EditObjectListActivity<Book
     @Override
     @CallSuper
     protected void onActivityResult(final int requestCode, final int resultCode, final @Nullable Intent data) {
-        if (DEBUG_SWITCHES.ON_ACTIVITY_RESULT && BuildConfig.DEBUG) {
-            Logger.info(this, "onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
-        }
+        Tracker.enterOnActivityResult(this, requestCode, resultCode);
         switch (requestCode) {
-            case BooklistStylePropertiesActivity.REQUEST_CODE:  /* fadd7b9a-7eaf-4af9-90ce-6ffb7b93afe6 */
+            case BooklistStylePropertiesActivity.REQUEST_CODE: { /* fadd7b9a-7eaf-4af9-90ce-6ffb7b93afe6 */
                 if (resultCode == BooklistStylePropertiesActivity.RESULT_CHANGES_MADE) {
                     /* there *has* to be 'data' */
                     Objects.requireNonNull(data);
@@ -171,10 +168,14 @@ public class BooklistPreferredStylesActivity extends EditObjectListActivity<Book
                     handleStyleChange(style);
                     setChangesMade(true);
                 }
-                return;
+                break;
+            }
+            default:
+                super.onActivityResult(requestCode, resultCode, data);
+                break;
         }
 
-        super.onActivityResult(requestCode, resultCode, data);
+        Tracker.exitOnActivityResult(this, requestCode, resultCode);
     }
 
     /**
@@ -254,7 +255,7 @@ public class BooklistPreferredStylesActivity extends EditObjectListActivity<Book
             if (holder == null) {
                 holder = new Holder();
                 holder.preferred = target.findViewById(R.id.preferred);
-                holder.name = target.findViewById(R.id.filename);
+                holder.name = target.findViewById(R.id.name);
                 holder.groups = target.findViewById(R.id.groups);
                 holder.kind = target.findViewById(R.id.kind);
                 // Tag relevant views

@@ -38,7 +38,6 @@ import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter;
 import com.eleybourn.bookcatalogue.adapters.SimpleListAdapterRowActionListener;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
-import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.utils.BundleUtils;
 import com.eleybourn.bookcatalogue.widgets.TouchListView;
@@ -169,32 +168,29 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Bas
     @Override
     @CallSuper
     protected void onCreate(final @Nullable Bundle savedInstanceState) {
+        Tracker.enterOnCreate(this);
         super.onCreate(savedInstanceState);
-        try {
-            // Setup the DB
-            mDb = new CatalogueDBAdapter(this);
 
-            // see getList for full details as to where we "get" the list from
-            mList = getList(mBKey, savedInstanceState);
-            initListAdapter(mList);
+        mDb = new CatalogueDBAdapter(this);
 
-            // Look for id and title
-            Bundle extras = getIntent().getExtras();
-            if (extras != null) {
-                mRowId = extras.getLong(UniqueId.KEY_ID);
+        // see getList for full details as to where we "get" the list from
+        mList = getList(mBKey, savedInstanceState);
+        initListAdapter(mList);
 
-                mBookTitle = extras.getString(UniqueId.KEY_TITLE);
-                setTextOrHideView(R.id.title, mBookTitle);
-            }
-
-            // Add handlers for 'Save', 'Cancel' and 'Add' (if resources are defined)
-            setOnClickListener(R.id.confirm, mSaveListener);
-            setOnClickListener(R.id.cancel, mCancelListener);
-            setOnClickListener(R.id.add, mAddListener);
-
-        } catch (Exception e) {
-            Logger.error(e);
+        // Look for id and title
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            mRowId = extras.getLong(UniqueId.KEY_ID);
+            mBookTitle = extras.getString(UniqueId.KEY_TITLE);
+            setTextOrHideView(R.id.title, mBookTitle);
         }
+
+        // Add handlers for 'Save', 'Cancel' and 'Add' (if resources are defined)
+        setOnClickListener(R.id.confirm, mSaveListener);
+        setOnClickListener(R.id.cancel, mCancelListener);
+        setOnClickListener(R.id.add, mAddListener);
+
+        Tracker.exitOnCreate(this);
     }
 
     /**

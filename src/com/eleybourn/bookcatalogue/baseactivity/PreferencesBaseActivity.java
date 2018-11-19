@@ -27,7 +27,7 @@ import android.support.annotation.Nullable;
 import android.view.ViewGroup;
 
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.properties.Properties;
 
 /**
@@ -43,17 +43,15 @@ abstract public class PreferencesBaseActivity extends BaseActivity {
     @Override
     @CallSuper
     public void onCreate(final @Nullable Bundle savedInstanceState) {
-        try {
-            super.onCreate(savedInstanceState);
+        Tracker.enterOnCreate(this);
+        super.onCreate(savedInstanceState);
 
-            Properties globalProps = new Properties();
-            initFields(globalProps);
+        Properties globalProps = new Properties();
+        initFields(globalProps);
 
-            ViewGroup styleProps = findViewById(R.id.dynamic_properties);
-            globalProps.buildView(getLayoutInflater(), styleProps);
+        ViewGroup styleProps = findViewById(R.id.dynamic_properties);
+        globalProps.buildView(getLayoutInflater(), styleProps);
 
-        } catch (Exception e) {
-            Logger.error(e);
-        }
+        Tracker.exitOnCreate(this);
     }
 }

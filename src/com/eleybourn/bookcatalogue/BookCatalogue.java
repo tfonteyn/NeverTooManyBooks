@@ -6,6 +6,8 @@ import android.support.annotation.CallSuper;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
+import com.eleybourn.bookcatalogue.debug.Tracker;
+
 /**
  * This is a placeholder class to deal with the surprising number of old shortcuts that
  * have not been updated from version 3.x.
@@ -22,8 +24,10 @@ public class BookCatalogue extends AppCompatActivity {
 	@CallSuper
 	@Override
 	public void onCreate(final @Nullable Bundle savedInstanceState) {
+		Tracker.enterOnCreate(this);
 		super.onCreate(savedInstanceState);
 		startActivity(new Intent(this, StartupActivity.class));
 		finish();
+		Tracker.exitOnCreate(this);
 	}
 }

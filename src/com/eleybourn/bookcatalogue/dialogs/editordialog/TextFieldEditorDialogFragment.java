@@ -25,6 +25,8 @@ import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.eleybourn.bookcatalogue.debug.Tracker;
+
 /**
  * Fragment wrapper for {@link TextFieldEditorDialog}
  *
@@ -106,11 +108,13 @@ public class TextFieldEditorDialogFragment extends EditorDialogFragment {
     @Override
     @CallSuper
     public void onPause() {
+        Tracker.enterOnPause(this);
         TextFieldEditorDialog dialog = (TextFieldEditorDialog) getDialog();
         if (dialog != null) {
             mText = dialog.getText();
         }
         super.onPause();
+        Tracker.exitOnPause(this);
     }
 
     /**

@@ -21,15 +21,22 @@ package com.eleybourn.bookcatalogue.tasks;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.view.View;
+import android.widget.AdapterView;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.dialogs.ContextDialogItem;
+import com.eleybourn.bookcatalogue.taskqueue.LegacyEvent;
+import com.eleybourn.bookcatalogue.taskqueue.LegacyTask;
 import com.eleybourn.bookcatalogue.taskqueue.QueueManager;
+
+import java.util.List;
 
 /**
  * BookCatalogue implementation of QueueManager.
  *
- * This just implements the application-specific (and localized) versions of basic
- * QueueManager objects.
+ * This just implements the application-specific versions of basic QueueManager objects.
  *
  * @author Philip Warner
  */
@@ -50,15 +57,104 @@ public class BCQueueManager extends QueueManager {
      * main: long-running tasks, or tasks that can just wait
      * small_jobs: trivial background tasks that will only take a few seconds.
      */
-    public BCQueueManager(final @NonNull Context applicationContext) {
-        super(applicationContext);
+    public BCQueueManager(final @NonNull Context context) {
+        super(context);
         initializeQueue(QUEUE_MAIN);
         initializeQueue(QUEUE_SMALL_JOBS);
     }
 
+    /**
+     * Return a localized LegacyEvent for the passed blob.
+     * This method is used when deserialization fails, most likely as a result of changes
+     * to the underlying serialized class.
+     */
     @Override
     @NonNull
-    protected Context getApplicationContext() {
-        return BookCatalogueApp.getAppContext();
+    public LegacyEvent newLegacyEvent(byte[] original) {
+        return new BCLegacyEvent(original);
+    }
+
+    /**
+     * Return a localized current LegacyTask object.
+     */
+    @Override
+    @NonNull
+    public LegacyTask newLegacyTask(byte[] original) {
+        return new BCLegacyTask(original, BookCatalogueApp.getResourceString(R.string.legacy_task));
+    }
+
+    /**
+     * The only reason that this class has to be implemented in the client application is
+     * so that the call to addContextMenuItems(...) can return a LOCALIZED context menu.
+     *
+     * @author Philip Warner
+     */
+    public class BCLegacyEvent extends LegacyEvent {
+        private static final long serialVersionUID = 1992740024689009867L;
+
+        BCLegacyEvent(byte[] original) {
+            super(original, "Legacy Event");
+        }
+
+        @Override
+        public void addContextMenuItems(final @NonNull Context ctx,
+                                        @NonNull AdapterView<?> parent,
+                                        final @NonNull View v,
+                                        final int position,
+                                        final long id,
+                                        final @NonNull List<ContextDialogItem> items,
+                                        final @NonNull Object appInfo) {
+
+            items.add(new ContextDialogItem(ctx.getString(R.string.delete_event), new Runnable() {
+                @Override
+                public void run() {
+                    QueueManager.getQueueManager().deleteEvent(BCLegacyEvent.this.getId());
+                }
+            }));
+
+        }
+    }
+
+    /**
+     * The only reason that this class has to be implemented in the client application is
+     * so that the call to addContextMenuItems(...) can return a LOCALIZED context menu.
+     *
+     * @author Philip Warner
+     */
+    public class BCLegacyTask extends LegacyTask {
+        private static final long serialVersionUID = 164669981603757736L;
+
+        BCLegacyTask(byte[] original, String description) {
+            super(original, description);
+        }
+
+        @Override
+        public void addContextMenuItems(final @NonNull Context ctx,
+                                        @NonNull AdapterView<?> parent,
+                                        final @NonNull View v,
+                                        final int position,
+                                        final long id,
+                                        final @NonNull List<ContextDialogItem> items,
+                                        final @NonNull Object appInfo) {
+
+            items.add(new ContextDialogItem(ctx.getString(R.string.delete_task), new Runnable() {
+                @Override
+                public void run() {
+                    QueueManager.getQueueManager().deleteTask(BCLegacyTask.this.getId());
+                }
+            }));
+
+        }
+
+        @Override
+        @NonNull
+        public String getDescription() {
+            return BookCatalogueApp.getResourceString(R.string.unrecognized_task);
+        }
+
+        @Override
+        public int getCategory() {
+            return CAT_LEGACY;
+        }
     }
 }

@@ -99,6 +99,7 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
     @Override
     @CallSuper
     public void onCreate(final @Nullable Bundle savedInstanceState) {
+        Tracker.enterOnCreate(this);
         super.onCreate(savedInstanceState);
 
         Bundle extras = getIntent().getExtras();
@@ -125,6 +126,7 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
         initFields();
         populateFields();
         initCancelConfirmButtons();
+        Tracker.exitOnCreate(this);
     }
 
     private void initFields() {
@@ -310,14 +312,20 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
 
     @Override
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+        Tracker.enterOnActivityResult(this, requestCode, resultCode);
         switch (requestCode) {
             case SearchAdminActivity.REQUEST_CODE: /* 4266b81b-137b-4647-aa1c-8ec0fc8726e6 */
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     mSearchSites = data.getIntExtra(SearchAdminActivity.RESULT_SEARCH_SITES, mSearchSites);
                 }
                 break;
+
+            default:
+                super.onActivityResult(requestCode, resultCode, data);
+                break;
         }
-        super.onActivityResult(requestCode, resultCode, data);
+
+        Tracker.exitOnActivityResult(this, requestCode, resultCode);
     }
 
     private int countUserSelections() {
@@ -391,15 +399,14 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
         /** a key, usually from {@link com.eleybourn.bookcatalogue.UniqueId} */
         @NonNull
         public final String key;
-        /** how to use this field */
-        @NonNull
-        public Usage usage;
-
         /** is the field a list type */
         private final boolean canAppend;
         /** label to show to the user */
         @StringRes
         private final int labelId;
+        /** how to use this field */
+        @NonNull
+        public Usage usage;
 
 
         public FieldUsage(final @NonNull String name,

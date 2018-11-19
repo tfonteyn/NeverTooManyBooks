@@ -31,7 +31,7 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
-import com.eleybourn.bookcatalogue.database.cursors.BookCursorRow;
+import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Author;
@@ -173,7 +173,7 @@ class ImportAllTask extends GenericTask {
             mTotalBooks = (int) books.getLong(ListReviewsFieldNames.TOTAL);
             if (mFirstCall) {
                 // So the details get updated
-                qMgr.saveTask(this);
+                qMgr.updateTask(this);
                 mFirstCall = false;
             }
 
@@ -208,7 +208,7 @@ class ImportAllTask extends GenericTask {
                 //}
 
                 // Update after each book. Mainly for a nice UI.
-                qMgr.saveTask(this);
+                qMgr.updateTask(this);
                 mPosition++;
             }
         }
@@ -246,7 +246,7 @@ class ImportAllTask extends GenericTask {
 
             if (found) {
                 // If found, update ALL related books
-                BookCursorRow bookCursorRow = c.getCursorRow();
+                BookRowView bookCursorRow = c.getCursorRow();
                 do {
                     // Check for abort
                     if (this.isAborting()) {
@@ -304,7 +304,7 @@ class ImportAllTask extends GenericTask {
      * Update the book using the GR data
      */
     private void updateBook(final @NonNull CatalogueDBAdapter db,
-                            final @NonNull BookCursorRow bookCursorRow,
+                            final @NonNull BookRowView bookCursorRow,
                             final @NonNull Bundle review) {
         // Get last date book was sent to GR (may be null)
         final String lastGrSync = bookCursorRow.getDateLastSyncedWithGoodReads();
@@ -348,7 +348,7 @@ class ImportAllTask extends GenericTask {
      */
     @NonNull
     private Book buildBundle(final @NonNull CatalogueDBAdapter db,
-                             final @Nullable BookCursorRow bookCursorRow,
+                             final @Nullable BookRowView bookCursorRow,
                              final @NonNull Bundle review) {
         Book book = new Book();
 

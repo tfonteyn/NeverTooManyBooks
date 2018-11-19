@@ -21,7 +21,7 @@
     </FrameLayout>
 
     <TextView
-        android:id="@+id/filename"
+        android:id="@+id/name"
         style="@style/lbl_property_name"
         android:layout_toStartOf="@id/frame"
         tools:text="name of property" />
@@ -29,7 +29,7 @@
     <TextView
         android:id="@+id/value"
         style="@style/txt_property_value"
-        android:layout_below="@id/filename"
+        android:layout_below="@id/name"
         android:layout_toStartOf="@id/frame"
         tools:text="current value"/>
 

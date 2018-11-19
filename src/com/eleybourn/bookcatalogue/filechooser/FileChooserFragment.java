@@ -37,6 +37,7 @@ import android.widget.TextView;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.adapters.SimpleListAdapterRowActionListener;
+import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.filechooser.FileLister.FileListerListener;
 import com.eleybourn.bookcatalogue.utils.RTE;
@@ -109,6 +110,7 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
     @Override
     @CallSuper
     public void onActivityCreated(final @Nullable Bundle savedInstanceState) {
+        Tracker.enterOnActivityCreated(this);
         super.onActivityCreated(savedInstanceState);
 
         //noinspection ConstantConditions
@@ -137,6 +139,7 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
                 handleUp();
             }
         });
+        Tracker.exitOnActivityCreated(this);
     }
 
     /**

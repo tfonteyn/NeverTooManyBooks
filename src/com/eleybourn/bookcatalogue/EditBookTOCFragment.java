@@ -49,6 +49,7 @@ import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Book;
@@ -130,6 +131,7 @@ public class EditBookTOCFragment extends BookBaseFragment implements HandlesISFD
     @Override
     @CallSuper
     public void onActivityCreated(final @Nullable Bundle savedInstanceState) {
+        Tracker.enterOnActivityCreated(this);
         super.onActivityCreated(savedInstanceState);
 
         //noinspection ConstantConditions
@@ -181,6 +183,7 @@ public class EditBookTOCFragment extends BookBaseFragment implements HandlesISFD
                 getBookManager().setDirty(true);
             }
         });
+        Tracker.exitOnActivityCreated(this);
     }
 
     /**
@@ -227,6 +230,7 @@ public class EditBookTOCFragment extends BookBaseFragment implements HandlesISFD
     @Override
     @CallSuper
     protected void onLoadFieldsFromBook(final @NonNull Book book, final boolean setAllFrom) {
+        Tracker.enterOnLoadFieldsFromBook(this, book.getBookId());
         super.onLoadFieldsFromBook(book, setAllFrom);
 
         // populateFields
@@ -236,9 +240,7 @@ public class EditBookTOCFragment extends BookBaseFragment implements HandlesISFD
         // Restore default visibility
         //showHideFields(false);
 
-        if (DEBUG_SWITCHES.FIELD_BOOK_TRANSFERS && BuildConfig.DEBUG) {
-            Logger.info(this, "onLoadFieldsFromBook done");
-        }
+        Tracker.exitOnLoadFieldsFromBook(this, book.getBookId());
     }
 
     //</editor-fold>
@@ -281,6 +283,7 @@ public class EditBookTOCFragment extends BookBaseFragment implements HandlesISFD
     @Override
     @CallSuper
     protected void onSaveFieldsToBook(final @NonNull Book book) {
+        Tracker.enterOnSaveFieldsToBook(this, book.getBookId());
         super.onSaveFieldsToBook(book);
 
         book.putTOC(mList);
@@ -295,9 +298,7 @@ public class EditBookTOCFragment extends BookBaseFragment implements HandlesISFD
                         DatabaseDefinitions.DOM_IS_ANTHOLOGY
                         : DatabaseDefinitions.DOM_BOOK_WITH_MULTIPLE_AUTHORS ^ DatabaseDefinitions.DOM_IS_ANTHOLOGY);
 
-        if (DEBUG_SWITCHES.FIELD_BOOK_TRANSFERS && BuildConfig.DEBUG) {
-            Logger.info(this, "onSaveFieldsToBook done");
-        }
+        Tracker.exitOnSaveFieldsToBook(this, book.getBookId());
     }
 
 //    @Override

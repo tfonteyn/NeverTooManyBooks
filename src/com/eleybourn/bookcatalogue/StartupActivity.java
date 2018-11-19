@@ -47,6 +47,7 @@ import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.CoversDbAdapter;
 import com.eleybourn.bookcatalogue.database.UpgradeDatabase;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.filechooser.BackupChooserActivity;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.OnTaskFinishListener;
@@ -133,6 +134,7 @@ public class StartupActivity extends AppCompatActivity {
     @Override
     @CallSuper
     public void onCreate(final @Nullable Bundle savedInstanceState) {
+        Tracker.enterOnCreate(this);
         super.onCreate(savedInstanceState);
 
         // request Permissions (Android 6+)
@@ -148,6 +150,7 @@ public class StartupActivity extends AppCompatActivity {
             }
             startNextStage();
         }
+        Tracker.exitOnCreate(this);
     }
 
     private void initStorage() {
@@ -425,10 +428,12 @@ public class StartupActivity extends AppCompatActivity {
     @Override
     @CallSuper
     protected void onDestroy() {
+        Tracker.enterOnDestroy(this);
         if (mTaskQueue != null) {
             mTaskQueue.finish();
         }
         super.onDestroy();
+        Tracker.exitOnDestroy(this);
     }
 
     /**

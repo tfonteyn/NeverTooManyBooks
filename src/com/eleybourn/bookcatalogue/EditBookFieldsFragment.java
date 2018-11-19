@@ -37,6 +37,7 @@ import android.widget.Checkable;
 
 import com.eleybourn.bookcatalogue.Fields.Field;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.editordialog.CheckListEditorDialogFragment;
 import com.eleybourn.bookcatalogue.dialogs.editordialog.CheckListItem;
 import com.eleybourn.bookcatalogue.dialogs.editordialog.CheckListItemBase;
@@ -117,6 +118,7 @@ public class EditBookFieldsFragment extends BookBaseFragment implements
     @CallSuper
     @Override
     public void onActivityCreated(final @Nullable Bundle savedInstanceState) {
+        Tracker.enterOnActivityCreated(this);
         super.onActivityCreated(savedInstanceState);
 
         try {
@@ -127,6 +129,7 @@ public class EditBookFieldsFragment extends BookBaseFragment implements
             // 'next' key is pressed and some views have been hidden.
             Logger.error(e);
         }
+        Tracker.exitOnActivityCreated(this);
     }
 
     /**
@@ -156,7 +159,7 @@ public class EditBookFieldsFragment extends BookBaseFragment implements
                     }
                 });
 
-        mFields.add(R.id.filename, UniqueId.KEY_SERIES_NAME)
+        mFields.add(R.id.name, UniqueId.KEY_SERIES_NAME)
                 .getView().setOnClickListener(
                 new OnClickListener() {
                     @Override
@@ -241,6 +244,7 @@ public class EditBookFieldsFragment extends BookBaseFragment implements
     @Override
     @CallSuper
     protected void onLoadFieldsFromBook(final @NonNull Book book, final boolean setAllFrom) {
+        Tracker.enterOnLoadFieldsFromBook(this, book.getBookId());
         super.onLoadFieldsFromBook(book, setAllFrom);
 
         // new book ? load data fields from Extras
@@ -259,9 +263,7 @@ public class EditBookFieldsFragment extends BookBaseFragment implements
         // Restore default visibility
         showHideFields(false);
 
-        if (DEBUG_SWITCHES.FIELD_BOOK_TRANSFERS && BuildConfig.DEBUG) {
-            Logger.info(this, "onLoadFieldsFromBook done");
-        }
+        Tracker.exitOnLoadFieldsFromBook(this, book.getBookId());
     }
 
     //</editor-fold>
@@ -325,7 +327,7 @@ public class EditBookFieldsFragment extends BookBaseFragment implements
     }
 
     private void populateSeriesListField(final @NonNull Book book) {
-        boolean visible = mFields.getField(R.id.filename).visible;
+        boolean visible = mFields.getField(R.id.name).visible;
         if (visible) {
             ArrayList<Series> list = book.getSeriesList();
             int seriesCount = list.size();
@@ -339,11 +341,11 @@ public class EditBookFieldsFragment extends BookBaseFragment implements
             if (newText.isEmpty()) {
                 newText = getString(R.string.btn_set_series);
             }
-            mFields.getField(R.id.filename).setValue(newText);
+            mFields.getField(R.id.name).setValue(newText);
         }
         //noinspection ConstantConditions
         getView().findViewById(R.id.lbl_series).setVisibility(visible ? View.VISIBLE : View.GONE);
-        getView().findViewById(R.id.filename).setVisibility(visible ? View.VISIBLE : View.GONE);
+        getView().findViewById(R.id.name).setVisibility(visible ? View.VISIBLE : View.GONE);
     }
     //</editor-fold>
 
@@ -354,18 +356,18 @@ public class EditBookFieldsFragment extends BookBaseFragment implements
     @Override
     @CallSuper
     public void onPause() {
+        Tracker.enterOnPause(this);
         mCoverHandler.dismissCoverBrowser();
 
         super.onPause();
+        Tracker.exitOnPause(this);
     }
 
     @Override
     protected void onSaveFieldsToBook(@NonNull final Book book) {
+        Tracker.enterOnSaveFieldsToBook(this, book.getBookId());
         super.onSaveFieldsToBook(book);
-
-        if (DEBUG_SWITCHES.FIELD_BOOK_TRANSFERS && BuildConfig.DEBUG) {
-            Logger.info(this, "onSaveFieldsToBook done");
-        }
+        Tracker.exitOnSaveFieldsToBook(this, book.getBookId());
     }
 
 //    @Override
@@ -546,9 +548,7 @@ public class EditBookFieldsFragment extends BookBaseFragment implements
     @Override
     @CallSuper
     public void onActivityResult(final int requestCode, final int resultCode, final @Nullable Intent data) {
-        if (DEBUG_SWITCHES.ON_ACTIVITY_RESULT && BuildConfig.DEBUG) {
-            Logger.info(this, "onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
-        }
+        Tracker.enterOnActivityResult(this, requestCode, resultCode);
 
         Book book = getBookManager().getBook();
         switch (requestCode) {
@@ -568,7 +568,7 @@ public class EditBookFieldsFragment extends BookBaseFragment implements
                 boolean wasDirty = getBookManager().isDirty();
                 populateAuthorListField(book);
                 getBookManager().setDirty(wasDirty);
-                return;
+                break;
             }
             case EditSeriesListActivity.REQUEST_CODE: { /* bca659b6-dfb9-4a97-b651-5b05ad102400 */
                 if (resultCode == Activity.RESULT_OK && data != null && data.hasExtra(UniqueId.BKEY_SERIES_ARRAY)) {
@@ -578,15 +578,16 @@ public class EditBookFieldsFragment extends BookBaseFragment implements
                     populateSeriesListField(book);
                     getBookManager().setDirty(true);
                 }
-                return;
+                break;
             }
+            default:
+                // handle any cover image result codes
+                if (!mCoverHandler.onActivityResult(requestCode, resultCode, data)) {
+                    super.onActivityResult(requestCode, resultCode, data);
+                }
+                break;
         }
 
-        // handle any cover image result codes
-        if (mCoverHandler.onActivityResult(requestCode, resultCode, data)) {
-            return;
-        }
-
-        super.onActivityResult(requestCode, resultCode, data);
+        Tracker.exitOnActivityResult(this, requestCode, resultCode);
     }
 }

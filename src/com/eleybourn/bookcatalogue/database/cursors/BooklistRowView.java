@@ -44,7 +44,7 @@ import com.eleybourn.bookcatalogue.utils.DateUtils;
  *
  * @author Philip Warner
  */
-public class BooklistCursorRow extends BookCursorRowBase {
+public class BooklistRowView extends BookRowViewBase {
 
     /** Underlying builder object */
     @NonNull
@@ -77,7 +77,7 @@ public class BooklistCursorRow extends BookCursorRowBase {
      * @param cursor  Underlying Cursor
      * @param builder Underlying Builder
      */
-    public BooklistCursorRow(final @NonNull Cursor cursor, final @NonNull BooklistBuilder builder) {
+    public BooklistRowView(final @NonNull Cursor cursor, final @NonNull BooklistBuilder builder) {
         super(cursor);
         mBuilder = builder;
 

@@ -27,7 +27,7 @@ import android.support.annotation.NonNull;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
-import com.eleybourn.bookcatalogue.database.cursors.BookCursorRow;
+import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.searches.goodreads.BookEvents.GrNoIsbnEvent;
@@ -112,7 +112,7 @@ public class SendAllBooksTask extends GenericTask {
         // Use the app context; the calling activity may go away
         try (CatalogueDBAdapter db = new CatalogueDBAdapter(context.getApplicationContext());
              BookCursor books = db.fetchBooksForGoodreadsCursor(mLastId, mUpdatesOnly)) {
-            final BookCursorRow bookCursorRow = books.getCursorRow();
+            final BookRowView bookCursorRow = books.getCursorRow();
             mTotalBooks = books.getCount() + mCount;
 
             while (books.moveToNext()) {
@@ -131,7 +131,7 @@ public class SendAllBooksTask extends GenericTask {
                 switch (disposition) {
                     case error:
                         this.setException(exportException);
-                        queueManager.saveTask(this);
+                        queueManager.updateTask(this);
                         return false;
                     case sent:
                         // Record the change
@@ -151,7 +151,7 @@ public class SendAllBooksTask extends GenericTask {
                         if (getRetryDelay() > 300) {
                             setRetryDelay(300);
                         }
-                        queueManager.saveTask(this);
+                        queueManager.updateTask(this);
                         return false;
                 }
 
@@ -167,13 +167,13 @@ public class SendAllBooksTask extends GenericTask {
                 // Save every few rows in case phone dies (and to allow task queries to see data)
                 // Actually, save every row because it updates the UI, and sending a row takes a while.
                 //if (mCount - lastSave >= 5) {
-                //	queueManager.saveTask(this);
+                //	queueManager.updateTask(this);
                 //	lastSave = mCount;
                 //}
-                queueManager.saveTask(this);
+                queueManager.updateTask(this);
 
                 if (this.isAborting()) {
-                    queueManager.saveTask(this);
+                    queueManager.updateTask(this);
                     return false;
                 }
             }

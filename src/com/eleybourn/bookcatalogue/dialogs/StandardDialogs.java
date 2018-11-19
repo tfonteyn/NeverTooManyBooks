@@ -53,9 +53,6 @@ import java.util.List;
  * ENHANCE: decide Toast/Snackbar ? it's a preference setting for now... but overkill (bigger app)
  * TODO: Snackbar: needs styling
  * TODO: Snackbar: uses getDecorView for now so it's always at the bottom of the screen.
- *
- * Reminder: we still have {@link QueueManager#doToast(String)} which operate without access to 'anything'
- * If in doubt, search for "Toast.makeText"
  */
 public class StandardDialogs {
 
@@ -79,6 +76,17 @@ public class StandardDialogs {
         } else {
             Snackbar.make(activity.getWindow().getDecorView(), message, Snackbar.LENGTH_LONG).show();
         }
+    }
+
+    /**
+     * Problem child: called from a task (thread) which has no activity/context at all.
+     * Hardwired to use the application context.
+     * *will* only be called from a UI thread.
+     *
+     * Does mean we can't use SnackBar
+     */
+    public static void showUserMessage(final String message) {
+        Toast.makeText(BookCatalogueApp.getAppContext(), message, Toast.LENGTH_LONG).show();
     }
 
     /* ========================================================================================== */
@@ -310,6 +318,8 @@ public class StandardDialogs {
         dialog.show();
 
     }
+
+
 
     /* ========================================================================================== */
 

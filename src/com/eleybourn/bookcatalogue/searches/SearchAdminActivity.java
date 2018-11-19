@@ -15,6 +15,7 @@ import android.widget.Button;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
+import com.eleybourn.bookcatalogue.debug.Tracker;
 
 import java.util.ArrayList;
 
@@ -45,6 +46,7 @@ public class SearchAdminActivity extends BaseActivity {
     @Override
     @CallSuper
     protected void onCreate(final @Nullable Bundle savedInstanceState) {
+        Tracker.enterOnCreate(this);
         super.onCreate(savedInstanceState);
         setTitle(R.string.search_internet);
 
@@ -80,6 +82,7 @@ public class SearchAdminActivity extends BaseActivity {
                 finish();
             }
         });
+        Tracker.exitOnCreate(this);
     }
 
     private void initSingleTab(final @StringRes int titleId, final @NonNull ArrayList<SearchSites.Site> list) {

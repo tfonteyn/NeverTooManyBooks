@@ -38,7 +38,7 @@ import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
-import com.eleybourn.bookcatalogue.dialogs.fieldeditdialogs.EditBookshelfDialog;
+import com.eleybourn.bookcatalogue.dialogs.fieldeditdialog.EditBookshelfDialog;
 import com.eleybourn.bookcatalogue.dialogs.SelectOneDialog;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.widgets.TouchListViewWithDropListener;
@@ -67,12 +67,14 @@ public class EditBookshelfListActivity extends BaseListActivity {
     @Override
     @CallSuper
     public void onCreate(final @Nullable Bundle savedInstanceState) {
+        Tracker.enterOnCreate(this);
         super.onCreate(savedInstanceState);
         setTitle(R.string.title_edit_bookshelves);
 
         mDb = new CatalogueDBAdapter(this);
 
         populateList();
+        Tracker.exitOnCreate(this);
     }
 
     private void populateList() {

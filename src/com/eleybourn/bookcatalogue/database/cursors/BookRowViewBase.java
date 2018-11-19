@@ -12,12 +12,12 @@ import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
  * class has get*() methods for the most common (all?) book-related fields. Passed a Cursor object
  * it will retrieve the specified value using the current cursor row.
  *
- * Unified {@link BookCursorRow} and {@link BooklistCursorRow}
+ * Unified {@link BookRowView} and {@link BooklistRowView}
  *
  * This base class should ONLY have accessors for fields actually present in the 'books' table
  * Others should be done via extended classes of this base one.
  */
-public class BookCursorRowBase {
+public class BookRowViewBase {
 
     /** Associated cursor object */
     @NonNull
@@ -58,7 +58,7 @@ public class BookCursorRowBase {
     private int mGoodreadsBookIdCol = -2;
     private int mDateLastSyncedWithGoodReadsCol = -2;
 
-    protected BookCursorRowBase(final @NonNull Cursor cursor) {
+    protected BookRowViewBase(final @NonNull Cursor cursor) {
         mCursor = cursor;
     }
 

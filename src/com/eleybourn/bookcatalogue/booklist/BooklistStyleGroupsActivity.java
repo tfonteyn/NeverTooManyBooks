@@ -38,7 +38,7 @@ import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter;
 import com.eleybourn.bookcatalogue.adapters.SimpleListAdapterRowActionListener;
 import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyleGroupsActivity.GroupWrapper;
-import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.properties.Properties;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
@@ -75,32 +75,29 @@ public class BooklistStyleGroupsActivity extends EditObjectListActivity<GroupWra
     @Override
     @CallSuper
     protected void onCreate(final @Nullable Bundle savedInstanceState) {
-        try {
-            // Get the intent and get the style and other settings
-            Intent intent = this.getIntent();
-            mStyle = (BooklistStyle) intent.getSerializableExtra(REQUEST_BKEY_STYLE);
+        Tracker.enterOnCreate(this);
+        // Get the intent and get the style and other settings
+        Intent intent = this.getIntent();
+        mStyle = (BooklistStyle) intent.getSerializableExtra(REQUEST_BKEY_STYLE);
 
-            if (intent.hasExtra(REQUEST_BKEY_SAVE_TO_DATABASE)) {
-                mSaveToDb = intent.getBooleanExtra(REQUEST_BKEY_SAVE_TO_DATABASE, true);
-            }
-
-            /* Indicated this activity was called without an existing style */
-            if (mStyle == null) {
-                mStyle = new BooklistStyle("");
-            }
-
-            // Init the subclass now that we have the style
-            super.onCreate(savedInstanceState);
-
-            this.setTitle(getString(R.string.groupings) + ": " + mStyle.getDisplayName());
-
-            if (savedInstanceState == null) {
-                HintManager.displayHint(this.getLayoutInflater(), R.string.hint_booklist_style_groups, null);
-            }
-
-        } catch (Exception e) {
-            Logger.error(e);
+        if (intent.hasExtra(REQUEST_BKEY_SAVE_TO_DATABASE)) {
+            mSaveToDb = intent.getBooleanExtra(REQUEST_BKEY_SAVE_TO_DATABASE, true);
         }
+
+        /* Indicated this activity was called without an existing style */
+        if (mStyle == null) {
+            mStyle = new BooklistStyle("");
+        }
+
+        // Init the subclass now that we have the style
+        super.onCreate(savedInstanceState);
+
+        this.setTitle(getString(R.string.groupings) + ": " + mStyle.getDisplayName());
+
+        if (savedInstanceState == null) {
+            HintManager.displayHint(this.getLayoutInflater(), R.string.hint_booklist_style_groups, null);
+        }
+        Tracker.exitOnCreate(this);
     }
 
     /**
@@ -156,8 +153,30 @@ public class BooklistStyleGroupsActivity extends EditObjectListActivity<GroupWra
 
         return true;
     }
+
     protected SimpleListAdapter<GroupWrapper> createListAdapter(final @LayoutRes int rowViewId, final @NonNull ArrayList<GroupWrapper> list) {
-        return new GroupWrapperListAdapter(this,rowViewId,list);
+        return new GroupWrapperListAdapter(this, rowViewId, list);
+    }
+
+    /**
+     * We build a list of GroupWrappers which is passed to the underlying class for editing.
+     * The wrapper includes extra details needed by this activity.
+     *
+     * @author Philip Warner
+     */
+    public static class GroupWrapper implements Serializable {
+        private static final long serialVersionUID = 3108094089675884238L;
+        /** The actual group */
+        @NonNull
+        final BooklistGroup group;
+        /** Whether this groups is present in the style */
+        boolean present;
+
+        /** Constructor */
+        GroupWrapper(final @NonNull BooklistGroup group, final boolean present) {
+            this.group = group;
+            this.present = present;
+        }
     }
 
     protected class GroupWrapperListAdapter extends SimpleListAdapter<GroupWrapper> implements SimpleListAdapterRowActionListener<GroupWrapper> {
@@ -171,7 +190,7 @@ public class BooklistStyleGroupsActivity extends EditObjectListActivity<GroupWra
             if (holder == null) {
                 // New view, so build the Holder
                 holder = new Holder();
-                holder.name = target.findViewById(R.id.filename);
+                holder.name = target.findViewById(R.id.name);
                 holder.present = target.findViewById(R.id.present);
                 // Tag the parts that need it
                 ViewTagger.setTag(target, R.id.TAG_HOLDER, holder);// value BooklistStyleGroupsActivity.Holder
@@ -192,26 +211,6 @@ public class BooklistStyleGroupsActivity extends EditObjectListActivity<GroupWra
             holder.wrapper = wrapper;
             holder.name.setText(wrapper.group.getName());
             holder.present.setChecked(holder.wrapper.present);
-        }
-    }
-    /**
-     * We build a list of GroupWrappers which is passed to the underlying class for editing.
-     * The wrapper includes extra details needed by this activity.
-     *
-     * @author Philip Warner
-     */
-    public static class GroupWrapper implements Serializable {
-        private static final long serialVersionUID = 3108094089675884238L;
-        /** The actual group */
-        @NonNull
-        final BooklistGroup group;
-        /** Whether this groups is present in the style */
-        boolean present;
-
-        /** Constructor */
-        GroupWrapper(final @NonNull BooklistGroup group, final boolean present) {
-            this.group = group;
-            this.present = present;
         }
     }
 

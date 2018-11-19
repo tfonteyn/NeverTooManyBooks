@@ -66,7 +66,7 @@ public class BooleanProperty extends ValuePropertyWithGlobalDefault<Boolean> imp
         holder.cb = root.findViewById(R.id.checkbox);
         // Set the ID so weird stuff does not happen on activity reload after config changes.
         holder.cb.setId(nextViewId());
-        holder.name = root.findViewById(R.id.filename);
+        holder.name = root.findViewById(R.id.name);
         holder.name.setText(this.getNameResourceId());
         holder.value = root.findViewById(R.id.value);
 

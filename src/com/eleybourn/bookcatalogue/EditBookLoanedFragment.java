@@ -41,6 +41,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
 
+import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.BookManager;
 
@@ -109,6 +110,7 @@ public class EditBookLoanedFragment extends BookBaseFragment {
     @Override
     @CallSuper
     public void onActivityCreated(final @Nullable Bundle savedInstanceState) {
+        Tracker.enterOnActivityCreated(this);
         super.onActivityCreated(savedInstanceState);
 
         String friend = mDb.getLoanByBookId(getBookManager().getBook().getBookId());
@@ -117,6 +119,7 @@ public class EditBookLoanedFragment extends BookBaseFragment {
         } else {
             showLoaned(friend);
         }
+        Tracker.exitOnActivityCreated(this);
     }
 
 //    @Override

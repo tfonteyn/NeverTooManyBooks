@@ -21,6 +21,7 @@
 package com.eleybourn.bookcatalogue.taskqueue;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.adapters.BindableItemCursorAdapter;
 
@@ -46,14 +47,23 @@ public abstract class Event implements Serializable, BindableItemCursorAdapter.B
     @NonNull
     private final String mDescription;
     private long mId = 0;
+    private Exception mException = null;
 
     protected Event(final @NonNull String description) {
         mDescription = description;
     }
 
+    public Event(final @NonNull String description, final @Nullable Exception e) {
+        mDescription = description;
+        mException = e;
+    }
     @NonNull
     public String getDescription() {
         return mDescription;
+    }
+
+    public Exception getException() {
+        return mException;
     }
 
     public long getId() {

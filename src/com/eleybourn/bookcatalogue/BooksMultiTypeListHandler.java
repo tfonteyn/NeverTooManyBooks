@@ -50,20 +50,20 @@ import com.eleybourn.bookcatalogue.booklist.RowKinds;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.DBExceptions;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
-import com.eleybourn.bookcatalogue.database.cursors.BookCursorRow;
-import com.eleybourn.bookcatalogue.database.cursors.BooklistCursorRow;
+import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
+import com.eleybourn.bookcatalogue.database.cursors.BooklistRowView;
 import com.eleybourn.bookcatalogue.datamanager.Datum;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.SelectOneDialog;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
-import com.eleybourn.bookcatalogue.dialogs.fieldeditdialogs.EditAuthorDialog;
-import com.eleybourn.bookcatalogue.dialogs.fieldeditdialogs.EditFormatDialog;
-import com.eleybourn.bookcatalogue.dialogs.fieldeditdialogs.EditGenreDialog;
-import com.eleybourn.bookcatalogue.dialogs.fieldeditdialogs.EditLanguageDialog;
-import com.eleybourn.bookcatalogue.dialogs.fieldeditdialogs.EditLocationDialog;
-import com.eleybourn.bookcatalogue.dialogs.fieldeditdialogs.EditPublisherDialog;
-import com.eleybourn.bookcatalogue.dialogs.fieldeditdialogs.EditSeriesDialog;
+import com.eleybourn.bookcatalogue.dialogs.fieldeditdialog.EditAuthorDialog;
+import com.eleybourn.bookcatalogue.dialogs.fieldeditdialog.EditFormatDialog;
+import com.eleybourn.bookcatalogue.dialogs.fieldeditdialog.EditGenreDialog;
+import com.eleybourn.bookcatalogue.dialogs.fieldeditdialog.EditLanguageDialog;
+import com.eleybourn.bookcatalogue.dialogs.fieldeditdialog.EditLocationDialog;
+import com.eleybourn.bookcatalogue.dialogs.fieldeditdialog.EditPublisherDialog;
+import com.eleybourn.bookcatalogue.dialogs.fieldeditdialog.EditSeriesDialog;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Publisher;
 import com.eleybourn.bookcatalogue.entities.Series;
@@ -132,7 +132,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
      */
     @Override
     public int getItemViewType(final @NonNull Cursor cursor) {
-        BooklistCursorRow rowView = ((BooklistSupportProvider) cursor).getCursorRow();
+        BooklistRowView rowView = ((BooklistSupportProvider) cursor).getCursorRow();
         return rowView.getRowKind();
     }
 
@@ -157,7 +157,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
     @Override
     public String[] getSectionText(final @NonNull Cursor cursor) {
         Tracker.enterFunction(this, "getSectionTextForPosition", cursor);
-        BooklistCursorRow rowView = ((BooklistSupportProvider) cursor).getCursorRow();
+        BooklistRowView rowView = ((BooklistSupportProvider) cursor).getCursorRow();
         String[] st = new String[]{rowView.getLevel1Data(), rowView.getLevel2Data()};
         Tracker.exitFunction(this, "getSectionTextForPosition");
         return st;
@@ -171,7 +171,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
         return holder.absolutePosition;
     }
 
-    private void scaleViewText(@SuppressWarnings("unused") final @NonNull BooklistCursorRow rowView, final @NonNull View root) {
+    private void scaleViewText(@SuppressWarnings("unused") final @NonNull BooklistRowView rowView, final @NonNull View root) {
 
         if (root instanceof TextView) {
             TextView txt = (TextView) root;
@@ -234,7 +234,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                         @Nullable View convertView,
                         final @NonNull ViewGroup parent) {
 
-        final BooklistCursorRow rowView = ((BooklistSupportProvider) cursor).getCursorRow();
+        final BooklistRowView rowView = ((BooklistSupportProvider) cursor).getCursorRow();
         final BooklistHolder holder;
         final int level = rowView.getLevel();
 
@@ -260,7 +260,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
     }
 
     @Nullable
-    private String getAuthorFromRow(final @NonNull CatalogueDBAdapter db, final @NonNull BooklistCursorRow rowView) {
+    private String getAuthorFromRow(final @NonNull CatalogueDBAdapter db, final @NonNull BooklistRowView rowView) {
         if (rowView.hasAuthorId() && rowView.getAuthorId() > 0) {
             Author author = db.getAuthor(rowView.getAuthorId());
             Objects.requireNonNull(author);
@@ -276,7 +276,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
     }
 
     @Nullable
-    private String getSeriesFromRow(final @NonNull CatalogueDBAdapter db, final @NonNull BooklistCursorRow rowView) {
+    private String getSeriesFromRow(final @NonNull CatalogueDBAdapter db, final @NonNull BooklistRowView rowView) {
         if (rowView.hasSeriesId() && rowView.getSeriesId() > 0) {
             Series s = db.getSeries(rowView.getSeriesId());
             if (s != null) {
@@ -299,7 +299,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
      * @see SelectOneDialog.SimpleDialogMenuItem : can't use SubMenu.
      */
     public void prepareListViewContextMenu(final @NonNull Menu /* in/out */ menu,
-                                           final @NonNull BooklistCursorRow cursorRow) {
+                                           final @NonNull BooklistRowView cursorRow) {
         menu.clear();
 
         switch (cursorRow.getRowKind()) {
@@ -429,7 +429,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
     @SuppressWarnings("UnusedReturnValue")
     boolean onContextItemSelected(final @NonNull MenuItem menuItem,
                                   final @NonNull CatalogueDBAdapter db,
-                                  final @NonNull BooklistCursorRow cursorRow,
+                                  final @NonNull BooklistRowView cursorRow,
                                   final @NonNull FragmentActivity activity) {
 
         long bookId = cursorRow.getBookId();
@@ -667,7 +667,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
      *
      * @return a 'Holder' object for the row pointed to by rowView.
      */
-    private BooklistHolder newHolder(final @NonNull BooklistCursorRow rowView) {
+    private BooklistHolder newHolder(final @NonNull BooklistRowView rowView) {
         final int k = rowView.getRowKind();
 
         switch (k) {
@@ -860,7 +860,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                 try (BookCursor cursor = db.fetchBookById(mBookId)) {
                     // If we have a book, use it. Otherwise we are done.
                     if (cursor.moveToFirst()) {
-                        BookCursorRow rowView = cursor.getCursorRow();
+                        BookRowView rowView = cursor.getCursorRow();
 
                         if ((mFlags & BooklistStyle.EXTRAS_AUTHOR) != 0) {
                             mAuthor = rowView.getPrimaryAuthorNameFormatted();
@@ -933,7 +933,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
      *
      * @author Philip Warner
      */
-    public abstract static class BooklistHolder extends MultiTypeHolder<BooklistCursorRow> {
+    public abstract static class BooklistHolder extends MultiTypeHolder<BooklistRowView> {
         /** Pointer to the container of all info for this row. */
         View rowInfo;
         /** Absolute position of this row */
@@ -1009,7 +1009,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
          * @param source   Column name to use
          * @param noDataId String ID to use when data is blank
          */
-        private GenericStringHolder(final @NonNull BooklistCursorRow rowView,
+        private GenericStringHolder(final @NonNull BooklistRowView rowView,
                                     final @NonNull String source,
                                     final @StringRes int noDataId) {
             mSourceCol = rowView.getColumnIndex(source);
@@ -1020,19 +1020,19 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
         }
 
         @Override
-        public void map(final @NonNull BooklistCursorRow rowView, final @NonNull View view) {
+        public void map(final @NonNull BooklistRowView rowView, final @NonNull View view) {
             rowInfo = view.findViewById(R.id.BLB_ROW_DETAILS);
             mTextView = view.findViewById(R.id.name);
         }
 
         @Override
-        public void set(final @NonNull BooklistCursorRow rowView, final @NonNull View view, final int level) {
+        public void set(final @NonNull BooklistRowView rowView, final @NonNull View view, final int level) {
             String s = rowView.getString(mSourceCol);
             setText(mTextView, s, mNoDataId, level);
         }
 
         @Override
-        public View newView(final @NonNull BooklistCursorRow rowView,
+        public View newView(final @NonNull BooklistRowView rowView,
                             final @NonNull LayoutInflater inflater,
                             final @NonNull ViewGroup parent,
                             final int level) {
@@ -1047,14 +1047,14 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
      */
     public static class RatingHolder extends GenericStringHolder {
 
-        RatingHolder(final @NonNull BooklistCursorRow rowView,
+        RatingHolder(final @NonNull BooklistRowView rowView,
                      final @NonNull String source,
                      final @StringRes int noDataId) {
             super(rowView, source, noDataId);
         }
 
         @Override
-        public void set(final @NonNull BooklistCursorRow rowView, final @NonNull View view, final int level) {
+        public void set(final @NonNull BooklistRowView rowView, final @NonNull View view, final int level) {
             String s = rowView.getString(mSourceCol);
             try {
                 int i = (int) Float.parseFloat(s);
@@ -1074,14 +1074,14 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
      */
     public static class LanguageHolder extends GenericStringHolder {
 
-        private LanguageHolder(final @NonNull BooklistCursorRow rowView,
+        private LanguageHolder(final @NonNull BooklistRowView rowView,
                                final @NonNull String source,
                                final @StringRes int noDataId) {
             super(rowView, source, noDataId);
         }
 
         @Override
-        public void set(final @NonNull BooklistCursorRow rowView, final @NonNull View view, final int level) {
+        public void set(final @NonNull BooklistRowView rowView, final @NonNull View view, final int level) {
             String s = rowView.getString(mSourceCol);
             if (s != null && !s.isEmpty()) {
                 s = LocaleUtils.getDisplayName(s);
@@ -1095,14 +1095,14 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
      */
     public static class ReadUnreadHolder extends GenericStringHolder {
 
-        private ReadUnreadHolder(final @NonNull BooklistCursorRow rowView,
+        private ReadUnreadHolder(final @NonNull BooklistRowView rowView,
                                  final @NonNull String source,
                                  final @StringRes int noDataId) {
             super(rowView, source, noDataId);
         }
 
         @Override
-        public void set(final @NonNull BooklistCursorRow rowView, final @NonNull View view, final int level) {
+        public void set(final @NonNull BooklistRowView rowView, final @NonNull View view, final int level) {
             String s = rowView.getString(mSourceCol);
             if (Datum.toBoolean(s, true)) {
                 s = BookCatalogueApp.getResourceString(R.string.booklist_read);
@@ -1121,14 +1121,14 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
      */
     public static class MonthHolder extends GenericStringHolder {
 
-        private MonthHolder(final @NonNull BooklistCursorRow rowView,
+        private MonthHolder(final @NonNull BooklistRowView rowView,
                             final @NonNull String source,
                             final @StringRes int noDataId) {
             super(rowView, source, noDataId);
         }
 
         @Override
-        public void set(final @NonNull BooklistCursorRow rowView, final @NonNull View v, final int level) {
+        public void set(final @NonNull BooklistRowView rowView, final @NonNull View v, final int level) {
             String s = rowView.getString(mSourceCol);
             try {
                 int i = Integer.parseInt(s);
@@ -1174,7 +1174,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
         GetBookExtrasTask extrasTask;
 
         @Override
-        public void map(final @NonNull BooklistCursorRow rowView, final @NonNull View bookView) {
+        public void map(final @NonNull BooklistRowView rowView, final @NonNull View bookView) {
             final BooklistStyle style = rowView.getStyle();
             // scaling is done on the covers and on the 'read' icon
             float scale = style.isCondensed() ? BooklistStyle.SCALE : 1.0f;
@@ -1242,7 +1242,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
         }
 
         @Override
-        public void set(final @NonNull BooklistCursorRow rowView, final @NonNull View v, final int level) {
+        public void set(final @NonNull BooklistRowView rowView, final @NonNull View v, final int level) {
 
             final int extraFields = rowView.getStyle().getExtraFieldsStatus();
 
@@ -1325,7 +1325,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
          * The actual book entry
          */
         @Override
-        public View newView(final @NonNull BooklistCursorRow rowView,
+        public View newView(final @NonNull BooklistRowView rowView,
                             final @NonNull LayoutInflater inflater,
                             final @NonNull ViewGroup parent,
                             final int level) {

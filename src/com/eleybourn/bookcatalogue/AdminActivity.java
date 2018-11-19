@@ -41,6 +41,7 @@ import com.eleybourn.bookcatalogue.baseactivity.BaseActivityWithTasks;
 import com.eleybourn.bookcatalogue.booklist.BooklistPreferencesActivity;
 import com.eleybourn.bookcatalogue.database.CoversDbAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.dialogs.SelectOneDialog;
 import com.eleybourn.bookcatalogue.dialogs.SelectOneDialog.SimpleDialogFileItem;
@@ -93,6 +94,7 @@ public class AdminActivity extends BaseActivityWithTasks {
     @Override
     @CallSuper
     public void onCreate(final @Nullable Bundle savedInstanceState) {
+        Tracker.enterOnCreate(this);
         super.onCreate(savedInstanceState);
         this.setTitle(R.string.menu_administration_long);
 
@@ -109,6 +111,7 @@ public class AdminActivity extends BaseActivityWithTasks {
         }
 
         setupAdminPage();
+        Tracker.exitOnCreate(this);
     }
 
     /**
@@ -444,29 +447,32 @@ public class AdminActivity extends BaseActivityWithTasks {
     @Override
     @CallSuper
     protected void onActivityResult(final int requestCode, final int resultCode, final @Nullable Intent data) {
-        if (DEBUG_SWITCHES.ON_ACTIVITY_RESULT && BuildConfig.DEBUG) {
-            Logger.info(this, "onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
-        }
-
+        Tracker.enterOnActivityResult(this, requestCode, resultCode);
         switch (requestCode) {
             case FieldVisibilityActivity.REQUEST_CODE: /* 2f885b11-27f2-40d7-8c8b-fcb4d95a4151 */
             case BooklistPreferencesActivity.REQUEST_CODE: /* 9cdb2cbe-1390-4ed8-a491-87b3b1a1edb9 */
             case PreferencesActivity.REQUEST_CODE: /* 46f41e7b-f49c-465d-bea0-80ec85330d1c */
                 // no local action needed, pass results up
                 setResult(resultCode, data);
-                return;
+                break;
+
+            default:
+                super.onActivityResult(requestCode, resultCode, data);
+                break;
         }
 
-        super.onActivityResult(requestCode, resultCode, data);
+        Tracker.exitOnActivityResult(this, requestCode, resultCode);
     }
 
     @Override
     @CallSuper
     public void onResume() {
+        Tracker.enterOnResume(this);
         super.onResume();
         if (mExportToCsvOnStartup) {
             exportToCSV();
         }
+        Tracker.exitOnResume(this);
     }
 
     /**

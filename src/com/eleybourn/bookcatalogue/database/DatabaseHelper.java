@@ -337,9 +337,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @CallSuper
     public void onCreate(@NonNull SQLiteDatabase db) {
         Logger.info(this, "Creating database: " + db.getPath());
-        // indicate that this is new install; e.g. the 'upgrade' from not having our app before.
-        // this avoids messing with 'isNewInstall' etc...
-        UpgradeMessageManager.setUpgradeAcknowledged();
 
         db.execSQL(DATABASE_CREATE_AUTHORS);
         db.execSQL(DATABASE_CREATE_BOOKSHELF);
@@ -361,6 +358,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         DatabaseDefinitions.TBL_BOOKLIST_STYLES.createAll(syncedDb, true);
 
         createTriggers(syncedDb);
+
+        // indicate that this is new install; e.g. the 'upgrade' from not having our app before.
+        // this avoids messing with 'isNewInstall' etc...
+        UpgradeMessageManager.setUpgradeAcknowledged();
     }
 
     /**

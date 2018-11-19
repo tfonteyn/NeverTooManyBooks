@@ -36,6 +36,7 @@ import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 /**
@@ -55,6 +56,7 @@ public class About extends BaseActivity {
     @Override
     @CallSuper
     public void onCreate(final @Nullable Bundle savedInstanceState) {
+        Tracker.enterOnCreate(this);
         super.onCreate(savedInstanceState);
         setTitle(R.string.app_name);
 
@@ -128,18 +130,18 @@ public class About extends BaseActivity {
                 getString(R.string.app_name));
         view.setText(Utils.linkifyHtml(text));
         view.setMovementMethod(LinkMovementMethod.getInstance());
-
+        Tracker.exitOnCreate(this);
     }
 
     //TEST: do we need this ? is Linkify not doing email for us ?
     private void sendContactEmail(final @StringRes int stringId) {
         try {
-            Intent msg = new Intent(Intent.ACTION_SEND);
-            msg.setType("text/plain");
-            msg.putExtra(Intent.EXTRA_EMAIL, new String[]{getString(stringId)});
+            Intent emailIntent = new Intent(Intent.ACTION_SEND);
+            emailIntent.setType("text/plain");
+            emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{getString(stringId)});
             String subject = "[" + getString(R.string.app_name) + "] ";
-            msg.putExtra(Intent.EXTRA_SUBJECT, subject);
-            About.this.startActivity(Intent.createChooser(msg, getString(R.string.send_mail)));
+            emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
+            startActivity(Intent.createChooser(emailIntent, getString(R.string.send_mail)));
         } catch (ActivityNotFoundException e) {
             Logger.error(e);
         }

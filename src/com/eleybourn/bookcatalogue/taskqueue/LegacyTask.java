@@ -30,28 +30,23 @@ import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.cursors.BindableItemCursor;
 import com.eleybourn.bookcatalogue.dialogs.ContextDialogItem;
 
 import java.util.List;
 
-public class LegacyTask extends Task {
+public abstract class LegacyTask extends Task {
     private static final long serialVersionUID = 3596858518802582316L;
 
-    private static final int CAT_LEGACY = 0;
+    protected static final int CAT_LEGACY = 0;
 
     private static final int TEXT_FIELD_1 = 1;
     private static final int TEXT_FIELD_2 = 2;
+    private final byte[] mOriginal;
 
-    public LegacyTask() {
-        super(BookCatalogueApp.getResourceString(R.string.legacy_task));
-    }
-
-    @Override
-    public int getCategory() {
-        return CAT_LEGACY;
+    public LegacyTask(byte[] original, String description) {
+        super(description);
+        mOriginal = original;
     }
 
     @NonNull
@@ -65,12 +60,15 @@ public class LegacyTask extends Task {
         LinearLayout.LayoutParams margins = new LinearLayout.LayoutParams(
                 ViewGroup.MarginLayoutParams.MATCH_PARENT,
                 ViewGroup.MarginLayoutParams.WRAP_CONTENT);
+
         TextView tv = new TextView(context);
         tv.setId(TEXT_FIELD_1);
         root.addView(tv, margins);
+
         tv = new TextView(context);
         tv.setId(TEXT_FIELD_2);
         root.addView(tv, margins);
+
         return root;
     }
 
@@ -86,18 +84,17 @@ public class LegacyTask extends Task {
                 .setText("This task is obsolete and can not be recovered. It is probably advisable to delete it.");
     }
 
-    @Override
-    public void addContextMenuItems(final @NonNull Context ctx,
-                                    final @NonNull AdapterView<?> parent,
-                                    final @NonNull View v, final int position, final long id,
-                                    final @NonNull List<ContextDialogItem> items,
-                                    final @NonNull Object appInfo) {
-
-        items.add(new ContextDialogItem(ctx.getString(R.string.delete_task), new Runnable() {
-            @Override
-            public void run() {
-                QueueManager.getQueueManager().deleteTask(LegacyTask.this.getId());
-            }
-        }));
+    public byte[] getOriginal() {
+        return mOriginal;
     }
+
+    @Override
+    public abstract void addContextMenuItems(final @NonNull Context ctx,
+                                             @NonNull AdapterView<?> parent,
+                                             final @NonNull View v,
+                                             final int position,
+                                             final long id,
+                                             final @NonNull List<ContextDialogItem> items,
+                                             final @NonNull Object appInfo);
+
 }

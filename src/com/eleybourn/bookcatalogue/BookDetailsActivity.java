@@ -29,6 +29,7 @@ import android.support.v4.app.Fragment;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.entities.Book;
 
 public class BookDetailsActivity extends BaseActivity {
@@ -44,6 +45,7 @@ public class BookDetailsActivity extends BaseActivity {
     @Override
     @CallSuper
     public void onCreate(final @Nullable Bundle savedInstanceState) {
+        Tracker.enterOnCreate(this);
         super.onCreate(savedInstanceState);
 
         Bundle extras = getIntent().getExtras();
@@ -55,6 +57,7 @@ public class BookDetailsActivity extends BaseActivity {
                 .beginTransaction()
                 .replace(R.id.main_fragment, frag, BookFragment.TAG)
                 .commit();
+        Tracker.exitOnCreate(this);
     }
 
     private Book getBook() {
@@ -65,25 +68,27 @@ public class BookDetailsActivity extends BaseActivity {
 
     @Override
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-
+        Tracker.enterOnActivityResult(this,requestCode,resultCode);
         switch (requestCode) {
             case EditBookActivity.REQUEST_CODE: {
                 if (resultCode == EditBookFragment.RESULT_CHANGES_MADE) {
                     setChangesMade(true);
                 }
-                return;
+                break;
             }
+
+            default:
+                if (DEBUG_SWITCHES.ON_ACTIVITY_RESULT && BuildConfig.DEBUG) {
+                    Logger.info(this, "onActivityResult: forwarding to fragment " + BookFragment.TAG + " - requestCode=" + requestCode + ", resultCode=" + resultCode);
+                }
+                /*
+                 * Dispatch incoming result to the correct fragment.
+                 */
+                Fragment frag = getSupportFragmentManager().findFragmentByTag(BookFragment.TAG);
+                frag.onActivityResult(requestCode, resultCode, data);
         }
 
-        /*
-         * Dispatch incoming result to the correct fragment.
-         */
-        if (DEBUG_SWITCHES.ON_ACTIVITY_RESULT && BuildConfig.DEBUG) {
-            Logger.info(this, "onActivityResult: forwarding to fragment - requestCode=" + requestCode + ", resultCode=" + resultCode);
-        }
-
-        Fragment frag = getSupportFragmentManager().findFragmentByTag(BookFragment.TAG);
-        frag.onActivityResult(requestCode, resultCode, data);
+        Tracker.exitOnActivityResult(this,requestCode,resultCode);
     }
 
     /**

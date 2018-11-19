@@ -84,6 +84,7 @@ public class BooklistStylePropertiesActivity extends BaseActivity {
     @Override
     @CallSuper
     protected void onCreate(final @Nullable Bundle savedInstanceState) {
+        Tracker.enterOnCreate(this);
         super.onCreate(savedInstanceState);
 
         findViewById(R.id.confirm).setOnClickListener(new OnClickListener() {
@@ -140,6 +141,7 @@ public class BooklistStylePropertiesActivity extends BaseActivity {
         if (savedInstanceState == null) {
             HintManager.displayHint(this.getLayoutInflater(), R.string.hint_booklist_style_properties, null);
         }
+        Tracker.exitOnCreate(this);
     }
 
     /**
@@ -167,11 +169,9 @@ public class BooklistStylePropertiesActivity extends BaseActivity {
     @Override
     @CallSuper
     protected void onActivityResult(final int requestCode, final int resultCode, final @Nullable Intent data) {
-        if (DEBUG_SWITCHES.ON_ACTIVITY_RESULT && BuildConfig.DEBUG) {
-            Logger.info(this, "onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
-        }
+        Tracker.enterOnActivityResult(this,requestCode,resultCode);
         switch (requestCode) {
-            case BooklistStyleGroupsActivity.REQUEST_CODE: /* 06ed8d0e-7120-47aa-b47e-c0cd46361dcb */
+            case BooklistStyleGroupsActivity.REQUEST_CODE: {/* 06ed8d0e-7120-47aa-b47e-c0cd46361dcb */
                 if (resultCode == Activity.RESULT_OK) {
                     // having a result is optional
                     if (data != null && data.hasExtra(BooklistStyleGroupsActivity.REQUEST_BKEY_STYLE)) {
@@ -188,10 +188,14 @@ public class BooklistStylePropertiesActivity extends BaseActivity {
                         }
                     }
                 }
-                return;
+                break;
+            }
+            default:
+                super.onActivityResult(requestCode, resultCode, data);
+                break;
         }
 
-        super.onActivityResult(requestCode, resultCode, data);
+        Tracker.exitOnActivityResult(this, requestCode, resultCode);
     }
 
     /**
@@ -269,7 +273,7 @@ public class BooklistStylePropertiesActivity extends BaseActivity {
             ViewTagger.setTag(root, R.id.TAG_PROPERTY, this); // value: GroupsProperty
 
             // Set the initial values
-            final TextView name = root.findViewById(R.id.filename);
+            final TextView name = root.findViewById(R.id.name);
             name.setText(getName());
 
             final TextView value = root.findViewById(R.id.value);

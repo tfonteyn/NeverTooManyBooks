@@ -5,7 +5,7 @@
     style="@style/dialogFrame">
 
     <TextView
-        android:id="@+id/filename"
+        android:id="@+id/name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
@@ -19,7 +19,7 @@
         android:id="@+id/lbl_updated"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/filename"
+        android:layout_below="@id/name"
         android:layout_alignParentStart="true"
         android:layout_marginTop="4dp"
         android:text="@string/updated"

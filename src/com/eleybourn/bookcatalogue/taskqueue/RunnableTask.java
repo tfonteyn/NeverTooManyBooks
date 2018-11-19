@@ -25,7 +25,7 @@ import android.support.annotation.NonNull;
 
 /**
  * Extends the Task object to add a run(...) method that avoids the need to implement
- * a runOneTask() method in a subclassed QueueManager.
+ * a runTask() method in a subclassed QueueManager.
  *
  * @author Philip Warner
  */
@@ -37,5 +37,6 @@ public abstract class RunnableTask extends Task {
         super(description);
     }
 
-    public abstract boolean run(final @NonNull QueueManager manager, final @NonNull Context context);
+    public abstract boolean run(final @NonNull QueueManager manager,
+                                final @NonNull Context context);
 }

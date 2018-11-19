@@ -21,6 +21,8 @@ package com.eleybourn.bookcatalogue.debug;
 
 import android.support.annotation.NonNull;
 
+import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 
 import org.acra.ACRA;
@@ -42,6 +44,9 @@ public class Tracker {
     }
 
     public static void enterOnActivityResult(final @NonNull Object a, final int requestCode, final int resultCode) {
+        if (DEBUG_SWITCHES.ON_ACTIVITY_RESULT && BuildConfig.DEBUG) {
+            Logger.info(a, "onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
+        }
         handleEvent(a, "OnActivityResult[" + requestCode + "," + resultCode + "] (" + a + ")", States.Enter);
     }
 
@@ -57,12 +62,10 @@ public class Tracker {
         handleEvent(a, "OnCreate (" + a + ")", States.Exit);
     }
 
-    @SuppressWarnings("unused")
     public static void enterOnCreateView(final @NonNull Object a) {
         handleEvent(a, "OnCreateView (" + a + ")", States.Enter);
     }
 
-    @SuppressWarnings("unused")
     public static void exitOnCreateView(final @NonNull Object a) {
         handleEvent(a, "OnCreateView (" + a + ")", States.Exit);
     }
@@ -91,12 +94,24 @@ public class Tracker {
         handleEvent(a, "OnResume (" + a + ")", States.Exit);
     }
 
-    public static void enterOnSaveInstanceState(@NonNull Object a) {
-        handleEvent(a, "OnSaveInstanceState", States.Enter);
+    public static void enterOnLoadFieldsFromBook(final @NonNull Object a, final long bookId) {
+        handleEvent(a, "onLoadFieldsFromBook: " + bookId, States.Enter);
+    }
+    public static void exitOnLoadFieldsFromBook(final @NonNull Object a, final long bookId) {
+        if (DEBUG_SWITCHES.FIELD_BOOK_TRANSFERS && BuildConfig.DEBUG) {
+            Logger.info(a, "onLoadFieldsFromBook done: " + bookId);
+        }
+        handleEvent(a, "onLoadFieldsFromBook: " + bookId, States.Exit);
     }
 
-    public static void exitOnSaveInstanceState(@NonNull Object a) {
-        handleEvent(a, "OnSaveInstanceState", States.Exit);
+    public static void enterOnSaveFieldsToBook(final @NonNull Object a, final long bookId) {
+        handleEvent(a, "onSaveFieldsToBook: " + bookId, States.Enter);
+    }
+    public static void exitOnSaveFieldsToBook(final @NonNull Object a, final long bookId) {
+        if (DEBUG_SWITCHES.FIELD_BOOK_TRANSFERS && BuildConfig.DEBUG) {
+            Logger.info(a, "onSaveFieldsToBook done: " + bookId);
+        }
+        handleEvent(a, "onSaveFieldsToBook: " + bookId, States.Exit);
     }
 
     public static void enterFunction(final @NonNull Object a, final @NonNull String name, final @NonNull Object... params) {
@@ -105,21 +120,34 @@ public class Tracker {
             fullName.append(parameter).append(",");
         }
         fullName.append(")");
-
-        handleEvent(a, fullName.toString(), States.Enter);
+        String s = fullName.toString();
+        if (BuildConfig.DEBUG) {
+            Logger.info(a, s);
+        }
+        handleEvent(a, s, States.Enter);
     }
 
-    public static void exitFunction(final @NonNull Object a, final @NonNull String name) {
-        handleEvent(a, name, States.Exit);
+    public static void exitFunction(final @NonNull Object a, final @NonNull String name, final @NonNull Object... params) {
+        StringBuilder fullName = new StringBuilder(name + "(");
+        for (Object parameter : params) {
+            fullName.append(parameter).append(",");
+        }
+        fullName.append(")");
+        String s = fullName.toString();
+        if (BuildConfig.DEBUG) {
+            Logger.info(a, s);
+        }
+        handleEvent(a, s, States.Exit);
     }
 
-    public static void handleEvent(final @NonNull Object o, final @NonNull String name, final @NonNull States type) {
-        Event e = new Event(o, name, type);
+    public static void handleEvent(final @NonNull Object o, final @NonNull String message, final @NonNull States type) {
+        Event e = new Event(o, message, type);
         mEventBuffer[mNextEventBufferPos] = e;
         ACRA.getErrorReporter().putCustomData("History-" + mNextEventBufferPos, e.getInfo());
         mNextEventBufferPos = (mNextEventBufferPos + 1) % K_MAX_EVENTS;
     }
 
+    @NonNull
     public static String getEventsInfo() {
         StringBuilder s = new StringBuilder("Recent Events:\n");
         int pos = mNextEventBufferPos;
@@ -141,22 +169,25 @@ public class Tracker {
     }
 
     private static class Event {
-        public final String action;
+        @NonNull
+        public final String message;
+        @NonNull
         public final States state;
         @NonNull
         public final Date date;
-        final String activityClass;
+        @NonNull
+        final String clazz;
 
-        public Event(final @NonNull Object a, final @NonNull String action, final @NonNull States state) {
-            activityClass = a.getClass().getCanonicalName();
-            this.action = action;
+        public Event(final @NonNull Object a, final @NonNull String message, final @NonNull States state) {
+            clazz = a.getClass().getCanonicalName();
+            this.message = message;
             this.state = state;
             date = new Date();
         }
 
         @NonNull
         public String getInfo() {
-            return DateUtils.utcSqlDateTime(date) + ": " + activityClass + " " + action + " " + state;
+            return DateUtils.utcSqlDateTime(date) + "|" + clazz + "|" + state + "|" + message ;
         }
     }
 }

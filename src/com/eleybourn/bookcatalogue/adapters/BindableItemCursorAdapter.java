@@ -47,6 +47,7 @@ public class BindableItemCursorAdapter extends CursorAdapter {
     private final Context mContext;
     @NonNull
     private final BindableItemBinder mBinder;
+
     /** hash of class names and values used to dynamically allocate layout numbers */
     private final Map<String, Integer> mItemTypeLookups = new Hashtable<>();
     /** The position passed to the last call of {@link #getItemViewType} */

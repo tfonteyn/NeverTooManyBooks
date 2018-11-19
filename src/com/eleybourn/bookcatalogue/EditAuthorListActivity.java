@@ -38,8 +38,9 @@ import android.widget.TextView;
 import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter;
 import com.eleybourn.bookcatalogue.adapters.SimpleListAdapterRowActionListener;
 import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
+import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
-import com.eleybourn.bookcatalogue.dialogs.fieldeditdialogs.EditAuthorDialog;
+import com.eleybourn.bookcatalogue.dialogs.fieldeditdialog.EditAuthorDialog;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
@@ -66,6 +67,7 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
     @Override
     @CallSuper
     protected void onCreate(final @Nullable Bundle savedInstanceState) {
+        Tracker.enterOnCreate(this);
         super.onCreate(savedInstanceState);
         setTitle(mBookTitle);
 
@@ -75,6 +77,7 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
         ((AutoCompleteTextView) this.findViewById(R.id.author)).setAdapter(adapter);
 
         getWindow().setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+        Tracker.exitOnCreate(this);
     }
 
     /**

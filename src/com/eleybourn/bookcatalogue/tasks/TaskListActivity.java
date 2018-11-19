@@ -32,14 +32,14 @@ import android.widget.AdapterView;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.adapters.BindableItemCursorAdapter;
 import com.eleybourn.bookcatalogue.baseactivity.BindableItemListActivity;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
-import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.database.cursors.BindableItemCursor;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.ContextDialogItem;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsExportFailuresActivity;
-import com.eleybourn.bookcatalogue.database.cursors.BindableItemCursor;
 import com.eleybourn.bookcatalogue.taskqueue.Listeners.OnTaskChangeListener;
 import com.eleybourn.bookcatalogue.taskqueue.Listeners.TaskActions;
 import com.eleybourn.bookcatalogue.taskqueue.QueueManager;
@@ -47,7 +47,6 @@ import com.eleybourn.bookcatalogue.taskqueue.Task;
 import com.eleybourn.bookcatalogue.taskqueue.TasksCursor;
 import com.eleybourn.bookcatalogue.taskqueue.TasksCursor.TaskCursorSubtype;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
-import com.eleybourn.bookcatalogue.adapters.BindableItemCursorAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -79,30 +78,26 @@ public class TaskListActivity extends BindableItemListActivity {
     @Override
     @CallSuper
     protected void onCreate(final @Nullable Bundle savedInstanceState) {
-        try {
-            super.onCreate(savedInstanceState);
-            this.setTitle(R.string.background_tasks);
+        Tracker.enterOnCreate(this);
+        super.onCreate(savedInstanceState);
+        setTitle(R.string.background_tasks);
 
-            mDb = new CatalogueDBAdapter(this);
+        mDb = new CatalogueDBAdapter(this);
 
-            //When any Event is added/changed/deleted, update the list. Lazy, yes.
-            BookCatalogueApp.getQueueManager().registerTaskListener(m_OnTaskChangeListener);
+        //When any Event is added/changed/deleted, update the list. Lazy, yes.
+        BookCatalogueApp.getQueueManager().registerTaskListener(m_OnTaskChangeListener);
 
-            View cleanupButton = this.findViewById(R.id.cleanup);
-            cleanupButton.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    QueueManager.getQueueManager().cleanupOldTasks(7);
-                }
-            });
+        findViewById(R.id.cleanup).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                QueueManager.getQueueManager().cleanupOldTasks(7);
+            }
+        });
 
-            if (savedInstanceState == null)
-                HintManager.displayHint(this.getLayoutInflater(), R.string.hint_background_tasks, null);
-
-        } catch (Exception e) {
-            Logger.error(e);
+        if (savedInstanceState == null) {
+            HintManager.displayHint(this.getLayoutInflater(), R.string.hint_background_tasks, null);
         }
-
+        Tracker.exitOnCreate(this);
     }
 
     /**
@@ -111,8 +106,10 @@ public class TaskListActivity extends BindableItemListActivity {
     @Override
     @CallSuper
     protected void onResume() {
+        Tracker.enterOnResume(this);
         super.onResume();
         refreshData();
+        Tracker.exitOnResume(this);
     }
 
     /**
@@ -181,12 +178,15 @@ public class TaskListActivity extends BindableItemListActivity {
 
         try {
             BookCatalogueApp.getQueueManager().unregisterTaskListener(m_OnTaskChangeListener);
-        } catch (Exception ignore) {}
+        } catch (Exception ignore) {
+        }
 
         try {
-            if (mCursor != null)
+            if (mCursor != null) {
                 mCursor.close();
-        } catch (Exception ignore) {}
+            }
+        } catch (Exception ignore) {
+        }
 
         if (mDb != null) {
             mDb.close();

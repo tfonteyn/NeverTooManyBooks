@@ -49,6 +49,7 @@ import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.datamanager.DataEditor;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.SelectOneDialog;
 import com.eleybourn.bookcatalogue.dialogs.editordialog.CheckListEditorDialogFragment;
 import com.eleybourn.bookcatalogue.dialogs.editordialog.CheckListItem;
@@ -137,10 +138,12 @@ public abstract class BookBaseFragment extends Fragment implements DataEditor {
     @Override
     @CallSuper
     public void onCreate(final @Nullable Bundle savedInstanceState) {
+        Tracker.enterOnCreate(this);
         super.onCreate(savedInstanceState);
 
         // make sure {@link #onCreateOptionsMenu} is called
         this.setHasOptionsMenu(true);
+        Tracker.exitOnCreate(this);
     }
 
 //    @Nullable
@@ -155,6 +158,7 @@ public abstract class BookBaseFragment extends Fragment implements DataEditor {
     @Override
     @CallSuper
     public void onActivityCreated(final @Nullable Bundle savedInstanceState) {
+        Tracker.enterOnActivityCreated(this);
         // cache to avoid multiple calls to requireActivity()
         mActivity = (BaseActivity) requireActivity();
 
@@ -173,6 +177,7 @@ public abstract class BookBaseFragment extends Fragment implements DataEditor {
         }
 
         initFields();
+        Tracker.exitOnActivityCreated(this);
     }
 
     /**
@@ -196,10 +201,12 @@ public abstract class BookBaseFragment extends Fragment implements DataEditor {
     @Override
     @CallSuper
     public void onResume() {
+        Tracker.enterOnResume(this);
         super.onResume();
         //TOMF: reload locale if changed ! register as a listener
 
         populateFrame();
+        Tracker.exitOnResume(this);
     }
 
     /**
@@ -245,12 +252,11 @@ public abstract class BookBaseFragment extends Fragment implements DataEditor {
      */
     @CallSuper
     protected void onLoadFieldsFromBook(final @NonNull Book book, final boolean setAllFrom) {
+        Tracker.enterOnLoadFieldsFromBook(this, book.getBookId());
         if (!setAllFrom) {
             mFields.setAllFrom(book);
         }
-        if (DEBUG_SWITCHES.FIELD_BOOK_TRANSFERS && BuildConfig.DEBUG) {
-            Logger.info(this, "onLoadFieldsFromBook done");
-        }
+        Tracker.exitOnLoadFieldsFromBook(this, book.getBookId());
     }
 
     //</editor-fold>
@@ -265,9 +271,11 @@ public abstract class BookBaseFragment extends Fragment implements DataEditor {
     @Override
     @CallSuper
     public void onPause() {
+        Tracker.enterOnPause(this);
         // This is now done in onPause() since the view may have been deleted when this is called
         saveFieldsTo(getBookManager().getBook());
         super.onPause();
+        Tracker.exitOnPause(this);
     }
 
     /**
@@ -286,20 +294,20 @@ public abstract class BookBaseFragment extends Fragment implements DataEditor {
      * Override as needed, calling super if needed
      */
     protected void onSaveFieldsToBook(final @NonNull Book book) {
+        Tracker.enterOnSaveFieldsToBook(this, book.getBookId());
         mFields.putAllInto(book);
-
-        if (DEBUG_SWITCHES.FIELD_BOOK_TRANSFERS && BuildConfig.DEBUG) {
-            Logger.info(this, "onSaveFieldsToBook done");
-        }
+        Tracker.exitOnSaveFieldsToBook(this, book.getBookId());
     }
 
     @Override
     @CallSuper
     public void onDestroy() {
+        Tracker.enterOnDestroy(this);
         if (mDb != null) {
             mDb.close();
         }
         super.onDestroy();
+        Tracker.exitOnDestroy(this);
     }
     //</editor-fold>
 
@@ -585,9 +593,7 @@ public abstract class BookBaseFragment extends Fragment implements DataEditor {
 
     @Override
     public void onActivityResult(final int requestCode, final int resultCode, final @Nullable Intent data) {
-        if (DEBUG_SWITCHES.ON_ACTIVITY_RESULT && BuildConfig.DEBUG) {
-            Logger.info(this, "onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
-        }
+        Tracker.enterOnActivityResult(this,requestCode,resultCode);
         switch (requestCode) {
             case UpdateFromInternetActivity.REQUEST_CODE: /* 98a6d1eb-4df5-4893-9aaf-fac0ce0fee01 */
                 if (resultCode == Activity.RESULT_OK) {
@@ -603,17 +609,18 @@ public abstract class BookBaseFragment extends Fragment implements DataEditor {
                         Logger.info(this, "wasCancelled= " + wasCancelled);
                     }
                 }
-                return;
+                break;
 
             default:
                 if (DEBUG_SWITCHES.ON_ACTIVITY_RESULT && BuildConfig.DEBUG) {
                     // lowest level of our Fragments, see if we missed anything
                     Logger.info(this, "onActivityResult: NOT HANDLED: requestCode=" + requestCode + ", resultCode=" + resultCode);
                 }
+                super.onActivityResult(requestCode,resultCode,data);
                 break;
         }
 
-        super.onActivityResult(requestCode, resultCode, data);
+        Tracker.exitOnActivityResult(this,requestCode,resultCode);
     }
     //</editor-fold>
 

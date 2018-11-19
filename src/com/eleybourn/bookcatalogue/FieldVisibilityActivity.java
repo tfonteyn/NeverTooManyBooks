@@ -33,7 +33,7 @@ import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
-import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.debug.Tracker;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -104,13 +104,11 @@ public class FieldVisibilityActivity extends BaseActivity {
     @Override
     @CallSuper
     public void onCreate(final @Nullable Bundle savedInstanceState) {
-        try {
-            super.onCreate(savedInstanceState);
-            setTitle(R.string.menu_manage_fields);
-            populateFields();
-        } catch (Exception e) {
-            Logger.error(e);
-        }
+        Tracker.enterOnCreate(this);
+        super.onCreate(savedInstanceState);
+        setTitle(R.string.menu_manage_fields);
+        populateFields();
+        Tracker.exitOnCreate(this);
     }
 
     /**

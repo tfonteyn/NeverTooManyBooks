@@ -1,4 +1,4 @@
-package com.eleybourn.bookcatalogue.dialogs.fieldeditdialogs;
+package com.eleybourn.bookcatalogue.dialogs.fieldeditdialog;
 
 import android.app.Activity;
 import android.support.annotation.LayoutRes;
@@ -64,7 +64,7 @@ abstract class EditStringDialog {
         // Build the base dialog
         final View root = mActivity.getLayoutInflater().inflate(layout, null);
 
-        final EditText editView = root.findViewById(R.id.filename);
+        final EditText editView = root.findViewById(R.id.name);
         //noinspection ConstantConditions
         editView.setText(currentText);
         if (editView instanceof AutoCompleteTextView) {

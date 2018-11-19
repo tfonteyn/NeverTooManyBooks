@@ -69,6 +69,7 @@ public class GoodreadsSearchResultsActivity extends BaseListActivity {
     @Override
     @CallSuper
     public void onCreate(final @Nullable Bundle savedInstanceState) {
+        Tracker.enterOnCreate(this);
         super.onCreate(savedInstanceState);
 
         mDb = new CatalogueDBAdapter(this);
@@ -84,6 +85,7 @@ public class GoodreadsSearchResultsActivity extends BaseListActivity {
             setResult(Activity.RESULT_CANCELED);
             finish();
         }
+        Tracker.exitOnCreate(this);
     }
 
     /**

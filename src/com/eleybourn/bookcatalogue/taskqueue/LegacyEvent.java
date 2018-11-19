@@ -30,7 +30,6 @@ import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.cursors.BindableItemCursor;
 import com.eleybourn.bookcatalogue.dialogs.ContextDialogItem;
 
@@ -41,14 +40,16 @@ import java.util.List;
  *
  * @author Philip Warner
  */
-public class LegacyEvent extends Event {
+public abstract class LegacyEvent extends Event {
 
     private static final long serialVersionUID = -8518718598973561219L;
     private static final int TEXT_FIELD_1 = 1;
     private static final int TEXT_FIELD_2 = 2;
+    private final byte[] mOriginal;
 
-    LegacyEvent() {
-        super("Legacy Event");
+    public LegacyEvent(byte[] original, String description) {
+        super(description);
+        mOriginal = original;
     }
 
     @NonNull
@@ -84,19 +85,16 @@ public class LegacyEvent extends Event {
                 .setText("This event is obsolete and can not be recovered. It is probably advisable to delete it.");
     }
 
-    @Override
-    public void addContextMenuItems(final @NonNull Context ctx,
-                                    final @NonNull AdapterView<?> parent,
-                                    final @NonNull View v, final int position, final long id,
-                                    final @NonNull List<ContextDialogItem> items,
-                                    final @NonNull Object appInfo) {
-
-        items.add(new ContextDialogItem(ctx.getString(R.string.delete_event), new Runnable() {
-            @Override
-            public void run() {
-                QueueManager.getQueueManager().deleteEvent(LegacyEvent.this.getId());
-            }
-        }));
-
+    public byte[] getOriginal() {
+        return mOriginal;
     }
+
+    @Override
+    public abstract void addContextMenuItems(final @NonNull Context ctx,
+                                             @NonNull AdapterView<?> parent,
+                                             final @NonNull View v,
+                                             final int position,
+                                             final long id,
+                                             final @NonNull List<ContextDialogItem> items,
+                                             final @NonNull Object appInfo);
 }

@@ -36,6 +36,7 @@ import android.widget.ListView;
 import com.eleybourn.bookcatalogue.adapters.BindableItemCursorAdapter;
 import com.eleybourn.bookcatalogue.adapters.BindableItemCursorAdapter.BindableItemBinder;
 import com.eleybourn.bookcatalogue.database.cursors.BindableItemCursor;
+import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.ContextDialogItem;
 
 import java.util.List;
@@ -63,6 +64,7 @@ abstract public class BindableItemListActivity extends BaseListActivity implemen
     @Override
     @CallSuper
     protected void onCreate(final @Nullable Bundle savedInstanceState) {
+        Tracker.enterOnCreate(this);
         super.onCreate(savedInstanceState);
 
         mBindableItems = getBindableItemCursor(savedInstanceState);
@@ -87,6 +89,7 @@ abstract public class BindableItemListActivity extends BaseListActivity implemen
                 return BindableItemListActivity.this.onListItemLongClick(parent, v, position, id);
             }
         });
+        Tracker.exitOnCreate(this);
     }
 
     protected void refreshData() {
@@ -97,6 +100,7 @@ abstract public class BindableItemListActivity extends BaseListActivity implemen
     @Override
     @CallSuper
     protected void onDestroy() {
+        Tracker.enterOnDestroy(this);
         try {
             if (mBindableItems != null) {
                 mBindableItems.close();
@@ -104,6 +108,7 @@ abstract public class BindableItemListActivity extends BaseListActivity implemen
         } catch (Exception ignore) {
         }
         super.onDestroy();
+        Tracker.exitOnDestroy(this);
     }
 
     protected void onListItemClick(final @NonNull AdapterView<?> parent, final @NonNull View v, final int position, final long id) {

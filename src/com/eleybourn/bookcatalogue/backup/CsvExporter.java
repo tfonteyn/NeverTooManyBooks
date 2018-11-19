@@ -27,7 +27,7 @@ import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
-import com.eleybourn.bookcatalogue.database.cursors.BookCursorRow;
+import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
@@ -200,7 +200,7 @@ public class CsvExporter implements Exporter {
         try (BookCursor bookCursor = mDb.exportBooks(since);
              BufferedWriter out = new BufferedWriter(new OutputStreamWriter(outputStream, UTF8), BUFFER_SIZE)) {
 
-            final BookCursorRow bookCursorRow = bookCursor.getCursorRow();
+            final BookRowView bookCursorRow = bookCursor.getCursorRow();
             final int totalBooks = bookCursor.getCount();
 
             if (listener.isCancelled()) {

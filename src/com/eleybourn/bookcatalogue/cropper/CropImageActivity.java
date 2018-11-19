@@ -45,6 +45,7 @@ import android.view.WindowManager;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
@@ -280,6 +281,7 @@ public class CropImageActivity extends CropMonitoredActivity {
     @Override
     @CallSuper
     public void onCreate(final @Nullable Bundle savedInstanceState) {
+        Tracker.enterOnCreate(this);
         // Do this first to avoid 'must be first errors'
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
@@ -319,29 +321,29 @@ public class CropImageActivity extends CropMonitoredActivity {
             mOptionNoFaceDetection = extras.getBoolean(CropIImage.REQUEST_KEY_NO_FACE_DETECTION, true);
         }
 
-        if (mBitmap == null) {
+        if (mBitmap != null) {
+            // Make UI fullscreen.
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+            findViewById(R.id.cancel).setOnClickListener(
+                    new View.OnClickListener() {
+                        public void onClick(View v) {
+                            setResult(Activity.RESULT_CANCELED); /* 31c90366-d352-496f-9b7d-3237dd199a77 */
+                            finish();
+                        }
+                    });
+
+            findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    onSaveClicked();
+                }
+            });
+            startFaceDetection();
+        } else {
             setResult(Activity.RESULT_CANCELED);
             finish();
-            return;
         }
-
-        // Make UI fullscreen.
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
-        findViewById(R.id.cancel).setOnClickListener(
-                new View.OnClickListener() {
-                    public void onClick(View v) {
-                        setResult(Activity.RESULT_CANCELED); /* 31c90366-d352-496f-9b7d-3237dd199a77 */
-                        finish();
-                    }
-                });
-
-        findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                onSaveClicked();
-            }
-        });
-        startFaceDetection();
+        Tracker.exitOnCreate(this);
     }
 
 
@@ -567,18 +569,22 @@ public class CropImageActivity extends CropMonitoredActivity {
     @Override
     @CallSuper
     protected void onPause() {
+        Tracker.enterOnPause(this);
         CropBitmapManager.instance().cancelThreadDecoding(mDecodingThreads);
         // DO NOT RECYCLE HERE; will leave mBitmap unusable after a resume.
         // mBitmap.recycle();
         super.onPause();
+        Tracker.exitOnPause(this);
     }
 
     @Override
     @CallSuper
     protected void onDestroy() {
+        Tracker.enterOnDestroy(this);
         if (mBitmap != null && !mBitmap.isRecycled()) {
             mBitmap.recycle();
         }
         super.onDestroy();
+        Tracker.exitOnDestroy(this);
     }
 }

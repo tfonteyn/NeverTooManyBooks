@@ -39,6 +39,7 @@ import android.widget.Button;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.datamanager.DataEditor;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.editordialog.PartialDatePickerDialogFragment;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.dialogs.editordialog.TextFieldEditorDialogFragment;
@@ -146,6 +147,7 @@ public class EditBookFragment extends BookBaseFragment implements
     @Override
     @CallSuper
     public void onActivityCreated(final @Nullable Bundle savedInstanceState) {
+        Tracker.enterOnActivityCreated(this);
         // cache to avoid multiple calls to requireActivity()
         mActivity = (BaseActivity) requireActivity();
 
@@ -172,6 +174,7 @@ public class EditBookFragment extends BookBaseFragment implements
                 mActivity.finishIfClean();
             }
         });
+        Tracker.exitOnActivityCreated(this);
     }
 
 //    @Override
@@ -356,13 +359,16 @@ public class EditBookFragment extends BookBaseFragment implements
      */
     @Override
     public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+        Tracker.enterOnActivityResult(this,requestCode,resultCode);
+
         if (DEBUG_SWITCHES.ON_ACTIVITY_RESULT && BuildConfig.DEBUG) {
             Logger.info(this, "onActivityResult: forwarding to fragment - requestCode=" + requestCode + ", resultCode=" + resultCode);
         }
-
         // current visible child.
         Fragment frag = getChildFragmentManager().findFragmentById(R.id.tab_fragment);
         frag.onActivityResult(requestCode, resultCode, data);
+
+        Tracker.exitOnActivityResult(this,requestCode,resultCode);
     }
 
     /**

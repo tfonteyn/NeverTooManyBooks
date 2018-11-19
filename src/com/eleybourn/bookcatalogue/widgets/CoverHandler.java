@@ -20,8 +20,6 @@ import android.widget.ImageView;
 import android.widget.PopupMenu;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.BuildConfig;
-import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.Fields;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
@@ -57,29 +55,21 @@ public class CoverHandler implements SelectOneDialog.hasViewContextMenu {
     /** Degrees by which to rotate images automatically */
     public static final String PREF_AUTOROTATE_CAMERA_IMAGES = "App.AutorotateCameraImages";
     public static final int PREF_AUTOROTATE_CAMERA_IMAGES_DEFAULT = 90;
-
-    @NonNull
-    private final Activity mActivity;
-
-    @NonNull
-    private final CatalogueDBAdapter mDb;
-
-    @NonNull
-    private final BookManager mBookManager;
-
-    @Nullable
-    private CoverBrowser mCoverBrowser = null;
-
-    private final Fields.Field mCoverField;
-
-    /** keep a reference to the ISBN Field, so we can use the *current* value (instead of using getBook())*/
-    private final Fields.Field mIsbnField;
-
     /** Counter used to prevent images being reused accidentally */
     private static int mTempImageCounter = 0;
+    @NonNull
+    private final Activity mActivity;
+    @NonNull
+    private final CatalogueDBAdapter mDb;
+    @NonNull
+    private final BookManager mBookManager;
+    private final Fields.Field mCoverField;
 
+    /** keep a reference to the ISBN Field, so we can use the *current* value (instead of using getBook()) */
+    private final Fields.Field mIsbnField;
     private final ImageUtils.ThumbSize mThumbSize;
-
+    @Nullable
+    private CoverBrowser mCoverBrowser = null;
     /** Used to display a hint if user rotates a camera image */
     private boolean mGotCameraImage = false;
 
@@ -250,7 +240,6 @@ public class CoverHandler implements SelectOneDialog.hasViewContextMenu {
 
     /**
      * Load the image into the view, using preset {@link ImageUtils.ThumbSize#small} dimensions
-     *
      */
     public void populateCoverView() {
         ImageUtils.fetchFileIntoImageView((ImageView) (mCoverField.getView()), getCoverFile(),
@@ -396,7 +385,6 @@ public class CoverHandler implements SelectOneDialog.hasViewContextMenu {
             StandardDialogs.showUserMessage(mActivity, R.string.warning_cover_copy_failed);
         }
     }
-
 
 
     /**
@@ -565,9 +553,8 @@ public class CoverHandler implements SelectOneDialog.hasViewContextMenu {
      * @return true when handled, false if unknown requestCode
      */
     public boolean onActivityResult(final int requestCode, final int resultCode, final @Nullable Intent data) {
-        if (DEBUG_SWITCHES.ON_ACTIVITY_RESULT && BuildConfig.DEBUG) {
-            Logger.info(this, "onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
-        }
+        Tracker.enterOnActivityResult(this, requestCode, resultCode);
+        boolean handled = false;
         switch (requestCode) {
             case UniqueId.ACTIVITY_REQUEST_CODE_ANDROID_IMAGE_CAPTURE: /* 0b7027eb-a9da-469b-8ba7-2122f1006e92 */
                 if (resultCode == Activity.RESULT_OK) {
@@ -578,7 +565,8 @@ public class CoverHandler implements SelectOneDialog.hasViewContextMenu {
                     Objects.requireNonNull(extras);
                     addCoverFromCamera(requestCode, resultCode, extras);
                 }
-                return true;
+                handled = true;
+                break;
 
             case UniqueId.ACTIVITY_REQUEST_CODE_ANDROID_ACTION_GET_CONTENT: /* 27ecaa27-5ed8-4670-8947-112ab4ab0098 */
                 if (resultCode == Activity.RESULT_OK) {
@@ -586,10 +574,11 @@ public class CoverHandler implements SelectOneDialog.hasViewContextMenu {
                     Objects.requireNonNull(data);
                     addCoverFromGallery(data);
                 }
-                return true;
+                handled = true;
+                break;
 
             case CropImageActivity.REQUEST_CODE: /* 31c90366-d352-496f-9b7d-3237dd199a77 */
-            case UniqueId.ACTIVITY_REQUEST_CODE_EXTERNAL_CROP_IMAGE: /* 28ec93b0-24fb-4a81-ae6d-a282f3a7b918 */ {
+            case UniqueId.ACTIVITY_REQUEST_CODE_EXTERNAL_CROP_IMAGE: {/* 28ec93b0-24fb-4a81-ae6d-a282f3a7b918 */
                 if (resultCode == Activity.RESULT_OK) {
                     File cropped = getCroppedTempCoverFile();
                     if (cropped.exists()) {
@@ -600,16 +589,16 @@ public class CoverHandler implements SelectOneDialog.hasViewContextMenu {
                     } else {
                         Tracker.handleEvent(this, "onActivityResult(" + requestCode + "," + resultCode + ") - result OK, but no image file", Tracker.States.Running);
                     }
-
-                    return true;
-
                 } else {
                     Tracker.handleEvent(this, "onActivityResult(" + requestCode + "," + resultCode + ") - bad result", Tracker.States.Running);
                     StorageUtils.deleteFile(getCroppedTempCoverFile());
                 }
+                handled = true;
+                break;
             }
+            default:
         }
-
-        return false;
+        Tracker.exitOnActivityResult(this, requestCode, resultCode);
+        return handled;
     }
 }

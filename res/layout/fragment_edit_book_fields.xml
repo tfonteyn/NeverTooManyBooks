@@ -105,7 +105,7 @@
                 android:text="@string/lbl_series" />
 
             <Button
-                android:id="@+id/filename"
+                android:id="@+id/name"
                 style="@style/buttonDataEntry"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

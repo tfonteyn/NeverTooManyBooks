@@ -29,19 +29,21 @@ import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;
 import com.eleybourn.bookcatalogue.booklist.BooklistSupportProvider;
 import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer;
 
+import java.io.Closeable;
+
 /**
  * Cursor object that makes the underlying BooklistBuilder available to users of the Cursor, as
  * well as providing some information about the builder objects.
  *
  * @author Philip Warner
  */
-public class BooklistCursor extends TrackedCursor implements BooklistSupportProvider {
+public class BooklistCursor extends TrackedCursor implements BooklistSupportProvider, Closeable {
     /** Underlying BooklistBuilder object */
     @NonNull
     private final BooklistBuilder mBuilder;
     /** Cached RowView for this cursor */
     @Nullable
-    private BooklistCursorRow mRowView = null;
+    private BooklistRowView mRowView = null;
 
     /**
      * Constructor
@@ -73,9 +75,9 @@ public class BooklistCursor extends TrackedCursor implements BooklistSupportProv
      * Get a RowView for this cursor. Constructs one if necessary.
      */
     @NonNull
-    public BooklistCursorRow getCursorRow() {
+    public BooklistRowView getCursorRow() {
         if (mRowView == null) {
-            mRowView = new BooklistCursorRow(this, mBuilder);
+            mRowView = new BooklistRowView(this, mBuilder);
         }
         return mRowView;
     }

@@ -26,7 +26,7 @@ import android.support.annotation.NonNull;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
-import com.eleybourn.bookcatalogue.database.cursors.BookCursorRow;
+import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.searches.goodreads.BookEvents.GrNoIsbnEvent;
@@ -99,7 +99,7 @@ public class SendOneBookTask extends GenericTask {
         // Use the app context; the calling activity may go away
         try (CatalogueDBAdapter db = new CatalogueDBAdapter(context.getApplicationContext());
              BookCursor books = db.fetchBookForGoodreadsCursor(mBookId)) {
-            final BookCursorRow bookCursorRow = books.getCursorRow();
+            final BookRowView bookCursorRow = books.getCursorRow();
             while (books.moveToNext()) {
                 // Try to export one book
                 ExportDisposition disposition;
@@ -115,7 +115,7 @@ public class SendOneBookTask extends GenericTask {
                 switch (disposition) {
                     case error:
                         this.setException(exportException);
-                        queueManager.saveTask(this);
+                        queueManager.updateTask(this);
                         return false;
                     case sent:
                         // Record the change
@@ -132,7 +132,7 @@ public class SendOneBookTask extends GenericTask {
                         if (getRetryDelay() > 300) {
                             setRetryDelay(300);
                         }
-                        queueManager.saveTask(this);
+                        queueManager.updateTask(this);
                         return false;
                 }
             }

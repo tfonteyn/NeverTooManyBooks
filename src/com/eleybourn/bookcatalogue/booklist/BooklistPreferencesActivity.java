@@ -29,7 +29,7 @@ import com.eleybourn.bookcatalogue.BooksOnBookshelf;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.baseactivity.PreferencesBaseActivity;
-import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.properties.BooleanListProperty;
 import com.eleybourn.bookcatalogue.properties.IntegerListProperty;
@@ -180,15 +180,13 @@ public class BooklistPreferencesActivity extends PreferencesBaseActivity {
     @Override
     @CallSuper
     public void onCreate(final @Nullable Bundle savedInstanceState) {
-        try {
-            super.onCreate(savedInstanceState);
-            setTitle(R.string.menu_preferences_booklist);
-            if (savedInstanceState == null) {
-                HintManager.displayHint(this.getLayoutInflater(), R.string.hint_booklist_global_properties, null);
-            }
-        } catch (Exception e) {
-            Logger.error(e);
+        Tracker.enterOnCreate(this);
+        super.onCreate(savedInstanceState);
+        setTitle(R.string.menu_preferences_booklist);
+        if (savedInstanceState == null) {
+            HintManager.displayHint(this.getLayoutInflater(), R.string.hint_booklist_global_properties, null);
         }
+        Tracker.exitOnCreate(this);
     }
 
     /**

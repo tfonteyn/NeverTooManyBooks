@@ -26,6 +26,8 @@ import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.eleybourn.bookcatalogue.debug.Tracker;
+
 import java.util.Objects;
 
 /**
@@ -162,6 +164,7 @@ public class PartialDatePickerDialogFragment extends EditorDialogFragment {
     @Override
     @CallSuper
     public void onPause() {
+        Tracker.enterOnPause(this);
         PartialDatePickerDialog dialog = (PartialDatePickerDialog) getDialog();
         if (dialog != null) {
             mYear = dialog.getYear();
@@ -169,6 +172,7 @@ public class PartialDatePickerDialogFragment extends EditorDialogFragment {
             mDay = dialog.getDay();
         }
         super.onPause();
+        Tracker.exitOnPause(this);
     }
 
     /**

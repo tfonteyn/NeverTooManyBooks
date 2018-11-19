@@ -35,6 +35,7 @@ import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.backup.BackupManager;
 import com.eleybourn.bookcatalogue.backup.Exporter;
 import com.eleybourn.bookcatalogue.backup.Importer;
+import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.ExportTypeSelectionDialogFragment;
 import com.eleybourn.bookcatalogue.dialogs.ImportTypeSelectionDialogFragment;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressDialogFragment;
@@ -68,6 +69,7 @@ public class BackupChooserActivity extends FileChooserBaseActivity implements
     @CallSuper
     @Override
     public void onCreate(final @Nullable Bundle savedInstanceState) {
+        Tracker.enterOnCreate(this);
         super.onCreate(savedInstanceState);
 
         setTitle(isSaveDialog() ? R.string.backup_to_archive : R.string.import_from_archive);
@@ -75,6 +77,7 @@ public class BackupChooserActivity extends FileChooserBaseActivity implements
         if (savedInstanceState != null && savedInstanceState.containsKey(UniqueId.BKEY_FILE_SPEC)) {
             mBackupFile = new File(Objects.requireNonNull(savedInstanceState.getString(UniqueId.BKEY_FILE_SPEC)));
         }
+        Tracker.exitOnCreate(this);
     }
 
     /**

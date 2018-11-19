@@ -18,7 +18,7 @@
  * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.eleybourn.bookcatalogue.dialogs.fieldeditdialogs;
+package com.eleybourn.bookcatalogue.dialogs.fieldeditdialog;
 
 import android.app.Activity;
 import android.support.annotation.CallSuper;
@@ -27,14 +27,14 @@ import android.support.annotation.NonNull;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 
-public class EditLocationDialog extends EditStringDialog {
-    public EditLocationDialog(final @NonNull Activity activity, final @NonNull CatalogueDBAdapter db, final @NonNull Runnable onChanged) {
+public class EditGenreDialog extends EditStringDialog {
+    public EditGenreDialog(final @NonNull Activity activity, final @NonNull CatalogueDBAdapter db, final @NonNull Runnable onChanged) {
         super(activity, db, onChanged);
     }
 
     @CallSuper
-    public void edit(final @NonNull String currentText) {
-        super.edit(currentText, R.layout.dialog_edit_location, R.string.title_edit_location);
+    public void edit(final @NonNull String s) {
+        super.edit(s, R.layout.dialog_edit_genre, R.string.title_edit_genre);
     }
 
     @Override
@@ -43,7 +43,7 @@ public class EditLocationDialog extends EditStringDialog {
         if (to.equals(from)) {
             return;
         }
-        mDb.globalReplaceLocation(from, to);
+        mDb.globalReplaceGenre(from, to);
         mOnChanged.run();
     }
 }

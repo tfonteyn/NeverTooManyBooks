@@ -22,6 +22,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
+import com.eleybourn.bookcatalogue.debug.Tracker;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,19 +44,23 @@ abstract class CropMonitoredActivity extends BaseActivity {
     @Override
     @CallSuper
     protected void onCreate(final @Nullable Bundle savedInstanceState) {
+        Tracker.enterOnCreate(this);
         super.onCreate(savedInstanceState);
         for (LifeCycleListener listener : mListeners) {
             listener.onActivityCreated(this);
         }
+        Tracker.exitOnCreate(this);
     }
 
     @Override
     @CallSuper
     protected void onDestroy() {
+        Tracker.enterOnDestroy(this);
         for (LifeCycleListener listener : mListeners) {
             listener.onActivityDestroyed(this);
         }
         super.onDestroy();
+        Tracker.exitOnDestroy(this);
     }
 
     @Override

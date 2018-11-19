@@ -157,12 +157,14 @@ abstract public class BaseActivityWithTasks extends BaseActivity {
     @Override
     @CallSuper
     protected void onCreate(final @Nullable Bundle savedInstanceState) {
+        Tracker.enterOnCreate(this);
         super.onCreate(savedInstanceState);
 
         // Restore mTaskManagerId if present
         if (savedInstanceState != null) {
             mTaskManagerId = savedInstanceState.getLong(BKEY_TASK_MANAGER_ID);
         }
+        Tracker.exitOnCreate(this);
     }
 
     /**
@@ -195,6 +197,7 @@ abstract public class BaseActivityWithTasks extends BaseActivity {
     @Override
     @CallSuper
     protected void onPause() {
+        Tracker.enterOnPause(this);
         // Stop listening
         if (mTaskManagerId != 0) {
             TaskManager.getMessageSwitch().removeListener(mTaskManagerId, mTaskListener);
@@ -205,11 +208,13 @@ abstract public class BaseActivityWithTasks extends BaseActivity {
         }
         closeProgressDialog();
         super.onPause();
+        Tracker.exitOnPause(this);
     }
 
     @Override
     @CallSuper
     protected void onResume() {
+        Tracker.enterOnResume(this);
         super.onResume();
         // If we are finishing, we don't care about active tasks.
         if (!isFinishing()) {
@@ -218,6 +223,7 @@ abstract public class BaseActivityWithTasks extends BaseActivity {
             // Listen
             TaskManager.getMessageSwitch().addListener(mTaskManagerId, mTaskListener, true);
         }
+        Tracker.exitOnResume(this);
     }
 
     /**

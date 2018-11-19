@@ -38,6 +38,7 @@ import java.util.Map;
 import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_EVENT;
 import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_EVENT_DATE;
 import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_ID;
+import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_TASK_ID;
 
 /**
  * Cursor subclass used to make accessing TaskExceptions a little easier.
@@ -52,6 +53,8 @@ public class EventsCursor extends SQLiteCursor implements BindableItemCursor {
     private static int mDateCol = -2;
     /** Column number of Exception column. */
     private static int mEventCol = -2;
+    /** Column number of TaskId column. */
+    private static int mTaskIdCol = -2;
 
     private final Map<Long, Boolean> mSelections = new Hashtable<>();
 
@@ -73,6 +76,30 @@ public class EventsCursor extends SQLiteCursor implements BindableItemCursor {
             mIdCol = this.getColumnIndex(DOM_ID);
         }
         return getLong(mIdCol);
+    }
+    /**
+     * Accessor for Task ID field. Not present in all cursors.
+     *
+     * @return	task id
+     */
+    public long getTaskId() {
+        if (mTaskIdCol == -2) {
+            mTaskIdCol = this.getColumnIndex(DOM_TASK_ID);
+        }
+        return getLong(mTaskIdCol);
+    }
+
+    /**
+     * See if the optional task_id column is returned. m_taskIdCol will be initialized to -2, but if
+     * getColumnIndex has been called it will be a column number, or -1.
+     *
+     * @return	boolean indicating if task_id column is present.
+     */
+    public boolean hasTaskId() {
+        if (mTaskIdCol == -2) {
+            mTaskIdCol = this.getColumnIndex(DOM_TASK_ID);
+        }
+        return mTaskIdCol >= 0;
     }
 
     /**
@@ -107,7 +134,7 @@ public class EventsCursor extends SQLiteCursor implements BindableItemCursor {
         try {
             event = SerializationUtils.deserializeObject(blob);
         } catch (RTE.DeserializationException de) {
-            event = new LegacyEvent();
+            event = QueueManager.getQueueManager().newLegacyEvent(blob);
         }
         event.setId(this.getId());
         return event;

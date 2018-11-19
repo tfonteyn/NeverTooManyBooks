@@ -153,7 +153,7 @@
             android:text="@string/lbl_series" />
 
         <TextView
-            android:id="@+id/filename"
+            android:id="@+id/name"
             style="@style/txt_row_bookDetail"
             android:textIsSelectable="true"
             tools:text="Series name (1)\nSeries name (2)" />

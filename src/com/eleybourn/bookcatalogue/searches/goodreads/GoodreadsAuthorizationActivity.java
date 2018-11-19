@@ -28,6 +28,7 @@ import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.StartupActivity;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
+import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.taskqueue.QueueManager;
 import com.eleybourn.bookcatalogue.tasks.BCQueueManager;
 
@@ -44,6 +45,7 @@ public class GoodreadsAuthorizationActivity extends BaseActivity {
     @Override
     @CallSuper
     public void onCreate(final @Nullable Bundle savedInstanceState) {
+        Tracker.enterOnCreate(this);
         super.onCreate(savedInstanceState);
 
         // Get the payload and make sure it is what we expect
@@ -68,7 +70,8 @@ public class GoodreadsAuthorizationActivity extends BaseActivity {
         startActivity(bcTop);
 
         setResult(Activity.RESULT_OK);
-        this.finish();
+        finish();
+        Tracker.exitOnCreate(this);
     }
 
 }

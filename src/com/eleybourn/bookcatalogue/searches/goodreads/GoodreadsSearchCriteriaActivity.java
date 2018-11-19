@@ -36,7 +36,7 @@ import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
-import com.eleybourn.bookcatalogue.database.cursors.BookCursorRow;
+import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 
@@ -64,6 +64,7 @@ public class GoodreadsSearchCriteriaActivity extends BaseActivity {
     @Override
     @CallSuper
     public void onCreate(final @Nullable Bundle savedInstanceState) {
+        Tracker.enterOnCreate(this);
         super.onCreate(savedInstanceState);
 
         mDb = new CatalogueDBAdapter(this);
@@ -89,7 +90,7 @@ public class GoodreadsSearchCriteriaActivity extends BaseActivity {
                     finish();
                     return;
                 }
-                final BookCursorRow bookCursorRow = cursor.getCursorRow();
+                final BookRowView bookCursorRow = cursor.getCursorRow();
                 {
                     String s = bookCursorRow.getPrimaryAuthorNameFormattedGivenFirst();
                     setViewText(R.id.author, s);
@@ -119,6 +120,7 @@ public class GoodreadsSearchCriteriaActivity extends BaseActivity {
                 doSearch();
             }
         });
+        Tracker.exitOnCreate(this);
     }
 
     /**

@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter;
 import com.eleybourn.bookcatalogue.adapters.SimpleListAdapterRowActionListener;
+import com.eleybourn.bookcatalogue.debug.Tracker;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +42,7 @@ public class AdminSearchOrderFragment extends Fragment {
     @Override
     @CallSuper
     public void onActivityCreated(final @Nullable Bundle savedInstanceState) {
+        Tracker.enterOnActivityCreated(this);
         super.onActivityCreated(savedInstanceState);
         Bundle args = getArguments();
         Objects.requireNonNull(args);
@@ -52,6 +54,7 @@ public class AdminSearchOrderFragment extends Fragment {
         mListView = getView().findViewById(android.R.id.list);
         mListView.setAdapter(mAdapter);
         isCreated = true;
+        Tracker.exitOnActivityCreated(this);
     }
 
     @Nullable

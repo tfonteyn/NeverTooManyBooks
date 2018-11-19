@@ -164,87 +164,84 @@ public class BookSearchActivity extends BaseActivityWithTasks implements SearchM
     @CallSuper
     protected void onCreate(final @Nullable Bundle savedInstanceState) {
         Tracker.enterOnCreate(this);
-        try {
-            boolean network_available = Utils.isNetworkAvailable(this);
-            if (!network_available) {
-                StandardDialogs.showUserMessage(this, R.string.error_no_internet_connection);
+        boolean network_available = Utils.isNetworkAvailable(this);
+        if (!network_available) {
+            StandardDialogs.showUserMessage(this, R.string.error_no_internet_connection);
+            setResult(Activity.RESULT_CANCELED);
+            finish();
+            return;
+        }
+
+        // Must do this before super.onCreate as getLayoutId() needs them
+        Bundle extras = getIntent().getExtras();
+        Objects.requireNonNull(extras);
+        mIsbnSearchText = extras.getString(UniqueId.KEY_BOOK_ISBN);
+        mBy = extras.getString(REQUEST_BKEY_BY);
+
+        super.onCreate(savedInstanceState);
+        this.setTitle(R.string.title_isbn_search);
+
+        mSearchSites = extras.getInt(REQUEST_BKEY_SEARCH_SITES, SearchSites.SEARCH_ALL);
+
+        LibraryThingManager.showLtAlertIfNecessary(this, false, "search");
+
+        mDb = new CatalogueDBAdapter(this);
+
+        if (savedInstanceState != null) {
+            // the search at the moment the activity went to sleep
+            mSearchManagerId = savedInstanceState.getLong(SEARCH_MANAGER_ID);
+
+            if (savedInstanceState.containsKey(SCANNER_STARTED)) {
+                mScannerStarted = savedInstanceState.getBoolean(SCANNER_STARTED);
+            }
+        }
+
+        /* BUG NOTE 1:
+         *
+         * There is a bizarre bug that seems to only affect some users in which this activity
+         * is called AFTER the user has finished and the passed Intent has neither a ISBN nor a
+         * "REQUEST_BKEY_BY" in the Extras. Following all the code that starts this activity suggests that
+         * the activity is ALWAYS started with the intent data. The problems always occur AFTER
+         * adding a book, which confirms that the activity has been started correctly.
+         *
+         * In order to avoid this problem, we just check for nulls and finish().
+         * THIS IS NOT A FIX it is a MESSY WORK-AROUND.
+         *
+         * TODO: Find out why BookSearchActivity gets restarted with no data
+         *
+         * So...we save the extras in savedInstanceState, and look for it when missing
+         */
+        if (mIsbnSearchText == null && (mBy == null || mBy.isEmpty())) {
+            Logger.error("Empty args for BookSearchActivity");
+            if (savedInstanceState != null) {
+                if (mIsbnSearchText == null && savedInstanceState.containsKey(UniqueId.KEY_BOOK_ISBN)) {
+                    mIsbnSearchText = savedInstanceState.getString(UniqueId.KEY_BOOK_ISBN);
+                }
+                if (savedInstanceState.containsKey(REQUEST_BKEY_BY)) {
+                    mBy = savedInstanceState.getString(REQUEST_BKEY_BY);
+                }
+            }
+            // If they are still null, we can't proceed.
+            if (mIsbnSearchText == null && (mBy == null || mBy.isEmpty())) {
                 setResult(Activity.RESULT_CANCELED);
                 finish();
                 return;
             }
-
-            // Must do this before super.onCreate as getLayoutId() needs them
-            Bundle extras = getIntent().getExtras();
-            Objects.requireNonNull(extras);
-            mIsbnSearchText = extras.getString(UniqueId.KEY_BOOK_ISBN);
-            mBy = extras.getString(REQUEST_BKEY_BY);
-
-            super.onCreate(savedInstanceState);
-            this.setTitle(R.string.title_isbn_search);
-
-            mSearchSites = extras.getInt(REQUEST_BKEY_SEARCH_SITES, SearchSites.SEARCH_ALL);
-
-            LibraryThingManager.showLtAlertIfNecessary(this, false, "search");
-
-            mDb = new CatalogueDBAdapter(this);
-
-            if (savedInstanceState != null) {
-                // the search at the moment the activity went to sleep
-                mSearchManagerId = savedInstanceState.getLong(SEARCH_MANAGER_ID);
-
-                if (savedInstanceState.containsKey(SCANNER_STARTED)) {
-                    mScannerStarted = savedInstanceState.getBoolean(SCANNER_STARTED);
-                }
-            }
-
-            /* BUG NOTE 1:
-             *
-             * There is a bizarre bug that seems to only affect some users in which this activity
-             * is called AFTER the user has finished and the passed Intent has neither a ISBN nor a
-             * "REQUEST_BKEY_BY" in the Extras. Following all the code that starts this activity suggests that
-             * the activity is ALWAYS started with the intent data. The problems always occur AFTER
-             * adding a book, which confirms that the activity has been started correctly.
-             *
-             * In order to avoid this problem, we just check for nulls and finish().
-             * THIS IS NOT A FIX it is a MESSY WORK-AROUND.
-             *
-             * TODO: Find out why BookSearchActivity gets restarted with no data
-             *
-             * So...we save the extras in savedInstanceState, and look for it when missing
-             */
-            if (mIsbnSearchText == null && (mBy == null || mBy.isEmpty())) {
-                Logger.error("Empty args for BookSearchActivity");
-                if (savedInstanceState != null) {
-                    if (mIsbnSearchText == null && savedInstanceState.containsKey(UniqueId.KEY_BOOK_ISBN)) {
-                        mIsbnSearchText = savedInstanceState.getString(UniqueId.KEY_BOOK_ISBN);
-                    }
-                    if (savedInstanceState.containsKey(REQUEST_BKEY_BY)) {
-                        mBy = savedInstanceState.getString(REQUEST_BKEY_BY);
-                    }
-                }
-                // If they are still null, we can't proceed.
-                if (mIsbnSearchText == null && (mBy == null || mBy.isEmpty())) {
-                    setResult(Activity.RESULT_CANCELED);
-                    finish();
-                    return;
-                }
-            }
-
-            // Default to MANUAL
-            mLoopMode = false;
-
-            if (mIsbnSearchText != null) {
-                onCreateWithISBN();
-            } else if (BY_ISBN.equals(mBy)) {
-                onCreateByISBN();
-            } else if (BY_TEXT.equals(mBy)) {
-                onCreateByName();
-            } else if (BY_SCAN.equals(mBy)) {
-                onCreateByScan(savedInstanceState);
-            }
-        } finally {
-            Tracker.exitOnCreate(this);
         }
+
+        // Default to MANUAL
+        mLoopMode = false;
+
+        if (mIsbnSearchText != null) {
+            onCreateWithISBN();
+        } else if (BY_ISBN.equals(mBy)) {
+            onCreateByISBN();
+        } else if (BY_TEXT.equals(mBy)) {
+            onCreateByName();
+        } else if (BY_SCAN.equals(mBy)) {
+            onCreateByScan(savedInstanceState);
+        }
+        Tracker.exitOnCreate(this);
     }
 
     /**
@@ -759,9 +756,7 @@ public class BookSearchActivity extends BaseActivityWithTasks implements SearchM
     @Override
     @CallSuper
     protected void onActivityResult(final int requestCode, final int resultCode, final @Nullable Intent data) {
-        if (DEBUG_SWITCHES.ON_ACTIVITY_RESULT && BuildConfig.DEBUG) {
-            Logger.info(this, "onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
-        }
+        Tracker.enterOnActivityResult(this,requestCode,resultCode);
         switch (requestCode) {
             case Scanner.REQUEST_CODE: {/* 4f410d34-dc9c-4ee2-903e-79d69a328517, c2c28575-5327-40c6-827a-c7973bd24d12*/
                 mScannerStarted = false;
@@ -777,12 +772,12 @@ public class BookSearchActivity extends BaseActivityWithTasks implements SearchM
                     // and exit if no dialog present.
                     if (!mDisplayingAlert) {
                         finish();
-                        return;
+                        break;
                     }
                 }
 
                 initAuthorList();
-                return;
+                break;
             }
             case EditBookActivity.REQUEST_CODE: {/* 341ace23-c2c8-42d6-a71e-909a3a19ba99, 9e2c0b04-8217-4b49-9937-96d160104265 */
                 if (resultCode == EditBookActivity.RESULT_CHANGES_MADE) {
@@ -801,20 +796,23 @@ public class BookSearchActivity extends BaseActivityWithTasks implements SearchM
                 }
 
                 initAuthorList();
-                return;
+                break;
             }
             case SearchAdminActivity.REQUEST_CODE: { /* 1b923299-d966-4ed5-8230-c5a7c491053b */
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     mSearchSites = data.getIntExtra(SearchAdminActivity.RESULT_SEARCH_SITES, mSearchSites);
                 }
-                return;
+                break;
             }
+            default:
+                super.onActivityResult(requestCode, resultCode, data);
+                break;
         }
 
         // No matter what the activity was, rebuild the author list in case a new author was added.
         //initAuthorList();
 
-        super.onActivityResult(requestCode, resultCode, data);
+        Tracker.exitOnActivityResult(this,requestCode,resultCode);
     }
 
     @Override

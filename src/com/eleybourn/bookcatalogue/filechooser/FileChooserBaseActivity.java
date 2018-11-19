@@ -32,6 +32,7 @@ import android.widget.Button;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
+import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.filechooser.FileChooserFragment.FileDetails;
 import com.eleybourn.bookcatalogue.filechooser.FileChooserFragment.OnPathChangedListener;
@@ -79,6 +80,7 @@ public abstract class FileChooserBaseActivity extends BaseActivity implements
     @Override
     @CallSuper
     public void onCreate(final @Nullable Bundle savedInstanceState) {
+        Tracker.enterOnCreate(this);
         super.onCreate(savedInstanceState);
 
         // Determine the dialog type
@@ -127,7 +129,7 @@ public abstract class FileChooserBaseActivity extends BaseActivity implements
                 }
             });
         }
-
+        Tracker.exitOnCreate(this);
     }
 
     /**

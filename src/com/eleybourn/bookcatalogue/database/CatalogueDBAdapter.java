@@ -42,7 +42,7 @@ import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedStatement;
 import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer;
 import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer.SyncLock;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
-import com.eleybourn.bookcatalogue.database.cursors.BookCursorRow;
+import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
 import com.eleybourn.bookcatalogue.database.cursors.TrackedCursor;
 import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
 import com.eleybourn.bookcatalogue.database.definitions.TableInfo;
@@ -3573,7 +3573,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
             throw new DBExceptions.TransactionException();
         }
 
-        final BookCursorRow bookCursorRow = books.getCursorRow();
+        final BookRowView bookCursorRow = books.getCursorRow();
 
         // Build the SQL to get author details for a book.
 

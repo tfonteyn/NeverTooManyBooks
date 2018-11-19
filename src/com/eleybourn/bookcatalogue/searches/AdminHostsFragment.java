@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 
 import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.searches.amazon.AmazonManager;
 import com.eleybourn.bookcatalogue.searches.googlebooks.GoogleBooksManager;
 import com.eleybourn.bookcatalogue.searches.isfdb.ISFDBManager;
@@ -35,6 +36,7 @@ public class AdminHostsFragment extends Fragment {
     @Override
     @CallSuper
     public void onActivityCreated(final @Nullable Bundle savedInstanceState) {
+        Tracker.enterOnActivityCreated(this);
         super.onActivityCreated(savedInstanceState);
 
         //noinspection ConstantConditions
@@ -48,6 +50,7 @@ public class AdminHostsFragment extends Fragment {
         isfdb_url.setText(ISFDBManager.getBaseURL());
 
         isCreated = true;
+        Tracker.exitOnActivityCreated(this);
     }
 
     public void saveSettings() {

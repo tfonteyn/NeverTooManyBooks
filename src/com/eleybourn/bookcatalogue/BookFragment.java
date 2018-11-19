@@ -24,6 +24,7 @@ import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.booklist.FlattenedBooklist;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Book;
@@ -117,6 +118,7 @@ public class BookFragment extends BookBaseFragment implements BookManager {
     @Override
     @CallSuper
     public void onActivityCreated(final @Nullable Bundle savedInstanceState) {
+        Tracker.enterOnActivityCreated(this);
         // cache to avoid multiple calls to requireActivity()
         mActivity = (BaseActivity) requireActivity();
 
@@ -127,6 +129,7 @@ public class BookFragment extends BookBaseFragment implements BookManager {
         if (savedInstanceState == null) {
             HintManager.displayHint(mActivity.getLayoutInflater(), R.string.hint_view_only_help, null);
         }
+        Tracker.exitOnActivityCreated(this);
     }
 
     @Override
@@ -142,7 +145,7 @@ public class BookFragment extends BookBaseFragment implements BookManager {
         // ENHANCE: simplify the SQL and use a formatter instead.
         mFields.add(R.id.author, "", UniqueId.KEY_AUTHOR_FORMATTED);
 
-        mFields.add(R.id.filename, UniqueId.KEY_SERIES_NAME);
+        mFields.add(R.id.name, UniqueId.KEY_SERIES_NAME);
         mFields.add(R.id.title, UniqueId.KEY_TITLE);
         mFields.add(R.id.isbn, UniqueId.KEY_BOOK_ISBN);
         mFields.add(R.id.description, UniqueId.KEY_DESCRIPTION)
@@ -208,12 +211,15 @@ public class BookFragment extends BookBaseFragment implements BookManager {
     @CallSuper
     @Override
     public void onResume() {
+        Tracker.enterOnResume(this);
+        // we need the book before the super will load the fields
         long bookId = getBook().getBookId();
         if (bookId != 0) {
             getBook().reload(mDb, bookId);
         }
         // this will kick of the process that triggers onLoadFieldsFromBook
         super.onResume();
+        Tracker.exitOnResume(this);
     }
 
     /**
@@ -225,6 +231,7 @@ public class BookFragment extends BookBaseFragment implements BookManager {
     @Override
     @CallSuper
     protected void onLoadFieldsFromBook(final @NonNull Book book, final boolean setAllFrom) {
+        Tracker.enterOnLoadFieldsFromBook(this, book.getBookId());
         super.onLoadFieldsFromBook(book, setAllFrom);
 
         populateAuthorListField(book);
@@ -258,9 +265,7 @@ public class BookFragment extends BookBaseFragment implements BookManager {
             //showHideField(hideIfEmpty, R.id.edition, R.id.row_edition, R.id.lbl_edition);
         }
 
-        if (DEBUG_SWITCHES.FIELD_BOOK_TRANSFERS && BuildConfig.DEBUG) {
-            Logger.info(this, "onLoadFieldsFromBook done");
-        }
+        Tracker.exitOnLoadFieldsFromBook(this, book.getBookId());
     }
 
     //</editor-fold>
@@ -395,7 +400,7 @@ public class BookFragment extends BookBaseFragment implements BookManager {
     protected void populateSeriesListField(final @NonNull Book book) {
         ArrayList<Series> list = book.getSeriesList();
         int seriesCount = list.size();
-        boolean visible = seriesCount != 0 && mFields.getField(R.id.filename).visible;
+        boolean visible = seriesCount != 0 && mFields.getField(R.id.name).visible;
         if (visible) {
             Series.pruneSeriesList(list);
             Utils.pruneList(mDb, list);
@@ -407,11 +412,11 @@ public class BookFragment extends BookBaseFragment implements BookManager {
                 }
             }
 
-            mFields.getField(R.id.filename).setValue(builder.toString());
+            mFields.getField(R.id.name).setValue(builder.toString());
         }
         //noinspection ConstantConditions
         getView().findViewById(R.id.lbl_series).setVisibility(visible ? View.VISIBLE : View.GONE);
-        getView().findViewById(R.id.filename).setVisibility(visible ? View.VISIBLE : View.GONE);
+        getView().findViewById(R.id.name).setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
     /**
@@ -570,6 +575,7 @@ public class BookFragment extends BookBaseFragment implements BookManager {
     @Override
     @CallSuper
     public void onPause() {
+        Tracker.enterOnPause(this);
         if (mFlattenedBooklist != null) {
             mFlattenedBooklist.close();
             if (mActivity.isFinishing()) {
@@ -580,6 +586,7 @@ public class BookFragment extends BookBaseFragment implements BookManager {
         mCoverHandler.dismissCoverBrowser();
 
         super.onPause();
+        Tracker.exitOnPause(this);
     }
 
     /**
@@ -590,12 +597,10 @@ public class BookFragment extends BookBaseFragment implements BookManager {
      */
     @Override
     protected void onSaveFieldsToBook(final @NonNull Book book) {
+        Tracker.enterOnSaveFieldsToBook(this, book.getBookId());
         // don't call super, Don't save!
         // and don't remove this method... or the super *would* do the save!
-
-        if (DEBUG_SWITCHES.FIELD_BOOK_TRANSFERS && BuildConfig.DEBUG) {
-            Logger.info(this, "onSaveFieldsToBook done");
-        }
+        Tracker.exitOnSaveFieldsToBook(this, book.getBookId());
     }
 
     @Override
@@ -670,26 +675,24 @@ public class BookFragment extends BookBaseFragment implements BookManager {
 
     @Override
     public void onActivityResult(final int requestCode, final int resultCode, final @Nullable Intent data) {
-        if (DEBUG_SWITCHES.ON_ACTIVITY_RESULT && BuildConfig.DEBUG) {
-            Logger.info(this, "onActivityResult requestCode=" + requestCode + ", resultCode=" + resultCode);
-        }
-
+        Tracker.enterOnActivityResult(this,requestCode,resultCode);
         switch (requestCode) {
             case EditBookFragment.REQUEST_CODE: {
                 if (resultCode == EditBookFragment.RESULT_CHANGES_MADE) {
                     getBook().reload(mDb);
                     mActivity.setChangesMade(true);
                 }
-                return;
+                break;
             }
+            default:
+                // handle any cover image result codes
+                if (!mCoverHandler.onActivityResult(requestCode, resultCode, data)) {
+                    super.onActivityResult(requestCode, resultCode, data);
+                }
+                break;
         }
 
-        // handle any cover image result codes
-        if (mCoverHandler.onActivityResult(requestCode, resultCode, data)) {
-            return;
-        }
-
-        super.onActivityResult(requestCode, resultCode, data);
+        Tracker.exitOnActivityResult(this,requestCode,resultCode);
     }
 
 //    /**
