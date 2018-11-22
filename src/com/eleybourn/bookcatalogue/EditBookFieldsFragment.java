@@ -60,7 +60,7 @@ import java.util.List;
  * This class is called by {@link EditBookFragment} and displays the main Books fields Tab
  */
 public class EditBookFieldsFragment extends BookBaseFragment implements
-        CheckListEditorDialogFragment.OnCheckListEditorResultsListener,
+        CheckListEditorDialogFragment.OnCheckListEditorResultsListener<Bookshelf>,
         PartialDatePickerDialogFragment.OnPartialDatePickerResultsListener,
         TextFieldEditorDialogFragment.OnTextFieldEditorResultsListener {
 
@@ -422,13 +422,13 @@ public class EditBookFieldsFragment extends BookBaseFragment implements
 
     //<editor-fold desc="Field editors callbacks">
     @Override
-    public <T> void onCheckListEditorSave(final @NonNull CheckListEditorDialogFragment dialog,
+    public void onCheckListEditorSave(final @NonNull CheckListEditorDialogFragment dialog,
                                           final int destinationFieldId,
-                                          final @NonNull List<CheckListItem<T>> list) {
+                                          final @NonNull List<CheckListItem<Bookshelf>> list) {
         dialog.dismiss();
 
         if (destinationFieldId == R.id.bookshelves) {
-            ArrayList<Bookshelf> result = CheckListItemBase.extractList(list);
+            ArrayList<Bookshelf> result = new CheckListItemBase<Bookshelf>().extractList(list);
             getBookManager().getBook().putBookshelfList(result);
             mFields.getField(destinationFieldId).setValue(getBookManager().getBook().getBookshelfListAsText());
         }
@@ -555,7 +555,7 @@ public class EditBookFieldsFragment extends BookBaseFragment implements
         switch (requestCode) {
             case EditAuthorListActivity.REQUEST_CODE: { /* dd74343a-50ff-4ce9-a2e4-a75f7bcf9e36 */
                 if (resultCode == Activity.RESULT_OK && data != null && data.hasExtra(UniqueId.BKEY_AUTHOR_ARRAY)) {
-                    ArrayList<Author> list = BundleUtils.getListFromBundle(UniqueId.BKEY_AUTHOR_ARRAY, data.getExtras());
+                    ArrayList<Author> list = BundleUtils.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, data.getExtras());
                     book.putAuthorList(list != null ? list : new ArrayList<Author>());
 
                     getBookManager().setDirty(true);
@@ -573,7 +573,7 @@ public class EditBookFieldsFragment extends BookBaseFragment implements
             }
             case EditSeriesListActivity.REQUEST_CODE: { /* bca659b6-dfb9-4a97-b651-5b05ad102400 */
                 if (resultCode == Activity.RESULT_OK && data != null && data.hasExtra(UniqueId.BKEY_SERIES_ARRAY)) {
-                    ArrayList<Series> list = BundleUtils.getListFromBundle(UniqueId.BKEY_SERIES_ARRAY, data.getExtras());
+                    ArrayList<Series> list = BundleUtils.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, data.getExtras());
                     book.putSeriesList(list != null ? list : new ArrayList<Series>());
 
                     populateSeriesListField(book);

@@ -620,7 +620,7 @@ public class BooksOnBookshelf extends BaseListActivity implements
         Logger.error("onActivityResult: BooklistStylePropertiesActivity.RESULT_CHANGES_MADE was supposed to be unused?");
         /* there *has* to be 'data' */
         Objects.requireNonNull(data);
-        BooklistStyle style = (BooklistStyle) data.getSerializableExtra(BooklistStylePropertiesActivity.REQUEST_BKEY_STYLE);
+        BooklistStyle style = data.getParcelableExtra(BooklistStylePropertiesActivity.REQUEST_BKEY_STYLE);
         // can be null if a style was deleted.
         if (style != null) {
             mCurrentStyle = style;

@@ -409,7 +409,7 @@ public class SearchManager implements TaskManagerListener {
         }
         if (authors != null && !authors.isEmpty()) {
             ArrayList<Author> list = StringList.getAuthorUtils().decode(authors, false);
-            mBookData.putSerializable(UniqueId.BKEY_AUTHOR_ARRAY, list);
+            mBookData.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, list);
             mBookData.remove(UniqueId.BKEY_AUTHOR_STRING_LIST);
         }
 
@@ -435,7 +435,7 @@ public class SearchManager implements TaskManagerListener {
         String series = mBookData.getString(UniqueId.BKEY_SERIES_STRING_LIST);
         if (series != null && !series.isEmpty()) {
             ArrayList<Series> list = StringList.getSeriesUtils().decode(series, false);
-            mBookData.putSerializable(UniqueId.BKEY_SERIES_ARRAY, list);
+            mBookData.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, list);
             mBookData.remove(UniqueId.BKEY_SERIES_STRING_LIST);
         }
 
@@ -443,7 +443,7 @@ public class SearchManager implements TaskManagerListener {
         String tocEntriesAsStringList = mBookData.getString(UniqueId.BKEY_TOC_STRING_LIST);
         if (tocEntriesAsStringList != null && !tocEntriesAsStringList.isEmpty()) {
             ArrayList<TOCEntry> list = StringList.getTOCUtils().decode(tocEntriesAsStringList, false);
-            mBookData.putSerializable(UniqueId.BKEY_TOC_TITLES_ARRAY, list);
+            mBookData.putParcelableArrayList(UniqueId.BKEY_TOC_TITLES_ARRAY, list);
             mBookData.remove(UniqueId.BKEY_TOC_STRING_LIST);
         }
 

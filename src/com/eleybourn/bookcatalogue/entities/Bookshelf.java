@@ -40,6 +40,34 @@ public class Bookshelf implements Parcelable, Utils.ItemWithIdFixup {
         this.name = name.trim();
     }
 
+    protected Bookshelf(Parcel in) {
+        id = in.readLong();
+        name = in.readString();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(id);
+        dest.writeString(name);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<Bookshelf> CREATOR = new Creator<Bookshelf>() {
+        @Override
+        public Bookshelf createFromParcel(Parcel in) {
+            return new Bookshelf(in);
+        }
+
+        @Override
+        public Bookshelf[] newArray(int size) {
+            return new Bookshelf[size];
+        }
+    };
+
     /**
      * Support for encoding to a text file
      *
@@ -95,32 +123,4 @@ public class Bookshelf implements Parcelable, Utils.ItemWithIdFixup {
     public int hashCode() {
         return Objects.hash(id, name);
     }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(final @NonNull Parcel dest, int flags) {
-        dest.writeLong(id);
-        dest.writeString(name);
-    }
-
-    protected Bookshelf(final @NonNull Parcel in) {
-        id = in.readLong();
-        name = in.readString();
-    }
-
-    public static final Creator<Bookshelf> CREATOR = new Creator<Bookshelf>() {
-        @Override
-        public Bookshelf createFromParcel(final @NonNull Parcel in) {
-            return new Bookshelf(in);
-        }
-
-        @Override
-        public Bookshelf[] newArray(final int size) {
-            return new Bookshelf[size];
-        }
-    };
 }

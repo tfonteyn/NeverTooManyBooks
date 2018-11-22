@@ -1,5 +1,7 @@
 package com.eleybourn.bookcatalogue.database.definitions;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
 /**
@@ -7,7 +9,7 @@ import android.support.annotation.NonNull;
  *
  * @author Philip Warner
  */
-public class DomainDefinition {
+public class DomainDefinition implements Parcelable {
     @NonNull
     public final String name;
 
@@ -44,6 +46,38 @@ public class DomainDefinition {
         this.extra = extra;
         this.constraint = constraint;
     }
+
+    protected DomainDefinition(Parcel in) {
+        name = in.readString();
+        type = in.readString();
+        extra = in.readString();
+        constraint = in.readString();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(name);
+        dest.writeString(type);
+        dest.writeString(extra);
+        dest.writeString(constraint);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<DomainDefinition> CREATOR = new Creator<DomainDefinition>() {
+        @Override
+        public DomainDefinition createFromParcel(Parcel in) {
+            return new DomainDefinition(in);
+        }
+
+        @Override
+        public DomainDefinition[] newArray(int size) {
+            return new DomainDefinition[size];
+        }
+    };
 
     public boolean isText() {
         return TableInfo.TYPE_TEXT.equals(type.toLowerCase());

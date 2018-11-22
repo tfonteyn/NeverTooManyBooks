@@ -39,18 +39,13 @@ import android.widget.Button;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.datamanager.DataEditor;
 import com.eleybourn.bookcatalogue.debug.Tracker;
-import com.eleybourn.bookcatalogue.dialogs.editordialog.PartialDatePickerDialogFragment;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
-import com.eleybourn.bookcatalogue.dialogs.editordialog.TextFieldEditorDialogFragment;
-import com.eleybourn.bookcatalogue.dialogs.editordialog.CheckListEditorDialogFragment;
-import com.eleybourn.bookcatalogue.dialogs.editordialog.CheckListItem;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.BookManager;
 import com.eleybourn.bookcatalogue.utils.BundleUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 import java.io.File;
-import java.util.List;
 
 /**
  * A tab host activity which holds the edit book tabs
@@ -59,11 +54,7 @@ import java.util.List;
  * 3. Anthology titles
  * 4. Loan Book -> ENHANCE: remove this from this activity into either its own, or into a DialogFragment
  */
-public class EditBookFragment extends BookBaseFragment implements
-        CheckListEditorDialogFragment.OnCheckListEditorResultsListener,
-        PartialDatePickerDialogFragment.OnPartialDatePickerResultsListener,
-        TextFieldEditorDialogFragment.OnTextFieldEditorResultsListener,
-        BookManager {
+public class EditBookFragment extends BookBaseFragment implements BookManager {
 
     public static final String TAG = "EditBookFragment";
 
@@ -478,41 +469,6 @@ public class EditBookFragment extends BookBaseFragment implements
 
         // certainly made changes to the Book. Might be redundant, but I'm paranoid.
         mActivity.setChangesMade(true);
-    }
-
-    @Override
-    public void onPartialDatePickerSave(@NonNull final PartialDatePickerDialogFragment dialog,
-                                        final int destinationFieldId,
-                                        @Nullable final Integer year, @Nullable final Integer month, @Nullable final Integer day) {
-
-    }
-
-    @Override
-    public void onPartialDatePickerCancel(@NonNull final PartialDatePickerDialogFragment dialog,
-                                          final int destinationFieldId) {
-    }
-
-    @Override
-    public void onTextFieldEditorSave(@NonNull final TextFieldEditorDialogFragment dialog,
-                                      final int destinationFieldId,
-                                      @NonNull final String newText) {
-
-    }
-
-    @Override
-    public void onTextFieldEditorCancel(@NonNull final TextFieldEditorDialogFragment dialog, final int destinationFieldId) {
-    }
-
-    @Override
-    public <T2> void onCheckListEditorSave(@NonNull final CheckListEditorDialogFragment dialog,
-                                           final int destinationFieldId,
-                                           @NonNull final List<CheckListItem<T2>> list) {
-
-    }
-
-    @Override
-    public void onCheckListEditorCancel(@NonNull final CheckListEditorDialogFragment dialog,
-                                        final int destinationFieldId) {
     }
 
     /**

@@ -23,6 +23,8 @@ package com.eleybourn.bookcatalogue.booklist;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.CallSuper;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
@@ -78,7 +80,7 @@ public class BooklistStyleGroupsActivity extends EditObjectListActivity<GroupWra
         Tracker.enterOnCreate(this, savedInstanceState);
         // Get the intent and get the style and other settings
         Intent intent = this.getIntent();
-        mStyle = (BooklistStyle) intent.getSerializableExtra(REQUEST_BKEY_STYLE);
+        mStyle = intent.getParcelableExtra(REQUEST_BKEY_STYLE);
 
         if (intent.hasExtra(REQUEST_BKEY_SAVE_TO_DATABASE)) {
             mSaveToDb = intent.getBooleanExtra(REQUEST_BKEY_SAVE_TO_DATABASE, true);
@@ -144,7 +146,7 @@ public class BooklistStyleGroupsActivity extends EditObjectListActivity<GroupWra
         mStyle.setProperties(props);
 
         // Store in resulting Intent
-        intent.putExtra(REQUEST_BKEY_STYLE, mStyle); /* 06ed8d0e-7120-47aa-b47e-c0cd46361dcb */
+        intent.putExtra(REQUEST_BKEY_STYLE, (Parcelable) mStyle); /* 06ed8d0e-7120-47aa-b47e-c0cd46361dcb */
 
         // Save to DB if necessary
         if (mSaveToDb) {
@@ -164,7 +166,7 @@ public class BooklistStyleGroupsActivity extends EditObjectListActivity<GroupWra
      *
      * @author Philip Warner
      */
-    public static class GroupWrapper implements Serializable {
+    public static class GroupWrapper implements Serializable, Parcelable {
         private static final long serialVersionUID = 3108094089675884238L;
         /** The actual group */
         @NonNull
@@ -177,6 +179,35 @@ public class BooklistStyleGroupsActivity extends EditObjectListActivity<GroupWra
             this.group = group;
             this.present = present;
         }
+
+
+        protected GroupWrapper(Parcel in) {
+            group = in.readParcelable(BooklistGroup.class.getClassLoader());
+            present = in.readByte() != 0;
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            dest.writeParcelable(group, flags);
+            dest.writeByte((byte) (present ? 1 : 0));
+        }
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        public static final Creator<GroupWrapper> CREATOR = new Creator<GroupWrapper>() {
+            @Override
+            public GroupWrapper createFromParcel(Parcel in) {
+                return new GroupWrapper(in);
+            }
+
+            @Override
+            public GroupWrapper[] newArray(int size) {
+                return new GroupWrapper[size];
+            }
+        };
     }
 
     protected class GroupWrapperListAdapter extends SimpleListAdapter<GroupWrapper> implements SimpleListAdapterRowActionListener<GroupWrapper> {

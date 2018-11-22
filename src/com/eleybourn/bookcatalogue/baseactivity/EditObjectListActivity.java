@@ -23,6 +23,7 @@ package com.eleybourn.bookcatalogue.baseactivity;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.CallSuper;
 import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
@@ -33,20 +34,16 @@ import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.eleybourn.bookcatalogue.BuildConfig;
-import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter;
 import com.eleybourn.bookcatalogue.adapters.SimpleListAdapterRowActionListener;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
-import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.utils.BundleUtils;
 import com.eleybourn.bookcatalogue.widgets.TouchListView;
 import com.eleybourn.bookcatalogue.widgets.TouchListViewWithDropListener;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -88,7 +85,7 @@ import java.util.Objects;
  *
  * @author Philip Warner
  */
-abstract public class EditObjectListActivity<T extends Serializable> extends BaseListActivity {
+abstract public class EditObjectListActivity<T extends Parcelable> extends BaseListActivity {
 
     /** The key to use in the Bundle to get the array */
     @Nullable
@@ -209,7 +206,7 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Bas
 
         // we need the ArrayList before building the adapter.
         if (key != null) {
-            list = BundleUtils.getListFromBundles(key, savedInstanceState, getIntent().getExtras());
+            list = BundleUtils.getParcelableArrayList(key, savedInstanceState, getIntent().getExtras());
         }
         // nothing ? Then ask the subclass to setup the list
         if (list == null) {
@@ -337,7 +334,7 @@ abstract public class EditObjectListActivity<T extends Serializable> extends Bas
     @Override
     @CallSuper
     protected void onSaveInstanceState(final @NonNull Bundle outState) {
-        outState.putSerializable(mBKey, mList);
+        outState.putParcelableArrayList(mBKey, mList);
 
         super.onSaveInstanceState(outState);
     }

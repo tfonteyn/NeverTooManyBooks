@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue.searches;
 
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 
@@ -45,7 +46,6 @@ import com.eleybourn.bookcatalogue.utils.RTE;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 import java.io.File;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.locks.Condition;
@@ -131,15 +131,15 @@ public class UpdateFromInternetTask extends ManagedTask {
         getMessageSwitch().addListener(getSenderId(), listener, false);
     }
 
-    private static <T extends Serializable> void combineArrays(final @NonNull String key,
-                                                               final @NonNull Bundle origData,
-                                                               final @NonNull Bundle newData) {
+    private static <T extends Parcelable> void combineArrays(final @NonNull String key,
+                                                             final @NonNull Bundle origData,
+                                                             final @NonNull Bundle newData) {
         // Each of the lists to combine
         ArrayList<T> origList = null;
         ArrayList<T> newList = null;
         // Get the list from the original, if present.
         if (origData.containsKey(key)) {
-            origList = BundleUtils.getListFromBundle(key, origData);
+            origList = BundleUtils.getParcelableArrayList(key, origData);
         }
         // Otherwise an empty list
         if (origList == null) {
@@ -148,7 +148,7 @@ public class UpdateFromInternetTask extends ManagedTask {
 
         // Get the list from the new data
         if (newData.containsKey(key)) {
-            newList = BundleUtils.getListFromBundle(key, newData);
+            newList = BundleUtils.getParcelableArrayList(key, newData);
         }
         if (newList == null) {
             newList = new ArrayList<>();
@@ -161,7 +161,7 @@ public class UpdateFromInternetTask extends ManagedTask {
             }
         }
         // Save combined version to the new data
-        newData.putSerializable(key, origList);
+        newData.putParcelableArrayList(key, origList);
     }
 
     /**
@@ -203,9 +203,9 @@ public class UpdateFromInternetTask extends ManagedTask {
                 // Get the book UUID
                 mCurrentUuid = mOriginalBookData.getString(UniqueId.KEY_BOOK_UUID);
                 // Get the extra data about the book
-                mOriginalBookData.putSerializable(UniqueId.BKEY_AUTHOR_ARRAY, mDb.getBookAuthorList(mCurrentBookId));
-                mOriginalBookData.putSerializable(UniqueId.BKEY_SERIES_ARRAY, mDb.getBookSeriesList(mCurrentBookId));
-                mOriginalBookData.putSerializable(UniqueId.BKEY_TOC_TITLES_ARRAY, mDb.getTOCEntriesByBook(mCurrentBookId));
+                mOriginalBookData.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, mDb.getBookAuthorList(mCurrentBookId));
+                mOriginalBookData.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, mDb.getBookSeriesList(mCurrentBookId));
+                mOriginalBookData.putParcelableArrayList(UniqueId.BKEY_TOC_TITLES_ARRAY, mDb.getTOCEntriesByBook(mCurrentBookId));
 
                 // Grab the searchable fields. Ideally we will have an ISBN but we may not.
 
@@ -302,7 +302,7 @@ public class UpdateFromInternetTask extends ManagedTask {
                             case UniqueId.BKEY_AUTHOR_ARRAY:
                                 // We should never have a book without authors, but lets be paranoid
                                 if (mOriginalBookData.containsKey(usage.key)) {
-                                    ArrayList<Author> list = BundleUtils.getListFromBundle(UniqueId.BKEY_AUTHOR_ARRAY, mOriginalBookData);
+                                    ArrayList<Author> list = BundleUtils.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, mOriginalBookData);
                                     if (list == null || list.size() == 0) {
                                         mCurrentBookFieldUsages.put(usage);
                                     }
@@ -311,7 +311,7 @@ public class UpdateFromInternetTask extends ManagedTask {
 
                             case UniqueId.BKEY_SERIES_ARRAY:
                                 if (mOriginalBookData.containsKey(usage.key)) {
-                                    ArrayList<Series> list = BundleUtils.getListFromBundle(UniqueId.BKEY_SERIES_ARRAY, mOriginalBookData);
+                                    ArrayList<Series> list = BundleUtils.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, mOriginalBookData);
                                     if (list == null || list.size() == 0) {
                                         mCurrentBookFieldUsages.put(usage);
                                     }
@@ -320,7 +320,7 @@ public class UpdateFromInternetTask extends ManagedTask {
 
                             case UniqueId.BKEY_TOC_TITLES_ARRAY:
                                 if (mOriginalBookData.containsKey(usage.key)) {
-                                    ArrayList<TOCEntry> list = BundleUtils.getListFromBundle(UniqueId.BKEY_TOC_TITLES_ARRAY, mOriginalBookData);
+                                    ArrayList<TOCEntry> list = BundleUtils.getParcelableArrayList(UniqueId.BKEY_TOC_TITLES_ARRAY, mOriginalBookData);
                                     if (list == null || list.size() == 0) {
                                         mCurrentBookFieldUsages.put(usage);
                                     }
@@ -444,7 +444,7 @@ public class UpdateFromInternetTask extends ManagedTask {
                             switch (usage.key) {
                                 case UniqueId.BKEY_AUTHOR_ARRAY:
                                     if (originalBookData.containsKey(usage.key)) {
-                                        ArrayList<Author> list = BundleUtils.getListFromBundle(UniqueId.BKEY_AUTHOR_ARRAY, originalBookData);
+                                        ArrayList<Author> list = BundleUtils.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, originalBookData);
                                         if (list != null && list.size() > 0) {
                                             newBookData.remove(usage.key);
                                         }
@@ -452,7 +452,7 @@ public class UpdateFromInternetTask extends ManagedTask {
                                     break;
                                 case UniqueId.BKEY_SERIES_ARRAY:
                                     if (originalBookData.containsKey(usage.key)) {
-                                        ArrayList<Series> list = BundleUtils.getListFromBundle(UniqueId.BKEY_SERIES_ARRAY, originalBookData);
+                                        ArrayList<Series> list = BundleUtils.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, originalBookData);
                                         if (list != null && list.size() > 0) {
                                             newBookData.remove(usage.key);
                                         }
@@ -460,7 +460,7 @@ public class UpdateFromInternetTask extends ManagedTask {
                                     break;
                                 case UniqueId.BKEY_TOC_TITLES_ARRAY:
                                     if (originalBookData.containsKey(usage.key)) {
-                                        ArrayList<TOCEntry> list = BundleUtils.getListFromBundle(UniqueId.BKEY_TOC_TITLES_ARRAY, originalBookData);
+                                        ArrayList<TOCEntry> list = BundleUtils.getParcelableArrayList(UniqueId.BKEY_TOC_TITLES_ARRAY, originalBookData);
                                         if (list != null && list.size() > 0) {
                                             newBookData.remove(usage.key);
                                         }

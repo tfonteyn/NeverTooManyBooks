@@ -19,7 +19,7 @@ public class CheckListItemBase<T> implements CheckListItem<T> {
     private boolean selected;
     private T item;
 
-    protected CheckListItemBase() {
+    public CheckListItemBase() {
     }
 
     protected CheckListItemBase(final @NonNull T item, final boolean selected) {
@@ -50,12 +50,11 @@ public class CheckListItemBase<T> implements CheckListItem<T> {
     }
 
     @NonNull
-    public static <Z> ArrayList<Z> extractList(final @NonNull List<? extends CheckListItem> list) {
-        ArrayList<Z> result = new ArrayList<>();
-        for (CheckListItem<?> entry : list) {
+    public ArrayList<T> extractList(final @NonNull List<CheckListItem<T>> list) {
+        ArrayList<T> result = new ArrayList<>();
+        for (CheckListItem<T> entry : list) {
             if (entry.getSelected()) {
-                //noinspection unchecked
-                result.add((Z) entry.getItem());
+                result.add(entry.getItem());
             }
         }
         return result;

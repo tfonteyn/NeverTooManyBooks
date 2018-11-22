@@ -24,6 +24,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.CallSuper;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
@@ -149,7 +150,7 @@ public class BooklistPreferredStylesActivity extends EditObjectListActivity<Book
         }
 
         Intent intent = new Intent(this, BooklistStylePropertiesActivity.class);
-        intent.putExtra(BooklistStylePropertiesActivity.REQUEST_BKEY_STYLE, style);
+        intent.putExtra(BooklistStylePropertiesActivity.REQUEST_BKEY_STYLE, (Parcelable)style);
         startActivityForResult(intent, BooklistStylePropertiesActivity.REQUEST_CODE); /* fadd7b9a-7eaf-4af9-90ce-6ffb7b93afe6 */
     }
 
@@ -162,7 +163,7 @@ public class BooklistPreferredStylesActivity extends EditObjectListActivity<Book
                 if (resultCode == BooklistStylePropertiesActivity.RESULT_CHANGES_MADE) {
                     /* there *has* to be 'data' */
                     Objects.requireNonNull(data);
-                    BooklistStyle style = (BooklistStyle) data.getSerializableExtra(BooklistStylePropertiesActivity.REQUEST_BKEY_STYLE);
+                    BooklistStyle style = data.getParcelableExtra(BooklistStylePropertiesActivity.REQUEST_BKEY_STYLE);
                     handleStyleChange(style);
                     setChangesMade(true);
                 }

@@ -264,7 +264,7 @@ public class Book extends DataManager {
      */
     @NonNull
     public ArrayList<Bookshelf> getBookshelfList() {
-        ArrayList<Bookshelf> list = super.getSerializable(UniqueId.BKEY_BOOKSHELF_ARRAY);
+        ArrayList<Bookshelf> list = super.getParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY);
         return list != null ? list : new ArrayList<Bookshelf>();
     }
 
@@ -299,7 +299,7 @@ public class Book extends DataManager {
      * Special Accessor
      */
     public void putBookshelfList(final @NonNull ArrayList<Bookshelf> list) {
-        super.putSerializable(UniqueId.BKEY_BOOKSHELF_ARRAY, list);
+        super.putParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY, list);
     }
 
     /**
@@ -335,7 +335,7 @@ public class Book extends DataManager {
      */
     @NonNull
     public ArrayList<Author> getAuthorList() {
-        ArrayList<Author> list = super.getSerializable(UniqueId.BKEY_AUTHOR_ARRAY);
+        ArrayList<Author> list = super.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
         return list != null ? list : new ArrayList<Author>();
     }
 
@@ -374,7 +374,7 @@ public class Book extends DataManager {
      * Special Accessor
      */
     public void putAuthorList(final @NonNull ArrayList<Author> list) {
-        super.putSerializable(UniqueId.BKEY_AUTHOR_ARRAY, list);
+        super.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, list);
     }
 
     /**
@@ -399,7 +399,7 @@ public class Book extends DataManager {
      */
     @NonNull
     public ArrayList<Series> getSeriesList() {
-        ArrayList<Series> list = super.getSerializable(UniqueId.BKEY_SERIES_ARRAY);
+        ArrayList<Series> list = super.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
         return list != null ? list : new ArrayList<Series>();
     }
 
@@ -438,7 +438,7 @@ public class Book extends DataManager {
      * Special Accessor
      */
     public void putSeriesList(final @NonNull ArrayList<Series> list) {
-        super.putSerializable(UniqueId.BKEY_SERIES_ARRAY, list);
+        super.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, list);
     }
 
     /**
@@ -451,7 +451,7 @@ public class Book extends DataManager {
     @NonNull
     @CallSuper
     public ArrayList<TOCEntry> getTOC() {
-        ArrayList<TOCEntry> list = super.getSerializable(UniqueId.BKEY_TOC_TITLES_ARRAY);
+        ArrayList<TOCEntry> list = super.getParcelableArrayList(UniqueId.BKEY_TOC_TITLES_ARRAY);
         return list != null ? list : new ArrayList<TOCEntry>();
     }
 
@@ -460,7 +460,7 @@ public class Book extends DataManager {
      */
     @CallSuper
     public void putTOC(final @NonNull ArrayList<TOCEntry> list) {
-        super.putSerializable(UniqueId.BKEY_TOC_TITLES_ARRAY, list);
+        super.putParcelableArrayList(UniqueId.BKEY_TOC_TITLES_ARRAY, list);
     }
 
     /**
@@ -511,11 +511,14 @@ public class Book extends DataManager {
 
     }
 
-    private static class EditionCheckListItem extends CheckListItemBase<Integer> {
+    public static class EditionCheckListItem extends CheckListItemBase<Integer> {
         @StringRes
-        private final int labelId;
+        private int labelId;
 
-        EditionCheckListItem(final @NonNull Integer bit, final @StringRes int labelId, final boolean selected) {
+        public EditionCheckListItem() {
+        }
+
+        public EditionCheckListItem(final @NonNull Integer bit, final @StringRes int labelId, final boolean selected) {
             super(bit, selected);
             this.labelId = labelId;
         }
@@ -525,9 +528,12 @@ public class Book extends DataManager {
         }
     }
 
-    private static class BookshelfCheckListItem extends CheckListItemBase<Bookshelf> {
+    public static class BookshelfCheckListItem extends CheckListItemBase<Bookshelf> {
 
-        BookshelfCheckListItem(final @NonNull Bookshelf item, final boolean selected) {
+        public BookshelfCheckListItem() {
+        }
+
+        public BookshelfCheckListItem(final @NonNull Bookshelf item, final boolean selected) {
             super(item, selected);
         }
 

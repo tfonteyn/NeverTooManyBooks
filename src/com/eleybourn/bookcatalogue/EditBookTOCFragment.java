@@ -419,7 +419,7 @@ public class EditBookTOCFragment extends BookBaseFragment implements HandlesISFD
         ArrayList<TOCEntry> tocEntries = null;
         // preferably from the array.
         if (bookData.containsKey(UniqueId.BKEY_TOC_TITLES_ARRAY)) {
-            tocEntries = BundleUtils.getListFromBundle(UniqueId.BKEY_TOC_TITLES_ARRAY, bookData);
+            tocEntries = BundleUtils.getParcelableArrayList(UniqueId.BKEY_TOC_TITLES_ARRAY, bookData);
             bookData.remove(UniqueId.BKEY_TOC_TITLES_ARRAY);
         } else {
             String encoded_content_list = bookData.getString(UniqueId.BKEY_TOC_STRING_LIST);

@@ -107,6 +107,36 @@ public class Author implements Parcelable, Utils.ItemWithIdFixup {
         givenNames = given.trim();
     }
 
+    protected Author(Parcel in) {
+        id = in.readLong();
+        familyName = in.readString();
+        givenNames = in.readString();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(id);
+        dest.writeString(familyName);
+        dest.writeString(givenNames);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<Author> CREATOR = new Creator<Author>() {
+        @Override
+        public Author createFromParcel(Parcel in) {
+            return new Author(in);
+        }
+
+        @Override
+        public Author[] newArray(int size) {
+            return new Author[size];
+        }
+    };
+
     /**
      * This will parse a string into a family/given name pair
      * The name can be in either "family, given" or "given family" format.
@@ -279,34 +309,4 @@ public class Author implements Parcelable, Utils.ItemWithIdFixup {
     public int hashCode() {
         return Objects.hash(id, familyName, givenNames);
     }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(final @NonNull Parcel dest, int flags) {
-        dest.writeLong(id);
-        dest.writeString(familyName);
-        dest.writeString(givenNames);
-    }
-
-    protected Author(final @NonNull Parcel in) {
-        id = in.readLong();
-        familyName = in.readString();
-        givenNames = in.readString();
-    }
-
-    public static final Creator<Author> CREATOR = new Creator<Author>() {
-        @Override
-        public Author createFromParcel(final @NonNull Parcel in) {
-            return new Author(in);
-        }
-
-        @Override
-        public Author[] newArray(final int size) {
-            return new Author[size];
-        }
-    };
 }

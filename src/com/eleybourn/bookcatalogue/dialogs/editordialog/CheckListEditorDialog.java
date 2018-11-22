@@ -57,7 +57,7 @@ public class CheckListEditorDialog<T> extends AlertDialog {
     /** the list to display in the content view */
     private ArrayList<CheckListItem<T>> mList;
     /** Listener for dialog exit/save/cancel */
-    private OnCheckListEditorResultsListener mListener;
+    private OnCheckListEditorResultsListener<T> mListener;
 
     /**
      * Constructor
@@ -123,15 +123,15 @@ public class CheckListEditorDialog<T> extends AlertDialog {
     }
 
     /** Set the listener */
-    void setResultsListener(final @NonNull OnCheckListEditorResultsListener listener) {
+    void setResultsListener(final @NonNull OnCheckListEditorResultsListener<T> listener) {
         mListener = listener;
     }
 
     /**
      * Listener to receive notifications when dialog is closed by any means.
      */
-    interface OnCheckListEditorResultsListener {
-        <T> void onCheckListEditorSave(final @NonNull CheckListEditorDialog dialog,
+    interface OnCheckListEditorResultsListener<T> {
+        void onCheckListEditorSave(final @NonNull CheckListEditorDialog dialog,
                                        final @NonNull List<CheckListItem<T>> list);
 
         void onCheckListEditorCancel(final @NonNull CheckListEditorDialog dialog);

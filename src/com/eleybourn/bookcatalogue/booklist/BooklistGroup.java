@@ -20,6 +20,8 @@
 
 package com.eleybourn.bookcatalogue.booklist;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 
@@ -47,7 +49,7 @@ import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_SERIES;
  *
  * @author Philip Warner
  */
-public class BooklistGroup implements Serializable {
+public class BooklistGroup implements Serializable, Parcelable {
     private static final long serialVersionUID = 1012206875683862714L;
 
     private static final String PREF_SHOW_ALL_AUTHORS = "APP.ShowAllAuthors";
@@ -69,6 +71,32 @@ public class BooklistGroup implements Serializable {
     BooklistGroup(final int kind) {
         this.kind = kind;
     }
+
+    protected BooklistGroup(Parcel in) {
+        kind = in.readInt();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(kind);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<BooklistGroup> CREATOR = new Creator<BooklistGroup>() {
+        @Override
+        public BooklistGroup createFromParcel(Parcel in) {
+            return new BooklistGroup(in);
+        }
+
+        @Override
+        public BooklistGroup[] newArray(int size) {
+            return new BooklistGroup[size];
+        }
+    };
 
     /**
      * Return a list of BooklistGroups, one for each defined row kind
@@ -136,6 +164,7 @@ public class BooklistGroup implements Serializable {
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();
     }
+
 
     /**
      * Specialized BooklistGroup representing an Series group. Includes extra attributes based

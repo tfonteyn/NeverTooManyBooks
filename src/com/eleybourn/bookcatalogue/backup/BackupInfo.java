@@ -27,7 +27,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.database.DatabaseHelper;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 
 import java.util.Date;
@@ -39,9 +39,9 @@ import java.util.Date;
  */
 public class BackupInfo {
     /** Standard INFO item */
-    private static final String INFO_ARCHVERSION = "ArchVersion";
+    private static final String INFO_ARCHIVER_VERSION = "ArchVersion";
     /** Standard INFO item */
-    private static final String INFO_CREATEDATE = "CreateDate";
+    private static final String INFO_CREATION_DATE = "CreateDate";
     /** Standard INFO item */
     private static final String INFO_NUMBOOKS = "NumBooks";
     /** Standard INFO item */
@@ -52,6 +52,8 @@ public class BackupInfo {
     private static final String INFO_APPVERSIONNAME = "AppVersionName";
     /** Standard INFO item */
     private static final String INFO_APPVERSIONCODE = "AppVersionCode";
+    /** Standard INFO item */
+    private static final String INFO_DATABASE_VERSION = "DatabaseVersionCode";
     /** Standard INFO item */
     private static final String INFO_SDK = "SDK";
     /** Standard INFO item */
@@ -89,12 +91,14 @@ public class BackupInfo {
                                  final int bookCount,
                                  final int coverCount) {
         Bundle info = new Bundle();
-
-        info.putInt(INFO_ARCHVERSION, container.getVersion());
-        info.putInt(INFO_COMPATARCHIVER, 1);
-        info.putString(INFO_CREATEDATE, DateUtils.utcSqlDateTimeForToday());
         info.putInt(INFO_NUMBOOKS, bookCount);
         info.putInt(INFO_NUMCOVERS, coverCount);
+
+        info.putInt(INFO_ARCHIVER_VERSION, container.getVersion());
+        info.putInt(INFO_COMPATARCHIVER, 1);
+        info.putInt(INFO_SDK, Build.VERSION.SDK_INT);
+        info.putInt(INFO_DATABASE_VERSION, DatabaseHelper.DATABASE_VERSION);
+        info.putString(INFO_CREATION_DATE, DateUtils.utcSqlDateTimeForToday());
         try {
             // Get app info
             PackageManager manager = context.getPackageManager();
@@ -104,7 +108,6 @@ public class BackupInfo {
             info.putInt(INFO_APPVERSIONCODE, appInfo.versionCode);
         } catch (PackageManager.NameNotFoundException ignore) {
         }
-        info.putInt(INFO_SDK, Build.VERSION.SDK_INT);
         return new BackupInfo(info);
     }
 
@@ -114,7 +117,7 @@ public class BackupInfo {
     }
 
     public int getArchVersion() {
-        return mBundle.getInt(INFO_ARCHVERSION);
+        return mBundle.getInt(INFO_ARCHIVER_VERSION);
     }
 
     public int getCompatArchiver() {
@@ -123,7 +126,7 @@ public class BackupInfo {
 
     @Nullable
     public Date getCreateDate() {
-        return DateUtils.parseDate(mBundle.getString(INFO_CREATEDATE));
+        return DateUtils.parseDate(mBundle.getString(INFO_CREATION_DATE));
     }
 
     public int getNumBooks() {
@@ -138,6 +141,14 @@ public class BackupInfo {
     @Nullable
     public String getAppVersionName() {
         return mBundle.getString(INFO_APPVERSIONNAME);
+    }
+
+    /**
+     *
+     * @return version of the database this archive was generated from; or 0 when from version 82 or earlier
+     */
+    public int getDatabaseVersionCode() {
+        return mBundle.getInt(INFO_DATABASE_VERSION);
     }
 
     public int getAppVersionCode() {

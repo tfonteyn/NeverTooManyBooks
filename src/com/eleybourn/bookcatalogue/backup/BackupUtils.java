@@ -274,10 +274,12 @@ public class BackupUtils {
                 case TYPE_SERIALIZABLE:
                     //ENHANCE API 26
                     // byte[] blob = java.util.Base64.getDecoder().decode(value);
-
                     byte[] blob = Base64.decode(value);
                     mBundle.putSerializable(key, blob);
                     break;
+
+                default:
+                    throw new RTE.IllegalTypeException("type=" + type);
             }
         }
     }

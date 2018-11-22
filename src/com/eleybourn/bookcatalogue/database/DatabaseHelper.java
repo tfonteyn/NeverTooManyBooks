@@ -87,6 +87,11 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_SERIE
  */
 public class DatabaseHelper extends SQLiteOpenHelper {
 
+    /** RELEASE: Update database version */
+    public static final int DATABASE_VERSION = 83; // last official version was 82
+    /** the one and only */
+    private static final String DATABASE_NAME = "book_catalogue";
+
     /**
      * In addition to SQLite's default BINARY collator (others: NOCASE and RTRIM)
      * Android supplies two more:
@@ -164,10 +169,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     DOM_AUTHOR_POSITION + " integer NOT NULL, " +
                     "PRIMARY KEY(" + DOM_FK_BOOK_ID + ", " + DOM_AUTHOR_POSITION + ")" +
                     ")";
-    /** RELEASE: Update database version */
-    private static final int DATABASE_VERSION = 83; // last official version was 82
-    /** the one and only */
-    private static final String DATABASE_NAME = "book_catalogue";
     private static final String DATABASE_CREATE_ANTHOLOGY =
             "CREATE TABLE " + TBL_ANTHOLOGY + " (_id integer primary key autoincrement, " +
                     DOM_FK_AUTHOR_ID + " integer not null REFERENCES " + TBL_AUTHORS + ", " +
@@ -180,7 +181,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     DOM_FK_ANTHOLOGY_ID + " integer REFERENCES " + TBL_ANTHOLOGY + " ON DELETE CASCADE ON UPDATE CASCADE, " +
                     DOM_BOOK_TOC_ENTRY_POSITION + " integer" +
                     ")";
-
     private static final String DATABASE_CREATE_BOOKS =
             "CREATE TABLE " + TBL_BOOKS + " (_id integer primary key autoincrement, " +
                     DOM_TITLE + " text not null, " +
@@ -222,6 +222,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     ")";
 
 
+    /**
+     * All the indexes
+     */
     private static final String[] DATABASE_CREATE_INDICES = {
             "CREATE INDEX IF NOT EXISTS authors_given_names ON " + TBL_AUTHORS +
                     " (" + DOM_AUTHOR_GIVEN_NAMES + ");",

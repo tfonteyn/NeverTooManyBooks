@@ -141,7 +141,7 @@ public class MessageSwitch<T, U> {
     /** Remove the specified listener from the specified queue */
     public void removeListener(final @NonNull Long senderId, final @NonNull T listener) {
         if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
-            Logger.info(this,"\nremoveListener: senderId=" + senderId + "\n" + listener);
+            Logger.info(this,"|removeListener|senderId=" + senderId + "|" + listener);
         }
         synchronized (mListeners) {
             MessageListeners queue = mListeners.get(senderId);
@@ -158,7 +158,7 @@ public class MessageSwitch<T, U> {
      */
     public void send(final @NonNull Long senderId, final @NonNull Message<T> message) {
         if (DEBUG_SWITCHES.MESSAGING && BuildConfig.DEBUG) {
-            Logger.info(this, "\nsending to senderId=" + senderId + "\nmessage: " + message);
+            Logger.info(this, "|sending to senderId=" + senderId + "|message: " + message);
         }
         // Create a routing slip
         RoutingSlip m = new MessageRoutingSlip(senderId, message);

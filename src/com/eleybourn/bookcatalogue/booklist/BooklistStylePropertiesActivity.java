@@ -23,6 +23,7 @@ package com.eleybourn.bookcatalogue.booklist;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -99,7 +100,7 @@ public class BooklistStylePropertiesActivity extends BaseActivity {
                     getDb().insertOrUpdateBooklistStyle(mStyle);
                 }
                 Intent data = new Intent();
-                data.putExtra(REQUEST_BKEY_STYLE, mStyle);
+                data.putExtra(REQUEST_BKEY_STYLE, (Parcelable) mStyle);
                 setResult(RESULT_CHANGES_MADE, data);  /* fadd7b9a-7eaf-4af9-90ce-6ffb7b93afe6 */
                 finish();
             }
@@ -114,7 +115,7 @@ public class BooklistStylePropertiesActivity extends BaseActivity {
 
         // Get the intent and get the style and other details
         Intent intent = this.getIntent();
-        mStyle = (BooklistStyle) intent.getSerializableExtra(REQUEST_BKEY_STYLE);
+        mStyle = intent.getParcelableExtra(REQUEST_BKEY_STYLE);
 
         if (intent.hasExtra(BKEY_SAVE_TO_DATABASE)) {
             mSaveToDb = intent.getBooleanExtra(BKEY_SAVE_TO_DATABASE, true);
@@ -159,7 +160,7 @@ public class BooklistStylePropertiesActivity extends BaseActivity {
      */
     private void startGroupsActivity() {
         Intent intent = new Intent(this, BooklistStyleGroupsActivity.class);
-        intent.putExtra(BooklistStyleGroupsActivity.REQUEST_BKEY_STYLE, mStyle);
+        intent.putExtra(BooklistStyleGroupsActivity.REQUEST_BKEY_STYLE, (Parcelable)mStyle);
         intent.putExtra(BooklistStyleGroupsActivity.REQUEST_BKEY_SAVE_TO_DATABASE, false);
         startActivityForResult(intent, BooklistStyleGroupsActivity.REQUEST_CODE); /* 06ed8d0e-7120-47aa-b47e-c0cd46361dcb */
     }
@@ -167,19 +168,14 @@ public class BooklistStylePropertiesActivity extends BaseActivity {
     @Override
     @CallSuper
     protected void onActivityResult(final int requestCode, final int resultCode, final @Nullable Intent data) {
-        Tracker.enterOnActivityResult(this,requestCode,resultCode, data);
+        Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
         switch (requestCode) {
             case BooklistStyleGroupsActivity.REQUEST_CODE: {/* 06ed8d0e-7120-47aa-b47e-c0cd46361dcb */
                 if (resultCode == Activity.RESULT_OK) {
                     // having a result is optional
                     if (data != null && data.hasExtra(BooklistStyleGroupsActivity.REQUEST_BKEY_STYLE)) {
                         // When groups have been edited, copy them to this style.
-                        BooklistStyle editedStyle = null;
-                        try {
-                            editedStyle = (BooklistStyle) data.getSerializableExtra(BooklistStyleGroupsActivity.REQUEST_BKEY_STYLE);
-                        } catch (Exception e) {
-                            Logger.error(e);
-                        }
+                        BooklistStyle editedStyle = data.getParcelableExtra(BooklistStyleGroupsActivity.REQUEST_BKEY_STYLE);
                         if (editedStyle != null) {
                             mStyle.setGroups(editedStyle);
                             displayProperties();
@@ -280,17 +276,17 @@ public class BooklistStylePropertiesActivity extends BaseActivity {
 
             // Setup click handlers view row and edit button
             root.setOnClickListener(new OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            startGroupsActivity();
-                        }
-                    });
+                @Override
+                public void onClick(View v) {
+                    startGroupsActivity();
+                }
+            });
             root.findViewById(R.id.btn_edit).setOnClickListener(new OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            startGroupsActivity();
-                        }
-                    });
+                @Override
+                public void onClick(View v) {
+                    startGroupsActivity();
+                }
+            });
             return root;
         }
     }

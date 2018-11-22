@@ -1,9 +1,11 @@
 package com.eleybourn.bookcatalogue.utils;
 
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 public class BundleUtils {
@@ -128,13 +130,12 @@ public class BundleUtils {
      *
      * @return List, or null when not present
      */
-    @SuppressWarnings("unchecked")
     @Nullable
-    public static <T extends ArrayList> T getListFromBundle(final @Nullable String key, final @Nullable Bundle bundle) {
+    public static <T extends Parcelable> ArrayList<T> getParcelableArrayList(final @Nullable String key, final @Nullable Bundle bundle) {
         if (bundle == null) {
             return null;
         }
-        return (T) bundle.getSerializable(key);
+        return bundle.getParcelableArrayList(key);
     }
 
     /**
@@ -145,13 +146,12 @@ public class BundleUtils {
      *
      * @return List, or null when not present
      */
-    @SuppressWarnings("unchecked")
     @Nullable
-    public static <T extends ArrayList> T getListFromBundles(final @Nullable String key, final @NonNull Bundle... bundles) {
-        T value;
+    public static <T extends Parcelable> ArrayList<T> getParcelableArrayList(final @Nullable String key, final @NonNull Bundle... bundles) {
+        ArrayList<T> value;
         for (Bundle bundle : bundles) {
             if (bundle != null && bundle.containsKey(key)) {
-                value = (T) bundle.getSerializable(key);
+                value = bundle.getParcelableArrayList(key);
                 if (value != null) {
                     return value;
                 }
@@ -159,6 +159,4 @@ public class BundleUtils {
         }
         return null;
     }
-
-
 }

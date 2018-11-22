@@ -21,6 +21,8 @@
 package com.eleybourn.bookcatalogue.booklist;
 
 import android.annotation.SuppressLint;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
@@ -75,7 +77,7 @@ import java.util.Map;
  *
  * @author Philip Warner
  */
-public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
+public class BooklistStyle implements Iterable<BooklistGroup>, Serializable, Parcelable {
 
     /** Extra book data to show at lowest level */
     public static final int EXTRAS_BOOKSHELVES = 1;
@@ -192,17 +194,18 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
         mLoanedFilterListItems.add(FILTER_EITHER, R.string.all_books);
     }
 
-    /** List of groups */
-    @NonNull
-    private final ArrayList<BooklistGroup> mGroups;
+
+    /** Row id of database row from which this object comes, always 0 for a build-in style */
+    public long id = 0;
     /** ID if string representing name of this style. Used for standard system-defined styles */
     @StringRes
     private int mNameStringId;
     /** User-defined name of this style. */
     private transient StringProperty mNameProperty;
+    /** List of groups */
+    @NonNull
+    private final ArrayList<BooklistGroup> mGroups;
 
-    /** Row id of database row from which this object comes, always 0 for a build-in style */
-    public long id = 0;
 
     /** Extra details to show on book rows */
     private transient BooleanProperty mXtraShowThumbnails;
@@ -253,6 +256,38 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
         mGroups = new ArrayList<>();
         mNameProperty.set(name);
     }
+
+    protected BooklistStyle(Parcel in) {
+        id = in.readLong();
+        mNameStringId = in.readInt();
+        mGroups = in.createTypedArrayList(BooklistGroup.CREATOR);
+        mIsPreferred = in.readByte() != 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(id);
+        dest.writeInt(mNameStringId);
+        dest.writeTypedList(mGroups);
+        dest.writeByte((byte) (mIsPreferred ? 1 : 0));
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<BooklistStyle> CREATOR = new Creator<BooklistStyle>() {
+        @Override
+        public BooklistStyle createFromParcel(Parcel in) {
+            return new BooklistStyle(in);
+        }
+
+        @Override
+        public BooklistStyle[] newArray(int size) {
+            return new BooklistStyle[size];
+        }
+    };
 
     public int getReadFilter() {
         return mXtraReadFilter.getInt();
@@ -738,7 +773,7 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
      *
      * @author Philip Warner
      */
-    static class CompoundKey {
+    static class CompoundKey implements Parcelable {
         /** Unique getPrefix used to represent a key in the hierarchy */
         @NonNull
         final String prefix;
@@ -751,6 +786,35 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable {
             this.prefix = prefix;
             this.domains = domains;
         }
+
+
+        protected CompoundKey(Parcel in) {
+            prefix = in.readString();
+            domains = in.createTypedArray(DomainDefinition.CREATOR);
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            dest.writeString(prefix);
+            dest.writeTypedArray(domains, flags);
+        }
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        public static final Creator<CompoundKey> CREATOR = new Creator<CompoundKey>() {
+            @Override
+            public CompoundKey createFromParcel(Parcel in) {
+                return new CompoundKey(in);
+            }
+
+            @Override
+            public CompoundKey[] newArray(int size) {
+                return new CompoundKey[size];
+            }
+        };
     }
 }
 

@@ -25,10 +25,10 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.debug.Tracker;
-import com.eleybourn.bookcatalogue.utils.BundleUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Fragment wrapper for {@link CheckListEditorDialog}
@@ -41,16 +41,14 @@ public class CheckListEditorDialogFragment<T> extends EditorDialogFragment {
     /**
      * Object to handle changes
      */
-    private final CheckListEditorDialog.OnCheckListEditorResultsListener mEditListener =
-            new CheckListEditorDialog.OnCheckListEditorResultsListener() {
-                /**
-                 * @param <T2>  type to use for {@link CheckListItem}
-                 */
+    private final CheckListEditorDialog.OnCheckListEditorResultsListener<T> mEditListener =
+            new CheckListEditorDialog.OnCheckListEditorResultsListener<T>() {
+
                 @Override
-                public <T2> void onCheckListEditorSave(final @NonNull CheckListEditorDialog dialog,
-                                                       final @NonNull List<CheckListItem<T2>> list) {
+                public void onCheckListEditorSave(final @NonNull CheckListEditorDialog dialog,
+                                                       final @NonNull List<CheckListItem<T>> list) {
                     dialog.dismiss();
-                    ((OnCheckListEditorResultsListener) getCallerFragment())
+                    ((OnCheckListEditorResultsListener<T>) getCallerFragment())
                             .onCheckListEditorSave(CheckListEditorDialogFragment.this,
                                     mDestinationFieldId, list);
                 }
@@ -76,7 +74,15 @@ public class CheckListEditorDialogFragment<T> extends EditorDialogFragment {
         initStandardArgs(savedInstanceState);
 
         // Restore saved state info
-        mList = BundleUtils.getListFromBundles(BKEY_CHECK_LIST, savedInstanceState, getArguments());
+        if (savedInstanceState != null) {
+            //noinspection unchecked
+            mList = (ArrayList<CheckListItem<T>>) savedInstanceState.getSerializable(BKEY_CHECK_LIST);
+        } else {
+            Bundle args = getArguments();
+            Objects.requireNonNull(args);
+            //noinspection unchecked
+            mList = (ArrayList<CheckListItem<T>>) args.getSerializable(BKEY_CHECK_LIST);
+        }
 
         CheckListEditorDialog<T> editor = new CheckListEditorDialog<>(requireActivity());
         if (mTitleId != 0) {
@@ -117,10 +123,10 @@ public class CheckListEditorDialogFragment<T> extends EditorDialogFragment {
     /**
      * Listener interface to receive notifications when dialog is closed by any means.
      */
-    public interface OnCheckListEditorResultsListener {
-        <T2> void onCheckListEditorSave(final @NonNull CheckListEditorDialogFragment dialog,
+    public interface OnCheckListEditorResultsListener<T> {
+        void onCheckListEditorSave(final @NonNull CheckListEditorDialogFragment dialog,
                                         final int destinationFieldId,
-                                        final @NonNull List<CheckListItem<T2>> list);
+                                        final @NonNull List<CheckListItem<T>> list);
 
         void onCheckListEditorCancel(final @NonNull CheckListEditorDialogFragment dialog,
                                      final int destinationFieldId);

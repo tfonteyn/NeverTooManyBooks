@@ -36,7 +36,6 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.editordialog.CheckListEditorDialogFragment;
 import com.eleybourn.bookcatalogue.dialogs.editordialog.CheckListItem;
-import com.eleybourn.bookcatalogue.dialogs.editordialog.CheckListItemBase;
 import com.eleybourn.bookcatalogue.dialogs.editordialog.PartialDatePickerDialogFragment;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.BookManager;
@@ -49,7 +48,7 @@ import java.util.List;
  * This class is called by {@link EditBookFragment} and displays the Notes Tab
  */
 public class EditBookNotesFragment extends BookBaseFragment implements
-        CheckListEditorDialogFragment.OnCheckListEditorResultsListener,
+        CheckListEditorDialogFragment.OnCheckListEditorResultsListener<Integer>,
         PartialDatePickerDialogFragment.OnPartialDatePickerResultsListener {
 
     public static final String TAG = "EditBookNotesFragment";
@@ -246,13 +245,13 @@ public class EditBookNotesFragment extends BookBaseFragment implements
 
     //<editor-fold desc="Field editors callbacks">
     @Override
-    public <T> void onCheckListEditorSave(final @NonNull CheckListEditorDialogFragment dialog,
+    public void onCheckListEditorSave(final @NonNull CheckListEditorDialogFragment dialog,
                                           final int destinationFieldId,
-                                          final @NonNull List<CheckListItem<T>> list) {
+                                          final @NonNull List<CheckListItem<Integer>> list) {
         dialog.dismiss();
 
         if (destinationFieldId == R.id.edition) {
-            ArrayList<Integer> result = CheckListItemBase.extractList(list);
+            ArrayList<Integer> result = new Book.EditionCheckListItem().extractList(list);
             getBookManager().getBook().putEditions(result);
             mFields.getField(destinationFieldId).setValue(getBookManager().getBook().getString(UniqueId.KEY_BOOK_EDITION_BITMASK));
         }

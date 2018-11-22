@@ -105,6 +105,36 @@ public class Series implements Parcelable, Utils.ItemWithIdFixup {
         this.number = cleanupSeriesPosition(number);
     }
 
+    protected Series(Parcel in) {
+        id = in.readLong();
+        name = in.readString();
+        number = in.readString();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(id);
+        dest.writeString(name);
+        dest.writeString(number);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<Series> CREATOR = new Creator<Series>() {
+        @Override
+        public Series createFromParcel(Parcel in) {
+            return new Series(in);
+        }
+
+        @Override
+        public Series[] newArray(int size) {
+            return new Series[size];
+        }
+    };
+
     @NonNull
     public String getDisplayName() {
         if (number != null && !number.isEmpty()) {
@@ -319,35 +349,7 @@ public class Series implements Parcelable, Utils.ItemWithIdFixup {
         return Objects.hash(id, name);
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
 
-    @Override
-    public void writeToParcel(final @NonNull Parcel dest, int flags) {
-        dest.writeLong(id);
-        dest.writeString(name);
-        dest.writeString(number);
-    }
-
-    protected Series(final @NonNull Parcel in) {
-        id = in.readLong();
-        name = in.readString();
-        number = in.readString();
-    }
-
-    public static final Creator<Series> CREATOR = new Creator<Series>() {
-        @Override
-        public Series createFromParcel(final @NonNull Parcel in) {
-            return new Series(in);
-        }
-
-        @Override
-        public Series[] newArray(final int size) {
-            return new Series[size];
-        }
-    };
 
     /**
      * Data class giving resulting series info after parsing a series name

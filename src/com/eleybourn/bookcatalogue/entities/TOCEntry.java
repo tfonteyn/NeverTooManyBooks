@@ -93,6 +93,38 @@ public class TOCEntry implements Parcelable, Utils.ItemWithIdFixup {
         mFirstPublicationDate = publicationDate;
     }
 
+    protected TOCEntry(Parcel in) {
+        id = in.readLong();
+        mAuthor = in.readParcelable(Author.class.getClassLoader());
+        mTitle = in.readString();
+        mFirstPublicationDate = in.readString();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(id);
+        dest.writeParcelable(mAuthor, flags);
+        dest.writeString(mTitle);
+        dest.writeString(mFirstPublicationDate);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<TOCEntry> CREATOR = new Creator<TOCEntry>() {
+        @Override
+        public TOCEntry createFromParcel(Parcel in) {
+            return new TOCEntry(in);
+        }
+
+        @Override
+        public TOCEntry[] newArray(int size) {
+            return new TOCEntry[size];
+        }
+    };
+
     /**
      * Helper to check if all titles in a list have the same author.
      */
@@ -224,37 +256,7 @@ public class TOCEntry implements Parcelable, Utils.ItemWithIdFixup {
         return Objects.hash(id, mAuthor, mTitle);
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
 
-    @Override
-    public void writeToParcel(final @NonNull Parcel dest, int flags) {
-        dest.writeLong(id);
-        dest.writeParcelable(mAuthor, 0);
-        dest.writeString(mTitle);
-        dest.writeString(mFirstPublicationDate);
-    }
-
-    protected TOCEntry(final @NonNull Parcel in) {
-        id = in.readLong();
-        mAuthor = in.readParcelable(getClass().getClassLoader());
-        mTitle = in.readString();
-        mFirstPublicationDate = in.readString();
-    }
-
-    public static final Creator<TOCEntry> CREATOR = new Creator<TOCEntry>() {
-        @Override
-        public TOCEntry createFromParcel(final @NonNull Parcel in) {
-            return new TOCEntry(in);
-        }
-
-        @Override
-        public TOCEntry[] newArray(final int size) {
-            return new TOCEntry[size];
-        }
-    };
 
     //ENHANCE use enum for ANTHOLOGY_BITMASK
     public enum Type {

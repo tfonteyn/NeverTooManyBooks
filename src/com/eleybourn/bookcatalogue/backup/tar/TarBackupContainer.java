@@ -46,6 +46,11 @@ import java.util.regex.Pattern;
  * @author pjw
  */
 public class TarBackupContainer implements BackupContainer {
+    /** Always first entry; Used in the storage and identification of data store in TAR file */
+    static final String INFO_FILE = "INFO.xml";
+    /** Used in the storage and identification of data store in TAR file */
+    static final Pattern INFO_PATTERN = Pattern.compile("^INFO_.*\\.xml$", Pattern.CASE_INSENSITIVE);
+
     /** Used in the storage and identification of data store in TAR file */
     static final String BOOKS_FILE = "books.csv";
     /** Used in the storage and identification of data store in TAR file */
@@ -53,11 +58,6 @@ public class TarBackupContainer implements BackupContainer {
 
     /** Used in the storage and identification of data store in TAR file */
     static final String DB_FILE = "snapshot.db";
-
-    /** Used in the storage and identification of data store in TAR file */
-    static final String INFO_FILE = "INFO.xml";
-    /** Used in the storage and identification of data store in TAR file */
-    static final Pattern INFO_PATTERN = Pattern.compile("^INFO_.*\\.xml$", Pattern.CASE_INSENSITIVE);
 
     /** Used in the storage and identification of data store in TAR file */
     static final String STYLE_PREFIX = "style.blob.";
@@ -71,6 +71,7 @@ public class TarBackupContainer implements BackupContainer {
 
     /** Buffer size for buffered streams */
     public static final int BUFFER_SIZE = 32768;
+
     /** Backup file spec */
     @NonNull
     private final File mFile;

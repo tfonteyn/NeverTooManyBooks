@@ -42,6 +42,32 @@ public class Publisher implements Parcelable {
         this.name = name.trim();
     }
 
+    protected Publisher(Parcel in) {
+        name = in.readString();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(name);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<Publisher> CREATOR = new Creator<Publisher>() {
+        @Override
+        public Publisher createFromParcel(Parcel in) {
+            return new Publisher(in);
+        }
+
+        @Override
+        public Publisher[] newArray(int size) {
+            return new Publisher[size];
+        }
+    };
+
     /**
      * Support for encoding to a text file
      *
@@ -93,31 +119,5 @@ public class Publisher implements Parcelable {
         return Objects.hash(name);
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
 
-    @Override
-    public void writeToParcel(final @NonNull Parcel dest, int flags) {
-        //dest.writeLong(id);
-        dest.writeString(name);
-    }
-
-    protected Publisher(final @NonNull Parcel in) {
-        //id = in.readLong();
-        name = in.readString();
-    }
-
-    public static final Creator<Publisher> CREATOR = new Creator<Publisher>() {
-        @Override
-        public Publisher createFromParcel(final @NonNull Parcel in) {
-            return new Publisher(in);
-        }
-
-        @Override
-        public Publisher[] newArray(final int size) {
-            return new Publisher[size];
-        }
-    };
 }

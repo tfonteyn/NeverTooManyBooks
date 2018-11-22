@@ -4,8 +4,8 @@ Archive Format
 Assumed to have multiple 'entries', processed sequentially. Could be zip, tar, or any other 
 amenable stream
 
-First entry: INFO.xml
----------------------
+First entry: "INFO.xml"
+-----------------------
 
 Contains a simple name-value set including:
 
@@ -22,26 +22,26 @@ CompatArchiver
    We may in the dim distance future decide to make a new TAR format that older versions will be unable to
    understand. This is only a relevant field for DOWNGRADING.
 
-Optional Entries: INFO_*.xml
-----------------------------
+Optional Entries: "INFO_*.xml"
+------------------------------
 
 Later versions of the archiver *may* introduce specific INFO files for their versions. 
 The archiver should skip over INFO files it does not understand or expect.
 
-First Data Entry: BOOKS.CSV
----------------------------
+First Data Entry: "books.csv"
+-----------------------------
 
 A CSV export appropriate for the archiver that created the archive. ie. the most recent 
 archiver version for the app version that is installed.
 
-Optional Data Entries: BOOKS_<ArchVersion>.CSV
-----------------------------------------------
+Optional Data Entries: "books<ArchVersion>.csv"
+-----------------------------------------------
 
 For backwards compatibility, there may be alternate CSV files for older versions. The ArchVersion field
 indicates the last version it was completely compatible with.
 
-Scanning for BOOKS*.csv
------------------------
+Scanning for "books*.csv"
+-------------------------
 
 The basic rule is to scan the file until the last BOOKS*.csv is found and use the version that
 has an ArchVersion >= the current archiver version, or BOOKS.CSV if none match. eg.
@@ -56,13 +56,32 @@ if the current Archiver is version 7 then use BOOKS.csv
 if the current Archiver is version 5 then use BOOKS_5.csv
 if the current Archiver is version 4 then use BOOKS_5.csv
 if the current Archiver is version 1 then use BOOKS_3.csv
- 
+
+Optional Data Entries: "snapshot.db"
+------------------------------------
+A copy of the database.
+Note: v5.2.2 does not write this file. Not sure if any older versions did.
+
+Optional Data Entries: "preferences"
+------------------------------------
+xml file with the BookCatalogueApp.APP_SHARED_PREFERENCES
+
+Note: future versions may drop this entry when writing and instead write
+into an extensive xml file, for example "config.xml", section "<preferences>"
+This is not decided yet.
+Note: reading legacy file *should* be preserved.
+
+Optional Data Entries: "style.blob.[0-9]*"
+------------------------------------
+Serialised User-defined BooklistStyle
+
+Optional Data Entries: "*.xml"
+------------------------------
+Definition added 2018-11-10, for future expansion.
+
+
 Remaining Data Entries: *.*
 ---------------------------
-
-"Snapshot.db" 
-	Optional. A copy of the database.
-
 Any other name is assumed to be a cover image.
 
  

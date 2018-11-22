@@ -69,11 +69,11 @@ public class BookUtils {
                 bookData.putString(UniqueId.KEY_BOOK_ISBN, bookCursorRow.getIsbn());
                 bookData.putString(UniqueId.KEY_DESCRIPTION, bookCursorRow.getDescription());
 
-                bookData.putSerializable(UniqueId.BKEY_AUTHOR_ARRAY, db.getBookAuthorList(bookId));
-                bookData.putSerializable(UniqueId.BKEY_SERIES_ARRAY, db.getBookSeriesList(bookId));
+                bookData.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, db.getBookAuthorList(bookId));
+                bookData.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, db.getBookSeriesList(bookId));
 
                 bookData.putInt(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK, bookCursorRow.getAnthologyBitMask());
-                bookData.putSerializable(UniqueId.BKEY_TOC_TITLES_ARRAY, db.getTOCEntriesByBook(bookId));
+                bookData.putParcelableArrayList(UniqueId.BKEY_TOC_TITLES_ARRAY, db.getTOCEntriesByBook(bookId));
 
                 bookData.putString(UniqueId.KEY_BOOK_PUBLISHER, bookCursorRow.getPublisherName());
                 bookData.putString(UniqueId.KEY_BOOK_DATE_PUBLISHED, bookCursorRow.getDatePublished());

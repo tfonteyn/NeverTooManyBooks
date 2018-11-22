@@ -20,6 +20,7 @@
 package com.eleybourn.bookcatalogue.datamanager;
 
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -543,7 +544,7 @@ public class Datum {
     }
 
     /**
-     * Get the ArrayList<String> object from the collection.
+     * Get the ArrayList<Parcelable> object from the collection.
      * We currently do not use a Datum for special access.
      * TODO: Consider how to use an accessor
      *
@@ -552,33 +553,32 @@ public class Datum {
      *
      * @return The data
      */
-    @SuppressWarnings("unused")
     @Nullable
-    ArrayList<String> getStringArrayList(@SuppressWarnings("unused") final @NonNull DataManager data, final @NonNull Bundle bundle) {
+    <T extends Parcelable> ArrayList<T> getParcelableArrayList(@SuppressWarnings("unused") final @NonNull DataManager data, final @NonNull Bundle bundle) {
         if (mAccessor == null) {
-            return bundle.getStringArrayList(mKey);
+            return bundle.getParcelableArrayList(mKey);
         } else {
             throw new AccessorNotSupportedException("ArrayList<String>");
         }
     }
 
     /**
-     * Set the ArrayList<String> object in the collection.
+     * Set the ArrayList<Parcelable> object in the collection.
      * We currently do not use a Datum for special access.
      * TODO: Consider how to use an accessor
      *
      * @param bundle Raw data Bundle
-     * @param value  The ArrayList<String> object
+     * @param value  The ArrayList<Parcelable> object
      *
      * @return The data manager for chaining
      */
-    @SuppressWarnings("unused")
+    @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    Datum putStringArrayList(final @NonNull Bundle bundle, final @NonNull ArrayList<String> value) {
+    <T extends Parcelable> Datum putParcelableArrayList(final @NonNull Bundle bundle, final @NonNull ArrayList<T> value) {
         if (mAccessor == null) {
-            bundle.putStringArrayList(mKey, value);
+            bundle.putParcelableArrayList(mKey, value);
         } else {
-            throw new AccessorNotSupportedException("ArrayList<String>");
+            throw new AccessorNotSupportedException("ArrayList<Parcelable>");
         }
         return this;
     }

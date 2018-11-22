@@ -23,6 +23,7 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteCursor;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -365,6 +366,35 @@ public class DataManager {
     @NonNull
     public DataManager putSerializable(final @NonNull String key, final @NonNull Serializable value) {
         mData.get(key).putSerializable(mBundle, value);
+        return this;
+    }
+
+    /**
+     * Get the Parcelable ArrayList from the collection.
+     * We currently do not use a {@link Datum} for special access.
+     *
+     * @param key Key of object
+     *
+     * @return The Parcelable ArrayList
+     */
+    @Nullable
+    protected <T extends Parcelable> ArrayList<T> getParcelableArrayList(final @NonNull String key) {
+        return mData.get(key).getParcelableArrayList(this, mBundle);
+    }
+
+    /**
+     * Set the Parcelable ArrayList in the collection.
+     * We currently do not use a {@link Datum} for special access.
+     *
+     * @param key   Key of object
+     * @param value The Parcelable ArrayList
+     *
+     * @return The data manager for chaining
+     */
+    @SuppressWarnings("UnusedReturnValue")
+    @NonNull
+    public <T extends Parcelable> DataManager putParcelableArrayList(final @NonNull String key, final @NonNull ArrayList<T> value) {
+        mData.get(key).putParcelableArrayList(mBundle, value);
         return this;
     }
 
