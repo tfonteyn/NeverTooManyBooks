@@ -182,9 +182,9 @@ public class PreferencesActivity extends PreferencesBaseActivity {
     @Override
     @CallSuper
     public void onCreate(final @Nullable Bundle savedInstanceState) {
-        Tracker.enterOnCreate(this);
+        Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
-        setTitle(R.string.title_preferences);
+        setTitle(R.string.lbl_preferences);
         Tracker.exitOnCreate(this);
     }
 

@@ -177,6 +177,7 @@ public class SearchManager implements TaskManagerListener {
      * @param author         to search for (can be empty)
      * @param title          to search for (can be empty)
      * @param isbn           to search for (can be empty)
+     *
      * @param fetchThumbnail whether to fetch thumbnails
      */
     public void search(final int searchFlags,
@@ -217,9 +218,8 @@ public class SearchManager implements TaskManagerListener {
         TaskManager.getMessageSwitch().addListener(mTaskManager.getSenderId(), this, false);
 
 
-        // We really want to ensure we get the same book from each, so if isbn is not present,
-        // do these serially
-
+        // We really want to ensure we get the same book from each, so if isbn is
+        // not present, search the sites one at a time till we get an isbn
         boolean tasksStarted = false;
         mSearchingAsin = false;
         try {
@@ -245,7 +245,7 @@ public class SearchManager implements TaskManagerListener {
                 sendResults();
                 TaskManager.getMessageSwitch().removeListener(mTaskManager.getSenderId(), this);
                 if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
-                    Logger.info(this, "listener stopped");
+                    Logger.info(this, "listener stopped id=" + mTaskManager.getSenderId());
                 }
             }
         }
@@ -264,7 +264,7 @@ public class SearchManager implements TaskManagerListener {
         dest.putString(key, res);
 
         if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
-            Logger.info(this, "appended data to: key=" + key);
+            Logger.info(this, "appended data to: key=" + key + ", value=`" + res + "`");
         }
     }
 
@@ -610,7 +610,7 @@ public class SearchManager implements TaskManagerListener {
      * @author Philip Warner
      */
     public interface SearchListener {
-        boolean onSearchFinished(final @NonNull Bundle bookData, final boolean cancelled);
+        boolean onSearchFinished(final @NonNull Bundle bookData, final boolean wasCancelled);
     }
 
     /**

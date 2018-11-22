@@ -33,8 +33,8 @@ import com.eleybourn.bookcatalogue.utils.ViewTagger;
 import java.lang.ref.WeakReference;
 
 /**
- * Class to store the 'work' data returned via a goodreads search. It also creates a background task
- * to find images and waits for completion.
+ * Class to store the 'work' data returned via a Goodreads search.
+ * It also creates a background task to find images and waits for completion.
  * 
  * @author Philip Warner
  */

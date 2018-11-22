@@ -101,7 +101,7 @@ public class EditBookNotesFragment extends BookBaseFragment implements
     @Override
     @CallSuper
     public void onActivityCreated(final @Nullable Bundle savedInstanceState) {
-        Tracker.enterOnActivityCreated(this);
+        Tracker.enterOnActivityCreated(this, savedInstanceState);
         super.onActivityCreated(savedInstanceState);
 
         try {
@@ -150,7 +150,7 @@ public class EditBookNotesFragment extends BookBaseFragment implements
 
         mFields.add(R.id.price_paid, UniqueId.KEY_BOOK_PRICE_PAID);
         field = mFields.add(R.id.price_paid_currency, UniqueId.KEY_BOOK_PRICE_PAID_CURRENCY);
-        initValuePicker(field, R.string.currency, R.id.btn_price_paid_currency, getPricePaidCurrencyCodes());
+        initValuePicker(field, R.string.lbl_currency, R.id.btn_price_paid_currency, getPricePaidCurrencyCodes());
 
         field = mFields.add(R.id.location, UniqueId.KEY_BOOK_LOCATION);
         initValuePicker(field, R.string.lbl_location, R.id.btn_location, getLocations());

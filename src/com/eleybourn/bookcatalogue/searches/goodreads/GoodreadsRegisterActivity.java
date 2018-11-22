@@ -43,8 +43,8 @@ import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressDialogFragment;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressDialogFragment.FragmentTask;
 
 /**
- * Activity to allow the user to authorize the application to access their goodreads account and
- * to explain goodreads.
+ * Activity to allow the user to authorize the application to access their Goodreads account and
+ * to explain Goodreads.
  *
  * @author Philip Warner
  */
@@ -81,7 +81,7 @@ public class GoodreadsRegisterActivity extends BaseActivity {
     }
 
     /**
-     * Static method to request authorization from goodreads.
+     * Static method to request authorization from Goodreads.
      */
     private static int requestAuthorizationImmediate(final @NonNull Context context) {
         GoodreadsManager grMgr = new GoodreadsManager();
@@ -107,7 +107,7 @@ public class GoodreadsRegisterActivity extends BaseActivity {
     @Override
     @CallSuper
     public void onCreate(final @Nullable Bundle savedInstanceState) {
-        Tracker.enterOnCreate(this);
+        Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
         setTitle(R.string.goodreads);
 

@@ -40,13 +40,13 @@ import com.eleybourn.bookcatalogue.tasks.BCQueueManager;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 /**
- * Background task class to send all books in the database to goodreads.
+ * Background task class to send all books in the database to Goodreads.
  *
  * @author Philip Warner
  */
 public class SendAllBooksTask extends GenericTask {
     private static final long serialVersionUID = -1933000305276643875L;
-    /** Options indicating if it should only send UPDATED books to goodreads; false == all books */
+    /** Options indicating if it should only send UPDATED books to Goodreads; false == all books */
     private final boolean mUpdatesOnly;
     /** Last book ID processed */
     private long mLastId = 0;
@@ -179,7 +179,7 @@ public class SendAllBooksTask extends GenericTask {
             }
 
         }
-        // Notify the user: '15 books processed: 3 sent successfully, 5 with no ISBN and 7 with ISBN but not found in goodreads'
+        // Notify the user: '15 books processed: 3 sent successfully, 5 with no ISBN and 7 with ISBN but not found in Goodreads'
         BookCatalogueApp.showNotification(
                 context, context.getString(R.string.gr_title_send_book),
                 context.getString(R.string.gr_send_all_books_results, mCount, mSent, mNoIsbn, mNotFound));

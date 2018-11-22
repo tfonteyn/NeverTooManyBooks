@@ -104,7 +104,7 @@ public class FieldVisibilityActivity extends BaseActivity {
     @Override
     @CallSuper
     public void onCreate(final @Nullable Bundle savedInstanceState) {
-        Tracker.enterOnCreate(this);
+        Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
         setTitle(R.string.menu_manage_fields);
         populateFields();

@@ -10,6 +10,8 @@ import com.eleybourn.bookcatalogue.database.definitions.TableInfo;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
+import java.io.File;
+
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_AUTHOR_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_POSITION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_BOOKSHELF_ID;
@@ -279,8 +281,8 @@ public class UpgradeDatabase {
     }
 
     /**
-     * For the upgrade to version 4 (db version 72), all cover files were renamed based on the hash value in
-     * the books table to avoid future collisions.
+     * For the upgrade to version 4 (db version 72), all cover files were renamed based on the
+     * uuid value in the books table to avoid future collisions.
      *
      * This routine renames all files, if they exist.
      */
@@ -289,7 +291,9 @@ public class UpgradeDatabase {
             while (c.moveToNext()) {
                 final long id = c.getLong(0);
                 final String uuid = c.getString(1);
-                StorageUtils.renameFile(StorageUtils.getCoverFile(Long.toString(id)), StorageUtils.getCoverFile(uuid));
+                File source = StorageUtils.getCoverFile(Long.toString(id));
+                File destination = StorageUtils.getCoverFile(uuid);
+                StorageUtils.renameFile(source, destination);
             }
         }
     }

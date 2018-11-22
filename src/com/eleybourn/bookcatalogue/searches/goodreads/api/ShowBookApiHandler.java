@@ -57,20 +57,6 @@ import oauth.signpost.exception.OAuthMessageSignerException;
  */
 public abstract class ShowBookApiHandler extends ApiHandler {
 
-    /** XML tags we look for */
-    private static final String XML_GOODREADS_RESPONSE = "GoodreadsResponse";
-    private static final String XML_AUTHOR = "author";
-    private static final String XML_AUTHORS = "authors";
-    private static final String XML_BOOK = "book";
-    private static final String XML_ID = "id";
-    private static final String XML_MY_REVIEW = "my_review";
-    private static final String XML_SERIES = "series";
-    private static final String XML_SERIES_WORK = "series_work";
-    private static final String XML_SERIES_WORKS = "series_works";
-    private static final String XML_TITLE = "title";
-    private static final String XML_WORK = "work";
-    private static final String XML_SHELVES = "shelves";
-
     /**
      * Options to indicate if request should be signed. Signed requests via ISB cause server errors
      * and unsigned requests do not return review (not a big problem for searches)
@@ -358,7 +344,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
         @Override
         public void process(final @NonNull ElementContext context) {
             if (context.attributes != null) {
-                String name = context.attributes.getValue("name");
+                String name = context.attributes.getValue(XML_NAME);
                 mShelves.add(name);
             }
         }
@@ -657,55 +643,55 @@ public abstract class ShowBookApiHandler extends ApiHandler {
                 .setStartAction(mHandleSeriesStart)
                 .setEndAction(mHandleSeriesEnd);
 
-        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, "isbn")
+        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_ISBN)
                 .setEndAction(mHandleText, UniqueId.KEY_BOOK_ISBN);
-        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, "isbn13")
+        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_ISBN_13)
                 .setEndAction(mHandleText, ShowBookFieldNames.ISBN13);
-        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, "image_url")
+        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_IMAGE_URL)
                 .setEndAction(mHandleText, ShowBookFieldNames.IMAGE);
-        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, "small_image_url")
+        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_SMALL_IMAGE_URL)
                 .setEndAction(mHandleText, ShowBookFieldNames.SMALL_IMAGE);
-        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, "publication_year")
+        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_PUBLICATION_YEAR)
                 .setEndAction(mHandleLong, ShowBookFieldNames.PUBLICATION_YEAR);
-        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, "publication_month")
+        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_PUBLICATION_MONTH)
                 .setEndAction(mHandleLong, ShowBookFieldNames.PUBLICATION_MONTH);
-        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, "publication_day")
+        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_PUBLICATION_DAY)
                 .setEndAction(mHandleLong, ShowBookFieldNames.PUBLICATION_DAY);
-        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, "publisher")
+        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_PUBLISHER)
                 .setEndAction(mHandleText, UniqueId.KEY_BOOK_PUBLISHER);
-        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, "is_ebook")
+        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_IS_EBOOK)
                 .setEndAction(mHandleBoolean, ShowBookFieldNames.IS_EBOOK);
-        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, "description")
+        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_DESCRIPTION)
                 .setEndAction(mHandleText, UniqueId.KEY_DESCRIPTION);
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_WORK, XML_ID)
                 .setEndAction(mHandleLong, ShowBookFieldNames.WORK_ID);
-        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_WORK, "original_publication_day")
+        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_WORK, XML_ORIGINAL_PUBLICATION_DAY)
                 .setEndAction(mHandleLong, ShowBookFieldNames.ORIG_PUBLICATION_DAY);
-        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_WORK, "original_publication_month")
+        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_WORK, XML_ORIGINAL_PUBLICATION_MONTH)
                 .setEndAction(mHandleLong, ShowBookFieldNames.ORIG_PUBLICATION_MONTH);
-        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_WORK, "original_publication_year")
+        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_WORK, XML_ORIGINAL_PUBLICATION_YEAR)
                 .setEndAction(mHandleLong, ShowBookFieldNames.ORIG_PUBLICATION_YEAR);
-        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_WORK, "original_title")
+        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_WORK, XML_ORIGINAL_TITLE)
                 .setEndAction(mHandleText, ShowBookFieldNames.ORIG_TITLE);
-        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, "average_rating")
+        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_AVERAGE_RATING)
                 .setEndAction(mHandleFloat, ShowBookFieldNames.RATING);
-        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, "num_pages")
+        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_NUM_PAGES)
                 .setEndAction(mHandleLong, UniqueId.KEY_BOOK_PAGES);
-        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, "format")
+        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_FORMAT)
                 .setEndAction(mHandleText, UniqueId.KEY_BOOK_FORMAT);
-        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, "url")
+        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_URL)
                 .setEndAction(mHandleText, ShowBookFieldNames.BOOK_URL);
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_AUTHORS, XML_AUTHOR, XML_ID)
                 .setEndAction(mHandleAuthorId);
-        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_AUTHORS, XML_AUTHOR, "name")
+        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_AUTHORS, XML_AUTHOR, XML_NAME)
                 .setEndAction(mHandleAuthorName);
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_MY_REVIEW, XML_ID)
                 .setEndAction(mHandleLong, ShowBookFieldNames.REVIEW_ID);
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_MY_REVIEW, XML_SHELVES)
                 .setStartAction(mHandleShelvesStart);
-        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_MY_REVIEW, XML_SHELVES, "shelf")
+        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_MY_REVIEW, XML_SHELVES, XML_SHELF)
                 .setStartAction(mHandleShelf);
-        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_SERIES_WORKS, XML_SERIES_WORK, "user_position")
+        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_SERIES_WORKS, XML_SERIES_WORK, XML_USER_POSITION)
                 .setEndAction(mHandleSeriesPosition);
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_SERIES_WORKS, XML_SERIES_WORK, XML_SERIES, XML_ID)
                 .setEndAction(mHandleSeriesId);

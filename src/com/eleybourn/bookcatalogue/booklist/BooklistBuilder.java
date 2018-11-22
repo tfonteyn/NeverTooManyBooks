@@ -599,7 +599,7 @@ public class BooklistBuilder implements AutoCloseable {
      * @param previouslySelectedBookId ID of book to remember, so we can scroll back to it
      */
     public void build(final int preferredState, final long previouslySelectedBookId) {
-        Tracker.handleEvent(this, "build-" + mBooklistBuilderId, Tracker.States.Enter);
+        Tracker.handleEvent(this, Tracker.States.Enter, "build-" + mBooklistBuilderId);
 
         try {
             @SuppressWarnings("UnusedAssignment") final long t0 = System.currentTimeMillis();
@@ -1044,7 +1044,7 @@ public class BooklistBuilder implements AutoCloseable {
 
             }
         } finally {
-            Tracker.handleEvent(this, "build-" + mBooklistBuilderId, Tracker.States.Exit);
+            Tracker.handleEvent(this, Tracker.States.Exit, "build-" + mBooklistBuilderId);
         }
     }
 

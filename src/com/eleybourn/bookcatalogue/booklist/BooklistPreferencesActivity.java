@@ -180,7 +180,7 @@ public class BooklistPreferencesActivity extends PreferencesBaseActivity {
     @Override
     @CallSuper
     public void onCreate(final @Nullable Bundle savedInstanceState) {
-        Tracker.enterOnCreate(this);
+        Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
         setTitle(R.string.menu_preferences_booklist);
         if (savedInstanceState == null) {

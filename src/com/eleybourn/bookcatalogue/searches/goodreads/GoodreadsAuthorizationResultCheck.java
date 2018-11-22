@@ -32,10 +32,10 @@ import com.eleybourn.bookcatalogue.taskqueue.QueueManager;
 import com.eleybourn.bookcatalogue.tasks.BCQueueManager;
 
 /**
- * Simple class to run in background and verify goodreads credentials then
+ * Simple class to run in background and verify Goodreads credentials then
  * display a notification based on the result.
  *
- * This task is run as the last part of the goodreads auth process.
+ * This task is run as the last part of the Goodreads auth process.
  *
  * Runs in background because it can take several seconds.
  *

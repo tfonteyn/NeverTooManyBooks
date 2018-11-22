@@ -50,11 +50,7 @@ import oauth.signpost.exception.OAuthMessageSignerException;
  * @author Philip Warner
  */
 public class SearchBooksApiHandler extends ApiHandler {
-    private static final String GR_RESP = "GoodreadsResponse";
-    private static final String GR_SEARCH = "search";
-    private static final String GR_RESULT = "results";
-    private static final String GR_WORK = "work";
-    private static final String GR_BEST_BOOK = "best_book";
+
     /** List of GoodreadsWork objects that result from a search */
     @Nullable
     private List<GoodreadsWork> mWorks = null;
@@ -417,34 +413,34 @@ public class SearchBooksApiHandler extends ApiHandler {
 			</GoodreadsResponse>
 
 		 */
-        XmlFilter.buildFilter(mRootFilter, GR_RESP, GR_SEARCH, "results-start")
+        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_SEARCH, "results-start")
                 .setEndAction(mHandleResultsStart);
-        XmlFilter.buildFilter(mRootFilter, GR_RESP, GR_SEARCH, "results-end")
+        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_SEARCH, "results-end")
                 .setEndAction(mHandleResultsEnd);
-        XmlFilter.buildFilter(mRootFilter, GR_RESP, GR_SEARCH, "total-results")
+        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_SEARCH, "total-results")
                 .setEndAction(mHandleTotalResults);
-        XmlFilter.buildFilter(mRootFilter, GR_RESP, GR_SEARCH, GR_RESULT, GR_WORK)
+        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_SEARCH, XML_RESULT, XML_WORK)
                 .setStartAction(mHandleWorkStart)
                 .setEndAction(mHandleWorkEnd);
-        XmlFilter.buildFilter(mRootFilter, GR_RESP, GR_SEARCH, GR_RESULT, GR_WORK, "id")
+        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_SEARCH, XML_RESULT, XML_WORK, "id")
                 .setEndAction(mHandleWorkId);
-        XmlFilter.buildFilter(mRootFilter, GR_RESP, GR_SEARCH, GR_RESULT, GR_WORK, "original_publication_day")
+        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_SEARCH, XML_RESULT, XML_WORK, "original_publication_day")
                 .setEndAction(mHandlePubDay);
-        XmlFilter.buildFilter(mRootFilter, GR_RESP, GR_SEARCH, GR_RESULT, GR_WORK, "original_publication_month")
+        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_SEARCH, XML_RESULT, XML_WORK, "original_publication_month")
                 .setEndAction(mHandlePubMonth);
-        XmlFilter.buildFilter(mRootFilter, GR_RESP, GR_SEARCH, GR_RESULT, GR_WORK, "original_publication_year")
+        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_SEARCH, XML_RESULT, XML_WORK, "original_publication_year")
                 .setEndAction(mHandlePubYear);
-        XmlFilter.buildFilter(mRootFilter, GR_RESP, GR_SEARCH, GR_RESULT, GR_WORK, GR_BEST_BOOK, "id")
+        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_SEARCH, XML_RESULT, XML_WORK, XML_BEST_BOOK, "id")
                 .setEndAction(mHandleBookId);
-        XmlFilter.buildFilter(mRootFilter, GR_RESP, GR_SEARCH, GR_RESULT, GR_WORK, GR_BEST_BOOK, "title")
+        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_SEARCH, XML_RESULT, XML_WORK, XML_BEST_BOOK, "title")
                 .setEndAction(mHandleBookTitle);
-        XmlFilter.buildFilter(mRootFilter, GR_RESP, GR_SEARCH, GR_RESULT, GR_WORK, GR_BEST_BOOK, "author", "id")
+        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_SEARCH, XML_RESULT, XML_WORK, XML_BEST_BOOK, "author", "id")
                 .setEndAction(mHandleAuthorId);
-        XmlFilter.buildFilter(mRootFilter, GR_RESP, GR_SEARCH, GR_RESULT, GR_WORK, GR_BEST_BOOK, "author", "name")
+        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_SEARCH, XML_RESULT, XML_WORK, XML_BEST_BOOK, "author", "name")
                 .setEndAction(mHandleAuthorName);
-        XmlFilter.buildFilter(mRootFilter, GR_RESP, GR_SEARCH, GR_RESULT, GR_WORK, GR_BEST_BOOK, "image_url")
+        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_SEARCH, XML_RESULT, XML_WORK, XML_BEST_BOOK, "image_url")
                 .setEndAction(mHandleImageUrl);
-        XmlFilter.buildFilter(mRootFilter, GR_RESP, GR_SEARCH, GR_RESULT, GR_WORK, GR_BEST_BOOK, "small_image_url")
+        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_SEARCH, XML_RESULT, XML_WORK, XML_BEST_BOOK, "small_image_url")
                 .setEndAction(mHandleSmallImageUrl);
     }
 

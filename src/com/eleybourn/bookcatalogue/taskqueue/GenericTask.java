@@ -34,9 +34,6 @@ import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.dialogs.ContextDialogItem;
 import com.eleybourn.bookcatalogue.database.cursors.BindableItemCursor;
-import com.eleybourn.bookcatalogue.taskqueue.QueueManager;
-import com.eleybourn.bookcatalogue.taskqueue.RunnableTask;
-import com.eleybourn.bookcatalogue.taskqueue.TasksCursor;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
@@ -162,7 +159,7 @@ public abstract class GenericTask extends RunnableTask {
                                     final @NonNull List<ContextDialogItem> items,
                                     final @NonNull Object appInfo) {
 
-        items.add(new ContextDialogItem(context.getString(R.string.delete_task), new Runnable() {
+        items.add(new ContextDialogItem(context.getString(R.string.menu_delete_task), new Runnable() {
                     @Override
                     public void run() {
                         QueueManager.getQueueManager().deleteTask(id);

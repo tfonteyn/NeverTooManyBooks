@@ -62,6 +62,7 @@ public class HintManager {
         mHints.put(R.string.hint_booklist_style_groups, new Hint("BOOKLIST_STYLE_GROUPS"));
         mHints.put(R.string.hint_booklist_style_properties, new Hint("BOOKLIST_STYLE_PROPERTIES"));
         mHints.put(R.string.hint_booklist_global_properties, new Hint("BOOKLIST_GLOBAL_PROPERTIES"));
+
         mHints.put(R.string.hint_authors_book_may_appear_more_than_once, new Hint("BOOKLIST_MULTI_AUTHORS"));
         mHints.put(R.string.hint_series_book_may_appear_more_than_once, new Hint("BOOKLIST_MULTI_SERIES"));
 
@@ -73,13 +74,15 @@ public class HintManager {
         mHints.put(R.string.gr_explain_goodreads_no_isbn, new Hint("explain_goodreads_no_isbn"));
         mHints.put(R.string.gr_explain_goodreads_no_match, new Hint("explain_goodreads_no_match"));
 
+        mHints.put(R.string.hint_tempus_locum, new Hint("hint_tempus_locum"));
+
         mHints.put(R.string.hint_booklist_style_menu, new Hint("hint_booklist_style_menu"));
         mHints.put(R.string.hint_autorotate_camera_images, new Hint("hint_autorotate_camera_images"));
         mHints.put(R.string.hint_view_only_book_details, new Hint("hint_view_only_book_details"));
         mHints.put(R.string.hint_view_only_help, new Hint("hint_view_only_help"));
-        mHints.put(R.string.hint_tempus_locum, new Hint("hint_tempus_locum"));
         mHints.put(R.string.hint_book_list, new Hint("hint_book_list"));
         mHints.put(R.string.hint_amazon_links_blurb, new Hint("hint_amazon_links_blurb"));
+        mHints.put(R.string.hint_book_search_by_text, new Hint("hint_book_search_by_text"));
     }
 
     private HintManager() {

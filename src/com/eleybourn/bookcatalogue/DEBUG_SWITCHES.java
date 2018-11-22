@@ -35,7 +35,7 @@ public final class DEBUG_SWITCHES {
     public static final boolean SQL = false;
 
     /** {@link com.eleybourn.bookcatalogue.database.CatalogueDBAdapter} */
-    public static final boolean DB_ADAPTER = true;
+    public static final boolean DB_ADAPTER = false;
 
     /** {@link com.eleybourn.bookcatalogue.database.DbSync} */
     public static final boolean DB_SYNC = false;
@@ -86,4 +86,7 @@ public final class DEBUG_SWITCHES {
 
     /** track the flow of onLoadFieldsFromBook/onSaveFieldsToBook */
     public static final boolean FIELD_BOOK_TRANSFERS = false;
+
+    /** dump savedInstanceState/outState/extras/arguments for functions that have those parameters */
+    public static final boolean INSTANCE_STATE = false;
 }

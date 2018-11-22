@@ -33,7 +33,9 @@ import java.util.Locale;
 /**
  * Edit the language field.
  *
- * FIXME: as we moved to ISO3 codes... how much use is this ?
+ * Will hardly ever be needed now that we have ISO3 code.
+ * However, if a language was misspelled, auto-translation will fail, and manual edit *will*
+ * be needed.
  */
 public class EditLanguageDialog extends EditStringDialog {
 

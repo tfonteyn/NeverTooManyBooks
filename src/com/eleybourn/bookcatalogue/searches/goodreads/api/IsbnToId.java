@@ -36,7 +36,7 @@ import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 
 /**
- * API call to get a goodreads ID from an ISBN.
+ * API call to get a Goodreads ID from an ISBN.
  * 
  * NOTE: THIS API DOES NOT RETURN XML. The text output is the ID.
  * 

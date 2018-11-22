@@ -36,7 +36,7 @@ public class AdminHostsFragment extends Fragment {
     @Override
     @CallSuper
     public void onActivityCreated(final @Nullable Bundle savedInstanceState) {
-        Tracker.enterOnActivityCreated(this);
+        Tracker.enterOnActivityCreated(this, savedInstanceState);
         super.onActivityCreated(savedInstanceState);
 
         //noinspection ConstantConditions

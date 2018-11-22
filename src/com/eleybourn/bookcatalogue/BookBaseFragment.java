@@ -20,7 +20,6 @@
 package com.eleybourn.bookcatalogue;
 
 import android.annotation.SuppressLint;
-import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -30,6 +29,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -81,15 +81,16 @@ import java.util.Objects;
  */
 public abstract class BookBaseFragment extends Fragment implements DataEditor {
 
-    /** Database instance */
-    protected CatalogueDBAdapter mDb;
     /** */
     protected Fields mFields;
     /** A link to the Activity, cached to avoid requireActivity() all over the place */
     private BaseActivity mActivity;
 
+    /** Database instance */
+    protected CatalogueDBAdapter mDb;
+
     protected void setActivityTitle(final @NonNull Book book) {
-        ActionBar actionBar = requireActivity().getActionBar();
+        ActionBar actionBar = mActivity.getSupportActionBar();
         if (actionBar != null) {
             if (book.getBookId() > 0) {
                 // editing an existing book
@@ -138,7 +139,7 @@ public abstract class BookBaseFragment extends Fragment implements DataEditor {
     @Override
     @CallSuper
     public void onCreate(final @Nullable Bundle savedInstanceState) {
-        Tracker.enterOnCreate(this);
+        Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
 
         // make sure {@link #onCreateOptionsMenu} is called
@@ -158,7 +159,7 @@ public abstract class BookBaseFragment extends Fragment implements DataEditor {
     @Override
     @CallSuper
     public void onActivityCreated(final @Nullable Bundle savedInstanceState) {
-        Tracker.enterOnActivityCreated(this);
+        Tracker.enterOnActivityCreated(this, savedInstanceState);
         // cache to avoid multiple calls to requireActivity()
         mActivity = (BaseActivity) requireActivity();
 
@@ -309,6 +310,7 @@ public abstract class BookBaseFragment extends Fragment implements DataEditor {
         super.onDestroy();
         Tracker.exitOnDestroy(this);
     }
+
     //</editor-fold>
 
     /* ------------------------------------------------------------------------------------------ */
@@ -328,7 +330,7 @@ public abstract class BookBaseFragment extends Fragment implements DataEditor {
                 .setIcon(R.drawable.ic_delete);
         menu.add(R.id.MENU_GROUP_BOOK, R.id.MENU_BOOK_DUPLICATE, 0, R.string.menu_duplicate_book)
                 .setIcon(R.drawable.ic_content_copy);
-        menu.add(R.id.MENU_GROUP_BOOK, R.id.MENU_BOOK_UPDATE_FROM_INTERNET, 0, R.string.internet_update_fields)
+        menu.add(R.id.MENU_GROUP_BOOK, R.id.MENU_BOOK_UPDATE_FROM_INTERNET, 0, R.string.menu_internet_update_fields)
                 .setIcon(R.drawable.ic_search);
         /* TODO: Consider allowing Tweets (or other sharing methods) to work on un-added books. */
         menu.add(R.id.MENU_GROUP_BOOK, R.id.MENU_SHARE, 0, R.string.menu_share_this)
@@ -336,8 +338,8 @@ public abstract class BookBaseFragment extends Fragment implements DataEditor {
 
         MenuHandler.addAmazonSearchSubMenu(menu);
 
-        menu.add(R.id.MENU_BOOK_READ, R.id.MENU_BOOK_READ, 0, R.string.set_as_read);
-        menu.add(R.id.MENU_BOOK_UNREAD, R.id.MENU_BOOK_UNREAD, 0, R.string.set_as_unread);
+        menu.add(R.id.MENU_BOOK_READ, R.id.MENU_BOOK_READ, 0, R.string.menu_set_read);
+        menu.add(R.id.MENU_BOOK_UNREAD, R.id.MENU_BOOK_UNREAD, 0, R.string.menu_set_unread);
 
         super.onCreateOptionsMenu(menu, inflater);
     }
@@ -591,9 +593,13 @@ public abstract class BookBaseFragment extends Fragment implements DataEditor {
         });
     }
 
+    //</editor-fold>
+
+    /* ------------------------------------------------------------------------------------------ */
+
     @Override
     public void onActivityResult(final int requestCode, final int resultCode, final @Nullable Intent data) {
-        Tracker.enterOnActivityResult(this,requestCode,resultCode);
+        Tracker.enterOnActivityResult(this,requestCode,resultCode, data);
         switch (requestCode) {
             case UpdateFromInternetActivity.REQUEST_CODE: /* 98a6d1eb-4df5-4893-9aaf-fac0ce0fee01 */
                 if (resultCode == Activity.RESULT_OK) {
@@ -612,19 +618,14 @@ public abstract class BookBaseFragment extends Fragment implements DataEditor {
                 break;
 
             default:
-                if (DEBUG_SWITCHES.ON_ACTIVITY_RESULT && BuildConfig.DEBUG) {
-                    // lowest level of our Fragments, see if we missed anything
-                    Logger.info(this, "onActivityResult: NOT HANDLED: requestCode=" + requestCode + ", resultCode=" + resultCode);
-                }
+                // lowest level of our Fragment, see if we missed anything
+                Logger.info(this, "onActivityResult: NOT HANDLED: requestCode=" + requestCode + ", resultCode=" + resultCode);
                 super.onActivityResult(requestCode,resultCode,data);
                 break;
         }
 
-        Tracker.exitOnActivityResult(this,requestCode,resultCode);
+        Tracker.exitOnActivityResult(this);
     }
-    //</editor-fold>
-
-    /* ------------------------------------------------------------------------------------------ */
 
     /**
      * Hides unused fields if they have no useful data.

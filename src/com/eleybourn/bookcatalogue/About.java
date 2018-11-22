@@ -32,6 +32,7 @@ import android.support.annotation.StringRes;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
@@ -56,7 +57,7 @@ public class About extends BaseActivity {
     @Override
     @CallSuper
     public void onCreate(final @Nullable Bundle savedInstanceState) {
-        Tracker.enterOnCreate(this);
+        Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
         setTitle(R.string.app_name);
 

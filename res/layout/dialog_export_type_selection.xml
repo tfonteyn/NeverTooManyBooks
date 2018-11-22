@@ -37,7 +37,7 @@
         <RadioButton
             android:id="@+id/advanced_options"
             style="@style/row_option_radio_button"
-            android:text="@string/title_advanced_options" />
+            android:text="@string/lbl_advanced_options" />
 
         <TextView
             android:id="@+id/export_advanced_blurb"

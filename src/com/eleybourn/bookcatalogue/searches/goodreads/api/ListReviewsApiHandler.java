@@ -61,7 +61,8 @@ public class ListReviewsApiHandler extends ApiHandler {
 
     /** Date format used for parsing 'last_update_date' */
     @SuppressLint("SimpleDateFormat")
-    private static final SimpleDateFormat mUpdateDateFmt = new SimpleDateFormat("EEE MMM dd HH:mm:ss ZZZZ yyyy");
+    static final SimpleDateFormat mUpdateDateFmt = new SimpleDateFormat("EEE MMM dd HH:mm:ss ZZZZ yyyy");
+
     /**
      * Listener to handle the contents of the date_updated field. We only
      * keep it if it is a valid date, and we store it in SQL format using
@@ -300,94 +301,94 @@ public class ListReviewsApiHandler extends ApiHandler {
 
         mFilters
                 //<GoodreadsResponse>
-                .s("GoodreadsResponse")
+                .s(XML_GOODREADS_RESPONSE)
                 //	<Request>
                 //		...
                 //	</Request>
                 //	<reviews start="3" end="4" total="933">
-                .s("reviews").isArray(ListReviewsFieldNames.REVIEWS)
-                .longAttr("start", ListReviewsFieldNames.START)
-                .longAttr("end", ListReviewsFieldNames.END)
-                .longAttr("total", ListReviewsFieldNames.TOTAL)
+                .s(XML_REVIEWS).isArray(ListReviewsFieldNames.REVIEWS)
+                .longAttr(XML_START, ListReviewsFieldNames.START)
+                .longAttr(XML_END, ListReviewsFieldNames.END)
+                .longAttr(XML_TOTAL, ListReviewsFieldNames.TOTAL)
                 //		<review>
-                .s("review").isArrayItem()
+                .s(XML_REVIEW).isArrayItem()
                 //			<id>276860380</id>
-                .longBody("id", ListReviewsFieldNames.GR_REVIEW_ID)
+                .longBody(XML_ID, ListReviewsFieldNames.GR_REVIEW_ID)
                 //			<book>
-                .s("book")
+                .s(XML_BOOK)
                 //				<id type="integer">951750</id>
-                .longBody("id", ListReviewsFieldNames.GR_BOOK_ID)
+                .longBody(XML_ID, ListReviewsFieldNames.GR_BOOK_ID)
                 //				<isbn>0583120911</isbn>
-                .stringBody("isbn", ListReviewsFieldNames.DB_ISBN)
+                .stringBody(XML_ISBN, ListReviewsFieldNames.DB_ISBN)
                 //				<isbn13>9780583120913</isbn13>
-                .stringBody("isbn13", ListReviewsFieldNames.ISBN13)
+                .stringBody(XML_ISBN_13, ListReviewsFieldNames.ISBN13)
                 //				...
                 //				<title><![CDATA[The Dying Earth]]></title>
-                .stringBody("title", ListReviewsFieldNames.DB_TITLE)
+                .stringBody(XML_TITLE, ListReviewsFieldNames.DB_TITLE)
                 //				<image_url>http://photo.goodreads.com/books/1294108593m/951750.jpg</image_url>
-                .stringBody("image_url", ListReviewsFieldNames.LARGE_IMAGE)
+                .stringBody(XML_IMAGE_URL, ListReviewsFieldNames.LARGE_IMAGE)
                 //				<small_image_url>http://photo.goodreads.com/books/1294108593s/951750.jpg</small_image_url>
-                .stringBody("small_image_url", ListReviewsFieldNames.SMALL_IMAGE)
+                .stringBody(XML_SMALL_IMAGE_URL, ListReviewsFieldNames.SMALL_IMAGE)
                 //				...
                 //				<num_pages>159</num_pages>
-                .longBody("num_pages", ListReviewsFieldNames.DB_PAGES)
+                .longBody(XML_NUM_PAGES, ListReviewsFieldNames.DB_PAGES)
                 //				<format></format>
-                .stringBody("format", ListReviewsFieldNames.DB_FORMAT)
+                .stringBody(XML_FORMAT, ListReviewsFieldNames.DB_FORMAT)
                 //				<publisher></publisher>
-                .stringBody("publisher", ListReviewsFieldNames.DB_PUBLISHER)
+                .stringBody(XML_PUBLISHER, ListReviewsFieldNames.DB_PUBLISHER)
                 //				<publication_day>20</publication_day>
-                .longBody("publication_day", ListReviewsFieldNames.PUB_DAY)
+                .longBody(XML_PUBLICATION_DAY, ListReviewsFieldNames.PUB_DAY)
                 //				<publication_year>1972</publication_year>
-                .longBody("publication_year", ListReviewsFieldNames.PUB_YEAR)
+                .longBody(XML_PUBLICATION_YEAR, ListReviewsFieldNames.PUB_YEAR)
                 //				<publication_month>4</publication_month>
-                .longBody("publication_month", ListReviewsFieldNames.PUB_MONTH)
+                .longBody(XML_PUBLICATION_MONTH, ListReviewsFieldNames.PUB_MONTH)
                 //				<description><![CDATA[]]></description>
-                .stringBody("description", ListReviewsFieldNames.DB_DESCRIPTION)
+                .stringBody(XML_DESCRIPTION, ListReviewsFieldNames.DB_DESCRIPTION)
                 //				...
                 //
                 //				<authors>
-                .s("authors")
+                .s(XML_AUTHORS)
                 .isArray(ListReviewsFieldNames.AUTHORS)
                 //					<author>
-                .s("author")
+                .s(XML_AUTHOR)
                 .isArrayItem()
                 //						<id>5376</id>
-                .longBody("id", ListReviewsFieldNames.DB_AUTHOR_ID)
+                .longBody(XML_ID, ListReviewsFieldNames.DB_AUTHOR_ID)
                 //						<name><![CDATA[Jack Vance]]></name>
-                .stringBody("name", ListReviewsFieldNames.AUTHOR_NAME_GF)
+                .stringBody(XML_NAME, ListReviewsFieldNames.AUTHOR_NAME_GF)
                 //						...
                 //					</author>
                 //				</authors>
                 //				...
                 //			</book>
-                .popTo("review")
+                .popTo(XML_REVIEW)
                 //
                 //			<rating>0</rating>
-                .doubleBody("rating", ListReviewsFieldNames.DB_RATING)
+                .doubleBody(XML_RATING, ListReviewsFieldNames.DB_RATING)
                 //			...
                 //			<shelves>
-                .s("shelves")
+                .s(XML_SHELVES)
                 .isArray(ListReviewsFieldNames.SHELVES)
                 //				<shelf name="sci-fi-fantasy" />
-                .s("shelf")
+                .s(XML_SHELF)
                 .isArrayItem()
-                .stringAttr("name", ListReviewsFieldNames.SHELF)
-                .popTo("review")
+                .stringAttr(XML_NAME, ListReviewsFieldNames.SHELF)
+                .popTo(XML_REVIEW)
                 //				<shelf name="to-read" />
                 //			</shelves>
                 //			...
                 //			<started_at></started_at>
-                .stringBody("started_at", ListReviewsFieldNames.DB_READ_START)
+                .stringBody(XML_STARTED_AT, ListReviewsFieldNames.DB_READ_START)
                 //			<read_at></read_at>
-                .stringBody("read_at", ListReviewsFieldNames.DB_READ_END)
+                .stringBody(XML_READ_AT, ListReviewsFieldNames.DB_READ_END)
                 //			<date_added>Mon Feb 13 05:32:30 -0800 2012</date_added>
                 //.stringBody("date_added", ADDED)
-                .s("date_added").stringBody(ListReviewsFieldNames.ADDED).setListener(mAddedListener).pop()
+                .s(XML_DATE_ADDED).stringBody(ListReviewsFieldNames.ADDED).setListener(mAddedListener).pop()
                 //			<date_updated>Mon Feb 13 05:32:31 -0800 2012</date_updated>
-                .s("date_updated").stringBody(ListReviewsFieldNames.UPDATED).setListener(mUpdatedListener).pop()
+                .s(XML_DATE_UPDATED).stringBody(ListReviewsFieldNames.UPDATED).setListener(mUpdatedListener).pop()
                 //			...
                 //			<body><![CDATA[]]></body>
-                .stringBody("body", ListReviewsFieldNames.DB_NOTES).pop()
+                .stringBody(XML_BODY, ListReviewsFieldNames.DB_NOTES).pop()
                 //			...
                 //			<owned>0</owned>
                 //		</review>

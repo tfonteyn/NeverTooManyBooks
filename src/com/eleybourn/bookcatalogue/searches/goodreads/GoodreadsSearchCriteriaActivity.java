@@ -31,21 +31,24 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
 
+import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
 import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
+import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 
 /**
- * Activity to handle searching goodreads for books that did not automatically convert. These
+ * Activity to handle searching Goodreads for books that did not automatically convert. These
  * are typically books with no ISBN.
  *
  * The search criteria is setup to contain the book author, title and ISBN. The user can edit
- * these and search goodreads, then review the results.
+ * these and search Goodreads, then review the results.
  *
  * @author Philip Warner
  */
@@ -64,7 +67,7 @@ public class GoodreadsSearchCriteriaActivity extends BaseActivity {
     @Override
     @CallSuper
     public void onCreate(final @Nullable Bundle savedInstanceState) {
-        Tracker.enterOnCreate(this);
+        Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
 
         mDb = new CatalogueDBAdapter(this);

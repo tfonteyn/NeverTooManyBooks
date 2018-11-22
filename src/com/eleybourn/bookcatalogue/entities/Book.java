@@ -153,11 +153,11 @@ public class Book extends DataManager {
      * Private constructor.
      *
      * @param bookId of book (may be 0 for new)
-     * @param bundle Bundle with book data
+     * @param bookData Bundle with book data
      */
-    private Book(final long bookId, final @NonNull Bundle bundle) {
+    private Book(final long bookId, final @NonNull Bundle bookData) {
         this();
-        putAll(bundle);
+        putAll(bookData);
     }
 
     /**
@@ -171,23 +171,24 @@ public class Book extends DataManager {
      * 3. It will leave the Book blank for new books.
      *
      * So *always* returns a valid Book.
+     *
+     * @param bookId of book (may be 0 for new)
+     * @param bookData Bundle with book data (may be null)
      */
     @NonNull
-    public static Book getBook(final @NonNull CatalogueDBAdapter db, final long bookId, final @Nullable Bundle bundle) {
+    public static Book getBook(final @NonNull CatalogueDBAdapter db, final long bookId, final @Nullable Bundle bookData) {
         // if we have a populated bundle, use that.
-        if (bundle != null && bundle.containsKey(UniqueId.BKEY_BOOK_DATA)) {
-            Bundle bookData = bundle.getBundle(UniqueId.BKEY_BOOK_DATA);
             if (bookData != null) {
-                // If we have saved book data, use it
                 return new Book(bookId, bookData);
-            }
         }
         // otherwise, create a new book and try to load the data from the database.
         return new Book(db, bookId);
     }
 
     /**
-     * shortcut if we you don't have a bundle
+     * shortcut if we don't have a bundle
+     *
+     * @param bookId of book (may be 0 for new)
      */
     @NonNull
     public static Book getBook(final @NonNull CatalogueDBAdapter db, final long bookId) {
@@ -217,6 +218,8 @@ public class Book extends DataManager {
 
     /**
      * Load the book details from the database
+     *
+     * @param bookId of book (may be 0 for new, in which case we do nothing)
      */
     public void reload(final @NonNull CatalogueDBAdapter db, final long bookId) {
         // If ID = 0, no details in DB
@@ -461,7 +464,7 @@ public class Book extends DataManager {
     }
 
     /**
-     * Cleanup thumbnails from underlying data
+     * // If there are thumbnails present, pick the biggest, delete others and rename.
      */
     public void cleanupThumbnails() {
         ImageUtils.cleanupThumbnails(mBundle);

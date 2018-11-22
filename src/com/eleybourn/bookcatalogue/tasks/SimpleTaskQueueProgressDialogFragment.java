@@ -272,7 +272,7 @@ public class SimpleTaskQueueProgressDialogFragment extends DialogFragment {
     @Override
     @CallSuper
     public void onCreate(final @Nullable Bundle savedInstanceState) {
-        Tracker.enterOnCreate(this);
+        Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
 
         // Control whether a fragment instance is retained across Activity
@@ -288,7 +288,7 @@ public class SimpleTaskQueueProgressDialogFragment extends DialogFragment {
     @Override
     @CallSuper
     public void onActivityCreated(final @Nullable Bundle savedInstanceState) {
-        Tracker.enterOnActivityCreated(this);
+        Tracker.enterOnActivityCreated(this, savedInstanceState);
         super.onActivityCreated(savedInstanceState);
 
         // Deliver any outstanding messages

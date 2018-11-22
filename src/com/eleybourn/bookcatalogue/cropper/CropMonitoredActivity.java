@@ -44,7 +44,7 @@ abstract class CropMonitoredActivity extends BaseActivity {
     @Override
     @CallSuper
     protected void onCreate(final @Nullable Bundle savedInstanceState) {
-        Tracker.enterOnCreate(this);
+        Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
         for (LifeCycleListener listener : mListeners) {
             listener.onActivityCreated(this);

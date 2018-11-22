@@ -161,6 +161,10 @@ public class StorageUtils {
         return new File(TEMP_FILE_PATH);
     }
 
+    public static File getCoverStorage() {
+        return new File(COVER_FILE_PATH);
+    }
+
     public static File getLogStorage() {
         return new File(LOG_FILE_PATH);
     }
@@ -183,33 +187,33 @@ public class StorageUtils {
         return new File(EXTERNAL_FILE_PATH + File.separator + fileName);
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-
-    public static File getCoverStorage() {
-        return new File(COVER_FILE_PATH);
-    }
+    /* ------------------------------------------------------------------------------------------ */
 
     /**
      * Get the 'standard' temp file name for new books
      */
     public static File getTempCoverFile() {
-        return getTempCoverFile("tmp", "");
+        return new File(TEMP_FILE_PATH + File.separator + "tmp.jpg");
+    }
+    public static void deleteTempCoverFile() {
+        deleteFile(getTempCoverFile());
     }
 
     /**
      * Get the 'standard' temp file name for new books, including a suffix
      */
-    static File getTempCoverFile(final @NonNull String name) {
-        return getTempCoverFile("tmp", name);
+    static File getTempCoverFile(final @NonNull String suffix) {
+        return new File(TEMP_FILE_PATH + File.separator + "tmp" + suffix + ".jpg");
     }
 
     /**
      * Get the 'standard' temp file name for new books, including a suffix
-     * Located in the small Covers directory
      */
     public static File getTempCoverFile(final @NonNull String prefix, final @NonNull String name) {
-        return new File(COVER_FILE_PATH + File.separator + prefix + name + ".jpg");
+        return new File(TEMP_FILE_PATH + File.separator + prefix + name + ".jpg");
     }
+
+    /* ------------------------------------------------------------------------------------------ */
 
     /**
      *
@@ -241,10 +245,12 @@ public class StorageUtils {
             return png;
         }
 
-        // we need a new file,
-        // return new File(COVER_FILE_PATH + File.separator + uuid + ".jpg");
+        // TODO: we need a new file, .. do we ever ?
+        Logger.debug("getCoverFile(`" + uuid + "`) not found, return a placeholder");
         return jpg;
     }
+
+    /* ------------------------------------------------------------------------------------------ */
 
     /**
      * Count size + (optional) Cleanup any purgeable files.
@@ -256,9 +262,6 @@ public class StorageUtils {
     public static long purgeFiles(final boolean reallyDelete) {
         long totalSize = 0;
         try {
-            for (String name : getCoverStorage().list()) {
-                totalSize += purgeFile(name, reallyDelete);
-            }
             for (String name : getLogStorage().list()) {
                 totalSize += purgeFile(name, reallyDelete);
             }
@@ -267,6 +270,10 @@ public class StorageUtils {
             }
             // and the root.
             for (String name : getSharedStorage().list()) {
+                totalSize += purgeFile(name, reallyDelete);
+            }
+            // theoretically this one is not needed.
+            for (String name : getCoverStorage().list()) {
                 totalSize += purgeFile(name, reallyDelete);
             }
         } catch (SecurityException e) {
@@ -307,6 +314,7 @@ public class StorageUtils {
             Logger.error(e);
         }
     }
+    /* ------------------------------------------------------------------------------------------ */
 
     @NonNull
     public static List<File> findCsvFiles() {

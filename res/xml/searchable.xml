@@ -1,7 +1,7 @@
 <searchable 
 	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:label="@string/search_for_books"
-	android:hint="@string/search_hint"
+	android:label="@string/lbl_search_for_books"
+	android:hint="@string/title_search_for"
 	android:searchSuggestAuthority="${packageName}.SearchSuggestionProvider"
 	android:searchSuggestSelection=" ?"
 	android:searchSuggestIntentAction="android.intent.action.VIEW"

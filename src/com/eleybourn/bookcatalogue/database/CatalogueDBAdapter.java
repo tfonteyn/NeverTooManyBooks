@@ -62,7 +62,6 @@ import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.StringList;
 import com.eleybourn.bookcatalogue.utils.UpgradeMessageManager;
 
-import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Date;
@@ -551,7 +550,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
     }
 
     /**
-     * Set the goodreads sync date to the current time
+     * Set the Goodreads sync date to the current time
      */
     public void setGoodreadsSyncDate(final long bookId) {
         if (mSetGoodreadsSyncDateStmt == null) {
@@ -1199,7 +1198,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
         // Handle AUTHOR
         // If present, get the author ID from the author name (it may have changed with a name change)
         if (book.containsKey(UniqueId.KEY_AUTHOR_FORMATTED)) {
-            Author author = Author.toAuthor(book.getString(UniqueId.KEY_AUTHOR_FORMATTED));
+            Author author = new Author(book.getString(UniqueId.KEY_AUTHOR_FORMATTED));
             book.putLong(UniqueId.KEY_AUTHOR_ID, getOrInsertAuthorId(author));
         } else {
             if (book.containsKey(UniqueId.KEY_AUTHOR_FAMILY_NAME)) {
@@ -1432,17 +1431,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
     private void deleteThumbnail(final @Nullable String uuid) {
         if (uuid != null) {
             // remove from file system
-            try {
-                //TODO: understand the logic of the loop....
-                File coverFile = StorageUtils.getCoverFile(uuid);
-                while (coverFile.exists()) {
-                    StorageUtils.deleteFile(coverFile);
-                    coverFile = StorageUtils.getCoverFile(uuid);
-                }
-            } catch (Exception e) {
-                Logger.error(e, "Failed to delete cover thumbnail");
-            }
-
+            StorageUtils.deleteFile(StorageUtils.getCoverFile(uuid));
             // remove from cache
             if (!uuid.isEmpty()) {
                 try (CoversDbAdapter coversDbAdapter = CoversDbAdapter.getInstance()) {
@@ -3360,7 +3349,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
     }
 
     /**
-     * Set the goodreads book id for this book
+     * Set the Goodreads book id for this book
      */
     public void setGoodreadsBookId(final long bookId, final long goodreadsBookId) {
         if (mSetGoodreadsBookIdStmt == null) {
@@ -3374,7 +3363,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
     }
 
     /**
-     * Return a {@link BookCursor} for the given goodreads book Id.
+     * Return a {@link BookCursor} for the given Goodreads book Id.
      * Note: MAY RETURN MORE THAN ONE BOOK
      *
      * @param grBookId to retrieve
@@ -3387,10 +3376,10 @@ public class CatalogueDBAdapter implements AutoCloseable {
     }
 
     /**
-     * Query to get relevant {@link Book} columns for sending to goodreads.
+     * Query to get relevant {@link Book} columns for sending to Goodreads.
      *
-     * @param startId     the 'first' (e.g. 'oldest') bookId to since the last sync with goodreads
-     * @param updatesOnly true, if we only want the updated records since the last sync with goodreads
+     * @param startId     the 'first' (e.g. 'oldest') bookId to since the last sync with Goodreads
+     * @param updatesOnly true, if we only want the updated records since the last sync with Goodreads
      *
      * @return {@link BookCursor} containing all records, if any
      */
@@ -3414,7 +3403,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
     }
 
     /**
-     * Query to get the ISBN for the given {@link Book} id, for sending to goodreads.
+     * Query to get the ISBN for the given {@link Book} id, for sending to Goodreads.
      *
      * @param bookId to retrieve
      *

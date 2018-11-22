@@ -87,7 +87,7 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity {
     @Override
     @CallSuper
     public void onCreate(final @Nullable Bundle savedInstanceState) {
-        Tracker.enterOnCreate(this);
+        Tracker.enterOnCreate(this, savedInstanceState);
         mDb = new CatalogueDBAdapter(this);
 
         Intent intent = getIntent();
@@ -96,7 +96,7 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity {
         }
         // Once the basic criteria have been setup, call the parent
         super.onCreate(savedInstanceState);
-        setTitle(R.string.task_errors);
+        setTitle(R.string.title_task_errors);
 
         //When any Event is added/changed/deleted, update the list. Lazy, yes.
         BookCatalogueApp.getQueueManager().registerEventListener(mOnEventChangeListener);
@@ -167,7 +167,7 @@ public class GoodreadsExportFailuresActivity extends BindableItemListActivity {
         event.addContextMenuItems(this, parent, v, position, id, items, mDb);
 
         if (items.size() > 0) {
-            showContextDialogue(R.string.select_an_action, items);
+            showContextDialogue(R.string.title_select_an_action, items);
         }
     }
 

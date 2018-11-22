@@ -47,7 +47,7 @@
     <string name="new_in_423">
 <![CDATA[
     <p><b>Novedades en la versión 4.2.3</b>\n\n
-			* Mejoras en la gestión de ISBNs no válidos al enviar a goodreads\n\n
+			* Mejoras en la gestión de ISBNs no válidos al enviar a Goodreads\n\n
 			* Corrección de otros pequeños errores\n\n
 			</p>
 		]]>
@@ -73,7 +73,7 @@
 		* Archivado (Backup & Importación) del catálogo completo, incluyendo libros, portadas, preferencias y estilos\n\n
 		* Interfaz actualizada con una barra de acción que funciona mejor en dispositivos sin botones de menú\n\n
 		* Soporte para el escáner pic2shop (mejor para foco fijo, poca luz y cámaras frontales)\n\n
-		* goodreads aparece ahora en el menú principal, si lo autoriza\n\n
+		* Goodreads aparece ahora en el menú principal, si lo autoriza\n\n
 		* Comprobar conexión a internet antes de intentar escanear libros\n\n
 		* Más actualizaciones en la traducción al alemán (Robert Wetzlmayr)\n\n
 		* Más actualizaciones en la traducción al francés (Imkal & Djiko)\n\n

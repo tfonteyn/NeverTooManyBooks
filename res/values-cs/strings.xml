@@ -32,8 +32,8 @@
     <string name="title_isbn_search">Hledat ISBN</string>
     <string name="title_edit_bookshelves">Spravovat knihovny</string>
     <string name="menu_edit_bookshelf">Upravit knihovnu</string>
-    <string name="search_for_books">Hledat knihy</string>
-    <string name="search_hint">Hledat autora nebo titul</string>
+    <string name="lbl_search_for_books">Hledat knihy</string>
+    <string name="title_search_for">Hledat autora nebo titul</string>
     <string name="warning_book_not_found">Nepodařilo se nalézt hledanou knihu. Zkuste prosím zadat potřebné údaje manuálně.</string>
     <string name="lbl_series_num">#</string>
     <string name="title_import_data">Importovat knihy</string>
@@ -64,8 +64,8 @@
     <string name="about_lbl_donate">Podpořit</string>
     <string name="menu_about">O této aplikaci</string>
     <string name="lbl_price_listed">Seznam cen</string>
-    <string name="title_update_fields">Automaticky aktualizovat pole</string>
-    <string name="title_select_fields_to_update">Zvolit pole k aktualizaci</string>
+    <string name="lbl_update_fields">Automaticky aktualizovat pole</string>
+    <string name="lbl_update_fields_to_update">Zvolit pole k aktualizaci</string>
     <string name="info_select_fields_to_update">Vybraná pole budou aktualizována automaticky z internetu. Nevybraná pole zůstanou beze změny.</string>
     <string name="overwrite_thumbnail">Toto aktualizuje pouze vybraná pole, ale náhledy budou staženy pro VŠECHNY knihy.\n\nChcete přepsat všechny existující náhledy? Pozor, může to chvíli trvat…</string>
     <string name="yes">Ano</string>
@@ -78,7 +78,7 @@
     <string name="info_manage_fields">Vybraná pole jsou viditelná na obrazovce pro přidání/úpravu knihy. Nevybraná pole jsou skryta.</string>
     <string name="anthology_titles">Antologické tituly</string>
     <string name="about_donate_amazon">Amazon Wishlist</string>
-    <string name="toc_same_author">Všechny příběhy v této antologii jsou napsány stejným autorem</string>
+    <string name="lbl_toc_same_author">Všechny příběhy v této antologii jsou napsány stejným autorem</string>
     <string name="menu_delete_toc_entry">Odstranit tento titul z antologií</string>
     <string name="lbl_is_anthology">Je tato kniha antologií?</string>
     <string name="menu_populate_toc">Automaticky naplnit tituly (EXPERIMENTÁLNÍ FUNKCE)</string>
@@ -99,7 +99,7 @@
     <string name="warning_duplicate_book_message">Kniha, kterou se pokoušíte přidat, se již v databázi nachází - určitě si přejete přidat její další kopii?</string>
     <string name="menu_cover_add_from_gallery">Z galerie…</string>
     <string name="backup_request">Přejete si zálohovat Vaši databázi na SD kartu</string>
-    <string name="title_backup">Zálohovat?</string>
+    <string name="lbl_backup_dialog">Zálohovat?</string>
     <string name="searching_amazon_books">Vyhledávám na Amazonu</string>
     <string name="searching_google_books">Vyhledávám na Google Books</string>
     <string name="searching_library_thing">Vyhledávám na LibraryThing</string>
@@ -109,7 +109,7 @@
     <string name="lbl_genre">Žánr</string>
     <string name="not_set">Nenastaveno</string>
     <string name="menu_search_books">Hledat knihy</string>
-    <string name="info_isbn_name_search">Přidání knihy podle ISBN kódu je přesnější než její přidání podle názvu a autora - proto tento postup doporučujeme. Pamatujte, že správný kód můžete ve většině případů nalézt přímo na obalu knihy. \n\n</string>
+    <string name="hint_book_search_by_text">Přidání knihy podle ISBN kódu je přesnější než její přidání podle názvu a autora - proto tento postup doporučujeme. Pamatujte, že správný kód můžete ve většině případů nalézt přímo na obalu knihy. \n\n</string>
     <string name="about_help_click_here">Klikněte zde pro přístup k online nápovědě</string>
     <string name="vldt_unable_to_get_value">Neznámá hodnota pro \'%s\'</string>
     <string name="vldt_integer_expected">Očekávána číselná hodnota pro \'%s\'</string>
@@ -167,7 +167,7 @@
     <string name="unsaved_edits_title">Změny nejsou uloženy</string>
     <string name="changed_author_how_apply">Změnil jste autora z:\n  \'%1$s\' na \n  \'%2$s\'\nJak si přejete aplikovat tuto změnu?\nUpozornění: Volba \'%3$s\' bude aplikována okamžitě.</string>
     <string name="btn_this_book">Tato kniha</string>
-    <string name="scope_of_change">Rozsah změny</string>
+    <string name="title_scope_of_change">Rozsah změny</string>
     <string name="changed_series_how_apply">Změnil jste sérii z:\n  \'%1$s\' na \n  \'%2$s\'\nJak si přejete aplikovat tuto změnu?\nUpozornění: Volba \'%3$s\' bude aplikována okamžitě.</string>
     <string name="warning_unable_to_find_book">Nepodařilo se nalézt zadanou knihu</string>
     <string name="list_and">a</string>
@@ -179,9 +179,9 @@
     <string name="progress_msg_loading">Načítání…</string>
     <string name="warning_cover_not_found">Obrázek nebyl nalezen</string>
     <string name="warning_select_min_1_field">Zvolte alespoň jedno pole k aktualizaci</string>
-    <string name="usage_copy_if_blank">Kopírovat pokud je prázdné</string>
-    <string name="usage_add_extra">Přidat extra data</string>
-    <string name="usage_overwrite">Přepsat existující data</string>
+    <string name="lbl_field_usage_copy_if_blank">Kopírovat pokud je prázdné</string>
+    <string name="lbl_field_usage_add_extra">Přidat extra data</string>
+    <string name="lbl_field_usage_overwrite">Přepsat existující data</string>
     <string name="progress_msg_cancelling">Rušení</string>
     <string name="progress_msg_starting_search">Začínám vyhledávat</string>
     <string name="lt_info">Tato aplikace může využít LibraryThing jako další zdroj informací o knihách. K využití této funkce je nutná Vaše registrace na LibraryThing (zdarma) a rovněž získání vývojářského klíče od LibraryThing (také zdarma).</string>
@@ -213,7 +213,7 @@
     <string name="menu_share_this">Sdílet</string>
     <string name="email_export">Přejete si odeslat tento export prostřednictvím mailu?</string>
     <string name="menu_cover_crop">Oříznout náhled</string>
-    <string name="task_errors">Chyby</string>
+    <string name="title_task_errors">Chyby</string>
     <string name="retry">Opakovat</string>
     <string name="my_books">Moje knihy</string>
     <string name="loan_return_book">Půjčit, vrátit nebo upravit knihu</string>
@@ -235,9 +235,9 @@
     <string name="gr_access_error">Během autorizace aplikace došlo k problému s internetovým připojením. Zkontrolujte prosím přístup ke stránkám Goodreads a pokud problémy přetrvají, kontaktujte správce.</string>
     <string name="menu_preferences_other">Další možnosti</string>
     <string name="user_interface">Uživatelské rozhraní</string>
-    <string name="background_tasks">Úlohy na pozadí</string>
-    <string name="cleanup_old_tasks">Smazat staré úlohy</string>
-    <string name="cleanup_old_events">Smazat staré události</string>
+    <string name="menu_background_tasks">Úlohy na pozadí</string>
+    <string name="btn_cleanup_old_tasks">Smazat staré úlohy</string>
+    <string name="btn_cleanup_old_events">Smazat staré události</string>
     <string name="text_and_or_isbn">Vložit a/nebo ISBN</string>
     <string name="search_criteria">Kritéria pro vyhledávání</string>
     <string name="menu_add_book_manually">Přidat ručně</string>
@@ -252,7 +252,7 @@
     <string name="lbl_by_authors">(kým) %1$s</string>
     <string name="warning_no_matching_book_found">Nebyla nalezena odpovídající kniha</string>
     <string name="warning_no_isbn_stored_for_book">Kniha nemá uložen ISBN</string>
-    <string name="select_an_action">Zvolte akci</string>
+    <string name="title_select_an_action">Zvolte akci</string>
     <string name="gr_auth_check">Kontrola Goodreads autorizace</string>
     <string name="gr_auth_failed">Goodreads autorizace selhala</string>
     <string name="gr_auth_successful">Goodreads autorizace v pořádku</string>
@@ -275,8 +275,8 @@
     <string name="crash_dialog_text">Vypadá to, že došlo k neočekávanému pádu aplikace BookCatalogue. Napište nám prosím o tomto problému všechny informace, které považujete za relevantní, a tlačítkem "OK" nám je odešlete. Před odesláním mailu budete mít ještě možnost jej zkontrolovat.</string>
     <string name="crash_dialog_comment_prompt">Váš komentář (nepovinné):</string>
     <string name="crash_dialog_ok_message">Děkujeme!</string>
-    <string name="booklist_read">Přečteno</string>
-    <string name="booklist_unread">Nepřečteno</string>
+    <string name="lbl_read">Přečteno</string>
+    <string name="lbl_unread">Nepřečteno</string>
     <string name="no_date">(žádné datum)</string>
     <string name="thumbnails_show">Zobrazit náhledy</string>
     <string name="thumbnails_prefer_large">Preferovat velké náhledy</string>
@@ -300,7 +300,7 @@
     <string name="progress_msg_rebuilding_search_index">Obnovování indexu pro vyhledávání…</string>
     <string name="progress_msg_optimizing_databases">Optimalizování databáze…</string>
     <string name="progress_msg_starting_up">Spouštění…</string>
-    <string name="title_book_catalogue_startup">BookCatalogue spuštěn</string>
+    <string name="lbl_book_catalogue_startup">BookCatalogue spuštěn</string>
     <string name="blp_list_state">Stav seznamu knih</string>
     <string name="blp_state_start_expanded">Vždy otevřít seznam knih rozbalený</string>
     <string name="blp_state_start_collapsed">Vždy otevřít seznam knih sbalený</string>
@@ -337,7 +337,7 @@
     										nastavení, která budou aplikována na všechny Vaše styly.
     										\n\nMůžete zde rovněž upravit podobu menu stylů.
     										</string>
-    <string name="title_preferred_styles">Preferované styly</string>
+    <string name="lbl_preferred_styles">Preferované styly</string>
     <string name="title_edit_style_colon_name">Upravit styl: %1$s</string>
     <string name="menu_add_style">Přidat styl</string>
     <string name="title_clone_style_colon_name">Klonovat styl: %1$s</string>
@@ -365,7 +365,7 @@
     <string name="warning_thing_must_not_be_blank">%1$s nemůže být prázdné</string>
     <string name="edit">Upravit</string>
     <string name="groupings">Seskupení</string>
-    <string name="title_preferences">Nastavení</string>
+    <string name="lbl_preferences">Nastavení</string>
     <string name="error_unexpected_error">Došlo k neočekávané chybě, prosím zašlete nám detaily o této chybě prostřednictvím \'Nápovědy\' v hlavním menu.</string>
     <string name="menu_delete_style">Smazat styl</string>
     <string name="menu_edit_booklist_style">Upravit styl</string>

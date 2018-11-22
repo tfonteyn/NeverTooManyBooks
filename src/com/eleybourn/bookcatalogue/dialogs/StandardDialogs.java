@@ -44,7 +44,6 @@ import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsRegisterActivity;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingAdminActivity;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
-import com.eleybourn.bookcatalogue.taskqueue.QueueManager;
 import com.eleybourn.bookcatalogue.utils.ThemeUtils;
 
 import java.util.List;
@@ -97,8 +96,8 @@ public class StandardDialogs {
     public static void showConfirmUnsavedEditsDialog(final @NonNull Activity activity,
                                                      final @Nullable Runnable onConfirm) {
         AlertDialog dialog = new AlertDialog.Builder(activity)
-                .setTitle(R.string.details_have_changed)
-                .setMessage(R.string.you_have_unsaved_changes)
+                .setTitle(R.string.lbl_details_have_changed)
+                .setMessage(R.string.warning_unsaved_changes)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .setCancelable(false)
                 .create();
@@ -117,7 +116,7 @@ public class StandardDialogs {
                     }
                 });
 
-        dialog.setButton(DialogInterface.BUTTON_NEUTRAL, activity.getString(R.string.continue_editing),
+        dialog.setButton(DialogInterface.BUTTON_NEUTRAL, activity.getString(R.string.btn_continue_editing),
                 new AlertDialog.OnClickListener() {
                     @Override
                     public void onClick(final @NonNull DialogInterface dialog, final int which) {
@@ -281,7 +280,7 @@ public class StandardDialogs {
     }
 
     /**
-     * Display a dialog warning the user that goodreads authentication is required;
+     * Display a dialog warning the user that Goodreads authentication is required;
      * gives the options: 'request now', 'more info' or 'cancel'.
      */
     public static void goodreadsAuthAlert(final @NonNull FragmentActivity context) {

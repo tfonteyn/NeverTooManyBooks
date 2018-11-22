@@ -46,7 +46,7 @@
     <string name="new_in_423">
         <![CDATA[
             <p><b>New in 4.2.3</b>\n\n
-			    * Improve handling of invalid ISBNs when sending to goodreads\n\n
+			    * Improve handling of invalid ISBNs when sending to Goodreads\n\n
 			    * Other minor bug fixes\n\n
 			</p>
 		]]>
@@ -71,7 +71,7 @@
                 * Archiving (Backup & Import) of entire catalogue, including books, covers, preferences and styles\n\n
                 * Updated interface with Action Bar support for usability and to work better on devices without menu buttons\n\n
                 * Support for pic2shop scanner (better for fixed focus, low light and in front-facing cameras)\n\n
-                * goodreads now appears in main menu if you authorize it\n\n
+                * Goodreads now appears in main menu if you authorize it\n\n
                 * Check internet connection earlier when trying to scan books\n\n
                 * More German translation updates (Robert Wetzlmayr)\n\n
                 * More French translation updates (Imkal & Djiko)\n\n

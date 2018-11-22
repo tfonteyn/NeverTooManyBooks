@@ -110,7 +110,7 @@ public class EditBookLoanedFragment extends BookBaseFragment {
     @Override
     @CallSuper
     public void onActivityCreated(final @Nullable Bundle savedInstanceState) {
-        Tracker.enterOnActivityCreated(this);
+        Tracker.enterOnActivityCreated(this, savedInstanceState);
         super.onActivityCreated(savedInstanceState);
 
         String friend = mDb.getLoanByBookId(getBookManager().getBook().getBookId());

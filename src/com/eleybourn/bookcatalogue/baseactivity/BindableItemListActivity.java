@@ -64,7 +64,7 @@ abstract public class BindableItemListActivity extends BaseListActivity implemen
     @Override
     @CallSuper
     protected void onCreate(final @Nullable Bundle savedInstanceState) {
-        Tracker.enterOnCreate(this);
+        Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
 
         mBindableItems = getBindableItemCursor(savedInstanceState);

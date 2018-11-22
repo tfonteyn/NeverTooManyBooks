@@ -84,13 +84,13 @@
 
             <TextView
                 style="@style/hdr_preferencesSection"
-                android:text="@string/internet_update_fields" />
+                android:text="@string/menu_internet_update_fields" />
 
             <TextView
                 android:id="@+id/lbl_update_internet"
                 style="@style/row_option_text"
                 android:drawableStart="@drawable/ic_content_copy"
-                android:text="@string/title_update_fields" />
+                android:text="@string/lbl_update_fields" />
 
             <TextView
                 android:id="@+id/lbl_sync_with_goodreads"
@@ -135,7 +135,7 @@
 
             <TextView
                 style="@style/hdr_preferencesSection"
-                android:text="@string/title_advanced_options" />
+                android:text="@string/lbl_advanced_options" />
 
             <TextView
                 android:id="@+id/search_sites"
@@ -147,7 +147,7 @@
                 android:id="@+id/lbl_background_tasks"
                 style="@style/row_option_text"
                 android:drawableStart="@drawable/ic_format_list_bulleted"
-                android:text="@string/background_tasks" />
+                android:text="@string/menu_background_tasks" />
 
             <TextView
                 android:id="@+id/lbl_reset_hints"

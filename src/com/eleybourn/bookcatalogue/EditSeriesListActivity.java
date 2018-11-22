@@ -71,7 +71,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
     @Override
     @CallSuper
     protected void onCreate(final @Nullable Bundle savedInstanceState) {
-        Tracker.enterOnCreate(this);
+        Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
         setTitle(mBookTitle);
         mSeriesAdapter = new ArrayAdapter<>(this,
@@ -196,7 +196,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
 
         final AlertDialog dialog = new AlertDialog.Builder(this)
                 .setMessage(getString(R.string.changed_series_how_apply, from.name, to.name, allBooks))
-                .setTitle(R.string.scope_of_change)
+                .setTitle(R.string.title_scope_of_change)
                 .setIcon(R.drawable.ic_info_outline)
                 .create();
 

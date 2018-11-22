@@ -212,7 +212,7 @@ public class ImageUtils {
     }
 
     /**
-     * Given a URL, get an image and save to a file, optionally appending a suffix to the file.
+     * Given a URL, get an image and save to a file, appending a suffix to the filename.
      *
      * @param urlText        Image file URL
      * @param filenameSuffix Suffix to add
@@ -286,7 +286,7 @@ public class ImageUtils {
      * If there is a {@link UniqueId#BKEY_THUMBNAIL_FILE_SPEC} key, pick the largest image, rename it
      * and delete the others. Finally, remove the key. and set BKEY_HAVE_THUMBNAIL to true
      */
-    public static void cleanupThumbnails(final @Nullable Bundle result) {
+    public static void cleanupThumbnails(final @Nullable Bundle /* in/out */result) {
         if (result == null) {
             return;
         }
@@ -332,7 +332,9 @@ public class ImageUtils {
         }
         // Get the best file (if present) and rename it.
         if (bestFileIndex >= 0) {
-            StorageUtils.renameFile(new File(files.get(bestFileIndex)), StorageUtils.getTempCoverFile());
+            File source = new File(files.get(bestFileIndex));
+            File destination = StorageUtils.getTempCoverFile();
+            StorageUtils.renameFile(source, destination );
         }
         // Finally, cleanup the data
         result.remove(UniqueId.BKEY_THUMBNAIL_FILE_SPEC);

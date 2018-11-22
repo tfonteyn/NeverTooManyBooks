@@ -334,9 +334,9 @@ class ImportAllTask extends GenericTask {
         if (id > 0) {
             if (book.getBoolean(UniqueId.BKEY_HAVE_THUMBNAIL)) {
                 String uuid = db.getBookUuid(id);
-                File thumb = StorageUtils.getTempCoverFile();
-                File real = StorageUtils.getCoverFile(uuid);
-                StorageUtils.renameFile(thumb, real);
+                File source = StorageUtils.getTempCoverFile();
+                File destination = StorageUtils.getCoverFile(uuid);
+                StorageUtils.renameFile(source, destination);
             }
             //db.setGoodreadsSyncDate(id);
         }
@@ -445,6 +445,7 @@ class ImportAllTask extends GenericTask {
                 if (!fileSpec.isEmpty()) {
                     book.appendOrAdd(UniqueId.BKEY_THUMBNAIL_FILE_SPEC, fileSpec);
                 }
+                // If there are thumbnails present, pick the biggest, delete others and rename.
                 book.cleanupThumbnails();
             }
         }

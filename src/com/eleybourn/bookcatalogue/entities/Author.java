@@ -20,6 +20,8 @@
 
 package com.eleybourn.bookcatalogue.entities;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -27,8 +29,6 @@ import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.utils.StringList;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -38,10 +38,9 @@ import java.util.regex.Pattern;
  *
  * @author Philip Warner
  */
-public class Author implements Serializable, Utils.ItemWithIdFixup {
+public class Author implements Parcelable, Utils.ItemWithIdFixup {
 
     private static final char SEPARATOR = ',';
-    private static final long serialVersionUID = 4597779234440821872L;
 
     /**
      * FIXME: author middle name; needs internationalisation ?
@@ -50,12 +49,13 @@ public class Author implements Serializable, Utils.ItemWithIdFixup {
      * Marianne De Pierres
      * A. E. Van Vogt
      * Rip Von Ronkel
-     *
      */
     private static final Pattern FAMILY_NAME_PREFIX = Pattern.compile("[LlDd]e|[Vv][oa]n");
 
     /**
      * FIXME: author name suffixes; needs internationalisation ? probably not.
+     *
+     * j/s lower or upper case
      *
      * Foo Bar Jr.
      * Foo Bar Jr
@@ -63,10 +63,12 @@ public class Author implements Serializable, Utils.ItemWithIdFixup {
      * Foo Bar Sr.
      * Foo Bar Sr
      * Foo Bar Senior
-     * (j/s lower or upper case)
+     *
+     * same again, but with comma:
+     * Foo Bar, Jr.
+     *
      *
      * Not covered yet, and seen in the wild:
-     * "James Tiptree, Jr."  -> has comma which breaks algorithm
      * "James jr. Tiptree" -> suffix as a middle name.
      */
     private static final Pattern FAMILY_NAME_SUFFIX = Pattern.compile("[Jj]r\\.|[Jj]r|[Jj]unior|[Ss]r\\.|[Ss]r|[Ss]enior");
@@ -106,47 +108,60 @@ public class Author implements Serializable, Utils.ItemWithIdFixup {
     }
 
     /**
-     * This will return the parsed author name based on a String.
+     * This will parse a string into a family/given name pair
      * The name can be in either "family, given" or "given family" format.
      *
      * Special rules, see {@link #FAMILY_NAME_PREFIX} and {@link #FAMILY_NAME_SUFFIX}
      *
      * Not covered are people with multiple, and not concatenated, last names.
      *
-     * @param name a String containing the name
+     * TODO: would be nice to redo with a rules based approach.
      *
-     * @return a String array containing the family and given names.
+     * @param name a String containing the name
      */
-    public static Author toAuthor(final @NonNull String name) {
+    private void fromString(@NonNull String name) {
         int commaIndex = name.indexOf(",");
-        // if we have a comma, assume the names are already formatted.
         if (commaIndex > 0) {
-            return new Author(name.substring(0, commaIndex).trim(), name.substring(commaIndex + 1).trim());
+            String beforeComma = name.substring(0, commaIndex).trim();
+            String behindComma = name.substring(commaIndex + 1).trim();
+            Matcher matchSuffix = FAMILY_NAME_SUFFIX.matcher(behindComma);
+            if (!matchSuffix.find()) {
+                // not a suffix, assume the names are already formatted.
+                familyName = beforeComma;
+                givenNames = behindComma;
+                return;
+            } else {
+                // concatenate without the comma. Further processing will take care of the suffix.
+                name = beforeComma + " " + behindComma;
+            }
         }
 
         String[] names = name.split(" ");
         // two easy cases
         switch (names.length) {
             case 1:
-                // reminder: don't call new Author(names[0]) as that would recurse.
-                return new Author(names[0], "");
+                familyName = names[0];
+                givenNames = "";
+                return;
             case 2:
-                return new Author(names[1], names[0]);
+                familyName = names[1];
+                givenNames = names[0];
+                return;
         }
 
-        // 3 or more parts, check the family name for any pre and suffixes
-        StringBuilder familyName = new StringBuilder();
+        // we have 3 or more parts, check the family name for suffixes and prefixes
+        StringBuilder buildFamilyName = new StringBuilder();
         // the position to check, start at the end.
         int pos = names.length - 1;
 
         Matcher matchSuffix = FAMILY_NAME_SUFFIX.matcher(names[pos]);
         if (!matchSuffix.find()) {
             // no suffix.
-            familyName.append(names[pos]);
+            buildFamilyName.append(names[pos]);
             pos--;
         } else {
             // suffix and the element before it are part of the last name.
-            familyName.append(names[pos - 1]).append(" ").append(names[pos]);
+            buildFamilyName.append(names[pos - 1]).append(" ").append(names[pos]);
             pos -= 2;
         }
 
@@ -154,17 +169,18 @@ public class Author implements Serializable, Utils.ItemWithIdFixup {
         Matcher matchMiddleName = FAMILY_NAME_PREFIX.matcher(names[pos]);
         if (matchMiddleName.find()) {
             // insert it at the front of the family name
-            familyName.insert(0, names[pos] + " ");
+            buildFamilyName.insert(0, names[pos] + " ");
             pos--;
         }
 
         // everything else are considered given names
-        StringBuilder givenNames = new StringBuilder();
-        for (int i = 0; i <=pos; i++) {
-            givenNames.append(names[i]).append(" ");
+        StringBuilder buildGivenNames = new StringBuilder();
+        for (int i = 0; i <= pos; i++) {
+            buildGivenNames.append(names[i]).append(" ");
         }
 
-        return new Author(familyName.toString().trim(), givenNames.toString().trim());
+        familyName = buildFamilyName.toString().trim();
+        givenNames = buildGivenNames.toString().trim();
     }
 
     /**
@@ -196,9 +212,9 @@ public class Author implements Serializable, Utils.ItemWithIdFixup {
     }
 
     /**
-     * Support for Serializable/encoding to a text file
+     * Support for encoding to a text file
      *
-     * @return the object encoded as a String. If the format changes, update serialVersionUID
+     * @return the object encoded as a String.
      *
      * "familyName, givenName"
      */
@@ -208,21 +224,6 @@ public class Author implements Serializable, Utils.ItemWithIdFixup {
         // Always use givenNames even if blanks because we need to KNOW they are blank. There
         // is a slim chance that family name may contain spaces (eg. 'Anonymous Anarchists').
         return StringList.encodeListItem(SEPARATOR, familyName) + SEPARATOR + " " + StringList.encodeListItem(SEPARATOR, givenNames);
-    }
-
-    private void fromString(final @NonNull String name) {
-        ArrayList<String> list = StringList.decode(SEPARATOR, name);
-        if (list.size() > 0) {
-            if (list.size() < 2) {
-                // We have a name with no comma. Parse it the usual way.
-                Author author = toAuthor(name);
-                familyName = author.familyName;
-                givenNames = author.givenNames;
-            } else {
-                familyName = list.get(0).trim();
-                givenNames = list.get(1).trim();
-            }
-        }
     }
 
     /**
@@ -278,4 +279,34 @@ public class Author implements Serializable, Utils.ItemWithIdFixup {
     public int hashCode() {
         return Objects.hash(id, familyName, givenNames);
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(final @NonNull Parcel dest, int flags) {
+        dest.writeLong(id);
+        dest.writeString(familyName);
+        dest.writeString(givenNames);
+    }
+
+    protected Author(final @NonNull Parcel in) {
+        id = in.readLong();
+        familyName = in.readString();
+        givenNames = in.readString();
+    }
+
+    public static final Creator<Author> CREATOR = new Creator<Author>() {
+        @Override
+        public Author createFromParcel(final @NonNull Parcel in) {
+            return new Author(in);
+        }
+
+        @Override
+        public Author[] newArray(final int size) {
+            return new Author[size];
+        }
+    };
 }

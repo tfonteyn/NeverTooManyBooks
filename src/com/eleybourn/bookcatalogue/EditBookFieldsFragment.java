@@ -118,7 +118,7 @@ public class EditBookFieldsFragment extends BookBaseFragment implements
     @CallSuper
     @Override
     public void onActivityCreated(final @Nullable Bundle savedInstanceState) {
-        Tracker.enterOnActivityCreated(this);
+        Tracker.enterOnActivityCreated(this, savedInstanceState);
         super.onActivityCreated(savedInstanceState);
 
         try {
@@ -203,7 +203,7 @@ public class EditBookFieldsFragment extends BookBaseFragment implements
 
         mFields.add(R.id.price_listed, UniqueId.KEY_BOOK_PRICE_LISTED);
         field = mFields.add(R.id.price_listed_currency, UniqueId.KEY_BOOK_PRICE_LISTED_CURRENCY);
-        initValuePicker(field, R.string.currency, R.id.btn_price_listed_currency, getListPriceCurrencyCodes());
+        initValuePicker(field, R.string.lbl_currency, R.id.btn_price_listed_currency, getListPriceCurrencyCodes());
 
         /* Anthology is provided as a boolean, see {@link Book#initValidators()}*/
         mFields.add(R.id.is_anthology, Book.IS_ANTHOLOGY)
@@ -249,7 +249,8 @@ public class EditBookFieldsFragment extends BookBaseFragment implements
 
         // new book ? load data fields from Extras
         if (book.getBookId() <= 0) {
-            populateFieldsFromBundle(book, requireActivity().getIntent().getExtras());
+            Bundle extras = requireActivity().getIntent().getExtras();
+            populateFieldsFromBundle(book, extras);
         }
 
         populateAuthorListField(book);
@@ -276,7 +277,7 @@ public class EditBookFieldsFragment extends BookBaseFragment implements
             /*
              * From the ISBN Search (add if not there yet)
              */
-            Bundle values = bundle.getParcelable(UniqueId.BKEY_BOOK_DATA);
+            Bundle values = bundle.getBundle(UniqueId.BKEY_BOOK_DATA);
             if (values != null) {
                 for (Field field : mFields) {
                     if (!field.column.isEmpty() && values.containsKey(field.column)) {
@@ -548,7 +549,7 @@ public class EditBookFieldsFragment extends BookBaseFragment implements
     @Override
     @CallSuper
     public void onActivityResult(final int requestCode, final int resultCode, final @Nullable Intent data) {
-        Tracker.enterOnActivityResult(this, requestCode, resultCode);
+        Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
 
         Book book = getBookManager().getBook();
         switch (requestCode) {
@@ -588,6 +589,6 @@ public class EditBookFieldsFragment extends BookBaseFragment implements
                 break;
         }
 
-        Tracker.exitOnActivityResult(this, requestCode, resultCode);
+        Tracker.exitOnActivityResult(this);
     }
 }

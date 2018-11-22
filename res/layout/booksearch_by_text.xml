@@ -11,10 +11,6 @@
         android:gravity="center_horizontal"
         android:orientation="vertical">
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            style="@style/toolbar" />
-
         <AutoCompleteTextView
             android:id="@+id/author"
             style="@style/personalNameTextEntry"
@@ -39,13 +35,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/menu_search" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/info_isbn_name_search"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
     </LinearLayout>
 
 </ScrollView>

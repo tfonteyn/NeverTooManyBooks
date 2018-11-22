@@ -20,6 +20,8 @@
 
 package com.eleybourn.bookcatalogue.entities;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -28,7 +30,6 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -42,8 +43,7 @@ import java.util.regex.Pattern;
  *
  * @author Philip Warner
  */
-public class Series implements Serializable, Utils.ItemWithIdFixup {
-    private static final long serialVersionUID = 1L;
+public class Series implements Parcelable, Utils.ItemWithIdFixup {
 
     private static final String SERIES_REGEX_SUFFIX =
             BookCatalogueApp.getResourceString(R.string.series_number_prefixes)
@@ -247,9 +247,9 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
 
 
     /**
-     * Support for Serializable/encoding to a text file
+     * Support for encoding to a text file
      *
-     * @return the object encoded as a String. If the format changes, update serialVersionUID
+     * @return the object encoded as a String.
      *
      * "name (number)"
      * or
@@ -318,6 +318,36 @@ public class Series implements Serializable, Utils.ItemWithIdFixup {
     public int hashCode() {
         return Objects.hash(id, name);
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(final @NonNull Parcel dest, int flags) {
+        dest.writeLong(id);
+        dest.writeString(name);
+        dest.writeString(number);
+    }
+
+    protected Series(final @NonNull Parcel in) {
+        id = in.readLong();
+        name = in.readString();
+        number = in.readString();
+    }
+
+    public static final Creator<Series> CREATOR = new Creator<Series>() {
+        @Override
+        public Series createFromParcel(final @NonNull Parcel in) {
+            return new Series(in);
+        }
+
+        @Override
+        public Series[] newArray(final int size) {
+            return new Series[size];
+        }
+    };
 
     /**
      * Data class giving resulting series info after parsing a series name

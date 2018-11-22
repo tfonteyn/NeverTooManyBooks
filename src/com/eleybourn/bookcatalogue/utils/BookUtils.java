@@ -162,10 +162,8 @@ public class BookUtils {
             }
         }
 
-        File coverFile = StorageUtils.getCoverFile(db.getBookUuid(bookId));
-
         if (!series.isEmpty()) {
-            series = " (" + series.replace("#", "%23") + ")";
+            series = " (" + series.replace("#", "%23 ") + ")";
         }
 
         //remove trailing 0's
@@ -186,6 +184,8 @@ public class BookUtils {
 
 
         // prepare the cover to post
+        String uuid = db.getBookUuid(bookId);
+        File coverFile = StorageUtils.getCoverFile(uuid);
         Uri coverURI = FileProvider.getUriForFile(activity, GenericFileProvider.AUTHORITY, coverFile);
 
         /*

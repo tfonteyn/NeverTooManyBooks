@@ -305,10 +305,10 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
         switch (cursorRow.getRowKind()) {
             case RowKinds.ROW_KIND_BOOK: {
                 if (cursorRow.isRead()) {
-                    menu.add(Menu.NONE, R.id.MENU_BOOK_UNREAD, 0, R.string.set_as_unread)
+                    menu.add(Menu.NONE, R.id.MENU_BOOK_UNREAD, 0, R.string.menu_set_unread)
                             .setIcon(R.drawable.btn_check_buttonless_off);
                 } else {
-                    menu.add(Menu.NONE, R.id.MENU_BOOK_READ, 0, R.string.set_as_read)
+                    menu.add(Menu.NONE, R.id.MENU_BOOK_READ, 0, R.string.menu_set_read)
                             .setIcon(R.drawable.btn_check_buttonless_on);
                 }
 
@@ -1091,7 +1091,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
     }
 
     /**
-     * Holder for a row that displays a 'language'.
+     * Holder for a row that displays a 'read/unread' status.
      */
     public static class ReadUnreadHolder extends GenericStringHolder {
 
@@ -1105,9 +1105,9 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
         public void set(final @NonNull BooklistRowView rowView, final @NonNull View view, final int level) {
             String s = rowView.getString(mSourceCol);
             if (Datum.toBoolean(s, true)) {
-                s = BookCatalogueApp.getResourceString(R.string.booklist_read);
+                s = BookCatalogueApp.getResourceString(R.string.lbl_read);
             } else {
-                s = BookCatalogueApp.getResourceString(R.string.booklist_unread);
+                s = BookCatalogueApp.getResourceString(R.string.lbl_unread);
             }
             setText(this.mTextView, s, mNoDataId, level);
         }

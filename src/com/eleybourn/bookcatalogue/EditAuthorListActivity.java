@@ -67,7 +67,7 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
     @Override
     @CallSuper
     protected void onCreate(final @Nullable Bundle savedInstanceState) {
-        Tracker.enterOnCreate(this);
+        Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
         setTitle(mBookTitle);
 
@@ -183,7 +183,7 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
 
         final AlertDialog dialog = new AlertDialog.Builder(this)
                 .setMessage(getString(R.string.changed_author_how_apply, from.getSortName(), to.getSortName(), allBooks))
-                .setTitle(R.string.scope_of_change)
+                .setTitle(R.string.title_scope_of_change)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .create();
 

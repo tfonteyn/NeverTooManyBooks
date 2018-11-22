@@ -32,8 +32,8 @@
     <string name="title_isbn_search">Cerca ISBN</string>
     <string name="title_edit_bookshelves">Gestisci librerie</string>
     <string name="menu_edit_bookshelf">Modifica libreria</string>
-    <string name="search_for_books">Cerca per libro</string>
-    <string name="search_hint">Cerca per autore o titolo</string>
+    <string name="lbl_search_for_books">Cerca per libro</string>
+    <string name="title_search_for">Cerca per autore o titolo</string>
     <string name="warning_book_not_found">Il libro scansionato non è stato trovato. A volte il codice a barre corretto si trova all\'interno della copertina. Altrimenti inserisci i dati manualmente.</string>
     <string name="lbl_series_num">#</string>
     <string name="title_import_data">Importa libri</string>
@@ -63,8 +63,8 @@
     <string name="about_lbl_donate">Dona</string>
     <string name="menu_about">Riguardo questa app</string>
     <string name="lbl_price_listed">Prezzo di listino</string>
-    <string name="title_update_fields">Aggiorna i campi automaticamente</string>
-    <string name="title_select_fields_to_update">Seleziona i campi da aggiornare</string>
+    <string name="lbl_update_fields">Aggiorna i campi automaticamente</string>
+    <string name="lbl_update_fields_to_update">Seleziona i campi da aggiornare</string>
     <string name="info_select_fields_to_update">I campi selezionati verranno aggiornato da Internet. Gli altri rimarranno invariati.</string>
     <string name="overwrite_thumbnail">Verranno aggiornati i campi selezionati come indicato, ma opzionalmente è possibile aggiornare anche le miniature di TUTTI i libri.\n\nVuoi sovrascrivere tutte le miniature esistenti? Attenzione, potrebbero occorrere diversi minuti. </string>
     <string name="yes">Sì</string>
@@ -77,7 +77,7 @@
     <string name="info_manage_fields">I campi selezionati sono visibili nella schermata aggiungi/modifica libro. Gli altri rimangono nascosti.</string>
     <string name="anthology_titles">Antologia titoli</string>
     <string name="about_donate_amazon">Amazon Wishlist</string>
-    <string name="toc_same_author">Tutte le storie in questa antologia sono scritte dallo stesso autore</string>
+    <string name="lbl_toc_same_author">Tutte le storie in questa antologia sono scritte dallo stesso autore</string>
     <string name="menu_delete_toc_entry">Cancella titolo dall\'antologia</string>
     <string name="lbl_is_anthology">Questo libro è una antologia?</string>
     <string name="menu_populate_toc">Inserisci titoli automaticamente (SPERIMENTALE)</string>
@@ -98,7 +98,7 @@
     <string name="warning_duplicate_book_message">Il libro che stai cercando di aggiungere è già presente nel database, vuoi aggiungerne un\'altra copia?</string>
     <string name="menu_cover_add_from_gallery">Dalla Galleria…</string>
     <string name="backup_request">Vuoi effettuare il backup del database nella scheda SD?</string>
-    <string name="title_backup">Backup?</string>
+    <string name="lbl_backup_dialog">Backup?</string>
     <string name="searching_amazon_books">Ricerca in Amazon</string>
     <string name="searching_google_books">Ricerca in Google Books</string>
     <string name="searching_library_thing">Ricerca in LibraryThing</string>
@@ -108,7 +108,7 @@
     <string name="lbl_genre">Genere</string>
     <string name="not_set">Non impostato</string>
     <string name="menu_search_books">Cerca libri</string>
-    <string name="info_isbn_name_search">Aggiungere libri mediante codice ISBN è molto più preciso rispetto ad aggiungerli per autore e titolo ed è in genere consigliato. Nota che a volte il codice ISBN si trova all\'interno della copertina. \n\n</string>
+    <string name="hint_book_search_by_text">Aggiungere libri mediante codice ISBN è molto più preciso rispetto ad aggiungerli per autore e titolo ed è in genere consigliato. Nota che a volte il codice ISBN si trova all\'interno della copertina. \n\n</string>
     <string name="about_help_click_here">Tocca qui per accedere all\'aiuto online</string>
     <string name="vldt_unable_to_get_value">Impossibile ottenere un valore per \'%s\'</string>
     <string name="vldt_integer_expected">È previsto un valore intero per \'%s\'</string>
@@ -166,7 +166,7 @@
     <string name="unsaved_edits_title">Modifiche non salvate</string>
     <string name="changed_author_how_apply">Hai modificato l\'autore da:\n  \'%1$s\' a \n  \'%2$s\'\nCome desideri applicare questa modifica?\nNota: La scelta \'%3$s\' sarà applicata immediatamente.</string>
     <string name="btn_this_book">Questo libro</string>
-    <string name="scope_of_change">Intervallo modifica</string>
+    <string name="title_scope_of_change">Intervallo modifica</string>
     <string name="changed_series_how_apply">Hai modificato le serie da:\n  \'%1$s\' a \n  \'%2$s\'\nCome desideri applicare questa modifica?\nNota: La scelta \'%3$s\' sarà applicata immediatamente.</string>
     <string name="warning_unable_to_find_book">Impossibile trovare il libro specificato</string>
     <string name="list_and">e</string>
@@ -178,9 +178,9 @@
     <string name="progress_msg_loading">Caricamento…</string>
     <string name="warning_cover_not_found">Immagine non trovata</string>
     <string name="warning_select_min_1_field">Seleziona almeno un campo da aggiornare</string>
-    <string name="usage_copy_if_blank">Copia se vuoto</string>
-    <string name="usage_add_extra">Aggiungi altri dati</string>
-    <string name="usage_overwrite">Sovrascrivi dati esistenti</string>
+    <string name="lbl_field_usage_copy_if_blank">Copia se vuoto</string>
+    <string name="lbl_field_usage_add_extra">Aggiungi altri dati</string>
+    <string name="lbl_field_usage_overwrite">Sovrascrivi dati esistenti</string>
     <string name="progress_msg_cancelling">Annullamento</string>
     <string name="progress_msg_starting_search">Inizio ricerca</string>
     <string name="lt_info">Questa applicazione utilizza LibraryThing come fonte ulteriore di informazioni sulle serie dei libri e per reperire copertine alternative. Per utilizzare LibraryThing è necessario essere registrati (è gratuita) e richiedere la chiave sviluppatore LibraryThing (anch\'essa gratuita).</string>
@@ -212,10 +212,10 @@
     <string name="menu_share_this">Condividi</string>
     <string name="email_export">Inviare il file di esportazione per email?</string>
     <string name="menu_cover_crop">Ritaglia miniatura</string>
-    <string name="task_errors">Task Errors</string>
+    <string name="title_task_errors">Task Errors</string>
     <string name="retry">Riprova</string>
-    <string name="delete_event">Cancella evento</string>
-    <string name="delete_task">Cancella operazione</string>
+    <string name="menu_delete_event">Cancella evento</string>
+    <string name="menu_delete_task">Cancella operazione</string>
     <string name="my_books">I miei libri</string>
     <string name="loan_return_book">Presta, ritorna o modifica libro</string>
     <string name="menu_admin_and_prefs">Amministrazione e Preferenze</string>
@@ -236,9 +236,9 @@
     <string name="gr_access_error">Problema di rete nell\'accedere a GoodReads. Verifica che il sito di GoodReads sia accessibile, e, se il problema persiste, contatta il supporto</string>
     <string name="menu_preferences_other">Altre Preferenze</string>
     <string name="user_interface">Interfaccia Utente</string>
-    <string name="background_tasks">Operazioni in background</string>
-    <string name="cleanup_old_tasks">Cancella operazioni precedenti</string>
-    <string name="cleanup_old_events">Cancella eventi trascorsi</string>
+    <string name="menu_background_tasks">Operazioni in background</string>
+    <string name="btn_cleanup_old_tasks">Cancella operazioni precedenti</string>
+    <string name="btn_cleanup_old_events">Cancella eventi trascorsi</string>
     <string name="text_and_or_isbn">Testo e/o ISBN</string>
     <string name="search_criteria">Criteri di ricerca</string>
     <string name="menu_add_book_manually">Aggiungi Manualmente</string>
@@ -253,7 +253,7 @@
     <string name="lbl_by_authors">da %1$s</string>
     <string name="warning_no_matching_book_found">Nessuna corrispondenza trovata</string>
     <string name="warning_no_isbn_stored_for_book">Codice ISBN non memorizzato</string>
-    <string name="select_an_action">Seleziona un\'azione</string>
+    <string name="title_select_an_action">Seleziona un\'azione</string>
     <string name="gr_auth_check">Verifica autorizzazione Goodreads</string>
     <string name="gr_auth_failed">Autorizzazione Goodreads fallita</string>
     <string name="gr_auth_successful">Autorizzazione Goodreads concessa</string>
@@ -276,8 +276,8 @@
     <string name="crash_dialog_text">BookCatalogue sembra essersi bloccato. Se possibile, comunicaci qui sotto qualsiasi cosa ritieni pertinente e clicca \"OK\" per inviarci un\'email relativa al blocco. Potrai verificare l\'email prima dell\'invio.</string>
     <string name="crash_dialog_comment_prompt">I tuoi commenti (o lascia in bianco):</string>
     <string name="crash_dialog_ok_message">Grazie!</string>
-    <string name="booklist_read">Letto</string>
-    <string name="booklist_unread">Non letto</string>
+    <string name="lbl_read">Letto</string>
+    <string name="lbl_unread">Non letto</string>
     <string name="no_date">(data non indicata)</string>
     <string name="thumbnails_show">Mostra miniature</string>
     <string name="thumbnails_prefer_large">Mostra miniature grandi</string>
@@ -303,7 +303,7 @@
     <string name="progress_msg_rebuilding_search_index">Ricostruzione indice di ricerca…</string>
     <string name="progress_msg_optimizing_databases">Ottimizzazione archivi…</string>
     <string name="progress_msg_starting_up">Avvio…</string>
-    <string name="title_book_catalogue_startup">Avvio BookCatalogue</string>
+    <string name="lbl_book_catalogue_startup">Avvio BookCatalogue</string>
     <string name="blp_list_state">Stato elenco libri</string>
     <string name="blp_state_start_expanded">Avvia con elelnco libri espansa</string>
     <string name="blp_state_start_collapsed">Avvia con elenco libri compressa</string>
@@ -342,7 +342,7 @@
     										altri parametri da applicare a tutti i tuoi stili quando possibile.
     										\n\nDa questa schermata è anche possibile modificare il menu degli stili e gli stili stessi.
 </string>
-    <string name="title_preferred_styles">Stili preferiti</string>
+    <string name="lbl_preferred_styles">Stili preferiti</string>
     <string name="title_edit_style_colon_name">Modifica stile: %1$s</string>
     <string name="menu_add_style">Aggiungi stile</string>
     <string name="title_clone_style_colon_name">Duplica stile: %1$s</string>
@@ -370,7 +370,7 @@
     <string name="warning_thing_must_not_be_blank">%1$s deve contenere un valore</string>
     <string name="edit">Modifica</string>
     <string name="groupings">Raggruppamenti</string>
-    <string name="title_preferences">Preferenze</string>
+    <string name="lbl_preferences">Preferenze</string>
     <string name="error_unexpected_error">Si è verificato un errore inatteso, per favore invia i dettagli all\'Assistenza usando l\'opzione \'Aiuto\' nel menu principale</string>
     <string name="menu_delete_style">Elimina stile</string>
     <string name="menu_edit_booklist_style">Modifica stile</string>
@@ -463,16 +463,16 @@
     <string name="info_option_not_available_until_book_saved">Opzione disponibile dopo aver salvato il libro</string>
     <string name="menu_add_book_by_barcode_scan">Acquisisci codice a barre/ISBN</string>
     <string name="menu_add_book_by_isbn">Inserisci codice ISBN</string>
-    <string name="allow_asin">Consenti codice ASIN</string>
+    <string name="lbl_allow_asin">Consenti codice ASIN</string>
     <string name="warning_x_is_not_a_valid_isbn_or_asin">%1$s non è un codice ISBN o ASIN valido</string>
     <string name="read_year">Leggi Anno</string>
     <string name="read_month">Leggi Mese</string>
     <string name="read_day">Leggi Giorno</string>
     <string name="style_builtin_read_date">Lettura Data</string>
-    <string name="details_have_changed">Dettagli modificati</string>
-    <string name="you_have_unsaved_changes">Vi sono modifiche non salvate, se esci adesso saranno perse.</string>
+    <string name="lbl_details_have_changed">Dettagli modificati</string>
+    <string name="warning_unsaved_changes">Vi sono modifiche non salvate, se esci adesso saranno perse.</string>
     <string name="btn_confirm_exit">Esci</string>
-    <string name="continue_editing">Annulla</string>
+    <string name="btn_continue_editing">Annulla</string>
     <string name="warning_title_already_exists">Titolo già presente in elenco</string>
     <string name="year">Anno</string>
     <string name="month">Mese</string>
@@ -527,10 +527,10 @@
 
     <!-- Hint displayed when an export or database backup is done -->
 
-    <!-- Button text on the goodreads activity; only displayed after user has registered -->
+    <!-- Button text on the Goodreads activity; only displayed after user has registered -->
     <string name="gr_btn_forget_credentials">Cancella Credenziali</string>
 
-    <!-- Extra text displayed on the goodreads activity when a user HAS registered -->
+    <!-- Extra text displayed on the Goodreads activity when a user HAS registered -->
     <string name="gr_auth_blurb_part4">Questa applicazione sembra essere già stata autorizzata. Se desideri
     cancellare le credenziali da questo apparecchio, premi il pulsante qui sotto. Ricordati altresì che occorre 
     anche rimuovere l\'autorizzazione all\'applicazione nel sito di Goodreads.
@@ -551,7 +551,7 @@
     <!-- Displayed in progress dialog when exporting covers -->
     <string name="progress_msg_covers">%1$s copertine processate (%2$s mancanti)</string>
     <!-- Heading in Admin activity -->
-    <string name="title_advanced_options">Opzioni Avanzate</string>
+    <string name="lbl_advanced_options">Opzioni Avanzate</string>
     <!-- Showed in progress dialog when an import starts -->
     <string name="progress_msg_backing_up">Creazione backup in corso…</string>
     <!-- Showed in progress dialog when an import starts -->

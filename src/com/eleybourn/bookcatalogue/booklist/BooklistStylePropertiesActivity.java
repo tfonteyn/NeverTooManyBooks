@@ -32,8 +32,6 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.eleybourn.bookcatalogue.BuildConfig;
-import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
@@ -84,7 +82,7 @@ public class BooklistStylePropertiesActivity extends BaseActivity {
     @Override
     @CallSuper
     protected void onCreate(final @Nullable Bundle savedInstanceState) {
-        Tracker.enterOnCreate(this);
+        Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
 
         findViewById(R.id.confirm).setOnClickListener(new OnClickListener() {
@@ -169,7 +167,7 @@ public class BooklistStylePropertiesActivity extends BaseActivity {
     @Override
     @CallSuper
     protected void onActivityResult(final int requestCode, final int resultCode, final @Nullable Intent data) {
-        Tracker.enterOnActivityResult(this,requestCode,resultCode);
+        Tracker.enterOnActivityResult(this,requestCode,resultCode, data);
         switch (requestCode) {
             case BooklistStyleGroupsActivity.REQUEST_CODE: {/* 06ed8d0e-7120-47aa-b47e-c0cd46361dcb */
                 if (resultCode == Activity.RESULT_OK) {
@@ -195,7 +193,7 @@ public class BooklistStylePropertiesActivity extends BaseActivity {
                 break;
         }
 
-        Tracker.exitOnActivityResult(this, requestCode, resultCode);
+        Tracker.exitOnActivityResult(this);
     }
 
     /**

@@ -99,7 +99,7 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
     @Override
     @CallSuper
     public void onCreate(final @Nullable Bundle savedInstanceState) {
-        Tracker.enterOnCreate(this);
+        Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
 
         Bundle extras = getIntent().getExtras();
@@ -118,7 +118,7 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
             mSearchSites = extras.getInt(REQUEST_BKEY_SEARCH_SITES, SearchSites.SEARCH_ALL);
         }
 
-        setTitle(R.string.title_select_fields_to_update);
+        setTitle(R.string.lbl_update_fields_to_update);
         LibraryThingManager.showLtAlertIfNecessary(this, false, "update_from_internet");
 
         mListContainer = findViewById(R.id.manage_fields_scrollview);
@@ -234,7 +234,7 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
                     // Verify - this can be a dangerous operation
                     AlertDialog dialog = new AlertDialog.Builder(UpdateFromInternetActivity.this)
                             .setMessage(R.string.overwrite_thumbnail)
-                            .setTitle(R.string.title_update_fields)
+                            .setTitle(R.string.lbl_update_fields)
                             .setIconAttribute(android.R.attr.alertDialogIcon)
                             .create();
                     dialog.setButton(AlertDialog.BUTTON_POSITIVE, UpdateFromInternetActivity.this.getString(R.string.yes),
@@ -311,8 +311,8 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
     }
 
     @Override
-    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-        Tracker.enterOnActivityResult(this, requestCode, resultCode);
+    protected void onActivityResult(final int requestCode, final int resultCode, final @Nullable Intent data) {
+        Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
         switch (requestCode) {
             case SearchAdminActivity.REQUEST_CODE: /* 4266b81b-137b-4647-aa1c-8ec0fc8726e6 */
                 if (resultCode == Activity.RESULT_OK && data != null) {
@@ -325,7 +325,7 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
                 break;
         }
 
-        Tracker.exitOnActivityResult(this, requestCode, resultCode);
+        Tracker.exitOnActivityResult(this);
     }
 
     private int countUserSelections() {
@@ -464,11 +464,11 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
             int getStringId() {
                 switch (this) {
                     case CopyIfBlank:
-                        return R.string.usage_copy_if_blank;
+                        return R.string.lbl_field_usage_copy_if_blank;
                     case AddExtra:
-                        return R.string.usage_add_extra;
+                        return R.string.lbl_field_usage_add_extra;
                     case Overwrite:
-                        return R.string.usage_overwrite;
+                        return R.string.lbl_field_usage_overwrite;
                     default:
                         return R.string.usage_skip;
                 }

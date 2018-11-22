@@ -172,10 +172,10 @@ public class Logger {
     public static void clearLog() {
         try {
             try {
-                File orig = new File(StorageUtils.getErrorLog());
-                if (orig.exists() && orig.length() > 0) {
+                File logFile = new File(StorageUtils.getErrorLog());
+                if (logFile.exists() && logFile.length() > 0) {
                     File backup = new File(StorageUtils.getErrorLog() + ".bak");
-                    StorageUtils.renameFile(orig, backup);
+                    StorageUtils.renameFile(logFile, backup);
                 }
             } catch (Exception ignore) {
                 // Ignore backup failure...

@@ -34,4 +34,11 @@
         android:orderInCategory="3"
         android:title="@string/menu_about" />
 
+    <item
+        android:id="@+id/nav_debug_dump_events"
+        android:icon="@drawable/ic_lens"
+        android:menuCategory="secondary"
+        android:orderInCategory="10"
+        android:title="@string/debug_subject" />
+
 </menu>

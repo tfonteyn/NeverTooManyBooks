@@ -75,7 +75,7 @@ public class PropertyGroup {
 
     /** Global PropertyGroup definition */
     private static final int GRP_ADVANCED_OPTIONS_ID = ++GRP_COUNT;
-    public static final PropertyGroup GRP_ADVANCED_OPTIONS = mGroups.addGroup(GRP_ADVANCED_OPTIONS_ID, R.string.title_advanced_options, 80);
+    public static final PropertyGroup GRP_ADVANCED_OPTIONS = mGroups.addGroup(GRP_ADVANCED_OPTIONS_ID, R.string.lbl_advanced_options, 80);
 
     /** ID of this group */
     private final int id;

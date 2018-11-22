@@ -97,8 +97,8 @@ public class UpdateFromInternetTask extends ManagedTask {
     @SuppressWarnings("FieldCanBeLocal")
     private final SearchManager.SearchListener mSearchListener = new SearchManager.SearchListener() {
         @Override
-        public boolean onSearchFinished(final @NonNull Bundle bookData, final boolean cancelled) {
-            return UpdateFromInternetTask.this.onSearchFinished(bookData, cancelled);
+        public boolean onSearchFinished(final @NonNull Bundle bookData, final boolean wasCancelled) {
+            return UpdateFromInternetTask.this.onSearchFinished(bookData, wasCancelled);
         }
     };
 
@@ -224,8 +224,8 @@ public class UpdateFromInternetTask extends ManagedTask {
                 // Cache the value to indicate we need thumbnails (or not).
                 boolean tmpThumbWanted = mCurrentBookFieldUsages.containsKey(UniqueId.BKEY_HAVE_THUMBNAIL);
                 if (tmpThumbWanted) {
-                    // delete any temporary thumbnails //
-                    StorageUtils.deleteFile(StorageUtils.getTempCoverFile());
+                    // delete any leftover temporary thumbnails
+                    StorageUtils.deleteTempCoverFile();
                 }
 
                 // Use this to flag if we actually need a search.
@@ -429,8 +429,8 @@ public class UpdateFromInternetTask extends ManagedTask {
                         copyThumb = true;
                     }
                     if (copyThumb) {
-                        File file = StorageUtils.getCoverFile(uuid);
-                        StorageUtils.renameFile(downloadedFile, file);
+                        File destination = StorageUtils.getCoverFile(uuid);
+                        StorageUtils.renameFile(downloadedFile, destination);
                     } else {
                         StorageUtils.deleteFile(downloadedFile);
                     }

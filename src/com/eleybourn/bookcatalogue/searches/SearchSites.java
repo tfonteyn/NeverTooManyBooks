@@ -24,8 +24,6 @@ import java.util.List;
  */
 public class SearchSites {
 
-    private static final String TAG = "SearchManager";
-
     /** Options indicating a search source to use */
     public static final int SEARCH_GOOGLE = 1;
     /** Options indicating a search source to use */
@@ -38,10 +36,9 @@ public class SearchSites {
     public static final int SEARCH_ISFDB = 1 << 4;
     /** Mask including all search sources */
     public static final int SEARCH_ALL = SEARCH_GOOGLE | SEARCH_AMAZON | SEARCH_LIBRARY_THING | SEARCH_GOODREADS | SEARCH_ISFDB;
-
     /** */
     public static final String BKEY_SEARCH_SITES = "searchSitesList";
-
+    private static final String TAG = "SearchManager";
     /** the default search site order */
     private static final ArrayList<Site> mSearchOrderDefaults = new ArrayList<>();
     /** the default search site order */
@@ -54,7 +51,7 @@ public class SearchSites {
     private static ArrayList<Site> mPreferredCoverSearchOrder;
 
     static {
-        /*ENHANCE: note to self... redo this mess. To complicated for what it is doing. Isolate ALL functionality in SearchSite
+        /*ENHANCE: note to self... redo this mess. To complicated for what it is doing. Isolate ALL functionality in Site
 
          * default search order
          *
@@ -158,10 +155,7 @@ public class SearchSites {
         boolean isbnOnly = false;
 
         @SuppressWarnings("SameParameterValue")
-        Site(final int bit,
-             final @NonNull String name,
-             final int order,
-             final boolean enabled) {
+        Site(final int bit, final @NonNull String name, final int order, final boolean enabled) {
             this.id = bit;
             this.name = name;
             this.order = order;
@@ -171,11 +165,7 @@ public class SearchSites {
         }
 
         @SuppressWarnings("SameParameterValue")
-        Site(final int id,
-             final @NonNull String name,
-             final int order,
-             final boolean enabled,
-             final int reliability) {
+        Site(final int id, final @NonNull String name, final int order, final boolean enabled, final int reliability) {
             this.id = id;
             this.name = name;
             this.order = order;

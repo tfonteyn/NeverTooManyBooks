@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/title"
-        android:text="@string/toc_same_author" />
+        android:text="@string/lbl_toc_same_author" />
 
     <AutoCompleteTextView
         android:id="@+id/add_author"

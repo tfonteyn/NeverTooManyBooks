@@ -75,7 +75,7 @@ public class BooklistStyleGroupsActivity extends EditObjectListActivity<GroupWra
     @Override
     @CallSuper
     protected void onCreate(final @Nullable Bundle savedInstanceState) {
-        Tracker.enterOnCreate(this);
+        Tracker.enterOnCreate(this, savedInstanceState);
         // Get the intent and get the style and other settings
         Intent intent = this.getIntent();
         mStyle = (BooklistStyle) intent.getSerializableExtra(REQUEST_BKEY_STYLE);

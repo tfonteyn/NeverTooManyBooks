@@ -32,8 +32,8 @@
     <string name="title_isbn_search">Szukj wg ISBN</string>
     <string name="title_edit_bookshelves">Zarządzaj półkami</string>
     <string name="menu_edit_bookshelf">Edycja półek</string>
-    <string name="search_for_books">Szukaj książek</string>
-    <string name="search_hint">Szukaj autora lub tytułu</string>
+    <string name="lbl_search_for_books">Szukaj książek</string>
+    <string name="title_search_for">Szukaj autora lub tytułu</string>
     <string name="warning_book_not_found">Zeskanowana książka nie została odnaleziona. Spóbuj ponownie z kodem, który może znajdować się w środku okładki lub wprowadź dane ręcznie.</string>
     <string name="lbl_series_num">tom#</string>
     <string name="title_import_data">Importuj książki</string>
@@ -64,8 +64,8 @@
     <string name="about_lbl_donate">Wesprzyj</string>
     <string name="menu_about">O programie</string>
     <string name="lbl_price_listed">Cena</string>
-    <string name="title_update_fields">Automatycznie aktualizuj pola wg danych z sieci</string>
-    <string name="title_select_fields_to_update">Wybierz pola do aktualizacji</string>
+    <string name="lbl_update_fields">Automatycznie aktualizuj pola wg danych z sieci</string>
+    <string name="lbl_update_fields_to_update">Wybierz pola do aktualizacji</string>
     <string name="info_select_fields_to_update">Wybrane pola będą zaktualizowane wg danych z sieci. Pozostałe nie zostaną zmienione.</string>
     <string name="overwrite_thumbnail">Wybrane pola zostaną zaktualizowane, natomiast okładki mogą by opcjonalnie pobrane dla wszystkich książek.\n\nCzy chcesz zastąpić wszystkie istniejące okładki? Uwaga - może to zająć sporo czasu…</string>
     <string name="yes">Tak</string>
@@ -78,7 +78,7 @@
     <string name="info_manage_fields">Wybrane pola są widoczne na ekranach dodawania i edycji książki. Pozostałe są ukryte.</string>
     <string name="anthology_titles">Tytuły antologii</string>
     <string name="about_donate_amazon">Amazon Wishlist</string>
-    <string name="toc_same_author">Wszystkie ksiązki w tej antologii są napisane przez tego samego autora</string>
+    <string name="lbl_toc_same_author">Wszystkie ksiązki w tej antologii są napisane przez tego samego autora</string>
     <string name="menu_delete_toc_entry">Usuń pozycję z antologii</string>
     <string name="lbl_is_anthology">Czy ta książka jest antologią?</string>
     <string name="menu_populate_toc">Automatycznie obsadź pozycje antologii(EKSPERYMENTALNIE)</string>
@@ -99,7 +99,7 @@
     <string name="warning_duplicate_book_message">Książka, którą próbujesz dodać już istnieje w katalogu, czy na pewno chcesz dodać jeszcze jeden egzemplarz?</string>
     <string name="menu_cover_add_from_gallery">Z galerii…</string>
     <string name="backup_request">Czy chcesz wykonac kopię zapasową na karcie SD?</string>
-    <string name="title_backup">Kopia?</string>
+    <string name="lbl_backup_dialog">Kopia?</string>
     <string name="searching_amazon_books">Przeszukiwanie Amazon</string>
     <string name="searching_google_books">Przeszukiwanie Google Books</string>
     <string name="searching_library_thing">Przeszukiwanie LibraryThing</string>
@@ -109,7 +109,7 @@
     <string name="lbl_genre">Gatunek</string>
     <string name="not_set">Nie wybrany(a)</string>
     <string name="menu_search_books">Przeszukaj książki</string>
-    <string name="info_isbn_name_search">Dodawanie wg ISBN jest zalecane - bardziej dokładne niż wg autora i tytułu. W niektórych książkach kod kreskowy znajdziesz wewnątrz okładki. \n\n</string>
+    <string name="hint_book_search_by_text">Dodawanie wg ISBN jest zalecane - bardziej dokładne niż wg autora i tytułu. W niektórych książkach kod kreskowy znajdziesz wewnątrz okładki. \n\n</string>
     <string name="about_help_click_here">Kliknij tu by wejść do pomocy online</string>
     <string name="vldt_unable_to_get_value">Nie mogę pobrać wartości dla \'%s\'</string>
     <string name="vldt_integer_expected">Oczekiwana wartość całkowita dla \'%s\'</string>
@@ -167,7 +167,7 @@
     <string name="unsaved_edits_title">Niezapisane zmiany</string>
     <string name="changed_author_how_apply">Zmieniłeś autora z :\n  \'%1$s\' na \n  \'%2$s\'\nJak chcesz zastosować tę zmianę?\nUwaga: Zmiana \'%3$s\' zostanie wykonana natychmiast.</string>
     <string name="btn_this_book">Ta książka</string>
-    <string name="scope_of_change">Zakres zmiany</string>
+    <string name="title_scope_of_change">Zakres zmiany</string>
     <string name="changed_series_how_apply">Zmieniłeś serię z:\n  \'%1$s\' na \n  \'%2$s\'\nJak chcesz zastosować tę zmianę?\nNote: Wybrane \'%3$s\' będą zmienione natychmiast.</string>
     <string name="warning_unable_to_find_book">Nie mogę znaleźć tej książki</string>
     <string name="list_and">i</string>
@@ -179,9 +179,9 @@
     <string name="progress_msg_loading">Pobieram…</string>
     <string name="warning_cover_not_found">Zdjęcie nie znalezione</string>
     <string name="warning_select_min_1_field">Wybierz przynajmniej jedno pole do zaktualizowania</string>
-    <string name="usage_copy_if_blank">Kopiuj, gdy puste</string>
-    <string name="usage_add_extra">Dopisz do istniejącego</string>
-    <string name="usage_overwrite">Nadpisz istniejące dane</string>
+    <string name="lbl_field_usage_copy_if_blank">Kopiuj, gdy puste</string>
+    <string name="lbl_field_usage_add_extra">Dopisz do istniejącego</string>
+    <string name="lbl_field_usage_overwrite">Nadpisz istniejące dane</string>
     <string name="progress_msg_cancelling">Przerywam..</string>
     <string name="progress_msg_starting_search">Rozpoczynam szukanie</string>
     <string name="lt_info">Ten program wykorzystuje serwis LibraryThing jako żródło informacji o książkach, ich seriach, okładkach. W tym celu powinienieś zarejestrować się (darmowo) w LibraryThing i uzyskać klucz deweloperski LibraryThing (również darmowo).</string>

@@ -33,7 +33,7 @@ public class GoodreadsUtils {
         View root = inf.inflate(R.layout.goodreads_options_list, null);
 
         final AlertDialog dialog = new AlertDialog.Builder(activity).setView(root).create();
-        dialog.setTitle(R.string.select_an_action);
+        dialog.setTitle(R.string.title_select_an_action);
         dialog.show();
 
         /* Goodreads SYNC Link */

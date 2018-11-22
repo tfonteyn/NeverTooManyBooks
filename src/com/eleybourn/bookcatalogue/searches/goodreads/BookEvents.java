@@ -240,7 +240,7 @@ public class BookEvents {
 //            	}}));
 
             // DELETE EVENT
-            items.add(new ContextDialogItem(context.getString(R.string.delete_event), new Runnable() {
+            items.add(new ContextDialogItem(context.getString(R.string.menu_delete_event), new Runnable() {
                 @Override
                 public void run() {
                     BookCatalogueApp.getQueueManager().deleteEvent(eventId);

@@ -100,8 +100,8 @@ public class AuthUserApiHandler extends ApiHandler {
      * </GoodreadsResponse>
      */
     private void buildFilters() {
-        XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "user").setStartAction(mHandleUserStart);
-        XmlFilter.buildFilter(mRootFilter, "GoodreadsResponse", "user", "name").setEndAction(mHandleUsernameEnd);
+        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_USER).setStartAction(mHandleUserStart);
+        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_USER, XML_NAME).setEndAction(mHandleUsernameEnd);
     }
 
     @Nullable

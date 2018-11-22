@@ -39,7 +39,7 @@ import com.eleybourn.bookcatalogue.tasks.BCQueueManager;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 /**
- * Task to send a single books details to goodreads.
+ * Task to send a single books details to Goodreads.
  *
  * @author Philip Warner
  */

@@ -40,8 +40,6 @@ import java.util.Objects;
  *  Dialog to edit a single bookshelf.
  *
  * Calling point is a List.
- *
- * TEST new 'merge' behaviour
  */
 public class EditBookshelfDialog {
     @NonNull
@@ -132,22 +130,12 @@ public class EditBookshelfDialog {
         Objects.requireNonNull(existingShelf);
 
         final AlertDialog dialog = new AlertDialog.Builder(mContext)
-                .setMessage("The shelf you are renaming already exists. Would you like to merge them?")
                 .setTitle(R.string.menu_edit_bookshelf)
+                .setMessage(R.string.warning_merge_bookshelves)
                 .create();
 
-        dialog.setButton(DialogInterface.BUTTON_POSITIVE, mContext.getString(R.string.btn_confirm_update), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(final DialogInterface dialog, final int which) {
-                dialog.dismiss();
-
-                // just update
-                mDb.updateBookshelf(from.id, newName);
-                mOnChanged.run();
-            }
-        });
-
-        dialog.setButton(DialogInterface.BUTTON_NEUTRAL, mContext.getString(R.string.btn_merge), new DialogInterface.OnClickListener() {
+        dialog.setButton(DialogInterface.BUTTON_POSITIVE, mContext.getString(R.string.btn_merge),
+                new DialogInterface.OnClickListener() {
             @Override
             public void onClick(final DialogInterface dialog, final int which) {
                 dialog.dismiss();
@@ -157,6 +145,13 @@ public class EditBookshelfDialog {
             }
         });
 
+        dialog.setButton(DialogInterface.BUTTON_NEGATIVE, mContext.getString(android.R.string.cancel),
+                new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(final DialogInterface dialog, final int which) {
+                dialog.dismiss();
+            }
+        });
         dialog.show();
     }
 }

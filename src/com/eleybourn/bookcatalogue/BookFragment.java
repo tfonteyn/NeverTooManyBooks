@@ -23,12 +23,12 @@ import com.eleybourn.bookcatalogue.Fields.Field;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.booklist.FlattenedBooklist;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
-import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.BookManager;
+import com.eleybourn.bookcatalogue.entities.Publisher;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.entities.TOCEntry;
 import com.eleybourn.bookcatalogue.utils.BundleUtils;
@@ -118,11 +118,15 @@ public class BookFragment extends BookBaseFragment implements BookManager {
     @Override
     @CallSuper
     public void onActivityCreated(final @Nullable Bundle savedInstanceState) {
-        Tracker.enterOnActivityCreated(this);
+        Tracker.enterOnActivityCreated(this, savedInstanceState);
         // cache to avoid multiple calls to requireActivity()
         mActivity = (BaseActivity) requireActivity();
 
         super.onActivityCreated(savedInstanceState);
+
+        ArrayList<Publisher> pl = getArguments().getParcelableArrayList("par");
+
+
 
         initBooklist(getArguments(), savedInstanceState);
 
@@ -675,7 +679,7 @@ public class BookFragment extends BookBaseFragment implements BookManager {
 
     @Override
     public void onActivityResult(final int requestCode, final int resultCode, final @Nullable Intent data) {
-        Tracker.enterOnActivityResult(this,requestCode,resultCode);
+        Tracker.enterOnActivityResult(this,requestCode,resultCode, data);
         switch (requestCode) {
             case EditBookFragment.REQUEST_CODE: {
                 if (resultCode == EditBookFragment.RESULT_CHANGES_MADE) {
@@ -692,7 +696,7 @@ public class BookFragment extends BookBaseFragment implements BookManager {
                 break;
         }
 
-        Tracker.exitOnActivityResult(this,requestCode,resultCode);
+        Tracker.exitOnActivityResult(this);
     }
 
 //    /**

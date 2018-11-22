@@ -36,8 +36,6 @@ import android.widget.CheckedTextView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
-import com.eleybourn.bookcatalogue.BuildConfig;
-import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter;
@@ -79,9 +77,9 @@ public class BooklistPreferredStylesActivity extends EditObjectListActivity<Book
     @Override
     @CallSuper
     protected void onCreate(final @Nullable Bundle savedInstanceState) {
-        Tracker.enterOnCreate(this);
+        Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
-        this.setTitle(R.string.title_preferred_styles);
+        this.setTitle(R.string.lbl_preferred_styles);
 
         // We want context menus on the ListView
         registerForContextMenu(getListView());
@@ -158,7 +156,7 @@ public class BooklistPreferredStylesActivity extends EditObjectListActivity<Book
     @Override
     @CallSuper
     protected void onActivityResult(final int requestCode, final int resultCode, final @Nullable Intent data) {
-        Tracker.enterOnActivityResult(this, requestCode, resultCode);
+        Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
         switch (requestCode) {
             case BooklistStylePropertiesActivity.REQUEST_CODE: { /* fadd7b9a-7eaf-4af9-90ce-6ffb7b93afe6 */
                 if (resultCode == BooklistStylePropertiesActivity.RESULT_CHANGES_MADE) {
@@ -175,7 +173,7 @@ public class BooklistPreferredStylesActivity extends EditObjectListActivity<Book
                 break;
         }
 
-        Tracker.exitOnActivityResult(this, requestCode, resultCode);
+        Tracker.exitOnActivityResult(this);
     }
 
     /**

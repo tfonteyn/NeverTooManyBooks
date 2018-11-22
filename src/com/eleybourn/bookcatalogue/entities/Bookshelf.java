@@ -1,16 +1,16 @@
 package com.eleybourn.bookcatalogue.entities;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
-import java.io.Serializable;
 import java.util.Objects;
 
-public class Bookshelf implements Serializable, Utils.ItemWithIdFixup {
-    private static final long serialVersionUID = 1L;
+public class Bookshelf implements Parcelable, Utils.ItemWithIdFixup {
 
     /** how to concat bookshelf names */
     public static final Character SEPARATOR = ',';
@@ -41,9 +41,9 @@ public class Bookshelf implements Serializable, Utils.ItemWithIdFixup {
     }
 
     /**
-     * Support for Serializable/encoding to a text file
+     * Support for encoding to a text file
      *
-     * @return the object encoded as a String. If the format changes, update serialVersionUID
+     * @return the object encoded as a String.
      *
      * "name"
      */
@@ -95,4 +95,32 @@ public class Bookshelf implements Serializable, Utils.ItemWithIdFixup {
     public int hashCode() {
         return Objects.hash(id, name);
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(final @NonNull Parcel dest, int flags) {
+        dest.writeLong(id);
+        dest.writeString(name);
+    }
+
+    protected Bookshelf(final @NonNull Parcel in) {
+        id = in.readLong();
+        name = in.readString();
+    }
+
+    public static final Creator<Bookshelf> CREATOR = new Creator<Bookshelf>() {
+        @Override
+        public Bookshelf createFromParcel(final @NonNull Parcel in) {
+            return new Bookshelf(in);
+        }
+
+        @Override
+        public Bookshelf[] newArray(final int size) {
+            return new Bookshelf[size];
+        }
+    };
 }

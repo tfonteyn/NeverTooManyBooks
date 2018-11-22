@@ -78,9 +78,9 @@ public class TaskListActivity extends BindableItemListActivity {
     @Override
     @CallSuper
     protected void onCreate(final @Nullable Bundle savedInstanceState) {
-        Tracker.enterOnCreate(this);
+        Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
-        setTitle(R.string.background_tasks);
+        setTitle(R.string.menu_background_tasks);
 
         mDb = new CatalogueDBAdapter(this);
 
@@ -130,7 +130,7 @@ public class TaskListActivity extends BindableItemListActivity {
         task.addContextMenuItems(this, parent, v, position, id, items, mDb);
 
         if (items.size() > 0) {
-            showContextDialogue(R.string.select_an_action, items);
+            showContextDialogue(R.string.title_select_an_action, items);
         }
     }
 

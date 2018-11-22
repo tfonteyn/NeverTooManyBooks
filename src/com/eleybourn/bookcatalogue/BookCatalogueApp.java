@@ -188,7 +188,6 @@ public class BookCatalogueApp extends Application {
     @Override
     @CallSuper
     public void onCreate() {
-        Tracker.enterOnCreate(this);
         // Get the preferred locale as soon as possible
         try {
             LocaleUtils.loadPreferred();
@@ -212,7 +211,6 @@ public class BookCatalogueApp extends Application {
 
         // Watch the preferences and handle changes as necessary
         getSharedPreferences().registerOnSharedPreferenceChangeListener(mSharedPreferenceChangeListener);
-        Tracker.exitOnCreate(this);
     }
 
     /**

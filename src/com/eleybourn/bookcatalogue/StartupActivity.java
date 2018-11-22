@@ -134,7 +134,7 @@ public class StartupActivity extends AppCompatActivity {
     @Override
     @CallSuper
     public void onCreate(final @Nullable Bundle savedInstanceState) {
-        Tracker.enterOnCreate(this);
+        Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
 
         // request Permissions (Android 6+)
@@ -172,7 +172,7 @@ public class StartupActivity extends AppCompatActivity {
             case 1: {
                 // Create a progress dialog; we may not use it...but we need it to be created in the UI thread.
                 mProgress = ProgressDialog.show(this,
-                        getString(R.string.title_book_catalogue_startup),
+                        getString(R.string.lbl_book_catalogue_startup),
                         getString(R.string.progress_msg_starting_up),
                         true,
                         true, new OnCancelListener() {
@@ -354,7 +354,7 @@ public class StartupActivity extends AppCompatActivity {
         if (proposeBackup()) {
             AlertDialog dialog = new AlertDialog.Builder(this)
                     .setMessage(R.string.backup_request)
-                    .setTitle(R.string.title_backup)
+                    .setTitle(R.string.lbl_backup_dialog)
                     .setIcon(R.drawable.ic_help_outline)
                     .create();
 

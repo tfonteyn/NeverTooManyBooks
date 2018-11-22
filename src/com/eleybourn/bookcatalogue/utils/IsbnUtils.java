@@ -58,8 +58,7 @@ public class IsbnUtils {
      */
     @NonNull
     public static String upc2isbn(final @NonNull String input) {
-        int len = input.length();
-        if (len == 0 || len == 10 || len == 13) {
+        if (input.isEmpty()) {
             return input;
         }
 

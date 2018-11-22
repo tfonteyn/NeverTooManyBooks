@@ -33,7 +33,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:focusable="false"
-        android:text="@string/cleanup_old_events" />
+        android:text="@string/btn_cleanup_old_events" />
 
     <ListView
         android:id="@android:id/list"

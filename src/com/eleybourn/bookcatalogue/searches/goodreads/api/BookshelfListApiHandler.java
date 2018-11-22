@@ -91,7 +91,7 @@ public class BookshelfListApiHandler extends ApiHandler {
         Bundle results = mFilters.getData();
 
         if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
-            Logger.info(this,"Found " + results.getLong(BookshelfListFieldNames.TOTAL) + " shelves in " + (System.currentTimeMillis() - t0) + "ms");
+            Logger.info(this, "Found " + results.getLong(BookshelfListFieldNames.TOTAL) + " shelves in " + (System.currentTimeMillis() - t0) + "ms");
         }
 
         return results;
@@ -105,25 +105,25 @@ public class BookshelfListApiHandler extends ApiHandler {
 
         mFilters
                 //<GoodreadsResponse>
-                .s("GoodreadsResponse")
+                .s(XML_GOODREADS_RESPONSE)
                 //	<Request>
                 //		...
                 //	</Request>
                 //	<reviews start="3" end="4" total="933">
                 //  <shelves start='1' end='29' total='29'>
-                .s("shelves").isArray(BookshelfListFieldNames.SHELVES)
-                .longAttr("start", BookshelfListFieldNames.START)
-                .longAttr("end", BookshelfListFieldNames.END)
-                .longAttr("total", BookshelfListFieldNames.TOTAL)
+                .s(XML_SHELVES).isArray(BookshelfListFieldNames.SHELVES)
+                .longAttr(XML_START, BookshelfListFieldNames.START)
+                .longAttr(XML_END, BookshelfListFieldNames.END)
+                .longAttr(XML_TOTAL, BookshelfListFieldNames.TOTAL)
 
                 //  <user_shelf>
-                .s("user_shelf").isArrayItem()
+                .s(XML_USER_SHELF).isArrayItem()
                 //	  <exclusive_flag type='boolean'>false</exclusive_flag>
-                .booleanBody("exclusive_flag", BookshelfListFieldNames.EXCLUSIVE)
+                .booleanBody(XML_EXCLUSIVE_FLAG, BookshelfListFieldNames.EXCLUSIVE)
 
                 //	  <id type='integer'>26567684</id>
-                .longBody("id", BookshelfListFieldNames.ID)
-                .stringBody("name", BookshelfListFieldNames.NAME)
+                .longBody(XML_ID, BookshelfListFieldNames.ID)
+                .stringBody(XML_NAME, BookshelfListFieldNames.NAME)
                 .pop()
                 .done();
     }

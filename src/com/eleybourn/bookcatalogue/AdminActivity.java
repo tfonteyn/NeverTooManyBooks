@@ -94,11 +94,12 @@ public class AdminActivity extends BaseActivityWithTasks {
     @Override
     @CallSuper
     public void onCreate(final @Nullable Bundle savedInstanceState) {
-        Tracker.enterOnCreate(this);
+        Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
-        this.setTitle(R.string.menu_administration_long);
+        setTitle(R.string.menu_administration_long);
 
-        String val = BundleUtils.getStringFromBundles(BKEY_DO_AUTO, getIntent().getExtras());
+        Bundle extras = getIntent().getExtras();
+        String val = BundleUtils.getStringFromBundles(BKEY_DO_AUTO, extras);
         if (val != null) {
             switch (val) {
                 case BVAL_DO_AUTO_EXPORT:
@@ -447,7 +448,7 @@ public class AdminActivity extends BaseActivityWithTasks {
     @Override
     @CallSuper
     protected void onActivityResult(final int requestCode, final int resultCode, final @Nullable Intent data) {
-        Tracker.enterOnActivityResult(this, requestCode, resultCode);
+        Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
         switch (requestCode) {
             case FieldVisibilityActivity.REQUEST_CODE: /* 2f885b11-27f2-40d7-8c8b-fcb4d95a4151 */
             case BooklistPreferencesActivity.REQUEST_CODE: /* 9cdb2cbe-1390-4ed8-a491-87b3b1a1edb9 */
@@ -461,7 +462,7 @@ public class AdminActivity extends BaseActivityWithTasks {
                 break;
         }
 
-        Tracker.exitOnActivityResult(this, requestCode, resultCode);
+        Tracker.exitOnActivityResult(this);
     }
 
     @Override

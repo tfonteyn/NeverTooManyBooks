@@ -69,7 +69,7 @@ public class GoodreadsSearchResultsActivity extends BaseListActivity {
     @Override
     @CallSuper
     public void onCreate(final @Nullable Bundle savedInstanceState) {
-        Tracker.enterOnCreate(this);
+        Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
 
         mDb = new CatalogueDBAdapter(this);
@@ -101,7 +101,7 @@ public class GoodreadsSearchResultsActivity extends BaseListActivity {
         try {
             works = searcher.search(criteria.trim());
         } catch (Exception e) {
-            Logger.error(e, "Failed when searching goodreads");
+            Logger.error(e, "Failed when searching Goodreads");
             StandardDialogs.showUserMessage(this,
                     getString(R.string.gr_error_while_searching) + " " + getString(R.string.error_if_the_problem_persists));
             setResult(Activity.RESULT_CANCELED);

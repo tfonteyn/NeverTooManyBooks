@@ -62,11 +62,10 @@ public class EditBookActivity extends BaseActivity {
     @Override
     @CallSuper
     public void onCreate(final @Nullable Bundle savedInstanceState) {
-        Tracker.enterOnCreate(this);
+        Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
 
         Bundle extras = getIntent().getExtras();
-
         EditBookFragment frag = new EditBookFragment();
         frag.setArguments(extras);
 
@@ -79,18 +78,12 @@ public class EditBookActivity extends BaseActivity {
 
 
     @Override
-    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-        Tracker.enterOnActivityResult(this,requestCode,resultCode);
-        /*
-         * Dispatch incoming result to the correct fragment.
-         */
-        if (DEBUG_SWITCHES.ON_ACTIVITY_RESULT && BuildConfig.DEBUG) {
-            Logger.info(this, "onActivityResult: forwarding to fragment " + EditBookFragment.TAG + " - requestCode=" + requestCode + ", resultCode=" + resultCode);
-        }
-
+    protected void onActivityResult(final int requestCode, final int resultCode, final @Nullable Intent data) {
+        Tracker.enterOnActivityResult(this,requestCode,resultCode, data);
+        // Dispatch incoming result to the current visible fragment.
         Fragment frag = getSupportFragmentManager().findFragmentByTag(EditBookFragment.TAG);
         frag.onActivityResult(requestCode, resultCode, data);
 
-        Tracker.exitOnActivityResult(this,requestCode,resultCode);
+        Tracker.exitOnActivityResult(this);
     }
 }

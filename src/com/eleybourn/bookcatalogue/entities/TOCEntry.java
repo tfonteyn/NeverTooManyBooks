@@ -19,6 +19,8 @@
  */
 package com.eleybourn.bookcatalogue.entities;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -27,7 +29,6 @@ import com.eleybourn.bookcatalogue.utils.StringList;
 import com.eleybourn.bookcatalogue.utils.RTE;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -45,7 +46,7 @@ import java.util.regex.Pattern;
  *
  * @author pjw
  */
-public class TOCEntry implements Serializable, Utils.ItemWithIdFixup {
+public class TOCEntry implements Parcelable, Utils.ItemWithIdFixup {
     /**
      * import/export etc...
      *
@@ -65,14 +66,6 @@ public class TOCEntry implements Serializable, Utils.ItemWithIdFixup {
      */
     private static final Pattern YEAR_FROM_STRING = Pattern.compile("\\(([1|2]\\d\\d\\d)\\)");
 
-    /**
-     * V82:
-     * private static final long serialVersionUID = -8715364898312204329L;
-     * V83 changed the format
-     *
-     * TODO: see if this matters, I don't think we serialize this to a binary stream (only to a String)
-     */
-    private static final long serialVersionUID = 2L;
     private long id = 0;
     private Author mAuthor;
     private String mTitle;
@@ -141,7 +134,7 @@ public class TOCEntry implements Serializable, Utils.ItemWithIdFixup {
     }
 
     /**
-     * Support for Serializable/encoding to a text file
+     * Support for encoding to a text file
      *
      * @return the object encoded as a String.
      *
@@ -230,6 +223,38 @@ public class TOCEntry implements Serializable, Utils.ItemWithIdFixup {
 
         return Objects.hash(id, mAuthor, mTitle);
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(final @NonNull Parcel dest, int flags) {
+        dest.writeLong(id);
+        dest.writeParcelable(mAuthor, 0);
+        dest.writeString(mTitle);
+        dest.writeString(mFirstPublicationDate);
+    }
+
+    protected TOCEntry(final @NonNull Parcel in) {
+        id = in.readLong();
+        mAuthor = in.readParcelable(getClass().getClassLoader());
+        mTitle = in.readString();
+        mFirstPublicationDate = in.readString();
+    }
+
+    public static final Creator<TOCEntry> CREATOR = new Creator<TOCEntry>() {
+        @Override
+        public TOCEntry createFromParcel(final @NonNull Parcel in) {
+            return new TOCEntry(in);
+        }
+
+        @Override
+        public TOCEntry[] newArray(final int size) {
+            return new TOCEntry[size];
+        }
+    };
 
     //ENHANCE use enum for ANTHOLOGY_BITMASK
     public enum Type {

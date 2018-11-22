@@ -92,7 +92,7 @@ abstract public class BaseActivity extends AppCompatActivity implements
     @Override
     @CallSuper
     protected void onCreate(final @Nullable Bundle savedInstanceState) {
-        Tracker.enterOnCreate(this);
+        Tracker.enterOnCreate(this, savedInstanceState);
         // call setTheme before super.onCreate
         setTheme(ThemeUtils.getThemeResId());
 
@@ -216,6 +216,10 @@ abstract public class BaseActivity extends AppCompatActivity implements
                 startActivity(intent);
                 return true;
             }
+            case R.id.nav_debug_dump_events: {
+                Logger.info(this, Tracker.getEventsInfo());
+                return true;
+            }
         }
 
         return false;
@@ -261,8 +265,8 @@ abstract public class BaseActivity extends AppCompatActivity implements
      * Dispatch incoming result to the correct fragment.
      */
     @Override
-    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-        Tracker.enterOnActivityResult(this, requestCode, resultCode);
+    protected void onActivityResult(final int requestCode, final int resultCode, final @Nullable Intent data) {
+        Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
 
         if (DEBUG_SWITCHES.ON_ACTIVITY_RESULT && BuildConfig.DEBUG) {
             // these are not errors; but just a way to see if we missed catching them in one Activity or another
@@ -294,7 +298,7 @@ abstract public class BaseActivity extends AppCompatActivity implements
             }
         }
 
-        Tracker.exitOnActivityResult(this, requestCode, resultCode);
+        Tracker.exitOnActivityResult(this);
     }
 
     /**

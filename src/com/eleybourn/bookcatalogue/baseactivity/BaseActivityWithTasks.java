@@ -107,7 +107,7 @@ abstract public class BaseActivityWithTasks extends BaseActivity {
                 @SuppressWarnings("UnusedAssignment")
                 String dbgMsg = "onProgress: " + count + "/" + max + ", '" + message.replace("\n", "\\n") + "'";
 
-                Tracker.handleEvent(BaseActivityWithTasks.this, "SearchProgress " + dbgMsg, States.Running);
+                Tracker.handleEvent(BaseActivityWithTasks.this, States.Running, "SearchProgress " + dbgMsg);
                 Logger.info(BaseActivityWithTasks.this, dbgMsg);
             }
 
@@ -157,7 +157,7 @@ abstract public class BaseActivityWithTasks extends BaseActivity {
     @Override
     @CallSuper
     protected void onCreate(final @Nullable Bundle savedInstanceState) {
-        Tracker.enterOnCreate(this);
+        Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
 
         // Restore mTaskManagerId if present
@@ -171,7 +171,7 @@ abstract public class BaseActivityWithTasks extends BaseActivity {
      * Utility routine to get the task manager for this activity
      */
     @NonNull
-    protected TaskManager getTaskManager() {
+    public TaskManager getTaskManager() {
         if (mTaskManager == null) {
             if (mTaskManagerId != 0) {
                 TaskManagerController controller = TaskManager.getMessageSwitch().getController(mTaskManagerId);

@@ -176,7 +176,7 @@ public class BooksOnBookshelf extends BaseListActivity implements
     @Override
     @CallSuper
     public void onCreate(final @Nullable Bundle savedInstanceState) {
-        Tracker.enterOnCreate(this);
+        Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
         setTitle(R.string.app_name);
 
@@ -505,7 +505,7 @@ public class BooksOnBookshelf extends BaseListActivity implements
     @Override
     @CallSuper
     protected void onActivityResult(final int requestCode, final int resultCode, final @Nullable Intent data) {
-        Tracker.enterOnActivityResult(this, requestCode, resultCode);
+        Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
         mCurrentPositionedBookId = 0;
 
         switch (requestCode) {
@@ -612,7 +612,7 @@ public class BooksOnBookshelf extends BaseListActivity implements
                 break;
         }
 
-        Tracker.exitOnActivityResult(this, requestCode, resultCode);
+        Tracker.exitOnActivityResult(this);
     }
 
     /** Future enhancement maybe. See {@link #onActivityResult} */
@@ -996,7 +996,31 @@ public class BooksOnBookshelf extends BaseListActivity implements
     }
 
     /**
-     * FIXME: rather brutal; check the {@link BooklistChangeListener} flags and see what can be done to avoid full rebuild?
+     * Called if changes were made to a single book. *Try* not to do a full rebuild.
+     *
+     * @param extraFieldsInUse a bitmask with the Extra fields being used (visible) in the current
+     *                         {@link BooklistStyle} as configured by the user
+     * @param fieldsChanged    a bitmask build from the flags of {@link BooklistChangeListener}
+     * @param rowPosition      the absolute position of the row in the cursor view
+     * @param bookId           the book that was changed
+     */
+    @Override
+    public void onBooklistChange(final int extraFieldsInUse, final int fieldsChanged,
+                                 final int rowPosition, final long bookId) {
+
+        if ((fieldsChanged & BooklistChangeListener.FLAG_BOOK_READ) != 0) {
+            //ENHANCE: avoid the rebuild altogether ? but the 'false' rebuild is broken anyhow.
+            savePosition();
+            initBookList(false);
+            return;
+        }
+
+        //Something changed and we have no special handling for the row
+        onBooklistChange(extraFieldsInUse, fieldsChanged);
+    }
+
+    /**
+     * FIXME: check  {@link BooklistChangeListener} flags and try avoid full rebuild? but the 'false' rebuild is broken anyhow.
      *
      * Called if global changes were made that (potentially) affect the whole list.
      *
@@ -1011,30 +1035,6 @@ public class BooksOnBookshelf extends BaseListActivity implements
             savePosition();
             initBookList(true);
         }
-    }
-
-    /**
-     * Called if changes were made to a single book. *Try* not to do a full rebuild.
-     *
-     * @param extraFieldsInUse a bitmask with the Extra fields being used (visible) in the current
-     *                         {@link BooklistStyle} as configured by the user
-     * @param fieldsChanged    a bitmask build from the flags of {@link BooklistChangeListener}
-     * @param rowPosition      the absolute position of the row in the cursor view
-     * @param bookId           the book that was changed
-     */
-    @Override
-    public void onBooklistChange(final int extraFieldsInUse, final int fieldsChanged,
-                                 final int rowPosition, final long bookId) {
-
-        if ((fieldsChanged & BooklistChangeListener.FLAG_BOOK_READ) != 0) {
-            //ENHANCE: avoid the rebuild altogether ?
-            savePosition();
-            initBookList(false);
-            return;
-        }
-
-        //Something changed and we have no special handling for the row
-        onBooklistChange(extraFieldsInUse, fieldsChanged);
     }
 
     /**

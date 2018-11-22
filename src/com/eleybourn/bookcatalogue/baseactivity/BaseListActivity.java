@@ -89,7 +89,7 @@ abstract public class BaseListActivity extends BaseActivity implements
 
     @Override
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
-        Tracker.enterOnCreate(this);
+        Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
         // enable context menu for the list view
         initListViewContextMenuListener(this);

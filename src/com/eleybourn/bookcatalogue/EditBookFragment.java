@@ -38,7 +38,6 @@ import android.widget.Button;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.datamanager.DataEditor;
-import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.editordialog.PartialDatePickerDialogFragment;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
@@ -147,7 +146,7 @@ public class EditBookFragment extends BookBaseFragment implements
     @Override
     @CallSuper
     public void onActivityCreated(final @Nullable Bundle savedInstanceState) {
-        Tracker.enterOnActivityCreated(this);
+        Tracker.enterOnActivityCreated(this, savedInstanceState);
         // cache to avoid multiple calls to requireActivity()
         mActivity = (BaseActivity) requireActivity();
 
@@ -171,6 +170,10 @@ public class EditBookFragment extends BookBaseFragment implements
                 // 2018-11-02: no longer doing this explicitly now... sooner or later a purge will happen anyhow
 //                mDb.purgeAuthors();
 //                mDb.purgeSeries();
+
+                // delete any leftover temporary thumbnails
+                StorageUtils.deleteTempCoverFile();
+
                 mActivity.finishIfClean();
             }
         });
@@ -358,17 +361,14 @@ public class EditBookFragment extends BookBaseFragment implements
      * Called from the hosting {@link EditBookActivity#onActivityResult(int, int, Intent)}
      */
     @Override
-    public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-        Tracker.enterOnActivityResult(this,requestCode,resultCode);
+    public void onActivityResult(final int requestCode, final int resultCode, final @Nullable Intent data) {
+        Tracker.enterOnActivityResult(this,requestCode,resultCode, data);
 
-        if (DEBUG_SWITCHES.ON_ACTIVITY_RESULT && BuildConfig.DEBUG) {
-            Logger.info(this, "onActivityResult: forwarding to fragment - requestCode=" + requestCode + ", resultCode=" + resultCode);
-        }
-        // current visible child.
+        // Dispatch incoming result to the current visible fragment.
         Fragment frag = getChildFragmentManager().findFragmentById(R.id.tab_fragment);
         frag.onActivityResult(requestCode, resultCode, data);
 
-        Tracker.exitOnActivityResult(this,requestCode,resultCode);
+        Tracker.exitOnActivityResult(this);
     }
 
     /**
@@ -467,9 +467,10 @@ public class EditBookFragment extends BookBaseFragment implements
         if (book.getBookId() == 0) {
             long id = mDb.insertBook(book);
             if (id > 0) {
-                File thumb = StorageUtils.getTempCoverFile();
-                File real = StorageUtils.getCoverFile(mDb.getBookUuid(id));
-                StorageUtils.renameFile(thumb, real);
+                String uuid = mDb.getBookUuid(id);
+                File source = StorageUtils.getTempCoverFile();
+                File destination = StorageUtils.getCoverFile(uuid);
+                StorageUtils.renameFile(source, destination);
             }
         } else {
             mDb.updateBook(book.getBookId(), book, 0);

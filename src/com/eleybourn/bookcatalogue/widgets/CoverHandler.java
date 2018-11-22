@@ -263,7 +263,8 @@ public class CoverHandler implements SelectOneDialog.hasViewContextMenu {
         if (mBookManager.getBook().getBookId() == 0) {
             return StorageUtils.getTempCoverFile();
         } else {
-            return StorageUtils.getCoverFile(mDb.getBookUuid(mBookManager.getBook().getBookId()));
+            String uuid = mDb.getBookUuid(mBookManager.getBook().getBookId());
+            return StorageUtils.getCoverFile(uuid);
         }
     }
 
@@ -277,10 +278,11 @@ public class CoverHandler implements SelectOneDialog.hasViewContextMenu {
                 @Override
                 public void onImageSelected(final @NonNull String fileSpec) {
                     if (mCoverBrowser != null) {
-                        // Get the current file
-                        File bookFile = getCoverFile();
+                        // the new file we got
                         File newFile = new File(fileSpec);
-                        // Overwrite with new file
+                        // Get the current file we want to loose
+                        File bookFile = getCoverFile();
+                        // copy new file on top of old.
                         StorageUtils.renameFile(newFile, bookFile);
                         // Update the ImageView with the new image
                         populateCoverView();
@@ -342,7 +344,7 @@ public class CoverHandler implements SelectOneDialog.hasViewContextMenu {
             cropCoverImage(cameraFile);
             mGotCameraImage = true;
         } else {
-            Tracker.handleEvent(this, "onActivityResult(" + requestCode + "," + resultCode + ") - camera image empty", Tracker.States.Running);
+            Tracker.handleEvent(this, Tracker.States.Running, "onActivityResult(" + requestCode + "," + resultCode + ") - camera image empty");
         }
     }
 
@@ -466,7 +468,7 @@ public class CoverHandler implements SelectOneDialog.hasViewContextMenu {
      * Worked for me...
      */
     private void cropCoverImageExternal(final @NonNull File thumbFile) {
-        Tracker.handleEvent(this, "cropCoverImageExternal", Tracker.States.Enter);
+        Tracker.handleEvent(this, Tracker.States.Enter, "cropCoverImageExternal");
         try {
             File inputFile = new File(thumbFile.getAbsolutePath());
 
@@ -503,7 +505,7 @@ public class CoverHandler implements SelectOneDialog.hasViewContextMenu {
                 mActivity.startActivityForResult(cropIntent, UniqueId.ACTIVITY_REQUEST_CODE_EXTERNAL_CROP_IMAGE); /* 28ec93b0-24fb-4a81-ae6d-a282f3a7b918 */
             }
         } finally {
-            Tracker.handleEvent(this, "cropCoverImageExternal", Tracker.States.Exit);
+            Tracker.handleEvent(this, Tracker.States.Exit, "cropCoverImageExternal");
         }
     }
 
@@ -553,7 +555,7 @@ public class CoverHandler implements SelectOneDialog.hasViewContextMenu {
      * @return true when handled, false if unknown requestCode
      */
     public boolean onActivityResult(final int requestCode, final int resultCode, final @Nullable Intent data) {
-        Tracker.enterOnActivityResult(this, requestCode, resultCode);
+        Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
         boolean handled = false;
         switch (requestCode) {
             case UniqueId.ACTIVITY_REQUEST_CODE_ANDROID_IMAGE_CAPTURE: /* 0b7027eb-a9da-469b-8ba7-2122f1006e92 */
@@ -582,15 +584,15 @@ public class CoverHandler implements SelectOneDialog.hasViewContextMenu {
                 if (resultCode == Activity.RESULT_OK) {
                     File cropped = getCroppedTempCoverFile();
                     if (cropped.exists()) {
-                        File thumbFile = getCoverFile();
-                        StorageUtils.renameFile(cropped, thumbFile);
+                        File destination = getCoverFile();
+                        StorageUtils.renameFile(cropped, destination);
                         // Update the ImageView with the new image
                         populateCoverView();
                     } else {
-                        Tracker.handleEvent(this, "onActivityResult(" + requestCode + "," + resultCode + ") - result OK, but no image file", Tracker.States.Running);
+                        Tracker.handleEvent(this, Tracker.States.Running, "onActivityResult(" + requestCode + "," + resultCode + ") - result OK, but no image file");
                     }
                 } else {
-                    Tracker.handleEvent(this, "onActivityResult(" + requestCode + "," + resultCode + ") - bad result", Tracker.States.Running);
+                    Tracker.handleEvent(this, Tracker.States.Running, "onActivityResult(" + requestCode + "," + resultCode + ") - bad result");
                     StorageUtils.deleteFile(getCroppedTempCoverFile());
                 }
                 handled = true;
@@ -598,7 +600,7 @@ public class CoverHandler implements SelectOneDialog.hasViewContextMenu {
             }
             default:
         }
-        Tracker.exitOnActivityResult(this, requestCode, resultCode);
+        Tracker.exitOnActivityResult(this);
         return handled;
     }
 }

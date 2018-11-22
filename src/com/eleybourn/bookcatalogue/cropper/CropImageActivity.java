@@ -42,6 +42,8 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
+import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -281,7 +283,7 @@ public class CropImageActivity extends CropMonitoredActivity {
     @Override
     @CallSuper
     public void onCreate(final @Nullable Bundle savedInstanceState) {
-        Tracker.enterOnCreate(this);
+        Tracker.enterOnCreate(this, savedInstanceState);
         // Do this first to avoid 'must be first errors'
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
@@ -519,14 +521,14 @@ public class CropImageActivity extends CropMonitoredActivity {
         }
 
         // Return the cropped image directly or save it to the specified URI.
-        Bundle myExtras = getIntent().getExtras();
-        if (myExtras != null && (myExtras.getParcelable(CropIImage.BKEY_DATA) != null
-                || myExtras.getBoolean(CropIImage.BKEY_RETURN_DATA))) {
+        Bundle extras = getIntent().getExtras();
+        if (extras != null && (extras.getParcelable(CropIImage.BKEY_DATA) != null
+                || extras.getBoolean(CropIImage.BKEY_RETURN_DATA))) {
 
-            Bundle extras = new Bundle();
-            extras.putParcelable(CropIImage.BKEY_DATA, croppedImage);
+            Bundle resultExtras = new Bundle();
+            resultExtras.putParcelable(CropIImage.BKEY_DATA, croppedImage);
             Intent data = new Intent("inline-data");
-            data.putExtras(extras);
+            data.putExtras(resultExtras);
             setResult(Activity.RESULT_OK, data); /* 31c90366-d352-496f-9b7d-3237dd199a77 */
             finish();
         } else {

@@ -69,7 +69,7 @@ public class BackupChooserActivity extends FileChooserBaseActivity implements
     @CallSuper
     @Override
     public void onCreate(final @Nullable Bundle savedInstanceState) {
-        Tracker.enterOnCreate(this);
+        Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
 
         setTitle(isSaveDialog() ? R.string.backup_to_archive : R.string.import_from_archive);

@@ -20,12 +20,13 @@
 
 package com.eleybourn.bookcatalogue.entities;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.utils.StringList;
 
-import java.io.Serializable;
 import java.util.Objects;
 
 /**
@@ -33,9 +34,8 @@ import java.util.Objects;
  *
  * ENHANCE Could just have used a String, but this way we're prepared for a dedicated table with the publishers
  */
-public class Publisher implements Serializable {
+public class Publisher implements Parcelable {
     private static final char SEPARATOR = ',';
-    private static final long serialVersionUID = 1L;
     public String name;
 
     public Publisher(final @NonNull String name) {
@@ -43,9 +43,9 @@ public class Publisher implements Serializable {
     }
 
     /**
-     * Support for Serializable/encoding to a text file
+     * Support for encoding to a text file
      *
-     * @return the object encoded as a String. If the format changes, update serialVersionUID
+     * @return the object encoded as a String.
      *
      * "name"
      */
@@ -92,4 +92,32 @@ public class Publisher implements Serializable {
     public int hashCode() {
         return Objects.hash(name);
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(final @NonNull Parcel dest, int flags) {
+        //dest.writeLong(id);
+        dest.writeString(name);
+    }
+
+    protected Publisher(final @NonNull Parcel in) {
+        //id = in.readLong();
+        name = in.readString();
+    }
+
+    public static final Creator<Publisher> CREATOR = new Creator<Publisher>() {
+        @Override
+        public Publisher createFromParcel(final @NonNull Parcel in) {
+            return new Publisher(in);
+        }
+
+        @Override
+        public Publisher[] newArray(final int size) {
+            return new Publisher[size];
+        }
+    };
 }

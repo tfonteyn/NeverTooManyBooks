@@ -105,7 +105,7 @@ public class BCQueueManager extends QueueManager {
                                         final @NonNull List<ContextDialogItem> items,
                                         final @NonNull Object appInfo) {
 
-            items.add(new ContextDialogItem(ctx.getString(R.string.delete_event), new Runnable() {
+            items.add(new ContextDialogItem(ctx.getString(R.string.menu_delete_event), new Runnable() {
                 @Override
                 public void run() {
                     QueueManager.getQueueManager().deleteEvent(BCLegacyEvent.this.getId());
@@ -137,7 +137,7 @@ public class BCQueueManager extends QueueManager {
                                         final @NonNull List<ContextDialogItem> items,
                                         final @NonNull Object appInfo) {
 
-            items.add(new ContextDialogItem(ctx.getString(R.string.delete_task), new Runnable() {
+            items.add(new ContextDialogItem(ctx.getString(R.string.menu_delete_task), new Runnable() {
                 @Override
                 public void run() {
                     QueueManager.getQueueManager().deleteTask(BCLegacyTask.this.getId());

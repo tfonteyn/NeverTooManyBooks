@@ -40,7 +40,7 @@ import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 
 /**
- * SearchManager for goodreads.
+ * SearchManager for Goodreads.
  *
  * @author Philip Warner
  */
@@ -104,7 +104,7 @@ public class SearchGoodreadsTask extends SearchTask {
     }
 
     /**
-     * Get the global ID for the goodreads search manager
+     * Get the global ID for the Goodreads search manager
      */
     @Override
     public int getSearchId() {

@@ -135,21 +135,21 @@ public class LocalCoverFinder implements Importer.CoverFinder {
 
     /**
      * Rename/move a specified source file into the default cover location for a new file.
-     * DO NO Overwrite EXISTING FILES.
+     * DO NOT Overwrite EXISTING FILES.
      */
-    private void renameFileToCoverImageIfMissing(final @Nullable File orig, final @NonNull String newUuid) {
+    private void renameFileToCoverImageIfMissing(final @Nullable File source, final @NonNull String newUuid) {
         // Nothing to copy?
-        if (orig == null || !orig.exists() || orig.length() == 0) {
+        if (source == null || !source.exists() || source.length() == 0) {
             return;
         }
 
         // Check for ANY current image
-        final File newFile = getNewCoverFile(newUuid);
-        if (newFile.exists()) {
+        final File destination = getNewCoverFile(newUuid);
+        if (destination.exists()) {
             return;
         }
 
-        StorageUtils.renameFile(orig, newFile);
+        StorageUtils.renameFile(source, destination);
     }
 
     /**

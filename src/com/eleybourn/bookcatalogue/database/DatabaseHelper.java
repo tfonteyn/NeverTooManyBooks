@@ -315,15 +315,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         try (Cursor cur = db.rawQuery("SELECT " + DOM_BOOK_UUID + " FROM " + TBL_BOOKS, new String[]{})) {
             while (cur.moveToNext()) {
                 final String uuid = cur.getString(0);
-                File file = StorageUtils.getFile(uuid + ".jpg");
-                if (!file.exists()) {
-                    file = StorageUtils.getFile(uuid + ".png");
-                    if (!file.exists()) {
+                File source = StorageUtils.getFile(uuid + ".jpg");
+                if (!source.exists()) {
+                    source = StorageUtils.getFile(uuid + ".png");
+                    if (!source.exists()) {
                         continue;
                     }
                 }
-                File newFile = StorageUtils.getCoverFile(uuid);
-                StorageUtils.renameFile(file, newFile);
+                File destination = StorageUtils.getCoverFile(uuid);
+                StorageUtils.renameFile(source, destination);
             }
         }
     }
@@ -511,6 +511,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             // all books with a list price are assumed to be USD based on the only search up to v82 being Amazon US.
             // FIXME if a user has manually edited the list price, ouch....
+            // set all rows which have a price, to being in USD. Do not change the price field.
             db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_PRICE_LISTED_CURRENCY + "='USD' WHERE NOT " + DOM_BOOK_PRICE_LISTED + "=''");
         }
 
