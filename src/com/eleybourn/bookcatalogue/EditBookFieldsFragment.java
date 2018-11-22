@@ -428,7 +428,7 @@ public class EditBookFieldsFragment extends BookBaseFragment implements
         dialog.dismiss();
 
         if (destinationFieldId == R.id.bookshelves) {
-            ArrayList<Bookshelf> result = new CheckListItemBase<Bookshelf>().extractList(list);
+            ArrayList<Bookshelf> result = new Book.BookshelfCheckListItem().extractList(list);
             getBookManager().getBook().putBookshelfList(result);
             mFields.getField(destinationFieldId).setValue(getBookManager().getBook().getBookshelfListAsText());
         }

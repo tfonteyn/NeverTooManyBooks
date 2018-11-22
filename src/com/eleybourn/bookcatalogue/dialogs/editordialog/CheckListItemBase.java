@@ -1,5 +1,7 @@
 package com.eleybourn.bookcatalogue.dialogs.editordialog;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
@@ -11,20 +13,38 @@ import java.util.List;
  * Using .toString is not really a nice solution, hence... extends this class
  * and implement: String {@link CheckListItem#getLabel()}
  *
- * BUT.. not abstract, so the {@link #extractList(List)} method can be used
- *
  * @param <T> type of encapsulated item
  */
-public class CheckListItemBase<T> implements CheckListItem<T> {
+public abstract class CheckListItemBase<T> implements CheckListItem<T>, Parcelable {
     private boolean selected;
-    private T item;
+    protected T item;
 
-    public CheckListItemBase() {
+    protected CheckListItemBase() {
     }
 
     protected CheckListItemBase(final @NonNull T item, final boolean selected) {
         this.item = item;
         this.selected = selected;
+    }
+
+    /**
+     * Subclass must handle the {@link #item}
+     */
+    protected CheckListItemBase(Parcel in) {
+        selected = in.readByte() != 0;
+    }
+
+    /**
+     * Subclass must handle the {@link #item}
+     */
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeByte((byte) (selected ? 1 : 0));
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     @NonNull
@@ -33,7 +53,7 @@ public class CheckListItemBase<T> implements CheckListItem<T> {
         return item;
     }
 
-    /** label to use in a {@link CheckListEditorDialog} */
+    /** label to use in a {@link CheckListEditorDialogFragment.CheckListEditorDialog} */
     @Override
     public String getLabel() {
         throw new java.lang.UnsupportedOperationException("must be overridden");

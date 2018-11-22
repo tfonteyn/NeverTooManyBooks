@@ -46,8 +46,7 @@ public class AdminSearchOrderFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         Bundle args = getArguments();
         Objects.requireNonNull(args);
-        //noinspection unchecked
-        mList = (ArrayList<SearchSites.Site>) args.getSerializable(SearchSites.BKEY_SEARCH_SITES);
+        mList = args.getParcelableArrayList(SearchSites.BKEY_SEARCH_SITES);
 
         mAdapter = new SearchSiteListAdapter(requireContext(), R.layout.row_edit_searchsite, mList);
         //noinspection ConstantConditions

@@ -586,7 +586,7 @@ public abstract class BookBaseFragment extends Fragment implements DataEditor {
                 args.putString(UniqueId.BKEY_CALLER_ID, callerTag);
                 args.putInt(UniqueId.BKEY_DIALOG_TITLE, dialogTitleId);
                 args.putInt(UniqueId.BKEY_FIELD_ID, field.id);
-                args.putSerializable(CheckListEditorDialogFragment.BKEY_CHECK_LIST, listGetter.getList());
+                args.putParcelableArrayList(CheckListEditorDialogFragment.BKEY_CHECK_LIST, listGetter.getList());
                 frag.setArguments(args);
                 frag.show(requireFragmentManager(), null);
             }

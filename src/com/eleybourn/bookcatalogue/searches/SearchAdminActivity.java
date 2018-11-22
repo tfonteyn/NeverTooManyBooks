@@ -89,7 +89,7 @@ public class SearchAdminActivity extends BaseActivity {
         setTitle(titleId);
 
         Bundle args = new Bundle();
-        args.putSerializable(SearchSites.BKEY_SEARCH_SITES, list);
+        args.putParcelableArrayList(SearchSites.BKEY_SEARCH_SITES, list);
 
         final AdminSearchOrderFragment frag = new AdminSearchOrderFragment();
         frag.setArguments(args);
@@ -137,7 +137,7 @@ public class SearchAdminActivity extends BaseActivity {
         fragmentHolder = new FragmentHolder();
         fragmentHolder.fragment = new AdminSearchOrderFragment();
         fragmentHolder.tag = AdminSearchOrderFragment.TAG + TAB_SEARCH_ORDER;
-        args.putSerializable(SearchSites.BKEY_SEARCH_SITES, SearchSites.getSiteSearchOrder());
+        args.putParcelableArrayList(SearchSites.BKEY_SEARCH_SITES, SearchSites.getSiteSearchOrder());
         fragmentHolder.fragment.setArguments(args);
         tab = mTabLayout.newTab().setText(R.string.tab_lbl_search_site_order).setTag(fragmentHolder);
         mTabLayout.addTab(tab); //TAB_SEARCH_ORDER
@@ -147,7 +147,7 @@ public class SearchAdminActivity extends BaseActivity {
         fragmentHolder = new FragmentHolder();
         fragmentHolder.fragment = new AdminSearchOrderFragment();
         fragmentHolder.tag = AdminSearchOrderFragment.TAG + TAB_SEARCH_COVER_ORDER;
-        args.putSerializable(SearchSites.BKEY_SEARCH_SITES, SearchSites.getSiteCoverSearchOrder());
+        args.putParcelableArrayList(SearchSites.BKEY_SEARCH_SITES, SearchSites.getSiteCoverSearchOrder());
         fragmentHolder.fragment.setArguments(args);
         tab = mTabLayout.newTab().setText(R.string.tab_lbl_search_site_cover_order).setTag(fragmentHolder);
         mTabLayout.addTab(tab); //TAB_SEARCH_COVER_ORDER

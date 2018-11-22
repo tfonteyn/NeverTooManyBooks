@@ -71,6 +71,7 @@ public class BackupFileDetails implements FileDetails {
         mFile = (File) in.readSerializable();
         byte infoFlag = in.readByte();
         if (infoFlag != (byte) 0) {
+            // note we're only doing the Bundle, not the info object itself.
             mInfo = new BackupInfo(in.readBundle());
         } else {
             mInfo = null;
@@ -169,6 +170,7 @@ public class BackupFileDetails implements FileDetails {
         dest.writeSerializable(mFile);
         if (mInfo != null) {
             dest.writeByte((byte) 1);
+            // note we're only doing the Bundle, not the info object itself.
             dest.writeBundle(mInfo.getBundle());
         } else {
             dest.writeByte((byte) 0);

@@ -182,12 +182,14 @@ public class BooklistStyleGroupsActivity extends EditObjectListActivity<GroupWra
 
 
         protected GroupWrapper(Parcel in) {
+            //ENHANCE API 23 use readTypedObject(BooklistGroup.CREATOR)
             group = in.readParcelable(BooklistGroup.class.getClassLoader());
             present = in.readByte() != 0;
         }
 
         @Override
         public void writeToParcel(Parcel dest, int flags) {
+            //ENHANCE API 23 use writeTypedObject
             dest.writeParcelable(group, flags);
             dest.writeByte((byte) (present ? 1 : 0));
         }

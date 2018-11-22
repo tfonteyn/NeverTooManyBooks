@@ -7,12 +7,19 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
 
+import com.eleybourn.bookcatalogue.Fields;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 
-public class EditorDialogFragment extends DialogFragment {
+/**
+ * You can of course only have one Listener implemented on your Fragment, but you can use
+ * the {@link #mDestinationFieldId} to determine for which {@link Fields.Field} the result is meant.
+ *
+ * @param <LT> listener type implemented by the Fragment that called the editor,
+ *            e.g. the {@link UniqueId#BKEY_CALLER_ID}
+ */
+public class EditorDialogFragment<LT> extends DialogFragment {
 
     @StringRes
     protected int mTitleId;
@@ -22,9 +29,13 @@ public class EditorDialogFragment extends DialogFragment {
     /** the fragment TAG who called us */
     private String mCallerTag;
 
-    protected Fragment getCallerFragment() {
-        //noinspection ConstantConditions
-        return getFragmentManager().findFragmentByTag(mCallerTag);
+    /**
+     *
+     * @return the Fragment that implemented the results listener, casted to that listener type.
+     */
+    @SuppressWarnings({"unchecked", "ConstantConditions"})
+    protected LT getFragmentListener() {
+        return (LT) getFragmentManager().findFragmentByTag(mCallerTag);
     }
 
     public void initStandardArgs(final @Nullable Bundle savedInstanceState) {

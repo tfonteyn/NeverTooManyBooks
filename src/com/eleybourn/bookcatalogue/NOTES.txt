@@ -26,8 +26,6 @@ ENHANCE instead of string encoding of lists, use JSON ? or at the very least Arr
  * con: fools / fields will be bigger due to json labels
  * => or... do a specific JSON Exporter / Importer as an alternative to the Csv model (con: not easy to get 'others' to provide import files)
 
-TOMF Parcelable ?  see FileChooserFragment example use
-
 TODO: dialogs/* -> eliminate the pass up of the actual dialog. -> dismiss earlier
 
 Issues checked: 800 down to 677 (inc)

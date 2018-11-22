@@ -27,6 +27,7 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.datamanager.validators.BlankValidator;
 import com.eleybourn.bookcatalogue.datamanager.validators.DataCrossValidator;
 import com.eleybourn.bookcatalogue.datamanager.validators.DataValidator;
@@ -365,6 +366,9 @@ public class DataManager {
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
     public DataManager putSerializable(final @NonNull String key, final @NonNull Serializable value) {
+        if (BuildConfig.DEBUG) {
+            Logger.info(this, " putSerializable, key=" + key + " , type=" + value.getClass().getCanonicalName());
+        }
         mData.get(key).putSerializable(mBundle, value);
         return this;
     }

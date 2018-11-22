@@ -1,6 +1,8 @@
 package com.eleybourn.bookcatalogue.searches;
 
 import android.content.SharedPreferences;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
@@ -145,7 +147,7 @@ public class SearchSites {
         e.apply();
     }
 
-    public static class Site {
+    public static class Site implements Parcelable {
         public final int id;
         final String name;
 
@@ -172,6 +174,42 @@ public class SearchSites {
             this.enabled = enabled;
             this.reliability = reliability;
         }
+
+        Site(final @NonNull Parcel in) {
+            id = in.readInt();
+            name = in.readString();
+            enabled = in.readByte() != 0;
+            order = in.readInt();
+            reliability = in.readInt();
+            isbnOnly = in.readByte() != 0;
+        }
+
+        @Override
+        public void writeToParcel(final @NonNull Parcel dest, final int flags) {
+            dest.writeInt(id);
+            dest.writeString(name);
+            dest.writeByte((byte) (enabled ? 1 : 0));
+            dest.writeInt(order);
+            dest.writeInt(reliability);
+            dest.writeByte((byte) (isbnOnly ? 1 : 0));
+        }
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        public static final Creator<Site> CREATOR = new Creator<Site>() {
+            @Override
+            public Site createFromParcel(final @NonNull Parcel in) {
+                return new Site(in);
+            }
+
+            @Override
+            public Site[] newArray(final int size) {
+                return new Site[size];
+            }
+        };
 
         public SearchTask getTask(final @NonNull TaskManager manager) {
             switch (id) {

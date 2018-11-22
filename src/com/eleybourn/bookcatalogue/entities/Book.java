@@ -22,6 +22,8 @@ package com.eleybourn.bookcatalogue.entities;
 import android.annotation.SuppressLint;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -238,21 +240,6 @@ public class Book extends DataManager {
                 putTOC(db.getTOCEntriesByBook(bookId));
             }
         }
-    }
-
-    /**
-     * Special Accessor for easier debug, TBR
-     */
-    @NonNull
-    @Override
-    @CallSuper
-    @Deprecated
-    public DataManager putSerializable(final @NonNull String key, final @NonNull Serializable value) {
-        if (BuildConfig.DEBUG) {
-            Logger.info(this, " putSerializable, key=" + key + " , type=" + value.getClass().getCanonicalName());
-        }
-        super.putSerializable(key, value);
-        return this;
     }
 
     /**
@@ -495,47 +482,87 @@ public class Book extends DataManager {
 
         addAccessor(IS_READ, new BooleanDataAccessor(UniqueId.KEY_BOOK_READ));
 
-//        addAccessor(IS_FIRST_EDITION,
-//                new BitmaskDataAccessor(UniqueId.KEY_BOOK_EDITION_BITMASK, EDITION_FIRST));
-//        addAccessor(IS_FIRST_IMPRESSION,
-//                new BitmaskDataAccessor(UniqueId.KEY_BOOK_EDITION_BITMASK, EDITION_FIRST_IMPRESSION));
-//        addAccessor(IS_LIMITED,
-//                new BitmaskDataAccessor(UniqueId.KEY_BOOK_EDITION_BITMASK, EDITION_LIMITED));
-//        addAccessor(IS_BOOK_CLUB_EDITION,
-//                new BitmaskDataAccessor(UniqueId.KEY_BOOK_EDITION_BITMASK, EDITION_BOOK_CLUB));
-        //NEWKIND: edition
-
         /* This only handles the fact of being an anthology or not. Does not handle 'multiple authors' */
         addAccessor(IS_ANTHOLOGY,
                 new BitmaskDataAccessor(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK, DatabaseDefinitions.DOM_IS_ANTHOLOGY));
 
     }
 
-    public static class EditionCheckListItem extends CheckListItemBase<Integer> {
+    public static class EditionCheckListItem extends CheckListItemBase<Integer> implements Parcelable {
         @StringRes
         private int labelId;
 
         public EditionCheckListItem() {
         }
 
-        public EditionCheckListItem(final @NonNull Integer bit, final @StringRes int labelId, final boolean selected) {
+        EditionCheckListItem(final @NonNull Integer bit, final @StringRes int labelId, final boolean selected) {
             super(bit, selected);
             this.labelId = labelId;
         }
+
+        EditionCheckListItem(final @NonNull Parcel in) {
+            super(in);
+            labelId = in.readInt();
+            item = in.readInt();
+        }
+
+        @Override
+        public void writeToParcel(final @NonNull Parcel dest, final int flags) {
+            super.writeToParcel(dest, flags);
+            dest.writeInt(labelId);
+            dest.writeInt(item);
+        }
+
+        public static final Creator<EditionCheckListItem> CREATOR = new Creator<EditionCheckListItem>() {
+            @Override
+            public EditionCheckListItem createFromParcel(final @NonNull Parcel in) {
+                return new EditionCheckListItem(in);
+            }
+
+            @Override
+            public EditionCheckListItem[] newArray(final int size) {
+                return new EditionCheckListItem[size];
+            }
+        };
 
         public String getLabel() {
             return BookCatalogueApp.getResourceString(labelId);
         }
     }
 
-    public static class BookshelfCheckListItem extends CheckListItemBase<Bookshelf> {
+    public static class BookshelfCheckListItem extends CheckListItemBase<Bookshelf> implements Parcelable {
 
         public BookshelfCheckListItem() {
         }
 
-        public BookshelfCheckListItem(final @NonNull Bookshelf item, final boolean selected) {
+        BookshelfCheckListItem(final @NonNull Bookshelf item, final boolean selected) {
             super(item, selected);
         }
+
+        BookshelfCheckListItem(final @NonNull Parcel in) {
+            super(in);
+            //ENHANCE API 23 use readTypedObject(Bookshelf.CREATOR)
+            item = in.readParcelable(Bookshelf.class.getClassLoader());
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, final int flags) {
+            super.writeToParcel(dest, flags);
+            //ENHANCE API 23 use writeTypedObject
+            dest.writeParcelable(item, flags);
+        }
+
+        public static final Creator<BookshelfCheckListItem> CREATOR = new Creator<BookshelfCheckListItem>() {
+            @Override
+            public BookshelfCheckListItem createFromParcel(final @NonNull Parcel in) {
+                return new BookshelfCheckListItem(in);
+            }
+
+            @Override
+            public BookshelfCheckListItem[] newArray(final int size) {
+                return new BookshelfCheckListItem[size];
+            }
+        };
 
         public String getLabel() {
             return getItem().name;

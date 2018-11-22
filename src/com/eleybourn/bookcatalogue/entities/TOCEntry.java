@@ -95,6 +95,7 @@ public class TOCEntry implements Parcelable, Utils.ItemWithIdFixup {
 
     protected TOCEntry(Parcel in) {
         id = in.readLong();
+        //ENHANCE API 23 use readTypedObject(Author.CREATOR)
         mAuthor = in.readParcelable(Author.class.getClassLoader());
         mTitle = in.readString();
         mFirstPublicationDate = in.readString();
@@ -103,6 +104,7 @@ public class TOCEntry implements Parcelable, Utils.ItemWithIdFixup {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeLong(id);
+        //ENHANCE API 23 use writeTypedObject
         dest.writeParcelable(mAuthor, flags);
         dest.writeString(mTitle);
         dest.writeString(mFirstPublicationDate);
