@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue.searches.goodreads;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.Nullable;
@@ -37,7 +38,9 @@ import com.eleybourn.bookcatalogue.tasks.BCQueueManager;
  * it does not seem to be possible to get them to work from web browser callbacks. So, we just
  * do the necessary processing here and exit.
  *
- * TODO: This activity should bring the app to the foreground.
+ * the filters in the manifest will bring us here
+ * "com.eleybourn.bookcatalogue://goodreadsauth"
+ * Intent.ACTION_VIEW
  *
  * @author Philip Warner
  */
@@ -50,10 +53,10 @@ public class GoodreadsAuthorizationActivity extends BaseActivity {
 
         // Get the payload and make sure it is what we expect
         Intent intent = this.getIntent();
-        android.net.Uri uri = intent.getData();
+        Uri uri = intent.getData();
         if (uri != null) {// && uri.toString().startsWith("BookCatalogue")) {
-            // GoodReads does not set the verifier...but we may as well check for it.
-            // The verifier was added in API version 1.0A, and GoodReads seems to
+            // Goodreads does not set the verifier...but we may as well check for it.
+            // The verifier was added in API version 1.0A, and Goodreads seems to
             // implement 1.0.
 
             //String verifier = uri.getQueryParameter("oauth_verifier");
@@ -71,6 +74,7 @@ public class GoodreadsAuthorizationActivity extends BaseActivity {
 
         setResult(Activity.RESULT_OK);
         finish();
+
         Tracker.exitOnCreate(this);
     }
 

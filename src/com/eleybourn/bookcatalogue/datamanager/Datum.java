@@ -48,14 +48,14 @@ public class Datum {
     /** Validator for this Datum */
     @Nullable
     private DataValidator mValidator;
-    /** Accessor for this Datum (eg. the datum might be a bit in a mask field, or a composite read-only value */
+    /** Accessor for this Datum (eg. the datum might be a bit in a bitmask field, or a composite read-only value */
     private DataAccessor mAccessor;
 
     /**
      * Constructor
      *
-     * @param key       Key of this datum
-     * @param visible   True if data should be visible
+     * @param key     Key of this datum
+     * @param visible True if data should be visible
      */
     public Datum(final @NonNull String key, final boolean visible) {
         mKey = key;
@@ -545,27 +545,30 @@ public class Datum {
 
     /**
      * Get the ArrayList<Parcelable> object from the collection.
-     * We currently do not use a Datum for special access.
-     * TODO: Consider how to use an accessor
      *
      * @param data   Parent DataManager
      * @param bundle Raw data Bundle
      *
-     * @return The data
+     * @return The list, can be empty but never null
      */
-    @Nullable
-    <T extends Parcelable> ArrayList<T> getParcelableArrayList(@SuppressWarnings("unused") final @NonNull DataManager data, final @NonNull Bundle bundle) {
+    @NonNull
+    <T extends Parcelable> ArrayList<T> getParcelableArrayList(final @NonNull DataManager data, final @NonNull Bundle bundle) {
+        Object o;
         if (mAccessor == null) {
-            return bundle.getParcelableArrayList(mKey);
+            o = bundle.get(mKey);
         } else {
-            throw new AccessorNotSupportedException("ArrayList<String>");
+            o = mAccessor.get(data, this, bundle);
         }
+
+        if (o == null) {
+            return new ArrayList<T>();
+        }
+        //noinspection unchecked
+        return (ArrayList<T>) o;
     }
 
     /**
      * Set the ArrayList<Parcelable> object in the collection.
-     * We currently do not use a Datum for special access.
-     * TODO: Consider how to use an accessor
      *
      * @param bundle Raw data Bundle
      * @param value  The ArrayList<Parcelable> object
@@ -574,11 +577,11 @@ public class Datum {
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    <T extends Parcelable> Datum putParcelableArrayList(final @NonNull Bundle bundle, final @NonNull ArrayList<T> value) {
+    <T extends Parcelable> Datum putParcelableArrayList(final @NonNull DataManager data, final @NonNull Bundle bundle, final @NonNull ArrayList<T> value) {
         if (mAccessor == null) {
             bundle.putParcelableArrayList(mKey, value);
         } else {
-            throw new AccessorNotSupportedException("ArrayList<Parcelable>");
+            mAccessor.set(data, this, bundle, value);
         }
         return this;
     }

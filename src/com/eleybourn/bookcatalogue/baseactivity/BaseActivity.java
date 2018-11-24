@@ -312,6 +312,8 @@ abstract public class BaseActivity extends AppCompatActivity implements
 
     /**
      * Check if edits need saving, and finish the activity if not
+     *
+     * TOMF: should we "StorageUtils.deleteTempCoverFile();" here ? or should we stick to where we *should* delete it ?
      */
     public void finishIfClean() {
         if (isDirty()) {

@@ -116,7 +116,7 @@ public class BookSearchByTextFragment extends BookSearchBaseFragment {
      */
     protected void startSearch() {
         if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
-            Logger.info(this, " doSearch: author=" + mAuthorSearchText + ", title=" + mTitleSearchText);
+            Logger.info(this, "doSearch|author=" + mAuthorSearchText + "|title=" + mTitleSearchText);
         }
         //sanity check
         if ((mAuthorSearchText == null || mAuthorSearchText.isEmpty())
@@ -140,7 +140,7 @@ public class BookSearchByTextFragment extends BookSearchBaseFragment {
         Tracker.handleEvent(this, Tracker.States.Running, "onSearchFinished" + mSearchManagerId);
         try {
             if (!wasCancelled) {
-                mActivity.getTaskManager().doProgress(getString(R.string.progress_msg_adding_book));
+                mActivity.getTaskManager().sendHeaderTaskProgressMessage(getString(R.string.progress_msg_adding_book));
                 Intent intent = new Intent(this.getContext(), EditBookActivity.class);
                 intent.putExtra(UniqueId.BKEY_BOOK_DATA, bookData);
                 startActivityForResult(intent, EditBookActivity.REQUEST_CODE); /* 341ace23-c2c8-42d6-a71e-909a3a19ba99 */
@@ -154,7 +154,7 @@ public class BookSearchByTextFragment extends BookSearchBaseFragment {
             // Clean up
             mSearchManagerId = 0;
             // Make sure the base message will be empty.
-            mActivity.getTaskManager().doProgress(null);
+            mActivity.getTaskManager().sendHeaderTaskProgressMessage(null);
         }
     }
 

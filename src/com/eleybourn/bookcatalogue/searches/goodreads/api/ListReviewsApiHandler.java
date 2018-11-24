@@ -272,7 +272,7 @@ public class ListReviewsApiHandler extends ApiHandler {
         // Sort by update_dte (descending) so sync is faster. Specify 'shelf=all' because it seems goodreads returns
         // the shelf that is selected in 'My Books' on the web interface by default.
         final String urlBase = GoodreadsManager.GOODREADS_API_ROOT + "/review/list/%4$s.xml?key=%1$s&v=2&page=%2$s&per_page=%3$s&sort=date_updated&order=d&shelf=all";
-        final String url = String.format(urlBase, mManager.getDeveloperKey(), page, perPage, mManager.getUserId());
+        final String url = String.format(urlBase, mManager.getDevKey(), page, perPage, mManager.getUserId());
         HttpGet get = new HttpGet(url);
 
         // Get a handler and run query.
@@ -438,7 +438,6 @@ public class ListReviewsApiHandler extends ApiHandler {
         public static final String SHELF = "__shelf";
         public static final String SHELVES = "__shelves";
         public static final String AUTHOR_NAME_GF = "__author_name";
-
 
         public static final String DB_PAGES = DatabaseDefinitions.DOM_BOOK_PAGES.name;
         public static final String DB_ISBN = DatabaseDefinitions.DOM_BOOK_ISBN.name;

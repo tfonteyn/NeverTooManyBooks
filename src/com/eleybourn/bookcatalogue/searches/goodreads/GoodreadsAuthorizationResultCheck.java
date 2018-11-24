@@ -31,6 +31,8 @@ import com.eleybourn.bookcatalogue.taskqueue.GenericTask;
 import com.eleybourn.bookcatalogue.taskqueue.QueueManager;
 import com.eleybourn.bookcatalogue.tasks.BCQueueManager;
 
+import java.io.Serializable;
+
 /**
  * Simple class to run in background and verify Goodreads credentials then
  * display a notification based on the result.
@@ -41,7 +43,7 @@ import com.eleybourn.bookcatalogue.tasks.BCQueueManager;
  *
  * @author Philip Warner
  */
-class GoodreadsAuthorizationResultCheck extends GenericTask {
+class GoodreadsAuthorizationResultCheck extends GenericTask implements Serializable {
     private static final long serialVersionUID = -5502292652351148420L;
 
     GoodreadsAuthorizationResultCheck() {
@@ -52,14 +54,14 @@ class GoodreadsAuthorizationResultCheck extends GenericTask {
     public boolean run(final @NonNull QueueManager manager, final @NonNull Context context) {
         GoodreadsManager grMgr = new GoodreadsManager();
         try {
-            grMgr.handleAuthentication(context);
+            grMgr.handleAuthentication();
             if (grMgr.hasValidCredentials()) {
-                Logger.info(this,"GoodreadsAuthorizationResultCheck: OK");
+                Logger.info(this,"GoodreadsAuthorizationResultCheck: hasValidCredentials==true");
 
                 BookCatalogueApp.showNotification(context, context.getString(R.string.authorized),
                         context.getString(R.string.gr_auth_successful));
             } else {
-                Logger.info(this,"GoodreadsAuthorizationResultCheck: FAILED, no exception?");
+                Logger.info(this,"GoodreadsAuthorizationResultCheck: hasValidCredentials==false");
                 BookCatalogueApp.showNotification(context, context.getString(R.string.not_authorized),
                         context.getString(R.string.gr_auth_failed));
             }
@@ -79,7 +81,7 @@ class GoodreadsAuthorizationResultCheck extends GenericTask {
 
     @Override
     public int getCategory() {
-        return BCQueueManager.CAT_GOODREADS_AUTH;
+        return BCQueueManager.CAT_GOODREADS_AUTH_RESULT;
     }
 
 }

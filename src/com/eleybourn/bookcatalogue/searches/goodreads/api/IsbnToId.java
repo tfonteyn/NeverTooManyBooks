@@ -1,7 +1,7 @@
 /*
  * @copyright 2012 Philip Warner
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -37,32 +37,31 @@ import oauth.signpost.exception.OAuthMessageSignerException;
 
 /**
  * API call to get a Goodreads ID from an ISBN.
- * 
+ *
  * NOTE: THIS API DOES NOT RETURN XML. The text output is the ID.
- * 
+ *
  * @author Philip Warner
  */
 public class IsbnToId extends ApiHandler {
 
-	public IsbnToId(final @NonNull GoodreadsManager manager) {
-		super(manager);
-	}
+    public IsbnToId(final @NonNull GoodreadsManager manager) {
+        super(manager);
+    }
 
-	/*
-	 * Get the Goodreads book ID given an ISBN. Response contains the ID  as is.
-	 *	URL: http://www.goodreads.com/book/isbn_to_id    (sample url)
-	 *	HTTP method: GET
-	 *	Parameters:
-	 *	    isbn: The ISBN of the book to lookup.
-	 *	    key: Developer key (required).
-	 */
-	public long isbnToId(final @NonNull String isbn)
-			throws OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException, IOException,
-					NotAuthorizedException, BookNotFoundException, NetworkException 
-	{
-		HttpGet get = new HttpGet(GoodreadsManager.GOODREADS_API_ROOT + "/book/isbn_to_id/" + isbn + "?key=" + mManager.getDeveloperKey());
-		String s = mManager.executeRaw(get);        
+    /*
+     * Get the Goodreads book ID given an ISBN. Response contains the ID  as is.
+     *	URL: http://www.goodreads.com/book/isbn_to_id    (sample url)
+     *	HTTP method: GET
+     *	Parameters:
+     *	    isbn: The ISBN of the book to lookup.
+     *	    key: Developer key (required).
+     */
+    public long isbnToId(final @NonNull String isbn) throws
+            OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException,
+            IOException, NotAuthorizedException, BookNotFoundException, NetworkException {
+        HttpGet get = new HttpGet(GoodreadsManager.GOODREADS_API_ROOT + "/book/isbn_to_id/" + isbn + "?key=" + mManager.getDevKey());
+        String s = mManager.executeRaw(get);
         return Long.parseLong(s);
-	}
-	
+    }
+
 }

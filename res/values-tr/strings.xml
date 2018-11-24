@@ -242,7 +242,7 @@
     <string name="search_internet">Genelağ\'da ara</string>
     <string name="show_results">Sonuçları göster</string>
     <string name="rebuild_fts">FTS\'yi yeniden yapıla (aşırı deneysel)</string>
-    <string name="gr_title_send_book">Kitapları GoodReads\'e gönder</string>
+    <string name="gr_title_send_book">Kitapları Goodreads\'e gönder</string>
     <string name="legacy_task">Eski görev</string>
     <string name="occurred_at">%1$s içinde oluştu</string>
     <string name="unknown_uc">BİLİNMEYEN</string>

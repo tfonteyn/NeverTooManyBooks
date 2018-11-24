@@ -35,27 +35,29 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.debug.Tracker.States;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
+import com.eleybourn.bookcatalogue.messaging.MessageSwitch;
 import com.eleybourn.bookcatalogue.tasks.ManagedTask;
 import com.eleybourn.bookcatalogue.tasks.TaskManager;
 import com.eleybourn.bookcatalogue.tasks.TaskManager.TaskManagerController;
 import com.eleybourn.bookcatalogue.tasks.TaskManager.TaskManagerListener;
 
 /**
- * TODO: Remove this!!!! Fragments makes BaseActivityWithTasks mostly redundant.
+ * TODO: Remove this! Fragments makes BaseActivityWithTasks mostly redundant.
  *
- * Base class for handling tasks in background while displaying a {@link ProgressDialog}.
+ * Class used to manager a collection of background threads for a {@link BaseActivityWithTasks} subclass.
  *
  * Part of three components that make this easier:
  *
+ *  {@link ManagedTask}
+ *  Background task that is managed by TaskManager and uses TaskManager to coordinate display activities.
+ *
  * {@link TaskManager}
- * handles the management of multiple threads sharing a progressDialog
+ * handles the management of multiple tasks and passing messages with the help of a {@link MessageSwitch}
  *
  * {@link BaseActivityWithTasks}
- * Uses a TaskManager (and communicates with it) to handle progress messages for threads.
+ * Uses a TaskManager (and communicates with it) to handle messages for ManagedTask.
  * Deals with orientation changes in cooperation with TaskManager.
  *
- * {@link ManagedTask}
- * Background task that is managed by TaskManager and uses TaskManager to do all display activities.
  *
  * @author Philip Warner
  */
@@ -76,39 +78,38 @@ abstract public class BaseActivityWithTasks extends BaseActivity {
     /** Message for ProgressDialog */
     @NonNull
     private String mProgressMessage = "";
-
-    /**
-     * When the user clicks 'back/up':
-     */
-    @Override
-    public void onBackPressed() {
-        // clean up any running tasks.
-        cancelAndUpdateProgress();
-        super.onBackPressed();
-    }
-
     /**
      * Object to handle all TaskManager events
      */
     @NonNull
     private final TaskManagerListener mTaskListener = new TaskManagerListener() {
+        /**
+         *
+         * @param manager   TaskManager
+         * @param task      task which is finishing.
+         */
         @Override
-        public void onTaskEnded(final @NonNull TaskManager manager, final @NonNull ManagedTask task) {
+        public void onTaskFinished(final @NonNull TaskManager manager, final @NonNull ManagedTask task) {
             if (DEBUG_SWITCHES.MESSAGING && BuildConfig.DEBUG) {
-                Logger.info(BaseActivityWithTasks.this, "passthrough onTaskEnded with task=" + task.getName());
+                Logger.info(BaseActivityWithTasks.this,
+                        "|onTaskFinished|task=`" + task.getName());
             }
-            // Just pass this one on
-            BaseActivityWithTasks.this.onTaskEnded(task);
+            // Just pass this one on. This will allow sub classes to override the base method, and as such get informed.
+            BaseActivityWithTasks.this.onTaskFinished(task);
         }
 
+        /**
+         * Display a progress message
+         */
         @Override
         public void onProgress(final int count, final int max, final @NonNull String message) {
             if (DEBUG_SWITCHES.MESSAGING && BuildConfig.DEBUG) {
                 @SuppressWarnings("UnusedAssignment")
                 String dbgMsg = "onProgress: " + count + "/" + max + ", '" + message.replace("\n", "\\n") + "'";
-
-                Tracker.handleEvent(BaseActivityWithTasks.this, States.Running, "SearchProgress " + dbgMsg);
-                Logger.info(BaseActivityWithTasks.this, dbgMsg);
+                Tracker.handleEvent(BaseActivityWithTasks.this, States.Running,
+                        "|onProgress|msg=" + dbgMsg);
+                Logger.info(BaseActivityWithTasks.this,
+                        "|onProgress|msg=" + dbgMsg);
             }
 
             // Save the details
@@ -132,27 +133,27 @@ abstract public class BaseActivityWithTasks extends BaseActivity {
         }
 
         /**
-         * Display a message
+         * Display an interactive message
          */
         @Override
-        public void onShowUserMessage(final @NonNull String message) {
+        public void onUserMessage(final @NonNull String message) {
+            if (DEBUG_SWITCHES.MESSAGING && BuildConfig.DEBUG) {
+                Logger.info(BaseActivityWithTasks.this,
+                        "|onUserMessage|msg=`" +message);
+            }
             StandardDialogs.showUserMessage(BaseActivityWithTasks.this, message);
         }
-
-        /**
-         * TaskManager is finishing...cleanup.
-         */
-        @Override
-        public void onFinished() {
-            if (DEBUG_SWITCHES.MESSAGING && BuildConfig.DEBUG) {
-                Logger.info(BaseActivityWithTasks.this, "TaskManagerListener `" + mTaskManagerId + "` finishing for activity: " +
-                        BaseActivityWithTasks.this);
-            }
-            mTaskManager.close();
-            mTaskManager = null;
-            mTaskManagerId = 0;
-        }
     };
+
+    /**
+     * When the user clicks 'back/up':
+     */
+    @Override
+    public void onBackPressed() {
+        // clean up any running tasks.
+        cancelAndUpdateProgress();
+        super.onBackPressed();
+    }
 
     @Override
     @CallSuper
@@ -168,7 +169,10 @@ abstract public class BaseActivityWithTasks extends BaseActivity {
     }
 
     /**
-     * Utility routine to get the task manager for this activity
+     * Get the task manager for this activity.
+     * If we had a TaskManager before we did a sleep, try to get it back using the mTaskManagerId
+     * we saved in onSaveInstanceState.
+     * Creates one if we don't yet have one.
      */
     @NonNull
     public TaskManager getTaskManager() {
@@ -178,16 +182,14 @@ abstract public class BaseActivityWithTasks extends BaseActivity {
                 if (controller != null) {
                     mTaskManager = controller.getManager();
                 } else {
-                    Logger.error("Have ID("+mTaskManagerId+"), but can not find controller getting TaskManager");
+                    Logger.error("Have ID(" + mTaskManagerId + "), but can not find controller getting TaskManager");
                 }
-            } //else {
-            //Logger.error("Task manager requested, but no ID available");
-            //}
+            }
 
             // Create if necessary
             if (mTaskManager == null) {
                 TaskManager tm = new TaskManager(this);
-                mTaskManagerId = tm.getSenderId();
+                mTaskManagerId = tm.getId();
                 mTaskManager = tm;
             }
         }
@@ -201,9 +203,9 @@ abstract public class BaseActivityWithTasks extends BaseActivity {
         // Stop listening
         if (mTaskManagerId != 0) {
             TaskManager.getMessageSwitch().removeListener(mTaskManagerId, mTaskListener);
-            // If it's finishing, remove all tasks and cleanup
+            // If the Activity is finishing, tell the TaskManager to cancel all active tasks and not to accept new ones.
             if (isFinishing()) {
-                getTaskManager().close();
+                getTaskManager().cancelAllTasksAndStopListening();
             }
         }
         closeProgressDialog();
@@ -229,9 +231,9 @@ abstract public class BaseActivityWithTasks extends BaseActivity {
     /**
      * Method to allow subclasses easy access to terminating tasks
      *
-     * @see TaskManagerListener#onTaskEnded
+     * @see TaskManagerListener#onTaskFinished
      */
-    protected void onTaskEnded(final @NonNull ManagedTask task) {
+    protected void onTaskFinished(final @NonNull ManagedTask task) {
     }
 
     /**
@@ -280,7 +282,7 @@ abstract public class BaseActivityWithTasks extends BaseActivity {
         mProgressDialog.setProgressStyle(wantInDeterminate ? ProgressDialog.STYLE_SPINNER : ProgressDialog.STYLE_HORIZONTAL);
 
         mProgressDialog.setCanceledOnTouchOutside(false); // back button only
-        mProgressDialog.setOnCancelListener( new OnCancelListener() {
+        mProgressDialog.setOnCancelListener(new OnCancelListener() {
             public void onCancel(DialogInterface i) {
                 cancelAndUpdateProgress();
             }

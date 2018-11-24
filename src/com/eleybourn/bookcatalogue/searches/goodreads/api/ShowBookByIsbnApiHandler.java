@@ -1,7 +1,7 @@
 /*
  * @copyright 2012 Philip Warner
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -40,36 +40,37 @@ import oauth.signpost.exception.OAuthMessageSignerException;
 
 /**
  * Class to call the search.books api (using an ISBN).
- * 
+ *
  * @author Philip Warner
  */
 public class ShowBookByIsbnApiHandler extends ShowBookApiHandler {
 
-	
-	public ShowBookByIsbnApiHandler(final @NonNull GoodreadsManager manager) {
-		// TODO: If goodreads fix signed book.show_by_isbn requests, change false to true...
-		super(manager, true);
-	}
 
-	/**
-	 * Perform a search and handle the results.
-	 *
-	 * @return	the array of GoodreadsWork objects.
-	 */
-	@NonNull
-	public Bundle get(final @NonNull String isbn, final boolean fetchThumbnail) throws
-			OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException,
-			NotAuthorizedException, BookNotFoundException, IOException, NetworkException {
-		if (!IsbnUtils.isValid(isbn)) {
-			throw new RTE.IsbnInvalidException(isbn);
-		}
+    public ShowBookByIsbnApiHandler(final @NonNull GoodreadsManager manager) {
+        // TODO: If goodreads fix signed book.show_by_isbn requests, change false to true...
+        super(manager, true);
+    }
 
-		// Setup API call //
-		final String urlBase = GoodreadsManager.GOODREADS_API_ROOT + "/book/isbn?format=xml&isbn=%1$s&key=%2$s"; //format=xml&
-		final String url = String.format(urlBase, isbn, mManager.getDeveloperKey());
-		HttpGet get = new HttpGet(url);
+    /**
+     * Perform a search and handle the results.
+     *
+     * @return the array of GoodreadsWork objects.
+     */
+    @NonNull
+    public Bundle get(final @NonNull String isbn, final boolean fetchThumbnail) throws
+            OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException,
+            NotAuthorizedException, BookNotFoundException, IOException, NetworkException {
 
-		return sendRequest(get, fetchThumbnail);
-	}
+        if (!IsbnUtils.isValid(isbn)) {
+            throw new RTE.IsbnInvalidException(isbn);
+        }
+
+        // Setup API call //
+        final String urlBase = GoodreadsManager.GOODREADS_API_ROOT + "/book/isbn?format=xml&isbn=%1$s&key=%2$s"; //format=xml&
+        final String url = String.format(urlBase, isbn, mManager.getDevKey());
+        HttpGet get = new HttpGet(url);
+
+        return sendRequest(get, fetchThumbnail);
+    }
 
 }

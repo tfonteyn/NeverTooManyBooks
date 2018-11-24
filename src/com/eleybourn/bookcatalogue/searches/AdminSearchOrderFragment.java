@@ -66,8 +66,8 @@ public class AdminSearchOrderFragment extends Fragment {
                 int pos = mAdapter.getViewRow(child);
                 SearchSites.Site site = mAdapter.getItem(pos);
                 //noinspection ConstantConditions
-                site.order = i;
-                newList.set(site.order, site);
+                site.priority = i;
+                newList.set(site.priority, site);
             }
             mList = newList;
         }

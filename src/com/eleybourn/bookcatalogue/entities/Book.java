@@ -56,6 +56,8 @@ import java.util.Map;
 /**
  * Represents the underlying data for a book.
  *
+ * ENHANCE: would be nice to make this Parcelable...
+ *
  * @author pjw
  */
 public class Book extends DataManager {
@@ -252,7 +254,8 @@ public class Book extends DataManager {
     @NonNull
     public ArrayList<Bookshelf> getBookshelfList() {
         ArrayList<Bookshelf> list = super.getParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY);
-        return list != null ? list : new ArrayList<Bookshelf>();
+//        return list != null ? list : new ArrayList<Bookshelf>();
+        return list;
     }
 
     /**
@@ -323,7 +326,8 @@ public class Book extends DataManager {
     @NonNull
     public ArrayList<Author> getAuthorList() {
         ArrayList<Author> list = super.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
-        return list != null ? list : new ArrayList<Author>();
+//        return list != null ? list : new ArrayList<Author>();
+        return list;
     }
 
     /**
@@ -387,7 +391,8 @@ public class Book extends DataManager {
     @NonNull
     public ArrayList<Series> getSeriesList() {
         ArrayList<Series> list = super.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
-        return list != null ? list : new ArrayList<Series>();
+//        return list != null ? list : new ArrayList<Series>();
+        return list;
     }
 
     /**
@@ -439,7 +444,8 @@ public class Book extends DataManager {
     @CallSuper
     public ArrayList<TOCEntry> getTOC() {
         ArrayList<TOCEntry> list = super.getParcelableArrayList(UniqueId.BKEY_TOC_TITLES_ARRAY);
-        return list != null ? list : new ArrayList<TOCEntry>();
+//        return list != null ? list : new ArrayList<TOCEntry>();
+        return list;
     }
 
     /**
@@ -541,14 +547,14 @@ public class Book extends DataManager {
 
         BookshelfCheckListItem(final @NonNull Parcel in) {
             super(in);
-            //ENHANCE API 23 use readTypedObject(Bookshelf.CREATOR)
+            //API_UPGRADE 23 use readTypedObject(Bookshelf.CREATOR) which is more efficient
             item = in.readParcelable(Bookshelf.class.getClassLoader());
         }
 
         @Override
         public void writeToParcel(Parcel dest, final int flags) {
             super.writeToParcel(dest, flags);
-            //ENHANCE API 23 use writeTypedObject
+            //API_UPGRADE 23 use writeTypedObject which is more efficient
             dest.writeParcelable(item, flags);
         }
 

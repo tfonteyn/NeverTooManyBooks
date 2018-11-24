@@ -56,6 +56,8 @@ abstract class ApiHandler {
     static final String XML_TITLE = "title";
     static final String XML_ORIGINAL_TITLE = "original_title";
 
+    static final String XML_LANGUAGE = "language_code";
+
     static final String XML_BOOK = "book";
     static final String XML_BEST_BOOK = "best_book";
     static final String XML_ISBN_13 = "isbn13";
@@ -74,6 +76,7 @@ abstract class ApiHandler {
     static final String XML_USER_SHELF = "user_shelf";
 
     static final String XML_PUBLISHER = "publisher";
+    static final String XML_COUNTRY_CODE = "country_code";
 
     static final String XML_PUBLICATION_YEAR = "publication_year";
     static final String XML_PUBLICATION_MONTH = "publication_month";

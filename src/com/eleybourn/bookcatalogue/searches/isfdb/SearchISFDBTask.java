@@ -13,6 +13,10 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
 
+/**
+ *  ISFDB SearchTask as used by the {@link SearchSites.Site#getTask(TaskManager)}
+ *
+ */
 public class SearchISFDBTask extends SearchTask {
 
     public SearchISFDBTask(final @NonNull String name,
@@ -20,11 +24,21 @@ public class SearchISFDBTask extends SearchTask {
         super(name, manager);
     }
 
+    /**
+     * Return the global ID for this searcher
+     */
+    @Override
+    public int getSearchId() {
+        return SearchSites.Site.SEARCH_ISFDB;
+    }
+
     @Override
     protected void runTask() {
         final @StringRes int R_ID_SEARCHING = R.string.searching_isfdb;
         doProgress(getString(R_ID_SEARCHING), 0);
+
         try {
+            // manager checks the arguments
             ISFDBManager.search(mIsbn, mAuthor, mTitle, mBookData, mFetchThumbnail);
             if (mBookData.size() > 0) {
                 // Look for series name and clean KEY_TITLE
@@ -47,12 +61,6 @@ public class SearchISFDBTask extends SearchTask {
         }
     }
 
-    /**
-     * Return the global ID for this searcher
-     */
-    @Override
-    public int getSearchId() {
-        return SearchSites.SEARCH_ISFDB;
-    }
+
 
 }

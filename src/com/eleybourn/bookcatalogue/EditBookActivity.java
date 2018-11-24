@@ -31,6 +31,7 @@ import android.support.v4.app.Fragment;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
+import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 public class EditBookActivity extends BaseActivity {
 
@@ -76,6 +77,12 @@ public class EditBookActivity extends BaseActivity {
         Tracker.exitOnCreate(this);
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        // delete any leftover temporary thumbnails
+        StorageUtils.deleteTempCoverFile();
+    }
 
     @Override
     protected void onActivityResult(final int requestCode, final int resultCode, final @Nullable Intent data) {

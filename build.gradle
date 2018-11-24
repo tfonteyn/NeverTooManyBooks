@@ -38,8 +38,10 @@ dependencies {
     implementation 'ch.acra:acra:4.11'
     // jsoup HTML parser library @ https://jsoup.org/
     implementation 'org.jsoup:jsoup:1.11.3'
+    //ENHANCE: apache http is removed from API 23
     implementation 'org.apache.httpcomponents:httpcore:4.4.10'
     implementation 'org.apache.httpcomponents:httpmime:4.5.6'
+    //
     implementation 'org.apache.commons:commons-compress:1.18'
     implementation 'commons-codec:commons-codec:1.11'
     implementation 'oauth.signpost:signpost-core:1.2.1.2'
@@ -77,16 +79,16 @@ android {
         }
     }
 
-    //    2018-10-01: https://developer.android.com/about/dashboards/
+    //    2018-10-26: https://developer.android.com/about/dashboards/
     //  9       28
     //  8.1     27
     //  8       26
     //  7.1     25
-    //  7       24      48.5%
-    //  6       23      70.1%
-    //  5.1     22      84.8%
-    //  5.0     21      88.4%
-    //  4.4     19      96.2%   but 5.0 has has so many new things....
+    //  7       24      49.7%
+    //  6       23      71.0%
+    //  5.1     22      85.4%
+    //  5.0     21      88.9%
+    //  4.4     19      96.5%   but 5.0 has has so many new things....
     defaultConfig {
         minSdkVersion 21
         targetSdkVersion 27

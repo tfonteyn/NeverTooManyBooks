@@ -36,10 +36,10 @@
             android:value="" />
         <meta-data
             android:name="goodreads.dev_key"
-            android:value="" />
+            android:value="ZWx0GvfCNvQxqPmbBdsNQ" />
         <meta-data
             android:name="goodreads.dev_secret"
-            android:value="" />
+            android:value="A6gLqqm5Jxf6TKTvcBMjkXnq3k31jNzYmthfRWUA" />
 
         <provider
             android:name=".searches.SearchSuggestionProvider"
@@ -83,6 +83,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <!-- the main activity -->
         <activity android:name=".BooksOnBookshelf">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
@@ -99,49 +100,117 @@
         <activity android:name=".About" />
         <activity android:name=".AdminActivity" />
 
-        <!-- ************************************************************ -->
-        <!-- AdminActivity: General -->
-        <!-- ************************************************************ -->
-
-
-        <!-- Manage Bookshelves -->
+        <!-- AdminActivity: Manage Bookshelves -->
         <activity android:name=".EditBookshelfListActivity" />
 
-        <!-- Field Visibility -->
+        <!-- AdminActivity: Field Visibility -->
         <activity android:name=".FieldVisibilityActivity" />
 
-        <!-- Edit book list styles -->
+        <!-- AdminActivity: Edit book list styles -->
         <activity android:name=".booklist.BooklistPreferredStylesActivity" />
         <activity
             android:name=".booklist.BooklistStylePropertiesActivity"
             android:windowSoftInputMode="stateHidden" />
         <activity android:name=".booklist.BooklistStyleGroupsActivity" />
 
-        <!-- AdminActivity:Data Import/Export -->
+        <!-- AdminActivity: Data Import/Export -->
         <activity android:name=".filechooser.BackupChooserActivity" />
 
         <!-- AdminActivity: Update Fields -->
         <activity android:name=".UpdateFromInternetActivity" />
 
-        <!-- AdminActivity: Credentials -->
+        <!-- AdminActivity: Credentials Goodreads -->
+        <activity android:name=".searches.goodreads.GoodreadsRegisterActivity" />
+        <!-- the callback-activity after we requested authorizing this application for the current user to Goodreads -->
         <activity
-            android:name=".searches.goodreads.GoodreadsRegisterActivity"
-            android:launchMode="standard" />
+            android:name=".searches.goodreads.GoodreadsAuthorizationActivity"
+            android:launchMode="singleInstance">
+
+            <!-- TODO: Work out which of these filters we don't need! -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.LAUNCHER" />
+
+                <data
+                    android:host="goodreadsauth"
+                    android:scheme="http" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.LAUNCHER" />
+
+                <data
+                    android:host="goodreadsauth"
+                    android:scheme="${packageName}" />
+            </intent-filter>
+            <!--<intent-filter>-->
+            <!--<action android:name="android.intent.action.VIEW" />-->
+
+            <!--<category android:name="android.intent.category.BROWSABLE" />-->
+
+            <!--<data-->
+            <!--android:host="goodreadsauth"-->
+            <!--android:scheme="${packageName}" />-->
+            <!--</intent-filter>-->
+            <intent-filter>
+                <action android:name="android.intent.action.GET" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.LAUNCHER" />
+
+                <data
+                    android:host="goodreadsauth"
+                    android:scheme="${packageName}" />
+            </intent-filter>
+
+            <intent-filter tools:ignore="AppLinkUrlError">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.BROWSABLE" />
+            </intent-filter>
+            <intent-filter>
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+            </intent-filter>
+            <intent-filter tools:ignore="AppLinkUrlError">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+            </intent-filter>
+        </activity>
+
+        <!-- AdminActivity: Credentials LibraryThing -->
         <activity android:name=".searches.librarything.LibraryThingAdminActivity" />
 
         <!-- AdminActivity: Background tasks -->
         <activity android:name=".tasks.TaskListActivity" />
 
-        <!-- AdminActivity: Search configuration -->
+        <!-- AdminActivity: Search Sites configuration -->
         <activity
             android:name=".searches.SearchAdminActivity"
             android:windowSoftInputMode="adjustResize" />
-        <!-- *********************************************************************************** -->
-        <!-- END admin pages -->
-        <!-- *********************************************************************************** -->
 
-
-        <!-- Search -->
+        <!-- Local Search -->
         <activity
             android:name=".searches.SearchLocalActivity"
             android:windowSoftInputMode="adjustResize" />
@@ -165,90 +234,19 @@
         <activity android:name=".EditAuthorListActivity" />
         <activity android:name=".EditSeriesListActivity" />
 
-        <!-- view an Author and all of his TOCEntries -->
+        <!-- view an Author and all of his details -->
         <activity android:name=".AuthorActivity" />
 
         <!-- cropping an image, either from the cover of a book, or direct from a new scan -->
         <activity android:name=".cropper.CropImageActivity" />
 
-        <!-- and then some GoodReads activities... TODO: satisfy curiosity later -->
+
+        <!-- and then some Goodreads activities... TODO: satisfy curiosity later -->
         <activity android:name=".searches.goodreads.GoodreadsSearchCriteriaActivity" />
         <activity android:name=".searches.goodreads.GoodreadsSearchResultsActivity" />
         <activity android:name=".searches.goodreads.GoodreadsExportFailuresActivity" />
-        <activity
-            android:name=".searches.goodreads.GoodreadsAuthorizationActivity"
-            android:launchMode="singleInstance">
 
-            <!-- TODO: Work out which of these filters we don't need! -->
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
 
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <category android:name="android.intent.category.LAUNCHER" />
-
-                <data
-                    android:host="goodreadsauth"
-                    android:scheme="http" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <category android:name="android.intent.category.LAUNCHER" />
-
-                <data
-                    android:host="goodreadsauth"
-                    android:scheme="${packageName}" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data
-                    android:host="goodreadsauth"
-                    android:scheme="${packageName}" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.GET" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <category android:name="android.intent.category.LAUNCHER" />
-
-                <data
-                    android:host="goodreadsauth"
-                    android:scheme="${packageName}" />
-            </intent-filter>
-            <intent-filter tools:ignore="AppLinkUrlError">
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-            <intent-filter>
-                <category android:name="android.intent.category.LAUNCHER" />
-                <category android:name="android.intent.category.BROWSABLE" />
-            </intent-filter>
-            <intent-filter>
-                <category android:name="android.intent.category.BROWSABLE" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-            <intent-filter>
-                <category android:name="android.intent.category.LAUNCHER" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-            </intent-filter>
-            <intent-filter tools:ignore="AppLinkUrlError">
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-            </intent-filter>
-        </activity>
     </application>
 
 </manifest>

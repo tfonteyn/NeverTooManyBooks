@@ -41,7 +41,13 @@ abstract public class SearchTask extends ManagedTask {
     protected String mTitle;
     protected String mIsbn;
 
-    /** Accumulated book info. */
+    /**
+     * Accumulated book info.
+     *
+     * The Bundle will contain String or {@link StringList} based entries by default
+     *
+     * NEWKIND: if you add a new Search task that adds non-string based data, {@link SearchManager#accumulateData(int)} must be able to handle it.
+     */
     @NonNull
     protected Bundle mBookData = new Bundle();
 
@@ -102,9 +108,9 @@ abstract public class SearchTask extends ManagedTask {
      */
     protected void checkForSeriesName() {
         if (mBookData.containsKey(UniqueId.KEY_TITLE)) {
-            String thisTitle = mBookData.getString(UniqueId.KEY_TITLE);
-            if (thisTitle != null) {
-                SeriesDetails details = Series.findSeriesFromBookTitle(thisTitle);
+            String bookTitle = mBookData.getString(UniqueId.KEY_TITLE);
+            if (bookTitle != null) {
+                SeriesDetails details = Series.findSeriesFromBookTitle(bookTitle);
                 if (details != null && !details.name.isEmpty()) {
                     List<Series> list;
                     if (mBookData.containsKey(UniqueId.BKEY_SERIES_STRING_LIST)) {
@@ -113,8 +119,10 @@ abstract public class SearchTask extends ManagedTask {
                         list = new ArrayList<>();
                     }
                     list.add(new Series(details.name, details.position));
+                    // store Series back as a StringList
                     mBookData.putString(UniqueId.BKEY_SERIES_STRING_LIST, StringList.getSeriesUtils().encode(list));
-                    mBookData.putString(UniqueId.KEY_TITLE, thisTitle.substring(0, details.startChar - 1).trim());
+                    // remove series info from the book title.
+                    mBookData.putString(UniqueId.KEY_TITLE, bookTitle.substring(0, details.startChar - 1).trim());
                 }
             }
         }
@@ -144,6 +152,8 @@ abstract public class SearchTask extends ManagedTask {
 
     /**
      * Accessor, so when thread has finished, data can be retrieved.
+     *
+     * The Bundle will contain String or {@link StringList} based entries by default
      */
     @NonNull
     Bundle getBookData() {

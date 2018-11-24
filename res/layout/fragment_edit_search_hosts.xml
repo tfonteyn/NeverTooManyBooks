@@ -5,21 +5,7 @@
     android:layout_height="match_parent"
     android:paddingTop="@dimen/padding_border_double"
     android:orientation="vertical">
-<!-- paddingTop is there to stop the overspill from the TabLayout (bug?)-->
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/amazon" />
-
-    <!-- no style used on purpose -->
-    <EditText
-        android:id="@+id/amazon_url"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="http://www.amazon.com"
-        android:inputType="textUri"
-        tools:ignore="Autofill,HardcodedText" />
+<!-- paddingTop is there to stop overspill from the TabLayout (bug?)-->
 
     <TextView
         android:layout_width="match_parent"
@@ -34,6 +20,24 @@
         android:hint="http://books.google.com"
         android:inputType="textUri"
         tools:ignore="Autofill,HardcodedText" />
+
+    <!-- FIXME: Amazon is currently searched through a proxy, see {@link AmazonManager}
+         , so not showing this one. Keeping it for future use -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/amazon"
+        android:visibility="gone"/>
+
+    <!-- no style used on purpose -->
+    <EditText
+        android:id="@+id/amazon_url"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="http://www.amazon.com"
+        android:inputType="textUri"
+        tools:ignore="Autofill,HardcodedText"
+        android:visibility="gone" />
 
     <!-- there is only one valid URL, so not showing this one. Keeping it for completeness sake -->
     <TextView

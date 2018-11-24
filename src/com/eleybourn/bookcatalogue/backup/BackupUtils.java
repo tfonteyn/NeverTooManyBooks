@@ -272,8 +272,7 @@ public class BackupUtils {
                     mBundle.putBoolean(key, Boolean.parseBoolean(value));
                     break;
                 case TYPE_SERIALIZABLE:
-                    //ENHANCE API 26
-                    // byte[] blob = java.util.Base64.getDecoder().decode(value);
+                    //API_UPGRADE 26 use: byte[] blob = java.util.Base64.getDecoder().decode(value);
                     byte[] blob = Base64.decode(value);
                     mBundle.putSerializable(key, blob);
                     break;

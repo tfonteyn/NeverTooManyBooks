@@ -27,8 +27,11 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import java.util.ArrayList;
+
 /*
  * An XML handler for the Google Books return
+ * Gets the total number of books found, and their id (which is a URL)
  *
  * An example response looks like;
  * <?xml version='1.0' encoding='UTF-8'?>
@@ -125,70 +128,41 @@ class SearchGoogleBooksHandler extends DefaultHandler {
 
     /** Words in XML */
     private static final String XML_ID = "id";
-    private static final String XML_TOTAL_RESULTS = "totalResults";
     private static final String XML_ENTRY = "entry";
 
-    private StringBuilder builder;
+    private StringBuilder mBuilder = new StringBuilder();
     @NonNull
-    private String id = "";
-    private int count = 0;
-    private boolean entry = false;
-    private boolean done = false;
+    private ArrayList<String> url = new ArrayList<>();
+
+    private boolean mInEntry = false;
+    private boolean mEntryDone = false;
 
     /**
      * Return the id of the first book found
      *
-     * @return The book id (to be passed to the entry handler)
+     * @return The book url list (to be passed to the entry handler), can be empty.
      */
     @NonNull
-    public String getId() {
-        return id;
+    ArrayList<String> getUrlList() {
+        return url;
+    }
+
+    @Override
+    @CallSuper
+    public void characters(final @NonNull char[] ch,
+                           final int start,
+                           final int length) throws SAXException {
+        super.characters(ch, start, length);
+        mBuilder.append(ch, start, length);
     }
 
     /**
-     * How many books were found?
+     * (non-Javadoc)
      *
-     * @return The number of books found
+     * @see org.xml.sax.helpers.DefaultHandler#startElement(java.lang.String, java.lang.String, java.lang.String, org.xml.sax.Attributes)
+     *
+     * Start each XML element. Specifically identify when we are in the item element and set the appropriate flag.
      */
-    public int getCount() {
-        return count;
-    }
-
-    @Override
-    @CallSuper
-    public void characters(final @NonNull char[] ch, final int start, final int length) throws SAXException {
-        super.characters(ch, start, length);
-        builder.append(ch, start, length);
-    }
-
-    @Override
-    @CallSuper
-    public void endElement(final @NonNull String uri,
-                           final @NonNull String localName,
-                           final @NonNull String name) throws SAXException {
-        super.endElement(uri, localName, name);
-        if (localName.equalsIgnoreCase(XML_TOTAL_RESULTS)) {
-            count = Integer.parseInt(builder.toString());
-        }
-        if (localName.equalsIgnoreCase(XML_ENTRY)) {
-            entry = false;
-            done = true;
-        }
-        if (entry && id.isEmpty()) {
-            if (localName.equalsIgnoreCase(XML_ID)) {
-                id = builder.toString();
-            }
-        }
-        builder.setLength(0);
-    }
-
-    @Override
-    @CallSuper
-    public void startDocument() throws SAXException {
-        super.startDocument();
-        builder = new StringBuilder();
-    }
-
     @Override
     @CallSuper
     public void startElement(final @NonNull String uri,
@@ -196,8 +170,38 @@ class SearchGoogleBooksHandler extends DefaultHandler {
                              final @NonNull String name,
                              final @NonNull Attributes attributes) throws SAXException {
         super.startElement(uri, localName, name, attributes);
-        if (!done && localName.equalsIgnoreCase(XML_ENTRY)) {
-            entry = true;
+        if (!mEntryDone && localName.equalsIgnoreCase(XML_ENTRY)) {
+            mInEntry = true;
         }
+    }
+
+    /**
+     * (non-Javadoc)
+     *
+     * @see org.xml.sax.helpers.DefaultHandler#endElement(java.lang.String, java.lang.String, java.lang.String)
+     *
+     * Populate the results Bundle for each appropriate element.
+     */
+    @Override
+    @CallSuper
+    public void endElement(final @NonNull String uri,
+                           final @NonNull String localName,
+                           final @NonNull String name) throws SAXException {
+        super.endElement(uri, localName, name);
+        if (localName.equalsIgnoreCase(XML_ENTRY)) {
+            mInEntry = false;
+            mEntryDone = true;
+        } else if (mInEntry) {
+            if (localName.equalsIgnoreCase(XML_ID)) {
+                url.add(mBuilder.toString());
+            }
+        }
+
+        // Note:
+        // Always reset the length. This is not entirely the right thing to do, but works
+        // because we always want strings from the lowest level (leaf) XML elements.
+        // To be completely correct, we should maintain a stack of builders that are pushed and
+        // popped as each startElement/endElement is called. But lets not be pedantic for now.
+        mBuilder.setLength(0);
     }
 }

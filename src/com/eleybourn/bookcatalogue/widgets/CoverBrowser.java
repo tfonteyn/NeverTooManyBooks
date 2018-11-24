@@ -64,7 +64,7 @@ import java.util.List;
 /**
  * Class to display and manage a cover image browser in a dialog.
  *
- * ENHANCE: For each ISBN returned by LT, add TWO images and get the second from GoodReads
+ * ENHANCE: For each ISBN returned by LT, add TWO images and get the second from Goodreads
  * ENHANCE: (Somehow) remove non-existent images from ImageSelector. Probably start with 1 image and GROW it.
  *
  * @author Philip Warner
@@ -162,7 +162,7 @@ public class CoverBrowser {
 
         LibraryThingManager mLibraryThing = new LibraryThingManager();
         if (!mLibraryThing.isAvailable()) {
-            StandardDialogs.needLibraryThingAlert(mActivity, true, "cover_browser");
+            LibraryThingManager.needLibraryThingAlert(mActivity, true, "cover_browser");
             return;
         }
 
@@ -582,19 +582,19 @@ public class CoverBrowser {
             //Reminder: the for() loop will bailout (return) as soon as a cover file is found.
             // it does not collect covers from all sites; just from the first one found.
             // ENHANCE: allow the user to prioritize the order on the fly.
-            for (SearchSites.Site site : SearchSites.getSiteCoverSearchOrder()) {
+            for (SearchSites.Site site : SearchSites.getSitesForCoverSearches()) {
                 if (site.enabled) {
                     File file = null;
                     switch (site.id) {
-                        case SearchSites.SEARCH_LIBRARY_THING: {
+                        case SearchSites.Site.SEARCH_LIBRARY_THING: {
                             file = libraryThingManager.getCoverImage(isbn, size);
                             break;
                         }
-                        case SearchSites.SEARCH_GOOGLE: {
+                        case SearchSites.Site.SEARCH_GOOGLE: {
                             file = GoogleBooksManager.getCoverImage(isbn);
                             break;
                         }
-                        case SearchSites.SEARCH_ISFDB: {
+                        case SearchSites.Site.SEARCH_ISFDB: {
                             file = ISFDBManager.getCoverImage(isbn);
                             break;
                         }

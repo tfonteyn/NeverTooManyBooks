@@ -364,7 +364,7 @@ public class BookEvents {
     }
 
     /**
-     * Exception indicating the book's ISBN could not be found at GoodReads
+     * Exception indicating the book's ISBN could not be found at Goodreads
      *
      * @author Philip Warner
      */

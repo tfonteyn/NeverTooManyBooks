@@ -6,6 +6,8 @@ import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.utils.IsbnUtils;
+import com.eleybourn.bookcatalogue.utils.RTE;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 import org.xml.sax.SAXException;
@@ -40,46 +42,37 @@ public class AmazonManager {
     public static void search(final @NonNull String isbn,
                               @NonNull String author,
                               @NonNull String title,
-                              final @NonNull Bundle book,
+                              final @NonNull Bundle /* out*/ bookData,
                               final boolean fetchThumbnail) throws IOException {
 
-        String path = "https://bc.theagiledirector.com/getRest_v3.php";
+        String urlText = "https://bc.theagiledirector.com/getRest_v3.php";
         if (!isbn.isEmpty()) {
-            path += "?isbn=" + isbn;
+            // sanity check
+            if (!IsbnUtils.isValid(isbn)) {
+                return;
+            }
+            urlText += "?isbn=" + isbn;
         } else {
-            // if both empty, no search
+            // sanity check
             if (author.isEmpty() && title.isEmpty()) {
                 return;
             }
-            //replace spaces with %20
-            author = author.replace(" ", "%20");
-            //try {
-            //	mAuthor = URLEncoder.encode(mAuthor, "utf-8");
-            //} catch (UnsupportedEncodingException e1) {
-            //	// Just use raw author...
-            //}
-
-            title = title.replace(" ", "%20");
-            //try {
-            //	mTitle = URLEncoder.encode(mTitle, "utf-8");
-            //} catch (UnsupportedEncodingException e1) {
-            //	// Just use raw title...
-            //}
-            path += "?author=" + author + "&title=" + title;
+            //replace spaces in author/title with %20
+            urlText += "?author=" + author.replace(" ", "%20") + "&title=" + title.replace(" ", "%20");
         }
 
+        // Setup the parser
         SAXParserFactory factory = SAXParserFactory.newInstance();
-        SAXParser parser;
-        SearchAmazonHandler handler = new SearchAmazonHandler(book, fetchThumbnail);
+        SearchAmazonHandler handler = new SearchAmazonHandler(bookData, fetchThumbnail);
 
+        // Get it
         try {
-            URL url = new URL(path);
-            parser = factory.newSAXParser();
-            // We can't Toast anything here, so let exceptions fall through.
+            URL url = new URL(urlText);
+            SAXParser parser = factory.newSAXParser();
             parser.parse(Utils.getInputStreamWithTerminator(url), handler);
 
             // only catch exceptions related to the parsing, others will be caught by the caller.
-        } catch (ParserConfigurationException | ParseException |SAXException e) {
+        } catch (ParserConfigurationException | SAXException e) {
             Logger.error(e);
         }
     }

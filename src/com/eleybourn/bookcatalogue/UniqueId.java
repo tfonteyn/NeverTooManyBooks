@@ -130,14 +130,12 @@ public class UniqueId {
     public static final String BKEY_TOC_TITLES_ARRAY = "toc_titles_array";
     public static final String BKEY_BOOKSHELF_ARRAY = "bookshelf_array";
 
-
-    //TODO: these should become ArrayList<String> which is supported by Bundle
     /* The CSV file has columns with these names */
     /** string-encoded - used in import/export and internet searches, never change this string! */
     public static final String BKEY_AUTHOR_STRING_LIST = "author_details";
     /** string-encoded - used in import/export and internet searches, never change this string! */
     public static final String BKEY_SERIES_STRING_LIST = "series_details";
-    /** string-encoded - used in import/export and internet searches, never change this string! */
+    /** string-encoded - used in import/export, never change this string! */
     public static final String BKEY_TOC_STRING_LIST = "anthology_titles";
 
     /* BKEY_* and BVAL_* which are used in more then one class should be moved here */

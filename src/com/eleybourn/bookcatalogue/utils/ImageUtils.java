@@ -26,7 +26,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 
 public class ImageUtils {
@@ -217,20 +217,68 @@ public class ImageUtils {
      * @param urlText        Image file URL
      * @param filenameSuffix Suffix to add
      *
-     * @return Downloaded fileSpec, or blank "" on failure
+     * @return Downloaded fileSpec, or null on failure
      */
-    @NonNull
+    @Nullable
     public static String saveThumbnailFromUrl(final @NonNull String urlText, final @NonNull String filenameSuffix) {
-
+        boolean success = false;
         final File file = StorageUtils.getTempCoverFile(filenameSuffix);
-
-        try (InputStream in = Utils.getInputStream(urlText)) {
-            StorageUtils.saveInputStreamToFile(in, file);
-        } catch (@NonNull IOException | URISyntaxException e) {
+        try (InputStream in = Utils.getInputStreamWithTerminator(new URL(urlText))) {
+            if (in != null) {
+                success = StorageUtils.saveInputStreamToFile(in, file);
+            } else {
+                Logger.error("InputStream was null");
+            }
+        } catch (@NonNull IOException e) {
             Logger.error(e);
-            return "";
         }
-        return file.getAbsolutePath();
+
+        return (success ? file.getAbsolutePath() : null);
+    }
+
+    /**
+     * Given a URL, get an image and return as a byte array.
+     *
+     * @param urlText Image file URL
+     *
+     * @return Downloaded byte[] or null upon failure
+     */
+    @Nullable
+    public static byte[] getBytesFromUrl(final @NonNull String urlText) {
+        InputStream in = null;
+        ByteArrayOutputStream out = null;
+        try {
+            in = Utils.getInputStreamWithTerminator(new URL(urlText));
+            if (in != null) {
+                out = new ByteArrayOutputStream();
+                // Save the output to a byte output stream
+                byte[] buffer = new byte[65536];
+                int len;
+                while ((len = in.read(buffer)) >= 0) {
+                    out.write(buffer, 0, len);
+                }
+                return out.toByteArray();
+            } else {
+                Logger.error("InputStream was null");
+            }
+        } catch (@NonNull IOException e) {
+            Logger.error(e);
+        } finally {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException ignore) {
+                }
+            }
+            if (out != null) {
+                try {
+                    out.close();
+                } catch (IOException ignore) {
+                }
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -254,32 +302,7 @@ public class ImageUtils {
     }
 
 
-    /**
-     * Given a URL, get an image and return as a byte array.
-     *
-     * @param urlText Image file URL
-     *
-     * @return Downloaded byte[] or null upon failure
-     */
-    @Nullable
-    public static byte[] getBytesFromUrl(final @NonNull String urlText) {
 
-        try (InputStream in = Utils.getInputStream(urlText);
-             ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-
-            // Save the output to a byte output stream
-            byte[] buffer = new byte[65536];
-            int len;
-            while ((len = in.read(buffer)) >= 0) {
-                out.write(buffer, 0, len);
-            }
-            return out.toByteArray();
-
-        } catch (@NonNull IOException | URISyntaxException e) {
-            Logger.error(e);
-            return null;
-        }
-    }
 
 
     /**
@@ -334,7 +357,7 @@ public class ImageUtils {
         if (bestFileIndex >= 0) {
             File source = new File(files.get(bestFileIndex));
             File destination = StorageUtils.getTempCoverFile();
-            StorageUtils.renameFile(source, destination );
+            StorageUtils.renameFile(source, destination);
         }
         // Finally, cleanup the data
         result.remove(UniqueId.BKEY_THUMBNAIL_FILE_SPEC);

@@ -40,7 +40,7 @@
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textIsSelectable="true"
             android:textStyle="bold"
-            tools:text="Export all books to GoodReads" />
+            tools:text="Export all books to Goodreads" />
 
         <TextView
             android:id="@+id/state"

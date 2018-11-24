@@ -30,30 +30,35 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.messaging.MessageSwitch;
 
 /**
- * Base class for handling tasks in background while displaying a ProgressDialog.
+ * Class used to manager a collection of background threads for a {@link BaseActivityWithTasks} subclass.
  *
  * Part of three components that make this easier:
  *
+ * {@link ManagedTask}
+ * Background task that is managed by TaskManager and uses TaskManager to coordinate display activities.
+ *
  * {@link TaskManager}
- * handles the management of multiple threads sharing a ProgressDialog
+ * handles the management of multiple tasks and passing messages with the help of a {@link MessageSwitch}
  *
  * {@link BaseActivityWithTasks}
- * Uses a TaskManager (and communicates with it) to handle progress messages for threads.
+ * Uses a TaskManager (and communicates with it) to handle messages for ManagedTask.
  * Deals with orientation changes in cooperation with TaskManager.
  *
- * {@link ManagedTask}
- * Background task that is managed by TaskManager and uses TaskManager to do all display activities.
  *
- *
- * {@link TaskController}
- * Ask the {@link TaskMessageSwitch} for the controller. The controller gives access to the sender.
- * via its {@link TaskController#getTask()} task and can {@link TaskController#requestAbort()}
+ * {@link ManagedTaskController}
+ * Ask the {@link MessageSwitch} for the controller. The controller gives access to the sender.
+ * via its {@link ManagedTaskController#getTask()} task and can {@link ManagedTaskController#requestAbort()}
  *
  * @author Philip Warner
  */
 abstract public class ManagedTask extends Thread {
 
-    private static final TaskMessageSwitch mMessageSwitch = new TaskMessageSwitch();
+    /**
+     * STATIC Object for passing messages from background tasks to activities that may be recreated
+     *
+     * This object handles all underlying task messages for every instance of this class.
+     */
+    private static final MessageSwitch<ManagedTaskListener, ManagedTaskController> mMessageSwitch = new MessageSwitch<>();
     /** The manager who we will use for progress etc, and who we will inform about our state. */
     @NonNull
     protected final TaskManager mTaskManager;
@@ -63,16 +68,17 @@ abstract public class ManagedTask extends Thread {
     private boolean mFinished = false;
     /** Indicates the user has requested a cancel. Up to the subclass to decide what to do. */
     private boolean mCancelFlg = false;
-
     /**
      * Constructor.
      *
-     * @param name    of this task(thread)
-     * @param manager Associated task manager
+     * @param name        of this task(thread)
+     * @param taskManager Associated task manager
      */
-    protected ManagedTask(final @NonNull String name, final @NonNull TaskManager manager) {
-        /* Controller instance for this specific task */
-        TaskController controller = new TaskController() {
+    protected ManagedTask(final @NonNull String name,
+                          final @NonNull TaskManager taskManager) {
+
+        /* Controller instance for this specific ManagedTask */
+        ManagedTaskController controller = new ManagedTaskController() {
             @Override
             public void requestAbort() {
                 ManagedTask.this.cancelTask();
@@ -89,14 +95,14 @@ abstract public class ManagedTask extends Thread {
         setName(name);
 
         mMessageSenderId = mMessageSwitch.createSender(controller);
-        // Save the stuff for later
-        mTaskManager = manager;
-        // Add to my manager
+        // Save the taskManager for later
+        mTaskManager = taskManager;
+        // Add myself to my manager
         mTaskManager.addTask(this);
     }
 
     @NonNull
-    public static TaskMessageSwitch getMessageSwitch() {
+    public static MessageSwitch<ManagedTaskListener, ManagedTaskController> getMessageSwitch() {
         return mMessageSwitch;
     }
 
@@ -131,8 +137,8 @@ abstract public class ManagedTask extends Thread {
      * @param message Message to display
      * @param count   Counter. 0 if Max not set.
      */
-    public void doProgress(final @NonNull String message, final int count) {
-        mTaskManager.doProgress(this, message, count);
+    protected void doProgress(final @NonNull String message, final int count) {
+        mTaskManager.sendTaskProgressMessage(this, message, count);
     }
 
     /**
@@ -141,14 +147,8 @@ abstract public class ManagedTask extends Thread {
      * @param message Message to display
      */
     protected void showUserMessage(final @NonNull String message) {
-        mTaskManager.showUserMessage(message);
+        mTaskManager.sendTaskUserMessage(message);
     }
-
-
-    /* =====================================================================
-     * Message Switchboard implementation
-     * =====================================================================
-     */
 
     /**
      * Executed in main task thread.
@@ -158,7 +158,9 @@ abstract public class ManagedTask extends Thread {
         try {
             runTask();
         } catch (InterruptedException e) {
-            Logger.info(ManagedTask.this, "" + this + " was interrupted");
+            Logger.info(ManagedTask.this,
+                    "|ManagedTask=" + this.getName() +
+                            " was interrupted");
             mCancelFlg = true;
         } catch (Exception e) {
             Logger.error(e);
@@ -170,12 +172,13 @@ abstract public class ManagedTask extends Thread {
 
         // Queue the 'onTaskFinished' message; this should also inform the TaskManager
         mMessageSwitch.send(mMessageSenderId,
-                new MessageSwitch.Message<TaskListener>() {
+                new MessageSwitch.Message<ManagedTaskListener>() {
                     @Override
-                    public boolean deliver(final @NonNull TaskListener listener) {
+                    public boolean deliver(final @NonNull ManagedTaskListener listener) {
                         if (DEBUG_SWITCHES.MESSAGING && BuildConfig.DEBUG) {
-                            Logger.info(ManagedTask.this,"Delivering 'onTaskFinished' to listener: " + listener +
-                            "\ntask=" + ManagedTask.this.getName());
+                            Logger.info(ManagedTask.this,
+                                    "|ManagedTask=" + ManagedTask.this.getName() +
+                                    "|Delivering 'onTaskFinished' to listener: " + listener);
                         }
                         listener.onTaskFinished(ManagedTask.this);
                         return false;
@@ -214,19 +217,9 @@ abstract public class ManagedTask extends Thread {
     }
 
     /**
-     * Allows other objects to know when a task completed.
-     *
-     * @author Philip Warner
-     */
-    public interface TaskListener {
-        void onTaskFinished(final @NonNull ManagedTask task);
-    }
-
-    /**
      * Controller interface for this object
      */
-    public interface TaskController {
-        @SuppressWarnings("unused")
+    public interface ManagedTaskController {
         void requestAbort();
 
         @NonNull
@@ -234,13 +227,13 @@ abstract public class ManagedTask extends Thread {
     }
 
     /**
-     * STATIC Object for passing messages from background tasks to activities that may be recreated
+     * Allows other objects to know when a task completed.
      *
-     * This object handles all underlying OnTaskEndedListener messages for every instance of this class.
-     *
-     * note to self: YES "public" is a MUST, lint is to eager
+     * @author Philip Warner
      */
-    @SuppressWarnings("WeakerAccess")
-    public static class TaskMessageSwitch extends MessageSwitch<TaskListener, TaskController> {
+    public interface ManagedTaskListener {
+        void onTaskFinished(final @NonNull ManagedTask task);
     }
+
+
 }

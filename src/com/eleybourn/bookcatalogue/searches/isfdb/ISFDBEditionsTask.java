@@ -14,9 +14,9 @@ class ISFDBEditionsTask implements SimpleTaskQueue.SimpleTask {
 
     private List<String> editions;
     private String isbn;
-    private HandlesISFDB callback;
+    private ISFDBResultsListener callback;
 
-    ISFDBEditionsTask(final @NonNull String isbn, HandlesISFDB callback) {
+    ISFDBEditionsTask(final @NonNull String isbn, ISFDBResultsListener callback) {
         if (!IsbnUtils.isValid(isbn)) {
             throw new RTE.IsbnInvalidException(isbn);
         }

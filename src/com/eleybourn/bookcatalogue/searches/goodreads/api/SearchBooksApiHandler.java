@@ -339,7 +339,7 @@ public class SearchBooksApiHandler extends ApiHandler {
         HttpPost post = new HttpPost(GoodreadsManager.GOODREADS_API_ROOT + "/search/index.xml");
         List<NameValuePair> parameters = new ArrayList<>();
         parameters.add(new BasicNameValuePair("q", query.trim()));
-        parameters.add(new BasicNameValuePair("key", mManager.getDeveloperKey()));
+        parameters.add(new BasicNameValuePair("key", mManager.getDevKey()));
 
         post.setEntity(new UrlEncodedFormEntity(parameters));
         mWorks = new ArrayList<>();

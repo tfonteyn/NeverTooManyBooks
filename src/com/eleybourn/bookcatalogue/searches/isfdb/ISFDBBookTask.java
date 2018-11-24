@@ -7,26 +7,28 @@ import android.support.annotation.Nullable;
 import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue;
 
 import java.net.SocketTimeoutException;
+import java.util.List;
 
 class ISFDBBookTask implements SimpleTaskQueue.SimpleTask {
     @NonNull
-    private final HandlesISFDB callback;
+    private final ISFDBResultsListener callback;
+
     @NonNull
-    private final String bookUrl;
+    private final List<String> editionUrls;
     private final Bundle mBookData = new Bundle();
     private final boolean fetchThumbnail;
 
-    ISFDBBookTask(final @NonNull String bookUrl,
+    ISFDBBookTask(final @NonNull List<String> editionUrls,
                   final boolean fetchThumbnail,
-                  final @NonNull HandlesISFDB callback) {
+                  final @NonNull ISFDBResultsListener callback) {
         this.callback = callback;
-        this.bookUrl = bookUrl;
+        this.editionUrls = editionUrls;
         this.fetchThumbnail = fetchThumbnail;
     }
 
     @Override
     public void run(final @NonNull SimpleTaskQueue.SimpleTaskContext taskContext) throws SocketTimeoutException {
-        ISFDBBook isfdbBook = new ISFDBBook(bookUrl);
+        ISFDBBook isfdbBook = new ISFDBBook(editionUrls);
         isfdbBook.fetch(mBookData, fetchThumbnail);
     }
 

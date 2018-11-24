@@ -37,8 +37,8 @@ import com.eleybourn.bookcatalogue.datamanager.validators.NonBlankValidator;
 import com.eleybourn.bookcatalogue.datamanager.validators.OrValidator;
 import com.eleybourn.bookcatalogue.datamanager.validators.ValidatorException;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.utils.StringList;
 import com.eleybourn.bookcatalogue.utils.RTE;
+import com.eleybourn.bookcatalogue.utils.StringList;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -295,6 +295,8 @@ public class DataManager {
                 putDouble(key, (Double) value);
             } else if (value instanceof Float) {
                 putFloat(key, (Float) value);
+            } else if (value instanceof ArrayList) {
+                this.putParcelableArrayList(key, (ArrayList)value);
             } else if (value instanceof Serializable) {
                 this.putSerializable(key, (Serializable) value);
             } else {
@@ -375,20 +377,18 @@ public class DataManager {
 
     /**
      * Get the Parcelable ArrayList from the collection.
-     * We currently do not use a {@link Datum} for special access.
      *
      * @param key Key of object
      *
      * @return The Parcelable ArrayList
      */
-    @Nullable
+    @NonNull
     protected <T extends Parcelable> ArrayList<T> getParcelableArrayList(final @NonNull String key) {
         return mData.get(key).getParcelableArrayList(this, mBundle);
     }
 
     /**
      * Set the Parcelable ArrayList in the collection.
-     * We currently do not use a {@link Datum} for special access.
      *
      * @param key   Key of object
      * @param value The Parcelable ArrayList
@@ -398,7 +398,7 @@ public class DataManager {
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
     public <T extends Parcelable> DataManager putParcelableArrayList(final @NonNull String key, final @NonNull ArrayList<T> value) {
-        mData.get(key).putParcelableArrayList(mBundle, value);
+        mData.get(key).putParcelableArrayList(this, mBundle, value);
         return this;
     }
 
@@ -532,7 +532,7 @@ public class DataManager {
     }
 
     /**
-     * Append a string to a list value in this collection
+     * Append a string to a {@link StringList} value in this collection
      */
     public void appendOrAdd(final @NonNull String key, final @NonNull String value) {
         String s = StringList.encodeListItem(value);

@@ -68,7 +68,7 @@ public class SendOneBookTask extends GenericTask {
         try {
             result = sendBook(manager, context);
         } catch (NotAuthorizedException e) {
-            Logger.error(e, "Not Authorized to send books to GoodReads");
+            Logger.error(e, "Not Authorized to send books to Goodreads");
         }
         return result;
     }

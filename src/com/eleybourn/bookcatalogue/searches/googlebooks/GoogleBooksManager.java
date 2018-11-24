@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.utils.IsbnUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
@@ -16,6 +17,7 @@ import org.xml.sax.SAXException;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -41,12 +43,18 @@ public class GoogleBooksManager {
      *
      * @param isbn for book cover to find
      *
-     * @return found & saved File, or null when none
+     * @return found/saved File, or null when none found (or any other failure)
      */
     @Nullable
     static public File getCoverImage(final @NonNull String isbn) {
+        // sanity check
+        if (!IsbnUtils.isValid(isbn)) {
+            return null;
+        }
+
         Bundle bookData = new Bundle();
         try {
+            // no specific API, just got search the book
             search(isbn, "", "", bookData, true);
 
             String fileSpec = bookData.getString(UniqueId.BKEY_THUMBNAIL_FILE_SPEC);
@@ -70,30 +78,37 @@ public class GoogleBooksManager {
                               final @NonNull Bundle /* out */ book,
                               final boolean fetchThumbnail) throws IOException {
 
-        String path = getBaseURL() + "/books/feeds/volumes";
+        String urlText = getBaseURL() + "/books/feeds/volumes";
         if (!isbn.isEmpty()) {
-            path += "?q=ISBN%3C" + isbn + "%3E";
+            // sanity check
+            if (!IsbnUtils.isValid(isbn)) {
+                return;
+            }
+            urlText += "?q=ISBN%3C" + isbn + "%3E";
         } else {
-            // if both empty, no search
+            // sanity check
             if (author.isEmpty() && title.isEmpty()) {
                 return;
             }
             //replace spaces in author/title with %20
-            path += "?q=" + "intitle%3A" + title.replace(" ", "%20") + "%2Binauthor%3A" + author.replace(" ", "%20") + "";
+            urlText += "?q=" + "intitle%3A" + title.replace(" ", "%20") + "%2Binauthor%3A" + author.replace(" ", "%20") + "";
         }
 
+        // Setup the parser; the handler can return multiple books. The entry handler takes care of them
         SAXParserFactory factory = SAXParserFactory.newInstance();
         SearchGoogleBooksHandler handler = new SearchGoogleBooksHandler();
         SearchGoogleBooksEntryHandler entryHandler = new SearchGoogleBooksEntryHandler(book, fetchThumbnail);
 
         try {
-            URL url = new URL(path);
+            URL url = new URL(urlText);
             SAXParser parser = factory.newSAXParser();
             parser.parse(Utils.getInputStreamWithTerminator(url), handler);
 
-            if (handler.getCount() > 0) {
-                String id = handler.getId();
-                url = new URL(id);
+            ArrayList<String> urlList = handler.getUrlList();
+            if (urlList.size() > 0) {
+                // only using the first one found, maybe future enhancement?
+                urlText = urlList.get(0);
+                url = new URL(urlText);
                 parser = factory.newSAXParser();
                 parser.parse(Utils.getInputStreamWithTerminator(url), entryHandler);
             }

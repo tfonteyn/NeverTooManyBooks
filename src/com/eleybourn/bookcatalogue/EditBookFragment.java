@@ -325,7 +325,6 @@ public class EditBookFragment extends BookBaseFragment implements BookManager {
 
     /**
      * the only thing on this level is the TAB we're on
-     * TEST: does this work ? we don't have a onResume ?
      */
     @Override
     @CallSuper
@@ -398,7 +397,7 @@ public class EditBookFragment extends BookBaseFragment implements BookManager {
         // Ignore validation failures; but we still validate to get the current values.
         book.validate();
 //        if (!book.validate()) {
-//            StandardDialogs.showUserMessage(this, book.getValidationExceptionMessage(getResources()));
+//            StandardDialogs.sendTaskUserMessage(this, book.getValidationExceptionMessage(getResources()));
 //        }
 
         // However, there is some data that we really do require...
@@ -470,6 +469,7 @@ public class EditBookFragment extends BookBaseFragment implements BookManager {
         // certainly made changes to the Book. Might be redundant, but I'm paranoid.
         mActivity.setChangesMade(true);
     }
+
 
     /**
      * TODO: nice idea, but underused.

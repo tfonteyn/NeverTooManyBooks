@@ -55,8 +55,10 @@ import java.util.concurrent.atomic.AtomicLong;
  *
  * ENHANCE: Allow fixed sender IDs to ensure uniqueness and/or allow multiple senders for specific IDs
  *
- * @param <T> The Class of message that this switchboard sends
- * @param <U> The Class of controller object made available to listeners. The controller gives access to the sender.
+ * @param <T> The Class (a listener interface) of message that this switchboard sends
+ *
+ * @param <U> The Class of controller object made available to listeners.
+ *            The controller gives access to the sender.
  *
  * @author pjw
  */
@@ -99,9 +101,9 @@ public class MessageSwitch<T, U> {
      */
     public void addListener(final @NonNull Long senderId, final @NonNull T listener, final boolean deliverLast) {
         if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
-            Logger.info(this,"\nadded: senderId=" + senderId + "\n" + listener);
+            Logger.info(this, "addListener|" + listener + "|senderId=" + senderId);
         }
-        // Add the listener to the queue, creating queue if necessary
+        // Add the listener to the queue, creating the queue if necessary
         MessageListeners queue;
         synchronized (mListeners) {
             queue = mListeners.get(senderId);
@@ -119,17 +121,16 @@ public class MessageSwitch<T, U> {
                 // Do it on the UI thread.
                 if (mHandler.getLooper().getThread() == Thread.currentThread()) {
                     if (DEBUG_SWITCHES.MESSAGING && BuildConfig.DEBUG) {
-                        Logger.info(this, "\nUI thread\ndelivering to listener: " + listener + "\n" + routingSlip.message.toString());
+                        Logger.info(this, "|UI thread|delivering to listener: " + listener + "|msg=" + routingSlip.message.toString());
                     }
                     routingSlip.message.deliver(listener);
                 } else {
                     if (DEBUG_SWITCHES.MESSAGING && BuildConfig.DEBUG) {
-                        Logger.info(this, "\npost runnable\ndelivering to listener: " + listener + "\n" + routingSlip.message.toString());
+                        Logger.info(this, "|post runnable|delivering to listener: " + listener + "|msg=" + routingSlip.message.toString());
                     }
                     mHandler.post(new Runnable() {
                         @Override
                         public void run() {
-
                             routingSlip.message.deliver(listener);
                         }
                     });
@@ -141,7 +142,7 @@ public class MessageSwitch<T, U> {
     /** Remove the specified listener from the specified queue */
     public void removeListener(final @NonNull Long senderId, final @NonNull T listener) {
         if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
-            Logger.info(this,"|removeListener|senderId=" + senderId + "|" + listener);
+            Logger.info(this, "|removeListener|senderId=" + senderId + "|" + listener);
         }
         synchronized (mListeners) {
             MessageListeners queue = mListeners.get(senderId);
@@ -169,6 +170,7 @@ public class MessageSwitch<T, U> {
         // Process queue
         startProcessingMessages();
     }
+
 
     /**
      * Get the controller object associated with a sender ID

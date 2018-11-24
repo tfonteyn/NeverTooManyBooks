@@ -70,6 +70,7 @@ public class Author implements Parcelable, Utils.ItemWithIdFixup {
      *
      * Not covered yet, and seen in the wild:
      * "James jr. Tiptree" -> suffix as a middle name.
+     * "Dr. Asimov" -> titles... pre or suffixed
      */
     private static final Pattern FAMILY_NAME_SUFFIX = Pattern.compile("[Jj]r\\.|[Jj]r|[Jj]unior|[Ss]r\\.|[Ss]r|[Ss]enior");
 
@@ -251,8 +252,8 @@ public class Author implements Parcelable, Utils.ItemWithIdFixup {
     @Override
     @NonNull
     public String toString() {
-        // Always use givenNames even if blanks because we need to KNOW they are blank. There
-        // is a slim chance that family name may contain spaces (eg. 'Anonymous Anarchists').
+        // Always use givenNames even if blanks because we need to KNOW they are blank.
+        // There is a slim chance that family name may contain spaces (eg. 'Anonymous Anarchists').
         return StringList.encodeListItem(SEPARATOR, familyName) + SEPARATOR + " " + StringList.encodeListItem(SEPARATOR, givenNames);
     }
 

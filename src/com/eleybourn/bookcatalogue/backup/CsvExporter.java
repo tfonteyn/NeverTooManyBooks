@@ -284,7 +284,7 @@ public class CsvExporter implements Exporter {
                         .append(formatCell(bookCursorRow.getLibraryThingBookId()))
                         .append(formatCell(bookCursorRow.getISFDBBookId()))
                         .append(formatCell(bookCursorRow.getGoodreadsBookId()))
-                        .append(formatCell(bookCursorRow.getDateLastSyncedWithGoodReads()))
+                        .append(formatCell(bookCursorRow.getDateLastSyncedWithGoodreads()))
 
                         .append(formatCell(bookCursorRow.getDateLastUpdated()))
                         .append(formatCell(bookCursorRow.getBookUuid()));

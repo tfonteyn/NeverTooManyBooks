@@ -83,7 +83,8 @@ public abstract class ShowBookApiHandler extends ApiHandler {
                     <publication_year>2000</publication_year>
                     <publication_month>4</publication_month>
                     <publication_day>1</publication_day>
-                    <publisher/><language_code/>
+                    <publisher/>
+                    <language_code/>
                     <is_ebook>false</is_ebook>
                     <description>
                         <p>Since it was first published in 1987, blah blah....</p></p>
@@ -470,7 +471,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
             }
             if (bestImage != null) {
                 String fileSpec = ImageUtils.saveThumbnailFromUrl(bestImage, GoodreadsUtils.FILENAME_SUFFIX);
-                if (fileSpec.length() > 0) {
+                if (fileSpec != null) {
                     StringList.addOrAppend(mBookData, UniqueId.BKEY_THUMBNAIL_FILE_SPEC, fileSpec);
                 }
             }
@@ -522,25 +523,27 @@ public abstract class ShowBookApiHandler extends ApiHandler {
                 //}
             }
         } else if (mBookData.containsKey(ShowBookFieldNames.ORIG_TITLE)) {
+            // if we did not get a title, but there is an original title, use that.
             mBookData.putString(UniqueId.KEY_TITLE, mBookData.getString(ShowBookFieldNames.ORIG_TITLE));
         }
 
         if (mAuthors != null && mAuthors.size() > 0) {
-            mBookData.putString(UniqueId.BKEY_AUTHOR_STRING_LIST, StringList.getAuthorUtils().encode(mAuthors));
+            //mBookData.putString(UniqueId.BKEY_AUTHOR_STRING_LIST, StringList.getAuthorUtils().encode(mAuthors));
+            mBookData.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, mAuthors);
         }
 
         if (mSeries != null && mSeries.size() > 0) {
-            mBookData.putString(UniqueId.BKEY_SERIES_STRING_LIST, StringList.getSeriesUtils().encode(mSeries));
+            //mBookData.putString(UniqueId.BKEY_SERIES_STRING_LIST, StringList.getSeriesUtils().encode(mSeries));
+            mBookData.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, mSeries);
         }
 
+        // these are Goodreads shelves, not ours.
         if (mShelves != null && mShelves.size() > 0) {
             mBookData.putStringArrayList(ShowBookFieldNames.SHELVES, mShelves);
         }
 
 
-        //ENHANCE: rating ? url ?
-        //public static final String RATING = "__rating";
-        //public static final String BOOK_URL = "__url";
+        //ENHANCE: rating ? url ? country_code (publisher) ?
 
         // Return parsed results.
         return mBookData;
@@ -659,10 +662,15 @@ public abstract class ShowBookApiHandler extends ApiHandler {
                 .setEndAction(mHandleLong, ShowBookFieldNames.PUBLICATION_DAY);
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_PUBLISHER)
                 .setEndAction(mHandleText, UniqueId.KEY_BOOK_PUBLISHER);
+        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_COUNTRY_CODE)
+                .setEndAction(mHandleText, ShowBookFieldNames.COUNTRY_CODE);
+        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_LANGUAGE)
+                .setEndAction(mHandleText, UniqueId.KEY_BOOK_LANGUAGE);
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_IS_EBOOK)
                 .setEndAction(mHandleBoolean, ShowBookFieldNames.IS_EBOOK);
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_DESCRIPTION)
                 .setEndAction(mHandleText, UniqueId.KEY_DESCRIPTION);
+
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_WORK, XML_ID)
                 .setEndAction(mHandleLong, ShowBookFieldNames.WORK_ID);
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_WORK, XML_ORIGINAL_PUBLICATION_DAY)
@@ -673,6 +681,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
                 .setEndAction(mHandleLong, ShowBookFieldNames.ORIG_PUBLICATION_YEAR);
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_WORK, XML_ORIGINAL_TITLE)
                 .setEndAction(mHandleText, ShowBookFieldNames.ORIG_TITLE);
+
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_AVERAGE_RATING)
                 .setEndAction(mHandleFloat, ShowBookFieldNames.RATING);
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_NUM_PAGES)
@@ -681,18 +690,22 @@ public abstract class ShowBookApiHandler extends ApiHandler {
                 .setEndAction(mHandleText, UniqueId.KEY_BOOK_FORMAT);
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_URL)
                 .setEndAction(mHandleText, ShowBookFieldNames.BOOK_URL);
+
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_AUTHORS, XML_AUTHOR, XML_ID)
                 .setEndAction(mHandleAuthorId);
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_AUTHORS, XML_AUTHOR, XML_NAME)
                 .setEndAction(mHandleAuthorName);
+
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_MY_REVIEW, XML_ID)
                 .setEndAction(mHandleLong, ShowBookFieldNames.REVIEW_ID);
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_MY_REVIEW, XML_SHELVES)
                 .setStartAction(mHandleShelvesStart);
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_MY_REVIEW, XML_SHELVES, XML_SHELF)
                 .setStartAction(mHandleShelf);
+
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_SERIES_WORKS, XML_SERIES_WORK, XML_USER_POSITION)
                 .setEndAction(mHandleSeriesPosition);
+
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_SERIES_WORKS, XML_SERIES_WORK, XML_SERIES, XML_ID)
                 .setEndAction(mHandleSeriesId);
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_SERIES_WORKS, XML_SERIES_WORK, XML_SERIES, XML_TITLE)
@@ -728,5 +741,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
         static final String ORIG_TITLE = "__orig_title";
         static final String RATING = "__rating";
         static final String BOOK_URL = "__url";
+        static final String COUNTRY_CODE = "__country_code";
+
     }
 }

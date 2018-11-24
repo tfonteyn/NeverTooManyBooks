@@ -29,9 +29,9 @@ public class ImportTask extends ManagedTask {
         @Override
         public void onProgress(final @NonNull String message, final int position) {
             if (position > 0) {
-                mTaskManager.doProgress(ImportTask.this, message, position);
+                mTaskManager.sendTaskProgressMessage(ImportTask.this, message, position);
             } else {
-                mTaskManager.doProgress(message);
+                mTaskManager.sendHeaderTaskProgressMessage(message);
             }
         }
 
@@ -42,7 +42,7 @@ public class ImportTask extends ManagedTask {
 
         @Override
         public void setMax(final int max) {
-            mTaskManager.setMax(ImportTask.this, max);
+            mTaskManager.setMaxProgress(ImportTask.this, max);
         }
     };
 
@@ -60,7 +60,7 @@ public class ImportTask extends ManagedTask {
                 // If this is not the SharedStorage folder, we'll be doing copies, else renames (to 'cover' folder)
                 StorageUtils.getSharedStorage().getAbsolutePath());
 
-        //getMessageSwitch().addListener(getSenderId(), taskHandler, false);
+        //getMessageSwitch().addListener(getId(), taskHandler, false);
         //Debug.startMethodTracing();
     }
 

@@ -39,22 +39,13 @@ import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.tasks.Terminator;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.entity.BufferedHttpEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-
 import java.io.BufferedInputStream;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -69,43 +60,22 @@ public class Utils {
     }
 
     /**
-     * TODO: unify with {@link #getInputStreamWithTerminator}
-     */
-    @NonNull
-    static InputStream getInputStream(final @NonNull String urlText) throws IOException, URISyntaxException {
-        final URL url = new URL(urlText);
-        final HttpGet httpRequest = new HttpGet(url.toURI());
-        final HttpClient httpclient = new DefaultHttpClient();
-        final HttpResponse response = httpclient.execute(httpRequest);
-
-        if (response.getStatusLine().getStatusCode() >= 300) {
-            Logger.error("URL lookup failed: " + response.getStatusLine().getStatusCode() +
-                    " " + response.getStatusLine().getReasonPhrase() + ", URL: " + url);
-            throw new IOException();
-        }
-
-        final HttpEntity entity = response.getEntity();
-        final BufferedHttpEntity bufHttpEntity = new BufferedHttpEntity(entity);
-        return bufHttpEntity.getContent();
-    }
-
-    /**
-     * Utility routine to get the data from a URL. Makes sure timeout is set to
-     * avoid application stalling.
+     * https://developer.android.com/about/versions/marshmallow/android-6.0-changes
+     * The Apache HTTP client was removed from 6.0 (although you can use a legacy lib)
+     * Recommended is to use the java.net.HttpURLConnection
+     * This means com.android.okhttp
+     *      https://square.github.io/okhttp/
      *
-     * TODO: using the jdk one right now. This means com.android.okhttp
-     * https://square.github.io/okhttp/
+     * 2018-11-22: removal of apache started....
      *
-     * There are indeed some issues with it, see for example {@link com.eleybourn.bookcatalogue.searches.isfdb.ISFDBBook}
-     * But just using Apache as here and some other places might not be the best solution.
-     * Needs investigating though. Below code mentions 2010; we're now 2018 after all.
+     * Get data from a URL. Makes sure timeout is set to avoid application stalling.
      *
      * @param url URL to retrieve
      *
      * @return InputStream
      */
     @Nullable
-    public static InputStream getInputStreamWithTerminator(final @NonNull URL url) throws UnknownHostException {
+    public static InputStream getInputStreamWithTerminator(final @NonNull URL url) throws IOException {
 
         synchronized (lock) {
 
@@ -131,19 +101,6 @@ public class Utils {
                      *
                      * So...we are forced to use a background thread to be able to kill it.
                      */
-
-                    // If at some stage in the future the casting code breaks...use the Apache one.
-                    //final HttpClient client = new DefaultHttpClient();
-                    //final HttpParams httpParameters = client.getParams();
-                    //
-                    //HttpConnectionParams.setConnectionTimeout(httpParameters, 30 * 1000);
-                    //HttpConnectionParams.setSoTimeout        (httpParameters, 30 * 1000);
-                    //
-                    //final HttpGet connection = new HttpGet(url.toString());
-                    //
-                    //HttpResponse response = client.execute(connection);
-                    //InputStream inputStream = response.getEntity().getContent();
-                    //return new BufferedInputStream(inputStream);
 
                     final ConnectionInfo connInfo = new ConnectionInfo();
 
@@ -324,7 +281,7 @@ public class Utils {
     /**
      * Join the passed array of strings, with 'delim' between them.
      *
-     * ENHANCE: API 26 needed for {@link String#join(CharSequence, Iterable)} }
+     * API_UPGRADE 26 needed for {@link String#join(CharSequence, Iterable)} }
      *
      * @param delim Delimiter to place between entries
      * @param sa    Array of strings to join

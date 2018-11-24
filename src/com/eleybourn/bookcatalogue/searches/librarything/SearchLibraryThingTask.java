@@ -16,11 +16,11 @@ import java.net.UnknownHostException;
 
 
 /**
- * LibraryThing
+ * LibraryThing SearchTask as used by the {@link SearchSites.Site#getTask(TaskManager)}
  *
  * We always contact LibraryThing because it is a good source of Series data and thumbnails.
  * But it does require an ISBN AND a developer key.
-*/
+ */
 public class SearchLibraryThingTask extends SearchTask {
 
     public SearchLibraryThingTask(final @NonNull String name,
@@ -28,44 +28,45 @@ public class SearchLibraryThingTask extends SearchTask {
         super(name, manager);
     }
 
-    @Override
-    protected void runTask() {
-        if (IsbnUtils.isValid(mIsbn)) {
-            final @StringRes int R_ID_SEARCHING = R.string.searching_library_thing;
-            doProgress(getString(R_ID_SEARCHING), 0);
-            LibraryThingManager ltm = new LibraryThingManager();
-            // do we have a dev kev ?
-            if (ltm.isAvailable()) {
-                try {
-                    ltm.search(mIsbn, mBookData, mFetchThumbnail);
-                    // Look for series name and clean KEY_TITLE
-                    checkForSeriesName();
-
-                } catch (java.net.SocketTimeoutException e) {
-                    showError(R_ID_SEARCHING, R.string.error_network_timeout);
-                } catch (MalformedURLException | UnknownHostException e) {
-                    Logger.error(e);
-                    showError(R_ID_SEARCHING, R.string.error_search_configuration);
-
-                } catch (IOException e) {
-                    showError(R_ID_SEARCHING, R.string.error_search_failed);
-                    Logger.error(e);
-
-                } catch (Exception e) {
-                    Logger.error(e);
-                    showException(R_ID_SEARCHING, e);
-                }
-            }
-
-        }
-    }
-
     /**
      * Return the global ID for this searcher
      */
     @Override
     public int getSearchId() {
-        return SearchSites.SEARCH_LIBRARY_THING;
+        return SearchSites.Site.SEARCH_LIBRARY_THING;
     }
 
+    @Override
+    protected void runTask() {
+        final @StringRes int R_ID_SEARCHING = R.string.searching_library_thing;
+        doProgress(getString(R_ID_SEARCHING), 0);
+
+        LibraryThingManager ltm = new LibraryThingManager();
+        if (!ltm.isAvailable()) {
+            return;
+        }
+
+        try {
+            // manager checks the arguments
+            ltm.search(mIsbn, mBookData, mFetchThumbnail);
+            if (mBookData.size() > 0) {
+                // Look for series name in the book title and clean KEY_TITLE
+                checkForSeriesName();
+            }
+        } catch (java.net.SocketTimeoutException e) {
+            showError(R_ID_SEARCHING, R.string.error_network_timeout);
+        } catch (MalformedURLException | UnknownHostException e) {
+            Logger.error(e);
+            showError(R_ID_SEARCHING, R.string.error_search_configuration);
+
+        } catch (IOException e) {
+            showError(R_ID_SEARCHING, R.string.error_search_failed);
+            Logger.error(e);
+
+        } catch (Exception e) {
+            Logger.error(e);
+            showException(R_ID_SEARCHING, e);
+        }
+
+    }
 }

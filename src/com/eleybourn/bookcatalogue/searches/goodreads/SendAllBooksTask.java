@@ -78,7 +78,7 @@ public class SendAllBooksTask extends GenericTask {
         try {
             result = sendAllBooks(manager, context);
         } catch (Exception e) {
-            Logger.error(e, "Error sending books to GoodReads");
+            Logger.error(e, "Error sending books to Goodreads");
         }
         return result;
     }

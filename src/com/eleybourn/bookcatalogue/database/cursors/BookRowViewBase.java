@@ -56,7 +56,7 @@ public class BookRowViewBase {
     private int mLibraryThinkgBookIdCol = -2;
     private int mISFDBBookIdCol = -2;
     private int mGoodreadsBookIdCol = -2;
-    private int mDateLastSyncedWithGoodReadsCol = -2;
+    private int mDateLastSyncedWithGoodreadsCol = -2;
 
     protected BookRowViewBase(final @NonNull Cursor cursor) {
         mCursor = cursor;
@@ -430,13 +430,13 @@ public class BookRowViewBase {
         return mCursor.getLong(mGoodreadsBookIdCol);
     }
 
-    public final String getDateLastSyncedWithGoodReads() {
-        if (mDateLastSyncedWithGoodReadsCol < 0) {
-            mDateLastSyncedWithGoodReadsCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_GOODREADS_LAST_SYNC_DATE.name);
-            if (mDateLastSyncedWithGoodReadsCol < 0) {
+    public final String getDateLastSyncedWithGoodreads() {
+        if (mDateLastSyncedWithGoodreadsCol < 0) {
+            mDateLastSyncedWithGoodreadsCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_GOODREADS_LAST_SYNC_DATE.name);
+            if (mDateLastSyncedWithGoodreadsCol < 0) {
                 throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_BOOK_GOODREADS_LAST_SYNC_DATE.name);
             }
         }
-        return mCursor.getString(mDateLastSyncedWithGoodReadsCol);
+        return mCursor.getString(mDateLastSyncedWithGoodreadsCol);
     }
 }

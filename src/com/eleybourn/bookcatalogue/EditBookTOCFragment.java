@@ -20,8 +20,10 @@
 
 package com.eleybourn.bookcatalogue;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.LayoutRes;
@@ -56,8 +58,11 @@ import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.BookManager;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.entities.TOCEntry;
-import com.eleybourn.bookcatalogue.searches.isfdb.HandlesISFDB;
+import com.eleybourn.bookcatalogue.searches.SearchManager;
+import com.eleybourn.bookcatalogue.searches.SearchSites;
+import com.eleybourn.bookcatalogue.searches.isfdb.ISFDBResultsListener;
 import com.eleybourn.bookcatalogue.searches.isfdb.ISFDBManager;
+import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.StringList;
 import com.eleybourn.bookcatalogue.utils.BundleUtils;
 
@@ -67,7 +72,7 @@ import java.util.List;
 /**
  * This class is called by {@link EditBookFragment} and displays the Content Tab
  */
-public class EditBookTOCFragment extends BookBaseFragment implements HandlesISFDB {
+public class EditBookTOCFragment extends BookBaseFragment implements ISFDBResultsListener {
 
     public static final String TAG = "EditBookTOCFragment";
 
@@ -83,6 +88,11 @@ public class EditBookTOCFragment extends BookBaseFragment implements HandlesISFD
     private Integer mEditPosition = null;
     private ArrayList<TOCEntry> mList;
     private ListView mListView;
+
+    /** sites to search on. Can be overridden by the user (option menu) */
+    protected int mSearchSites = SearchSites.Site.SEARCH_ISFDB;
+    /** Objects managing current search. */
+    protected long mSearchManagerId = 0;
 
     /**
      * ISFDB editions (url's) of a book(isbn)
@@ -380,7 +390,7 @@ public class EditBookTOCFragment extends BookBaseFragment implements HandlesISFD
     public void onGotISFDBEditions(final @NonNull List<String> editions) {
         mISFDBEditionUrls = editions;
         if (mISFDBEditionUrls.size() > 0) {
-            ISFDBManager.search(mISFDBEditionUrls.get(0), this);
+            ISFDBManager.search(mISFDBEditionUrls, this);
         }
     }
 
@@ -416,19 +426,7 @@ public class EditBookTOCFragment extends BookBaseFragment implements HandlesISFD
 
         // finally the TOC itself; not saved here but only put on display for the user to approve
         final int tocBitMask = bookData.getInt(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK);
-        ArrayList<TOCEntry> tocEntries = null;
-        // preferably from the array.
-        if (bookData.containsKey(UniqueId.BKEY_TOC_TITLES_ARRAY)) {
-            tocEntries = BundleUtils.getParcelableArrayList(UniqueId.BKEY_TOC_TITLES_ARRAY, bookData);
-            bookData.remove(UniqueId.BKEY_TOC_TITLES_ARRAY);
-        } else {
-            String encoded_content_list = bookData.getString(UniqueId.BKEY_TOC_STRING_LIST);
-            if (encoded_content_list != null) {
-                tocEntries = StringList.getTOCUtils().decode(encoded_content_list, false);
-                bookData.remove(UniqueId.BKEY_TOC_STRING_LIST);
-            }
-        }
-
+        ArrayList<TOCEntry> tocEntries = BundleUtils.getParcelableArrayList(UniqueId.BKEY_TOC_TITLES_ARRAY, bookData);
         boolean hasTOC = (tocEntries != null && !tocEntries.isEmpty());
 
         StringBuilder msg = new StringBuilder();
@@ -445,9 +443,9 @@ public class EditBookTOCFragment extends BookBaseFragment implements HandlesISFD
         content.setText(msg);
         // Not ideal but works
         content.setTextSize(14);
-        //ENHANCE API 23 ?
+        //API_UPGRADE 23 ?
         //content.setTextAppearance(android.R.style.TextAppearance_Small);
-        //ENHANCE API 26 ?
+        //API_UPGRADE 26 ?
         //content.setAutoSizeTextTypeWithDefaults(TextView.AUTO_SIZE_TEXT_TYPE_UNIFORM);
 
         AlertDialog dialog = new AlertDialog.Builder(requireActivity())
@@ -470,8 +468,9 @@ public class EditBookTOCFragment extends BookBaseFragment implements HandlesISFD
             dialog.setButton(AlertDialog.BUTTON_NEUTRAL, getString(R.string.retry),
                     new DialogInterface.OnClickListener() {
                         public void onClick(final DialogInterface dialog, final int which) {
+                            // remove the top one, and try again
                             mISFDBEditionUrls.remove(0);
-                            ISFDBManager.search(mISFDBEditionUrls.get(0), EditBookTOCFragment.this);
+                            ISFDBManager.search(mISFDBEditionUrls, EditBookTOCFragment.this);
                         }
                     });
         }

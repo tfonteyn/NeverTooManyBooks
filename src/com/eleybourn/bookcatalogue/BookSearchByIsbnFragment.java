@@ -266,7 +266,7 @@ public class BookSearchByIsbnFragment extends BookSearchBaseFragment {
      */
     protected void doSearch(final @Nullable String isbn) {
         if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
-            Logger.info(this, " doSearch: isbn=" + isbn);
+            Logger.info(this, "doSearch|isbn=" + isbn);
         }
         // sanity check
         if (isbn == null || isbn.isEmpty()) {
@@ -393,7 +393,7 @@ public class BookSearchByIsbnFragment extends BookSearchBaseFragment {
                     startScannerActivity();
                 }
             } else {
-                mActivity.getTaskManager().doProgress(getString(R.string.progress_msg_adding_book));
+                mActivity.getTaskManager().sendHeaderTaskProgressMessage(getString(R.string.progress_msg_adding_book));
                 Intent intent = new Intent(mActivity, EditBookActivity.class);
                 intent.putExtra(UniqueId.BKEY_BOOK_DATA, bookData);
                 startActivityForResult(intent, EditBookActivity.REQUEST_CODE); /* 341ace23-c2c8-42d6-a71e-909a3a19ba99 */
@@ -409,7 +409,7 @@ public class BookSearchByIsbnFragment extends BookSearchBaseFragment {
             // Clean up
             mSearchManagerId = 0;
             // Make sure the base message will be empty.
-            mActivity.getTaskManager().doProgress(null);
+            mActivity.getTaskManager().sendHeaderTaskProgressMessage(null);
         }
     }
 

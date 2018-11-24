@@ -127,63 +127,6 @@ public class StandardDialogs {
         dialog.show();
     }
 
-    public static void needLibraryThingAlert(final @NonNull Context context,
-                                             final boolean required,
-                                             final @NonNull String prefSuffix) {
-
-        final SharedPreferences prefs = BookCatalogueApp.getSharedPreferences();
-
-        boolean showAlert;
-        @StringRes
-        int msgId;
-        final String prefName = LibraryThingManager.PREFS_LT_HIDE_ALERT + "_" + prefSuffix;
-        if (required) {
-            msgId = R.string.lt_required_info;
-            showAlert = true;
-        } else {
-            msgId = R.string.lt_uses_info;
-            showAlert = !prefs.getBoolean(prefName, false);
-        }
-
-        if (!showAlert)
-            return;
-
-        final AlertDialog dialog = new AlertDialog.Builder(context).setMessage(msgId)
-                .setTitle(R.string.lt_registration_title)
-                .setIconAttribute(android.R.attr.alertDialogIcon)
-                .create();
-
-        dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getString(R.string.btn_more_info),
-                new DialogInterface.OnClickListener() {
-                    public void onClick(final @NonNull DialogInterface dialog, final int which) {
-                        Intent i = new Intent(context, LibraryThingAdminActivity.class);
-                        context.startActivity(i);
-                        dialog.dismiss();
-                    }
-                });
-
-        if (!required) {
-            dialog.setButton(DialogInterface.BUTTON_NEUTRAL, context.getString(R.string.btn_disable_message),
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(final @NonNull DialogInterface dialog, final int which) {
-                            SharedPreferences.Editor ed = prefs.edit();
-                            ed.putBoolean(prefName, true);
-                            ed.apply();
-                            dialog.dismiss();
-                        }
-                    });
-        }
-
-        dialog.setButton(DialogInterface.BUTTON_NEGATIVE, context.getString(android.R.string.cancel),
-                new DialogInterface.OnClickListener() {
-                    public void onClick(final @NonNull DialogInterface dialog, final int which) {
-                        dialog.dismiss();
-                    }
-                });
-
-        dialog.show();
-    }
-
     public static void deleteSeriesAlert(final @NonNull Context context,
                                          final @NonNull CatalogueDBAdapter db,
                                          final @NonNull Series series,

@@ -38,6 +38,7 @@ import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -48,7 +49,7 @@ import java.util.List;
  *
  * @author Philip Warner
  */
-public abstract class GenericTask extends RunnableTask {
+public abstract class GenericTask extends RunnableTask implements Serializable {
     private static final long serialVersionUID = -5985866222873741455L;
 
     private static final String STATUS_COMPLETE = "S";

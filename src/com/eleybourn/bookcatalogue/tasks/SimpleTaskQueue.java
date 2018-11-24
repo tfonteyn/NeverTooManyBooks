@@ -44,6 +44,17 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
+ * As a reminder: https://developer.android.com/reference/android/os/AsyncTask
+ * AsyncTasks are executed on a single thread to avoid common application errors
+ * caused by parallel execution. If you truly want parallel execution, you can invoke
+ * executeOnExecutor(java.util.concurrent.Executor, Object[]) with THREAD_POOL_EXECUTOR.
+ *
+ * In short: AsyncTask is *not* a replacement for the way tasks are implemented/used
+ * in this application.
+ *
+ * On the other hand, using java.util.concurrent *would* be a standard replacement.
+ * -----------------------------------------------------------------------------------------------
+ *
  * Class to perform time consuming but light-weight tasks in a worker thread. Users of this
  * class should implement their tasks as self-contained objects that implement {@link SimpleTask}.
  *

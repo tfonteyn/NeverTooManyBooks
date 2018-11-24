@@ -62,12 +62,12 @@ public class SearchAdminActivity extends BaseActivity {
         switch (requestedTab) {
             case TAB_SEARCH_ORDER:
                 mTabLayout.setVisibility(View.GONE);
-                initSingleTab(R.string.tab_lbl_search_site_order, SearchSites.getSiteSearchOrder());
+                initSingleTab(R.string.tab_lbl_search_site_order, SearchSites.getSites());
                 break;
 
             case TAB_SEARCH_COVER_ORDER:
                 mTabLayout.setVisibility(View.GONE);
-                initSingleTab(R.string.tab_lbl_search_site_cover_order, SearchSites.getSiteCoverSearchOrder());
+                initSingleTab(R.string.tab_lbl_search_site_cover_order, SearchSites.getSitesForCoverSearches());
                 break;
 
             default:
@@ -99,7 +99,7 @@ public class SearchAdminActivity extends BaseActivity {
         confirmBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                int sites = SearchSites.SEARCH_ALL;
+                int sites = SearchSites.Site.SEARCH_ALL;
                 ArrayList<SearchSites.Site> list = frag.getList();
                 if (list != null) {
                     for (SearchSites.Site site : list) {
@@ -137,7 +137,7 @@ public class SearchAdminActivity extends BaseActivity {
         fragmentHolder = new FragmentHolder();
         fragmentHolder.fragment = new AdminSearchOrderFragment();
         fragmentHolder.tag = AdminSearchOrderFragment.TAG + TAB_SEARCH_ORDER;
-        args.putParcelableArrayList(SearchSites.BKEY_SEARCH_SITES, SearchSites.getSiteSearchOrder());
+        args.putParcelableArrayList(SearchSites.BKEY_SEARCH_SITES, SearchSites.getSites());
         fragmentHolder.fragment.setArguments(args);
         tab = mTabLayout.newTab().setText(R.string.tab_lbl_search_site_order).setTag(fragmentHolder);
         mTabLayout.addTab(tab); //TAB_SEARCH_ORDER
@@ -147,7 +147,7 @@ public class SearchAdminActivity extends BaseActivity {
         fragmentHolder = new FragmentHolder();
         fragmentHolder.fragment = new AdminSearchOrderFragment();
         fragmentHolder.tag = AdminSearchOrderFragment.TAG + TAB_SEARCH_COVER_ORDER;
-        args.putParcelableArrayList(SearchSites.BKEY_SEARCH_SITES, SearchSites.getSiteCoverSearchOrder());
+        args.putParcelableArrayList(SearchSites.BKEY_SEARCH_SITES, SearchSites.getSitesForCoverSearches());
         fragmentHolder.fragment.setArguments(args);
         tab = mTabLayout.newTab().setText(R.string.tab_lbl_search_site_cover_order).setTag(fragmentHolder);
         mTabLayout.addTab(tab); //TAB_SEARCH_COVER_ORDER

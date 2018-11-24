@@ -25,9 +25,9 @@ import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 public abstract class BookSearchBaseFragment extends Fragment
-        implements SearchManager.SearchListener {
+        implements SearchManager.SearchManagerListener {
 
-    /** optionally limit the sites to search on. By default uses {@link SearchSites#SEARCH_ALL} */
+    /** optionally limit the sites to search on. By default uses {@link SearchSites.Site#SEARCH_ALL} */
     public static final String REQUEST_BKEY_SEARCH_SITES = "SearchSites";
     /** stores an active search id, or 0 when none active */
     public static final String BKEY_SEARCH_MANAGER_ID = "SearchManagerId";
@@ -40,7 +40,7 @@ public abstract class BookSearchBaseFragment extends Fragment
     protected CatalogueDBAdapter mDb;
 
     /** sites to search on. Can be overridden by the user (option menu) */
-    protected int mSearchSites = SearchSites.SEARCH_ALL;
+    protected int mSearchSites = SearchSites.Site.SEARCH_ALL;
     /** Objects managing current search. */
     protected long mSearchManagerId = 0;
 
@@ -90,16 +90,16 @@ public abstract class BookSearchBaseFragment extends Fragment
         if (savedInstanceState != null) {
             mSearchManagerId = savedInstanceState.getLong(BKEY_SEARCH_MANAGER_ID);
             /* optional, use ALL if not there */
-            mSearchSites = savedInstanceState.getInt(REQUEST_BKEY_SEARCH_SITES, SearchSites.SEARCH_ALL);
+            mSearchSites = savedInstanceState.getInt(REQUEST_BKEY_SEARCH_SITES, SearchSites.Site.SEARCH_ALL);
         } else {
             Bundle args = getArguments();
             //noinspection ConstantConditions
             mSearchManagerId = args.getLong(BKEY_SEARCH_MANAGER_ID);
             /* optional, use ALL if not there */
-            mSearchSites = args.getInt(REQUEST_BKEY_SEARCH_SITES, SearchSites.SEARCH_ALL);
+            mSearchSites = args.getInt(REQUEST_BKEY_SEARCH_SITES, SearchSites.Site.SEARCH_ALL);
         }
 
-        if ((mSearchSites & SearchSites.SEARCH_LIBRARY_THING) != 0) {
+        if ((mSearchSites & SearchSites.Site.SEARCH_LIBRARY_THING) != 0) {
             LibraryThingManager.showLtAlertIfNecessary(mActivity, false, "search");
         }
 
@@ -165,11 +165,11 @@ public abstract class BookSearchBaseFragment extends Fragment
         try {
             // Start the lookup in a background search task.
             final SearchManager searchManager = new SearchManager(mActivity.getTaskManager(), this);
-            mSearchManagerId = searchManager.getSenderId();
+            mSearchManagerId = searchManager.getId();
 
             Tracker.handleEvent(this, Tracker.States.Running, "Searching book with SearchManagerId=" + mSearchManagerId);
 
-            mActivity.getTaskManager().doProgress(getString(R.string.progress_msg_searching));
+            mActivity.getTaskManager().sendHeaderTaskProgressMessage(getString(R.string.progress_msg_searching));
             searchManager.search(mSearchSites, authorSearchText, titleSearchText, isbnSearchText, true);
 
         } catch (Exception e) {

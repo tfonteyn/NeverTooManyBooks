@@ -25,12 +25,16 @@ import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ISFDBBook extends AbstractBase {
+
+    /** ArrayList<String> with edition url's */
+    public static final String BKEY_EDITION_LIST = "edition_url_list";
 
     /** file suffix for cover files */
     private static final String FILENAME_SUFFIX = "_ISFDB";
@@ -99,6 +103,9 @@ public class ISFDBBook extends AbstractBase {
     /** ISFDB native book id */
     private long mPublicationRecord;
 
+    /** url list of all editions of this book */
+    private List<String> mEditions;
+
     /**
      * @param publicationRecord ISFDB native book id
      */
@@ -108,11 +115,24 @@ public class ISFDBBook extends AbstractBase {
     }
 
     /**
+     * @param editionUrls List of url's; example: "http://www.isfdb.org/cgi-bin/pl.cgi?230949"
+     */
+    ISFDBBook(final @NonNull List<String> editionUrls) {
+        mPath = editionUrls.get(0);
+        mPublicationRecord = stripNumber(mPath);
+    }
+
+    /**
      * @param path example: "http://www.isfdb.org/cgi-bin/pl.cgi?230949"
      */
     ISFDBBook(final @NonNull String path) {
-        mPublicationRecord = stripNumber(path);
         mPath = path;
+        mPublicationRecord = stripNumber(mPath);
+    }
+
+    @Nullable
+    public List<String> getEditions() {
+        return mEditions;
     }
 
     /* First "ContentBox" contains all basic details
@@ -330,11 +350,12 @@ public class ISFDBBook extends AbstractBase {
         // ISFDB does not offer the books language on the main page (although they store it in their database)
         // default to a localised 'English" as ISFDB is after all (I presume) 95% english
 //        bookData.putString(UniqueId.KEY_BOOK_LANGUAGE, Locale.ENGLISH.getDisplayName());
-        //V83: use the code
+        //V83: use the code Luke
         bookData.putString(UniqueId.KEY_BOOK_LANGUAGE, Locale.ENGLISH.getISO3Language());
 
-        // the content for some local processing. The actual entries are already added to the book data bundle
+        // the table of content
         ArrayList<TOCEntry> toc = getTableOfContentList(bookData);
+        bookData.putParcelableArrayList(UniqueId.BKEY_TOC_TITLES_ARRAY, toc);
 
         // check Anthology type
         if (toc.size() > 0) {
@@ -413,7 +434,7 @@ public class ISFDBBook extends AbstractBase {
         if (img != null) {
             String thumbnail = img.attr("src");
             String fileSpec = ImageUtils.saveThumbnailFromUrl(thumbnail, FILENAME_SUFFIX);
-            if (!fileSpec.isEmpty()) {
+            if (fileSpec != null) {
                 StringList.addOrAppend(bookData, UniqueId.BKEY_THUMBNAIL_FILE_SPEC, fileSpec);
             }
         }
@@ -541,13 +562,8 @@ public class ISFDBBook extends AbstractBase {
                 mFirstPublication = year;
             }
 
-            //TODO: bit annoying to use DETAILS string... as the SearchManager will reform it to ARRAY anyhow.
-            // {@link SearchManager#accumulateData} depends on String encoded, as theoretically *all* search engines
-            // return string encoded.
-            // {@link SearchManager#sendResults} then decodes the string, and creates the ARRAY.
             TOCEntry tocEntry = new TOCEntry(author, title, year);
             results.add(tocEntry);
-            StringList.addOrAppend(bookData, UniqueId.BKEY_TOC_STRING_LIST, tocEntry.toString());
         }
 
         return results;

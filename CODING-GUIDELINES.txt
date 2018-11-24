@@ -54,6 +54,7 @@ Small notes in addition:
   - TODO
   - FIXME
   - ENHANCE
+  - API_UPGRADE: like enhance, but specific for Android API level upgrades
   - TEST: work done, but needs proper testing
   - RELEASE : things that must be checked before doing a public release
   - NEWKIND : where a list of 'items' is processed -> where you can/should add 'items' to that list

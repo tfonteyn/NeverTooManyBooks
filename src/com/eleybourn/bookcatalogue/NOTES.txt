@@ -21,12 +21,15 @@ ENHANCE finish FTS searching {@link com.eleybourn.bookcatalogue.searches.SearchL
 
 TOMF: research 'local' search. The code has some stuff enabled, but not tested. -> check BC 5.2.2 release (not master)
 
-ENHANCE instead of string encoding of lists, use JSON ? or at the very least ArrayList<String>
+ENHANCE instead of string encoding of lists, at the very least use ArrayList<String>; only do the multi-string encoding/decoding at CSV level
+
+ENHANCE: JSON or XML Exporter / Importer
  * pro: easier / (sort of) foolproof / FLEXIBLE!
- * con: fools / fields will be bigger due to json labels
- * => or... do a specific JSON Exporter / Importer as an alternative to the Csv model (con: not easy to get 'others' to provide import files)
+ * con: fools / fields will be bigger due to labels/tags / not easy to get 'others' to provide import files
 
 TODO: dialogs/* -> eliminate the pass up of the actual dialog. -> dismiss earlier
+
+TODO: remove the Apache http client; it's removed from API 23.
 
 Issues checked: 800 down to 677 (inc)
 

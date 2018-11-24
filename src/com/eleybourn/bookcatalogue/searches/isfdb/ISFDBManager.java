@@ -40,7 +40,7 @@ public class ISFDBManager {
 
     /**
      *
-     * @param isbn for book cover to find
+     * @param isbn for book cover to find. ENHANCE? Always returns the image from the first edition found!
      *
      * @return found & saved File, or null when none
      */
@@ -68,19 +68,22 @@ public class ISFDBManager {
     public static void search(final @NonNull String isbn,
                               final @NonNull String author,
                               final @NonNull String title,
-                              final @NonNull Bundle /* out */ book,
+                              final @NonNull Bundle /* out */ bookData,
                               final boolean fetchThumbnail) throws IOException {
         if (IsbnUtils.isValid(isbn)) {
             List<String> editions = new Editions(isbn).fetch();
             if (editions.size() > 0) {
-                ISFDBBook isfdbBook = new ISFDBBook(editions.get(0));
-                isfdbBook.fetch(book, fetchThumbnail);
+                ISFDBBook isfdbBook = new ISFDBBook(editions);
+                isfdbBook.fetch(bookData, fetchThumbnail);
             }
         } else {
             //replace spaces in author/title with %20
             //TODO: implement ISFDB search by author/title
-            String path = getBaseURL() + "/cgi-bin/adv_search_results.cgi?title_title%3A" + title.replace(" ", "%20") + "%2Bauthor_canonical%3A" + author.replace(" ", "%20");
-            throw new UnsupportedOperationException(path);
+            String urlText = getBaseURL() + "/cgi-bin/adv_search_results.cgi?" +
+                    "title_title%3A" + title.replace(" ", "%20") +
+                    "%2B" +
+                    "author_canonical%3A" + author.replace(" ", "%20");
+            throw new UnsupportedOperationException(urlText);
         }
         //TODO: only let IOExceptions out (except RTE's)
     }
@@ -92,26 +95,26 @@ public class ISFDBManager {
      * specifically used by {@link EditBookTOCFragment}
      * First step, get all editions for the ISBN
      */
-    public static void searchEditions(final @NonNull String isbn, final @NonNull HandlesISFDB callback) {
+    public static void searchEditions(final @NonNull String isbn, final @NonNull ISFDBResultsListener listener) {
         // Setup the background fetcher
         if (taskQueue == null) {
             taskQueue = new SimpleTaskQueue("isfdb");
         }
-        taskQueue.enqueue(new ISFDBEditionsTask(isbn, callback));
+        taskQueue.enqueue(new ISFDBEditionsTask(isbn, listener));
     }
 
     /**
      * FIXME this has been shoehorned in here. Need to redo this by using the SearchISFDBTask really
      *
      * specifically used by {@link EditBookTOCFragment}
-     * First step, get all editions for the ISBN via {@link #searchEditions(String, HandlesISFDB)}
+     * First step, get all editions for the ISBN via {@link #searchEditions(String, ISFDBResultsListener)}
      * That will then call this one
      */
-    public static void search(final @NonNull String bookUrl, final @NonNull HandlesISFDB callback) {
+    public static void search(final @NonNull List<String> editionUrls, final @NonNull ISFDBResultsListener listener) {
         // Setup the background fetcher
         if (taskQueue == null) {
             taskQueue = new SimpleTaskQueue("isfdb");
         }
-        taskQueue.enqueue(new ISFDBBookTask(bookUrl, false, callback));
+        taskQueue.enqueue(new ISFDBBookTask(editionUrls, false, listener));
     }
 }

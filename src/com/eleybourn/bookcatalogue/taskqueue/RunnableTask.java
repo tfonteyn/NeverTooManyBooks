@@ -23,13 +23,15 @@ package com.eleybourn.bookcatalogue.taskqueue;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
+import java.io.Serializable;
+
 /**
  * Extends the Task object to add a run(...) method that avoids the need to implement
  * a runTask() method in a subclassed QueueManager.
  *
  * @author Philip Warner
  */
-public abstract class RunnableTask extends Task {
+public abstract class RunnableTask extends Task implements Serializable {
 
     private static final long serialVersionUID = 5399775565316896935L;
 

@@ -480,7 +480,7 @@ public class AdminActivity extends BaseActivityWithTasks {
      * Called when any background task completes
      */
     @Override
-    public void onTaskEnded(final @NonNull ManagedTask task) {
+    public void onTaskFinished(final @NonNull ManagedTask task) {
         // If it's an export, handle it
         if (task instanceof ExportTask) {
             onExportFinished((ExportTask) task);

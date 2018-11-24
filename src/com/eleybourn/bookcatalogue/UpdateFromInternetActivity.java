@@ -59,11 +59,11 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
 
     public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_UPDATE_FROM_INTERNET;
 
-    /** optionally limit the sites to search on. By default uses {@link SearchSites#SEARCH_ALL} */
+    /** optionally limit the sites to search on. By default uses {@link SearchSites.Site#SEARCH_ALL} */
     private static final String REQUEST_BKEY_SEARCH_SITES = "SearchSites";
     /** */
     private final FieldUsages mFieldUsages = new FieldUsages();
-    private int mSearchSites = SearchSites.SEARCH_ALL;
+    private int mSearchSites = SearchSites.Site.SEARCH_ALL;
     private long mBookId = 0;
 
     private ViewGroup mListContainer;
@@ -71,7 +71,7 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
     private long mUpdateSenderId = 0;
 
     /** this is where the results can be 'consumed' before finishing this activity */
-    private final ManagedTask.TaskListener mSearchTaskListener = new ManagedTask.TaskListener() {
+    private final ManagedTask.ManagedTaskListener mSearchTaskListener = new ManagedTask.ManagedTaskListener() {
         @Override
         public void onTaskFinished(final @NonNull ManagedTask task) {
             mUpdateSenderId = 0;
@@ -115,11 +115,14 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
                 findViewById(R.id.row_book).setVisibility(View.VISIBLE);
             }
 
-            mSearchSites = extras.getInt(REQUEST_BKEY_SEARCH_SITES, SearchSites.SEARCH_ALL);
+            mSearchSites = extras.getInt(REQUEST_BKEY_SEARCH_SITES, SearchSites.Site.SEARCH_ALL);
         }
 
         setTitle(R.string.lbl_update_fields_to_update);
-        LibraryThingManager.showLtAlertIfNecessary(this, false, "update_from_internet");
+
+        if ((mSearchSites & SearchSites.Site.SEARCH_LIBRARY_THING) != 0) {
+            LibraryThingManager.showLtAlertIfNecessary(this, false, "update_from_internet");
+        }
 
         mListContainer = findViewById(R.id.manage_fields_scrollview);
 
@@ -268,8 +271,8 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
         findViewById(R.id.cancel).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(final View v) {
-                // not sure if needed... can't harm.
-                ManagedTask.TaskController tc = UpdateFromInternetTask.getMessageSwitch().getController(mUpdateSenderId);
+                //TOMF: not sure if needed... can't harm. or can it ?
+                ManagedTask.ManagedTaskController tc = UpdateFromInternetTask.getMessageSwitch().getController(mUpdateSenderId);
                 if (tc != null) {
                     tc.requestAbort();
                 }
@@ -348,15 +351,16 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
      * @param bookId 0 for all books, or a valid book id for one book
      */
     private void startUpdate(final long bookId) {
-        UpdateFromInternetTask updateThread = new UpdateFromInternetTask(getTaskManager(),
+        UpdateFromInternetTask updateTask = new UpdateFromInternetTask(getTaskManager(),
                 mFieldUsages, mSearchSites, mSearchTaskListener);
+
         if (bookId > 0) {
-            updateThread.setBookId(bookId);
+            updateTask.setBookId(bookId);
         }
 
-        mUpdateSenderId = updateThread.getSenderId();
+        mUpdateSenderId = updateTask.getSenderId();
         UpdateFromInternetTask.getMessageSwitch().addListener(mUpdateSenderId, mSearchTaskListener, false);
-        updateThread.start();
+        updateTask.start();
     }
 
     @Override

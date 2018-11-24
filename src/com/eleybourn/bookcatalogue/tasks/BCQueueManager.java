@@ -46,7 +46,7 @@ public class BCQueueManager extends QueueManager {
     public static final String QUEUE_SMALL_JOBS = "small_jobs";
 
     // 0 is reserved for Legacy.
-    public static final int CAT_GOODREADS_AUTH = 2;
+    public static final int CAT_GOODREADS_AUTH_RESULT = 2;
     public static final int CAT_GOODREADS_IMPORT_ALL = 3;
     public static final int CAT_GOODREADS_EXPORT_ALL = 4;
     public static final int CAT_GOODREADS_EXPORT_ONE = 5;

@@ -89,4 +89,10 @@ public final class DEBUG_SWITCHES {
 
     /** dump savedInstanceState/outState/extras/arguments for functions that have those parameters */
     public static final boolean INSTANCE_STATE = false;
+
+    /**
+     * Dump entire HTTP response to System.out
+     * WARNING: usually aborts the function it's in.
+     */
+    public static final boolean DUMP_HTTP_RESPONSE = false;
 }

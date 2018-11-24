@@ -23,9 +23,9 @@ public class ExportTask extends ManagedTask {
         @Override
         public void onProgress(final @NonNull String message, final int position) {
             if (position > 0) {
-                mTaskManager.doProgress(ExportTask.this, message, position);
+                mTaskManager.sendTaskProgressMessage(ExportTask.this, message, position);
             } else {
-                mTaskManager.doProgress(message);
+                mTaskManager.sendHeaderTaskProgressMessage(message);
             }
         }
 
@@ -36,7 +36,7 @@ public class ExportTask extends ManagedTask {
 
         @Override
         public void setMax(final int max) {
-            mTaskManager.setMax(ExportTask.this, max);
+            mTaskManager.setMaxProgress(ExportTask.this, max);
         }
 
     };
@@ -63,7 +63,7 @@ public class ExportTask extends ManagedTask {
             renameFiles(tmpFile);
         } catch (IOException e) {
             Logger.error(e);
-            mTaskManager.showUserMessage(getString(R.string.error_export_failed));
+            mTaskManager.sendTaskUserMessage(getString(R.string.error_export_failed));
         }
     }
 

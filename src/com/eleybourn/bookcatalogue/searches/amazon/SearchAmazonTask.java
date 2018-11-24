@@ -13,6 +13,10 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
 
+/**
+ *  Amazon SearchTask as used by the {@link SearchSites.Site#getTask(TaskManager)}
+ *
+ */
 public class SearchAmazonTask extends SearchTask {
 
     public SearchAmazonTask(final @NonNull String name,
@@ -20,14 +24,24 @@ public class SearchAmazonTask extends SearchTask {
         super(name, manager);
     }
 
+    /**
+     * Return the global ID for this searcher
+     */
+    @Override
+    public int getSearchId() {
+        return SearchSites.Site.SEARCH_AMAZON;
+    }
+
     @Override
     protected void runTask() {
         final @StringRes int R_ID_SEARCHING = R.string.searching_amazon_books;
         doProgress(getString(R_ID_SEARCHING), 0);
+
         try {
+            // manager checks the arguments
             AmazonManager.search(mIsbn, mAuthor, mTitle, mBookData, mFetchThumbnail);
             if (mBookData.size() > 0) {
-                // Look for series name and clean KEY_TITLE
+                // Look for series name in the book title and clean KEY_TITLE
                 checkForSeriesName();
             }
         } catch (java.net.SocketTimeoutException e) {
@@ -46,14 +60,6 @@ public class SearchAmazonTask extends SearchTask {
             showException(R_ID_SEARCHING, e);
         }
 
-    }
-
-    /**
-     * Return the global ID for this searcher
-     */
-    @Override
-    public int getSearchId() {
-        return SearchSites.SEARCH_AMAZON;
     }
 
 }

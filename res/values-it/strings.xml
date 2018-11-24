@@ -219,21 +219,21 @@
     <string name="my_books">I miei libri</string>
     <string name="loan_return_book">Presta, ritorna o modifica libro</string>
     <string name="menu_admin_and_prefs">Amministrazione e Preferenze</string>
-    <string name="gr_menu_send_to_goodreads">Invia a GoodReads</string>
-    <string name="gr_auth_blurb_part1">GoodReads è un sito Internet la cui missione è \"aiutare le persone a trovare e condividere i libri che amano\".
-    										Possiedono un vasto archivio di libri e recensioni, e, se sei un utente registrato di GoodReads, 
-    										BookCatalogue può esportare i tuoi libri, librerie e recensioni in GoodReads e importare i tuoi libri, 
-    										librerie e recensioni da GoodReads. BookCatalogue è un\'applicazione indipendente e non richiede 
-    										GoodReads, ma, se sei interessato, puoi registrarti presso:</string>
-    <string name="gr_auth_blurb_part2">Una volta registrato, o se sei già utente di GoodReads, puoi autorizzare BookCatalogue ad accedere
-    										ai tuoi dati di GoodReads premendo il bottone qui sotto. Verrà aperta una nuova pagina web in cui
-    										dovrai eseguire il login a GoodReads ed autorizzare questa applicazione. Non saremo a conoscenza 
-    										della relativa password, e potrai revocare l\'accesso dal sito di GoodReads. A causa della volatilità di Internet, 
+    <string name="gr_menu_send_to_goodreads">Invia a Goodreads</string>
+    <string name="gr_auth_blurb_part1">Goodreads è un sito Internet la cui missione è \"aiutare le persone a trovare e condividere i libri che amano\".
+    										Possiedono un vasto archivio di libri e recensioni, e, se sei un utente registrato di Goodreads,
+    										BookCatalogue può esportare i tuoi libri, librerie e recensioni in Goodreads e importare i tuoi libri,
+    										librerie e recensioni da Goodreads. BookCatalogue è un\'applicazione indipendente e non richiede
+    										Goodreads, ma, se sei interessato, puoi registrarti presso:</string>
+    <string name="gr_auth_blurb_part2">Una volta registrato, o se sei già utente di Goodreads, puoi autorizzare BookCatalogue ad accedere
+    										ai tuoi dati di Goodreads premendo il bottone qui sotto. Verrà aperta una nuova pagina web in cui
+    										dovrai eseguire il login a Goodreads ed autorizzare questa applicazione. Non saremo a conoscenza
+    										della relativa password, e potrai revocare l\'accesso dal sito di Goodreads. A causa della volatilità di Internet,
     										il link potrebbe non essere più corretto. Clicca sul bottone Indietro per tornare in questo punto!</string>
     <string name="gr_auth_blurb_part3">Ma ricorda… ciò non è affatto obbligatorio: BookCatalogue funziona perfettamente anche senza!</string>
     <string name="gr_title_auth_access">Autorizza accesso</string>
-    <string name="gr_auth_access_already_auth">Questa applicazione sembra già autorizzata. Tutte le funzionalità di GoodReads dovrebbero già essere utilizzabili</string>
-    <string name="gr_access_error">Problema di rete nell\'accedere a GoodReads. Verifica che il sito di GoodReads sia accessibile, e, se il problema persiste, contatta il supporto</string>
+    <string name="gr_auth_access_already_auth">Questa applicazione sembra già autorizzata. Tutte le funzionalità di Goodreads dovrebbero già essere utilizzabili</string>
+    <string name="gr_access_error">Problema di rete nell\'accedere a Goodreads. Verifica che il sito di Goodreads sia accessibile, e, se il problema persiste, contatta il supporto</string>
     <string name="menu_preferences_other">Altre Preferenze</string>
     <string name="user_interface">Interfaccia Utente</string>
     <string name="menu_background_tasks">Operazioni in background</string>
@@ -245,7 +245,7 @@
     <string name="search_internet">Cerca in Internet</string>
     <string name="show_results">Mostra risultati</string>
     <string name="rebuild_fts">Ricrea FTS (sperimentale!)</string>
-    <string name="gr_title_send_book">Invia libri a GoodReads</string>
+    <string name="gr_title_send_book">Invia libri a Goodreads</string>
     <string name="legacy_task">Operazione obsoleta</string>
     <string name="occurred_at">si è verificata a %1$s</string>
     <string name="unknown_uc">SCONOSCIUTO</string>

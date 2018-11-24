@@ -63,7 +63,7 @@ public class SimpleTaskQueueProgressDialogFragment extends DialogFragment {
     private final Handler mHandler = new Handler();
     /** List of messages to be sent to the underlying activity, but not yet sent */
     private final List<TaskMessage> mTaskMessages = new ArrayList<>();
-    /** List of messages queued; only used if activity not present when showUserMessage() is called */
+    /** List of messages queued; only used if activity not present when sendTaskUserMessage() is called */
     @Nullable
     private List<String> mMessages = null;
     /** Options indicating dialog was cancelled */

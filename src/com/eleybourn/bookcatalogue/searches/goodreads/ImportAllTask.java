@@ -307,7 +307,7 @@ class ImportAllTask extends GenericTask {
                             final @NonNull BookRowView bookCursorRow,
                             final @NonNull Bundle review) {
         // Get last date book was sent to GR (may be null)
-        final String lastGrSync = bookCursorRow.getDateLastSyncedWithGoodReads();
+        final String lastGrSync = bookCursorRow.getDateLastSyncedWithGoodreads();
         // If the review has an 'updated' date, then see if we can compare to book
         if (lastGrSync != null && review.containsKey(ListReviewsFieldNames.UPDATED)) {
             final String lastUpdate = review.getString(ListReviewsFieldNames.UPDATED);
@@ -442,7 +442,7 @@ class ImportAllTask extends GenericTask {
 
             if (thumbnail != null) {
                 String fileSpec = ImageUtils.saveThumbnailFromUrl(thumbnail, GoodreadsUtils.FILENAME_SUFFIX);
-                if (!fileSpec.isEmpty()) {
+                if (fileSpec != null) {
                     book.appendOrAdd(UniqueId.BKEY_THUMBNAIL_FILE_SPEC, fileSpec);
                 }
                 // If there are thumbnails present, pick the biggest, delete others and rename.

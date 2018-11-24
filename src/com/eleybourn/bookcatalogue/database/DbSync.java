@@ -309,7 +309,9 @@ public class DbSync {
         public boolean isCollationCaseSensitive() {
             if (mIsCollationCaseSensitive == null) {
                 mIsCollationCaseSensitive = checkIfCollationIsCaseSensitive();
-                Logger.info(this,"isCollationCaseSensitive=" + mIsCollationCaseSensitive);
+                if (DEBUG_SWITCHES.DB_SYNC && BuildConfig.DEBUG) {
+                    Logger.info(this, "isCollationCaseSensitive=" + mIsCollationCaseSensitive);
+                }
             }
             return mIsCollationCaseSensitive;
         }

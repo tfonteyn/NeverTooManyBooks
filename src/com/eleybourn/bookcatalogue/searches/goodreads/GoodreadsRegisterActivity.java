@@ -131,10 +131,9 @@ public class GoodreadsRegisterActivity extends BaseActivity {
         });
 
         /* Forget credentials */
-        boolean hasCred = GoodreadsManager.hasCredentials();
         View blurb = findViewById(R.id.forget_blurb);
-        View blurb_button = findViewById(R.id.forget);
-        if (hasCred) {
+        View blurb_button = findViewById(R.id.btn_forget_credentials);
+        if (GoodreadsManager.hasCredentials()) {
             blurb.setVisibility(View.VISIBLE);
             blurb_button.setVisibility(View.VISIBLE);
             blurb_button.setOnClickListener(new OnClickListener() {

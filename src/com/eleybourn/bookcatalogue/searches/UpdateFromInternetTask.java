@@ -58,7 +58,7 @@ import java.util.concurrent.locks.ReentrantLock;
  *
  * @author Philip Warner
  */
-public class UpdateFromInternetTask extends ManagedTask {
+public class UpdateFromInternetTask extends ManagedTask implements SearchManager.SearchManagerListener {
     /** The fields that the user requested to update */
     @NonNull
     private final UpdateFromInternetActivity.FieldUsages mRequestedFields;
@@ -68,8 +68,7 @@ public class UpdateFromInternetTask extends ManagedTask {
     /** Signal for available items */
     private final Condition mSearchDone = mSearchLock.newCondition();
     /** Active search manager */
-    @NonNull
-    private final SearchManager mSearchManager;
+    private SearchManager mSearchManager;
     /** Sites to search */
     private final int mSearchSites; // = SearchManager.SEARCH_ALL;
 
@@ -90,17 +89,17 @@ public class UpdateFromInternetTask extends ManagedTask {
     /** The (subset) of fields relevant to the current book */
     private UpdateFromInternetActivity.FieldUsages mCurrentBookFieldUsages;
 
-    /**
-     * Our class local {@link SearchManager.SearchListener}.
-     * This must be a class global. Don't make this local to the constructor.
-     */
-    @SuppressWarnings("FieldCanBeLocal")
-    private final SearchManager.SearchListener mSearchListener = new SearchManager.SearchListener() {
-        @Override
-        public boolean onSearchFinished(final @NonNull Bundle bookData, final boolean wasCancelled) {
-            return UpdateFromInternetTask.this.onSearchFinished(bookData, wasCancelled);
-        }
-    };
+//    /**
+//     * Our class local {@link SearchManager.SearchManagerListener}.
+//     * This must be a class global. Don't make this local to the constructor.
+//     */
+//    @SuppressWarnings("FieldCanBeLocal")
+//    private final SearchManager.SearchManagerListener mSearchListener = new SearchManager.SearchManagerListener() {
+//        @Override
+//        public boolean onSearchFinished(final @NonNull Bundle bookData, final boolean wasCancelled) {
+//            return UpdateFromInternetTask.this.onSearchFinished(bookData, wasCancelled);
+//        }
+//    };
 
     /**
      * where clause to use in cursor, none by default, but
@@ -118,16 +117,15 @@ public class UpdateFromInternetTask extends ManagedTask {
     public UpdateFromInternetTask(final @NonNull TaskManager manager,
                                   final @NonNull UpdateFromInternetActivity.FieldUsages requestedFields,
                                   final int searchSites,
-                                  final @NonNull TaskListener listener) {
+                                  final @NonNull ManagedTaskListener listener) {
         super("UpdateFromInternetTask", manager);
 
         mDb = new CatalogueDBAdapter(manager.getContext());
-
         mRequestedFields = requestedFields;
-
         mSearchSites = searchSites;
-        mSearchManager = new SearchManager(mTaskManager, mSearchListener);
-        mTaskManager.doProgress(BookCatalogueApp.getResourceString(R.string.progress_msg_starting_search));
+
+        mSearchManager = new SearchManager(mTaskManager, this);
+        mTaskManager.sendHeaderTaskProgressMessage(BookCatalogueApp.getResourceString(R.string.progress_msg_starting_search));
         getMessageSwitch().addListener(getSenderId(), listener, false);
     }
 
@@ -187,7 +185,7 @@ public class UpdateFromInternetTask extends ManagedTask {
         try (Cursor books = mDb.fetchBooksWhere(mBookWhereClause, new String[]{},
                 DatabaseDefinitions.TBL_BOOKS.dot(DatabaseDefinitions.DOM_PK_ID))) {
 
-            mTaskManager.setMax(this, books.getCount());
+            mTaskManager.setMaxProgress(this, books.getCount());
             while (books.moveToNext() && !isCancelled()) {
                 progressCounter++;
 
@@ -232,17 +230,17 @@ public class UpdateFromInternetTask extends ManagedTask {
                 boolean wantSearch = false;
                 // Update the progress appropriately
                 if (mCurrentBookFieldUsages.size() == 0 || isbn.isEmpty() && (author.isEmpty() || title.isEmpty())) {
-                    mTaskManager.doProgress(String.format(getString(R.string.progress_msg_skip_title), title));
+                    mTaskManager.sendHeaderTaskProgressMessage(String.format(getString(R.string.progress_msg_skip_title), title));
                 } else {
                     wantSearch = true;
                     if (!title.isEmpty()) {
-                        mTaskManager.doProgress(title);
+                        mTaskManager.sendHeaderTaskProgressMessage(title);
                     } else {
-                        mTaskManager.doProgress(isbn);
+                        mTaskManager.sendHeaderTaskProgressMessage(isbn);
                     }
                 }
 
-                mTaskManager.doProgress(this, null, progressCounter);
+                mTaskManager.sendTaskProgressMessage(this, null, progressCounter);
 
                 // Start searching if we need to, then wait...
                 if (wantSearch) {
@@ -263,7 +261,7 @@ public class UpdateFromInternetTask extends ManagedTask {
             }
         } finally {
             // Empty/close the progress.
-            mTaskManager.doProgress(null);
+            mTaskManager.sendHeaderTaskProgressMessage(null);
             // Make the final message (user message, not a Progress message)
             mFinalMessage = String.format(getString(R.string.progress_end_num_books_searched), "" + progressCounter);
             if (isCancelled()) {
@@ -344,7 +342,7 @@ public class UpdateFromInternetTask extends ManagedTask {
     @Override
     public void onTaskFinish() {
         try {
-            mTaskManager.showUserMessage(mFinalMessage);
+            mTaskManager.sendTaskUserMessage(mFinalMessage);
         } finally {
             cleanup();
         }
@@ -354,7 +352,7 @@ public class UpdateFromInternetTask extends ManagedTask {
      * Called in the main thread for this object when a search has completed.
      */
     @SuppressWarnings("SameReturnValue")
-    private boolean onSearchFinished(final @NonNull Bundle newBookData, final boolean cancelled) {
+    public boolean onSearchFinished(final @NonNull Bundle newBookData, final boolean cancelled) {
         if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
             Logger.info(this, " onSearchFinished");
         }
@@ -363,7 +361,7 @@ public class UpdateFromInternetTask extends ManagedTask {
         if (cancelled) {
             cancelTask();
         } else if (newBookData.size() == 0) {
-            mTaskManager.showUserMessage(BookCatalogueApp.getResourceString(R.string.warning_unable_to_find_book));
+            mTaskManager.sendTaskUserMessage(BookCatalogueApp.getResourceString(R.string.warning_unable_to_find_book));
         }
 
         // Save the local data from the context so we can start a new search
