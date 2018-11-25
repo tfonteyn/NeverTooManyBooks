@@ -29,15 +29,12 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
-import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 public class EditBookActivity extends BaseActivity {
 
     public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_EDIT_BOOK;
-    // no local results, actual ones passed up from EditBookFragment
-    public static final int RESULT_CHANGES_MADE = EditBookFragment.RESULT_CHANGES_MADE;
 
     /**
      * Load with the provided book id. Also open to the provided tab.

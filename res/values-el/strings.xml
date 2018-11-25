@@ -372,7 +372,7 @@
     <string name="booklist_background_style">Στυλ φόντου λίστας βιβλίων</string>
     <string name="textured_background">Εικόνα φόντου</string>
     <string name="plain_background_b_reduces_flicker_b">Απλό φόντο (μείωση τρεμοπαίγματος)</string>
-    <string name="warning_thing_must_not_be_blank">%1$s δεν πρέπει να είναι κενό</string>
+    <string name="warning_required_field_x">%1$s δεν πρέπει να είναι κενό</string>
     <string name="edit">Επεξεργασία</string>
     <string name="groupings">Ομαδοποιήσεις</string>
     <string name="lbl_preferences">Επιλογές</string>

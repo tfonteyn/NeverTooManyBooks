@@ -253,9 +253,7 @@ public class Book extends DataManager {
      */
     @NonNull
     public ArrayList<Bookshelf> getBookshelfList() {
-        ArrayList<Bookshelf> list = super.getParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY);
-//        return list != null ? list : new ArrayList<Bookshelf>();
-        return list;
+        return super.getParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY);
     }
 
     /**
@@ -325,9 +323,7 @@ public class Book extends DataManager {
      */
     @NonNull
     public ArrayList<Author> getAuthorList() {
-        ArrayList<Author> list = super.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
-//        return list != null ? list : new ArrayList<Author>();
-        return list;
+        return super.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
     }
 
     /**
@@ -390,9 +386,7 @@ public class Book extends DataManager {
      */
     @NonNull
     public ArrayList<Series> getSeriesList() {
-        ArrayList<Series> list = super.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
-//        return list != null ? list : new ArrayList<Series>();
-        return list;
+        return super.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
     }
 
     /**
@@ -443,9 +437,7 @@ public class Book extends DataManager {
     @NonNull
     @CallSuper
     public ArrayList<TOCEntry> getTOC() {
-        ArrayList<TOCEntry> list = super.getParcelableArrayList(UniqueId.BKEY_TOC_TITLES_ARRAY);
-//        return list != null ? list : new ArrayList<TOCEntry>();
-        return list;
+        return super.getParcelableArrayList(UniqueId.BKEY_TOC_TITLES_ARRAY);
     }
 
     /**

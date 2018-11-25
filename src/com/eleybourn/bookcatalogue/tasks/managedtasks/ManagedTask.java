@@ -18,7 +18,7 @@
  * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.eleybourn.bookcatalogue.tasks;
+package com.eleybourn.bookcatalogue.tasks.managedtasks;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
@@ -27,27 +27,35 @@ import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivityWithTasks;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.messaging.MessageSwitch;
 
 /**
- * Class used to manager a collection of background threads for a {@link BaseActivityWithTasks} subclass.
- *
- * Part of three components that make this easier:
+ * Class used to manage background threads for a {@link BaseActivityWithTasks} subclass.
  *
  * {@link ManagedTask}
- * Background task that is managed by TaskManager and uses TaskManager to coordinate display activities.
+ * Background task that is managed by TaskManager and uses TaskManager to coordinate
+ * display activities.
  *
  * {@link TaskManager}
- * handles the management of multiple tasks and passing messages with the help of a {@link MessageSwitch}
+ * handles the management of multiple tasks and passing messages with the help
+ * of a {@link MessageSwitch}
  *
  * {@link BaseActivityWithTasks}
  * Uses a TaskManager (and communicates with it) to handle messages for ManagedTask.
  * Deals with orientation changes in cooperation with TaskManager.
  *
+ * {@link MessageSwitch}
+ * A Switchboard to receive and deliver {@link MessageSwitch.Message}.
+ * ------------------------------------------------------------------------------------------------
  *
  * {@link ManagedTaskController}
- * Ask the {@link MessageSwitch} for the controller. The controller gives access to the sender.
- * via its {@link ManagedTaskController#getTask()} task and can {@link ManagedTaskController#requestAbort()}
+ * Ask the {@link MessageSwitch} for the controller. The controller gives access to the
+ * Sender (a {@link ManagedTask}) via its {@link ManagedTaskController#getManagedTask()} task
+ * or can call {@link ManagedTaskController#requestAbort()}
+ *
+ * {@link ManagedTaskListener} can be implemented by other objects if they want to receive
+ * {@link MessageSwitch.Message} of the task finishing via the
+ * {@link ManagedTaskListener#onTaskFinished(ManagedTask)} ()}
+ *
  *
  * @author Philip Warner
  */
@@ -86,7 +94,7 @@ abstract public class ManagedTask extends Thread {
 
             @NonNull
             @Override
-            public ManagedTask getTask() {
+            public ManagedTask getManagedTask() {
                 return ManagedTask.this;
             }
         };
@@ -175,7 +183,7 @@ abstract public class ManagedTask extends Thread {
                 new MessageSwitch.Message<ManagedTaskListener>() {
                     @Override
                     public boolean deliver(final @NonNull ManagedTaskListener listener) {
-                        if (DEBUG_SWITCHES.MESSAGING && BuildConfig.DEBUG) {
+                        if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
                             Logger.info(ManagedTask.this,
                                     "|ManagedTask=" + ManagedTask.this.getName() +
                                     "|Delivering 'onTaskFinished' to listener: " + listener);
@@ -223,7 +231,7 @@ abstract public class ManagedTask extends Thread {
         void requestAbort();
 
         @NonNull
-        ManagedTask getTask();
+        ManagedTask getManagedTask();
     }
 
     /**

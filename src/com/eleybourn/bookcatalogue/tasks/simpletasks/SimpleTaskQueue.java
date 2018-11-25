@@ -18,9 +18,8 @@
  * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.eleybourn.bookcatalogue.tasks;
+package com.eleybourn.bookcatalogue.tasks.simpletasks;
 
-import android.content.Context;
 import android.os.Handler;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
@@ -105,7 +104,7 @@ public class SimpleTaskQueue {
      */
     private boolean mDoProcessResultsIsQueued = false;
     /**
-     * Method to ensure results queue is processed.
+     * Method to ensure results queue is processed in the UI thread.
      */
     private final Runnable mDoProcessResults = new Runnable() {
         @Override
@@ -152,7 +151,7 @@ public class SimpleTaskQueue {
     /**
      * Terminate processing.
      */
-    public void finish() {
+    public void terminate() {
         synchronized (this) {
             mTerminate = true;
             for (Thread t : mThreads) {
@@ -186,8 +185,8 @@ public class SimpleTaskQueue {
             mManagedTaskCount++;
         }
 
-        if (DEBUG_SWITCHES.MESSAGING && BuildConfig.DEBUG) {
-            Logger.info(this,"added: " + mExecutionStack.size());
+        if (DEBUG_SWITCHES.SIMPLE_TASKS && BuildConfig.DEBUG) {
+            Logger.info(this,"ExecutionStack size=" +mExecutionStack.size() + "|SimpleTask queued: " + task.toString());
         }
         synchronized (this) {
             int qSize = mExecutionStack.size();
@@ -236,8 +235,8 @@ public class SimpleTaskQueue {
     /**
      * Run the task then queue the results.
      */
-    private void handleRequest(final @NonNull SimpleTaskQueueThread thread,
-                               final @NonNull SimpleTaskWrapper taskWrapper) {
+    private void startTask(final @NonNull SimpleTaskQueueThread activeThread,
+                           final @NonNull SimpleTaskWrapper taskWrapper) {
         final SimpleTask task = taskWrapper.task;
 
         if (mTaskStartListener != null) {
@@ -247,10 +246,15 @@ public class SimpleTaskQueue {
             }
         }
 
-        // Use the thread object to get some context stuff (mainly DBs)
-        taskWrapper.activeThread = thread;
+        // Make the thread object available to provide Context related stuff (db's)
+        taskWrapper.activeThread = activeThread;
         try {
+            // kick of the actual task.
             task.run(taskWrapper);
+            if (DEBUG_SWITCHES.SIMPLE_TASKS && BuildConfig.DEBUG) {
+                Logger.info(this,"starting SimpleTask: " + task.toString());
+            }
+
         } catch (Exception e) {
             taskWrapper.exception = e;
             Logger.error(e, "Error running task");
@@ -282,7 +286,7 @@ public class SimpleTaskQueue {
     }
 
     /**
-     * Run in the UI thread, process the results queue.
+     * Runs in the UI thread, process the results queue.
      */
     private void processResults() {
         try {
@@ -301,7 +305,7 @@ public class SimpleTaskQueue {
                     mManagedTaskCount--;
                 }
 
-                // Call the task handler; log and ignore errors.
+                // Call the task finish handler; log but ignore errors.
                 if (req.finishRequested) {
                     try {
                         task.onFinish(req.exception);
@@ -310,7 +314,7 @@ public class SimpleTaskQueue {
                     }
                 }
 
-                // Call the task listener; log and ignore errors.
+                // Call the task listener; tell it this task is done; log but ignore errors.
                 if (mTaskFinishListener != null) {
                     try {
                         mTaskFinishListener.onTaskFinish(task, req.exception);
@@ -327,15 +331,6 @@ public class SimpleTaskQueue {
     /**
      * Accessor.
      */
-    @Nullable
-    @SuppressWarnings("unused")
-    public OnTaskStartListener getTaskStartListener() {
-        return mTaskStartListener;
-    }
-
-    /**
-     * Accessor.
-     */
     @SuppressWarnings("unused")
     public void setTaskStartListener(final @NonNull OnTaskStartListener listener) {
         mTaskStartListener = listener;
@@ -346,8 +341,8 @@ public class SimpleTaskQueue {
      */
     @Nullable
     @SuppressWarnings("unused")
-    public OnTaskFinishListener getTaskFinishListener() {
-        return mTaskFinishListener;
+    public OnTaskStartListener getTaskStartListener() {
+        return mTaskStartListener;
     }
 
     /**
@@ -355,6 +350,15 @@ public class SimpleTaskQueue {
      */
     public void setTaskFinishListener(final @NonNull OnTaskFinishListener listener) {
         mTaskFinishListener = listener;
+    }
+
+    /**
+     * Accessor.
+     */
+    @Nullable
+    @SuppressWarnings("unused")
+    public OnTaskFinishListener getTaskFinishListener() {
+        return mTaskFinishListener;
     }
 
     /**
@@ -506,6 +510,7 @@ public class SimpleTaskQueue {
          *
          * @return a database connection associated with this Task
          */
+        @SuppressWarnings("WeakerAccess")
         @NonNull
         public CoversDbAdapter getCoversDb() {
             if (mCoversDbAdapter == null) {
@@ -513,6 +518,7 @@ public class SimpleTaskQueue {
             }
             return mCoversDbAdapter;
         }
+
         /**
          * Main worker thread logic
          */
@@ -535,10 +541,7 @@ public class SimpleTaskQueue {
                         }
                     }
 
-                    if (DEBUG_SWITCHES.MESSAGING && BuildConfig.DEBUG) {
-                        Logger.info(this,"run: " + mExecutionStack.size());
-                    }
-                    handleRequest(this, req);
+                    startTask(this, req);
                 }
             } catch (InterruptedException ignore) {
             } catch (Exception e) {

@@ -23,8 +23,8 @@ package com.eleybourn.bookcatalogue.searches.goodreads;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue;
-import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTaskContext;
+import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue;
+import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue.SimpleTaskContext;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 
 /**

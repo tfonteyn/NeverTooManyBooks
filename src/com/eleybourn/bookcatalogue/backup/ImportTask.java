@@ -4,8 +4,8 @@ import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.tasks.ManagedTask;
-import com.eleybourn.bookcatalogue.tasks.TaskManager;
+import com.eleybourn.bookcatalogue.tasks.managedtasks.ManagedTask;
+import com.eleybourn.bookcatalogue.tasks.managedtasks.TaskManager;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 import java.io.File;

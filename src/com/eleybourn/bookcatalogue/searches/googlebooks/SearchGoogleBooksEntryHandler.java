@@ -199,7 +199,12 @@ class SearchGoogleBooksEntryHandler extends DefaultHandler {
                 String thumbnail = attributes.getValue("", "href");
                 String fileSpec = ImageUtils.saveThumbnailFromUrl(thumbnail, FILENAME_SUFFIX);
                 if (fileSpec != null) {
-                    StringList.addOrAppend(mBookData, UniqueId.BKEY_THUMBNAIL_FILE_SPEC, fileSpec);
+                    ArrayList<String> imageList = mBookData.getStringArrayList(UniqueId.BKEY_THUMBNAIL_FILE_SPEC_ARRAY);
+                    if (imageList == null) {
+                        imageList = new ArrayList<>();
+                    }
+                    imageList.add(fileSpec);
+                    mBookData.putStringArrayList(UniqueId.BKEY_THUMBNAIL_FILE_SPEC_ARRAY, imageList);
                 }
             }
         }

@@ -18,7 +18,7 @@
  * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.eleybourn.bookcatalogue.taskqueue;
+package com.eleybourn.bookcatalogue.tasks.taskqueue;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -35,16 +35,19 @@ import com.eleybourn.bookcatalogue.dialogs.ContextDialogItem;
 
 import java.util.List;
 
-public abstract class LegacyTask extends Task {
-    private static final long serialVersionUID = 3596858518802582316L;
+/**
+ * Class to wrap events that can not be de-serialized so that the EventsCursor *always* returns a valid Event.
+ *
+ * @author Philip Warner
+ */
+public abstract class LegacyEvent extends Event {
 
-    protected static final int CAT_LEGACY = 0;
-
+    private static final long serialVersionUID = -8518718598973561219L;
     private static final int TEXT_FIELD_1 = 1;
     private static final int TEXT_FIELD_2 = 2;
     private final byte[] mOriginal;
 
-    public LegacyTask(byte[] original, String description) {
+    public LegacyEvent(byte[] original, String description) {
         super(description);
         mOriginal = original;
     }
@@ -57,9 +60,7 @@ public abstract class LegacyTask extends Task {
                                 final @NonNull ViewGroup parent) {
         LinearLayout root = new LinearLayout(context);
         root.setOrientation(LinearLayout.VERTICAL);
-        LinearLayout.LayoutParams margins = new LinearLayout.LayoutParams(
-                ViewGroup.MarginLayoutParams.MATCH_PARENT,
-                ViewGroup.MarginLayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams margins = new LinearLayout.LayoutParams(ViewGroup.MarginLayoutParams.MATCH_PARENT, ViewGroup.MarginLayoutParams.WRAP_CONTENT);
 
         TextView tv = new TextView(context);
         tv.setId(TEXT_FIELD_1);
@@ -79,9 +80,9 @@ public abstract class LegacyTask extends Task {
                          final @NonNull BindableItemCursor cursor,
                          final @NonNull Object appInfo) {
         ((TextView) view.findViewById(TEXT_FIELD_1))
-                .setText("Legacy Task Placeholder for Task #" + this.getId());
+                .setText("Legacy Event Placeholder for Event #" + this.getId());
         ((TextView) view.findViewById(TEXT_FIELD_2))
-                .setText("This task is obsolete and can not be recovered. It is probably advisable to delete it.");
+                .setText("This event is obsolete and can not be recovered. It is probably advisable to delete it.");
     }
 
     public byte[] getOriginal() {
@@ -96,5 +97,4 @@ public abstract class LegacyTask extends Task {
                                              final long id,
                                              final @NonNull List<ContextDialogItem> items,
                                              final @NonNull Object appInfo);
-
 }

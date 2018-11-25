@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.eleybourn.bookcatalogue.tasks;
+package com.eleybourn.bookcatalogue.tasks.taskqueue;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -27,9 +27,9 @@ import android.widget.AdapterView;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.dialogs.ContextDialogItem;
-import com.eleybourn.bookcatalogue.taskqueue.LegacyEvent;
-import com.eleybourn.bookcatalogue.taskqueue.LegacyTask;
-import com.eleybourn.bookcatalogue.taskqueue.QueueManager;
+import com.eleybourn.bookcatalogue.tasks.taskqueue.LegacyEvent;
+import com.eleybourn.bookcatalogue.tasks.taskqueue.LegacyTask;
+import com.eleybourn.bookcatalogue.tasks.taskqueue.QueueManager;
 
 import java.util.List;
 

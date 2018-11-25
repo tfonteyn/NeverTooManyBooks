@@ -36,10 +36,10 @@
             android:value="" />
         <meta-data
             android:name="goodreads.dev_key"
-            android:value="ZWx0GvfCNvQxqPmbBdsNQ" />
+            android:value="" />
         <meta-data
             android:name="goodreads.dev_secret"
-            android:value="A6gLqqm5Jxf6TKTvcBMjkXnq3k31jNzYmthfRWUA" />
+            android:value="" />
 
         <provider
             android:name=".searches.SearchSuggestionProvider"
@@ -117,7 +117,7 @@
         <activity android:name=".filechooser.BackupChooserActivity" />
 
         <!-- AdminActivity: Update Fields -->
-        <activity android:name=".UpdateFromInternetActivity" />
+        <activity android:name=".UpdateFieldsFromInternetActivity" />
 
         <!-- AdminActivity: Credentials Goodreads -->
         <activity android:name=".searches.goodreads.GoodreadsRegisterActivity" />
@@ -203,7 +203,7 @@
         <activity android:name=".searches.librarything.LibraryThingAdminActivity" />
 
         <!-- AdminActivity: Background tasks -->
-        <activity android:name=".tasks.TaskListActivity" />
+        <activity android:name=".tasks.taskqueue.TaskListActivity" />
 
         <!-- AdminActivity: Search Sites configuration -->
         <activity

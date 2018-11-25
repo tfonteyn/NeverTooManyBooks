@@ -367,7 +367,7 @@
     <string name="booklist_background_style">Stile dello sfondo dell\'elenco libri</string>
     <string name="textured_background">Immagine di sfondo</string>
     <string name="plain_background_b_reduces_flicker_b">Sfondo semplice (riduce lo sfarfallio)</string>
-    <string name="warning_thing_must_not_be_blank">%1$s deve contenere un valore</string>
+    <string name="warning_required_field_x">%1$s deve contenere un valore</string>
     <string name="edit">Modifica</string>
     <string name="groupings">Raggruppamenti</string>
     <string name="lbl_preferences">Preferenze</string>

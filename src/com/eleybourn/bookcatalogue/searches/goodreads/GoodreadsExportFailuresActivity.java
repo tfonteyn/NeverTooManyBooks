@@ -41,10 +41,10 @@ import com.eleybourn.bookcatalogue.dialogs.ContextDialogItem;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.dialogs.HintManager.HintOwner;
 import com.eleybourn.bookcatalogue.database.cursors.BindableItemCursor;
-import com.eleybourn.bookcatalogue.taskqueue.Event;
-import com.eleybourn.bookcatalogue.taskqueue.Listeners.EventActions;
-import com.eleybourn.bookcatalogue.taskqueue.Listeners.OnEventChangeListener;
-import com.eleybourn.bookcatalogue.taskqueue.QueueManager;
+import com.eleybourn.bookcatalogue.tasks.taskqueue.Event;
+import com.eleybourn.bookcatalogue.tasks.taskqueue.Listeners.EventActions;
+import com.eleybourn.bookcatalogue.tasks.taskqueue.Listeners.OnEventChangeListener;
+import com.eleybourn.bookcatalogue.tasks.taskqueue.QueueManager;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.util.ArrayList;

@@ -37,7 +37,7 @@ import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.tasks.Terminator;
+import com.eleybourn.bookcatalogue.tasks.simpletasks.Terminator;
 
 import java.io.BufferedInputStream;
 import java.io.Closeable;

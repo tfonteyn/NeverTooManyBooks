@@ -362,7 +362,7 @@
     <string name="booklist_background_style">Styl pozadí seznamu knih</string>
     <string name="textured_background">Obrázek na pozadí</string>
     <string name="plain_background_b_reduces_flicker_b">Jednobarevné pozadí (redukuje blikání)</string>
-    <string name="warning_thing_must_not_be_blank">%1$s nemůže být prázdné</string>
+    <string name="warning_required_field_x">%1$s nemůže být prázdné</string>
     <string name="edit">Upravit</string>
     <string name="groupings">Seskupení</string>
     <string name="lbl_preferences">Nastavení</string>

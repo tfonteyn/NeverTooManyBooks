@@ -40,9 +40,9 @@ import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler;
 import com.eleybourn.bookcatalogue.searches.goodreads.api.ListReviewsApiHandler.ListReviewsFieldNames;
-import com.eleybourn.bookcatalogue.taskqueue.GenericTask;
-import com.eleybourn.bookcatalogue.taskqueue.QueueManager;
-import com.eleybourn.bookcatalogue.tasks.BCQueueManager;
+import com.eleybourn.bookcatalogue.tasks.taskqueue.GenericTask;
+import com.eleybourn.bookcatalogue.tasks.taskqueue.QueueManager;
+import com.eleybourn.bookcatalogue.tasks.taskqueue.BCQueueManager;
 import com.eleybourn.bookcatalogue.utils.StringList;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
@@ -334,8 +334,10 @@ class ImportAllTask extends GenericTask {
         if (id > 0) {
             if (book.getBoolean(UniqueId.BKEY_HAVE_THUMBNAIL)) {
                 String uuid = db.getBookUuid(id);
+                // get the temporary downloaded file
                 File source = StorageUtils.getTempCoverFile();
                 File destination = StorageUtils.getCoverFile(uuid);
+                // and rename it to the permanent UUID one.
                 StorageUtils.renameFile(source, destination);
             }
             //db.setGoodreadsSyncDate(id);
@@ -443,7 +445,9 @@ class ImportAllTask extends GenericTask {
             if (thumbnail != null) {
                 String fileSpec = ImageUtils.saveThumbnailFromUrl(thumbnail, GoodreadsUtils.FILENAME_SUFFIX);
                 if (fileSpec != null) {
-                    book.appendOrAdd(UniqueId.BKEY_THUMBNAIL_FILE_SPEC, fileSpec);
+                    ArrayList<String> imageList = book.getStringArrayList(UniqueId.BKEY_THUMBNAIL_FILE_SPEC_ARRAY);
+                    imageList.add(fileSpec);
+                    book.putStringArrayList(UniqueId.BKEY_THUMBNAIL_FILE_SPEC_ARRAY, imageList);
                 }
                 // If there are thumbnails present, pick the biggest, delete others and rename.
                 book.cleanupThumbnails();

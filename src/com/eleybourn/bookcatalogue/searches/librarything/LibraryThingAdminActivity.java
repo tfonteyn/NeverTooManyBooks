@@ -35,9 +35,9 @@ import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.debug.Tracker;
-import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTaskContext;
-import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressDialogFragment;
-import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressDialogFragment.FragmentTask;
+import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue.SimpleTaskContext;
+import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueueProgressDialogFragment;
+import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueueProgressDialogFragment.FragmentTask;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 import java.io.File;
@@ -124,7 +124,7 @@ public class LibraryThingAdminActivity extends BaseActivity {
                     };
 
                     // Get the fragment to display task progress
-                    SimpleTaskQueueProgressDialogFragment.runTaskWithProgress(LibraryThingAdminActivity.this, R.string.progress_msg_connecting_to_web_site, task, true, 0);
+                    SimpleTaskQueueProgressDialogFragment.newInstance(LibraryThingAdminActivity.this, R.string.progress_msg_connecting_to_web_site, task, true, 0);
 
                 }
             }

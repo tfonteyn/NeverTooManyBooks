@@ -25,7 +25,6 @@ import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
@@ -94,6 +93,14 @@ public class CsvExporter implements Exporter {
     private static final int COPIES = 5;
     @NonNull
     private final CatalogueDBAdapter mDb;
+
+    /* The CSV file has columns with these names */
+    /** string-encoded - used in import/export, never change this string! */
+    static final String CSV_COLUMN_TOC = "anthology_titles";
+    /** string-encoded - used in import/export, never change this string! */
+    static final String CSV_COLUMN_SERIES = "series_details";
+    /** string-encoded - used in import/export, never change this string! */
+    static final String CSV_COLUMN_AUTHORS = "author_details";
     /**
      * The order of the header MUST be the same as the order used to write the data (obvious eh?)
      *
@@ -101,7 +108,7 @@ public class CsvExporter implements Exporter {
      */
     private final String EXPORT_FIELD_HEADERS =
             '"' + DOM_PK_ID.name + "\"," +
-                    '"' + UniqueId.BKEY_AUTHOR_STRING_LIST + "\"," +
+                    '"' + CSV_COLUMN_AUTHORS + "\"," +
                     '"' + DOM_TITLE + "\"," +
                     '"' + DOM_BOOK_ISBN + "\"," +
                     '"' + DOM_BOOK_PUBLISHER + "\"," +
@@ -114,7 +121,7 @@ public class CsvExporter implements Exporter {
                     '"' + "bookshelf_id\"," +
                     '"' + DOM_BOOKSHELF + "\"," +
                     '"' + DOM_BOOK_READ + "\"," +
-                    '"' + UniqueId.BKEY_SERIES_STRING_LIST + "\"," +
+                    '"' + CSV_COLUMN_SERIES + "\"," +
                     '"' + DOM_BOOK_PAGES + "\"," +
                     '"' + DOM_BOOK_NOTES + "\"," +
 
@@ -131,7 +138,7 @@ public class CsvExporter implements Exporter {
                     '"' + DOM_BOOK_FORMAT + "\"," +
                     '"' + DOM_BOOK_SIGNED + "\"," +
                     '"' + DOM_LOANED_TO + "\"," +
-                    '"' + UniqueId.BKEY_TOC_STRING_LIST + "\"," +
+                    '"' + CSV_COLUMN_TOC + "\"," +
                     '"' + DOM_DESCRIPTION + "\"," +
                     '"' + DOM_BOOK_GENRE + "\"," +
                     '"' + DOM_BOOK_LANGUAGE + "\"," +

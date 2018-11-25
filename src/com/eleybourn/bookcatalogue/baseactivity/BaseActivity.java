@@ -45,6 +45,8 @@ abstract public class BaseActivity extends AppCompatActivity implements
         ThemeUtils.OnThemeChangedListener,
         CanBeDirty {
 
+    public static final int RESULT_CHANGES_MADE = UniqueId.ACTIVITY_RESULT_CHANGES_MADE;
+
     /** The side/navigation panel */
     @Nullable
     private DrawerLayout mDrawerLayout;
@@ -312,8 +314,6 @@ abstract public class BaseActivity extends AppCompatActivity implements
 
     /**
      * Check if edits need saving, and finish the activity if not
-     *
-     * TOMF: should we "StorageUtils.deleteTempCoverFile();" here ? or should we stick to where we *should* delete it ?
      */
     public void finishIfClean() {
         if (isDirty()) {

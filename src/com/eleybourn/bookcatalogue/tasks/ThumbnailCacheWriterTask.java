@@ -25,7 +25,8 @@ import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.database.CoversDbAdapter;
-import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTaskContext;
+import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue;
+import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue.SimpleTaskContext;
 
 /**
  * Background task to save a bitmap into the covers thumbnail database. Runs in background
@@ -42,7 +43,7 @@ public class ThumbnailCacheWriterTask implements SimpleTaskQueue.SimpleTask {
      * Single-thread queue for writing data. There is no point in more than one thread since
      * the database will force serialization of the updates.
      */
-    private static final SimpleTaskQueue mQueue = new SimpleTaskQueue("cache-writer", 1);
+    private static final SimpleTaskQueue mQueue = new SimpleTaskQueue("ThumbnailCacheWriterTask", 1);
     private final Context mContext;
     /** Indicates if Bitmap can be recycled when no longer needed */
     private final boolean mCanRecycle;

@@ -20,7 +20,6 @@
 
 package com.eleybourn.bookcatalogue;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
@@ -37,9 +36,9 @@ import com.eleybourn.bookcatalogue.baseactivity.BaseListActivity;
 import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Tracker;
+import com.eleybourn.bookcatalogue.dialogs.SelectOneDialog;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.dialogs.fieldeditdialog.EditBookshelfDialog;
-import com.eleybourn.bookcatalogue.dialogs.SelectOneDialog;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.widgets.TouchListViewWithDropListener;
 
@@ -55,7 +54,6 @@ import java.util.ArrayList;
 public class EditBookshelfListActivity extends BaseListActivity {
 
     public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_EDIT_BOOKSHELF_LIST;
-    public static final int RESULT_CHANGES_MADE = UniqueId.ACTIVITY_RESULT_CHANGES_MADE_EDIT_BOOKSHELF_LIST;
 
     private CatalogueDBAdapter mDb;
     private ArrayList<Bookshelf> mList;
@@ -187,11 +185,6 @@ public class EditBookshelfListActivity extends BaseListActivity {
             }
         });
         d.edit(bookshelf);
-    }
-
-    @Override
-    public void setActivityResult() {
-        setResult(changesMade() ? RESULT_CHANGES_MADE : Activity.RESULT_CANCELED); /* 41e84172-5833-4906-a891-8df302ecc190 */
     }
 
     @Override

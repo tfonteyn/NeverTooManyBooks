@@ -25,10 +25,10 @@ import android.support.annotation.StringRes;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.searches.ManagedSearchTask;
 import com.eleybourn.bookcatalogue.searches.SearchSites;
-import com.eleybourn.bookcatalogue.searches.SearchTask;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.BookNotFoundException;
-import com.eleybourn.bookcatalogue.tasks.TaskManager;
+import com.eleybourn.bookcatalogue.tasks.managedtasks.TaskManager;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -40,11 +40,11 @@ import oauth.signpost.exception.OAuthMessageSignerException;
 
 /**
  /**
- *  Goodreads SearchTask as used by the {@link SearchSites.Site#getTask(TaskManager)}
+ *  Goodreads ManagedSearchTask as used by the {@link SearchSites.Site#getTask(TaskManager)}
  *
  * @author Philip Warner
  */
-public class SearchGoodreadsTask extends SearchTask {
+public class SearchGoodreadsTask extends ManagedSearchTask {
 
     public SearchGoodreadsTask(final @NonNull String name,
                                final @NonNull TaskManager manager) {

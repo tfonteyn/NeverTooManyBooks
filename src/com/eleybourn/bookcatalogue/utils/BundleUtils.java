@@ -123,22 +123,6 @@ public class BundleUtils {
     }
 
     /**
-     * Utility routine to get the list from the passed bundle. Added to reduce lint warnings...
-     *
-     * @param key     to check for
-     * @param bundle  to check
-     *
-     * @return List, or null when not present
-     */
-    @Nullable
-    public static <T extends Parcelable> ArrayList<T> getParcelableArrayList(final @Nullable String key, final @Nullable Bundle bundle) {
-        if (bundle == null) {
-            return null;
-        }
-        return bundle.getParcelableArrayList(key);
-    }
-
-    /**
      * Utility routine to get the list from the passed bundles. Added to reduce lint warnings...
      *
      * @param key     to check for

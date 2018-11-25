@@ -43,19 +43,19 @@ import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.searches.SearchAdminActivity;
 import com.eleybourn.bookcatalogue.searches.SearchSites;
-import com.eleybourn.bookcatalogue.searches.UpdateFromInternetTask;
+import com.eleybourn.bookcatalogue.searches.UpdateFieldsFromInternetTask;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
-import com.eleybourn.bookcatalogue.tasks.ManagedTask;
+import com.eleybourn.bookcatalogue.tasks.managedtasks.ManagedTask;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.util.LinkedHashMap;
 
 /**
- * NEWKIND must stay in sync with {@link UpdateFromInternetTask}
+ * NEWKIND must stay in sync with {@link UpdateFieldsFromInternetTask}
  *
  * FIXME ... re-test and see why the progress stops. Seems we hit some limit in number of HTTP connections (server imposed ?)
  */
-public class UpdateFromInternetActivity extends BaseActivityWithTasks {
+public class UpdateFieldsFromInternetActivity extends BaseActivityWithTasks {
 
     public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_UPDATE_FROM_INTERNET;
 
@@ -135,54 +135,68 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
     private void initFields() {
         addIfVisible(UniqueId.BKEY_AUTHOR_ARRAY, UniqueId.KEY_AUTHOR_ID,
                 R.string.lbl_author, true, FieldUsage.Usage.AddExtra);
-        addIfVisible(UniqueId.KEY_TITLE, null,
+        addIfVisible(UniqueId.KEY_TITLE,
                 R.string.lbl_title, false, FieldUsage.Usage.CopyIfBlank);
-        addIfVisible(UniqueId.KEY_BOOK_ISBN, null,
+        addIfVisible(UniqueId.KEY_BOOK_ISBN,
                 R.string.lbl_isbn, false, FieldUsage.Usage.CopyIfBlank);
-        addIfVisible(UniqueId.BKEY_HAVE_THUMBNAIL, null,
+        addIfVisible(UniqueId.BKEY_HAVE_THUMBNAIL,
                 R.string.lbl_cover, false, FieldUsage.Usage.CopyIfBlank);
         addIfVisible(UniqueId.BKEY_SERIES_ARRAY, UniqueId.KEY_SERIES_NAME,
                 R.string.lbl_series, true, FieldUsage.Usage.AddExtra);
         addIfVisible(UniqueId.BKEY_TOC_TITLES_ARRAY, UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK,
                 R.string.table_of_content, true, FieldUsage.Usage.AddExtra);
-        addIfVisible(UniqueId.KEY_BOOK_PUBLISHER, null,
+        addIfVisible(UniqueId.KEY_BOOK_PUBLISHER,
                 R.string.lbl_publisher, false, FieldUsage.Usage.CopyIfBlank);
-        addIfVisible(UniqueId.KEY_BOOK_DATE_PUBLISHED, null,
+        addIfVisible(UniqueId.KEY_BOOK_DATE_PUBLISHED,
                 R.string.lbl_date_published, false, FieldUsage.Usage.CopyIfBlank);
-        addIfVisible(UniqueId.KEY_FIRST_PUBLICATION, null,
+        addIfVisible(UniqueId.KEY_FIRST_PUBLICATION,
                 R.string.lbl_first_publication, false, FieldUsage.Usage.CopyIfBlank);
-        addIfVisible(UniqueId.KEY_DESCRIPTION, null,
+        addIfVisible(UniqueId.KEY_DESCRIPTION,
                 R.string.lbl_description, false, FieldUsage.Usage.CopyIfBlank);
-        addIfVisible(UniqueId.KEY_BOOK_PAGES, null,
+        addIfVisible(UniqueId.KEY_BOOK_PAGES,
                 R.string.lbl_pages, false, FieldUsage.Usage.CopyIfBlank);
-        addIfVisible(UniqueId.KEY_BOOK_PRICE_LISTED, null,
+        addIfVisible(UniqueId.KEY_BOOK_PRICE_LISTED,
                 R.string.lbl_price_listed, false, FieldUsage.Usage.CopyIfBlank);
-        addIfVisible(UniqueId.KEY_BOOK_FORMAT, null,
+        addIfVisible(UniqueId.KEY_BOOK_FORMAT,
                 R.string.lbl_format, false, FieldUsage.Usage.CopyIfBlank);
-        addIfVisible(UniqueId.KEY_BOOK_GENRE, null,
+        addIfVisible(UniqueId.KEY_BOOK_GENRE,
                 R.string.lbl_genre, false, FieldUsage.Usage.CopyIfBlank);
-        addIfVisible(UniqueId.KEY_BOOK_LANGUAGE, null,
+        addIfVisible(UniqueId.KEY_BOOK_LANGUAGE,
                 R.string.lbl_language, false, FieldUsage.Usage.CopyIfBlank);
     }
 
     /**
      * Add a FieldUsage if the specified field has not been hidden by the user.
      *
-     * @param field     name to use in FieldUsages
-     * @param visField  Field name to check for visibility. If null, use field itself.
+     * @param field     name to use in FieldUsages + check for visibility
      * @param stringId  of field label string
      * @param canAppend if the field is a list to which we can append to
      * @param usage     Usage to apply.
      */
     private void addIfVisible(final @NonNull String field,
-                              @Nullable String visField,
                               final @StringRes int stringId,
                               final boolean canAppend,
                               final @NonNull FieldUsage.Usage usage) {
 
-        if (visField == null || visField.trim().isEmpty()) {
-            visField = field;
+        if (Fields.isVisible(field)) {
+            mFieldUsages.put(new FieldUsage(field, stringId, usage, canAppend));
         }
+    }
+
+    /**
+     * Add a FieldUsage if the specified field has not been hidden by the user.
+     *
+     * @param field     name to use in FieldUsages
+     * @param visField  Field name to check for visibility.
+     * @param stringId  of field label string
+     * @param canAppend if the field is a list to which we can append to
+     * @param usage     Usage to apply.
+     */
+    private void addIfVisible(final @NonNull String field,
+                              final @NonNull String visField,
+                              final @StringRes int stringId,
+                              final boolean canAppend,
+                              final @NonNull FieldUsage.Usage usage) {
 
         if (Fields.isVisible(visField)) {
             mFieldUsages.put(new FieldUsage(field, stringId, usage, canAppend));
@@ -202,7 +216,7 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
 
             CompoundButton cb = row.findViewById(R.id.usage);
             cb.setChecked(usage.isSelected());
-            cb.setText(usage.getUsageInfo(UpdateFromInternetActivity.this));
+            cb.setText(usage.getUsageInfo(UpdateFieldsFromInternetActivity.this));
             cb.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -211,7 +225,7 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
                     final FieldUsage usage = ViewTagger.getTagOrThrow(cb);
                     usage.nextState();
                     cb.setChecked(usage.isSelected());
-                    cb.setText(usage.getUsageInfo(UpdateFromInternetActivity.this));
+                    cb.setText(usage.getUsageInfo(UpdateFieldsFromInternetActivity.this));
                 }
             });
 
@@ -226,7 +240,7 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
             public void onClick(final View v) {
                 // sanity check
                 if (countUserSelections() == 0) {
-                    StandardDialogs.showUserMessage(UpdateFromInternetActivity.this, R.string.warning_select_min_1_field);
+                    StandardDialogs.showUserMessage(UpdateFieldsFromInternetActivity.this, R.string.warning_select_min_1_field);
                     return;
                 }
 
@@ -235,26 +249,26 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
                 // but don't ask if its a single book only; just download it.
                 if (mBookId == 0 && coversWanted.isSelected()) {
                     // Verify - this can be a dangerous operation
-                    AlertDialog dialog = new AlertDialog.Builder(UpdateFromInternetActivity.this)
+                    AlertDialog dialog = new AlertDialog.Builder(UpdateFieldsFromInternetActivity.this)
                             .setMessage(R.string.overwrite_thumbnail)
                             .setTitle(R.string.lbl_update_fields)
                             .setIconAttribute(android.R.attr.alertDialogIcon)
                             .create();
-                    dialog.setButton(AlertDialog.BUTTON_POSITIVE, UpdateFromInternetActivity.this.getString(R.string.yes),
+                    dialog.setButton(AlertDialog.BUTTON_POSITIVE, UpdateFieldsFromInternetActivity.this.getString(R.string.yes),
                             new DialogInterface.OnClickListener() {
                                 public void onClick(final DialogInterface dialog, final int which) {
                                     mFieldUsages.get(UniqueId.BKEY_HAVE_THUMBNAIL).usage = FieldUsage.Usage.Overwrite;
                                     startUpdate(mBookId);
                                 }
                             });
-                    dialog.setButton(AlertDialog.BUTTON_NEGATIVE, UpdateFromInternetActivity.this.getString(android.R.string.cancel),
+                    dialog.setButton(AlertDialog.BUTTON_NEGATIVE, UpdateFieldsFromInternetActivity.this.getString(android.R.string.cancel),
                             new DialogInterface.OnClickListener() {
                                 @SuppressWarnings("EmptyMethod")
                                 public void onClick(final DialogInterface dialog, final int which) {
                                     //do nothing
                                 }
                             });
-                    dialog.setButton(AlertDialog.BUTTON_NEUTRAL, UpdateFromInternetActivity.this.getString(R.string.no),
+                    dialog.setButton(AlertDialog.BUTTON_NEUTRAL, UpdateFieldsFromInternetActivity.this.getString(R.string.no),
                             new DialogInterface.OnClickListener() {
                                 public void onClick(final DialogInterface dialog, final int which) {
                                     mFieldUsages.get(UniqueId.BKEY_HAVE_THUMBNAIL).usage = FieldUsage.Usage.CopyIfBlank;
@@ -272,7 +286,7 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
             @Override
             public void onClick(final View v) {
                 //TOMF: not sure if needed... can't harm. or can it ?
-                ManagedTask.ManagedTaskController tc = UpdateFromInternetTask.getMessageSwitch().getController(mUpdateSenderId);
+                ManagedTask.ManagedTaskController tc = UpdateFieldsFromInternetTask.getMessageSwitch().getController(mUpdateSenderId);
                 if (tc != null) {
                     tc.requestAbort();
                 }
@@ -351,15 +365,15 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
      * @param bookId 0 for all books, or a valid book id for one book
      */
     private void startUpdate(final long bookId) {
-        UpdateFromInternetTask updateTask = new UpdateFromInternetTask(getTaskManager(),
-                mFieldUsages, mSearchSites, mSearchTaskListener);
+        UpdateFieldsFromInternetTask updateTask = new UpdateFieldsFromInternetTask(getTaskManager(),
+                mSearchSites, mFieldUsages, mSearchTaskListener);
 
         if (bookId > 0) {
             updateTask.setBookId(bookId);
         }
 
         mUpdateSenderId = updateTask.getSenderId();
-        UpdateFromInternetTask.getMessageSwitch().addListener(mUpdateSenderId, mSearchTaskListener, false);
+        UpdateFieldsFromInternetTask.getMessageSwitch().addListener(mUpdateSenderId, mSearchTaskListener, false);
         updateTask.start();
     }
 
@@ -368,7 +382,7 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
     protected void onPause() {
         Tracker.enterOnPause(this);
         if (mUpdateSenderId != 0) {
-            UpdateFromInternetTask.getMessageSwitch().removeListener(mUpdateSenderId, mSearchTaskListener);
+            UpdateFieldsFromInternetTask.getMessageSwitch().removeListener(mUpdateSenderId, mSearchTaskListener);
         }
         super.onPause();
         Tracker.exitOnPause(this);
@@ -380,7 +394,7 @@ public class UpdateFromInternetActivity extends BaseActivityWithTasks {
         Tracker.enterOnResume(this);
         super.onResume();
         if (mUpdateSenderId != 0) {
-            UpdateFromInternetTask.getMessageSwitch().addListener(mUpdateSenderId, mSearchTaskListener, true);
+            UpdateFieldsFromInternetTask.getMessageSwitch().addListener(mUpdateSenderId, mSearchTaskListener, true);
         }
         Tracker.exitOnResume(this);
     }

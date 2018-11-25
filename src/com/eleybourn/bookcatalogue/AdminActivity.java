@@ -53,8 +53,8 @@ import com.eleybourn.bookcatalogue.searches.SearchAdminActivity;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsRegisterActivity;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsUtils;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingAdminActivity;
-import com.eleybourn.bookcatalogue.tasks.ManagedTask;
-import com.eleybourn.bookcatalogue.tasks.TaskListActivity;
+import com.eleybourn.bookcatalogue.tasks.managedtasks.ManagedTask;
+import com.eleybourn.bookcatalogue.tasks.taskqueue.TaskListActivity;
 import com.eleybourn.bookcatalogue.utils.BundleUtils;
 import com.eleybourn.bookcatalogue.utils.GenericFileProvider;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
@@ -229,7 +229,7 @@ public class AdminActivity extends BaseActivityWithTasks {
             v.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(AdminActivity.this, UpdateFromInternetActivity.class);
+                    Intent intent = new Intent(AdminActivity.this, UpdateFieldsFromInternetActivity.class);
                     startActivity(intent);
                 }
             });

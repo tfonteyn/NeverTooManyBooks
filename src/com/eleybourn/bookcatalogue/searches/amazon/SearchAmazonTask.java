@@ -5,19 +5,19 @@ import android.support.annotation.StringRes;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.searches.ManagedSearchTask;
 import com.eleybourn.bookcatalogue.searches.SearchSites;
-import com.eleybourn.bookcatalogue.searches.SearchTask;
-import com.eleybourn.bookcatalogue.tasks.TaskManager;
+import com.eleybourn.bookcatalogue.tasks.managedtasks.TaskManager;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
 
 /**
- *  Amazon SearchTask as used by the {@link SearchSites.Site#getTask(TaskManager)}
+ *  Amazon ManagedSearchTask as used by the {@link SearchSites.Site#getTask(TaskManager)}
  *
  */
-public class SearchAmazonTask extends SearchTask {
+public class SearchAmazonTask extends ManagedSearchTask {
 
     public SearchAmazonTask(final @NonNull String name,
                             final @NonNull TaskManager manager) {
@@ -42,7 +42,7 @@ public class SearchAmazonTask extends SearchTask {
             AmazonManager.search(mIsbn, mAuthor, mTitle, mBookData, mFetchThumbnail);
             if (mBookData.size() > 0) {
                 // Look for series name in the book title and clean KEY_TITLE
-                checkForSeriesName();
+                checkForSeriesNameInTitle();
             }
         } catch (java.net.SocketTimeoutException e) {
             showError(R_ID_SEARCHING, R.string.error_network_timeout);

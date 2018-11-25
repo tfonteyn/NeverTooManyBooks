@@ -34,9 +34,9 @@ import com.eleybourn.bookcatalogue.searches.goodreads.BookEvents.GrNoIsbnEvent;
 import com.eleybourn.bookcatalogue.searches.goodreads.BookEvents.GrNoMatchEvent;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.NotAuthorizedException;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.ExportDisposition;
-import com.eleybourn.bookcatalogue.taskqueue.GenericTask;
-import com.eleybourn.bookcatalogue.taskqueue.QueueManager;
-import com.eleybourn.bookcatalogue.tasks.BCQueueManager;
+import com.eleybourn.bookcatalogue.tasks.taskqueue.GenericTask;
+import com.eleybourn.bookcatalogue.tasks.taskqueue.QueueManager;
+import com.eleybourn.bookcatalogue.tasks.taskqueue.BCQueueManager;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 /**

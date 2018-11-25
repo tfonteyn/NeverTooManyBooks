@@ -28,17 +28,12 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
-import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.entities.Book;
-import com.eleybourn.bookcatalogue.entities.Publisher;
-
-import java.util.ArrayList;
 
 public class BookDetailsActivity extends BaseActivity {
 
     public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_VIEW_BOOK;
-    public static final int RESULT_CHANGES_MADE = UniqueId.ACTIVITY_RESULT_CHANGES_MADE_VIEW_BOOK;
 
     @Override
     protected int getLayoutId() {
@@ -53,11 +48,6 @@ public class BookDetailsActivity extends BaseActivity {
 
         Bundle extras = getIntent().getExtras();
         BookFragment frag = new BookFragment();
-
-        ArrayList<Publisher> pl = new ArrayList<>();
-        pl.add(new Publisher("test"));
-        pl.add(new Publisher("test2"));
-        extras.putParcelableArrayList("par", pl);
         frag.setArguments(extras);
 
         getSupportFragmentManager()

@@ -18,7 +18,7 @@
  * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.eleybourn.bookcatalogue.taskqueue;
+package com.eleybourn.bookcatalogue.tasks.taskqueue;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteCursor;
@@ -36,19 +36,19 @@ import com.eleybourn.bookcatalogue.adapters.BindableItemCursorAdapter;
 
 import java.util.Date;
 
-import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_CATEGORY;
-import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_EVENT_COUNT;
-import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_EXCEPTION;
-import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_FAILURE_REASON;
-import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_ID;
-import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_QUEUED_DATE;
-import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_QUEUE_ID;
-import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_RETRY_DATE;
-import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_STATUS_CODE;
-import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_TASK;
-import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_TASK_ID;
-import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.TBL_EVENT;
-import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.TBL_TASK;
+import static com.eleybourn.bookcatalogue.tasks.taskqueue.DBHelper.DOM_CATEGORY;
+import static com.eleybourn.bookcatalogue.tasks.taskqueue.DBHelper.DOM_EVENT_COUNT;
+import static com.eleybourn.bookcatalogue.tasks.taskqueue.DBHelper.DOM_EXCEPTION;
+import static com.eleybourn.bookcatalogue.tasks.taskqueue.DBHelper.DOM_FAILURE_REASON;
+import static com.eleybourn.bookcatalogue.tasks.taskqueue.DBHelper.DOM_ID;
+import static com.eleybourn.bookcatalogue.tasks.taskqueue.DBHelper.DOM_QUEUED_DATE;
+import static com.eleybourn.bookcatalogue.tasks.taskqueue.DBHelper.DOM_QUEUE_ID;
+import static com.eleybourn.bookcatalogue.tasks.taskqueue.DBHelper.DOM_RETRY_DATE;
+import static com.eleybourn.bookcatalogue.tasks.taskqueue.DBHelper.DOM_STATUS_CODE;
+import static com.eleybourn.bookcatalogue.tasks.taskqueue.DBHelper.DOM_TASK;
+import static com.eleybourn.bookcatalogue.tasks.taskqueue.DBHelper.DOM_TASK_ID;
+import static com.eleybourn.bookcatalogue.tasks.taskqueue.DBHelper.TBL_EVENT;
+import static com.eleybourn.bookcatalogue.tasks.taskqueue.DBHelper.TBL_TASK;
 
 /**
  * Cursor subclass used to make accessing Tasks a little easier.

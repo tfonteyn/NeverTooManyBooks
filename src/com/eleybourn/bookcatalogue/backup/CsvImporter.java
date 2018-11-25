@@ -122,7 +122,7 @@ public class CsvImporter implements Importer {
         requireColumnOrThrow(book, UniqueId.KEY_ID, UniqueId.KEY_BOOK_UUID);
         // need some type of author name.
         requireColumnOrThrow(book,
-                UniqueId.BKEY_AUTHOR_STRING_LIST, // aka author_details: preferred one as used in latest versions
+                CsvExporter.CSV_COLUMN_AUTHORS, // aka author_details: preferred one as used in latest versions
 
                 UniqueId.KEY_AUTHOR_FAMILY_NAME,
                 UniqueId.KEY_AUTHOR_FORMATTED,
@@ -162,6 +162,8 @@ public class CsvImporter implements Importer {
                 final String[] csvDataRow = returnRow(importedList.get(row), fullEscaping);
                 // clear book (avoiding construction another object) and add each field
                 book.clear();
+                // read all columns of the current row into the Bundle
+                //note that some of them require further processing before being valid.
                 for (int i = 0; i < csvColumnNames.length; i++) {
                     book.putString(csvColumnNames[i], csvDataRow[i]);
                 }
@@ -201,7 +203,7 @@ public class CsvImporter implements Importer {
                 // storing the book data does all that
                 handleAuthors(mDb, book);
                 handleSeries(mDb, book);
-                if (book.containsKey(UniqueId.BKEY_TOC_STRING_LIST)) {
+                if (book.containsKey(CsvExporter.CSV_COLUMN_TOC)) {
                     // ignore the actual value of the UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK! it will be
                     // 'reset' to mirror what we actually have when storing the book data
                     handleAnthology(mDb, book);
@@ -368,7 +370,7 @@ public class CsvImporter implements Importer {
     private void handleAnthology(final @NonNull CatalogueDBAdapter db,
                                  final @NonNull Book book) {
 
-        String encodedList = book.getString(UniqueId.BKEY_TOC_STRING_LIST);
+        String encodedList = book.getString(CsvExporter.CSV_COLUMN_TOC);
         if (!encodedList.isEmpty()) {
             ArrayList<TOCEntry> list = StringList.getTOCUtils().decode(encodedList,false);
             if (!list.isEmpty()) {
@@ -379,7 +381,7 @@ public class CsvImporter implements Importer {
         }
 
         // remove the unneeded string encoded set
-        book.remove(UniqueId.BKEY_TOC_STRING_LIST);
+        book.remove(CsvExporter.CSV_COLUMN_TOC);
     }
 
     /**
@@ -389,7 +391,7 @@ public class CsvImporter implements Importer {
      */
     private void handleSeries(final @NonNull CatalogueDBAdapter db,
                               final @NonNull Book book) {
-        String encodedList = book.getString(UniqueId.BKEY_SERIES_STRING_LIST);
+        String encodedList = book.getString(CsvExporter.CSV_COLUMN_SERIES);
         if (encodedList.isEmpty()) {
             // Try to build from SERIES_NAME and SERIES_NUM. It may all be blank
             if (book.containsKey(UniqueId.KEY_SERIES_NAME)) {
@@ -407,7 +409,7 @@ public class CsvImporter implements Importer {
         Series.pruneSeriesList(list);
         Utils.pruneList(db, list);
         book.putSeriesList(list);
-        book.remove(UniqueId.BKEY_SERIES_STRING_LIST);
+        book.remove(CsvExporter.CSV_COLUMN_SERIES);
     }
 
     /**
@@ -418,7 +420,7 @@ public class CsvImporter implements Importer {
     private void handleAuthors(final @NonNull CatalogueDBAdapter db,
                                final @NonNull Book book) {
         // preferred & used in latest versions
-        String encodedList = book.getString(UniqueId.BKEY_AUTHOR_STRING_LIST);
+        String encodedList = book.getString(CsvExporter.CSV_COLUMN_AUTHORS);
         if (encodedList.isEmpty()) {
             // Need to build it from other/older fields.
 
@@ -452,7 +454,7 @@ public class CsvImporter implements Importer {
         final ArrayList<Author> list = StringList.getAuthorUtils().decode(encodedList, false);
         Utils.pruneList(db, list);
         book.putAuthorList(list);
-        book.remove(UniqueId.BKEY_AUTHOR_STRING_LIST);
+        book.remove(CsvExporter.CSV_COLUMN_AUTHORS);
     }
 
     //

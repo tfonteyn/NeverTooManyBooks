@@ -18,7 +18,7 @@
  * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.eleybourn.bookcatalogue.taskqueue;
+package com.eleybourn.bookcatalogue.tasks.taskqueue;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -31,8 +31,8 @@ import android.database.sqlite.SQLiteStatement;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.taskqueue.Task.TaskState;
-import com.eleybourn.bookcatalogue.taskqueue.TasksCursor.TaskCursorSubtype;
+import com.eleybourn.bookcatalogue.tasks.taskqueue.Task.TaskState;
+import com.eleybourn.bookcatalogue.tasks.taskqueue.TasksCursor.TaskCursorSubtype;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.RTE;
 import com.eleybourn.bookcatalogue.utils.SerializationUtils;
@@ -42,23 +42,23 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_CATEGORY;
-import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_EVENT;
-import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_EVENT_DATE;
-import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_EXCEPTION;
-import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_FAILURE_REASON;
-import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_ID;
-import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_NAME;
-import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_PRIORITY;
-import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_QUEUE_ID;
-import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_RETRY_COUNT;
-import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_RETRY_DATE;
-import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_STATUS_CODE;
-import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_TASK;
-import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_TASK_ID;
-import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.TBL_EVENT;
-import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.TBL_QUEUE;
-import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.TBL_TASK;
+import static com.eleybourn.bookcatalogue.tasks.taskqueue.DBHelper.DOM_CATEGORY;
+import static com.eleybourn.bookcatalogue.tasks.taskqueue.DBHelper.DOM_EVENT;
+import static com.eleybourn.bookcatalogue.tasks.taskqueue.DBHelper.DOM_EVENT_DATE;
+import static com.eleybourn.bookcatalogue.tasks.taskqueue.DBHelper.DOM_EXCEPTION;
+import static com.eleybourn.bookcatalogue.tasks.taskqueue.DBHelper.DOM_FAILURE_REASON;
+import static com.eleybourn.bookcatalogue.tasks.taskqueue.DBHelper.DOM_ID;
+import static com.eleybourn.bookcatalogue.tasks.taskqueue.DBHelper.DOM_NAME;
+import static com.eleybourn.bookcatalogue.tasks.taskqueue.DBHelper.DOM_PRIORITY;
+import static com.eleybourn.bookcatalogue.tasks.taskqueue.DBHelper.DOM_QUEUE_ID;
+import static com.eleybourn.bookcatalogue.tasks.taskqueue.DBHelper.DOM_RETRY_COUNT;
+import static com.eleybourn.bookcatalogue.tasks.taskqueue.DBHelper.DOM_RETRY_DATE;
+import static com.eleybourn.bookcatalogue.tasks.taskqueue.DBHelper.DOM_STATUS_CODE;
+import static com.eleybourn.bookcatalogue.tasks.taskqueue.DBHelper.DOM_TASK;
+import static com.eleybourn.bookcatalogue.tasks.taskqueue.DBHelper.DOM_TASK_ID;
+import static com.eleybourn.bookcatalogue.tasks.taskqueue.DBHelper.TBL_EVENT;
+import static com.eleybourn.bookcatalogue.tasks.taskqueue.DBHelper.TBL_QUEUE;
+import static com.eleybourn.bookcatalogue.tasks.taskqueue.DBHelper.TBL_TASK;
 
 /**
  * Database layer. Implements all direct database access.

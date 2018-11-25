@@ -361,7 +361,7 @@ anschließend auf eine leeren Seite landen. Klicken Sie einfach auf den "Zurück
     <string name="booklist_background_style">Hintergrundstil der Bücherliste</string>
     <string name="textured_background">Gemustertes Hintergrundbild</string>
     <string name="plain_background_b_reduces_flicker_b">Einfacher Hintergrund (vermindert Flackern)</string>
-    <string name="warning_thing_must_not_be_blank">%1$s darf nicht leer sein</string>
+    <string name="warning_required_field_x">%1$s darf nicht leer sein</string>
     <string name="edit">Bearbeiten</string>
     <string name="groupings">Gruppierung</string>
     <string name="lbl_preferences">Einstellungen</string>

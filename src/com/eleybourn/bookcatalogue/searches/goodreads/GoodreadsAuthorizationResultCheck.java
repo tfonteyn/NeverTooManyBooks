@@ -27,9 +27,9 @@ import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.NotAuthorizedException;
-import com.eleybourn.bookcatalogue.taskqueue.GenericTask;
-import com.eleybourn.bookcatalogue.taskqueue.QueueManager;
-import com.eleybourn.bookcatalogue.tasks.BCQueueManager;
+import com.eleybourn.bookcatalogue.tasks.taskqueue.GenericTask;
+import com.eleybourn.bookcatalogue.tasks.taskqueue.QueueManager;
+import com.eleybourn.bookcatalogue.tasks.taskqueue.BCQueueManager;
 
 import java.io.Serializable;
 

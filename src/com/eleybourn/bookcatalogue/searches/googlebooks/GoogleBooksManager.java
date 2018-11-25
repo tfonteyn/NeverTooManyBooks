@@ -54,12 +54,12 @@ public class GoogleBooksManager {
 
         Bundle bookData = new Bundle();
         try {
-            // no specific API, just got search the book
+            // no specific API, just go search the book
             search(isbn, "", "", bookData, true);
 
-            String fileSpec = bookData.getString(UniqueId.BKEY_THUMBNAIL_FILE_SPEC);
-            if (fileSpec != null) {
-                File found = new File(fileSpec);
+            ArrayList<String> imageList = bookData.getStringArrayList(UniqueId.BKEY_THUMBNAIL_FILE_SPEC_ARRAY);
+            if (imageList != null && !imageList.isEmpty()) {
+                File found = new File(imageList.get(0));
                 File coverFile = new File(found.getAbsolutePath() + "_" + isbn);
                 StorageUtils.renameFile(found, coverFile);
                 return coverFile;

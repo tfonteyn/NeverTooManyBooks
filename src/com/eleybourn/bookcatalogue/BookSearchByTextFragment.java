@@ -13,9 +13,9 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 
-import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
+import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.searches.SearchManager;
 
 import java.util.ArrayList;
@@ -32,11 +32,10 @@ public class BookSearchByTextFragment extends BookSearchBaseFragment {
 
     private EditText mTitleView;
     private AutoCompleteTextView mAuthorView;
-    /** */
-    @Nullable
-    private String mAuthorSearchText;
-    @Nullable
-    private String mTitleSearchText;
+    @NonNull
+    private String mAuthorSearchText = "";
+    @NonNull
+    private String mTitleSearchText = "";
 
     @Override
     public View onCreateView(final @NonNull LayoutInflater inflater,
@@ -51,13 +50,13 @@ public class BookSearchByTextFragment extends BookSearchBaseFragment {
         super.onActivityCreated(savedInstanceState);
 
         if (savedInstanceState != null) {
-            mAuthorSearchText = savedInstanceState.getString(UniqueId.BKEY_SEARCH_AUTHOR);
-            mTitleSearchText = savedInstanceState.getString(UniqueId.KEY_TITLE);
+            mAuthorSearchText = savedInstanceState.getString(UniqueId.BKEY_SEARCH_AUTHOR, "");
+            mTitleSearchText = savedInstanceState.getString(UniqueId.KEY_TITLE, "");
         } else {
             Bundle args = getArguments();
             //noinspection ConstantConditions
-            mAuthorSearchText = args.getString(UniqueId.BKEY_SEARCH_AUTHOR);
-            mTitleSearchText = args.getString(UniqueId.KEY_TITLE);
+            mAuthorSearchText = args.getString(UniqueId.BKEY_SEARCH_AUTHOR, "");
+            mTitleSearchText = args.getString(UniqueId.KEY_TITLE, "");
         }
 
         ActionBar actionBar = mActivity.getSupportActionBar();
@@ -76,29 +75,7 @@ public class BookSearchByTextFragment extends BookSearchBaseFragment {
             public void onClick(View view) {
                 mAuthorSearchText = mAuthorView.getText().toString().trim();
                 mTitleSearchText = mTitleView.getText().toString().trim();
-
-                if (mAuthorAdapter.getPosition(mAuthorSearchText) < 0) {
-                    // Based on code from filipeximenes we also need to update the adapter here in
-                    // case no author or book is added, but we still want to see 'recent' entries.
-                    if (!mAuthorSearchText.isEmpty()) {
-                        boolean found = false;
-                        for (String s : mAuthorNames) {
-                            if (s.equalsIgnoreCase(mAuthorSearchText)) {
-                                found = true;
-                                break;
-                            }
-                        }
-                        if (!found) {
-                            // Keep a list of names as typed to use when we recreate list
-                            mAuthorNames.add(mAuthorSearchText);
-                            // Add to adapter, in case search produces no results
-                            mAuthorAdapter.add(mAuthorSearchText);
-                        }
-                    }
-                }
-                if (mSearchManagerId == 0) {
-                    startSearch();
-                }
+                prepareSearch();
             }
         });
 
@@ -109,25 +86,51 @@ public class BookSearchByTextFragment extends BookSearchBaseFragment {
         Tracker.exitOnActivityCreated(this);
     }
 
+    private void prepareSearch() {
+        if (mAuthorAdapter.getPosition(mAuthorSearchText) < 0) {
+            // Based on code from filipeximenes we also need to update the adapter here in
+            // case no author or book is added, but we still want to see 'recent' entries.
+            if (!mAuthorSearchText.isEmpty()) {
+                boolean found = false;
+                for (String s : mAuthorNames) {
+                    if (s.equalsIgnoreCase(mAuthorSearchText)) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    // Keep a list of names as typed to use when we recreate list
+                    mAuthorNames.add(mAuthorSearchText);
+                    // Add to adapter, in case search produces no results
+                    mAuthorAdapter.add(mAuthorSearchText);
+                }
+            }
+        }
+
+        startSearch();
+    }
+
     /**
      * Start the actual search with the {@link SearchManager} in the background.
      *
-     * The results will arrive in {@link #onSearchFinished(Bundle, boolean)}
+     * The results will arrive in {@link #onSearchFinished}
      */
     protected void startSearch() {
-        if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
-            Logger.info(this, "doSearch|author=" + mAuthorSearchText + "|title=" + mTitleSearchText);
-        }
-        //sanity check
-        if ((mAuthorSearchText == null || mAuthorSearchText.isEmpty())
-                || (mTitleSearchText == null || mTitleSearchText.isEmpty())) {
-            //ENHANCE: the user will surely realise he cannot search without entering both fields ?
+        // check if we have an active search, if so, quit.
+        if (mSearchManagerId != 0) {
             return;
         }
-        super.startSearch(mAuthorSearchText, mTitleSearchText, "");
-        // reset the details so we don't restart the search unnecessarily
-        mAuthorSearchText = "";
-        mTitleSearchText = "";
+
+        //sanity check
+        if ((mAuthorSearchText.isEmpty()) || mTitleSearchText.isEmpty()) {
+            StandardDialogs.showUserMessage(mActivity, R.string.warning_required_at_least_one);
+            return;
+        }
+        if (super.startSearch(mAuthorSearchText, mTitleSearchText, "")) {
+            // reset the details so we don't restart the search unnecessarily
+            mAuthorSearchText = "";
+            mTitleSearchText = "";
+        }
     }
 
     /**
@@ -136,8 +139,8 @@ public class BookSearchByTextFragment extends BookSearchBaseFragment {
      * The details will get sent to {@link EditBookActivity}
      */
     @SuppressWarnings("SameReturnValue")
-    public boolean onSearchFinished(final @NonNull Bundle bookData, final boolean wasCancelled) {
-        Tracker.handleEvent(this, Tracker.States.Running, "onSearchFinished" + mSearchManagerId);
+    public boolean onSearchFinished(final boolean wasCancelled, final @NonNull Bundle bookData) {
+        Tracker.handleEvent(this, Tracker.States.Running, "onSearchFinished|SearchManagerId=" + mSearchManagerId);
         try {
             if (!wasCancelled) {
                 mActivity.getTaskManager().sendHeaderTaskProgressMessage(getString(R.string.progress_msg_adding_book));
@@ -162,8 +165,12 @@ public class BookSearchByTextFragment extends BookSearchBaseFragment {
     @CallSuper
     public void onActivityResult(final int requestCode, final int resultCode, final @Nullable Intent data) {
         Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
+//        switch (requestCode) {
+//            default:
+                super.onActivityResult(requestCode, resultCode, data);
+//                break;
+//        }
 
-        super.onActivityResult(requestCode, resultCode, data);
         // refresh, we could have modified/created Authors while editing (even when cancelled the edit)
         populateAuthorList();
 

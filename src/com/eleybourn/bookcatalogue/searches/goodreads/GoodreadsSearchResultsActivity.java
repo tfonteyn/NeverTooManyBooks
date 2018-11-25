@@ -41,7 +41,7 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.searches.goodreads.api.SearchBooksApiHandler;
-import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue;
+import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.util.ArrayList;
@@ -57,7 +57,7 @@ import java.util.Objects;
 public class GoodreadsSearchResultsActivity extends BaseListActivity {
 
     public static final String BKEY_SEARCH_CRITERIA = "criteria";
-    private final SimpleTaskQueue mTaskQueue = new SimpleTaskQueue("gr-covers");
+    private final SimpleTaskQueue mTaskQueue = new SimpleTaskQueue("Goodreads-GetImageTask");
     private CatalogueDBAdapter mDb;
     private List<GoodreadsWork> mList = new ArrayList<>();
 

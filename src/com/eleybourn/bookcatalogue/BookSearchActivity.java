@@ -20,7 +20,6 @@
 
 package com.eleybourn.bookcatalogue;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
@@ -28,10 +27,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivityWithTasks;
-import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
-import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
-import com.eleybourn.bookcatalogue.utils.Utils;
 
 import java.util.Objects;
 
@@ -51,8 +47,6 @@ import java.util.Objects;
 public class BookSearchActivity extends BaseActivityWithTasks {
 
     public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_ADD_BOOK;
-
-    public static final int RESULT_CHANGES_MADE = UniqueId.ACTIVITY_RESULT_CHANGES_MADE_ADD_BOOK_BY_SEARCH;
 
     public static final String REQUEST_BKEY_BY = "by";
     public static final String BY_ISBN = "isbn";

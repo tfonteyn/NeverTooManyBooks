@@ -35,8 +35,9 @@ public class ImageUtils {
     }
 
     /**
-     * Shrinks the image in the passed file to the specified dimensions, and places the image
-     * in the passed view.
+     * Shrinks the image in the passed file to the specified dimensions.
+     *
+     * If the view is non-null, the image is placed in the view.
      *
      * @return The bitmap, or null
      */
@@ -57,8 +58,11 @@ public class ImageUtils {
     }
 
     /**
-     * Shrinks the passed image file spec into the specified dimensions, and returns the bitmap.
-     * If the view is non-null, the image is also placed in the view.
+     * Shrinks the passed image file spec into the specified dimensions.
+     *
+     * If the view is non-null, the image is placed in the view.
+     *
+     * @return The bitmap, or null
      */
     @Nullable
     public static Bitmap fetchFileIntoImageView(final @Nullable ImageView destView,
@@ -176,12 +180,12 @@ public class ImageUtils {
      * @return Bitmap (if cached) or null (if done in background)
      */
     @Nullable
-    public static Bitmap fetchBookCoverIntoImageView(final @Nullable ImageView destView,
-                                                     final @NonNull String uuid,
-                                                     final int maxWidth, final int maxHeight,
-                                                     final boolean exact,
-                                                     final boolean checkCache,
-                                                     final boolean allowBackground) {
+    public static Bitmap fetchFileIntoImageView(final @Nullable ImageView destView,
+                                                final @NonNull String uuid,
+                                                final int maxWidth, final int maxHeight,
+                                                final boolean exact,
+                                                final boolean checkCache,
+                                                final boolean allowBackground) {
 
         //* Get the original file so we can use the modification date, path etc */
         final File coverFile = StorageUtils.getCoverFile(uuid);
@@ -302,25 +306,20 @@ public class ImageUtils {
     }
 
 
-
-
-
     /**
-     * If there is a {@link UniqueId#BKEY_THUMBNAIL_FILE_SPEC} key, pick the largest image, rename it
-     * and delete the others. Finally, remove the key. and set BKEY_HAVE_THUMBNAIL to true
+     * Read UniqueId.BKEY_THUMBNAIL_FILE_SPEC_ARRAY.
+     * If there are images, pick the largest one, rename it, and delete the others.
+     * Finally, remove the key and set UniqueId.BKEY_HAVE_THUMBNAIL to true
      */
-    public static void cleanupThumbnails(final @Nullable Bundle /* in/out */result) {
-        if (result == null) {
+    public static void cleanupThumbnails(final @Nullable Bundle /* in/out */ bookData) {
+        if (bookData == null) {
             return;
         }
 
-        String fileSpecs = result.getString(UniqueId.BKEY_THUMBNAIL_FILE_SPEC);
-        if (fileSpecs == null) {
+        ArrayList<String> imageList = bookData.getStringArrayList(UniqueId.BKEY_THUMBNAIL_FILE_SPEC_ARRAY);
+        if (imageList == null || imageList.isEmpty()) {
             return;
         }
-
-        // Parse the list
-        ArrayList<String> files = StringList.decode(fileSpecs);
 
         long bestFileSize = -1;
         int bestFileIndex = -1;
@@ -330,8 +329,8 @@ public class ImageUtils {
         opt.inJustDecodeBounds = true;
 
         // Loop, finding biggest image
-        for (int i = 0; i < files.size(); i++) {
-            String fileSpec = files.get(i);
+        for (int i = 0; i < imageList.size(); i++) {
+            String fileSpec = imageList.get(i);
             if (new File(fileSpec).exists()) {
                 BitmapFactory.decodeFile(fileSpec, opt);
                 // If no size info, assume file bad and skip
@@ -348,21 +347,21 @@ public class ImageUtils {
         // Delete all but the best one. Note there *may* be no best one,
         // so all would be deleted. We do this first in case the list
         // contains a file with the same name as the target of our rename.
-        for (int i = 0; i < files.size(); i++) {
+        for (int i = 0; i < imageList.size(); i++) {
             if (i != bestFileIndex) {
-                StorageUtils.deleteFile(new File(files.get(i)));
+                StorageUtils.deleteFile(new File(imageList.get(i)));
             }
         }
         // Get the best file (if present) and rename it.
         if (bestFileIndex >= 0) {
-            File source = new File(files.get(bestFileIndex));
+            File source = new File(imageList.get(bestFileIndex));
             File destination = StorageUtils.getTempCoverFile();
             StorageUtils.renameFile(source, destination);
         }
         // Finally, cleanup the data
-        result.remove(UniqueId.BKEY_THUMBNAIL_FILE_SPEC);
-        // and indicate we got a file
-        result.putBoolean(UniqueId.BKEY_HAVE_THUMBNAIL, true);
+        bookData.remove(UniqueId.BKEY_THUMBNAIL_FILE_SPEC_ARRAY);
+        // and indicate we got a file with the default name
+        bookData.putBoolean(UniqueId.BKEY_HAVE_THUMBNAIL, true);
     }
 
     /**

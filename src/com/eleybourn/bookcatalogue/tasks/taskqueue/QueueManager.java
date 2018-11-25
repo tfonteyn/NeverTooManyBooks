@@ -18,7 +18,7 @@
  * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.eleybourn.bookcatalogue.taskqueue;
+package com.eleybourn.bookcatalogue.tasks.taskqueue;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -28,11 +28,11 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
-import com.eleybourn.bookcatalogue.taskqueue.Listeners.EventActions;
-import com.eleybourn.bookcatalogue.taskqueue.Listeners.OnEventChangeListener;
-import com.eleybourn.bookcatalogue.taskqueue.Listeners.OnTaskChangeListener;
-import com.eleybourn.bookcatalogue.taskqueue.Listeners.TaskActions;
-import com.eleybourn.bookcatalogue.taskqueue.TasksCursor.TaskCursorSubtype;
+import com.eleybourn.bookcatalogue.tasks.taskqueue.Listeners.EventActions;
+import com.eleybourn.bookcatalogue.tasks.taskqueue.Listeners.OnEventChangeListener;
+import com.eleybourn.bookcatalogue.tasks.taskqueue.Listeners.OnTaskChangeListener;
+import com.eleybourn.bookcatalogue.tasks.taskqueue.Listeners.TaskActions;
+import com.eleybourn.bookcatalogue.tasks.taskqueue.TasksCursor.TaskCursorSubtype;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -45,12 +45,6 @@ import java.util.Map;
  *
  * Each defined queue results in a fresh Queue object being created in its own thread;
  * the QueueManager creates these. Queue objects last until there are no entries left in the queue.
- *
- * ENHANCE: Split QueueManager into *Manager and *Service, and auto create QueueManager which will start Service when queues need to execute. Service stops after last queue.
- * ENHANCE: Add a 'requiresNetwork()' task property
- * ENHANCE: Register a BroadcastReceiver for ConnectivityManager.CONNECTIVITY_ACTION. In the onReceive handler you can call NetworkInfo info = (NetworkInfo) intent.getParcelableExtra(ConnectivityManager.EXTRA_NETWORK_INFO)
- * ENHANCE: Terminate queues if network not available and all jobs require network.
- * ENHANCE: Add a 'stopQueue(name, force)' method which kills a queue by terminating its thread (force=true), or by asking it to stop, waiting 30 seconds and killing it.
  *
  * @author Philip Warner
  */
@@ -139,7 +133,7 @@ public abstract class QueueManager {
         }
     }
 
-    public void registerTaskListener(final @NonNull OnTaskChangeListener listener) {
+    void registerTaskListener(final @NonNull OnTaskChangeListener listener) {
         synchronized (mTaskChangeListeners) {
             for (WeakReference<OnTaskChangeListener> lr : mTaskChangeListeners) {
                 OnTaskChangeListener l = lr.get();
@@ -151,7 +145,7 @@ public abstract class QueueManager {
         }
     }
 
-    public void unregisterTaskListener(final @NonNull OnTaskChangeListener listener) {
+    void unregisterTaskListener(final @NonNull OnTaskChangeListener listener) {
         synchronized (mTaskChangeListeners) {
             List<WeakReference<OnTaskChangeListener>> ll = new ArrayList<>();
             for (WeakReference<OnTaskChangeListener> l : mTaskChangeListeners) {
@@ -251,7 +245,7 @@ public abstract class QueueManager {
      *
      * @param name Name of the queue
      */
-    protected void initializeQueue(final @NonNull String name) {
+    void initializeQueue(final @NonNull String name) {
         mDb.createQueue(name);
     }
 
@@ -374,7 +368,7 @@ public abstract class QueueManager {
      * @return Cursor of exceptions
      */
     @NonNull
-    public TasksCursor getTasks(final @NonNull TaskCursorSubtype type) {
+    TasksCursor getTasks(final @NonNull TaskCursorSubtype type) {
         return mDb.getTasks(type);
     }
 
@@ -396,7 +390,7 @@ public abstract class QueueManager {
      *
      * @param id ID of TaskException to delete.
      */
-    public void deleteTask(final long id) {
+    void deleteTask(final long id) {
         boolean isActive = false;
         // Check if the task is running in a queue.
         synchronized (this) {
@@ -457,7 +451,7 @@ public abstract class QueueManager {
      *
      * @param ageInDays Age in days for stale records
      */
-    public void cleanupOldTasks(final int ageInDays) {
+    void cleanupOldTasks(final int ageInDays) {
         mDb.cleanupOldTasks(ageInDays);
         mDb.cleanupOrphans();
         // This is non-optimal, but ... it's easy and clear.

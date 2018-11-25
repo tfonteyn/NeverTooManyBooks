@@ -1,3 +1,65 @@
+TOMF some 'task' notes...
+
+1. ManagedTask's started from a BaseActivityWithTasks.
+
+ * abstract {@link ManagedTask} extends Thread
+ * Background task that is managed by TaskManager and uses TaskManager to coordinate display activities.
+ *
+ * {@link TaskManager}
+ * handles the management of multiple tasks and passing messages with the help of a {@link MessageSwitch}
+ *
+ * {@link BaseActivityWithTasks}
+ * Uses a TaskManager (and communicates with it) to handle messages for ManagedTask.
+ * Handles progress messages (ProgressDialog) and user messages (toast)
+
+Also involved are:
+- a Client Listener, for example {@link TaskManager.TaskManagerListener},
+  to which Messages can be send by the MessageSwitch
+- a Controller, for example {@link TaskManager.TaskManagerController}
+  which the client can 'get' from the MessageSwitch, and then use to get hold of the Sender.
+
+Used by:
+- BookSearchActivity
+- UpdateFieldsFromInternetActivity
+==> the SearchManager/SearchTasks for getting book information from web sites.
+- AdminActivity
+ ==> CSV import/export
+----------------------------------------------------------------------------------------------------
+2. SimpleTask
+   Uses SimpleTaskQueue, with callbacks (listeners) directly to the object which enqueued the task.
+
+3. FragmentTask
+   Almost the same as SimpleTask, but has access to the Fragment that started it.
+   Uses a SimpleTaskQueueProgressDialogFragment, displaying a ProgressDialog
+
+4. Terminator/TerminatorTask: delayed start of SimpleTask's
+----------------------------------------------------------------------------------------------------
+5. taskqueue - minimalistic traditional database backed "Sun MessageQueue" like product
+   Task
+   LegacyTask extends Task
+   RunnableTask extends Task
+   GenericTask extends RunnableTask
+
+Used by:
+- goodreads api
+
+ ----------------------------------------------------------------------------------------------------
+
+GOALS:
+ 1. Removal of taskqueue
+    replace with SimpleTask.
+ 2. Removal of ManagedTask.
+ 3. retire...
+ 4. Move to using ASyncTask (single-threaded) or Executor (multi-threaded) for all ?
+
+
+
+FIXME: help screen 'cleanup' button. Broken? + move it to admin screen.
+
+
+
+
+
 TOMF ENHANCE New anthology stuff:
  * to think about:
  * - when to delete entries in ANTHOLOGY ? when last book is gone or keep them, for adding to new books / wish list

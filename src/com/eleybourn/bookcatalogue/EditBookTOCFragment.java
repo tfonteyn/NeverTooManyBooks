@@ -20,10 +20,8 @@
 
 package com.eleybourn.bookcatalogue;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.LayoutRes;
@@ -50,7 +48,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
-import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.entities.Author;
@@ -58,12 +55,9 @@ import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.BookManager;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.entities.TOCEntry;
-import com.eleybourn.bookcatalogue.searches.SearchManager;
 import com.eleybourn.bookcatalogue.searches.SearchSites;
-import com.eleybourn.bookcatalogue.searches.isfdb.ISFDBResultsListener;
 import com.eleybourn.bookcatalogue.searches.isfdb.ISFDBManager;
-import com.eleybourn.bookcatalogue.utils.StorageUtils;
-import com.eleybourn.bookcatalogue.utils.StringList;
+import com.eleybourn.bookcatalogue.searches.isfdb.ISFDBResultsListener;
 import com.eleybourn.bookcatalogue.utils.BundleUtils;
 
 import java.util.ArrayList;
@@ -403,10 +397,10 @@ public class EditBookTOCFragment extends BookBaseFragment implements ISFDBResult
     public void onGotISFDBBook(final @NonNull Bundle bookData) {
 
         // update the book with series information that was gathered from the TOC
-        String encoded_series_list = bookData.getString(UniqueId.BKEY_SERIES_STRING_LIST);
-        if (encoded_series_list != null) {
+        List<Series> series = bookData.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
+        if (series != null && !series.isEmpty()) {
             ArrayList<Series> inBook = getBookManager().getBook().getSeriesList();
-            List<Series> series = StringList.getSeriesUtils().decode(encoded_series_list, false);
+            // add, weeding out duplicates
             for (Series s : series) {
                 if (!inBook.contains(s)) {
                     inBook.add(s);
@@ -426,7 +420,7 @@ public class EditBookTOCFragment extends BookBaseFragment implements ISFDBResult
 
         // finally the TOC itself; not saved here but only put on display for the user to approve
         final int tocBitMask = bookData.getInt(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK);
-        ArrayList<TOCEntry> tocEntries = BundleUtils.getParcelableArrayList(UniqueId.BKEY_TOC_TITLES_ARRAY, bookData);
+        ArrayList<TOCEntry> tocEntries = bookData.getParcelableArrayList(UniqueId.BKEY_TOC_TITLES_ARRAY);
         boolean hasTOC = (tocEntries != null && !tocEntries.isEmpty());
 
         StringBuilder msg = new StringBuilder();

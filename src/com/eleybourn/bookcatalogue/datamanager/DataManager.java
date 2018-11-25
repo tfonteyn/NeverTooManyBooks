@@ -295,16 +295,17 @@ public class DataManager {
                 putDouble(key, (Double) value);
             } else if (value instanceof Float) {
                 putFloat(key, (Float) value);
+            } else if (value instanceof Boolean) {
+                putBoolean(key, (Boolean) value);
             } else if (value instanceof ArrayList) {
                 this.putParcelableArrayList(key, (ArrayList)value);
             } else if (value instanceof Serializable) {
                 this.putSerializable(key, (Serializable) value);
             } else {
-                // THIS IS NOT IDEAL!
+                // THIS IS NOT IDEAL! Keep checking the log if we ever get here.
+                Logger.debug("key=`" + key + "`, value=" + value );
                 if (value != null) {
                     putString(key, value.toString());
-                } else {
-                    Logger.debug("NULL value for key '" + key + "'");
                 }
             }
         }
@@ -369,7 +370,7 @@ public class DataManager {
     @NonNull
     public DataManager putSerializable(final @NonNull String key, final @NonNull Serializable value) {
         if (BuildConfig.DEBUG) {
-            Logger.info(this, " putSerializable, key=" + key + " , type=" + value.getClass().getCanonicalName());
+            Logger.debug("putSerializable, key=" + key + " , type=" + value.getClass().getCanonicalName());
         }
         mData.get(key).putSerializable(mBundle, value);
         return this;
@@ -399,6 +400,34 @@ public class DataManager {
     @NonNull
     public <T extends Parcelable> DataManager putParcelableArrayList(final @NonNull String key, final @NonNull ArrayList<T> value) {
         mData.get(key).putParcelableArrayList(this, mBundle, value);
+        return this;
+    }
+
+
+    /**
+     * Get the ArrayList<String> from the collection.
+     *
+     * @param key Key of object
+     *
+     * @return The ArrayList<String>
+     */
+    @NonNull
+    public ArrayList<String> getStringArrayList(final @NonNull String key) {
+        return mData.get(key).getStringArrayList(this, mBundle);
+    }
+
+    /**
+     * Set the ArrayList<String> in the collection.
+     *
+     * @param key   Key of object
+     * @param value the ArrayList<String>
+     *
+     * @return The data manager for chaining
+     */
+    @SuppressWarnings("UnusedReturnValue")
+    @NonNull
+    public DataManager putStringArrayList(final @NonNull String key, final @NonNull ArrayList<String> value) {
+        mData.get(key).putStringArrayList(this, mBundle, value);
         return this;
     }
 

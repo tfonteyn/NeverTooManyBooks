@@ -30,18 +30,14 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
-import com.eleybourn.bookcatalogue.BuildConfig;
-import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
-import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.filechooser.FileChooserFragment.FileDetails;
 import com.eleybourn.bookcatalogue.filechooser.FileChooserFragment.OnPathChangedListener;
-import com.eleybourn.bookcatalogue.filechooser.FileLister.FileListerListener;
-import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressDialogFragment;
+import com.eleybourn.bookcatalogue.filechooser.FileListerFragmentTask.FileListerListener;
+import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueueProgressDialogFragment;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -55,7 +51,7 @@ import java.util.ArrayList;
 public abstract class FileChooserBaseActivity extends BaseActivity implements
         SimpleTaskQueueProgressDialogFragment.OnTaskFinishedListener,
         SimpleTaskQueueProgressDialogFragment.OnAllTasksFinishedListener,
-        FileLister.FileListerListener,
+        FileListerFragmentTask.FileListerListener,
         OnPathChangedListener {
 
     /** Key for member of EXTRAS that specifies the mode of operation of this dialog */
@@ -197,7 +193,7 @@ public abstract class FileChooserBaseActivity extends BaseActivity implements
      * Get an object for building an list of files in background.
      */
     @NonNull
-    protected abstract FileLister getFileLister(final @NonNull File root);
+    protected abstract FileListerFragmentTask getFileLister(final @NonNull File root);
 
     /**
      * Rebuild the file list in background; gather whatever data is necessary to
@@ -209,10 +205,10 @@ public abstract class FileChooserBaseActivity extends BaseActivity implements
             return;
 
         // Create the background task
-        FileLister lister = getFileLister(root);
+        FileListerFragmentTask lister = getFileLister(root);
 
         // Start the task
-        SimpleTaskQueueProgressDialogFragment.runTaskWithProgress(this, R.string.progress_msg_searching_directory, lister, true, 0);
+        SimpleTaskQueueProgressDialogFragment.newInstance(this, R.string.progress_msg_searching_directory, lister, true, 0);
 
     }
 }

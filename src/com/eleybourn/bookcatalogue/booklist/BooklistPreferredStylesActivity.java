@@ -229,10 +229,6 @@ public class BooklistPreferredStylesActivity extends EditObjectListActivity<Book
         }
     }
 
-    public void setActivityResult() {
-        setResult(changesMade() ? RESULT_CHANGES_MADE : Activity.RESULT_CANCELED);
-    }
-
     protected SimpleListAdapter<BooklistStyle> createListAdapter(final @LayoutRes int rowViewId, final @NonNull ArrayList<BooklistStyle> list) {
         return new BooklistStyleListAdapter(this, rowViewId, list);
     }

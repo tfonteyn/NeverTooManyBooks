@@ -38,9 +38,9 @@ import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.NetworkException;
-import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTaskContext;
-import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressDialogFragment;
-import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressDialogFragment.FragmentTask;
+import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue.SimpleTaskContext;
+import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueueProgressDialogFragment;
+import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueueProgressDialogFragment.FragmentTask;
 
 /**
  * Activity to allow the user to authorize the application to access their Goodreads account and
@@ -77,7 +77,7 @@ public class GoodreadsRegisterActivity extends BaseActivity {
         };
 
         // Get the fragment to display task progress
-        SimpleTaskQueueProgressDialogFragment.runTaskWithProgress(activity, R.string.progress_msg_connecting_to_web_site, task, true, 0);
+        SimpleTaskQueueProgressDialogFragment.newInstance(activity, R.string.progress_msg_connecting_to_web_site, task, true, 0);
     }
 
     /**

@@ -1,7 +1,8 @@
 package com.eleybourn.bookcatalogue;
 
 import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;
-import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressDialogFragment;
+import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueueProgressDialogFragment;
+import com.eleybourn.bookcatalogue.tasks.managedtasks.TaskManager;
 
 /**
  * Global location where you can switch individual DEBUG options of/off
@@ -58,9 +59,9 @@ public final class DEBUG_SWITCHES {
     public static final boolean SQPFragment = false;
 
     /** {@link com.eleybourn.bookcatalogue.utils.StorageUtils} */
-    public static final boolean STORAGE_UTILS = false;
+    public static final boolean STORAGE_UTILS = true;
 
-    /** {@link com.eleybourn.bookcatalogue.tasks.TaskManager} */
+    /** {@link TaskManager} */
     public static final boolean TASK_MANAGER = false;
 
     /** {@link com.eleybourn.bookcatalogue.searches.SearchManager} and related */
@@ -69,8 +70,10 @@ public final class DEBUG_SWITCHES {
     /** {@link com.eleybourn.bookcatalogue.searches.isfdb.ISFDBBook} */
     public static final boolean ISFDB_SEARCH = true;
 
-    /** all things related to sending messages around */
-    public static final boolean MESSAGING = false;
+    /** all things related to {@link com.eleybourn.bookcatalogue.tasks.managedtasks.ManagedTask} */
+    public static final boolean MANAGED_TASKS = false;
+    /** all things related to {@link com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue.SimpleTask} */
+    public static final boolean SIMPLE_TASKS = false;
 
     /** reading/writing a backup file */
     public static final boolean BACKUP = false;

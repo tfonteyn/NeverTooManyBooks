@@ -18,16 +18,16 @@
  * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.eleybourn.bookcatalogue.taskqueue;
+package com.eleybourn.bookcatalogue.tasks.taskqueue;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.taskqueue.DBAdapter.ScheduledTask;
-import com.eleybourn.bookcatalogue.taskqueue.Listeners.TaskActions;
-import com.eleybourn.bookcatalogue.taskqueue.Task.TaskState;
+import com.eleybourn.bookcatalogue.tasks.taskqueue.DBAdapter.ScheduledTask;
+import com.eleybourn.bookcatalogue.tasks.taskqueue.Listeners.TaskActions;
+import com.eleybourn.bookcatalogue.tasks.taskqueue.Task.TaskState;
 
 import java.lang.ref.WeakReference;
 
@@ -99,7 +99,7 @@ public class Queue extends Thread {
         try {
             // Get a database adapter
             mDb = new DBAdapter(mApplicationContext);
-            // Run until we're told not to or until we decide no to.
+            // Run until we're told not to or until we decide not to.
             while (!mTerminate) {
                 ScheduledTask scheduledTask;
                 Task task;
@@ -124,7 +124,6 @@ public class Queue extends Thread {
                 }
 
                 // If we get here, we have a task, or know that there is one waiting to run. Just wait.
-                // ENHANCE: A future optimization might be to put an Alarm in the QueueManager
                 // for any wait that is longer than a minute.
                 if (task != null) {
                     runTask(task);

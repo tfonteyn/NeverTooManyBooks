@@ -68,7 +68,6 @@ public class Help extends BaseActivity {
             }
         });
 
-        initCleanupButton();
         Tracker.exitOnCreate(this);
     }
 

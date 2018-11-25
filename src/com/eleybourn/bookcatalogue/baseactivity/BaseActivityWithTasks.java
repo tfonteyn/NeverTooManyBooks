@@ -35,11 +35,11 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.debug.Tracker.States;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
-import com.eleybourn.bookcatalogue.messaging.MessageSwitch;
-import com.eleybourn.bookcatalogue.tasks.ManagedTask;
-import com.eleybourn.bookcatalogue.tasks.TaskManager;
-import com.eleybourn.bookcatalogue.tasks.TaskManager.TaskManagerController;
-import com.eleybourn.bookcatalogue.tasks.TaskManager.TaskManagerListener;
+import com.eleybourn.bookcatalogue.tasks.managedtasks.MessageSwitch;
+import com.eleybourn.bookcatalogue.tasks.managedtasks.ManagedTask;
+import com.eleybourn.bookcatalogue.tasks.managedtasks.TaskManager;
+import com.eleybourn.bookcatalogue.tasks.managedtasks.TaskManager.TaskManagerController;
+import com.eleybourn.bookcatalogue.tasks.managedtasks.TaskManager.TaskManagerListener;
 
 /**
  * TODO: Remove this! Fragments makes BaseActivityWithTasks mostly redundant.
@@ -90,7 +90,7 @@ abstract public class BaseActivityWithTasks extends BaseActivity {
          */
         @Override
         public void onTaskFinished(final @NonNull TaskManager manager, final @NonNull ManagedTask task) {
-            if (DEBUG_SWITCHES.MESSAGING && BuildConfig.DEBUG) {
+            if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
                 Logger.info(BaseActivityWithTasks.this,
                         "|onTaskFinished|task=`" + task.getName());
             }
@@ -103,7 +103,7 @@ abstract public class BaseActivityWithTasks extends BaseActivity {
          */
         @Override
         public void onProgress(final int count, final int max, final @NonNull String message) {
-            if (DEBUG_SWITCHES.MESSAGING && BuildConfig.DEBUG) {
+            if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
                 @SuppressWarnings("UnusedAssignment")
                 String dbgMsg = "onProgress: " + count + "/" + max + ", '" + message.replace("\n", "\\n") + "'";
                 Tracker.handleEvent(BaseActivityWithTasks.this, States.Running,
@@ -137,7 +137,7 @@ abstract public class BaseActivityWithTasks extends BaseActivity {
          */
         @Override
         public void onUserMessage(final @NonNull String message) {
-            if (DEBUG_SWITCHES.MESSAGING && BuildConfig.DEBUG) {
+            if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
                 Logger.info(BaseActivityWithTasks.this,
                         "|onUserMessage|msg=`" +message);
             }
@@ -180,7 +180,7 @@ abstract public class BaseActivityWithTasks extends BaseActivity {
             if (mTaskManagerId != 0) {
                 TaskManagerController controller = TaskManager.getMessageSwitch().getController(mTaskManagerId);
                 if (controller != null) {
-                    mTaskManager = controller.getManager();
+                    mTaskManager = controller.getTaskManager();
                 } else {
                     Logger.error("Have ID(" + mTaskManagerId + "), but can not find controller getting TaskManager");
                 }
@@ -240,7 +240,7 @@ abstract public class BaseActivityWithTasks extends BaseActivity {
      * Setup the ProgressDialog according to our needs
      */
     private void initProgressDialog() {
-        if (DEBUG_SWITCHES.MESSAGING && BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
             Logger.info(BaseActivityWithTasks.this, "initProgressDialog");
         }
 
@@ -290,7 +290,7 @@ abstract public class BaseActivityWithTasks extends BaseActivity {
     }
 
     private void closeProgressDialog() {
-        if (DEBUG_SWITCHES.MESSAGING && BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
             Logger.info(BaseActivityWithTasks.this, "closeProgressDialog");
         }
         if (mProgressDialog != null) {
@@ -303,7 +303,7 @@ abstract public class BaseActivityWithTasks extends BaseActivity {
      * Cancel all tasks, and if the progress is showing, update it (it will check task manager status)
      */
     private void cancelAndUpdateProgress() {
-        if (DEBUG_SWITCHES.MESSAGING && BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
             Logger.info(BaseActivityWithTasks.this, "cancelAndUpdateProgress");
         }
         if (mTaskManager != null) {

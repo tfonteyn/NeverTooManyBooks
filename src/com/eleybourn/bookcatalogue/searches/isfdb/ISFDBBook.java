@@ -12,6 +12,7 @@ import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Author;
+import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.entities.TOCEntry;
 import com.eleybourn.bookcatalogue.utils.StringList;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
@@ -98,10 +99,16 @@ public class ISFDBBook extends AbstractBase {
     /** with some luck we'll get these as well */
     @Nullable
     private String mFirstPublication;
-    @Nullable
-    private String mSeries;
+
     /** ISFDB native book id */
     private long mPublicationRecord;
+
+    /** accumulate all authors for this book */
+    @NonNull
+    private final ArrayList<Author> mAuthors = new ArrayList<>();
+    /** accumulate all series for this book */
+    @NonNull
+    private final ArrayList<Series> mSeries = new ArrayList<>();
 
     /** url list of all editions of this book */
     private List<String> mEditions;
@@ -118,6 +125,7 @@ public class ISFDBBook extends AbstractBase {
      * @param editionUrls List of url's; example: "http://www.isfdb.org/cgi-bin/pl.cgi?230949"
      */
     ISFDBBook(final @NonNull List<String> editionUrls) {
+        mEditions = editionUrls;
         mPath = editionUrls.get(0);
         mPublicationRecord = stripNumber(mPath);
     }
@@ -180,6 +188,8 @@ public class ISFDBBook extends AbstractBase {
             return;
         }
 
+
+
         Element contentBox = mDoc.select("div.contentbox").first();
         Elements lis = contentBox.select("li");
         String tmp;
@@ -221,7 +231,7 @@ public class ISFDBBook extends AbstractBase {
                     Elements as = li.select("a");
                     if (as != null) {
                         for (Element a : as) {
-                            StringList.addOrAppend(bookData, UniqueId.BKEY_AUTHOR_STRING_LIST, a.text());
+                            mAuthors.add(new Author(a.text()));
                             StringList.addOrAppend(bookData, ISFDB_BKEY_AUTHOR_LIST_ID, Long.toString(stripNumber(a.attr("href"))));
                         }
                     }
@@ -255,7 +265,7 @@ public class ISFDBBook extends AbstractBase {
                     Elements as = li.select("a");
                     if (as != null) {
                         for (Element a : as) {
-                            StringList.addOrAppend(bookData, UniqueId.BKEY_SERIES_STRING_LIST, a.text());
+                            mSeries.add(new Series(a.text()));
                             StringList.addOrAppend(bookData, ISFDB_BKEY_SERIES_ID, Long.toString(stripNumber(a.attr("href"))));
                         }
                     }
@@ -353,9 +363,15 @@ public class ISFDBBook extends AbstractBase {
         //V83: use the code Luke
         bookData.putString(UniqueId.KEY_BOOK_LANGUAGE, Locale.ENGLISH.getISO3Language());
 
+        // store accumulated Authors
+        bookData.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, mAuthors);
+
         // the table of content
         ArrayList<TOCEntry> toc = getTableOfContentList(bookData);
         bookData.putParcelableArrayList(UniqueId.BKEY_TOC_TITLES_ARRAY, toc);
+
+        // store accumulated Series, do this *after* we go the TOC
+        bookData.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, mSeries);
 
         // check Anthology type
         if (toc.size() > 0) {
@@ -381,11 +397,6 @@ public class ISFDBBook extends AbstractBase {
             if (mFirstPublication != null) {
                 bookData.putString(UniqueId.KEY_FIRST_PUBLICATION, digits(mFirstPublication));
             } // else take the book pub date ... but that might be wrong....
-        }
-
-        // another gamble for the series "name (nr)"
-        if (mSeries != null) {
-            StringList.addOrAppend(bookData, UniqueId.BKEY_SERIES_STRING_LIST, mSeries);
         }
 
         // optional fetch of the cover.
@@ -435,7 +446,12 @@ public class ISFDBBook extends AbstractBase {
             String thumbnail = img.attr("src");
             String fileSpec = ImageUtils.saveThumbnailFromUrl(thumbnail, FILENAME_SUFFIX);
             if (fileSpec != null) {
-                StringList.addOrAppend(bookData, UniqueId.BKEY_THUMBNAIL_FILE_SPEC, fileSpec);
+                ArrayList<String> imageList = bookData.getStringArrayList(UniqueId.BKEY_THUMBNAIL_FILE_SPEC_ARRAY);
+                if (imageList == null) {
+                    imageList = new ArrayList<>();
+                }
+                imageList.add(fileSpec);
+                bookData.putStringArrayList(UniqueId.BKEY_THUMBNAIL_FILE_SPEC_ARRAY, imageList);
             }
         }
     }
@@ -525,8 +541,9 @@ public class ISFDBBook extends AbstractBase {
                 } else if (author == null && href.contains("ea.cgi")) {
                     author = new Author(cleanUpName(a.text()));
 
-                } else if (mSeries == null && href.contains("pe.cgi")) {
-                    mSeries = a.text();
+                } else if (mSeries.isEmpty() && href.contains("pe.cgi")) {
+                    String seriesName = a.text();
+                    String seriesNum = null;
                     // check for the number; series don't always have a number
                     int start = liAsString.indexOf("[");
                     int end = liAsString.indexOf("]");
@@ -536,16 +553,16 @@ public class ISFDBBook extends AbstractBase {
                         String[] data = tmp.split("&#x2022;");
                         // check if there really was a series number
                         if (data.length > 1) {
-                            //noinspection StringConcatenationInLoop
-                            mSeries += " (" + data[1] + ")";
+                            seriesNum = data[1];
                         }
                     }
+                    mSeries.add(new Series(seriesName, seriesNum));
                 }
             }
 
             // unlikely, but if so, then grab first book author
             if (author == null) {
-                author = StringList.getAuthorUtils().decode(bookData.getString(UniqueId.BKEY_AUTHOR_STRING_LIST), false).get(0);
+                author = mAuthors.get(0);
                 Logger.info(this, "ISFDB search for content found no author for li=" + li);
             }
             // very unlikely

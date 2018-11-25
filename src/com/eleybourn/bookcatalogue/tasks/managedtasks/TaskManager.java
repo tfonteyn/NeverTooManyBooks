@@ -18,7 +18,7 @@
  * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.eleybourn.bookcatalogue.tasks;
+package com.eleybourn.bookcatalogue.tasks.managedtasks;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -28,27 +28,37 @@ import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivityWithTasks;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.messaging.MessageSwitch;
-import com.eleybourn.bookcatalogue.messaging.MessageSwitch.Message;
+import com.eleybourn.bookcatalogue.tasks.managedtasks.MessageSwitch.Message;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Class used to manager a collection of background threads for a {@link BaseActivityWithTasks} subclass.
- *
- * Part of three components that make this easier:
+ * Class used to manage background threads for a {@link BaseActivityWithTasks} subclass.
  *
  * {@link ManagedTask}
- * Background task that is managed by TaskManager and uses TaskManager to coordinate display activities.
+ * Background task that is managed by TaskManager and uses TaskManager to coordinate
+ * display activities.
  *
  * {@link TaskManager}
- * Handles the management of multiple tasks and passing messages with the help of a {@link MessageSwitch}
- * Is owned by a {@link BaseActivityWithTasks}
+ * handles the management of multiple tasks and passing messages with the help
+ * of a {@link MessageSwitch}
  *
  * {@link BaseActivityWithTasks}
  * Uses a TaskManager (and communicates with it) to handle messages for ManagedTask.
  * Deals with orientation changes in cooperation with TaskManager.
+ *
+ * {@link MessageSwitch}
+ * A Switchboard to receive and deliver {@link MessageSwitch.Message}.
+ * ------------------------------------------------------------------------------------------------
+ *
+ * {@link TaskManagerController}
+ * Ask the {@link MessageSwitch} for the controller. The controller gives access to the
+ * Sender (a {@link TaskManager}) via its {@link TaskManagerController#getTaskManager()} task
+ * or can call {@link TaskManagerController#requestAbort()}
+ *
+ * {@link TaskManagerListener} can be implemented by other objects for receiving
+ * {@link TaskProgressMessage}, {@link TaskUserMessage} and {@link TaskFinishedMessage}
  *
  * @author Philip Warner
  */
@@ -84,33 +94,36 @@ public class TaskManager {
     /**
      * Listener for ManagedTask messages.
      */
-    private final ManagedTask.ManagedTaskListener mManagedTaskListener = new ManagedTask.ManagedTaskListener() {
-        @Override
-        public void onTaskFinished(@NonNull ManagedTask task) {
-            // Remove the finished task from our list
-            synchronized (mManagedTasks) {
-                for (TaskInfo i : mManagedTasks) {
-                    if (i.task == task) {
-                        mManagedTasks.remove(i);
-                        break;
+    private final ManagedTask.ManagedTaskListener mManagedTaskListener =
+            new ManagedTask.ManagedTaskListener() {
+                @Override
+                public void onTaskFinished(@NonNull ManagedTask task) {
+                    // Remove the finished task from our list
+                    synchronized (mManagedTasks) {
+                        for (TaskInfo i : mManagedTasks) {
+                            if (i.task == task) {
+                                mManagedTasks.remove(i);
+                                break;
+                            }
+                        }
+
+                        if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
+                            for (TaskInfo i : mManagedTasks) {
+                                Logger.info(TaskManager.this,
+                                        "|Task `" + i.task.getName() + "` still running");
+                            }
+                        }
                     }
+
+                    // Tell all listeners that the task has finished.
+                    mMessageSwitch.send(mMessageSenderId,
+                            new TaskFinishedMessage(TaskManager.this, task));
+
+                    // Update the progress dialog
+                    sendTaskProgressMessage();
                 }
+            };
 
-                if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
-                    for (TaskInfo i : mManagedTasks) {
-                        Logger.info(TaskManager.this, "|Task `" + i.task.getName() + "` still running");
-                    }
-                }
-            }
-
-            // Tell all listeners that the task has finished.
-            mMessageSwitch.send(mMessageSenderId,
-                    new TaskFinishedMessage(TaskManager.this, task));
-
-            // Update the progress dialog
-            sendTaskProgressMessage();
-        }
-    };
     /**
      * Indicates tasks are being cancelled. This is reset when a new task is added
      */
@@ -120,6 +133,7 @@ public class TaskManager {
      * Indicates the TaskManager is terminating; will close after last task exits
      */
     private boolean mIsClosing = false;
+
     /**
      * Constructor.
      */
@@ -133,7 +147,7 @@ public class TaskManager {
 
             @Override
             @NonNull
-            public TaskManager getManager() {
+            public TaskManager getTaskManager() {
                 return TaskManager.this;
             }
         };
@@ -352,7 +366,7 @@ public class TaskManager {
         void requestAbort();
 
         @NonNull
-        TaskManager getManager();
+        TaskManager getTaskManager();
     }
 
     /**
@@ -384,7 +398,7 @@ public class TaskManager {
 
         @Override
         public boolean deliver(final @NonNull TaskManagerListener listener) {
-            if (DEBUG_SWITCHES.MESSAGING && BuildConfig.DEBUG) {
+            if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
                 Logger.info(this, "Delivering 'TaskFinishedMessage' to listener: " + listener +
                         "\n mTask=`" + mTask + "`");
             }
@@ -415,7 +429,7 @@ public class TaskManager {
 
         @Override
         public boolean deliver(final @NonNull TaskManagerListener listener) {
-            if (DEBUG_SWITCHES.MESSAGING && BuildConfig.DEBUG) {
+            if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
                 Logger.info(this, "Delivering 'TaskProgressMessage' to listener: " + listener +
                         "\n mMessage=`" + mMessage + "`");
             }
@@ -443,7 +457,7 @@ public class TaskManager {
 
         @Override
         public boolean deliver(final @NonNull TaskManagerListener listener) {
-            if (DEBUG_SWITCHES.MESSAGING && BuildConfig.DEBUG) {
+            if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
                 Logger.info(this, "Delivering 'TaskUserMessage' to listener: " + listener +
                         "\n mMessage=`" + mMessage + "`");
             }

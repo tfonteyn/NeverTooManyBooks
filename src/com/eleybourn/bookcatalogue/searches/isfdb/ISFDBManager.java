@@ -8,12 +8,13 @@ import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.EditBookTOCFragment;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue;
+import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue;
 import com.eleybourn.bookcatalogue.utils.IsbnUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ISFDBManager {
@@ -48,11 +49,12 @@ public class ISFDBManager {
     static public File getCoverImage(final @NonNull String isbn) {
         Bundle bookData = new Bundle();
         try {
+            // no specific API, just go search the book
             search(isbn, "", "", bookData, true);
-            String fileSpec = bookData.getString(UniqueId.BKEY_THUMBNAIL_FILE_SPEC);
 
-            if (fileSpec != null) {
-                File found = new File(fileSpec);
+            ArrayList<String> imageList = bookData.getStringArrayList(UniqueId.BKEY_THUMBNAIL_FILE_SPEC_ARRAY);
+            if (imageList != null && !imageList.isEmpty()) {
+                File found = new File(imageList.get(0));
                 File coverFile = new File(found.getAbsolutePath() + "_" + isbn);
                 StorageUtils.renameFile(found, coverFile);
                 return coverFile;
@@ -98,7 +100,7 @@ public class ISFDBManager {
     public static void searchEditions(final @NonNull String isbn, final @NonNull ISFDBResultsListener listener) {
         // Setup the background fetcher
         if (taskQueue == null) {
-            taskQueue = new SimpleTaskQueue("isfdb");
+            taskQueue = new SimpleTaskQueue("ISFDB-toc-search-tasks");
         }
         taskQueue.enqueue(new ISFDBEditionsTask(isbn, listener));
     }
@@ -113,7 +115,7 @@ public class ISFDBManager {
     public static void search(final @NonNull List<String> editionUrls, final @NonNull ISFDBResultsListener listener) {
         // Setup the background fetcher
         if (taskQueue == null) {
-            taskQueue = new SimpleTaskQueue("isfdb");
+            taskQueue = new SimpleTaskQueue("ISFDB-toc-search-tasks");
         }
         taskQueue.enqueue(new ISFDBBookTask(editionUrls, false, listener));
     }

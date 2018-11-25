@@ -139,6 +139,9 @@ public abstract class BookSearchBaseFragment extends Fragment
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * (re)connect with the {@link SearchManager} by starting to listen to its messages
+     */
     @Override
     @CallSuper
     public void onResume() {
@@ -153,13 +156,17 @@ public abstract class BookSearchBaseFragment extends Fragment
     /**
      * Start the actual search with the {@link SearchManager} in the background.
      *
-     * The results will arrive in {@link #onSearchFinished(Bundle, boolean)}
+     * The results will arrive in {@link SearchManager.SearchManagerListener#onSearchFinished(boolean, Bundle)}
+     *
+     * @return true if search was started.
      */
-    protected void startSearch(final @NonNull String authorSearchText,
+    protected boolean startSearch(final @NonNull String authorSearchText,
                                final @NonNull String titleSearchText,
                                final @NonNull String isbnSearchText) {
-        // delete any leftover temporary thumbnails
-        StorageUtils.deleteTempCoverFile();
+
+        if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
+            Logger.info(this, "startSearch|isbn=" + isbnSearchText + "|author=" + authorSearchText + "|title=" + titleSearchText);
+        }
 
         /* Get the book */
         try {
@@ -167,10 +174,12 @@ public abstract class BookSearchBaseFragment extends Fragment
             final SearchManager searchManager = new SearchManager(mActivity.getTaskManager(), this);
             mSearchManagerId = searchManager.getId();
 
-            Tracker.handleEvent(this, Tracker.States.Running, "Searching book with SearchManagerId=" + mSearchManagerId);
+            Tracker.handleEvent(this, Tracker.States.Running, "Created SearchManager=" + mSearchManagerId);
 
             mActivity.getTaskManager().sendHeaderTaskProgressMessage(getString(R.string.progress_msg_searching));
+            // kick of the searches
             searchManager.search(mSearchSites, authorSearchText, titleSearchText, isbnSearchText, true);
+            return true;
 
         } catch (Exception e) {
             Logger.error(e);
@@ -178,8 +187,12 @@ public abstract class BookSearchBaseFragment extends Fragment
             mActivity.setResult(Activity.RESULT_CANCELED);
             mActivity.finish();
         }
+        return false;
     }
 
+    /**
+     * Cut us loose from the {@link SearchManager} by stopping listening to its messages
+     */
     @Override
     @CallSuper
     public void onPause() {
@@ -218,8 +231,7 @@ public abstract class BookSearchBaseFragment extends Fragment
                     // Created a book; save the intent
                     mLastBookData = data;
                     // and set that as the default result
-                    mActivity.setResult(mLastBookData != null ? BookSearchActivity.RESULT_CHANGES_MADE : Activity.RESULT_CANCELED, mLastBookData);
-
+                    mActivity.setResult(resultCode, mLastBookData);
                     mActivity.setChangesMade(true);
 
                 } else if (resultCode == Activity.RESULT_CANCELED) {

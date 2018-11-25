@@ -18,7 +18,7 @@
  * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.eleybourn.bookcatalogue.tasks;
+package com.eleybourn.bookcatalogue.tasks.taskqueue;
 
 import android.content.Context;
 import android.content.Intent;
@@ -40,12 +40,9 @@ import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.ContextDialogItem;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsExportFailuresActivity;
-import com.eleybourn.bookcatalogue.taskqueue.Listeners.OnTaskChangeListener;
-import com.eleybourn.bookcatalogue.taskqueue.Listeners.TaskActions;
-import com.eleybourn.bookcatalogue.taskqueue.QueueManager;
-import com.eleybourn.bookcatalogue.taskqueue.Task;
-import com.eleybourn.bookcatalogue.taskqueue.TasksCursor;
-import com.eleybourn.bookcatalogue.taskqueue.TasksCursor.TaskCursorSubtype;
+import com.eleybourn.bookcatalogue.tasks.taskqueue.Listeners.OnTaskChangeListener;
+import com.eleybourn.bookcatalogue.tasks.taskqueue.Listeners.TaskActions;
+import com.eleybourn.bookcatalogue.tasks.taskqueue.TasksCursor.TaskCursorSubtype;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.util.ArrayList;
@@ -60,7 +57,7 @@ public class TaskListActivity extends BindableItemListActivity {
     /**
      * Listener to handle Event add/change/delete.
      */
-    private final OnTaskChangeListener m_OnTaskChangeListener = new OnTaskChangeListener() {
+    private final OnTaskChangeListener mOnTaskChangeListener = new OnTaskChangeListener() {
         @Override
         public void onTaskChange(final @Nullable Task task, final @NonNull TaskActions action) {
             TaskListActivity.this.refreshData();
@@ -85,7 +82,7 @@ public class TaskListActivity extends BindableItemListActivity {
         mDb = new CatalogueDBAdapter(this);
 
         //When any Event is added/changed/deleted, update the list. Lazy, yes.
-        BookCatalogueApp.getQueueManager().registerTaskListener(m_OnTaskChangeListener);
+        BookCatalogueApp.getQueueManager().registerTaskListener(mOnTaskChangeListener);
 
         findViewById(R.id.cleanup).setOnClickListener(new OnClickListener() {
             @Override
@@ -177,7 +174,7 @@ public class TaskListActivity extends BindableItemListActivity {
         Tracker.enterOnDestroy(this);
 
         try {
-            BookCatalogueApp.getQueueManager().unregisterTaskListener(m_OnTaskChangeListener);
+            BookCatalogueApp.getQueueManager().unregisterTaskListener(mOnTaskChangeListener);
         } catch (Exception ignore) {
         }
 

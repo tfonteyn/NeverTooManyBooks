@@ -552,7 +552,8 @@ public class Datum {
      * @return The list, can be empty but never null
      */
     @NonNull
-    <T extends Parcelable> ArrayList<T> getParcelableArrayList(final @NonNull DataManager data, final @NonNull Bundle bundle) {
+    <T extends Parcelable> ArrayList<T> getParcelableArrayList(final @NonNull DataManager data,
+                                                               final @NonNull Bundle bundle) {
         Object o;
         if (mAccessor == null) {
             o = bundle.get(mKey);
@@ -577,9 +578,57 @@ public class Datum {
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    <T extends Parcelable> Datum putParcelableArrayList(final @NonNull DataManager data, final @NonNull Bundle bundle, final @NonNull ArrayList<T> value) {
+    <T extends Parcelable> Datum putParcelableArrayList(final @NonNull DataManager data,
+                                                        final @NonNull Bundle bundle,
+                                                        final @NonNull ArrayList<T> value) {
         if (mAccessor == null) {
             bundle.putParcelableArrayList(mKey, value);
+        } else {
+            mAccessor.set(data, this, bundle, value);
+        }
+        return this;
+    }
+
+    /**
+     * Get the ArrayList<String> object from the collection.
+     *
+     * @param data   Parent DataManager
+     * @param bundle Raw data Bundle
+     *
+     * @return The list, can be empty but never null
+     */
+    @NonNull
+    ArrayList<String> getStringArrayList(final @NonNull DataManager data,
+                                         final @NonNull Bundle bundle) {
+        Object o;
+        if (mAccessor == null) {
+            o = bundle.get(mKey);
+        } else {
+            o = mAccessor.get(data, this, bundle);
+        }
+
+        if (o == null) {
+            return new ArrayList<>();
+        }
+        //noinspection unchecked
+        return (ArrayList<String>) o;
+    }
+
+    /**
+     * Set the ArrayList<String> object in the collection.
+     *
+     * @param bundle Raw data Bundle
+     * @param value  The ArrayList<String> object
+     *
+     * @return The data manager for chaining
+     */
+    @SuppressWarnings("UnusedReturnValue")
+    @NonNull
+    Datum putStringArrayList(final @NonNull DataManager data,
+                             final @NonNull Bundle bundle,
+                             final @NonNull ArrayList<String> value) {
+        if (mAccessor == null) {
+            bundle.putStringArrayList(mKey, value);
         } else {
             mAccessor.set(data, this, bundle, value);
         }

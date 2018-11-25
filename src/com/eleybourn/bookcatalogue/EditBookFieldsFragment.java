@@ -40,7 +40,6 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.editordialog.CheckListEditorDialogFragment;
 import com.eleybourn.bookcatalogue.dialogs.editordialog.CheckListItem;
-import com.eleybourn.bookcatalogue.dialogs.editordialog.CheckListItemBase;
 import com.eleybourn.bookcatalogue.dialogs.editordialog.PartialDatePickerDialogFragment;
 import com.eleybourn.bookcatalogue.dialogs.editordialog.TextFieldEditorDialogFragment;
 import com.eleybourn.bookcatalogue.entities.Author;
@@ -217,10 +216,9 @@ public class EditBookFieldsFragment extends BookBaseFragment implements
                     }
                 });
 
-        // add the cover image
+        // define the cover image
         Field coverField = mFields.add(R.id.coverImage, "", UniqueId.BKEY_HAVE_THUMBNAIL)
                 .setDoNotFetch(true);
-
         mCoverHandler = new CoverHandler(requireActivity(), mDb, getBookManager(),
                 coverField, mFields.getField(R.id.isbn));
 
@@ -555,7 +553,8 @@ public class EditBookFieldsFragment extends BookBaseFragment implements
         switch (requestCode) {
             case EditAuthorListActivity.REQUEST_CODE: { /* dd74343a-50ff-4ce9-a2e4-a75f7bcf9e36 */
                 if (resultCode == Activity.RESULT_OK && data != null && data.hasExtra(UniqueId.BKEY_AUTHOR_ARRAY)) {
-                    ArrayList<Author> list = BundleUtils.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, data.getExtras());
+                    //noinspection ConstantConditions
+                    ArrayList<Author> list = data.getExtras().getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
                     book.putAuthorList(list != null ? list : new ArrayList<Author>());
 
                     getBookManager().setDirty(true);
@@ -573,7 +572,8 @@ public class EditBookFieldsFragment extends BookBaseFragment implements
             }
             case EditSeriesListActivity.REQUEST_CODE: { /* bca659b6-dfb9-4a97-b651-5b05ad102400 */
                 if (resultCode == Activity.RESULT_OK && data != null && data.hasExtra(UniqueId.BKEY_SERIES_ARRAY)) {
-                    ArrayList<Series> list = BundleUtils.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, data.getExtras());
+                    //noinspection ConstantConditions
+                    ArrayList<Series> list = data.getExtras().getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
                     book.putSeriesList(list != null ? list : new ArrayList<Series>());
 
                     populateSeriesListField(book);

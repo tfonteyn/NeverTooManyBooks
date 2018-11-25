@@ -6,18 +6,18 @@ import android.support.annotation.StringRes;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.searches.SearchSites;
-import com.eleybourn.bookcatalogue.searches.SearchTask;
-import com.eleybourn.bookcatalogue.tasks.TaskManager;
+import com.eleybourn.bookcatalogue.searches.ManagedSearchTask;
+import com.eleybourn.bookcatalogue.tasks.managedtasks.TaskManager;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
 
 /**
- *  GoogleBooks SearchTask as used by the {@link SearchSites.Site#getTask(TaskManager)}
+ *  GoogleBooks ManagedSearchTask as used by the {@link SearchSites.Site#getTask(TaskManager)}
  *
  */
-public class SearchGoogleBooksTask extends SearchTask {
+public class SearchGoogleBooksTask extends ManagedSearchTask {
 
     public SearchGoogleBooksTask(final @NonNull String name,
                                  final @NonNull TaskManager manager) {
@@ -43,7 +43,7 @@ public class SearchGoogleBooksTask extends SearchTask {
             GoogleBooksManager.search(mIsbn, mAuthor, mTitle, mBookData, mFetchThumbnail);
             if (mBookData.size() > 0) {
                 // Look for series name and clean KEY_TITLE
-                checkForSeriesName();
+                checkForSeriesNameInTitle();
             }
         } catch (java.net.SocketTimeoutException e) {
             showError(R_ID_SEARCHING, R.string.error_network_timeout);

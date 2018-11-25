@@ -38,8 +38,8 @@ import com.eleybourn.bookcatalogue.backup.Importer;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.ExportTypeSelectionDialogFragment;
 import com.eleybourn.bookcatalogue.dialogs.ImportTypeSelectionDialogFragment;
-import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressDialogFragment;
-import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressDialogFragment.FragmentTask;
+import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueueProgressDialogFragment;
+import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueueProgressDialogFragment.FragmentTask;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
@@ -111,8 +111,8 @@ public class BackupChooserActivity extends FileChooserBaseActivity implements
      */
     @NonNull
     @Override
-    public FileLister getFileLister(@NonNull File root) {
-        return new BackupLister(root);
+    public FileListerFragmentTask getFileLister(@NonNull File root) {
+        return new BackupListerFragmentTask(root);
     }
 
     /**

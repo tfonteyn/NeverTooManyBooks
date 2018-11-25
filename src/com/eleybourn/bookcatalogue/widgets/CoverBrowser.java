@@ -51,8 +51,8 @@ import com.eleybourn.bookcatalogue.searches.googlebooks.GoogleBooksManager;
 import com.eleybourn.bookcatalogue.searches.isfdb.ISFDBManager;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager.ImageSizes;
-import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue;
-import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTaskContext;
+import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue;
+import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue.SimpleTaskContext;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.IsbnUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
@@ -146,7 +146,7 @@ public class CoverBrowser {
         mDialog.dismiss();
 
         if (mImageFetcher != null) {
-            mImageFetcher.finish();
+            mImageFetcher.terminate();
             mImageFetcher = null;
         }
         if (mFileManager != null) {
@@ -174,7 +174,7 @@ public class CoverBrowser {
 
         // Setup the background fetcher
         if (mImageFetcher == null) {
-            mImageFetcher = new SimpleTaskQueue("cover-browser");
+            mImageFetcher = new SimpleTaskQueue("CoverBrowser-tasks");
         }
 
         mImageFetcher.enqueue(new GetEditionsTask(mIsbn));
@@ -549,6 +549,7 @@ public class CoverBrowser {
                 }
             }
 
+            // cleanup bad files.
             if (!ok) {
                 StorageUtils.deleteFile(file);
             }

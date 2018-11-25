@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.eleybourn.bookcatalogue.tasks;
+package com.eleybourn.bookcatalogue.tasks.simpletasks;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -40,7 +40,7 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
-import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTaskContext;
+import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue.SimpleTaskContext;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,6 +52,7 @@ import java.util.Objects;
  * @author pjw
  */
 public class SimpleTaskQueueProgressDialogFragment extends DialogFragment {
+
     private static final String BKEY_MESSAGE = "message";
     private static final String BKEY_DIALOG_IS_INDETERMINATE = "isIndeterminate";
     private static final String BKEY_TASK_ID = "taskId";
@@ -107,13 +108,13 @@ public class SimpleTaskQueueProgressDialogFragment extends DialogFragment {
      * Constructor
      */
     public SimpleTaskQueueProgressDialogFragment() {
-        mQueue = new SimpleTaskQueue("FragmentQueue");
-		/* Dismiss dialog if all tasks finished */
+        mQueue = new SimpleTaskQueue("DialogFragmentQueue");
+
         SimpleTaskQueue.OnTaskFinishListener mTaskFinishListener = new SimpleTaskQueue.OnTaskFinishListener() {
 
             @Override
             public void onTaskFinish(final @NonNull SimpleTaskQueue.SimpleTask task, final @Nullable Exception e) {
-                // If there are no more tasks, close this dialog
+                /* Dismiss dialog if all tasks finished */
                 if (!mQueue.hasActiveTasks()) {
                     queueAllTasksFinished();
                 }
@@ -125,32 +126,26 @@ public class SimpleTaskQueueProgressDialogFragment extends DialogFragment {
     /**
      * Convenience routine to show a dialog fragment and start the task
      *
-     * @param context Activity of caller
-     * @param messageId Message to display
-     * @param task    Task to run
+     * @param context         FragmentActivity of caller
+     * @param messageId       Message to display
+     * @param task            FragmentTask to run
+     * @param isIndeterminate type of progress
+     * @param taskId          Unique ID for this task. Can be used like menu or activity IDs
      */
     @NonNull
-    public static SimpleTaskQueueProgressDialogFragment runTaskWithProgress(final @NonNull FragmentActivity context,
-                                                                            final @StringRes int messageId,
-                                                                            final @NonNull FragmentTask task,
-                                                                            final boolean isIndeterminate,
-                                                                            final int taskId) {
-        SimpleTaskQueueProgressDialogFragment frag = SimpleTaskQueueProgressDialogFragment.newInstance(messageId, isIndeterminate, taskId);
-        frag.enqueue(task);
-        frag.show(context.getSupportFragmentManager(), null);
-        return frag;
-    }
-
-    @NonNull
-    private static SimpleTaskQueueProgressDialogFragment newInstance(final @StringRes int messageId,
-                                                                     final boolean isIndeterminate,
-                                                                     final int taskId) {
+    public static SimpleTaskQueueProgressDialogFragment newInstance(final @NonNull FragmentActivity context,
+                                                                    final @StringRes int messageId,
+                                                                    final @NonNull FragmentTask task,
+                                                                    final boolean isIndeterminate,
+                                                                    final int taskId) {
         SimpleTaskQueueProgressDialogFragment frag = new SimpleTaskQueueProgressDialogFragment();
         Bundle args = new Bundle();
         args.putInt(BKEY_MESSAGE, messageId);
         args.putInt(BKEY_TASK_ID, taskId);
         args.putBoolean(BKEY_DIALOG_IS_INDETERMINATE, isIndeterminate);
         frag.setArguments(args);
+        frag.enqueue(task);
+        frag.show(context.getSupportFragmentManager(), null);
         return frag;
     }
 
@@ -250,7 +245,7 @@ public class SimpleTaskQueueProgressDialogFragment extends DialogFragment {
     }
 
     /**
-     * Show any user message that need showing
+     * Show any initial user message that needs showing
      */
     @Override
     @CallSuper
@@ -297,7 +292,7 @@ public class SimpleTaskQueueProgressDialogFragment extends DialogFragment {
         // If no tasks left, exit
         if (!mQueue.hasActiveTasks()) {
             if (DEBUG_SWITCHES.SQPFragment && BuildConfig.DEBUG) {
-                Logger.info(this,"Tasks finished while activity absent, closing");
+                Logger.info(this, "Tasks finished while activity absent, closing");
             }
             dismiss();
         }
@@ -305,7 +300,7 @@ public class SimpleTaskQueueProgressDialogFragment extends DialogFragment {
     }
 
     /**
-     * Create the underlying dialog
+     * Create the underlying ProgressDialog
      */
     @NonNull
     @Override
@@ -345,7 +340,7 @@ public class SimpleTaskQueueProgressDialogFragment extends DialogFragment {
     public void onCancel(final @NonNull DialogInterface dialog) {
         super.onCancel(dialog);
         mWasCancelled = true;
-        mQueue.finish();
+        mQueue.terminate();
     }
 
     @Override
@@ -373,7 +368,7 @@ public class SimpleTaskQueueProgressDialogFragment extends DialogFragment {
      */
     private void requestUpdateProgress() {
         if (DEBUG_SWITCHES.SQPFragment && BuildConfig.DEBUG) {
-            Logger.info(this,mMessage + " (" + mProgress + "/" + mMax + ")");
+            Logger.info(this, mMessage + " (" + mProgress + "/" + mMax + ")");
         }
         if (Thread.currentThread() == mHandler.getLooper().getThread()) {
             updateProgress();

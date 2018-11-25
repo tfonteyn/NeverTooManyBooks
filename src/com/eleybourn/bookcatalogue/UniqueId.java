@@ -84,8 +84,6 @@ public class UniqueId {
     public static final int ACTIVITY_REQUEST_CODE_SEARCH_SITES = 604;
 
     public static final int ACTIVITY_REQUEST_CODE_EDIT_BOOKSHELF_LIST = 701;
-    public static final int ACTIVITY_REQUEST_CODE_BOOKSHELF_CREATE = 702;
-    public static final int ACTIVITY_REQUEST_CODE_BOOKSHELF_EDIT = 703;
 
 
     // Build-in system
@@ -97,19 +95,23 @@ public class UniqueId {
 
     // END Request Codes used for startActivityForResult / onActivityResult
 
+
     // BEGIN Result Codes used for setResult / onActivityResult
+    /** need distinct code as it can trickle up */
     public static final int ACTIVITY_RESULT_CODE_GLOBAL_CHANGES_FIELD_VISIBILITY = 10_001;
+    /** need distinct code as it can trickle up */
     public static final int ACTIVITY_RESULT_CODE_GLOBAL_CHANGES_BOOKLIST_PREFERENCES = 10_002;
+    /** need distinct code as it can trickle up */
     public static final int ACTIVITY_RESULT_CODE_GLOBAL_CHANGES_PREFERENCES = 10_003;
 
-    public static final int ACTIVITY_RESULT_CHANGES_MADE_EDIT_BOOKSHELF_LIST = 10_010;
-    public static final int ACTIVITY_RESULT_CHANGES_MADE_BOOKLIST_STYLES = 10_011;
-    public static final int ACTIVITY_RESULT_CHANGES_MADE_BOOKLIST_STYLE_PROPERTIES = 10_012;
-
     public static final int ACTIVITY_RESULT_BOOK_DELETED = 10_020;
-    public static final int ACTIVITY_RESULT_CHANGES_MADE_EDIT_BOOK = 10_021;
-    public static final int ACTIVITY_RESULT_CHANGES_MADE_VIEW_BOOK = 10_022;
-    public static final int ACTIVITY_RESULT_CHANGES_MADE_ADD_BOOK_BY_SEARCH = 10_023;
+
+    /** {@link BaseActivity} default result code if changes have been made */
+    public static final int ACTIVITY_RESULT_CHANGES_MADE = 10_101;
+    /** need distinct code as it can trickle up */
+    public static final int ACTIVITY_RESULT_CHANGES_MADE_BOOKLIST_STYLE_PROPERTIES = 10_102;
+    /** need distinct code as it can trickle up */
+    public static final int ACTIVITY_RESULT_CHANGES_MADE_BOOKLIST_STYLES = 10_103;
 
     // END Result Codes used for setResult / onActivityResult
 
@@ -124,41 +126,37 @@ public class UniqueId {
     /** bundle key to pass an {@link java.util.ArrayList<Integer>} around. */
      public static final String BKEY_BOOK_ID_LIST = "bookIdList";
 
-    /* Bundle keys for serialised ArrayList<Entity> */
+    /** Bundle keys for ParcelableArrayList<Entity> */
     public static final String BKEY_AUTHOR_ARRAY = "author_array";
     public static final String BKEY_SERIES_ARRAY = "series_array";
     public static final String BKEY_TOC_TITLES_ARRAY = "toc_titles_array";
     public static final String BKEY_BOOKSHELF_ARRAY = "bookshelf_array";
-
-    /* The CSV file has columns with these names */
-    /** string-encoded - used in import/export and internet searches, never change this string! */
-    public static final String BKEY_AUTHOR_STRING_LIST = "author_details";
-    /** string-encoded - used in import/export and internet searches, never change this string! */
-    public static final String BKEY_SERIES_STRING_LIST = "series_details";
-    /** string-encoded - used in import/export, never change this string! */
-    public static final String BKEY_TOC_STRING_LIST = "anthology_titles";
 
     /* BKEY_* and BVAL_* which are used in more then one class should be moved here */
     public static final String BKEY_DIALOG_TITLE = "dialogTitle";
     public static final String BKEY_FIELD_ID = "fieldId";
     public static final String BKEY_CALLER_ID = "dialogCallerId";
 
-    public static final String BKEY_NO_COVER = "noCover";
+    /** ArrayList<String> of fileSpecs of thumbnails fetches from the internet */
+    public static final String BKEY_THUMBNAIL_FILE_SPEC_ARRAY = "thumbnail_file_spec_array";
+    /**
+     * 3 uses:
+     * Boolean indicating if we have a thumbnail or not.
+     * Visibility indicator, see {@link FieldVisibilityActivity}
+     * Flag to indicate we 'want' a thumbnail, in {@link UpdateFieldsFromInternetActivity.FieldUsage.Usage}
+     */
+    public static final String BKEY_HAVE_THUMBNAIL = "thumbnail";
 
-    /** a filename or uri */
+    /** a generic filename or uri */
     public static final String BKEY_FILE_SPEC = "fileSpec";
-
     /** generic search text */
     public static final String BKEY_SEARCH_TEXT = "searchText";
     /** author search text */
     public static final String BKEY_SEARCH_AUTHOR = "searchAuthor";
 
-    /** boolean indicating if we have a thumbnail or not.
-     * Also used in {@link com.eleybourn.bookcatalogue.UpdateFromInternetActivity.FieldUsage.Usage} */
-    public static final String BKEY_HAVE_THUMBNAIL = "thumbnail";
 
-    /** one (plain String) or more (StringList encoded) fileSpec of a thumbnail fetches from the internet */
-    public static final String BKEY_THUMBNAIL_FILE_SPEC = "thumbnail_file_spec";
+
+    public static final String BKEY_NO_COVER = "noCover";
 
     /** to return the status of a startActivityForResult when a task was 'isCancelled' */
     public static final String BKEY_CANCELED = "cancelled";
@@ -220,6 +218,4 @@ public class UniqueId {
     public static final String KEY_BOOK_GOODREADS_LAST_SYNC_DATE = DOM_BOOK_GOODREADS_LAST_SYNC_DATE.name;
 
     public static final String KEY_LOAN_LOANED_TO = DOM_LOANED_TO.name;
-
-
 }

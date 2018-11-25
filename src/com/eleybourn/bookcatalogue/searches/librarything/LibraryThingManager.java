@@ -360,7 +360,12 @@ public class LibraryThingManager {
         if (fetchThumbnail) {
             File file = getCoverImage(isbn, ImageSizes.LARGE);
             if (file != null) {
-                StringList.addOrAppend(bookData, UniqueId.BKEY_THUMBNAIL_FILE_SPEC, file.getAbsolutePath());
+                ArrayList<String> imageList = bookData.getStringArrayList(UniqueId.BKEY_THUMBNAIL_FILE_SPEC_ARRAY);
+                if (imageList == null) {
+                    imageList = new ArrayList<>();
+                }
+                imageList.add(file.getAbsolutePath());
+                bookData.putStringArrayList(UniqueId.BKEY_THUMBNAIL_FILE_SPEC_ARRAY, imageList);
             }
         }
     }
@@ -371,9 +376,11 @@ public class LibraryThingManager {
      * @return <tt>true</tt>if there is a non-empty dev key
      */
     public boolean isAvailable() {
-        boolean result = !getDevKey().isEmpty();
-        Logger.info(this, "LT dev key not available");
-        return result;
+        boolean gotKey = !getDevKey().isEmpty();
+        if (!gotKey) {
+            Logger.info(this, "LT dev key not available");
+        }
+        return gotKey;
     }
 
     /**

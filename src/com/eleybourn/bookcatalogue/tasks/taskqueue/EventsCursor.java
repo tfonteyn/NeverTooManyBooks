@@ -18,7 +18,7 @@
  * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.eleybourn.bookcatalogue.taskqueue;
+package com.eleybourn.bookcatalogue.tasks.taskqueue;
 
 import android.database.sqlite.SQLiteCursor;
 import android.database.sqlite.SQLiteCursorDriver;
@@ -35,10 +35,10 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.Map;
 
-import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_EVENT;
-import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_EVENT_DATE;
-import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_ID;
-import static com.eleybourn.bookcatalogue.taskqueue.DBHelper.DOM_TASK_ID;
+import static com.eleybourn.bookcatalogue.tasks.taskqueue.DBHelper.DOM_EVENT;
+import static com.eleybourn.bookcatalogue.tasks.taskqueue.DBHelper.DOM_EVENT_DATE;
+import static com.eleybourn.bookcatalogue.tasks.taskqueue.DBHelper.DOM_ID;
+import static com.eleybourn.bookcatalogue.tasks.taskqueue.DBHelper.DOM_TASK_ID;
 
 /**
  * Cursor subclass used to make accessing TaskExceptions a little easier.

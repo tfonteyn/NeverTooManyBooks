@@ -32,7 +32,8 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.booklist.BooklistPreferencesActivity;
 import com.eleybourn.bookcatalogue.database.CoversDbAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTaskContext;
+import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue;
+import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue.SimpleTaskContext;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
@@ -72,7 +73,7 @@ public class GetThumbnailTask implements SimpleTaskQueue.SimpleTask {
             Logger.info(GetThumbnailTask.class, "GetThumbnailTask: #cpu     : " + nr);
             Logger.info(GetThumbnailTask.class, "GetThumbnailTask: #maxTasks: " + maxTasks);
         }
-        mQueue = new SimpleTaskQueue("thumbnails", maxTasks);
+        mQueue = new SimpleTaskQueue("GetThumbnailTask", maxTasks);
     }
 
     /** Reference to the view we are using */
@@ -172,7 +173,7 @@ public class GetThumbnailTask implements SimpleTaskQueue.SimpleTask {
      *
      * Code commented out for now: We wait at start to prevent a flood of images from hitting the UI thread.
      *
-     * TODO: fetchBookCoverIntoImageView is an expensive operation. Make sure its still needed.
+     * TODO: fetchFileIntoImageView is an expensive operation. Make sure its still needed.
      */
     @Override
     public void run(final @NonNull SimpleTaskContext taskContext) {
@@ -210,7 +211,7 @@ public class GetThumbnailTask implements SimpleTaskQueue.SimpleTask {
 
         // wasn't in cache, try file system
         if (mBitmap == null) {
-            mBitmap = ImageUtils.fetchBookCoverIntoImageView(null, mUuid,
+            mBitmap = ImageUtils.fetchFileIntoImageView(null, mUuid,
                     mWidth, mHeight, true, false, false);
         }
 

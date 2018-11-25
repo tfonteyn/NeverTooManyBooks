@@ -28,7 +28,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresPermission;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.database.DatabaseHelper;
@@ -191,10 +190,15 @@ public class StorageUtils {
 
     /**
      * Get the 'standard' temp file name for new books
+     * Is also used as the standard file name for images downloaded from the internet.
      */
     public static File getTempCoverFile() {
         return new File(TEMP_FILE_PATH + File.separator + "tmp.jpg");
     }
+
+    /**
+     * Delete the 'standard' temp file
+     */
     public static void deleteTempCoverFile() {
         deleteFile(getTempCoverFile());
     }
@@ -245,8 +249,7 @@ public class StorageUtils {
             return png;
         }
 
-        // TODO: we need a new file, .. do we ever ?
-        Logger.debug("getCoverFile(`" + uuid + "`) not found, return a placeholder");
+        // we need a new file, return a placeholder
         return jpg;
     }
 
@@ -287,9 +290,11 @@ public class StorageUtils {
         for (String prefix : mPurgeableFilePrefixes) {
             if (name.startsWith(prefix)) {
                 final File file = getFile(name);
-                totalSize += file.length();
-                if (reallyDelete) {
-                    deleteFile(file);
+                if (file.isFile()) {
+                    totalSize += file.length();
+                    if (reallyDelete) {
+                        deleteFile(file);
+                    }
                 }
             }
         }
@@ -328,10 +333,10 @@ public class StorageUtils {
             }
         };
 
-        @SuppressWarnings("unused") StringBuilder debugInfo;
+        @SuppressWarnings("unused") StringBuilder debugInfo = new StringBuilder();
         if (DEBUG_SWITCHES.STORAGE_UTILS && BuildConfig.DEBUG) {
             //noinspection UnusedAssignment
-            debugInfo = new StringBuilder("Getting mounted file systems\n");
+            debugInfo.append("Getting mounted file systems\n");
         }
 
         // Loop all mounted file systems
@@ -501,6 +506,9 @@ public class StorageUtils {
             try {
                 //noinspection ResultOfMethodCallIgnored
                 file.delete();
+                if (DEBUG_SWITCHES.STORAGE_UTILS && BuildConfig.DEBUG) {
+                    Logger.info(StorageUtils.class, "deleteFile|file=" + file.getAbsolutePath());
+                }
             } catch (Exception e) {
                 Logger.error(e);
             }
@@ -515,6 +523,9 @@ public class StorageUtils {
      * and not relying on the OS renameTo call.
      */
     public static boolean renameFile(final @NonNull File src, final @NonNull File dst) {
+        if (DEBUG_SWITCHES.STORAGE_UTILS && BuildConfig.DEBUG) {
+            Logger.info(StorageUtils.class, "renameFile|src=" + src.getAbsolutePath() + "|dst=" + dst.getAbsolutePath());
+        }
         if (src.exists()) {
             try {
                 //noinspection ResultOfMethodCallIgnored

@@ -35,10 +35,10 @@ import com.eleybourn.bookcatalogue.backup.BackupWriter.BackupWriterListener;
 import com.eleybourn.bookcatalogue.backup.tar.TarBackupContainer;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.filechooser.BackupFileDetails;
-import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTaskContext;
-import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressDialogFragment;
-import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressDialogFragment.FragmentTask;
-import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressDialogFragment.FragmentTaskAbstract;
+import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue.SimpleTaskContext;
+import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueueProgressDialogFragment;
+import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueueProgressDialogFragment.FragmentTask;
+import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueueProgressDialogFragment.FragmentTaskAbstract;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
@@ -176,7 +176,7 @@ public class BackupManager {
 
         };
         SimpleTaskQueueProgressDialogFragment frag = SimpleTaskQueueProgressDialogFragment
-                .runTaskWithProgress(context, R.string.progress_msg_backing_up, task, false, taskId);
+                .newInstance(context, R.string.progress_msg_backing_up, task, false, taskId);
         frag.setNumberFormat(null);
         return resultingFile;
     }
@@ -222,7 +222,7 @@ public class BackupManager {
                 Logger.info(BackupManager.class, "Finished importing " + inputFile.getAbsolutePath() + ", size = " + inputFile.length());
             }
         };
-        SimpleTaskQueueProgressDialogFragment frag = SimpleTaskQueueProgressDialogFragment.runTaskWithProgress(context,
+        SimpleTaskQueueProgressDialogFragment frag = SimpleTaskQueueProgressDialogFragment.newInstance(context,
                 R.string.progress_msg_importing, task, false, taskId);
         frag.setNumberFormat(null);
     }

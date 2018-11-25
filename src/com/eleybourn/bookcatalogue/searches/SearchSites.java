@@ -11,7 +11,7 @@ import com.eleybourn.bookcatalogue.searches.goodreads.SearchGoodreadsTask;
 import com.eleybourn.bookcatalogue.searches.googlebooks.SearchGoogleBooksTask;
 import com.eleybourn.bookcatalogue.searches.isfdb.SearchISFDBTask;
 import com.eleybourn.bookcatalogue.searches.librarything.SearchLibraryThingTask;
-import com.eleybourn.bookcatalogue.tasks.TaskManager;
+import com.eleybourn.bookcatalogue.tasks.managedtasks.TaskManager;
 import com.eleybourn.bookcatalogue.utils.RTE;
 
 import java.util.ArrayList;
@@ -240,7 +240,7 @@ public class SearchSites {
         /**
          * NEWKIND: search web site configuration
          */
-        SearchTask getTask(final @NonNull TaskManager manager) {
+        ManagedSearchTask getTask(final @NonNull TaskManager manager) {
             switch (id) {
                 case SEARCH_GOOGLE:
                     return new SearchGoogleBooksTask(name, manager);

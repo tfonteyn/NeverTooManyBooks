@@ -81,6 +81,8 @@ import java.util.Objects;
  */
 public abstract class BookBaseFragment extends Fragment implements DataEditor {
 
+    public static final int RESULT_CHANGES_MADE = UniqueId.ACTIVITY_RESULT_CHANGES_MADE;
+
     /** */
     protected Fields mFields;
     /** A link to the Activity, cached to avoid requireActivity() all over the place */
@@ -402,14 +404,14 @@ public abstract class BookBaseFragment extends Fragment implements DataEditor {
             }
             case R.id.MENU_BOOK_UPDATE_FROM_INTERNET: {
                 /* 98a6d1eb-4df5-4893-9aaf-fac0ce0fee01 */
-                Intent intent = new Intent(requireActivity(), UpdateFromInternetActivity.class);
+                Intent intent = new Intent(requireActivity(), UpdateFieldsFromInternetActivity.class);
                 // bookId to update
                 intent.putExtra(UniqueId.KEY_ID, book.getBookId());
                 // just as info, to display on the screen
                 intent.putExtra(UniqueId.KEY_TITLE, book.getString(UniqueId.KEY_TITLE));
                 intent.putExtra(UniqueId.KEY_AUTHOR_FORMATTED, book.getString(UniqueId.KEY_AUTHOR_FORMATTED));
 
-                mActivity.startActivityForResult(intent, UpdateFromInternetActivity.REQUEST_CODE); /* 98a6d1eb-4df5-4893-9aaf-fac0ce0fee01 */
+                mActivity.startActivityForResult(intent, UpdateFieldsFromInternetActivity.REQUEST_CODE); /* 98a6d1eb-4df5-4893-9aaf-fac0ce0fee01 */
                 return true;
             }
             case R.id.MENU_SHARE: {
@@ -601,7 +603,7 @@ public abstract class BookBaseFragment extends Fragment implements DataEditor {
     public void onActivityResult(final int requestCode, final int resultCode, final @Nullable Intent data) {
         Tracker.enterOnActivityResult(this,requestCode,resultCode, data);
         switch (requestCode) {
-            case UpdateFromInternetActivity.REQUEST_CODE: /* 98a6d1eb-4df5-4893-9aaf-fac0ce0fee01 */
+            case UpdateFieldsFromInternetActivity.REQUEST_CODE: /* 98a6d1eb-4df5-4893-9aaf-fac0ce0fee01 */
                 if (resultCode == Activity.RESULT_OK) {
                     Objects.requireNonNull(data);
                     long bookId = data.getLongExtra(UniqueId.KEY_ID, 0);

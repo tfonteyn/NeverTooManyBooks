@@ -56,6 +56,7 @@ import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.BooksMultiTypeListHandler.BooklistChangeListener;
 import com.eleybourn.bookcatalogue.adapters.MultiTypeListCursorAdapter;
+import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.baseactivity.BaseListActivity;
 import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;
 import com.eleybourn.bookcatalogue.booklist.BooklistBuilder.BookRowInfo;
@@ -76,8 +77,8 @@ import com.eleybourn.bookcatalogue.dialogs.SelectOneDialog;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.searches.SearchLocalActivity;
-import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue;
-import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTaskContext;
+import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue;
+import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue.SimpleTaskContext;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.util.ArrayList;
@@ -112,7 +113,7 @@ public class BooksOnBookshelf extends BaseListActivity implements
     private final static String PREF_TOP_ROW_TOP = TAG + ".TOP_ROW_TOP";
 
     /** Task queue to get book lists in background */
-    private final SimpleTaskQueue mTaskQueue = new SimpleTaskQueue("BoB-List", 1);
+    private final SimpleTaskQueue mTaskQueue = new SimpleTaskQueue("BoB-GetBookListTask", 1);
 
 
     /** Options indicating activity has been destroyed. Used for background tasks */
@@ -302,7 +303,7 @@ public class BooksOnBookshelf extends BaseListActivity implements
         }
 
         if (isFinishing()) {
-            mTaskQueue.finish();
+            mTaskQueue.terminate();
         }
 
         if (mListDialog != null) {
@@ -319,7 +320,7 @@ public class BooksOnBookshelf extends BaseListActivity implements
         Tracker.enterOnDestroy(this);
 
         mIsDead = true;
-        mTaskQueue.finish();
+        mTaskQueue.terminate();
 
         try {
             if (mListCursor != null) {
@@ -515,8 +516,7 @@ public class BooksOnBookshelf extends BaseListActivity implements
             case EditBookActivity.REQUEST_CODE: { /* 88a6c414-2d3b-4637-9044-b7291b6b9100,
              91b95a7f-17d6-4f98-af58-5f040b52414f, 01564e26-b463-425e-8889-55a8228c82d5,
               8a5c649a-e97b-4d53-8133-6060ef3c3072, 0308715c-e1d2-4a7f-9ba3-cb8f641e096b */
-                if (resultCode == BookDetailsActivity.RESULT_CHANGES_MADE
-                        || resultCode == EditBookActivity.RESULT_CHANGES_MADE) {
+                if (resultCode == BaseActivity.RESULT_CHANGES_MADE) {
                     /* there *has* to be 'data' */
                     Objects.requireNonNull(data);
                     long newId = data.getLongExtra(UniqueId.KEY_ID, 0);

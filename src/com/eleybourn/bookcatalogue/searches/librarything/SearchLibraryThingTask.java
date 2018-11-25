@@ -6,9 +6,8 @@ import android.support.annotation.StringRes;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.searches.SearchSites;
-import com.eleybourn.bookcatalogue.searches.SearchTask;
-import com.eleybourn.bookcatalogue.tasks.TaskManager;
-import com.eleybourn.bookcatalogue.utils.IsbnUtils;
+import com.eleybourn.bookcatalogue.searches.ManagedSearchTask;
+import com.eleybourn.bookcatalogue.tasks.managedtasks.TaskManager;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -16,12 +15,12 @@ import java.net.UnknownHostException;
 
 
 /**
- * LibraryThing SearchTask as used by the {@link SearchSites.Site#getTask(TaskManager)}
+ * LibraryThing ManagedSearchTask as used by the {@link SearchSites.Site#getTask(TaskManager)}
  *
  * We always contact LibraryThing because it is a good source of Series data and thumbnails.
  * But it does require an ISBN AND a developer key.
  */
-public class SearchLibraryThingTask extends SearchTask {
+public class SearchLibraryThingTask extends ManagedSearchTask {
 
     public SearchLibraryThingTask(final @NonNull String name,
                                   final @NonNull TaskManager manager) {
@@ -51,7 +50,7 @@ public class SearchLibraryThingTask extends SearchTask {
             ltm.search(mIsbn, mBookData, mFetchThumbnail);
             if (mBookData.size() > 0) {
                 // Look for series name in the book title and clean KEY_TITLE
-                checkForSeriesName();
+                checkForSeriesNameInTitle();
             }
         } catch (java.net.SocketTimeoutException e) {
             showError(R_ID_SEARCHING, R.string.error_network_timeout);

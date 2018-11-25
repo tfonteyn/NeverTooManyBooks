@@ -744,7 +744,7 @@ public class GoodreadsManager {
     }
 
     /**
-     * Wrapper to provide our SearchTask with a uniform call similar to others.
+     * Wrapper to provide our ManagedSearchTask with a uniform call similar to others.
      * (except we return the data)
      */
     public Bundle search(final @NonNull String isbn,
@@ -828,9 +828,11 @@ public class GoodreadsManager {
 
     /** developer check. */
     public boolean isAvailable() {
-        boolean result = !DEV_KEY.isEmpty() && !DEV_SECRET.isEmpty();
-        Logger.info(this, "Goodreads keys not available");
-        return result;
+        boolean gotKey = !DEV_KEY.isEmpty() && !DEV_SECRET.isEmpty();
+        if (!gotKey) {
+            Logger.info(this, "Goodreads keys not available");
+        }
+        return gotKey;
     }
 
     /**

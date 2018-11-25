@@ -30,8 +30,8 @@ import android.support.annotation.Nullable;
 import com.eleybourn.bookcatalogue.StartupActivity;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.debug.Tracker;
-import com.eleybourn.bookcatalogue.taskqueue.QueueManager;
-import com.eleybourn.bookcatalogue.tasks.BCQueueManager;
+import com.eleybourn.bookcatalogue.tasks.taskqueue.QueueManager;
+import com.eleybourn.bookcatalogue.tasks.taskqueue.BCQueueManager;
 
 /**
  * Trivial Activity to handle the callback URI; while using a broadcast receiver would be nicer,

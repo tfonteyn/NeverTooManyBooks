@@ -49,9 +49,9 @@ import com.eleybourn.bookcatalogue.database.UpgradeDatabase;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.filechooser.BackupChooserActivity;
-import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue;
-import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.OnTaskFinishListener;
-import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTaskContext;
+import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue;
+import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue.OnTaskFinishListener;
+import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue.SimpleTaskContext;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.UpgradeMessageManager;
@@ -301,7 +301,7 @@ public class StartupActivity extends AppCompatActivity {
     @NonNull
     private SimpleTaskQueue getQueue() {
         if (mTaskQueue == null) {
-            mTaskQueue = new SimpleTaskQueue("startup-tasks", 1);
+            mTaskQueue = new SimpleTaskQueue("StartupActivity-tasks", 1);
             // Listen for task completions
             mTaskQueue.setTaskFinishListener(new OnTaskFinishListener() {
                 @Override
@@ -430,7 +430,7 @@ public class StartupActivity extends AppCompatActivity {
     protected void onDestroy() {
         Tracker.enterOnDestroy(this);
         if (mTaskQueue != null) {
-            mTaskQueue.finish();
+            mTaskQueue.terminate();
         }
         super.onDestroy();
         Tracker.exitOnDestroy(this);

@@ -448,8 +448,6 @@ public class SearchAmazonHandler extends DefaultHandler {
 
     /**
      * Store the accumulated data in the results
-     *
-     * Choose the best thumbnail, if present.
      */
     @Override
     @CallSuper
@@ -457,10 +455,14 @@ public class SearchAmazonHandler extends DefaultHandler {
         if (mFetchThumbnail && !mThumbnailUrl.isEmpty()) {
             String fileSpec = ImageUtils.saveThumbnailFromUrl(mThumbnailUrl, FILENAME_SUFFIX);
             if (fileSpec != null) {
-                StringList.addOrAppend(mBookData, UniqueId.BKEY_THUMBNAIL_FILE_SPEC, fileSpec);
+                ArrayList<String> imageList = mBookData.getStringArrayList(UniqueId.BKEY_THUMBNAIL_FILE_SPEC_ARRAY);
+                if (imageList == null) {
+                    imageList = new ArrayList<>();
+                }
+                imageList.add(fileSpec);
+                mBookData.putStringArrayList(UniqueId.BKEY_THUMBNAIL_FILE_SPEC_ARRAY, imageList);
             }
         }
-
         mBookData.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, mAuthors);
     }
 }

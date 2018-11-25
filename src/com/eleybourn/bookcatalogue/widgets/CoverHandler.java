@@ -257,6 +257,7 @@ public class CoverHandler implements SelectOneDialog.hasViewContextMenu {
     /**
      * Get the File object for the cover of the book we are editing.
      * If the book is new (0), return the standard temp file.
+     * If the data is a result from a search, then that standard temp file will be the downloaded file.
      */
     @NonNull
     private File getCoverFile() {
@@ -297,7 +298,6 @@ public class CoverHandler implements SelectOneDialog.hasViewContextMenu {
             StandardDialogs.showUserMessage(mActivity, R.string.warning_editions_require_isbn);
         }
     }
-
 
     /**
      * Start the camera to get an image

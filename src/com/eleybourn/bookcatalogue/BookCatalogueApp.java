@@ -42,8 +42,8 @@ import android.util.TypedValue;
 import com.eleybourn.bookcatalogue.debug.DebugReport;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
-import com.eleybourn.bookcatalogue.tasks.BCQueueManager;
-import com.eleybourn.bookcatalogue.tasks.Terminator;
+import com.eleybourn.bookcatalogue.tasks.taskqueue.BCQueueManager;
+import com.eleybourn.bookcatalogue.tasks.simpletasks.Terminator;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.ThemeUtils;
 
@@ -120,7 +120,8 @@ public class BookCatalogueApp extends Application {
 
     /** Used to sent notifications regarding tasks */
     private static NotificationManager mNotifier;
-    /** */
+
+    /** legacy "taskqueue" */
     private static BCQueueManager mQueueManager = null;
 
     /**

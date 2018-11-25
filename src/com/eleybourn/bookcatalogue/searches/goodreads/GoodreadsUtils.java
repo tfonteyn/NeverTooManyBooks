@@ -13,12 +13,12 @@ import android.view.View.OnClickListener;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
-import com.eleybourn.bookcatalogue.taskqueue.QueueManager;
-import com.eleybourn.bookcatalogue.tasks.BCQueueManager;
-import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTaskContext;
-import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressDialogFragment;
-import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressDialogFragment.FragmentTask;
-import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueueProgressDialogFragment.FragmentTaskAbstract;
+import com.eleybourn.bookcatalogue.tasks.taskqueue.QueueManager;
+import com.eleybourn.bookcatalogue.tasks.taskqueue.BCQueueManager;
+import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue.SimpleTaskContext;
+import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueueProgressDialogFragment;
+import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueueProgressDialogFragment.FragmentTask;
+import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueueProgressDialogFragment.FragmentTaskAbstract;
 
 public class GoodreadsUtils {
     /** file suffix for cover files */
@@ -124,7 +124,7 @@ public class GoodreadsUtils {
                 }
             }
         };
-        SimpleTaskQueueProgressDialogFragment.runTaskWithProgress(context, R.string.progress_msg_connecting_to_web_site, task, true, 0);
+        SimpleTaskQueueProgressDialogFragment.newInstance(context, R.string.progress_msg_connecting_to_web_site, task, true, 0);
     }
 
     /**
@@ -196,7 +196,7 @@ public class GoodreadsUtils {
 
             }
         };
-        SimpleTaskQueueProgressDialogFragment.runTaskWithProgress(context, R.string.progress_msg_connecting_to_web_site, task, true, 0);
+        SimpleTaskQueueProgressDialogFragment.newInstance(context, R.string.progress_msg_connecting_to_web_site, task, true, 0);
     }
 
     /**
@@ -232,7 +232,7 @@ public class GoodreadsUtils {
 
             }
         };
-        SimpleTaskQueueProgressDialogFragment.runTaskWithProgress(context, R.string.progress_msg_connecting_to_web_site, task, true, 0);
+        SimpleTaskQueueProgressDialogFragment.newInstance(context, R.string.progress_msg_connecting_to_web_site, task, true, 0);
     }
 
     /**
@@ -316,7 +316,7 @@ public class GoodreadsUtils {
             }
         };
         // Run the task
-        SimpleTaskQueueProgressDialogFragment.runTaskWithProgress(context, R.string.progress_msg_connecting_to_web_site, task, true, 0);
+        SimpleTaskQueueProgressDialogFragment.newInstance(context, R.string.progress_msg_connecting_to_web_site, task, true, 0);
 
     }
 

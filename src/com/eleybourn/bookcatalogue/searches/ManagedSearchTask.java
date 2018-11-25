@@ -28,14 +28,14 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.entities.Series.SeriesDetails;
-import com.eleybourn.bookcatalogue.tasks.ManagedTask;
-import com.eleybourn.bookcatalogue.tasks.TaskManager;
+import com.eleybourn.bookcatalogue.tasks.managedtasks.ManagedTask;
+import com.eleybourn.bookcatalogue.tasks.managedtasks.TaskManager;
 import com.eleybourn.bookcatalogue.utils.StringList;
 
 import java.util.ArrayList;
 import java.util.List;
 
-abstract public class SearchTask extends ManagedTask {
+abstract public class ManagedSearchTask extends ManagedTask {
     protected static boolean mFetchThumbnail;
     protected String mAuthor;
     protected String mTitle;
@@ -58,8 +58,8 @@ abstract public class SearchTask extends ManagedTask {
      * @param name    of this thread
      * @param manager TaskHandler implementation
      */
-    protected SearchTask(final @NonNull String name,
-                         final @NonNull TaskManager manager) {
+    protected ManagedSearchTask(final @NonNull String name,
+                                final @NonNull TaskManager manager) {
         super(name, manager);
     }
 
@@ -102,28 +102,24 @@ abstract public class SearchTask extends ManagedTask {
     }
 
     /**
-     * Look in the data for a title, if present try to get a series name from it.
-     * In any case, clean the title (and save if none saved already) so that the
-     * next lookup will overwrite with a possibly new title.
+     * Look for a title; if present try to get a series name from it and clean the title
      */
-    protected void checkForSeriesName() {
-        if (mBookData.containsKey(UniqueId.KEY_TITLE)) {
-            String bookTitle = mBookData.getString(UniqueId.KEY_TITLE);
-            if (bookTitle != null) {
-                SeriesDetails details = Series.findSeriesFromBookTitle(bookTitle);
-                if (details != null && !details.name.isEmpty()) {
-                    List<Series> list;
-                    if (mBookData.containsKey(UniqueId.BKEY_SERIES_STRING_LIST)) {
-                        list = StringList.getSeriesUtils().decode(mBookData.getString(UniqueId.BKEY_SERIES_STRING_LIST), false);
-                    } else {
-                        list = new ArrayList<>();
-                    }
-                    list.add(new Series(details.name, details.position));
-                    // store Series back as a StringList
-                    mBookData.putString(UniqueId.BKEY_SERIES_STRING_LIST, StringList.getSeriesUtils().encode(list));
-                    // remove series info from the book title.
-                    mBookData.putString(UniqueId.KEY_TITLE, bookTitle.substring(0, details.startChar - 1).trim());
+    protected void checkForSeriesNameInTitle() {
+        String bookTitle = mBookData.getString(UniqueId.KEY_TITLE);
+        if (bookTitle != null) {
+            SeriesDetails details = Series.findSeriesFromBookTitle(bookTitle);
+            if (details != null && !details.name.isEmpty()) {
+                ArrayList<Series> list = mBookData.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
+                if (list == null) {
+                    list = new ArrayList<>();
                 }
+                list.add(new Series(details.name, details.position));
+                // store Series back
+                mBookData.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, list);
+                // remove series info from the book title.
+                bookTitle = bookTitle.substring(0, details.startChar - 1).trim();
+                // and store title back
+                mBookData.putString(UniqueId.KEY_TITLE, bookTitle);
             }
         }
     }

@@ -59,7 +59,6 @@ public class EditBookFragment extends BookBaseFragment implements BookManager {
     public static final String TAG = "EditBookFragment";
 
     public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_EDIT_BOOK;
-    public static final int RESULT_CHANGES_MADE = UniqueId.ACTIVITY_RESULT_CHANGES_MADE_EDIT_BOOK;
     /**
      * Tabs in order
      */
@@ -367,6 +366,7 @@ public class EditBookFragment extends BookBaseFragment implements BookManager {
     protected void setActivityResult() {
         Intent data = new Intent();
         data.putExtra(UniqueId.KEY_ID, getBook().getBookId());
+        // if some day we can detect global changes, use this:
 //        mActivity.setResult(mActivity.changesMade() ? RESULT_CHANGES_MADE : Activity.RESULT_CANCELED, data); /* many places */
         //ENHANCE: global changes not detected, so assume they happened.
         mActivity.setResult(RESULT_CHANGES_MADE, data); /* many places */
@@ -457,10 +457,15 @@ public class EditBookFragment extends BookBaseFragment implements BookManager {
         if (book.getBookId() == 0) {
             long id = mDb.insertBook(book);
             if (id > 0) {
-                String uuid = mDb.getBookUuid(id);
-                File source = StorageUtils.getTempCoverFile();
-                File destination = StorageUtils.getCoverFile(uuid);
-                StorageUtils.renameFile(source, destination);
+                // if we got a cover while searching the internet, make it permanent
+                if (book.getBoolean(UniqueId.BKEY_HAVE_THUMBNAIL)) {
+                    String uuid = mDb.getBookUuid(id);
+                    // get the temporary downloaded file
+                    File source = StorageUtils.getTempCoverFile();
+                    File destination = StorageUtils.getCoverFile(uuid);
+                    // and rename it to the permanent UUID one.
+                    StorageUtils.renameFile(source, destination);
+                }
             }
         } else {
             mDb.updateBook(book.getBookId(), book, 0);

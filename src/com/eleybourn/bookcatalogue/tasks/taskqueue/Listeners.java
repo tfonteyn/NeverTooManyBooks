@@ -18,27 +18,29 @@
  * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.eleybourn.bookcatalogue.taskqueue;
+package com.eleybourn.bookcatalogue.tasks.taskqueue;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
-import java.io.Serializable;
+public class Listeners {
 
-/**
- * Extends the Task object to add a run(...) method that avoids the need to implement
- * a runTask() method in a subclassed QueueManager.
- *
- * @author Philip Warner
- */
-public abstract class RunnableTask extends Task implements Serializable {
+    public enum EventActions {created, deleted, updated}
 
-    private static final long serialVersionUID = 5399775565316896935L;
+    public enum TaskActions {created, deleted, updated, completed, running, waiting}
 
-    RunnableTask(final @NonNull String description) {
-        super(description);
+    public interface OnEventChangeListener {
+        /**
+         *
+         * @param event can be null if action is 'deleted'
+         */
+        void onEventChange(final @Nullable Event event, final @NonNull EventActions action);
     }
 
-    public abstract boolean run(final @NonNull QueueManager manager,
-                                final @NonNull Context context);
+    public interface OnTaskChangeListener {
+        /**
+         * @param task can be null if action is 'deleted'
+         */
+        void onTaskChange(final @Nullable Task task, final @NonNull TaskActions action);
+    }
 }

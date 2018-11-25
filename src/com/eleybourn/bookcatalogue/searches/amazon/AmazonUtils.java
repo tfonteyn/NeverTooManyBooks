@@ -23,10 +23,10 @@ import java.net.URLEncoder;
  * Wrappers for Amazon API
  *
  * NOTE: The project manifest must contain the app key granted by Amazon.
- * For testing purposes this KEY can be junk.
+ * For testing purposes this KEY can be empty.
  *
  *
- * Not used, but as a reminder:
+ * Not used, but as a reminder this url is also usable:
  *    http://www.amazon.com/gp/product/ASIN-VALUE-HERE
  *
  * @author pjw

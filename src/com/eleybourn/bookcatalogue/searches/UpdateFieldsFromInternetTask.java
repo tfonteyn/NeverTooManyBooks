@@ -31,16 +31,16 @@ import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
-import com.eleybourn.bookcatalogue.UpdateFromInternetActivity;
+import com.eleybourn.bookcatalogue.UpdateFieldsFromInternetActivity;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.entities.TOCEntry;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.Series;
-import com.eleybourn.bookcatalogue.tasks.ManagedTask;
-import com.eleybourn.bookcatalogue.tasks.TaskManager;
+import com.eleybourn.bookcatalogue.entities.TOCEntry;
+import com.eleybourn.bookcatalogue.tasks.managedtasks.ManagedTask;
+import com.eleybourn.bookcatalogue.tasks.managedtasks.TaskManager;
 import com.eleybourn.bookcatalogue.utils.BundleUtils;
 import com.eleybourn.bookcatalogue.utils.RTE;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
@@ -52,26 +52,26 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * Class to update all thumbnails and other data in a background thread.
+ * ManagedTask to update requested fields by doing a search.
  *
- * NEWKIND must stay in sync with {@link com.eleybourn.bookcatalogue.UpdateFromInternetActivity}
+ * NEWKIND must stay in sync with {@link UpdateFieldsFromInternetActivity}
  *
  * @author Philip Warner
  */
-public class UpdateFromInternetTask extends ManagedTask implements SearchManager.SearchManagerListener {
+public class UpdateFieldsFromInternetTask extends ManagedTask
+        implements SearchManager.SearchManagerListener {
     /** The fields that the user requested to update */
     @NonNull
-    private final UpdateFromInternetActivity.FieldUsages mRequestedFields;
+    private final UpdateFieldsFromInternetActivity.FieldUsages mRequestedFields;
 
     //** Lock help by pop and by push when an item was added to an empty stack. */
     private final ReentrantLock mSearchLock = new ReentrantLock();
     /** Signal for available items */
     private final Condition mSearchDone = mSearchLock.newCondition();
+    /** Sites to search */
+    private final int mSearchSites;
     /** Active search manager */
     private SearchManager mSearchManager;
-    /** Sites to search */
-    private final int mSearchSites; // = SearchManager.SEARCH_ALL;
-
     /** message to display when all is said and done */
     private String mFinalMessage;
 
@@ -87,7 +87,7 @@ public class UpdateFromInternetTask extends ManagedTask implements SearchManager
     private String mCurrentUuid = null;
 
     /** The (subset) of fields relevant to the current book */
-    private UpdateFromInternetActivity.FieldUsages mCurrentBookFieldUsages;
+    private UpdateFieldsFromInternetActivity.FieldUsages mCurrentBookFieldUsages;
 
 //    /**
 //     * Our class local {@link SearchManager.SearchManagerListener}.
@@ -97,12 +97,13 @@ public class UpdateFromInternetTask extends ManagedTask implements SearchManager
 //    private final SearchManager.SearchManagerListener mSearchListener = new SearchManager.SearchManagerListener() {
 //        @Override
 //        public boolean onSearchFinished(final @NonNull Bundle bookData, final boolean wasCancelled) {
-//            return UpdateFromInternetTask.this.onSearchFinished(bookData, wasCancelled);
+//            return UpdateFieldsFromInternetTask.this.onSearchFinished(bookData, wasCancelled);
 //        }
 //    };
 
     /**
      * where clause to use in cursor, none by default, but
+     *
      * @see #setBookId(long)
      */
     @NonNull
@@ -111,16 +112,18 @@ public class UpdateFromInternetTask extends ManagedTask implements SearchManager
     /**
      * Constructor.
      *
-     * @param manager         Object to manage background tasks
+     * @param taskManager     Object to manage background tasks
+     * @param searchSites     sites to search, see {@link SearchSites.Site#SEARCH_ALL}
      * @param requestedFields fields to update
+     * @param listener        where to send our results to
      */
-    public UpdateFromInternetTask(final @NonNull TaskManager manager,
-                                  final @NonNull UpdateFromInternetActivity.FieldUsages requestedFields,
-                                  final int searchSites,
-                                  final @NonNull ManagedTaskListener listener) {
-        super("UpdateFromInternetTask", manager);
+    public UpdateFieldsFromInternetTask(final @NonNull TaskManager taskManager,
+                                        final int searchSites,
+                                        final @NonNull UpdateFieldsFromInternetActivity.FieldUsages requestedFields,
+                                        final @NonNull ManagedTaskListener listener) {
+        super("UpdateFieldsFromInternetTask", taskManager);
 
-        mDb = new CatalogueDBAdapter(manager.getContext());
+        mDb = new CatalogueDBAdapter(taskManager.getContext());
         mRequestedFields = requestedFields;
         mSearchSites = searchSites;
 
@@ -129,37 +132,44 @@ public class UpdateFromInternetTask extends ManagedTask implements SearchManager
         getMessageSwitch().addListener(getSenderId(), listener, false);
     }
 
+    /**
+     * Combines two ParcelableArrayList's, weeding out duplicates.
+     *
+     * @param key        for the ArrayList to combine
+     * @param sourceData Bundle with the 'original' ArrayList (if any)
+     * @param destData   Destination Bundle where the combined list is updated
+     * @param <T>        type of the ArrayList elements
+     */
     private static <T extends Parcelable> void combineArrays(final @NonNull String key,
-                                                             final @NonNull Bundle origData,
-                                                             final @NonNull Bundle newData) {
+                                                             final @NonNull Bundle sourceData,
+                                                             final @NonNull Bundle destData) {
         // Each of the lists to combine
-        ArrayList<T> origList = null;
-        ArrayList<T> newList = null;
+        ArrayList<T> sourceList = null;
+        ArrayList<T> destList = null;
         // Get the list from the original, if present.
-        if (origData.containsKey(key)) {
-            origList = BundleUtils.getParcelableArrayList(key, origData);
+        if (sourceData.containsKey(key)) {
+            sourceList = sourceData.getParcelableArrayList(key);
         }
         // Otherwise an empty list
-        if (origList == null) {
-            origList = new ArrayList<>();
+        if (sourceList == null) {
+            sourceList = new ArrayList<>();
         }
 
         // Get the list from the new data
-        if (newData.containsKey(key)) {
-            newList = BundleUtils.getParcelableArrayList(key, newData);
+        if (destData.containsKey(key)) {
+            destList = destData.getParcelableArrayList(key);
         }
-        if (newList == null) {
-            newList = new ArrayList<>();
+        if (destList == null) {
+            destList = new ArrayList<>();
         }
 
-        //TEST weeding out duplicates
-        for (T item : newList) {
-            if (!origList.contains(item)) {
-                origList.add(item);
+        for (T item : destList) {
+            if (!sourceList.contains(item)) {
+                sourceList.add(item);
             }
         }
         // Save combined version to the new data
-        newData.putParcelableArrayList(key, origList);
+        destData.putParcelableArrayList(key, sourceList);
     }
 
     /**
@@ -207,62 +217,53 @@ public class UpdateFromInternetTask extends ManagedTask implements SearchManager
 
                 // Grab the searchable fields. Ideally we will have an ISBN but we may not.
 
-                // Make sure ISBN is not NULL (legacy data, and possibly set to null when adding new book)
-                String isbn = mOriginalBookData.getString(UniqueId.KEY_BOOK_ISBN,"");
-
+                // Make sure the searchable fields are not NULL (legacy data, and possibly set to null when adding new book)
+                String isbn = mOriginalBookData.getString(UniqueId.KEY_BOOK_ISBN, "");
                 String author = mOriginalBookData.getString(UniqueId.KEY_AUTHOR_FORMATTED, "");
                 String title = mOriginalBookData.getString(UniqueId.KEY_TITLE, "");
 
-                // Reset the fields we want for THIS book
-                mCurrentBookFieldUsages = new UpdateFromInternetActivity.FieldUsages();
-
-                // See if there is a reason to fetch ANY data by checking which fields this book needs.
-                checkIfWeShouldSearch();
-
-                // Cache the value to indicate we need thumbnails (or not).
-                boolean tmpThumbWanted = mCurrentBookFieldUsages.containsKey(UniqueId.BKEY_HAVE_THUMBNAIL);
-                if (tmpThumbWanted) {
-                    // delete any leftover temporary thumbnails
-                    StorageUtils.deleteTempCoverFile();
-                }
-
-                // Use this to flag if we actually need a search.
-                boolean wantSearch = false;
-                // Update the progress appropriately
+                // Check which fields this book needs.
+                mCurrentBookFieldUsages = getCurrentBookFieldUsages(mRequestedFields);
+                // if no data required, skip to next book
                 if (mCurrentBookFieldUsages.size() == 0 || isbn.isEmpty() && (author.isEmpty() || title.isEmpty())) {
+                    // Update progress appropriately
                     mTaskManager.sendHeaderTaskProgressMessage(String.format(getString(R.string.progress_msg_skip_title), title));
-                } else {
-                    wantSearch = true;
-                    if (!title.isEmpty()) {
-                        mTaskManager.sendHeaderTaskProgressMessage(title);
-                    } else {
-                        mTaskManager.sendHeaderTaskProgressMessage(isbn);
-                    }
+                    continue;
                 }
 
+                // at this point we do want a search.
+
+                // Update the progress appropriately
+                if (!title.isEmpty()) {
+                    mTaskManager.sendHeaderTaskProgressMessage(title);
+                } else {
+                    mTaskManager.sendHeaderTaskProgressMessage(isbn);
+                }
+                // update the counter
                 mTaskManager.sendTaskProgressMessage(this, null, progressCounter);
 
-                // Start searching if we need to, then wait...
-                if (wantSearch) {
-                    mSearchManager.search(mSearchSites, author, title, isbn, tmpThumbWanted);
-                    // Wait for the search to complete. When the search has completed
-                    // it uses class-level state data when processing the results.
-                    // It will call "mSearchDone.signal()"  when it no longer needs any
-                    // class level state data (eg. mOriginalBookData).
-                    mSearchLock.lock();
-                    try {
-                        Logger.info(this, "mSearchDone await");
-                        mSearchDone.await();
-                        Logger.info(this, "mSearchDone done with await");
-                    } finally {
-                        mSearchLock.unlock();
-                    }
+                // Start searching, then wait...
+                mSearchManager.search(mSearchSites, author, title, isbn,
+                        mCurrentBookFieldUsages.containsKey(UniqueId.BKEY_HAVE_THUMBNAIL));
+
+                mSearchLock.lock();
+                try {
+                    Logger.info(this, "awaiting end of search");
+                    /*
+                     * Wait for the search to complete.
+                     * After processing the results, it wil call mSearchDone.signal()
+                     */
+                    mSearchDone.await();
+                    Logger.info(this, "search done, next!");
+                } finally {
+                    mSearchLock.unlock();
                 }
-            }
+
+            } //endWhile
         } finally {
-            // Empty/close the progress.
+            // Tell our listener they can clear the progress message.
             mTaskManager.sendHeaderTaskProgressMessage(null);
-            // Make the final message (user message, not a Progress message)
+            // Create the final message for them (user message, not a Progress message)
             mFinalMessage = String.format(getString(R.string.progress_end_num_books_searched), "" + progressCounter);
             if (isCancelled()) {
                 mFinalMessage = String.format(BookCatalogueApp.getResourceString(R.string.progress_end_cancelled_info), mFinalMessage);
@@ -273,18 +274,19 @@ public class UpdateFromInternetTask extends ManagedTask implements SearchManager
 
     /**
      * See if there is a reason to fetch ANY data by checking which fields this book needs.
-     * This will be available in {@link #mCurrentBookFieldUsages}
      */
-    private void checkIfWeShouldSearch() {
+    private UpdateFieldsFromInternetActivity.FieldUsages getCurrentBookFieldUsages(
+            final @NonNull UpdateFieldsFromInternetActivity.FieldUsages requestedFields) {
 
-        for (UpdateFromInternetActivity.FieldUsage usage : mRequestedFields.values()) {
+        UpdateFieldsFromInternetActivity.FieldUsages fieldUsages = new UpdateFieldsFromInternetActivity.FieldUsages();
+        for (UpdateFieldsFromInternetActivity.FieldUsage usage : requestedFields.values()) {
             // Not selected, we don't want it
             if (usage.isSelected()) {
                 switch (usage.usage) {
                     case AddExtra:
                     case Overwrite:
                         // Add and Overwrite mean we always get the data
-                        mCurrentBookFieldUsages.put(usage);
+                        fieldUsages.put(usage);
                         break;
                     case CopyIfBlank:
                         // Handle special cases first, 'default:' for the rest
@@ -293,34 +295,34 @@ public class UpdateFromInternetTask extends ManagedTask implements SearchManager
                             case UniqueId.BKEY_HAVE_THUMBNAIL:
                                 File file = StorageUtils.getCoverFile(mCurrentUuid);
                                 if (!file.exists() || file.length() == 0) {
-                                    mCurrentBookFieldUsages.put(usage);
+                                    fieldUsages.put(usage);
                                 }
                                 break;
 
                             case UniqueId.BKEY_AUTHOR_ARRAY:
                                 // We should never have a book without authors, but lets be paranoid
                                 if (mOriginalBookData.containsKey(usage.key)) {
-                                    ArrayList<Author> list = BundleUtils.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, mOriginalBookData);
+                                    ArrayList<Author> list = mOriginalBookData.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
                                     if (list == null || list.size() == 0) {
-                                        mCurrentBookFieldUsages.put(usage);
+                                        fieldUsages.put(usage);
                                     }
                                 }
                                 break;
 
                             case UniqueId.BKEY_SERIES_ARRAY:
                                 if (mOriginalBookData.containsKey(usage.key)) {
-                                    ArrayList<Series> list = BundleUtils.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, mOriginalBookData);
+                                    ArrayList<Series> list = mOriginalBookData.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
                                     if (list == null || list.size() == 0) {
-                                        mCurrentBookFieldUsages.put(usage);
+                                        fieldUsages.put(usage);
                                     }
                                 }
                                 break;
 
                             case UniqueId.BKEY_TOC_TITLES_ARRAY:
                                 if (mOriginalBookData.containsKey(usage.key)) {
-                                    ArrayList<TOCEntry> list = BundleUtils.getParcelableArrayList(UniqueId.BKEY_TOC_TITLES_ARRAY, mOriginalBookData);
+                                    ArrayList<TOCEntry> list = mOriginalBookData.getParcelableArrayList(UniqueId.BKEY_TOC_TITLES_ARRAY);
                                     if (list == null || list.size() == 0) {
-                                        mCurrentBookFieldUsages.put(usage);
+                                        fieldUsages.put(usage);
                                     }
                                 }
                                 break;
@@ -329,7 +331,7 @@ public class UpdateFromInternetTask extends ManagedTask implements SearchManager
                                 // If the original was blank, add to list
                                 String value = mOriginalBookData.getString(usage.key);
                                 if (value == null || value.isEmpty()) {
-                                    mCurrentBookFieldUsages.put(usage);
+                                    fieldUsages.put(usage);
                                 }
                                 break;
                         }
@@ -337,8 +339,13 @@ public class UpdateFromInternetTask extends ManagedTask implements SearchManager
                 }
             }
         }
+
+        return fieldUsages;
     }
 
+    /**
+     * The Update task is done.
+     */
     @Override
     public void onTaskFinish() {
         try {
@@ -349,18 +356,20 @@ public class UpdateFromInternetTask extends ManagedTask implements SearchManager
     }
 
     /**
-     * Called in the main thread for this object when a search has completed.
+     * Called in the main thread for this object when the search for one book has completed.
      */
     @SuppressWarnings("SameReturnValue")
-    public boolean onSearchFinished(final @NonNull Bundle newBookData, final boolean cancelled) {
+    public boolean onSearchFinished(final boolean cancelled, final @NonNull Bundle newBookData) {
         if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
-            Logger.info(this, " onSearchFinished");
+            Logger.info(this, " onSearchFinished|bookId=" + mCurrentBookId);
         }
 
-        // Set cancelled flag if the task was cancelled
+
         if (cancelled) {
+            // if the search was cancelled, propagate by cancelling ourselves.
             cancelTask();
         } else if (newBookData.size() == 0) {
+            // tell the user if the search failed.
             mTaskManager.sendTaskUserMessage(BookCatalogueApp.getResourceString(R.string.warning_unable_to_find_book));
         }
 
@@ -369,14 +378,10 @@ public class UpdateFromInternetTask extends ManagedTask implements SearchManager
             processSearchResults(mCurrentBookId, mCurrentUuid, mCurrentBookFieldUsages, newBookData, mOriginalBookData);
         }
 
-        // Done! This need to go after processSearchResults() because we will signal(free) the
-        // main thread which may disconnect database connection if on last book.
-//        if (BuildConfig.DEBUG) {
-//            Logger.info(this, "onSearchFinished, Let another search begin, signal mSearchDone");
-//        }
-        // The search is complete AND the class-level data has
-        // been cached by the processing thread, so that a new search can begin.
-        // Let another search begin
+        /*
+        * The search is complete AND the class-level data has been cached by the processing thread.
+        * Let another search begin.
+        */
         mSearchLock.lock();
         try {
             mSearchDone.signal();
@@ -396,7 +401,7 @@ public class UpdateFromInternetTask extends ManagedTask implements SearchManager
      */
     private void processSearchResults(final long bookId,
                                       final @NonNull String uuid,
-                                      final @NonNull UpdateFromInternetActivity.FieldUsages requestedFields,
+                                      final @NonNull UpdateFieldsFromInternetActivity.FieldUsages requestedFields,
                                       final @NonNull Bundle newBookData,
                                       final @NonNull Bundle originalBookData) {
         if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
@@ -414,16 +419,16 @@ public class UpdateFromInternetTask extends ManagedTask implements SearchManager
         }
 
         // For each field, process it according the the usage.
-        for (UpdateFromInternetActivity.FieldUsage usage : requestedFields.values()) {
+        for (UpdateFieldsFromInternetActivity.FieldUsage usage : requestedFields.values()) {
             if (newBookData.containsKey(usage.key)) {
                 // Handle thumbnail specially
                 if (usage.key.equals(UniqueId.BKEY_HAVE_THUMBNAIL)) {
                     File downloadedFile = StorageUtils.getTempCoverFile();
                     boolean copyThumb = false;
-                    if (usage.usage == UpdateFromInternetActivity.FieldUsage.Usage.CopyIfBlank) {
+                    if (usage.usage == UpdateFieldsFromInternetActivity.FieldUsage.Usage.CopyIfBlank) {
                         File file = StorageUtils.getCoverFile(uuid);
                         copyThumb = (!file.exists() || file.length() == 0);
-                    } else if (usage.usage == UpdateFromInternetActivity.FieldUsage.Usage.Overwrite) {
+                    } else if (usage.usage == UpdateFieldsFromInternetActivity.FieldUsage.Usage.Overwrite) {
                         copyThumb = true;
                     }
                     if (copyThumb) {
@@ -442,7 +447,7 @@ public class UpdateFromInternetTask extends ManagedTask implements SearchManager
                             switch (usage.key) {
                                 case UniqueId.BKEY_AUTHOR_ARRAY:
                                     if (originalBookData.containsKey(usage.key)) {
-                                        ArrayList<Author> list = BundleUtils.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, originalBookData);
+                                        ArrayList<Author> list = originalBookData.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
                                         if (list != null && list.size() > 0) {
                                             newBookData.remove(usage.key);
                                         }
@@ -450,7 +455,7 @@ public class UpdateFromInternetTask extends ManagedTask implements SearchManager
                                     break;
                                 case UniqueId.BKEY_SERIES_ARRAY:
                                     if (originalBookData.containsKey(usage.key)) {
-                                        ArrayList<Series> list = BundleUtils.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, originalBookData);
+                                        ArrayList<Series> list = originalBookData.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
                                         if (list != null && list.size() > 0) {
                                             newBookData.remove(usage.key);
                                         }
@@ -458,7 +463,7 @@ public class UpdateFromInternetTask extends ManagedTask implements SearchManager
                                     break;
                                 case UniqueId.BKEY_TOC_TITLES_ARRAY:
                                     if (originalBookData.containsKey(usage.key)) {
-                                        ArrayList<TOCEntry> list = BundleUtils.getParcelableArrayList(UniqueId.BKEY_TOC_TITLES_ARRAY, originalBookData);
+                                        ArrayList<TOCEntry> list = originalBookData.getParcelableArrayList(UniqueId.BKEY_TOC_TITLES_ARRAY);
                                         if (list != null && list.size() > 0) {
                                             newBookData.remove(usage.key);
                                         }
@@ -478,13 +483,13 @@ public class UpdateFromInternetTask extends ManagedTask implements SearchManager
                             // Handle arrays (note: before you're clever, and collapse this to one... Android Studio hides the type in the <~> notation!
                             switch (usage.key) {
                                 case UniqueId.BKEY_AUTHOR_ARRAY:
-                                    UpdateFromInternetTask.<Author>combineArrays(usage.key, originalBookData, newBookData);
+                                    UpdateFieldsFromInternetTask.<Author>combineArrays(usage.key, originalBookData, newBookData);
                                     break;
                                 case UniqueId.BKEY_SERIES_ARRAY:
-                                    UpdateFromInternetTask.<Series>combineArrays(usage.key, originalBookData, newBookData);
+                                    UpdateFieldsFromInternetTask.<Series>combineArrays(usage.key, originalBookData, newBookData);
                                     break;
                                 case UniqueId.BKEY_TOC_TITLES_ARRAY:
-                                    UpdateFromInternetTask.<TOCEntry>combineArrays(usage.key, originalBookData, newBookData);
+                                    UpdateFieldsFromInternetTask.<TOCEntry>combineArrays(usage.key, originalBookData, newBookData);
                                     break;
                                 default:
                                     // No idea how to handle this for non-arrays

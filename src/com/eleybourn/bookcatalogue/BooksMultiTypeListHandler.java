@@ -69,8 +69,8 @@ import com.eleybourn.bookcatalogue.entities.Publisher;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.searches.amazon.AmazonUtils;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsUtils;
-import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue;
-import com.eleybourn.bookcatalogue.tasks.SimpleTaskQueue.SimpleTaskContext;
+import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue;
+import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue.SimpleTaskContext;
 import com.eleybourn.bookcatalogue.utils.BookUtils;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
@@ -125,7 +125,7 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE
 public class BooksMultiTypeListHandler implements MultiTypeListHandler {
 
     /** Queue for tasks getting extra row details as necessary */
-    private static final SimpleTaskQueue mInfoQueue = new SimpleTaskQueue("extra-info", 1);
+    private static final SimpleTaskQueue mInfoQueue = new SimpleTaskQueue("BoB-GetBookExtrasTask", 1);
 
     /**
      * Return the row type for the current cursor position.
@@ -1289,7 +1289,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
 
             // Thumbnail
             if ((extraFields & BooklistStyle.EXTRAS_THUMBNAIL) != 0) {
-                ImageUtils.fetchBookCoverIntoImageView(cover,
+                ImageUtils.fetchFileIntoImageView(cover,
                         rowView.getBookUuid(), rowView.getMaxThumbnailWidth(), rowView.getMaxThumbnailHeight(),
                         true,
                         BooklistPreferencesActivity.isThumbnailCacheEnabled(),
