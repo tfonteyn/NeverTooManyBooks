@@ -30,6 +30,8 @@ import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.cursors.BindableItemCursor;
 import com.eleybourn.bookcatalogue.dialogs.ContextDialogItem;
 
@@ -40,15 +42,15 @@ import java.util.List;
  *
  * @author Philip Warner
  */
-public abstract class LegacyEvent extends Event {
+public class LegacyEvent extends Event {
 
     private static final long serialVersionUID = -8518718598973561219L;
     private static final int TEXT_FIELD_1 = 1;
     private static final int TEXT_FIELD_2 = 2;
     private final byte[] mOriginal;
 
-    public LegacyEvent(byte[] original, String description) {
-        super(description);
+    LegacyEvent(byte[] original) {
+        super("Legacy Event");
         mOriginal = original;
     }
 
@@ -78,7 +80,7 @@ public abstract class LegacyEvent extends Event {
     public void bindView(final @NonNull View view,
                          final @NonNull Context context,
                          final @NonNull BindableItemCursor cursor,
-                         final @NonNull Object appInfo) {
+                         final @NonNull CatalogueDBAdapter db) {
         ((TextView) view.findViewById(TEXT_FIELD_1))
                 .setText("Legacy Event Placeholder for Event #" + this.getId());
         ((TextView) view.findViewById(TEXT_FIELD_2))
@@ -90,11 +92,20 @@ public abstract class LegacyEvent extends Event {
     }
 
     @Override
-    public abstract void addContextMenuItems(final @NonNull Context ctx,
-                                             @NonNull AdapterView<?> parent,
-                                             final @NonNull View v,
-                                             final int position,
-                                             final long id,
-                                             final @NonNull List<ContextDialogItem> items,
-                                             final @NonNull Object appInfo);
+    public void addContextMenuItems(final @NonNull Context ctx,
+                                    @NonNull AdapterView<?> parent,
+                                    final @NonNull View v,
+                                    final int position,
+                                    final long id,
+                                    final @NonNull List<ContextDialogItem> items,
+                                    final @NonNull CatalogueDBAdapter db) {
+
+        items.add(new ContextDialogItem(ctx.getString(R.string.menu_delete_event), new Runnable() {
+            @Override
+            public void run() {
+                QueueManager.getQueueManager().deleteEvent(LegacyEvent.this.getId());
+            }
+        }));
+
+    }
 }

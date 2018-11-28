@@ -3,6 +3,8 @@ package com.eleybourn.bookcatalogue.searches.librarything;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 
+import com.eleybourn.bookcatalogue.utils.IsbnUtils;
+
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
@@ -60,7 +62,7 @@ class SearchLibraryThingEditionHandler extends DefaultHandler {
         if (localName.equalsIgnoreCase(XML_ISBN)) {
             // Add the isbn
             String isbn = mBuilder.toString();
-            mEditions.add(isbn);
+                mEditions.add(isbn);
         }
         // Note:
         // Always reset the length. This is not entirely the right thing to do, but works

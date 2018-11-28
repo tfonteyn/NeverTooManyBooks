@@ -29,9 +29,9 @@ import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
-import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.BookNotFoundException;
-import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.NetworkException;
-import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.NotAuthorizedException;
+import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.BookNotFoundException;
+import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.NetworkException;
+import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.NotAuthorizedException;
 import com.eleybourn.bookcatalogue.searches.goodreads.api.SimpleXmlFilter.BuilderContext;
 import com.eleybourn.bookcatalogue.searches.goodreads.api.SimpleXmlFilter.XmlListener;
 import com.eleybourn.bookcatalogue.searches.goodreads.api.XmlFilter.ElementContext;
@@ -271,7 +271,7 @@ public class ListReviewsApiHandler extends ApiHandler {
 
         // Sort by update_dte (descending) so sync is faster. Specify 'shelf=all' because it seems goodreads returns
         // the shelf that is selected in 'My Books' on the web interface by default.
-        final String urlBase = GoodreadsManager.GOODREADS_API_ROOT + "/review/list/%4$s.xml?key=%1$s&v=2&page=%2$s&per_page=%3$s&sort=date_updated&order=d&shelf=all";
+        final String urlBase = GoodreadsManager.BASE_URL + "/review/list/%4$s.xml?key=%1$s&v=2&page=%2$s&per_page=%3$s&sort=date_updated&order=d&shelf=all";
         final String url = String.format(urlBase, mManager.getDevKey(), page, perPage, mManager.getUserId());
         HttpGet get = new HttpGet(url);
 

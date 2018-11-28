@@ -38,7 +38,7 @@ public class SearchLibraryThingTask extends ManagedSearchTask {
     @Override
     protected void runTask() {
         final @StringRes int R_ID_SEARCHING = R.string.searching_library_thing;
-        doProgress(getString(R_ID_SEARCHING), 0);
+        mTaskManager.sendTaskProgressMessage(this, R_ID_SEARCHING, 0);
 
         LibraryThingManager ltm = new LibraryThingManager();
         if (!ltm.isAvailable()) {
@@ -53,19 +53,17 @@ public class SearchLibraryThingTask extends ManagedSearchTask {
                 checkForSeriesNameInTitle();
             }
         } catch (java.net.SocketTimeoutException e) {
-            showError(R_ID_SEARCHING, R.string.error_network_timeout);
+            Logger.info(this,e.getLocalizedMessage());
+            setFinalError(R_ID_SEARCHING, R.string.error_network_timeout);
         } catch (MalformedURLException | UnknownHostException e) {
             Logger.error(e);
-            showError(R_ID_SEARCHING, R.string.error_search_configuration);
-
+            setFinalError(R_ID_SEARCHING, R.string.error_search_configuration);
         } catch (IOException e) {
-            showError(R_ID_SEARCHING, R.string.error_search_failed);
+            setFinalError(R_ID_SEARCHING, R.string.error_search_failed);
             Logger.error(e);
-
         } catch (Exception e) {
             Logger.error(e);
-            showException(R_ID_SEARCHING, e);
+            setFinalError(R_ID_SEARCHING, e);
         }
-
     }
 }

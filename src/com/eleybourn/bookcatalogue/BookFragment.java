@@ -1,6 +1,7 @@
 package com.eleybourn.bookcatalogue;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
@@ -28,7 +29,6 @@ import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.BookManager;
-import com.eleybourn.bookcatalogue.entities.Publisher;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.entities.TOCEntry;
 import com.eleybourn.bookcatalogue.utils.BundleUtils;
@@ -123,10 +123,6 @@ public class BookFragment extends BookBaseFragment implements BookManager {
         mActivity = (BaseActivity) requireActivity();
 
         super.onActivityCreated(savedInstanceState);
-
-        ArrayList<Publisher> pl = getArguments().getParcelableArrayList("par");
-
-
 
         initBooklist(getArguments(), savedInstanceState);
 
@@ -682,14 +678,14 @@ public class BookFragment extends BookBaseFragment implements BookManager {
         Tracker.enterOnActivityResult(this,requestCode,resultCode, data);
         switch (requestCode) {
             case EditBookFragment.REQUEST_CODE: {
-                if (resultCode == EditBookFragment.RESULT_CHANGES_MADE) {
+                if (resultCode == Activity.RESULT_OK) {
                     getBook().reload(mDb);
                     mActivity.setChangesMade(true);
                 }
                 break;
             }
             default:
-                // handle any cover image result codes
+                // handle any cover image request codes
                 if (!mCoverHandler.onActivityResult(requestCode, resultCode, data)) {
                     super.onActivityResult(requestCode, resultCode, data);
                 }

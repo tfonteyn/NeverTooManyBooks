@@ -29,7 +29,9 @@ import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.view.View;
 
+import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.utils.ThemeUtils;
 
 /**
  * This class is used by CropImage to display a highlighted cropping rectangle overlaid with

@@ -26,7 +26,7 @@ import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.database.DatabaseHelper;
+import com.eleybourn.bookcatalogue.database.CatalogueDBHelper;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
 import java.util.ArrayList;
@@ -96,8 +96,8 @@ public class UpgradeMessageManager {
             // It was an old install using old database-based message system
             // set the version to the last installed version that used the old method.
             lastVersion = 98;
-            if (!DatabaseHelper.getMessage().isEmpty()) {
-                message.append("<p>").append(DatabaseHelper.getMessage()).append("</p>");
+            if (!CatalogueDBHelper.getMessage().isEmpty()) {
+                message.append("<p>").append(CatalogueDBHelper.getMessage()).append("</p>");
             }
         }
 

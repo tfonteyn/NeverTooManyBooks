@@ -370,7 +370,7 @@ public class CoverBrowser {
         @Override
         public void run(final @NonNull SimpleTaskContext taskContext) {
             // Get some editions
-            // ENHANCE: the list of editions should be expanded to somehow include other sites.
+            // TOMF ENHANCE: the list of editions should be expanded to somehow include other sites aside of LibraryThingManager
             // As well as the alternate user-contributed images from LibraryThing. The latter are
             // often the best source but at present could only be obtained by HTML scraping.
             try {
@@ -582,6 +582,7 @@ public class CoverBrowser {
 
             //Reminder: the for() loop will bailout (return) as soon as a cover file is found.
             // it does not collect covers from all sites; just from the first one found.
+            // (to avoid confusion: covers are fetched for each edition, but only from ONE website each)
             // ENHANCE: allow the user to prioritize the order on the fly.
             for (SearchSites.Site site : SearchSites.getSitesForCoverSearches()) {
                 if (site.enabled) {

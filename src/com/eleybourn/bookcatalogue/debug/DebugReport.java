@@ -15,6 +15,7 @@ import android.support.v4.content.FileProvider;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.database.CatalogueDBHelper;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.scanner.Pic2ShopScanner;
 import com.eleybourn.bookcatalogue.scanner.ScannerManager;
@@ -31,7 +32,7 @@ public class DebugReport {
 
     /** files with these prefixes will be bundled in the report */
     private static final String[] FILE_PREFIXES = new String[]{
-            "DbUpgrade", "DbExport", "error.log", "export.csv"};
+            "DbUpgrade", "DbExport", "error.log", "exportBooks.csv"};
 
     /**
      * Return the MD5 hash of the public key that signed this app, or a useful
@@ -100,7 +101,7 @@ public class DebugReport {
         // Create a temp file, set to auto-delete at app close
         File tmpDbFile = StorageUtils.getFile("DbExport-tmp.db");
         tmpDbFile.deleteOnExit();
-        StorageUtils.backupDatabaseFile(activity, tmpDbFile.getName());
+        StorageUtils.exportFile(CatalogueDBHelper.getDatabasePath(activity), tmpDbFile.getName());
 
         // setup the mail message
         final Intent emailIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);

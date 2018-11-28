@@ -24,9 +24,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
-import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.BookNotFoundException;
-import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.NetworkException;
-import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.NotAuthorizedException;
+import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.BookNotFoundException;
+import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.NetworkException;
+import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.NotAuthorizedException;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsWork;
 import com.eleybourn.bookcatalogue.searches.goodreads.api.XmlFilter.ElementContext;
 import com.eleybourn.bookcatalogue.searches.goodreads.api.XmlFilter.XmlHandler;
@@ -336,7 +336,7 @@ public class SearchBooksApiHandler extends ApiHandler {
             NotAuthorizedException, BookNotFoundException, IOException, NetworkException {
 
         // Setup API call
-        HttpPost post = new HttpPost(GoodreadsManager.GOODREADS_API_ROOT + "/search/index.xml");
+        HttpPost post = new HttpPost(GoodreadsManager.BASE_URL + "/search/index.xml");
         List<NameValuePair> parameters = new ArrayList<>();
         parameters.add(new BasicNameValuePair("q", query.trim()));
         parameters.add(new BasicNameValuePair("key", mManager.getDevKey()));

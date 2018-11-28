@@ -54,7 +54,7 @@ public final class RowKinds {
     // the total number of kinds (e.g. the size()) ALWAYS update after adding a row kind...
     private static final int ROW_KIND_TOTAL = 27;
 
-    //TOMF: add support for all? new columns added in DatabaseHelper: 2018-11-14
+    //TOMF: add support for all? new columns added in CatalogueDBHelper: 2018-11-14
     // don't forget MONTH special formatting, search specific for the MONTH kinds
     /*
         DOM_FIRST_PUBLICATION + " date"

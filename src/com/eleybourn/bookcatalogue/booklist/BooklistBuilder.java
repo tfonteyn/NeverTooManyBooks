@@ -38,7 +38,7 @@ import com.eleybourn.bookcatalogue.booklist.BooklistGroup.BooklistSeriesGroup;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle.CompoundKey;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
-import com.eleybourn.bookcatalogue.database.DatabaseHelper;
+import com.eleybourn.bookcatalogue.database.CatalogueDBHelper;
 import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedDb;
 import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedStatement;
 import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer.SyncLock;
@@ -205,7 +205,7 @@ public class BooklistBuilder implements AutoCloseable {
     private static final AtomicInteger mDebugInstanceCounter = new AtomicInteger();
 
     @NonNull
-    private Context mContext;
+    private final Context mContext;
 
     /** Collection of statements created by this Builder */
     @NonNull
@@ -741,7 +741,7 @@ public class BooklistBuilder implements AutoCloseable {
                 for (SortedDomainInfo sdi : sort) {
                     indexCols.append(sdi.domain.name);
                     if (sdi.domain.isText()) {
-                        indexCols.append(DatabaseHelper.COLLATION);
+                        indexCols.append(CatalogueDBHelper.COLLATION);
 
                         // *If* collations is case-sensitive, handle it.
                         if (collationIsCs) {
@@ -749,7 +749,7 @@ public class BooklistBuilder implements AutoCloseable {
                         } else {
                             sortCols.append(sdi.domain.name);
                         }
-                        sortCols.append(DatabaseHelper.COLLATION);
+                        sortCols.append(CatalogueDBHelper.COLLATION);
                     } else {
                         sortCols.append(sdi.domain.name);
                     }
@@ -1079,7 +1079,7 @@ public class BooklistBuilder implements AutoCloseable {
                     collatedCols.append(",");
                 }
                 cols.append(",").append(d.name);
-                collatedCols.append(" ").append(d.name).append(DatabaseHelper.COLLATION);
+                collatedCols.append(" ").append(d.name).append(CatalogueDBHelper.COLLATION);
             }
             // Construct the sum statement for this group
             String summarySql = "INSERT INTO " + mListTable + " (" + DOM_BL_NODE_LEVEL + "," + DOM_BL_NODE_ROW_KIND + cols + "," + DOM_ROOT_KEY + ")" +
@@ -1088,7 +1088,7 @@ public class BooklistBuilder implements AutoCloseable {
                     g.kind + " AS " + DOM_BL_NODE_ROW_KIND + cols + "," +
                     DOM_ROOT_KEY +
                     " FROM " + mListTable + " WHERE " + DOM_BL_NODE_LEVEL + "=" + (levelId + 1) +
-                    " GROUP BY " + collatedCols + "," + DOM_ROOT_KEY + DatabaseHelper.COLLATION;
+                    " GROUP BY " + collatedCols + "," + DOM_ROOT_KEY + CatalogueDBHelper.COLLATION;
             //" GROUP BY " + DOM_BL_NODE_LEVEL + ", " + DOM_BL_NODE_ROW_KIND + collatedCols;
 
             // Save, compile and run this statement
@@ -1799,7 +1799,7 @@ public class BooklistBuilder implements AutoCloseable {
                     if (conditionSql.length() > 0) {
                         conditionSql.append(" AND ");
                     }
-                    conditionSql.append("Coalesce(l.").append(groupDomain).append(",'') = Coalesce(new.").append(groupDomain).append(",'') ").append(DatabaseHelper.COLLATION).append("\n");
+                    conditionSql.append("Coalesce(l.").append(groupDomain).append(",'') = Coalesce(new.").append(groupDomain).append(",'') ").append(CatalogueDBHelper.COLLATION).append("\n");
                 }
             }
             insertSql.append(")\n").append(valuesSql).append(")");
@@ -1946,7 +1946,7 @@ public class BooklistBuilder implements AutoCloseable {
                     if (conditionSql.length() > 0) {
                         conditionSql.append("	AND ");
                     }
-                    conditionSql.append("Coalesce(l.").append(d).append(", '') = Coalesce(new.").append(d).append(",'') ").append(DatabaseHelper.COLLATION).append("\n");
+                    conditionSql.append("Coalesce(l.").append(d).append(", '') = Coalesce(new.").append(d).append(",'') ").append(CatalogueDBHelper.COLLATION).append("\n");
                 }
             }
             //insertSql += ")\n	Select " + valuesSql + " Where not exists(Select 1 From " + mListTable + " l where " + conditionSql + ")";

@@ -30,8 +30,8 @@ import java.io.Serializable;
 
 /**
  * Base class for capturing and storing exceptions that occur during task processing but which
- * do not prevent the task from completing. Examples might include a long running export job
- * in which 3 items fail, but 1000 succeed -- in this case it is useful to export the successful
+ * do not prevent the task from completing. Examples might include a long running exportBooks job
+ * in which 3 items fail, but 1000 succeed -- in this case it is useful to exportBooks the successful
  * ones and report the failures later.
  *
  * The Task object has a 'saveException()' method that stores the exception in the database

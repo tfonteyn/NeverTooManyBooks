@@ -25,9 +25,10 @@ import android.support.annotation.StringRes;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions;
 import com.eleybourn.bookcatalogue.searches.ManagedSearchTask;
 import com.eleybourn.bookcatalogue.searches.SearchSites;
-import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.BookNotFoundException;
+import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.BookNotFoundException;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.TaskManager;
 
 import java.io.IOException;
@@ -62,7 +63,7 @@ public class SearchGoodreadsTask extends ManagedSearchTask {
     @Override
     protected void runTask() {
         final @StringRes int R_ID_SEARCHING = R.string.searching_goodreads;
-        doProgress(getString(R_ID_SEARCHING), 0);
+        mTaskManager.sendTaskProgressMessage(this, R_ID_SEARCHING, 0);
 
         GoodreadsManager grMgr = new GoodreadsManager();
         if (!grMgr.isAvailable()) {
@@ -75,29 +76,27 @@ public class SearchGoodreadsTask extends ManagedSearchTask {
 
         } catch (BookNotFoundException ignore) {
             // ignore, to bad.
-        } catch (GoodreadsManager.Exceptions.NotAuthorizedException |
+        } catch (GoodreadsExceptions.NotAuthorizedException |
                 OAuthMessageSignerException | OAuthExpectationFailedException | OAuthCommunicationException
                 e) {
             // not actually sure if any of these will ever surface here?
             // but for completeness/curiosity/paranoia sake
             // see if we can capture any in our logs and fix anything obvious
             Logger.error(e);
-            showError(R_ID_SEARCHING, R.string.gr_auth_failed);
+            setFinalError(R_ID_SEARCHING, R.string.gr_auth_failed);
 
         } catch (java.net.SocketTimeoutException e) {
-            showError(R_ID_SEARCHING, R.string.error_network_timeout);
-
+            Logger.info(this,e.getLocalizedMessage());
+            setFinalError(R_ID_SEARCHING, R.string.error_network_timeout);
         } catch (MalformedURLException | UnknownHostException e) {
             Logger.error(e);
-            showError(R_ID_SEARCHING, R.string.error_search_configuration);
-
-        } catch (GoodreadsManager.Exceptions.NetworkException | IOException e) { // added NetworkException
-            showError(R_ID_SEARCHING, R.string.error_search_failed);
+            setFinalError(R_ID_SEARCHING, R.string.error_search_configuration);
+        } catch (IOException e) {
             Logger.error(e);
-
+            setFinalError(R_ID_SEARCHING, R.string.error_search_failed);
         } catch (Exception e) {
             Logger.error(e);
-            showException(R_ID_SEARCHING, e);
+            setFinalError(R_ID_SEARCHING, e);
         }
     }
 }

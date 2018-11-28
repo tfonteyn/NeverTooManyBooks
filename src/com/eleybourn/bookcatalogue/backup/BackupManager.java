@@ -32,7 +32,7 @@ import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.BackupReader.BackupReaderListener;
 import com.eleybourn.bookcatalogue.backup.BackupWriter.BackupWriterListener;
-import com.eleybourn.bookcatalogue.backup.tar.TarBackupContainer;
+import com.eleybourn.bookcatalogue.backup.tararchive.TarBackupContainer;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.filechooser.BackupFileDetails;
 import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue.SimpleTaskContext;
@@ -45,7 +45,6 @@ import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Date;
 
 /**
  * Class for public static methods relating to backup/restore
@@ -63,13 +62,12 @@ public class BackupManager {
      * Ensure the file name extension is what we want
      */
     @NonNull
-    private static File cleanupFile(final @NonNull File requestedFile) {
+    private static File cleanupExtension(final @NonNull File requestedFile) {
         if (!BackupFileDetails.isArchive(requestedFile)) {
             return new File(requestedFile.getAbsoluteFile() + BackupFileDetails.ARCHIVE_EXTENSION);
         } else {
             return requestedFile;
         }
-
     }
 
     /**
@@ -79,35 +77,31 @@ public class BackupManager {
      */
     @NonNull
     public static File backup(final @NonNull FragmentActivity context,
-                              final @NonNull File requestedFile,
                               final int taskId,
-                              final int backupFlags,
-                              final @Nullable Date since) {
-        final int flags = backupFlags & Exporter.EXPORT_MASK;
-        if (flags == 0) {
+                              final @NonNull ExportSettings settings) {
+
+        if ((settings.options & ExportSettings.EXPORT_MASK) == 0) {
             throw new IllegalArgumentException("Backup flags must be specified");
         }
-        //if (flags == (Exporter.EXPORT_ALL | Exporter.EXPORT_NEW_OR_UPDATED) ) {
-        //	throw new IllegalArgumentException("Illegal backup flag combination: ALL and NEW_OR_UPDATED");
-        //}
-
-        final File resultingFile = cleanupFile(requestedFile);
-        final File tempFile = new File(resultingFile.getAbsolutePath() + ".tmp");
+        final File destinationFile = cleanupExtension(settings.file);
+        // we write to the temp file, and rename it upon success
+        final File tempFile = new File(destinationFile.getAbsolutePath() + ".tmp");
 
         final FragmentTask task = new FragmentTaskAbstract() {
             private final String mBackupDate = DateUtils.utcSqlDateTimeForToday();
             private boolean mBackupOk = false;
 
             @Override
-            public void run(final @NonNull SimpleTaskQueueProgressDialogFragment fragment, final @NonNull SimpleTaskContext taskContext) {
+            public void run(final @NonNull SimpleTaskQueueProgressDialogFragment fragment,
+                            final @NonNull SimpleTaskContext taskContext) {
 
-                TarBackupContainer bkp = new TarBackupContainer(fragment.requireContext(), tempFile);
+                BackupContainer bkp = new TarBackupContainer(fragment.requireContext(), tempFile);
                 if (DEBUG_SWITCHES.BACKUP && BuildConfig.DEBUG) {
-                    Logger.info(this, " Starting " + tempFile.getAbsolutePath());
+                    Logger.info(this, "backup|starting|file=" + tempFile.getAbsolutePath());
                 }
                 try (BackupWriter wrt = bkp.newWriter()) {
-
-                    wrt.backup(new BackupWriterListener() {
+                    // do it!
+                    wrt.backup(settings, new BackupWriterListener() {
                         private int mTotalBooks = 0;
 
                         @Override
@@ -134,19 +128,22 @@ public class BackupManager {
                         public void setTotalBooks(final int books) {
                             mTotalBooks = books;
                         }
-                    }, backupFlags, since);
+                    });
 
+                    // all done. we handle the result here, still in the background.
                     if (fragment.isCancelled()) {
+                        // cancelled
                         if (DEBUG_SWITCHES.BACKUP && BuildConfig.DEBUG) {
-                            Logger.info(this, " Cancelled " + resultingFile.getAbsolutePath());
+                            Logger.info(this, "backup|cancelling|file=" + destinationFile.getAbsolutePath());
                         }
                         StorageUtils.deleteFile(tempFile);
                     } else {
-                        StorageUtils.deleteFile(resultingFile);
-                        StorageUtils.renameFile(tempFile, resultingFile);
+                        // success
+                        StorageUtils.deleteFile(destinationFile);
+                        StorageUtils.renameFile(tempFile, destinationFile);
                         mBackupOk = true;
                         if (DEBUG_SWITCHES.BACKUP && BuildConfig.DEBUG) {
-                            Logger.info(this, " Finished " + resultingFile.getAbsolutePath() + ", size = " + resultingFile.length());
+                            Logger.info(this, "backup|finished|file=" + destinationFile.getAbsolutePath() + ", size = " + destinationFile.length());
                         }
                     }
                 } catch (Exception e) {
@@ -163,13 +160,15 @@ public class BackupManager {
                 if (e != null) {
                     StorageUtils.deleteFile(tempFile);
                 }
+
                 fragment.setSuccess(mBackupOk);
                 if (mBackupOk) {
                     SharedPreferences.Editor ed = BookCatalogueApp.getSharedPreferences().edit();
-                    if ((backupFlags == Exporter.EXPORT_ALL)) {
+                    // if the backup was a full one (not a 'since') remember that.
+                    if ((settings.options & ExportSettings.EXPORT_ALL) != 0) {
                         ed.putString(PREF_LAST_BACKUP_DATE, mBackupDate);
                     }
-                    ed.putString(PREF_LAST_BACKUP_FILE, resultingFile.getAbsolutePath());
+                    ed.putString(PREF_LAST_BACKUP_FILE, destinationFile.getAbsolutePath());
                     ed.apply();
                 }
             }
@@ -178,7 +177,7 @@ public class BackupManager {
         SimpleTaskQueueProgressDialogFragment frag = SimpleTaskQueueProgressDialogFragment
                 .newInstance(context, R.string.progress_msg_backing_up, task, false, taskId);
         frag.setNumberFormat(null);
-        return resultingFile;
+        return destinationFile;
     }
 
     /**
@@ -187,18 +186,19 @@ public class BackupManager {
      * We use a FragmentTask so that long actions do not occur in the UI thread.
      */
     public static void restore(final @NonNull FragmentActivity context,
-                               final @NonNull File inputFile,
                                final int taskId,
-                               final int importFlags) {
+                               final @NonNull ImportSettings settings) {
 
         final FragmentTask task = new FragmentTaskAbstract() {
             @Override
-            public void run(final @NonNull SimpleTaskQueueProgressDialogFragment fragment, final @NonNull SimpleTaskContext taskContext) {
+            public void run(final @NonNull SimpleTaskQueueProgressDialogFragment fragment,
+                            final @NonNull SimpleTaskContext taskContext) {
                 try {
                     if (DEBUG_SWITCHES.BACKUP && BuildConfig.DEBUG) {
-                        Logger.info(this, " Importing " + inputFile.getAbsolutePath());
+                        Logger.info(this, "restore|starting|file=" + settings.file.getAbsolutePath());
                     }
-                    readFrom(context, inputFile).restore(new BackupReaderListener() {
+                    readFrom(context, settings.file)
+                            .restore(settings, new BackupReaderListener() {
                         @Override
                         public void setMax(int max) {
                             fragment.setMax(max);
@@ -213,13 +213,13 @@ public class BackupManager {
                         public boolean isCancelled() {
                             return fragment.isCancelled();
                         }
-                    }, importFlags);
+                    });
 
                 } catch (IOException e) {
                     Logger.error(e);
                     throw new RuntimeException("Error during restore", e);
                 }
-                Logger.info(BackupManager.class, "Finished importing " + inputFile.getAbsolutePath() + ", size = " + inputFile.length());
+                Logger.info(BackupManager.class, "restore|finishing|file=" + settings.file.getAbsolutePath() + ", size = " + settings.file.length());
             }
         };
         SimpleTaskQueueProgressDialogFragment frag = SimpleTaskQueueProgressDialogFragment.newInstance(context,

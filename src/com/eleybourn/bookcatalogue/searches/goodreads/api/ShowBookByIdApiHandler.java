@@ -24,9 +24,9 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
-import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.BookNotFoundException;
-import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.NetworkException;
-import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.NotAuthorizedException;
+import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.BookNotFoundException;
+import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.NetworkException;
+import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.NotAuthorizedException;
 
 import org.apache.http.client.methods.HttpGet;
 
@@ -59,7 +59,7 @@ public class ShowBookByIdApiHandler extends ShowBookApiHandler {
             BookNotFoundException, IOException, NetworkException {
 
         // Setup API call
-        final String urlBase = GoodreadsManager.GOODREADS_API_ROOT + "/book/show/%1$s.xml?key=%2$s";
+        final String urlBase = GoodreadsManager.BASE_URL + "/book/show/%1$s.xml?key=%2$s";
         final String url = String.format(urlBase, workId, mManager.getDevKey());
         HttpGet get = new HttpGet(url);
 

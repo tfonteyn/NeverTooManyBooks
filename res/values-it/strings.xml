@@ -525,7 +525,7 @@
     <!-- This is the heading of the 'Loan' tab when editing a book. It needs to be short. "Loan Book" is too long. -->
     <string name="tab_lbl_loan">Prestito</string>
 
-    <!-- Hint displayed when an export or database backup is done -->
+    <!-- Hint displayed when an exportBooks or database backup is done -->
 
     <!-- Button text on the Goodreads activity; only displayed after user has registered -->
     <string name="gr_btn_forget_credentials">Cancella Credenziali</string>
@@ -566,7 +566,7 @@
     <!-- For saving and opening exports or backups -->
     <string name="btn_confirm_open">Apri</string>
 
-    <!-- Admin option to export books -->
+    <!-- Admin option to exportBooks books -->
     <string name="export_to_csv">Esporta come File CSV</string>
     <!-- Admin option to import books -->
     <string name="import_from_csv">Importa da File CSV</string>
@@ -610,7 +610,7 @@
     <string name="import_books_blurb">I libri di questo archivio saranno importati. Seleziona uno delle due opzioni per avviare l\'importazione, o premi \'back\' per annullare:</string>
     <!-- Description of the 'import all books' option -->
     <string name="info_all_books_will_be_imported">Tutti i libri nell\'archivio saranno importati, aggiornando i libri già presenti e aggiungendo quelli nuovi.</string>
-    <!-- Menu text for the 'import/export new & changed' option -->
+    <!-- Menu text for the 'import/exportBooks new & changed' option -->
     <string name="new_and_changed_books">Libri nuovi ed aggiornati</string>
     <!-- Description of the 'import new & changed' option -->
     <string name="new_and_changed_books_blurb">Importa solo i libri nuovi, o che sono stati aggiornati più di recente nell\'archivio. Utile per sincronizzare due apparecchi.</string>
@@ -619,32 +619,32 @@
     <!-- Part of the progress message displayed when importing books -->
     <string name="progress_msg_n_created_m_updated">%1$s creati, %2$s aggiornati</string>
 
-    <!--  Explanatory text for 'export' dialogue -->
+    <!--  Explanatory text for 'exportBooks' dialogue -->
     <string name="export_books_blurb">I libri del tuo catalogo saranno esportati. Seleziona uno delle due opzioni per avviare l\'esportazione, o premi \'back\' per annullare:</string>
 
     <!-- Displayed in progress dialog when exporting covers in incremental mode -->
     <string name="progress_msg_covers_skip">%1$s copertine elaborate (%2$s mancanti, %3$s saltate)</string>
 
-    <!-- Explanatory note for 'export all' option -->
+    <!-- Explanatory note for 'exportBooks all' option -->
     <string name="export_all_blurb">Tutti i libri, copertine, impostazioni e stili personalizzati saranno esportati nell\'archivio.</string>
-    <!-- Explanatory note for 'advanced export' option -->
+    <!-- Explanatory note for 'advanced exportBooks' option -->
     <string name="export_advanced_blurb">Seleziona cosa esportare nell\'archivio.</string>
     <!-- Text for button -->
     <string name="book_details">Dettagli dei libri</string>
     <!-- Brief description -->
     <string name="info_book_details">Le informazioni dettagliate stesse</string>
     <!-- Text for button -->
-    <string name="btn_cover_images">Immagini delle copertine</string>
+    <string name="lbl_cover_images">Immagini delle copertine</string>
     <!-- Brief description -->
     <string name="info_cover_images">Copertine di tutti i libri selezionati. Ciò renderà l\'esportazione molto più pesante.</string>
     <!-- Brief description -->
     <string name="info_preferences">Preferenze e stili di elencazione personalizzati</string>
 
-    <!-- Explanatory note for export date (not yet implemented) -->
+    <!-- Explanatory note for exportBooks date (not yet implemented) -->
     <string name="export_advanced_date_blurb">In via opzionale, specifica una data da usare per selezionare libri e/o copertine da esportare:</string>
-    <!-- Explanatory note for export date (not yet implemented) -->
+    <!-- Explanatory note for exportBooks date (not yet implemented) -->
     <string name="all_books_added_or_updated_since">Tutti i libri aggiunti o aggiornati dopo il giorno:</string>
-    <!-- Explanatory note for export data since last backup -->
+    <!-- Explanatory note for exportBooks data since last backup -->
     <string name="info_all_books_added_or_updated_since_last_full_backup">Tutti i libri aggiunti o aggiornati dall\'ultimo backup completo</string>
 
     <plurals name="displaying_n_books">

@@ -23,9 +23,9 @@ package com.eleybourn.bookcatalogue.searches.goodreads.api;
 import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
-import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.BookNotFoundException;
-import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.NetworkException;
-import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.NotAuthorizedException;
+import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.BookNotFoundException;
+import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.NetworkException;
+import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.NotAuthorizedException;
 
 import org.apache.http.client.methods.HttpGet;
 
@@ -59,7 +59,7 @@ public class IsbnToId extends ApiHandler {
     public long isbnToId(final @NonNull String isbn) throws
             OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException,
             IOException, NotAuthorizedException, BookNotFoundException, NetworkException {
-        HttpGet get = new HttpGet(GoodreadsManager.GOODREADS_API_ROOT + "/book/isbn_to_id/" + isbn + "?key=" + mManager.getDevKey());
+        HttpGet get = new HttpGet(GoodreadsManager.BASE_URL + "/book/isbn_to_id/" + isbn + "?key=" + mManager.getDevKey());
         String s = mManager.executeRaw(get);
         return Long.parseLong(s);
     }

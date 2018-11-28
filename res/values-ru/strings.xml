@@ -561,7 +561,7 @@
 
     <string name="book_details">Детальное инфо</string>
     <string name="info_book_details">Подробная информация о самой книге</string>
-    <string name="btn_cover_images">Обложки</string>
+    <string name="lbl_cover_images">Обложки</string>
     <string name="info_cover_images">Обложки для всех выбранных книг. Это сделает экспорт значительно больше.</string>
     <string name="info_preferences">Настройки и пользовательские стили</string>
 

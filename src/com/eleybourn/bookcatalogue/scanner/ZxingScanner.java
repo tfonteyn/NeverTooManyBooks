@@ -6,8 +6,6 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
-
 /**
  * This object will start a Zxing compatible scanner and extract the data
  * from the resulting intent when the activity completes.

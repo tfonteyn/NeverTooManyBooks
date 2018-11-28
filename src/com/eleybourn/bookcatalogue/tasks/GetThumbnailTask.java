@@ -30,7 +30,7 @@ import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.booklist.BooklistPreferencesActivity;
-import com.eleybourn.bookcatalogue.database.CoversDbAdapter;
+import com.eleybourn.bookcatalogue.database.CoversDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue;
 import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue.SimpleTaskContext;
@@ -202,8 +202,8 @@ public class GetThumbnailTask implements SimpleTaskQueue.SimpleTask {
         // try cache
         if (!mCacheWasChecked) {
             File originalFile = StorageUtils.getCoverFile(mUuid);
-            CoversDbAdapter coversDbAdapter = taskContext.getCoversDb();
-            mBitmap = coversDbAdapter.fetchCachedImageIntoImageView(originalFile,
+            CoversDBAdapter coversDBAdapter = taskContext.getCoversDb();
+            mBitmap = coversDBAdapter.fetchCachedImageIntoImageView(originalFile,
                     null, mUuid, mWidth, mHeight);
 
             mWasInCache = (mBitmap != null);
@@ -244,7 +244,7 @@ public class GetThumbnailTask implements SimpleTaskQueue.SimpleTask {
                 // Queue the image to be written to the cache. Do it in a separate queue to avoid
                 // delays in displaying image and to avoid contention -- the cache queue only has
                 // one thread. Tell the cache write it can be recycled if we don't have a valid view.
-                ThumbnailCacheWriterTask.writeToCache(mContext, CoversDbAdapter.getThumbnailCoverCacheId(mUuid, mWidth, mHeight), mBitmap, !viewIsValid);
+                ThumbnailCacheWriterTask.writeToCache(mContext, CoversDBAdapter.getThumbnailCoverCacheId(mUuid, mWidth, mHeight), mBitmap, !viewIsValid);
             }
             if (viewIsValid) {
                 //LayoutParams lp = new LayoutParams(mBitmap.getWidth(), mBitmap.getHeight());

@@ -24,9 +24,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
-import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.BookNotFoundException;
-import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.NetworkException;
-import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.NotAuthorizedException;
+import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.BookNotFoundException;
+import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.NetworkException;
+import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.NotAuthorizedException;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -59,7 +59,7 @@ public class ReviewUpdateHandler extends ApiHandler {
                        final int rating)
             throws OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException, IOException,
             NotAuthorizedException, BookNotFoundException, NetworkException {
-        HttpPost post = new HttpPost(GoodreadsManager.GOODREADS_API_ROOT + "/review/" + reviewId + ".xml");
+        HttpPost post = new HttpPost(GoodreadsManager.BASE_URL + "/review/" + reviewId + ".xml");
 
         //StringBuilder shelvesString = null;
         //if (shelves != null && shelves.size() > 0) {

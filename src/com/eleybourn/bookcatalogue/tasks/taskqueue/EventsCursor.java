@@ -25,20 +25,19 @@ import android.database.sqlite.SQLiteCursorDriver;
 import android.database.sqlite.SQLiteQuery;
 import android.support.annotation.NonNull;
 
+import com.eleybourn.bookcatalogue.adapters.BindableItemCursorAdapter;
 import com.eleybourn.bookcatalogue.database.cursors.BindableItemCursor;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.RTE;
 import com.eleybourn.bookcatalogue.utils.SerializationUtils;
-import com.eleybourn.bookcatalogue.adapters.BindableItemCursorAdapter;
 
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Map;
 
-import static com.eleybourn.bookcatalogue.tasks.taskqueue.DBHelper.DOM_EVENT;
-import static com.eleybourn.bookcatalogue.tasks.taskqueue.DBHelper.DOM_EVENT_DATE;
-import static com.eleybourn.bookcatalogue.tasks.taskqueue.DBHelper.DOM_ID;
-import static com.eleybourn.bookcatalogue.tasks.taskqueue.DBHelper.DOM_TASK_ID;
+import static com.eleybourn.bookcatalogue.tasks.taskqueue.TaskQueueDBHelper.DOM_EVENT;
+import static com.eleybourn.bookcatalogue.tasks.taskqueue.TaskQueueDBHelper.DOM_EVENT_DATE;
+import static com.eleybourn.bookcatalogue.tasks.taskqueue.TaskQueueDBHelper.DOM_ID;
 
 /**
  * Cursor subclass used to make accessing TaskExceptions a little easier.
@@ -76,30 +75,6 @@ public class EventsCursor extends SQLiteCursor implements BindableItemCursor {
             mIdCol = this.getColumnIndex(DOM_ID);
         }
         return getLong(mIdCol);
-    }
-    /**
-     * Accessor for Task ID field. Not present in all cursors.
-     *
-     * @return	task id
-     */
-    public long getTaskId() {
-        if (mTaskIdCol == -2) {
-            mTaskIdCol = this.getColumnIndex(DOM_TASK_ID);
-        }
-        return getLong(mTaskIdCol);
-    }
-
-    /**
-     * See if the optional task_id column is returned. m_taskIdCol will be initialized to -2, but if
-     * getColumnIndex has been called it will be a column number, or -1.
-     *
-     * @return	boolean indicating if task_id column is present.
-     */
-    public boolean hasTaskId() {
-        if (mTaskIdCol == -2) {
-            mTaskIdCol = this.getColumnIndex(DOM_TASK_ID);
-        }
-        return mTaskIdCol >= 0;
     }
 
     /**

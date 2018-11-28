@@ -44,6 +44,9 @@ Used by:
 - goodreads api
 
  ----------------------------------------------------------------------------------------------------
+6. CropImageActivity
+Has yet another form of background job definition.
+ ----------------------------------------------------------------------------------------------------
 
 GOALS:
  1. Removal of taskqueue
@@ -54,10 +57,12 @@ GOALS:
 
 
 
-FIXME: help screen 'cleanup' button. Broken? + move it to admin screen.
+FIXME: help screen 'cleanup' button. Broken? + move it to admin adv. options ?
 
+TEST TOMF: onActivityResult now that fragments seem to be done correctly
 
-
+ENHANCE: backup -> offer options to import preferences, bookstyles, etc.... conditionally
+ENHANCE: backup -> if preferences were imported, indicate somehow that we want to switch to the bookshelf as set in the prefs.
 
 
 TOMF ENHANCE New anthology stuff:

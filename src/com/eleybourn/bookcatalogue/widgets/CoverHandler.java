@@ -23,10 +23,9 @@ import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.Fields;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
-import com.eleybourn.bookcatalogue.cropper.CropIImage;
 import com.eleybourn.bookcatalogue.cropper.CropImageActivity;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
-import com.eleybourn.bookcatalogue.database.CoversDbAdapter;
+import com.eleybourn.bookcatalogue.database.CoversDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
@@ -323,7 +322,7 @@ public class CoverHandler implements SelectOneDialog.hasViewContextMenu {
      * The camera has captured an image, process it.
      */
     private void addCoverFromCamera(final int requestCode, final int resultCode, final @NonNull Bundle bundle) {
-        Bitmap bitmap = (Bitmap) bundle.get(CropIImage.BKEY_DATA);
+        Bitmap bitmap = (Bitmap) bundle.get(CropImageActivity.BKEY_DATA);
         if (bitmap != null && bitmap.getWidth() > 0 && bitmap.getHeight() > 0) {
             Matrix m = new Matrix();
             m.postRotate(BookCatalogueApp.getIntPreference(PREF_AUTOROTATE_CAMERA_IMAGES, PREF_AUTOROTATE_CAMERA_IMAGES_DEFAULT));
@@ -447,13 +446,10 @@ public class CoverHandler implements SelectOneDialog.hasViewContextMenu {
     }
 
     /**
-     * Get a temp file for cropping output
+     * Crop the image using our internal code in {@link CropImageActivity}
+     *
+     * @param thumbFile to crop
      */
-    @NonNull
-    private File getCroppedTempCoverFile() {
-        return StorageUtils.getTempCoverFile("cropped", "" + mTempImageCounter);
-    }
-
     private void cropCoverImageInternal(final @NonNull File thumbFile) {
         boolean cropFrameWholeImage = BookCatalogueApp.getBooleanPreference(PREF_CROP_FRAME_WHOLE_IMAGE, false);
 
@@ -461,11 +457,21 @@ public class CoverHandler implements SelectOneDialog.hasViewContextMenu {
         File cropped = this.getCroppedTempCoverFile();
         StorageUtils.deleteFile(cropped);
 
-        CropImageActivity.startActivityForResult(mActivity, thumbFile, cropped, cropFrameWholeImage); /* 31c90366-d352-496f-9b7d-3237dd199a77 */
+        Intent cropIntent = new Intent(mActivity, CropImageActivity.class);
+        cropIntent.putExtra(CropImageActivity.REQUEST_KEY_IMAGE_ABSOLUTE_PATH, thumbFile.getAbsolutePath());
+        cropIntent.putExtra(CropImageActivity.REQUEST_KEY_SCALE, true);
+        cropIntent.putExtra(CropImageActivity.REQUEST_KEY_WHOLE_IMAGE, cropFrameWholeImage);
+        cropIntent.putExtra(CropImageActivity.REQUEST_KEY_OUTPUT_ABSOLUTE_PATH, cropped.getAbsolutePath());
+
+        mActivity.startActivityForResult(cropIntent, CropImageActivity.REQUEST_CODE); /* 31c90366-d352-496f-9b7d-3237dd199a77 */
     }
 
     /**
-     * Worked for me...
+     * Crop the image using the standard crop action intent (the device may not support it)
+     *
+     * Code using hardcoded string on purpose as they are part of the Intent api.
+     *
+     * @param thumbFile to crop
      */
     private void cropCoverImageExternal(final @NonNull File thumbFile) {
         Tracker.handleEvent(this, Tracker.States.Enter, "cropCoverImageExternal");
@@ -510,6 +516,14 @@ public class CoverHandler implements SelectOneDialog.hasViewContextMenu {
     }
 
     /**
+     * Get a temp file for cropping result
+     */
+    @NonNull
+    private File getCroppedTempCoverFile() {
+        return StorageUtils.getTempCoverFile("cropped", "" + mTempImageCounter);
+    }
+
+    /**
      * Delete the provided thumbnail
      */
     private void deleteCoverFile() {
@@ -528,8 +542,8 @@ public class CoverHandler implements SelectOneDialog.hasViewContextMenu {
     private void invalidateCachedThumbnail() {
         final long bookId = mBookManager.getBook().getBookId();
         if (bookId != 0) {
-            try (CoversDbAdapter coversDbAdapter = CoversDbAdapter.getInstance()) {
-                coversDbAdapter.deleteBookCover(mDb.getBookUuid(bookId));
+            try (CoversDBAdapter coversDBAdapter = CoversDBAdapter.getInstance()) {
+                coversDBAdapter.deleteBookCover(mDb.getBookUuid(bookId));
             } catch (Exception e) {
                 Logger.error(e, "Error cleaning up cached cover images");
             }
@@ -552,8 +566,13 @@ public class CoverHandler implements SelectOneDialog.hasViewContextMenu {
     }
 
     /**
+     * Handles results from Camera, Image Gallery, Cropping.
+     *
+     * Note: rotating is done locally.
+     *
      * @return true when handled, false if unknown requestCode
      */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean onActivityResult(final int requestCode, final int resultCode, final @Nullable Intent data) {
         Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
         boolean handled = false;

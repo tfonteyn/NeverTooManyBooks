@@ -41,10 +41,11 @@ import android.support.v4.content.PermissionChecker;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
+import android.util.Log;
 
 import com.eleybourn.bookcatalogue.booklist.BooklistPreferencesActivity;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
-import com.eleybourn.bookcatalogue.database.CoversDbAdapter;
+import com.eleybourn.bookcatalogue.database.CoversDBAdapter;
 import com.eleybourn.bookcatalogue.database.UpgradeDatabase;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
@@ -417,7 +418,7 @@ public class StartupActivity extends AppCompatActivity {
 
         if (mBackupRequired) {
             Intent backupIntent = new Intent(this, BackupChooserActivity.class);
-            backupIntent.putExtra(BackupChooserActivity.BKEY_MODE, BackupChooserActivity.BVAL_MODE_SAVE_AS);
+            backupIntent.putExtra(BackupChooserActivity.BKEY_MODE, BackupChooserActivity.BVAL_MODE_SAVE);
             startActivity(backupIntent);
         }
 
@@ -462,8 +463,8 @@ public class StartupActivity extends AppCompatActivity {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     initStorage();
                 } else {
-                    // we can't work without storage, so die.
-                    Logger.error("No storage permissions granted, quiting");
+                    // we can't work without storage, so die; can't use Logger as we don't have a log file!
+                    Log.e("StartupActivity","No storage permissions granted, quiting");
                     finishAndRemoveTask();
                 }
             }
@@ -542,8 +543,8 @@ public class StartupActivity extends AppCompatActivity {
             db.analyzeDb();
 
             if (BooklistPreferencesActivity.isThumbnailCacheEnabled()) {
-                CoversDbAdapter coversDbAdapter = taskContext.getCoversDb();
-                coversDbAdapter.analyze();
+                CoversDBAdapter coversDBAdapter = taskContext.getCoversDb();
+                coversDBAdapter.analyze();
             }
 
             if (BookCatalogueApp.getBooleanPreference(V74_PREF_AUTHOR_SERIES_FIX_UP_REQUIRED, false)) {

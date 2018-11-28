@@ -36,19 +36,19 @@ import com.eleybourn.bookcatalogue.adapters.BindableItemCursorAdapter;
 
 import java.util.Date;
 
-import static com.eleybourn.bookcatalogue.tasks.taskqueue.DBHelper.DOM_CATEGORY;
-import static com.eleybourn.bookcatalogue.tasks.taskqueue.DBHelper.DOM_EVENT_COUNT;
-import static com.eleybourn.bookcatalogue.tasks.taskqueue.DBHelper.DOM_EXCEPTION;
-import static com.eleybourn.bookcatalogue.tasks.taskqueue.DBHelper.DOM_FAILURE_REASON;
-import static com.eleybourn.bookcatalogue.tasks.taskqueue.DBHelper.DOM_ID;
-import static com.eleybourn.bookcatalogue.tasks.taskqueue.DBHelper.DOM_QUEUED_DATE;
-import static com.eleybourn.bookcatalogue.tasks.taskqueue.DBHelper.DOM_QUEUE_ID;
-import static com.eleybourn.bookcatalogue.tasks.taskqueue.DBHelper.DOM_RETRY_DATE;
-import static com.eleybourn.bookcatalogue.tasks.taskqueue.DBHelper.DOM_STATUS_CODE;
-import static com.eleybourn.bookcatalogue.tasks.taskqueue.DBHelper.DOM_TASK;
-import static com.eleybourn.bookcatalogue.tasks.taskqueue.DBHelper.DOM_TASK_ID;
-import static com.eleybourn.bookcatalogue.tasks.taskqueue.DBHelper.TBL_EVENT;
-import static com.eleybourn.bookcatalogue.tasks.taskqueue.DBHelper.TBL_TASK;
+import static com.eleybourn.bookcatalogue.tasks.taskqueue.TaskQueueDBHelper.DOM_CATEGORY;
+import static com.eleybourn.bookcatalogue.tasks.taskqueue.TaskQueueDBHelper.DOM_EVENT_COUNT;
+import static com.eleybourn.bookcatalogue.tasks.taskqueue.TaskQueueDBHelper.DOM_EXCEPTION;
+import static com.eleybourn.bookcatalogue.tasks.taskqueue.TaskQueueDBHelper.DOM_FAILURE_REASON;
+import static com.eleybourn.bookcatalogue.tasks.taskqueue.TaskQueueDBHelper.DOM_ID;
+import static com.eleybourn.bookcatalogue.tasks.taskqueue.TaskQueueDBHelper.DOM_QUEUED_DATE;
+import static com.eleybourn.bookcatalogue.tasks.taskqueue.TaskQueueDBHelper.DOM_QUEUE_ID;
+import static com.eleybourn.bookcatalogue.tasks.taskqueue.TaskQueueDBHelper.DOM_RETRY_DATE;
+import static com.eleybourn.bookcatalogue.tasks.taskqueue.TaskQueueDBHelper.DOM_STATUS_CODE;
+import static com.eleybourn.bookcatalogue.tasks.taskqueue.TaskQueueDBHelper.DOM_TASK;
+import static com.eleybourn.bookcatalogue.tasks.taskqueue.TaskQueueDBHelper.DOM_TASK_ID;
+import static com.eleybourn.bookcatalogue.tasks.taskqueue.TaskQueueDBHelper.TBL_EVENT;
+import static com.eleybourn.bookcatalogue.tasks.taskqueue.TaskQueueDBHelper.TBL_TASK;
 
 /**
  * Cursor subclass used to make accessing Tasks a little easier.
@@ -184,7 +184,7 @@ public class TasksCursor extends SQLiteCursor implements BindableItemCursor {
     }
 
     @NonNull
-    public Date getQueuedDate() {
+    Date getQueuedDate() {
         if (mQueuedDateCol < 0) {
             mQueuedDateCol = this.getColumnIndex(DOM_QUEUED_DATE);
         }
@@ -197,7 +197,7 @@ public class TasksCursor extends SQLiteCursor implements BindableItemCursor {
     }
 
     @NonNull
-    public Date getRetryDate() {
+    Date getRetryDate() {
         if (mRetryDateCol < 0) {
             mRetryDateCol = this.getColumnIndex(DOM_RETRY_DATE);
         }
@@ -209,7 +209,7 @@ public class TasksCursor extends SQLiteCursor implements BindableItemCursor {
         return date;
     }
 
-    public String getStatusCode() {
+    String getStatusCode() {
         if (mStatusCodeCol < 0) {
             mStatusCodeCol = this.getColumnIndex(DOM_STATUS_CODE);
         }
@@ -255,7 +255,7 @@ public class TasksCursor extends SQLiteCursor implements BindableItemCursor {
         return task;
     }
 
-    public int getNoteCount() {
+    int getNoteCount() {
         if (mNoteCountCol < 0) {
             mNoteCountCol = this.getColumnIndex(DOM_EVENT_COUNT);
         }

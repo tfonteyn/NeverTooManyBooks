@@ -48,7 +48,7 @@ import java.util.regex.Pattern;
  */
 public class TOCEntry implements Parcelable, Utils.ItemWithIdFixup {
     /**
-     * import/export etc...
+     * import/exportBooks etc...
      *
      * "anthology title (year) * author ","anthology title (year) * author ",...
      */
@@ -58,7 +58,7 @@ public class TOCEntry implements Parcelable, Utils.ItemWithIdFixup {
     /**
      * Used by:
      * - ISFDB import of anthology titles
-     * - export/import
+     * - exportBooks/import
      *
      * find the publication year in a string like "some title (1960)"
      *

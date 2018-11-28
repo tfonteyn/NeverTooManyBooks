@@ -56,14 +56,14 @@ public abstract class FileChooserBaseActivity extends BaseActivity implements
 
     /** Key for member of EXTRAS that specifies the mode of operation of this dialog */
     public static final String BKEY_MODE = "mode";
-    public static final String BVAL_MODE_SAVE_AS = "saveAs";
+    public static final String BVAL_MODE_SAVE = "saveAs";
     public static final String BVAL_MODE_OPEN = "open";
 
     /** Options indicating nature of this activity */
-    private boolean mIsSaveDialog = false;
+    private boolean mIsSave = false;
 
-    public boolean isSaveDialog() {
-        return mIsSaveDialog;
+    public boolean isSave() {
+        return mIsSave;
     }
 
     /**
@@ -85,7 +85,7 @@ public abstract class FileChooserBaseActivity extends BaseActivity implements
 
         // Determine the dialog type
         Bundle extras = getIntent().getExtras();
-        mIsSaveDialog = extras != null && BVAL_MODE_SAVE_AS.equals(extras.getString(BKEY_MODE));
+        mIsSave = extras != null && BVAL_MODE_SAVE.equals(extras.getString(BKEY_MODE));
 
         // Get and display the fragment
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -111,7 +111,7 @@ public abstract class FileChooserBaseActivity extends BaseActivity implements
         // Handle Open/Save button
         Button confirm = findViewById(R.id.confirm);
 
-        if (mIsSaveDialog) {
+        if (mIsSave) {
             confirm.setText(R.string.btn_confirm_save);
             confirm.setOnClickListener(new OnClickListener() {
                 @Override

@@ -65,7 +65,6 @@ public class UniqueId {
     public static final int ACTIVITY_REQUEST_CODE_SEARCH = 150;
 
     public static final int ACTIVITY_REQUEST_CODE_UPDATE_FROM_INTERNET = 201;
-    public static final int ACTIVITY_REQUEST_CODE_GOODREADS_EXPORT_FAILURES = 202;
     public static final int ACTIVITY_REQUEST_CODE_GOODREADS_SEARCH_CRITERIA = 203;
 
     public static final int ACTIVITY_REQUEST_CODE_SCANNER = 300;
@@ -82,6 +81,7 @@ public class UniqueId {
     public static final int ACTIVITY_REQUEST_CODE_PREFERENCES = 602;
     public static final int ACTIVITY_REQUEST_CODE_FIELD_VISIBILITY = 603;
     public static final int ACTIVITY_REQUEST_CODE_SEARCH_SITES = 604;
+    public static final int ACTIVITY_REQUEST_CODE_BACKUP_CHOOSER = 605;
 
     public static final int ACTIVITY_REQUEST_CODE_EDIT_BOOKSHELF_LIST = 701;
 
@@ -95,23 +95,16 @@ public class UniqueId {
 
     // END Request Codes used for startActivityForResult / onActivityResult
 
-
     // BEGIN Result Codes used for setResult / onActivityResult
-    /** need distinct code as it can trickle up */
-    public static final int ACTIVITY_RESULT_CODE_GLOBAL_CHANGES_FIELD_VISIBILITY = 10_001;
-    /** need distinct code as it can trickle up */
-    public static final int ACTIVITY_RESULT_CODE_GLOBAL_CHANGES_BOOKLIST_PREFERENCES = 10_002;
-    /** need distinct code as it can trickle up */
-    public static final int ACTIVITY_RESULT_CODE_GLOBAL_CHANGES_PREFERENCES = 10_003;
 
-    public static final int ACTIVITY_RESULT_BOOK_DELETED = 10_020;
-
-    /** {@link BaseActivity} default result code if changes have been made */
-    public static final int ACTIVITY_RESULT_CHANGES_MADE = 10_101;
     /** need distinct code as it can trickle up */
-    public static final int ACTIVITY_RESULT_CHANGES_MADE_BOOKLIST_STYLE_PROPERTIES = 10_102;
+    public static final int ACTIVITY_RESULT_BOOK_DELETED = 10_001;
     /** need distinct code as it can trickle up */
-    public static final int ACTIVITY_RESULT_CHANGES_MADE_BOOKLIST_STYLES = 10_103;
+    public static final int ACTIVITY_RESULT_PREFS_MIGHT_HAVE_CHANGED = 10_010;
+    /** need distinct code as it can trickle up */
+    public static final int ACTIVITY_RESULT_CHANGES_MADE_BOOKLIST_STYLE_PROPERTIES = 10_120;
+    /** need distinct code as it can trickle up */
+    public static final int ACTIVITY_RESULT_CHANGES_MADE_BOOKLIST_STYLES = 10_130;
 
     // END Result Codes used for setResult / onActivityResult
 

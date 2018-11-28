@@ -330,7 +330,7 @@ public class DbSync {
             if (/* always print debug */ BuildConfig.DEBUG) {
                 Logger.info(this, "\n\nReminder: Use of this method is not recommended. It is better to use\n" +
                         "\t\t  the methods that take a {@link SQLiteOpenHelper} object since opening the database may block\n" +
-                        "\t\t  another thread, or vice versa.\n\n");
+                        "\t\t  another thread, or vice versa.\n\n\n\n");
             }
         }
 
@@ -432,24 +432,13 @@ public class DbSync {
         @NonNull
         public SynchronizedCursor rawQuery(final @NonNull String sql,
                                            final @Nullable String[] selectionArgs) {
-            return rawQueryWithFactory(mCursorFactory, sql, selectionArgs, "");
-        }
-
-        /**
-         * Locking-aware wrapper for underlying database method.
-         */
-        @NonNull
-        SynchronizedCursor rawQueryWithFactory(final @NonNull SynchronizedCursorFactory factory,
-                                               final @NonNull String sql,
-                                               final @Nullable String[] selectionArgs,
-                                               @SuppressWarnings("SameParameterValue") final @NonNull String editTable) {
             SyncLock txLock = null;
             if (mTxLock == null) {
                 txLock = mSync.getSharedLock();
             }
 
             try {
-                return (SynchronizedCursor) mSqlDb.rawQueryWithFactory(factory, sql, selectionArgs, editTable);
+                return (SynchronizedCursor) mSqlDb.rawQueryWithFactory(mCursorFactory, sql, selectionArgs, "");
             } finally {
                 if (txLock != null) {
                     txLock.unlock();
@@ -651,7 +640,7 @@ public class DbSync {
          * @return the underlying SQLiteDatabase object.
          */
         @NonNull
-        public SQLiteDatabase getUnderlyingDatabaseIfYouAreSureWhatYouAreDoing() {
+        SQLiteDatabase getUnderlyingDatabaseIfYouAreSureWhatYouAreDoing() {
             return mSqlDb;
         }
 
@@ -782,7 +771,7 @@ public class DbSync {
                 mSqlDb.execSQL("INSERT INTO collation_cs_check VALUES('A', 2)");
 
                 String s;
-                try (Cursor c = mSqlDb.rawQuery("SELECT t, i FROM collation_cs_check ORDER BY t " + DatabaseHelper.COLLATION + ", i", new String[] {})) {
+                try (Cursor c = mSqlDb.rawQuery("SELECT t, i FROM collation_cs_check ORDER BY t " + CatalogueDBHelper.COLLATION + ", i", new String[] {})) {
                     c.moveToFirst();
                     s = c.getString(0);
                 }

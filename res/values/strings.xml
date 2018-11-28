@@ -73,7 +73,7 @@
     <!-- Displayed when any write operation to the sd card fails -->
     <string name="error_backup_failed_check_sd_writable">Please check that the SD Card is writable, and has sufficient space.</string>
 
-    <!-- Displayed when a CSV export fails -->
+    <!-- Displayed when a CSV exportBooks fails -->
     <string name="error_export_failed">Export failed - could not write to SD card</string>
     <!-- Displayed when a backup archive fails -->
     <string name="error_backup_failed">Backup Failed</string>
@@ -109,7 +109,7 @@
     <string name="info_book_details">The details of the books themselves</string>
     <string name="info_cover_images">Cover images for all selected books. Will make the export much larger.</string>
     <string name="info_preferences">Preferences and user-defined list styles</string>
-    <!-- Explanatory note for export data since last backup -->
+    <!-- Explanatory note for exportBooks data since last backup -->
     <string name="info_all_books_added_or_updated_since_last_full_backup">All books added or updated since last full backup</string>
     <string name="info_install_scanner">
         To scan your books via the ISBN barcode, you must install
@@ -738,7 +738,7 @@
     <string name="backup_to_archive">Backup to Archive</string>
     <!-- Admin option to import archive -->
     <string name="import_from_archive">Import from Archive</string>
-    <!-- Admin option to export books -->
+    <!-- Admin option to exportBooks books -->
     <string name="export_to_csv">Export to CSV File</string>
     <!-- Admin option to import books -->
     <string name="import_from_csv">Import from CSV File</string>
@@ -819,7 +819,6 @@
     <string name="btn_tell_me_more">Tell me more</string>
     <string name="btn_this_book">This Book</string>
     <string name="btn_reset">Reset</string>
-    <string name="btn_cover_images">Cover images</string>
 
     <!-- ####################################################################################### -->
     <!-- == Field labels == -->
@@ -890,6 +889,8 @@
     <!-- Heading in Admin activity and in 'Export' dialogue -->
     <string name="lbl_advanced_options">Advanced Options</string>
 
+
+    <string name="lbl_cover_images">Cover images</string>
     <string name="lbl_search_for_books">Search for Books</string>
     <string name="lbl_details_have_changed">Details have changed</string>
 
@@ -1113,7 +1114,7 @@
     <string name="import_books_blurb">The books in this archive will be imported. Select on
         one of two options to start the import, or press \'back\' to cancel:
     </string>
-    <!-- Menu text for the 'import/export new & changed' option -->
+    <!-- Menu text for the 'import/exportBooks new & changed' option -->
     <string name="new_and_changed_books">New and updated books</string>
     <!-- Description of the 'import new & changed' option -->
     <string name="new_and_changed_books_blurb">Only import books that are new, or which have
@@ -1122,14 +1123,14 @@
     <!-- Descriptive text associated with import options not available with older archives -->
     <string name="old_archive_blurb">This option is not supported for older archive versions.</string>
 
-    <!--  Explanatory text for 'export' dialogue -->
+    <!--  Explanatory text for 'exportBooks' dialogue -->
     <string name="export_books_blurb">
         The books in your catalogue will be exported. Select on one of two options to start
         the export, or press \'back\' to cancel:</string>
-    <!-- Explanatory note for 'export all' option -->
+    <!-- Explanatory note for 'exportBooks all' option -->
     <string name="export_all_blurb">
         All books, covers, settings and custom styles will be exported to the archive.</string>
-    <!-- Explanatory note for 'advanced export' option -->
+    <!-- Explanatory note for 'advanced exportBooks' option -->
     <string name="export_advanced_blurb">Select what will be exported to the archive.</string>
 
 
@@ -1177,9 +1178,9 @@
     <string name="textured_background">Textured background image</string>
     <string name="disable_background_image">Disable background image</string>
     <string name="plain_background_b_reduces_flicker_b">Plain background (reduces flicker)</string>
-    <!-- Explanatory note for export date (not yet implemented) -->
+    <!-- Explanatory note for exportBooks date (not yet implemented) -->
     <string name="export_advanced_date_blurb">Optionally specify a date to use in selecting books and/or covers to export:</string>
-    <!-- Explanatory note for export date (not yet implemented) -->
+    <!-- Explanatory note for exportBooks date (not yet implemented) -->
     <string name="all_books_added_or_updated_since">All books added or updated since:</string>
     <string name="isbn_found">ISBN Scanned. Searching Internet.</string>
     <string name="select_bookshelves">Select Bookshelves</string>
@@ -1218,14 +1219,19 @@
     <string name="saving_image">Saving image</string>
 
 
-    <string name="error_email_failed">Sending the email failed.</string>
-    <string name="error_storage_preparing_card">Preparing storage</string>
-    <string name="error_storage_no_card">No storage ?</string>
-    <string name="error_storage_no_space">Not enough space</string>
-    <string name="error_storage_cannot_write">Could not write to SDCard</string>
+    <!-- storage file system is not available (it's not mounted, busy, USB locked it, etc.... -->
+    <string name="error_storage_not_available">Storage is not available</string>
+    <!-- storage file system access fails for some reason (but is is available) -->
+    <string name="error_storage_no_access">Cannot access Storage</string>
+    <!-- you're out of storage space... buy a bigger SDCard -->
+    <string name="error_storage_no_space_left">Not enough Storage space</string>
+    <!-- when tried to write to Storage, but were denied; write-protected ? -->
+    <string name="error_storage_cannot_write">Could not write to Storage</string>
+
     <string name="error_no_external_crop_app">Can not find image crop app</string>
     <string name="error_no_style_found">Could not find appropriate style</string>
     <string name="error_network_timeout">timeout, please try again</string>
+    <string name="error_email_failed">Sending the email failed.</string>
     <string name="error_google_play_missing">Google Play/Market is not installed</string>
     <string name="error_search_configuration">Search configuration error. Please open the Admin page and check your Search Site settings</string>
 

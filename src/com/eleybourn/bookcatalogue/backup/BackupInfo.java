@@ -27,7 +27,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.database.DatabaseHelper;
+import com.eleybourn.bookcatalogue.database.CatalogueDBHelper;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 
 import java.util.Date;
@@ -98,7 +98,7 @@ public class BackupInfo {
         info.putInt(INFO_ARCHIVER_VERSION, container.getVersion());
         info.putInt(INFO_COMPATARCHIVER, 1);
         info.putInt(INFO_SDK, Build.VERSION.SDK_INT);
-        info.putInt(INFO_DATABASE_VERSION, DatabaseHelper.DATABASE_VERSION);
+        info.putInt(INFO_DATABASE_VERSION, CatalogueDBHelper.DATABASE_VERSION);
         info.putString(INFO_CREATION_DATE, DateUtils.utcSqlDateTimeForToday());
         try {
             // Get app info

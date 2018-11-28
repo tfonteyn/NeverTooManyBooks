@@ -29,14 +29,16 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.IsbnUtils;
-import com.eleybourn.bookcatalogue.utils.StringList;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 import org.xml.sax.SAXException;
@@ -239,6 +241,9 @@ public class LibraryThingManager {
 
         // add the original isbn, as there might be more images at the time this search is done.
         editions.add(isbn);
+        if (DEBUG_SWITCHES.LIBRARY_THING_MANAGER && BuildConfig.DEBUG) {
+            Logger.info(LibraryThingManager.class,"searchEditions|isbn=" + isbn);
+        }
 
         // Base path for an Editions search
         String urlText = String.format(EDITIONS_URL, isbn);
@@ -261,6 +266,9 @@ public class LibraryThingManager {
             Logger.error(e);
         }
 
+        if (DEBUG_SWITCHES.LIBRARY_THING_MANAGER && BuildConfig.DEBUG) {
+            Logger.info(LibraryThingManager.class,"searchEditions|editions=" + editions);
+        }
         return editions;
     }
 
@@ -375,6 +383,7 @@ public class LibraryThingManager {
      *
      * @return <tt>true</tt>if there is a non-empty dev key
      */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean isAvailable() {
         boolean gotKey = !getDevKey().isEmpty();
         if (!gotKey) {

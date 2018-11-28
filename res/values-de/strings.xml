@@ -578,7 +578,7 @@ Entweder sind die Daten des Buchs falsch (Sie sollten die ISBN überprüfen) ode
     <string name="import_books_blurb">Die Bücher aus diesem Archiv werden importiert. Tippen Sie auf eine der beiden Optionen, um den Import zu starten, oder auf \'Zurück\', um abzubrechen:</string>
     <!-- Description of the 'import all books' option -->
     <string name="info_all_books_will_be_imported">Alle Bücher aus diesem Archiv werden importiert. Vorhandene Bücher werden aktualisiert und neue Bücher hinzugefügt.</string>
-    <!-- Menu text for the 'import/export new & changed' option -->
+    <!-- Menu text for the 'import/exportBooks new & changed' option -->
     <string name="new_and_changed_books">Neue und aktualisierte Bücher</string>
     <!-- Description of the 'import new & changed' option -->
     <string name="new_and_changed_books_blurb">Nur neue oder aktuellere Bücher im Archiv. Das ist nützlich, um zwei Geräte zu synchronisieren.</string>
@@ -587,15 +587,15 @@ Entweder sind die Daten des Buchs falsch (Sie sollten die ISBN überprüfen) ode
     <!-- Part of the progress message displayed when importing books -->
     <string name="progress_msg_n_created_m_updated">%1$s erzeugt, %2$s aktualisiert</string>
 
-    <!--  Explanatory text for 'export' dialogue -->
+    <!--  Explanatory text for 'exportBooks' dialogue -->
     <string name="export_books_blurb">Die Bücher aus Ihrem Katalog werden exportiert. Tippen Sie auf eine der beiden Optionen, um den Export zu starten, oder auf \'Zurück\', um abzubrechen:</string>
 
     <!-- Displayed in progress dialog when exporting covers in incremental mode -->
     <string name="progress_msg_covers_skip">%1$s Cover bearbeitet (%2$s fehlen, %3$s übersprungen)</string>
 
-    <!-- Explanatory note for 'export all' option -->
+    <!-- Explanatory note for 'exportBooks all' option -->
     <string name="export_all_blurb">Alle Bücher, Cover, Einstellungen und benutzerdefinierten Stile werden in das Archiv exportiert.</string>
-    <!-- Explanatory note for 'advanced export' option -->
+    <!-- Explanatory note for 'advanced exportBooks' option -->
     <string name="export_advanced_blurb">Wählen Sie, was in das Archiv exportiert wird.</string>
 
     <!-- Text for button -->
@@ -603,18 +603,18 @@ Entweder sind die Daten des Buchs falsch (Sie sollten die ISBN überprüfen) ode
     <!-- Brief description -->
     <string name="info_book_details">Die Details der Bücher</string>
     <!-- Text for button -->
-    <string name="btn_cover_images">Cover-Bilder</string>
+    <string name="lbl_cover_images">Cover-Bilder</string>
     <!-- Brief description -->
     <string name="info_cover_images">Cover-Bilder für alle ausgewählten Bücher. Der Export wird dadurch viel größer.</string>
     <!-- Brief description -->
     <string name="info_preferences">Einstellungen und benutzerdefinierte Stile</string>
 
-    <!-- Explanatory note for export date (not yet implemented) -->
+    <!-- Explanatory note for exportBooks date (not yet implemented) -->
     <string name="export_advanced_date_blurb">Geben Sie wahlweise ein Datum an, um Bücher und Cover auszuwählen:</string>
 
-    <!-- Explanatory note for export date (not yet implemented) -->
+    <!-- Explanatory note for exportBooks date (not yet implemented) -->
     <string name="all_books_added_or_updated_since">Alle neuen und aktualisierten Bücher seit:</string>
-    <!-- Explanatory note for export data since last backup -->
+    <!-- Explanatory note for exportBooks data since last backup -->
     <string name="info_all_books_added_or_updated_since_last_full_backup">Alle neuen und aktualisierten Bücher seit der letzten vollständigen Sicherung</string>
 
     <plurals name="displaying_n_books">

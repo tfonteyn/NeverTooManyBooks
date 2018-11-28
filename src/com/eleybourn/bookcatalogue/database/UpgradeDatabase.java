@@ -55,18 +55,18 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOK_
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOK_SERIES;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_LOAN;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_SERIES;
-import static com.eleybourn.bookcatalogue.database.DatabaseHelper.COLLATION;
-import static com.eleybourn.bookcatalogue.database.DatabaseHelper.DATABASE_CREATE_AUTHORS;
-import static com.eleybourn.bookcatalogue.database.DatabaseHelper.DATABASE_CREATE_BOOKSHELF;
-import static com.eleybourn.bookcatalogue.database.DatabaseHelper.DATABASE_CREATE_BOOKSHELF_DATA;
-import static com.eleybourn.bookcatalogue.database.DatabaseHelper.DATABASE_CREATE_BOOK_AUTHOR;
-import static com.eleybourn.bookcatalogue.database.DatabaseHelper.DATABASE_CREATE_BOOK_BOOKSHELF_WEAK;
-import static com.eleybourn.bookcatalogue.database.DatabaseHelper.DATABASE_CREATE_BOOK_SERIES;
-import static com.eleybourn.bookcatalogue.database.DatabaseHelper.DATABASE_CREATE_LOAN;
-import static com.eleybourn.bookcatalogue.database.DatabaseHelper.DATABASE_CREATE_SERIES;
+import static com.eleybourn.bookcatalogue.database.CatalogueDBHelper.COLLATION;
+import static com.eleybourn.bookcatalogue.database.CatalogueDBHelper.DATABASE_CREATE_AUTHORS;
+import static com.eleybourn.bookcatalogue.database.CatalogueDBHelper.DATABASE_CREATE_BOOKSHELF;
+import static com.eleybourn.bookcatalogue.database.CatalogueDBHelper.DATABASE_CREATE_BOOKSHELF_DATA;
+import static com.eleybourn.bookcatalogue.database.CatalogueDBHelper.DATABASE_CREATE_BOOK_AUTHOR;
+import static com.eleybourn.bookcatalogue.database.CatalogueDBHelper.DATABASE_CREATE_BOOK_BOOKSHELF_WEAK;
+import static com.eleybourn.bookcatalogue.database.CatalogueDBHelper.DATABASE_CREATE_BOOK_SERIES;
+import static com.eleybourn.bookcatalogue.database.CatalogueDBHelper.DATABASE_CREATE_LOAN;
+import static com.eleybourn.bookcatalogue.database.CatalogueDBHelper.DATABASE_CREATE_SERIES;
 
 /**
- * Moved all upgrade specific definitions/methods from {@link DatabaseHelper} here.
+ * Moved all upgrade specific definitions/methods from {@link CatalogueDBHelper} here.
  * This should help reduce memory footprint (well, we can hope.. but at least editing the former is easier now)
  *
  */
@@ -591,7 +591,7 @@ public class UpgradeDatabase {
             mMessage += "* You can now assign books to multiple bookshelves (requested by many people)\n\n";
             mMessage += "* A .nomedia file will be automatically created which will stop the thumbnails showing up in the gallery (thanks Brandon)\n\n";
             mMessage += "* The 'Add Book by ISBN' page has been redesigned to be simpler and more stable (thanks Vinikia)\n\n";
-            mMessage += "* The export file is now formatted correctly (.csv) (thanks glohr)\n\n";
+            mMessage += "* The exportBooks file is now formatted correctly (.csv) (thanks glohr)\n\n";
             mMessage += "* You will be prompted to backup your books on a regular basis \n\n";
 
             try {
@@ -766,7 +766,7 @@ public class UpgradeDatabase {
             mMessage += "* The thumbnail can be rotated in both directions now\n\n";
             mMessage += "* You can zoom in the thumbnail to see full detail\n\n";
             mMessage += "* The help page will redirect to the, more frequently updated, online wiki\n\n";
-            mMessage += "* Dollar signs in the text fields will no longer FC on import/export\n\n";
+            mMessage += "* Dollar signs in the text fields will no longer FC on import/exportBooks\n\n";
         }
         if (curVersion == 52) {
             curVersion++;
@@ -1046,7 +1046,7 @@ public class UpgradeDatabase {
         if (curVersion == 60) {
             curVersion++;
             mMessage += "New in v3.7\n\n";
-            mMessage += "Hint: The export function will create an export.csv file on the sdcard\n\n";
+            mMessage += "Hint: The exportBooks function will create an exportBooks.csv file on the sdcard\n\n";
             mMessage += "* You can crop cover thumbnails (both from the menu and after taking a camera image)\n\n";
             mMessage += "* You can tweet about a book directly from the book edit screen.\n\n";
             mMessage += "* Sort by Date Published added\n\n";

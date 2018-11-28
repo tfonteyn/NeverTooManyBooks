@@ -546,7 +546,7 @@
     <string name="warning_no_parent_directory_found">Pas de répertoire parent disponible</string>
     <!-- For saving and opening exports or backups -->
     <string name="btn_confirm_open">Ouvrir</string>
-    <!-- Admin option to export books -->
+    <!-- Admin option to exportBooks books -->
     <string name="export_to_csv">Export vers un fichier CSV</string>
     <!-- Admin option to import books -->
     <string name="import_from_csv">Importer un fichier CSV</string>
@@ -593,7 +593,7 @@
     <string name="import_books_blurb">Les livres de cette sauvegarde vont être importés. Choisissez une des deux options au début de l\'import, ou cliquez sur « retour » pour annuler:</string>
     <!-- Description of the 'import all books' option -->
     <string name="info_all_books_will_be_imported">Tous les livres de la sauvegardes seront importés en mettant à jour ceux existant et en ajoutant les nouveaux.</string>
-    <!-- Menu text for the 'import/export new & changed' option -->
+    <!-- Menu text for the 'import/exportBooks new & changed' option -->
     <string name="new_and_changed_books">Nouveaux livres et livres mis à jour</string>
     <!-- Description of the 'import new & changed' option -->
     <string name="new_and_changed_books_blurb">Seuls les livres récemment ajoutés ou mis à jour dans la sauvegarde seront mis à jour. Cette option est utile lors de la synchronisation de deux appareils.</string>
@@ -602,33 +602,33 @@
     <!-- Part of the progress message displayed when importing books -->
     <string name="progress_msg_n_created_m_updated">%1$s ajoutés, %2$s mis à jour</string>
 
-    <!--  Explanatory text for 'export' dialogue -->
+    <!--  Explanatory text for 'exportBooks' dialogue -->
     <string name="export_books_blurb">Les livres de votre catalogue seront exportés. Choisissez une des deux options pour exporter vos livres ou cliquez sur « retour » pour annuler :</string>
 
     <!-- Displayed in progress dialog when exporting covers in incremental mode -->
     <string name="progress_msg_covers_skip">%1$s couvertures enregistrées (%2$s manquantes, %3$s ignorées)</string>
 
-    <!-- Explanatory note for 'export all' option -->
+    <!-- Explanatory note for 'exportBooks all' option -->
     <string name="export_all_blurb">Tous les livres, couvertures, préférence et styles de liste personnels du catalogue seront enregistrés dans la sauvegarde.</string>
-    <!-- Explanatory note for 'advanced export' option -->
+    <!-- Explanatory note for 'advanced exportBooks' option -->
     <string name="export_advanced_blurb">Selection de ce qui doit être enregistré dans la sauvegarde.</string>
     <!-- Text for button -->
     <string name="book_details">Details des livres</string>
     <!-- Brief description -->
     <string name="info_book_details">Le livre et tous ses détails</string>
     <!-- Text for button -->
-    <string name="btn_cover_images">Images de couverture</string>
+    <string name="lbl_cover_images">Images de couverture</string>
     <!-- Brief description -->
     <string name="info_cover_images">Couvertures de tous les livres sauvegardés. La taille de la sauvegarde sera plus importante.</string>
     <!-- Brief description -->
     <string name="info_preferences">Paramètres et préférences (style de liste personnel)</string>
 
-    <!-- Explanatory note for export date (not yet implemented) -->
+    <!-- Explanatory note for exportBooks date (not yet implemented) -->
     <string name="export_advanced_date_blurb">Definissez la date à prendre en compte pour l\'archivage des livres (optionnel):</string>
 
-    <!-- Explanatory note for export date (not yet implemented) -->
+    <!-- Explanatory note for exportBooks date (not yet implemented) -->
     <string name="all_books_added_or_updated_since">Tous les livres ajoutés ou mis à jour depuis le :</string>
-    <!-- Explanatory note for export data since last backup -->
+    <!-- Explanatory note for exportBooks data since last backup -->
     <string name="info_all_books_added_or_updated_since_last_full_backup">Tous les livres ajoutés ou mis à jour depuis la dernière sauvegarde complète</string>
 
     <plurals name="displaying_n_books">

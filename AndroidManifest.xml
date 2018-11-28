@@ -120,10 +120,10 @@
         <activity android:name=".UpdateFieldsFromInternetActivity" />
 
         <!-- AdminActivity: Credentials Goodreads -->
-        <activity android:name=".searches.goodreads.GoodreadsRegisterActivity" />
+        <activity android:name=".goodreads.GoodreadsRegisterActivity" />
         <!-- the callback-activity after we requested authorizing this application for the current user to Goodreads -->
         <activity
-            android:name=".searches.goodreads.GoodreadsAuthorizationActivity"
+            android:name=".goodreads.GoodreadsAuthorizationActivity"
             android:launchMode="singleInstance">
 
             <!-- TODO: Work out which of these filters we don't need! -->
@@ -203,7 +203,7 @@
         <activity android:name=".searches.librarything.LibraryThingAdminActivity" />
 
         <!-- AdminActivity: Background tasks -->
-        <activity android:name=".tasks.taskqueue.TaskListActivity" />
+        <activity android:name=".tasks.taskqueue.TaskQueueListActivity" />
 
         <!-- AdminActivity: Search Sites configuration -->
         <activity
@@ -242,9 +242,9 @@
 
 
         <!-- and then some Goodreads activities... TODO: satisfy curiosity later -->
-        <activity android:name=".searches.goodreads.GoodreadsSearchCriteriaActivity" />
-        <activity android:name=".searches.goodreads.GoodreadsSearchResultsActivity" />
-        <activity android:name=".searches.goodreads.GoodreadsExportFailuresActivity" />
+        <activity android:name=".goodreads.notinuse.GoodreadsSearchCriteriaActivity" />
+        <activity android:name=".goodreads.notinuse.GoodreadsSearchResultsActivity" />
+        <activity android:name=".tasks.taskqueue.EventQueueListActivity" />
 
 
     </application>

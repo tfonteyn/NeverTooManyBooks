@@ -718,22 +718,22 @@ public class BookCatalogueTest extends ActivityInstrumentationTestCase2 {
 		t.enterText(title, "'$5,\",\"\",\"'");
 		t.clickOnText("Save Book");
 		
-		//delete export file
-		String mFileName = Utils.EXTERNAL_FILE_PATH + "/export.csv";
-		File export = new File(mFileName);
-		export.delete();
-		export = new File(mFileName);
-		assertFalse("File was not deleted", export.exists());
+		//delete exportBooks file
+		String mFileName = Utils.EXTERNAL_FILE_PATH + "/exportBooks.csv";
+		File exportBooks = new File(mFileName);
+		exportBooks.delete();
+		exportBooks = new File(mFileName);
+		assertFalse("File was not deleted", exportBooks.exists());
 		
-		//export
+		//exportBooks
 		t.clickOnMenuItem("Help & Admin");
 		t.assertCurrentActivity("Expected Administration activity", "Administration");
 		t.clickOnText("Administration Functions");
 		t.assertCurrentActivity("Expected AdminActivity activity", "AdminActivity");
 		t.clickOnText("Export Books");
 		t.sleep(10000);
-		export = new File(mFileName);
-		assertTrue("File does not exist", export.exists());
+		exportBooks = new File(mFileName);
+		assertTrue("File does not exist", exportBooks.exists());
 	}*/
 	
 	public void test207AdminImport() {

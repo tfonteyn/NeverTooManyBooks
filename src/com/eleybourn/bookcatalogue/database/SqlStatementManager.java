@@ -105,7 +105,7 @@ public class SqlStatementManager implements AutoCloseable {
     }
 
     /**
-     * Exceptions are caught and fully ignored.
+     * GoodreadsExceptions are caught and fully ignored.
      */
     @Override
     public void close() {

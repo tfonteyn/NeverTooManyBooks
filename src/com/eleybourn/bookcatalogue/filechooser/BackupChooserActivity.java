@@ -33,11 +33,12 @@ import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.backup.BackupManager;
-import com.eleybourn.bookcatalogue.backup.Exporter;
-import com.eleybourn.bookcatalogue.backup.Importer;
+import com.eleybourn.bookcatalogue.backup.ExportSettings;
+import com.eleybourn.bookcatalogue.backup.ImportSettings;
+import com.eleybourn.bookcatalogue.backup.ui.ArchiveImportOptionsDialogFragment;
+import com.eleybourn.bookcatalogue.backup.ui.ExportSettingsDialogFragment;
+import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
-import com.eleybourn.bookcatalogue.dialogs.ExportTypeSelectionDialogFragment;
-import com.eleybourn.bookcatalogue.dialogs.ImportTypeSelectionDialogFragment;
 import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueueProgressDialogFragment;
 import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueueProgressDialogFragment.FragmentTask;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
@@ -55,16 +56,23 @@ import static com.eleybourn.bookcatalogue.backup.BackupManager.PREF_LAST_BACKUP_
  * @author pjw
  */
 public class BackupChooserActivity extends FileChooserBaseActivity implements
-        ImportTypeSelectionDialogFragment.OnImportTypeSelectionDialogResultsListener,
-        ExportTypeSelectionDialogFragment.OnExportTypeSelectionDialogResultsListener {
+        ArchiveImportOptionsDialogFragment.OnImportTypeSelectionDialogResultsListener,
+        ExportSettingsDialogFragment.OnExportTypeSelectionDialogResultsListener {
 
-    /** saving or opening */
-    private static final int IS_ERROR = 0;
-    private static final int IS_SAVE = 1;
-    private static final int IS_OPEN = 2;
+    public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_BACKUP_CHOOSER;
+
+    /**
+     * ID's to use when kicking of the tasks for doing a backup or restore.
+     * We get it back in {@link #onTaskFinished} so we know the type of task.
+     *
+     * Note: could use {@link #isSave()} of course. But keeping it future proof. Option 3 ? cloud ? etc....
+     */
+    private static final int TASK_ID_SAVE_TO_ARCHIVE = 1;
+    private static final int TASK_ID_READ_FROM_ARCHIVE = 2;
 
     /** The backup file that will be created (if saving) */
     private File mBackupFile;
+    private boolean mSuccess;
 
     @CallSuper
     @Override
@@ -72,7 +80,7 @@ public class BackupChooserActivity extends FileChooserBaseActivity implements
         Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
 
-        setTitle(isSaveDialog() ? R.string.backup_to_archive : R.string.import_from_archive);
+        setTitle(isSave() ? R.string.backup_to_archive : R.string.import_from_archive);
 
         if (savedInstanceState != null && savedInstanceState.containsKey(UniqueId.BKEY_FILE_SPEC)) {
             mBackupFile = new File(Objects.requireNonNull(savedInstanceState.getString(UniqueId.BKEY_FILE_SPEC)));
@@ -85,7 +93,7 @@ public class BackupChooserActivity extends FileChooserBaseActivity implements
      */
     @NonNull
     private String getDefaultFileName() {
-        if (isSaveDialog()) {
+        if (isSave()) {
             final String sqlDate = DateUtils.localSqlDateForToday();
             return BackupFileDetails.ARCHIVE_PREFIX +
                     sqlDate.replace(" ", "-").replace(":", "") +
@@ -115,9 +123,6 @@ public class BackupChooserActivity extends FileChooserBaseActivity implements
         return new BackupListerFragmentTask(root);
     }
 
-    /**
-     * Save the state
-     */
     @Override
     @CallSuper
     public void onSaveInstanceState(@NonNull Bundle outState) {
@@ -128,24 +133,22 @@ public class BackupChooserActivity extends FileChooserBaseActivity implements
     }
 
     /**
-     * If a file was selected, restore the archive.
+     * If a file was selected, offer the user options on how to restore the archive.
      */
     @Override
     public void onOpen(final @NonNull File file) {
-        ImportTypeSelectionDialogFragment.newInstance(IS_OPEN, file)
+        ArchiveImportOptionsDialogFragment.newInstance(TASK_ID_READ_FROM_ARCHIVE, file)
                 .show(getSupportFragmentManager(), null);
     }
 
     /**
-     * If a file was selected, save the archive.
+     * If a file was selected, offer the user options on how to save the archive.
      */
     @Override
     public void onSave(final @NonNull File file) {
-        ExportTypeSelectionDialogFragment.newInstance(IS_SAVE, file)
+        ExportSettingsDialogFragment.newInstance(TASK_ID_SAVE_TO_ARCHIVE, file)
                 .show(getSupportFragmentManager(), null);
     }
-
-    private boolean mSuccess;
 
     @Override
     public void onTaskFinished(final @NonNull SimpleTaskQueueProgressDialogFragment fragment,
@@ -157,91 +160,99 @@ public class BackupChooserActivity extends FileChooserBaseActivity implements
         mSuccess = success;
         // Is it a task we care about?
         switch (taskId) {
-            case IS_SAVE: {
-                if (!success) {
-                    String msg = getString(R.string.error_backup_failed)
-                            + " " + getString(R.string.error_backup_failed_check_sd_writable)
-                            + "\n\n" + getString(R.string.error_if_the_problem_persists);
-
-                    AlertDialog dialog = new AlertDialog.Builder(this)
-                            .setTitle(R.string.backup_to_archive)
-                            .setMessage(msg)
-                            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(final DialogInterface dialog, final int which) {
-                                    dialog.dismiss();
-                                }
-                            })
-                            .create();
-                    dialog.show();
-                    // Just return; user may want to try again
-                    return;
-                }
-                if (cancelled) {
-                    // Just return; user may want to try again
-                    return;
-                }
-                // Show a helpful message
-                String msg = getString(R.string.info_archive_complete_details,
-                        mBackupFile.getParent(),
-                        mBackupFile.getName(),
-                        Utils.formatFileSize(mBackupFile.length()));
-                AlertDialog dialog = new AlertDialog.Builder(this)
-                        .setTitle(R.string.backup_to_archive)
-                        .setMessage(msg)
-                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(final DialogInterface dialog, final int which) {
-                                dialog.dismiss();
-                                setResult(mSuccess ? Activity.RESULT_OK : Activity.RESULT_CANCELED);
-                                finish();
-                            }
-                        })
-                        .create();
-                dialog.show();
+            case TASK_ID_SAVE_TO_ARCHIVE: {
+                handleSaveToArchiveResults(success, cancelled);
                 break;
             }
 
-            case IS_OPEN: {
-                if (!success) {
-                    String msg = getString(R.string.error_import_failed)
-                            + " " + getString(R.string.error_import_failed_check_sd_readable)
-                            + "\n\n" + getString(R.string.error_if_the_problem_persists);
-                    AlertDialog dialog = new AlertDialog.Builder(this)
-                            .setTitle(R.string.import_from_archive)
-                            .setMessage(msg)
-                            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(final DialogInterface dialog, final int which) {
-                                    dialog.dismiss();
-                                }
-                            })
-                            .create();
-                    dialog.show();
-                    // Just return; user may want to try again
-                    return;
-                }
-                if (cancelled) {
-                    // Just return; user may want to try again
-                    return;
-                }
-
-                AlertDialog dialog = new AlertDialog.Builder(this)
-                        .setTitle(R.string.import_from_archive)
-                        .setMessage(R.string.progress_end_import_complete)
-                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(final DialogInterface dialog, final int which) {
-                                dialog.dismiss();
-                                setResult(mSuccess ? Activity.RESULT_OK : Activity.RESULT_CANCELED);
-                                finish();
-                            }
-                        })
-                        .create();
-                dialog.show();
+            case TASK_ID_READ_FROM_ARCHIVE: {
+                handleReadFromArchiveResults(success, cancelled);
                 break;
             }
         }
+    }
+
+    private void handleReadFromArchiveResults(final boolean success, final boolean cancelled) {
+        if (!success) {
+            String msg = getString(R.string.error_import_failed)
+                    + " " + getString(R.string.error_import_failed_check_sd_readable)
+                    + "\n\n" + getString(R.string.error_if_the_problem_persists);
+            AlertDialog dialog = new AlertDialog.Builder(this)
+                    .setTitle(R.string.import_from_archive)
+                    .setMessage(msg)
+                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(final DialogInterface dialog, final int which) {
+                            dialog.dismiss();
+                        }
+                    })
+                    .create();
+            dialog.show();
+            // Just return; user may want to try again
+            return;
+        }
+        if (cancelled) {
+            // Just return; user may want to try again
+            return;
+        }
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle(R.string.import_from_archive)
+                .setMessage(R.string.progress_end_import_complete)
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(final DialogInterface dialog, final int which) {
+                        dialog.dismiss();
+                        setResult(mSuccess ? Activity.RESULT_OK : Activity.RESULT_CANCELED);
+                        finish();
+                    }
+                })
+                .create();
+        dialog.show();
+    }
+
+    private void handleSaveToArchiveResults(final boolean success, final boolean cancelled) {
+        if (!success) {
+            String msg = getString(R.string.error_backup_failed)
+                    + " " + getString(R.string.error_backup_failed_check_sd_writable)
+                    + "\n\n" + getString(R.string.error_if_the_problem_persists);
+
+            AlertDialog dialog = new AlertDialog.Builder(this)
+                    .setTitle(R.string.backup_to_archive)
+                    .setMessage(msg)
+                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(final DialogInterface dialog, final int which) {
+                            dialog.dismiss();
+                        }
+                    })
+                    .create();
+            dialog.show();
+            // Just return; user may want to try again
+            return;
+        }
+        if (cancelled) {
+            // Just return; user may want to try again
+            return;
+        }
+        // Show a helpful message
+        String msg = getString(R.string.info_archive_complete_details,
+                mBackupFile.getParent(),
+                mBackupFile.getName(),
+                Utils.formatFileSize(mBackupFile.length()));
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle(R.string.backup_to_archive)
+                .setMessage(msg)
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(final DialogInterface dialog, final int which) {
+                        dialog.dismiss();
+                        setResult(mSuccess ? Activity.RESULT_OK : Activity.RESULT_CANCELED);
+                        finish();
+                    }
+                })
+                .create();
+        dialog.show();
     }
 
     @Override
@@ -253,42 +264,37 @@ public class BackupChooserActivity extends FileChooserBaseActivity implements
     }
 
     @Override
-    public void onImportTypeSelectionDialogResult(final @NonNull DialogFragment dialog,
-                                                  final @IdRes int callerId,
-                                                  final @NonNull ImportTypeSelectionDialogFragment.ImportSettings settings) {
-        switch (settings.options) {
-            case Importer.IMPORT_ALL:
-                BackupManager.restore(this, settings.file, IS_OPEN, Importer.IMPORT_ALL);
-                break;
-            case Importer.IMPORT_NEW_OR_UPDATED:
-                BackupManager.restore(this, settings.file, IS_OPEN, Importer.IMPORT_NEW_OR_UPDATED);
-                break;
-        }
+    public void onImportTypeSelectionDialogResult(final @IdRes int callerId,
+                                                  final @NonNull ImportSettings settings) {
+        BackupManager.restore(this, callerId, settings);
     }
 
+    /**
+     * User has set his choices for backup... so check them and kick of the backup task
+     */
     @Override
     public void onExportTypeSelectionDialogResult(final @NonNull DialogFragment dialog,
                                                   final @IdRes int callerId,
-                                                  final @NonNull ExportTypeSelectionDialogFragment.ExportSettings settings) {
-        switch (settings.options) {
-            case Exporter.EXPORT_ALL:
-                mBackupFile = BackupManager.backup(this, settings.file, IS_SAVE, Exporter.EXPORT_ALL, null);
-                break;
-
-            case Exporter.EXPORT_NOTHING:
-                return;
-
-            default:
-                if (settings.dateFrom == null) {
-                    String lastBackup = BookCatalogueApp.getStringPreference(BackupManager.PREF_LAST_BACKUP_DATE, null);
-                    if (lastBackup != null && !lastBackup.isEmpty()) {
-                        settings.dateFrom = DateUtils.parseDate(lastBackup);
-                    } else {
-                        settings.dateFrom = null;
-                    }
-                }
-                mBackupFile = BackupManager.backup(this, settings.file, IS_SAVE, settings.options, settings.dateFrom);
-                break;
+                                                  final @NonNull ExportSettings settings) {
+        // sanity check
+        if (settings.options == ExportSettings.NOTHING) {
+            return;
         }
+
+        // backup 'since'
+        if ((settings.options & ExportSettings.EXPORT_SINCE) != 0) {
+            // no date set, use "since last backup."
+            if (settings.dateFrom == null) {
+                String lastBackup = BookCatalogueApp.getStringPreference(BackupManager.PREF_LAST_BACKUP_DATE, null);
+                if (lastBackup != null && !lastBackup.isEmpty()) {
+                    settings.dateFrom = DateUtils.parseDate(lastBackup);
+                }
+            }
+        } else {
+            Logger.error("sanity double-check... cannot have a dateFrom when not asking for a time limited export");
+            settings.dateFrom = null;
+        }
+
+        mBackupFile = BackupManager.backup(this, callerId, settings);
     }
 }

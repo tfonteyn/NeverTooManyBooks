@@ -36,6 +36,7 @@ import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
+import com.eleybourn.bookcatalogue.backup.csv.CsvImporter;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedDb;
 import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedStatement;
@@ -74,6 +75,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static com.eleybourn.bookcatalogue.database.CatalogueDBHelper.COLLATION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FAMILY_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FORMATTED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FORMATTED_GIVEN_FIRST;
@@ -140,7 +142,6 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOK_
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOK_TOC_ENTRIES;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_LOAN;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_SERIES;
-import static com.eleybourn.bookcatalogue.database.DatabaseHelper.COLLATION;
 
 
 /**
@@ -214,7 +215,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
     @NonNull
     private static final AtomicInteger mDebugInstanceCount = new AtomicInteger();
     /** the actual SQLiteOpenHelper */
-    private static DatabaseHelper mDbHelper;
+    private static CatalogueDBHelper mDbHelper;
     /** the synchronized wrapper around the real database */
     private static SynchronizedDb mSyncedDb;
     /** needed for Resources & for getting the covers db */
@@ -223,7 +224,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
 
     //region Statements
     /** a cache for statements, where they are pre-compiled */
-    private SqlStatementManager mStatements;
+    private final SqlStatementManager mStatements;
     /** {@link #getTOCEntryId } */
     @Nullable
     private SynchronizedStatement mGetTOCEntryIdQuery = null;
@@ -357,7 +358,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
         mContext = context;
         // initialise static if not done yet
         if (mDbHelper == null) {
-            mDbHelper = new DatabaseHelper(mContext, mTrackedCursorFactory, mSynchronizer);
+            mDbHelper = new CatalogueDBHelper(mContext, mTrackedCursorFactory, mSynchronizer);
         }
 
         // initialise static if not done yet
@@ -555,10 +556,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
     public void setGoodreadsSyncDate(final long bookId) {
         if (mSetGoodreadsSyncDateStmt == null) {
             mSetGoodreadsSyncDateStmt = mStatements.add("mSetGoodreadsSyncDateStmt",
-                    "UPDATE " + TBL_BOOKS +
-                            " SET " +
-                            DOM_BOOK_GOODREADS_LAST_SYNC_DATE + "=current_timestamp" +
-                            " WHERE " + DOM_PK_ID + "=?");
+                    SqlString.SQL_GOODREADS_UPDATE_BOOK_LAST_SYNC_DATE);
         }
         mSetGoodreadsSyncDateStmt.bindLong(1, bookId);
         mSetGoodreadsSyncDateStmt.executeUpdateDelete();
@@ -598,7 +596,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
     }
 
     /**
-     * Used by {@link com.eleybourn.bookcatalogue.backup.CsvImporter}
+     * Used by {@link CsvImporter}
      */
     @NonNull
     public SyncLock startTransaction(boolean isUpdate) {
@@ -606,14 +604,14 @@ public class CatalogueDBAdapter implements AutoCloseable {
     }
 
     /**
-     * Used by {@link com.eleybourn.bookcatalogue.backup.CsvImporter}
+     * Used by {@link CsvImporter}
      */
     public void endTransaction(@NonNull SyncLock txLock) {
         mSyncedDb.endTransaction(txLock);
     }
 
     /**
-     * Used by {@link com.eleybourn.bookcatalogue.backup.CsvImporter}
+     * Used by {@link CsvImporter}
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean inTransaction() {
@@ -621,7 +619,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
     }
 
     /**
-     * Used by {@link com.eleybourn.bookcatalogue.backup.CsvImporter}
+     * Used by {@link CsvImporter}
      */
     public void setTransactionSuccessful() {
         mSyncedDb.setTransactionSuccessful();
@@ -1434,8 +1432,8 @@ public class CatalogueDBAdapter implements AutoCloseable {
             StorageUtils.deleteFile(StorageUtils.getCoverFile(uuid));
             // remove from cache
             if (!uuid.isEmpty()) {
-                try (CoversDbAdapter coversDbAdapter = CoversDbAdapter.getInstance()) {
-                    coversDbAdapter.eraseCachedBookCover(uuid);
+                try (CoversDBAdapter coversDBAdapter = CoversDBAdapter.getInstance()) {
+                    coversDBAdapter.eraseCachedBookCover(uuid);
                 }
             }
         }
@@ -1472,7 +1470,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
         }
 
         try {
-            if (DEBUG_SWITCHES.TMP_ANTHOLOGY && BuildConfig.DEBUG) {
+            if (DEBUG_SWITCHES.DUMP_BOOK_BUNDLE_AT_INSERT && BuildConfig.DEBUG) {
                 Logger.info(this, book.getRawData().toString());
             }
             // Cleanup fields (author, series, title and remove blank fields for which we have defaults)
@@ -1507,7 +1505,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
             if (newBookId > 0) {
                 insertBookDependents(newBookId, book);
                 insertFts(newBookId);
-                // it's an insert, onTextFieldEditorSave only if we inserted.
+                // it's an insert, success only if we really inserted.
                 if (txLock != null) {
                     mSyncedDb.setTransactionSuccessful();
                 }
@@ -1530,7 +1528,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
      * @param book   A collection with the columns to be set. May contain extra data.
      * @param flags  See {@link #BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT} an others for flag definitions
      *
-     * @return the number of rows affected, should be 1 for onTextFieldEditorSave.
+     * @return the number of rows affected, should be 1 for success.
      *
      * @throws DBExceptions.UpdateException on failure
      */
@@ -1542,7 +1540,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
         }
 
         try {
-            if (DEBUG_SWITCHES.TMP_ANTHOLOGY && BuildConfig.DEBUG) {
+            if (DEBUG_SWITCHES.DUMP_BOOK_BUNDLE_AT_UPDATE && BuildConfig.DEBUG) {
                 Logger.info(this, book.getRawData().toString());
             }
 
@@ -2435,7 +2433,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
     }
 
     /**
-     * A complete export of all tables (flattened) in the database
+     * A complete exportBooks of all tables (flattened) in the database
      *
      * @return BookCursor over all books, authors, etc
      */
@@ -3354,8 +3352,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
     public void setGoodreadsBookId(final long bookId, final long goodreadsBookId) {
         if (mSetGoodreadsBookIdStmt == null) {
             mSetGoodreadsBookIdStmt = mStatements.add("mSetGoodreadsBookIdStmt",
-                    "UPDATE " + TBL_BOOKS +
-                            " SET " + DOM_BOOK_GOODREADS_BOOK_ID + "=? WHERE " + DOM_PK_ID + "=?");
+                    SqlString.SQL_GOODREADS_UPDATE_BOOK_GR_ID);
         }
         mSetGoodreadsBookIdStmt.bindLong(1, goodreadsBookId);
         mSetGoodreadsBookIdStmt.bindLong(2, bookId);
@@ -3372,31 +3369,26 @@ public class CatalogueDBAdapter implements AutoCloseable {
      */
     @NonNull
     public BookCursor fetchBooksByGoodreadsBookId(long grBookId) {
-        return fetchBooksWhere(TBL_BOOKS.dot(DOM_BOOK_GOODREADS_BOOK_ID) + "=?", new String[]{Long.toString(grBookId)}, "");
+        return fetchBooksWhere(TBL_BOOKS.dot(DOM_BOOK_GOODREADS_BOOK_ID) + "=?",
+                new String[]{Long.toString(grBookId)}, "");
     }
 
     /**
-     * Query to get relevant {@link Book} columns for sending to Goodreads.
+     * Query to get relevant {@link Book} columns for sending a set of books to Goodreads.
      *
-     * @param startId     the 'first' (e.g. 'oldest') bookId to since the last sync with Goodreads
+     * @param startId     the 'first' (e.g. 'oldest') bookId to get since the last sync with Goodreads
      * @param updatesOnly true, if we only want the updated records since the last sync with Goodreads
      *
      * @return {@link BookCursor} containing all records, if any
      */
     @NonNull
     public BookCursor fetchBooksForGoodreadsCursor(final long startId, final boolean updatesOnly) {
-        String sql = "SELECT " +
-                DOM_BOOK_ISBN + "," +
-                DOM_PK_ID + "," +
-                DOM_BOOK_GOODREADS_BOOK_ID + "," +
-                DOM_BOOK_NOTES + "," +
-                DOM_BOOK_READ + "," +
-                DOM_BOOK_READ_END + "," +
-                DOM_BOOK_RATING +
+        String sql = "SELECT " + SqlString.SQL_GOODREADS_FIELDS_FOR_SENDING +
                 " FROM " + TBL_BOOKS + " WHERE " + DOM_PK_ID + " > ?";
         if (updatesOnly) {
             sql += " AND " + DOM_LAST_UPDATE_DATE + " > " + DOM_BOOK_GOODREADS_LAST_SYNC_DATE;
         }
+        // the order by is used to be able to restart an exportBooks.
         sql += " ORDER BY " + DOM_PK_ID;
 
         return fetchBooks(sql, new String[]{Long.toString(startId)});
@@ -3411,19 +3403,8 @@ public class CatalogueDBAdapter implements AutoCloseable {
      */
     @NonNull
     public BookCursor fetchBookForGoodreadsCursor(final long bookId) {
-        String sql = SqlString.map.get("fetchBookForGoodreadsCursor");
-        if (sql == null) {
-            sql = "SELECT " + DOM_PK_ID + "," +
-                    DOM_BOOK_ISBN + "," +
-                    DOM_BOOK_GOODREADS_BOOK_ID + "," +
-                    DOM_BOOK_NOTES + "," +
-                    DOM_BOOK_READ + "," +
-                    DOM_BOOK_READ_END + "," +
-                    DOM_BOOK_RATING +
-                    " FROM " + TBL_BOOKS + " WHERE " + DOM_PK_ID + " =?  ORDER BY " + DOM_PK_ID;
-            SqlString.map.put("fetchBookForGoodreadsCursor", sql);
-        }
-        return fetchBooks(sql, new String[]{Long.toString(bookId)});
+        return fetchBooks(SqlString.SQL_GOODREADS_SELECT_FOR_ONE_BOOK_TO_SEND,
+                new String[]{Long.toString(bookId)});
     }
 
     /**
@@ -4036,6 +4017,40 @@ public class CatalogueDBAdapter implements AutoCloseable {
                         " Else " + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES) + " || ' ' || " + TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME) + " End" +
                         " AS " + DOM_AUTHOR_FORMATTED_GIVEN_FIRST;
 
+        /**
+         * The columns from {@link DatabaseDefinitions#TBL_BOOKS} we need to send a Book to Goodreads
+         */
+        private static final String SQL_GOODREADS_FIELDS_FOR_SENDING =
+                DOM_PK_ID + "," +
+                        DOM_BOOK_ISBN + "," +
+                        DOM_BOOK_GOODREADS_BOOK_ID + "," +
+                        DOM_BOOK_NOTES + "," +
+                        DOM_BOOK_READ + "," +
+                        DOM_BOOK_READ_END + "," +
+                        DOM_BOOK_RATING;
+
+        /**
+         * Fetch a single Book to send to Goodreads
+         *
+         * param DOM_PK_ID of the Book
+         */
+        private static final String SQL_GOODREADS_SELECT_FOR_ONE_BOOK_TO_SEND =
+                "SELECT " + SQL_GOODREADS_FIELDS_FOR_SENDING +
+                        " FROM " + TBL_BOOKS + " WHERE " + DOM_PK_ID + "=?";
+
+        /**
+         * Update a single Book's last sync date with Goodreads.
+         */
+        private static final String SQL_GOODREADS_UPDATE_BOOK_LAST_SYNC_DATE = "UPDATE " + TBL_BOOKS +
+                " SET " + DOM_BOOK_GOODREADS_LAST_SYNC_DATE + "=current_timestamp" +
+                " WHERE " + DOM_PK_ID + "=?";
+
+        /**
+         * Update a single Book's Goodreads id.
+         */
+        private static final String SQL_GOODREADS_UPDATE_BOOK_GR_ID = "UPDATE " + TBL_BOOKS +
+                " SET " + DOM_BOOK_GOODREADS_BOOK_ID + "=?" +
+                " WHERE " + DOM_PK_ID + "=?";
     }
 }
 

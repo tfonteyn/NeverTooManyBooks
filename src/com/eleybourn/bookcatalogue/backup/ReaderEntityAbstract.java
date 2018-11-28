@@ -23,7 +23,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.backup.tar.TarBackupContainer;
+import com.eleybourn.bookcatalogue.backup.tararchive.TarBackupContainer;
 import com.eleybourn.bookcatalogue.utils.RTE.DeserializationException;
 import com.eleybourn.bookcatalogue.utils.SerializationUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
@@ -51,13 +51,13 @@ public abstract class ReaderEntityAbstract implements ReaderEntity {
         }
 
         // Build the new File and save
-        File dstFile = new File(dir.getAbsoluteFile() + File.separator + getName());
+        File destFile = new File(dir.getAbsoluteFile() + File.separator + getName());
         try {
-            StorageUtils.copyFile(getStream(), TarBackupContainer.BUFFER_SIZE, dstFile);
+            StorageUtils.copyFile(getStream(), TarBackupContainer.BUFFER_SIZE, destFile);
         } finally {
-            if (dstFile.exists()) {
+            if (destFile.exists()) {
                 //noinspection ResultOfMethodCallIgnored
-                dstFile.setLastModified(this.getDateModified().getTime());
+                destFile.setLastModified(this.getDateModified().getTime());
             }
         }
     }

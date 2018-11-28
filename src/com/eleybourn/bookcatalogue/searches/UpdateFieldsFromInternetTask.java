@@ -41,7 +41,6 @@ import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.entities.TOCEntry;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.ManagedTask;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.TaskManager;
-import com.eleybourn.bookcatalogue.utils.BundleUtils;
 import com.eleybourn.bookcatalogue.utils.RTE;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
@@ -71,9 +70,7 @@ public class UpdateFieldsFromInternetTask extends ManagedTask
     /** Sites to search */
     private final int mSearchSites;
     /** Active search manager */
-    private SearchManager mSearchManager;
-    /** message to display when all is said and done */
-    private String mFinalMessage;
+    private final SearchManager mSearchManager;
 
     /** DB connection */
     private CatalogueDBAdapter mDb;
@@ -240,7 +237,7 @@ public class UpdateFieldsFromInternetTask extends ManagedTask
                     mTaskManager.sendHeaderTaskProgressMessage(isbn);
                 }
                 // update the counter
-                mTaskManager.sendTaskProgressMessage(this, null, progressCounter);
+                mTaskManager.sendTaskProgressMessage(this, 0, progressCounter);
 
                 // Start searching, then wait...
                 mSearchManager.search(mSearchSites, author, title, isbn,
@@ -261,7 +258,7 @@ public class UpdateFieldsFromInternetTask extends ManagedTask
 
             } //endWhile
         } finally {
-            // Tell our listener they can clear the progress message.
+            // TOMF: do we need this here or can this be done when we send the final message ?? Tell our listener they can clear the progress message.
             mTaskManager.sendHeaderTaskProgressMessage(null);
             // Create the final message for them (user message, not a Progress message)
             mFinalMessage = String.format(getString(R.string.progress_end_num_books_searched), "" + progressCounter);
@@ -348,11 +345,7 @@ public class UpdateFieldsFromInternetTask extends ManagedTask
      */
     @Override
     public void onTaskFinish() {
-        try {
-            mTaskManager.sendTaskUserMessage(mFinalMessage);
-        } finally {
-            cleanup();
-        }
+        cleanup();
     }
 
     /**
@@ -379,9 +372,9 @@ public class UpdateFieldsFromInternetTask extends ManagedTask
         }
 
         /*
-        * The search is complete AND the class-level data has been cached by the processing thread.
-        * Let another search begin.
-        */
+         * The search is complete AND the class-level data has been cached by the processing thread.
+         * Let another search begin.
+         */
         mSearchLock.lock();
         try {
             mSearchDone.signal();

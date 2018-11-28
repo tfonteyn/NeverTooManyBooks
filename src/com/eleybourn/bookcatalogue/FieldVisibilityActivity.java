@@ -55,7 +55,6 @@ import java.util.List;
 public class FieldVisibilityActivity extends BaseActivity {
 
     public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_FIELD_VISIBILITY;
-    public static final int RESULT_CODE_GLOBAL_CHANGES = UniqueId.ACTIVITY_RESULT_CODE_GLOBAL_CHANGES_FIELD_VISIBILITY;
 
     private static final List<FieldInfo> mFields = new ArrayList<>();
 
@@ -131,13 +130,9 @@ public class FieldVisibilityActivity extends BaseActivity {
                 cb.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        // Here we actually commit the change to the preferences
+                        // Commit the change to the preferences
                         Fields.setVisibility(fieldName, !Fields.isVisible(fieldName));
-                        // so setting dirty has no sense, but leaving this as a reminder!
-                        // flag up we have (at least one) modifications
-                        //setDirty(true);
-
-                        // setActivityResult() takes care of setting the result when the user does a back-press
+                        setChangesMade(true);
                     }
                 });
             }
@@ -150,14 +145,6 @@ public class FieldVisibilityActivity extends BaseActivity {
 
             parent.addView(layout);
         }
-    }
-
-    /**
-     * For now, always signal that something (might have) changed
-     */
-    @Override
-    public void setActivityResult() {
-        setResult(RESULT_CODE_GLOBAL_CHANGES); /* 2f885b11-27f2-40d7-8c8b-fcb4d95a4151 */
     }
 
     private static class FieldInfo {

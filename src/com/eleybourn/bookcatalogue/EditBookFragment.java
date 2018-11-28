@@ -20,6 +20,7 @@
 
 package com.eleybourn.bookcatalogue;
 
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -353,9 +354,10 @@ public class EditBookFragment extends BookBaseFragment implements BookManager {
     public void onActivityResult(final int requestCode, final int resultCode, final @Nullable Intent data) {
         Tracker.enterOnActivityResult(this,requestCode,resultCode, data);
 
-        // Dispatch incoming result to the current visible fragment.
-        Fragment frag = getChildFragmentManager().findFragmentById(R.id.tab_fragment);
-        frag.onActivityResult(requestCode, resultCode, data);
+//        // Dispatch incoming result to the current visible fragment.
+//        Fragment frag = getChildFragmentManager().findFragmentById(R.id.tab_fragment);
+//        frag.onActivityResult(requestCode, resultCode, data);
+        super.onActivityResult(requestCode, resultCode, data);
 
         Tracker.exitOnActivityResult(this);
     }
@@ -367,9 +369,9 @@ public class EditBookFragment extends BookBaseFragment implements BookManager {
         Intent data = new Intent();
         data.putExtra(UniqueId.KEY_ID, getBook().getBookId());
         // if some day we can detect global changes, use this:
-//        mActivity.setResult(mActivity.changesMade() ? RESULT_CHANGES_MADE : Activity.RESULT_CANCELED, data); /* many places */
+//        mActivity.setResult(mActivity.changesMade() ? Activity.RESULT_OK : Activity.RESULT_CANCELED, data); /* many places */
         //ENHANCE: global changes not detected, so assume they happened.
-        mActivity.setResult(RESULT_CHANGES_MADE, data); /* many places */
+        mActivity.setResult(Activity.RESULT_OK, data); /* many places */
     }
 
     /**

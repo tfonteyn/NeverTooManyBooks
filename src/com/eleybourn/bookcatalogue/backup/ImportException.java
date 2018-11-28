@@ -2,10 +2,10 @@ package com.eleybourn.bookcatalogue.backup;
 
 import android.support.annotation.NonNull;
 
-class ImportException extends RuntimeException {
+public class ImportException extends RuntimeException {
     private static final long serialVersionUID = 1660687786319003483L;
 
-    ImportException(final @NonNull String s) {
+    public ImportException(final @NonNull String s) {
         super(s);
     }
 }

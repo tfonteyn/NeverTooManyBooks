@@ -34,7 +34,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Class to hold author data. Used in lists and import/export.
+ * Class to hold author data. Used in lists and import/exportBooks.
  *
  * @author Philip Warner
  */

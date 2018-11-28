@@ -27,6 +27,7 @@ import android.support.annotation.Nullable;
 import android.view.ViewGroup;
 
 import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.properties.Properties;
 
@@ -53,5 +54,14 @@ abstract public class PreferencesBaseActivity extends BaseActivity {
         globalProps.buildView(getLayoutInflater(), styleProps);
 
         Tracker.exitOnCreate(this);
+    }
+
+    /**
+     * For now, we can't be sure. There is no feedback from a pref change.
+     * ENHANCE: use a OnSharedPreferenceChangeListener
+     */
+    @Override
+    protected void setActivityResult() {
+        setResult(UniqueId.ACTIVITY_RESULT_PREFS_MIGHT_HAVE_CHANGED);
     }
 }

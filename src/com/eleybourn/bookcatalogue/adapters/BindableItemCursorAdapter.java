@@ -31,6 +31,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.CursorAdapter;
 
+import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.cursors.BindableItemCursor;
 import com.eleybourn.bookcatalogue.dialogs.ContextDialogItem;
 
@@ -239,7 +240,7 @@ public class BindableItemCursorAdapter extends CursorAdapter {
         void bindView(final @NonNull View view,
                       final @NonNull Context context,
                       final @NonNull BindableItemCursor cursor,
-                      final @NonNull Object appInfo);
+                      final @NonNull CatalogueDBAdapter appInfo);
 
         /**
          * Called when an item in a list has been clicked, this method should populate the passed
@@ -261,6 +262,6 @@ public class BindableItemCursorAdapter extends CursorAdapter {
                                  final int position,
                                  final long id,
                                  final @NonNull List<ContextDialogItem> items,
-                                 final @NonNull Object appInfo);
+                                 final @NonNull CatalogueDBAdapter appInfo);
     }
 }

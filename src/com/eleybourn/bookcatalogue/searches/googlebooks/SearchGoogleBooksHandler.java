@@ -130,7 +130,7 @@ class SearchGoogleBooksHandler extends DefaultHandler {
     private static final String XML_ID = "id";
     private static final String XML_ENTRY = "entry";
 
-    private StringBuilder mBuilder = new StringBuilder();
+    private final StringBuilder mBuilder = new StringBuilder();
     @NonNull
     private ArrayList<String> url = new ArrayList<>();
 

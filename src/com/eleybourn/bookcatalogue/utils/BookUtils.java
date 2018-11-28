@@ -113,8 +113,6 @@ public class BookUtils {
     /**
      * Delete book by its database row _id and close current activity.
      *
-     * TOMF: how about using {@link EditBookFragment.PostConfirmOrCancelAction}
-     *
      * @param bookId the book to delete
      */
     public static void deleteBook(final @NonNull Activity activity,

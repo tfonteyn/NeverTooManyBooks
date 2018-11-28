@@ -38,7 +38,7 @@ public class SearchSites {
     /** the users preferred search site order */
     private static ArrayList<Site> mPreferredCoverSearchOrder;
     /** TODO: not user configurable for now, but plumbing installed */
-    private static List<Site> mPreferredReliabilityOrder;
+    private static final List<Site> mPreferredReliabilityOrder;
 
     /*
      * default search order

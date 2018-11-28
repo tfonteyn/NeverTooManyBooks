@@ -70,7 +70,7 @@ public class AuthUserApiHandler extends ApiHandler {
      */
     public long getAuthUser() {
         // Setup API call
-        HttpPost post = new HttpPost(GoodreadsManager.GOODREADS_API_ROOT + "/api/auth_user");
+        HttpPost post = new HttpPost(GoodreadsManager.BASE_URL + "/api/auth_user");
 
         mUserId = 0;
         try {

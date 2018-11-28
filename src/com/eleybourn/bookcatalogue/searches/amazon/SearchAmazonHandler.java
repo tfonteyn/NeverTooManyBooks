@@ -32,7 +32,6 @@ import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.utils.BundleUtils;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
-import com.eleybourn.bookcatalogue.utils.StringList;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -219,7 +218,7 @@ public class SearchAmazonHandler extends DefaultHandler {
     @NonNull
     private final ArrayList<Author> mAuthors = new ArrayList<>();
     /** XML content */
-    private StringBuilder mBuilder = new StringBuilder();
+    private final StringBuilder mBuilder = new StringBuilder();
     /** mCurrencyCode + mCurrencyAmount will form the list-price */
     @NonNull
     private String mCurrencyCode = "";

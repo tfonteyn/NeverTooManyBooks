@@ -42,14 +42,19 @@ import java.io.Serializable;
  */
 public abstract class Task implements Serializable, BindableItemCursorAdapter.BindableItem {
 
+    static final int CAT_LEGACY = 0;
+    public static final int CAT_GOODREADS_AUTH_RESULT = 2;
+    public static final int CAT_GOODREADS_IMPORT_ALL = 3;
+    public static final int CAT_GOODREADS_EXPORT_ALL = 4;
+    public static final int CAT_GOODREADS_EXPORT_ONE = 5;
+
     private static final long serialVersionUID = -1735892871810069L;
-    private int mRetryLimit = 17;
+    private final int mRetryLimit = 17;
     @NonNull
     private final String mDescription;
     private TaskState mState;
     private long mId;
     private int mRetries;
-    private int mTotalRetries = 0;
 
     @Nullable
     private Exception mException = null;
@@ -108,9 +113,6 @@ public abstract class Task implements Serializable, BindableItemCursorAdapter.Bi
     int getRetryLimit() {
         return mRetryLimit;
     }
-    public void setRetryLimit(final int limit) {
-        mRetryLimit = limit;
-    }
 
     protected int getRetryDelay() {
         return mRetryDelay;
@@ -126,9 +128,6 @@ public abstract class Task implements Serializable, BindableItemCursorAdapter.Bi
 
     int getRetries() {
         return mRetries;
-    }
-    public int getTotalRetries() {
-        return mTotalRetries;
     }
 
     void setRetries(final int retries) {
@@ -153,7 +152,6 @@ public abstract class Task implements Serializable, BindableItemCursorAdapter.Bi
     }
 
     protected void resetRetryCounter() {
-        mTotalRetries += mRetries;
         mRetries = 0;
         setRetryDelay();
     }

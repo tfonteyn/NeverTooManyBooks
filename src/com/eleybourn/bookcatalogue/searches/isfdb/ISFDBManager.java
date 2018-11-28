@@ -41,7 +41,7 @@ public class ISFDBManager {
 
     /**
      *
-     * @param isbn for book cover to find. ENHANCE? Always returns the image from the first edition found!
+     * @param isbn for book cover to find. ENHANCE? For now, always returns the image from the first edition found!
      *
      * @return found & saved File, or null when none
      */

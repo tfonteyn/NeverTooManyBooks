@@ -23,6 +23,7 @@ package com.eleybourn.bookcatalogue.tasks.managedtasks;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
@@ -214,6 +215,24 @@ public class TaskManager {
     public void sendHeaderTaskProgressMessage(final @Nullable String message) {
         mBaseMessage = message;
         sendTaskProgressMessage();
+    }
+
+    /**
+     * Creates and send a {@link TaskProgressMessage} based on information about a task.
+     *
+     * @param task      The task associated with this message
+     * @param messageId Message string id
+     * @param count     Counter for progress
+     */
+    public void sendTaskProgressMessage(final @NonNull ManagedTask task,
+                                        final @StringRes int messageId,
+                                        final int count) {
+        TaskInfo taskInfo = getTaskInfo(task);
+        if (taskInfo != null) {
+            taskInfo.progressMessage = messageId != 0 ? mContext.getString(messageId) : null;
+            taskInfo.progressCurrent = count;
+            sendTaskProgressMessage();
+        }
     }
 
     /**

@@ -19,12 +19,9 @@ import com.eleybourn.bookcatalogue.AdminActivity;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.EditBookshelfListActivity;
-import com.eleybourn.bookcatalogue.FieldVisibilityActivity;
 import com.eleybourn.bookcatalogue.Help;
-import com.eleybourn.bookcatalogue.PreferencesActivity;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
-import com.eleybourn.bookcatalogue.booklist.BooklistPreferencesActivity;
 import com.eleybourn.bookcatalogue.booklist.BooklistPreferredStylesActivity;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
@@ -44,8 +41,6 @@ abstract public class BaseActivity extends AppCompatActivity implements
         LocaleUtils.OnLocaleChangedListener,
         ThemeUtils.OnThemeChangedListener,
         CanBeDirty {
-
-    public static final int RESULT_CHANGES_MADE = UniqueId.ACTIVITY_RESULT_CHANGES_MADE;
 
     /** The side/navigation panel */
     @Nullable
@@ -271,35 +266,10 @@ abstract public class BaseActivity extends AppCompatActivity implements
         Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
 
         if (DEBUG_SWITCHES.ON_ACTIVITY_RESULT && BuildConfig.DEBUG) {
-            // these are not errors; but just a way to see if we missed catching them in one Activity or another
-            // 2018-11-14: all caught in BooksOnBookshelf, silently ignored in others
-            switch (requestCode) {
-                case EditBookshelfListActivity.REQUEST_CODE: /* 41e84172-5833-4906-a891-8df302ecc190 */
-                    Logger.info(this, "onActivityResult unhandled EditBookshelfListActivity");
-                    break;
-                case BooklistPreferredStylesActivity.REQUEST_CODE: /* 13854efe-e8fd-447a-a195-47678c0d87e7 */
-                    Logger.info(this, "onActivityResult unhandled BooklistPreferredStylesActivity");
-                    break;
-                case AdminActivity.REQUEST_CODE: /* 7f46620d-7951-4637-8783-b410730cd460 */
-                    Logger.info(this, "onActivityResult unhandled AdminActivity");
-                    break;
-                case FieldVisibilityActivity.REQUEST_CODE: /* 2f885b11-27f2-40d7-8c8b-fcb4d95a4151 */
-                    Logger.info(this, "onActivityResult unhandled FieldVisibilityActivity");
-                    break;
-                case BooklistPreferencesActivity.REQUEST_CODE: /* 9cdb2cbe-1390-4ed8-a491-87b3b1a1edb9 */
-                    Logger.info(this, "onActivityResult unhandled BooklistPreferencesActivity");
-                    break;
-                case PreferencesActivity.REQUEST_CODE: /* 46f41e7b-f49c-465d-bea0-80ec85330d1c */
-                    Logger.info(this, "onActivityResult unhandled PreferencesActivity");
-                    break;
-                default:
-                    // lowest level of our Activities, see if we missed anything
-                    Logger.info(this, "onActivityResult: NOT HANDLED: requestCode=" + requestCode + ", resultCode=" + resultCode);
-                    super.onActivityResult(requestCode, resultCode, data);
-                    break;
-            }
+            // lowest level of our Activities, see if we missed anything
+            Logger.info(this, "BaseActivity|onActivityResult|NOT HANDLED: requestCode=" + requestCode + ", resultCode=" + resultCode);
         }
-
+        super.onActivityResult(requestCode, resultCode, data);
         Tracker.exitOnActivityResult(this);
     }
 
@@ -339,10 +309,6 @@ abstract public class BaseActivity extends AppCompatActivity implements
      * If your activity needs to send a specific result, override this call.
      * If your activity does an actual finish() call it *must* take care of the result itself
      * Of course it can still implement and call this method for the sake of uniformity.
-     *
-     * returns:
-     * RESULT_OK if the caller should take some action;
-     * RESULT_CANCELED when the caller should do nothing
      */
     protected void setActivityResult() {
         setResult(changesMade() ? Activity.RESULT_OK : Activity.RESULT_CANCELED);

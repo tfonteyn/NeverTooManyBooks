@@ -34,12 +34,14 @@ import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.view.View.OnClickListener;
 
-import com.eleybourn.bookcatalogue.backup.CsvExporter;
-import com.eleybourn.bookcatalogue.backup.ExportTask;
-import com.eleybourn.bookcatalogue.backup.ImportTask;
+import com.eleybourn.bookcatalogue.backup.ExportSettings;
+import com.eleybourn.bookcatalogue.backup.ImportSettings;
+import com.eleybourn.bookcatalogue.backup.csv.CsvExportTask;
+import com.eleybourn.bookcatalogue.backup.csv.CsvExporter;
+import com.eleybourn.bookcatalogue.backup.csv.CsvImportTask;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivityWithTasks;
 import com.eleybourn.bookcatalogue.booklist.BooklistPreferencesActivity;
-import com.eleybourn.bookcatalogue.database.CoversDbAdapter;
+import com.eleybourn.bookcatalogue.database.CoversDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
@@ -49,12 +51,12 @@ import com.eleybourn.bookcatalogue.dialogs.SelectOneDialog.SimpleDialogItem;
 import com.eleybourn.bookcatalogue.dialogs.SelectOneDialog.SimpleDialogOnClickListener;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.filechooser.BackupChooserActivity;
+import com.eleybourn.bookcatalogue.goodreads.GoodreadsUtils;
 import com.eleybourn.bookcatalogue.searches.SearchAdminActivity;
-import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsRegisterActivity;
-import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsUtils;
+import com.eleybourn.bookcatalogue.goodreads.GoodreadsRegisterActivity;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingAdminActivity;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.ManagedTask;
-import com.eleybourn.bookcatalogue.tasks.taskqueue.TaskListActivity;
+import com.eleybourn.bookcatalogue.tasks.taskqueue.TaskQueueListActivity;
 import com.eleybourn.bookcatalogue.utils.BundleUtils;
 import com.eleybourn.bookcatalogue.utils.GenericFileProvider;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
@@ -79,8 +81,8 @@ public class AdminActivity extends BaseActivityWithTasks {
      * Can be used to automatically trigger an action in {@link #onResume()}.
      */
     private static final String BKEY_DO_AUTO = "do_auto";
-    /** supported action: do an export to a CSV file + finishes the activity when done */
-    private static final String BVAL_DO_AUTO_EXPORT = "export";
+    /** supported action: do an exportBooks to a CSV file + finishes the activity when done */
+    private static final String BVAL_DO_AUTO_EXPORT = "exportBooks";
 
 
     private boolean mExportToCsvOnStartup = false;
@@ -173,8 +175,8 @@ public class AdminActivity extends BaseActivityWithTasks {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(AdminActivity.this, BackupChooserActivity.class);
-                    intent.putExtra(BackupChooserActivity.BKEY_MODE, BackupChooserActivity.BVAL_MODE_SAVE_AS);
-                    startActivity(intent);
+                    intent.putExtra(BackupChooserActivity.BKEY_MODE, BackupChooserActivity.BVAL_MODE_SAVE);
+                    startActivityForResult(intent, BackupChooserActivity.REQUEST_CODE); /* da0cd4d6-baca-46ad-a010-4d91263a9c5f */
                 }
             });
         }
@@ -189,7 +191,7 @@ public class AdminActivity extends BaseActivityWithTasks {
                 public void onClick(View v) {
                     Intent intent = new Intent(AdminActivity.this, BackupChooserActivity.class);
                     intent.putExtra(BackupChooserActivity.BKEY_MODE, BackupChooserActivity.BVAL_MODE_OPEN);
-                    startActivity(intent);
+                    startActivityForResult(intent, BackupChooserActivity.REQUEST_CODE); /* 0a27a94b-2b5b-4106-a279-e74b0c770fa8 */
                 }
             });
         }
@@ -311,7 +313,7 @@ public class AdminActivity extends BaseActivityWithTasks {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(AdminActivity.this, SearchAdminActivity.class);
-                    startActivity(intent);
+                    startActivityForResult(intent, SearchAdminActivity.REQUEST_CODE); /* 293bcc32-6af7-4beb-a4e0-4db2f239cf9f */
                 }
             });
         }
@@ -324,7 +326,7 @@ public class AdminActivity extends BaseActivityWithTasks {
             v.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(AdminActivity.this, TaskListActivity.class);
+                    Intent intent = new Intent(AdminActivity.this, TaskQueueListActivity.class);
                     startActivity(intent);
                 }
             });
@@ -353,8 +355,8 @@ public class AdminActivity extends BaseActivityWithTasks {
             v.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    try (CoversDbAdapter coversDbAdapter = CoversDbAdapter.getInstance()) {
-                        coversDbAdapter.eraseCoverCache();
+                    try (CoversDBAdapter coversDBAdapter = CoversDBAdapter.getInstance()) {
+                        coversDBAdapter.eraseCoverCache();
                     }
                 }
             });
@@ -368,7 +370,7 @@ public class AdminActivity extends BaseActivityWithTasks {
             v.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    StorageUtils.backupDatabaseFile(AdminActivity.this);
+                    StorageUtils.exportDatabaseFiles(AdminActivity.this);
                     //Snackbar.make(v, R.string.backup_success, Snackbar.LENGTH_LONG).show();
                     StandardDialogs.showUserMessage(AdminActivity.this, R.string.progress_end_backup_success);
                 }
@@ -381,7 +383,11 @@ public class AdminActivity extends BaseActivityWithTasks {
      * Export all data to a CSV file
      */
     private void exportToCSV() {
-        new ExportTask(getTaskManager()).start();
+        File file = StorageUtils.getFile(CsvExporter.EXPORT_FILE_NAME);
+        ExportSettings settings = new ExportSettings(file);
+        settings.options = ExportSettings.BOOK_DATA;
+        new CsvExportTask(getTaskManager(), settings)
+                .start();
     }
 
     /**
@@ -412,7 +418,7 @@ public class AdminActivity extends BaseActivityWithTasks {
      * Import all data from somewhere on shared storage; ask user to disambiguate if necessary
      */
     private void importFromCSV() {
-        // Find all possible files (CSV in bookCatalogue directory)
+
         List<File> files = StorageUtils.findCsvFiles();
         // If none, exit with message
         if (files.size() == 0) {
@@ -420,7 +426,7 @@ public class AdminActivity extends BaseActivityWithTasks {
         } else {
             if (files.size() == 1) {
                 // If only 1, just use it
-                importFromCSV(files.get(0).getAbsolutePath());
+                importFromCSV(files.get(0));
             } else {
                 // If more than one, ask user which file
                 // ENHANCE: Consider asking about importing cover images.
@@ -430,7 +436,7 @@ public class AdminActivity extends BaseActivityWithTasks {
                             @Override
                             public void onClick(final @NonNull SimpleDialogItem item) {
                                 SimpleDialogFileItem fileItem = (SimpleDialogFileItem) item;
-                                importFromCSV(fileItem.getFile().getAbsolutePath());
+                                importFromCSV(fileItem.getFile());
                             }
                         });
             }
@@ -440,26 +446,31 @@ public class AdminActivity extends BaseActivityWithTasks {
     /**
      * Import all data from the passed CSV file spec
      */
-    private void importFromCSV(@NonNull String fileSpec) {
-        new ImportTask(getTaskManager(), fileSpec).start();
+    private void importFromCSV(final @NonNull File file) {
+        ImportSettings settings = new ImportSettings(file);
+        settings.options = ImportSettings.BOOK_DATA;
+        new CsvImportTask(getTaskManager(), settings)
+                .start();
     }
-
 
     @Override
     @CallSuper
     protected void onActivityResult(final int requestCode, final int resultCode, final @Nullable Intent data) {
         Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
         switch (requestCode) {
+            case SearchAdminActivity.REQUEST_CODE: /* 293bcc32-6af7-4beb-a4e0-4db2f239cf9f */
             case FieldVisibilityActivity.REQUEST_CODE: /* 2f885b11-27f2-40d7-8c8b-fcb4d95a4151 */
             case BooklistPreferencesActivity.REQUEST_CODE: /* 9cdb2cbe-1390-4ed8-a491-87b3b1a1edb9 */
             case PreferencesActivity.REQUEST_CODE: /* 46f41e7b-f49c-465d-bea0-80ec85330d1c */
+            case BackupChooserActivity.REQUEST_CODE: {/* da0cd4d6-baca-46ad-a010-4d91263a9c5f, 0a27a94b-2b5b-4106-a279-e74b0c770fa8 */
                 // no local action needed, pass results up
                 setResult(resultCode, data);
                 break;
-
-            default:
+            }
+            default: {
                 super.onActivityResult(requestCode, resultCode, data);
                 break;
+            }
         }
 
         Tracker.exitOnActivityResult(this);
@@ -481,17 +492,20 @@ public class AdminActivity extends BaseActivityWithTasks {
      */
     @Override
     public void onTaskFinished(final @NonNull ManagedTask task) {
-        // If it's an export, handle it
-        if (task instanceof ExportTask) {
-            onExportFinished((ExportTask) task);
+        super.onTaskFinished(task);
+
+        // If it's an exportBooks, handle it
+        if (task instanceof CsvExportTask) {
+            onExportFinished((CsvExportTask) task);
         }
     }
 
-    private void onExportFinished(final @NonNull ExportTask task) {
+    private void onExportFinished(final @NonNull CsvExportTask task) {
         if (task.isCancelled()) {
-            if (mFinishAfterExport)
+            if (mFinishAfterExport) {
                 setResult(Activity.RESULT_OK);
-            finish();
+                finish();
+            }
             return;
         }
 
@@ -541,9 +555,10 @@ public class AdminActivity extends BaseActivityWithTasks {
         dialog.setOnDismissListener(new OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialog) {
-                if (mFinishAfterExport)
+                if (mFinishAfterExport) {
                     setResult(Activity.RESULT_OK);
-                finish();
+                    finish();
+                }
             }
         });
 

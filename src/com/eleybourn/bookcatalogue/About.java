@@ -32,7 +32,6 @@ import android.support.annotation.StringRes;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;

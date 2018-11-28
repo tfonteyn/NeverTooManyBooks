@@ -234,6 +234,10 @@ abstract public class BaseActivityWithTasks extends BaseActivity {
      * @see TaskManagerListener#onTaskFinished
      */
     protected void onTaskFinished(final @NonNull ManagedTask task) {
+        String message = task.getFinalMessage();
+        if (message != null && !message.isEmpty()) {
+            StandardDialogs.showUserMessage(BaseActivityWithTasks.this, message);
+        }
     }
 
     /**

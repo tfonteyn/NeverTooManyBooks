@@ -27,25 +27,21 @@ import java.io.InputStream;
 
 public interface Importer {
 
-    /** Options value to indicate ALL books should be imported */
-    int IMPORT_ALL = 1;
-    /** Options value to indicate new books and books with more recent update_date fields should be imported */
-    int IMPORT_NEW_OR_UPDATED = 2;
-
     /**
-     * Import function
+     * Import from an InputStream.
      *
-     * @param importStream Stream for reading data
+     * @param importStream Stream for reading data*
      * @param coverFinder  (Optional) object to find a file on the local device
      * @param listener     Progress and cancellation provider
      *
-     * @return <tt>true</tt>on onTextFieldEditorSave
+     * @return <tt>true</tt>on success
+     *
+     * @throws IOException on any error
      */
     @SuppressWarnings({"UnusedReturnValue", "SameReturnValue"})
     boolean importBooks(final @NonNull InputStream importStream,
-                        final @Nullable Importer.CoverFinder coverFinder,
-                        final @NonNull Importer.OnImporterListener listener,
-                        final int importFlags) throws IOException;
+                        final @Nullable CoverFinder coverFinder,
+                        final @NonNull OnImporterListener listener) throws IOException;
 
     /**
      * Listener interface to get progress messages.

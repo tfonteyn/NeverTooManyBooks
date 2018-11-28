@@ -585,7 +585,7 @@ y puede editar el libro utilizando el menú de opciones.
     <!-- For saving and opening exports or backups -->
     <string name="btn_confirm_open">Abrir</string>
 
-    <!-- Admin option to export books -->
+    <!-- Admin option to exportBooks books -->
     <string name="export_to_csv">Exportar a fichero CSV</string>
     <!-- Admin option to import books -->
     <string name="import_from_csv">Importar de fichero CSV</string>
@@ -629,7 +629,7 @@ y puede editar el libro utilizando el menú de opciones.
     <string name="import_books_blurb">Se importarán los libros de este fichero. Seleccione una de las dos opciones propuestas para empezar la importación, o pulse \'Atrás\' para cancelar:</string>
     <!-- Description of the 'import all books' option -->
     <string name="info_all_books_will_be_imported">Importar todos los libros del fichero, actualizando los que existan y añadiendo los nuevos.</string>
-    <!-- Menu text for the 'import/export new & changed' option -->
+    <!-- Menu text for the 'import/exportBooks new & changed' option -->
     <string name="new_and_changed_books">Libros nuevos y actualizados</string>
     <!-- Description of the 'import new & changed' option -->
     <string name="new_and_changed_books_blurb">Importar sólo los libros nuevos, o los que tienen fecha de actualización más reciente en el fichero. Esto es útil para sincronizar dispositivos.</string>
@@ -638,15 +638,15 @@ y puede editar el libro utilizando el menú de opciones.
     <!-- Part of the progress message displayed when importing books -->
     <string name="progress_msg_n_created_m_updated">%1$s creados, %2$s actualizados</string>
 
-    <!--  Explanatory text for 'export' dialogue -->
+    <!--  Explanatory text for 'exportBooks' dialogue -->
     <string name="export_books_blurb">Se exportarán los libros de su catálogo. Seleccione una opción para iniciar la exportación, o pulse \'Atrás\' para cancelar:</string>
 
     <!-- Displayed in progress dialog when exporting covers in incremental mode -->
     <string name="progress_msg_covers_skip">%1$s portadas procesadas (%2$s no encontradas, %3$s saltadas)</string>
 
-    <!-- Explanatory note for 'export all' option -->
+    <!-- Explanatory note for 'exportBooks all' option -->
     <string name="export_all_blurb">Se exportarán al fichero todos los libros, portadas, configuraciones y estilos personalizados.</string>
-    <!-- Explanatory note for 'advanced export' option -->
+    <!-- Explanatory note for 'advanced exportBooks' option -->
     <string name="export_advanced_blurb">Seleccione lo que desea exportar al fichero.</string>
 
     <!-- Text for button -->
@@ -654,18 +654,18 @@ y puede editar el libro utilizando el menú de opciones.
     <!-- Brief description -->
     <string name="info_book_details">Todos los datos de todos los libros</string>
     <!-- Text for button -->
-    <string name="btn_cover_images">Portadas</string>
+    <string name="lbl_cover_images">Portadas</string>
     <!-- Brief description -->
     <string name="info_cover_images">Portadas de todos los libros seleccionadas. La exportación requerirá mucho más tiempo.</string>
     <!-- Brief description -->
     <string name="info_preferences">Preferencias y estilos definidos por el usuario</string>
 
-    <!-- Explanatory note for export date (not yet implemented) -->
+    <!-- Explanatory note for exportBooks date (not yet implemented) -->
     <string name="export_advanced_date_blurb">Si lo desea, especifique una fecha para seleccionar los libros o portadas que se exportarán:</string>
 
-    <!-- Explanatory note for export date (not yet implemented) -->
+    <!-- Explanatory note for exportBooks date (not yet implemented) -->
     <string name="all_books_added_or_updated_since">Todos los libros añadidos o actualizados desde:</string>
-    <!-- Explanatory note for export data since last backup -->
+    <!-- Explanatory note for exportBooks data since last backup -->
     <string name="info_all_books_added_or_updated_since_last_full_backup">Todos los libros añadidos o actualizados desde la última copia de seguridad completa</string>
 
     <plurals name="displaying_n_books">

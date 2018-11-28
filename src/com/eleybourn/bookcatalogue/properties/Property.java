@@ -141,6 +141,7 @@ public abstract class Property {
 
     /** Default validation method. Override to provide validation. */
     public void validate() throws ValidationException {
+        //do nothing
     }
 
     /** Children must implement set(Property) */

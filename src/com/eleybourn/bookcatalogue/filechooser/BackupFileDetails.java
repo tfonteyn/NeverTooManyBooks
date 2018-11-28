@@ -23,17 +23,13 @@ import java.util.Date;
  * Implementation of {@link FileDetails} (implements {@link Parcelable} that record data
  * about backup files in a background thread.
  *
+ * IMPORTANT NOTE: If fields are added, then you must also modify
+ * {@link #writeToParcel} and {@link #BackupFileDetails(Parcel)}
+ *
  * @author pjw
  */
-public class BackupFileDetails implements FileDetails {
-    // IMPORTANT NOTE: If fields are added, then writeToParcelable and the parcelable constructor
-    // must also be modified.
+public class BackupFileDetails implements FileDetails, Parcelable {
 
-    /**
-     * {@link Parcelable} INTERFACE.
-     *
-     * Need a CREATOR
-     */
     public static final Parcelable.Creator<BackupFileDetails> CREATOR = new Parcelable.Creator<BackupFileDetails>() {
         public BackupFileDetails createFromParcel(final @NonNull Parcel in) {
             return new BackupFileDetails(in);
@@ -63,8 +59,6 @@ public class BackupFileDetails implements FileDetails {
     }
 
     /**
-     * {@link Parcelable} INTERFACE.
-     *
      * Constructor, using a Parcel as source.
      */
     private BackupFileDetails(final @NonNull Parcel in) {
@@ -152,8 +146,6 @@ public class BackupFileDetails implements FileDetails {
 
     /**
      * {@link Parcelable} INTERFACE.
-     *
-     * Bitmask, default to 0. Not really used.
      */
     @Override
     public int describeContents() {
@@ -161,8 +153,6 @@ public class BackupFileDetails implements FileDetails {
     }
 
     /**
-     * {@link Parcelable} INTERFACE.
-     *
      * Save all fields that must be persisted.
      */
     @Override

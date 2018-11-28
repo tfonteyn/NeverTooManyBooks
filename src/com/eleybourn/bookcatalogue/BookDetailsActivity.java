@@ -25,7 +25,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.debug.Tracker;
@@ -68,16 +67,17 @@ public class BookDetailsActivity extends BaseActivity {
         Tracker.enterOnActivityResult(this,requestCode,resultCode, data);
         switch (requestCode) {
             case EditBookActivity.REQUEST_CODE: {
-                if (resultCode == EditBookFragment.RESULT_CHANGES_MADE) {
+                if (resultCode == Activity.RESULT_OK) {
                     setChangesMade(true);
                 }
                 break;
             }
 
             default:
-                // Dispatch incoming result to the current visible fragment.
-                Fragment frag = getSupportFragmentManager().findFragmentByTag(BookFragment.TAG);
-                frag.onActivityResult(requestCode, resultCode, data);
+//                // Dispatch incoming result to the current visible fragment.
+//                Fragment frag = getSupportFragmentManager().findFragmentByTag(BookFragment.TAG);
+//                frag.onActivityResult(requestCode, resultCode, data);
+                super.onActivityResult(requestCode, resultCode, data);
         }
 
         Tracker.exitOnActivityResult(this);
@@ -90,6 +90,6 @@ public class BookDetailsActivity extends BaseActivity {
     public void setActivityResult() {
         Intent data = new Intent();
         data.putExtra(UniqueId.KEY_ID, getBook().getBookId());
-        setResult(changesMade() ? RESULT_CHANGES_MADE : Activity.RESULT_CANCELED, data); /* e63944b6-b63a-42b1-897a-a0e8e0dabf8a */
+        setResult(changesMade() ? Activity.RESULT_OK : Activity.RESULT_CANCELED, data); /* e63944b6-b63a-42b1-897a-a0e8e0dabf8a */
     }
 }

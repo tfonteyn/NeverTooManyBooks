@@ -34,8 +34,7 @@
             <TextView
                 android:id="@+id/goodreads_url"
                 style="@style/link_url"
-                android:gravity="center"
-                android:text="@string/url_goodreads" />
+                android:gravity="center" />
 
             <!-- BLURB 2 -->
 

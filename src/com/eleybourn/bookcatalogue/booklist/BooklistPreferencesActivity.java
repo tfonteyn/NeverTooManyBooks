@@ -49,7 +49,6 @@ import java.util.Objects;
 public class BooklistPreferencesActivity extends PreferencesBaseActivity {
 
     public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_BOOKLIST_PREFERENCES;
-    public static final int RESULT_CODE_GLOBAL_CHANGES = UniqueId.ACTIVITY_RESULT_CODE_GLOBAL_CHANGES_BOOKLIST_PREFERENCES;
 
     // ID values for state preservation property
     public static final int BOOK_LIST_ALWAYS_EXPANDED = 1; // default
@@ -216,13 +215,5 @@ public class BooklistPreferencesActivity extends PreferencesBaseActivity {
         globalProperties.add(mCacheThumbnailsProperty);
         globalProperties.add(mBackgroundThumbnailsProperty);
         globalProperties.add(mBooklistCompatibilityModeProperty);
-    }
-
-    /**
-     * For now, always signal that something (might have) changed
-     */
-    @Override
-    public void setActivityResult() {
-        setResult(RESULT_CODE_GLOBAL_CHANGES);
     }
 }

@@ -54,8 +54,6 @@ import com.eleybourn.bookcatalogue.utils.ViewTagger;
 public class BooklistStylePropertiesActivity extends BaseActivity {
 
     public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_BOOKLIST_STYLE_PROPERTIES;
-    public static final int RESULT_CHANGES_MADE = UniqueId.ACTIVITY_RESULT_CHANGES_MADE_BOOKLIST_STYLE_PROPERTIES;
-
 
     private static final String TAG = "BooklistStyleProperties";
     /** Parameter used to pass data to this activity */
@@ -100,7 +98,7 @@ public class BooklistStylePropertiesActivity extends BaseActivity {
                 }
                 Intent data = new Intent();
                 data.putExtra(REQUEST_BKEY_STYLE, (Parcelable) mStyle);
-                setResult(RESULT_CHANGES_MADE, data);  /* fadd7b9a-7eaf-4af9-90ce-6ffb7b93afe6 */
+                setResult(UniqueId.ACTIVITY_RESULT_CHANGES_MADE_BOOKLIST_STYLE_PROPERTIES, data);  /* fadd7b9a-7eaf-4af9-90ce-6ffb7b93afe6 */
                 finish();
             }
         });
@@ -189,13 +187,6 @@ public class BooklistStylePropertiesActivity extends BaseActivity {
         }
 
         Tracker.exitOnActivityResult(this);
-    }
-
-    /**
-     * Default result always cancel; the only positive result is when user clicked 'Save'
-     */
-    public void setActivityResult() {
-        setResult(Activity.RESULT_CANCELED);
     }
 
     /**

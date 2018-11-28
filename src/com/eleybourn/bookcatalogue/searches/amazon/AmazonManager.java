@@ -1,13 +1,11 @@
 package com.eleybourn.bookcatalogue.searches.amazon;
 
-import android.net.ParseException;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.IsbnUtils;
-import com.eleybourn.bookcatalogue.utils.RTE;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 import org.xml.sax.SAXException;

@@ -20,7 +20,6 @@
 
 package com.eleybourn.bookcatalogue.booklist;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -63,7 +62,6 @@ public class BooklistPreferredStylesActivity extends EditObjectListActivity<Book
         implements SelectOneDialog.hasListViewContextMenu {
 
     public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_BOOKLIST_PREFERRED_STYLES;
-    public static final int RESULT_CHANGES_MADE = UniqueId.ACTIVITY_RESULT_CHANGES_MADE_BOOKLIST_STYLES;
 
     /** The row being edited. Set when an individual style is edited */
     private int mEditedRow;
@@ -160,7 +158,7 @@ public class BooklistPreferredStylesActivity extends EditObjectListActivity<Book
         Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
         switch (requestCode) {
             case BooklistStylePropertiesActivity.REQUEST_CODE: { /* fadd7b9a-7eaf-4af9-90ce-6ffb7b93afe6 */
-                if (resultCode == BooklistStylePropertiesActivity.RESULT_CHANGES_MADE) {
+                if (resultCode == UniqueId.ACTIVITY_RESULT_CHANGES_MADE_BOOKLIST_STYLE_PROPERTIES) {
                     /* there *has* to be 'data' */
                     Objects.requireNonNull(data);
                     BooklistStyle style = data.getParcelableExtra(BooklistStylePropertiesActivity.REQUEST_BKEY_STYLE);

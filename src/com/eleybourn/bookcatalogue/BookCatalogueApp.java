@@ -42,7 +42,6 @@ import android.util.TypedValue;
 import com.eleybourn.bookcatalogue.debug.DebugReport;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
-import com.eleybourn.bookcatalogue.tasks.taskqueue.BCQueueManager;
 import com.eleybourn.bookcatalogue.tasks.simpletasks.Terminator;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.ThemeUtils;
@@ -121,9 +120,6 @@ public class BookCatalogueApp extends Application {
     /** Used to sent notifications regarding tasks */
     private static NotificationManager mNotifier;
 
-    /** legacy "taskqueue" */
-    private static BCQueueManager mQueueManager = null;
-
     /**
      * Shared Preferences Listener
      */
@@ -138,6 +134,7 @@ public class BookCatalogueApp extends Application {
                             if (LocaleUtils.hasLocalReallyChanged()) {
                                 // changing Locale is a global operation, so apply it here.
                                 LocaleUtils.apply(getBaseContext().getResources());
+                                // but still tell the listeners
                                 LocaleUtils.notifyListeners();
                             }
                             break;
@@ -203,11 +200,6 @@ public class BookCatalogueApp extends Application {
         // Create the notifier
         mNotifier = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
-        // Start the queue manager
-        if (mQueueManager == null) {
-            mQueueManager = new BCQueueManager(mInstance.getApplicationContext());
-        }
-
         super.onCreate();
 
         // Watch the preferences and handle changes as necessary
@@ -229,16 +221,6 @@ public class BookCatalogueApp extends Application {
     @NonNull
     public static Context getAppContext() {
         return mInstance.getApplicationContext();
-    }
-
-    /**
-     * Get the current QueueManager.
-     *
-     * @return QueueManager object
-     */
-    @NonNull
-    public static BCQueueManager getQueueManager() {
-        return mQueueManager;
     }
 
     /**
@@ -287,6 +269,9 @@ public class BookCatalogueApp extends Application {
         Objects.requireNonNull(result);
         return result.trim();
     }
+
+
+
 
     /**
      * Using the global app theme.
@@ -345,6 +330,7 @@ public class BookCatalogueApp extends Application {
     public static String getResourceString(final @StringRes int resId, final @Nullable Object... objects) {
         return mInstance.getApplicationContext().getString(resId, objects).trim();
     }
+
 
     @NonNull
     public static SharedPreferences getSharedPreferences() {

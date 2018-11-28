@@ -47,7 +47,6 @@ import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.BookManager;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.entities.Series;
-import com.eleybourn.bookcatalogue.utils.BundleUtils;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
 import com.eleybourn.bookcatalogue.widgets.CoverHandler;
@@ -582,7 +581,7 @@ public class EditBookFieldsFragment extends BookBaseFragment implements
                 break;
             }
             default:
-                // handle any cover image result codes
+                // handle any cover image request codes
                 if (!mCoverHandler.onActivityResult(requestCode, resultCode, data)) {
                     super.onActivityResult(requestCode, resultCode, data);
                 }

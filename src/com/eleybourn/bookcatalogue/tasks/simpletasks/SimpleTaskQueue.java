@@ -29,7 +29,7 @@ import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
-import com.eleybourn.bookcatalogue.database.CoversDbAdapter;
+import com.eleybourn.bookcatalogue.database.CoversDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
 import java.util.ArrayList;
@@ -405,7 +405,7 @@ public class SimpleTaskQueue {
         @NonNull
         CatalogueDBAdapter getDb();
         @NonNull
-        CoversDbAdapter getCoversDb();
+        CoversDBAdapter getCoversDb();
 
         void setRequiresFinish(final boolean requiresFinish);
 
@@ -456,11 +456,11 @@ public class SimpleTaskQueue {
          *
          * Do not close the database!
          *
-         * Returns a {@link CoversDbAdapter} which it gets from the {@link SimpleTaskQueueThread}
+         * Returns a {@link CoversDBAdapter} which it gets from the {@link SimpleTaskQueueThread}
          */
         @NonNull
         @Override
-        public CoversDbAdapter getCoversDb() {
+        public CoversDBAdapter getCoversDb() {
             Objects.requireNonNull(activeThread, "SimpleTaskWrapper can only be used in a context during the run() stage");
             return activeThread.getCoversDb();
         }
@@ -489,7 +489,7 @@ public class SimpleTaskQueue {
         @Nullable
         CatalogueDBAdapter mDb = null;
         @Nullable
-        CoversDbAdapter mCoversDbAdapter = null;
+        CoversDBAdapter mCoversDBAdapter = null;
 
         /**
          * Do not close the database; we close it for you when the task finishes.
@@ -512,11 +512,11 @@ public class SimpleTaskQueue {
          */
         @SuppressWarnings("WeakerAccess")
         @NonNull
-        public CoversDbAdapter getCoversDb() {
-            if (mCoversDbAdapter == null) {
-                mCoversDbAdapter = CoversDbAdapter.getInstance();
+        public CoversDBAdapter getCoversDb() {
+            if (mCoversDBAdapter == null) {
+                mCoversDBAdapter = CoversDBAdapter.getInstance();
             }
-            return mCoversDbAdapter;
+            return mCoversDBAdapter;
         }
 
         /**
@@ -550,8 +550,8 @@ public class SimpleTaskQueue {
                     if (mDb != null) {
                         mDb.close();
                     }
-                    if (mCoversDbAdapter != null) {
-                        mCoversDbAdapter.close();
+                    if (mCoversDBAdapter != null) {
+                        mCoversDBAdapter.close();
                     }
             }
         }

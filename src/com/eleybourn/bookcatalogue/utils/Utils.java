@@ -37,12 +37,14 @@ import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.searches.SearchSites;
 import com.eleybourn.bookcatalogue.tasks.simpletasks.Terminator;
 
 import java.io.BufferedInputStream;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InterruptedIOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
@@ -52,9 +54,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * ENHANCE: make timeouts configurable; global ? or per {@link SearchSites.Site} ? (ISFDB is slooow)
+ */
 public class Utils {
 
     private static final Object lock = new Object();
+
+    /** initial connection time to websites timeout */
+    public static final int CONNECT_TIMEOUT = 30_000;
+
+    /** timeout for requests to  website */
+    public static final int READ_TIMEOUT = 30_000;
+
+    /** kill connections after this delay */
+    public static final int KILL_CONNECT_DELAY = 60_000;
 
     private Utils() {
     }
@@ -81,6 +95,9 @@ public class Utils {
 
             int retries = 3;
             while (true) {
+
+                final ConnectionInfo connInfo = new ConnectionInfo();
+
                 try {
                     /*
                      * This is quite nasty; there seems to be a bug with URL.openConnection
@@ -89,11 +106,7 @@ public class Utils {
                      *
                      *     ((HttpURLConnection)connection).setRequestMethod("GET");
                      *
-                     * but I worry about future-proofing and the assumption that URL.openConnection
-                     * will always return a HttpURLConnection. OFC, it probably will...until it doesn't.
                      *
-                     * Using HttpClient and HttpGet explicitly seems to bypass the casting
-                     * problem but still does not allow the timeouts to work, or only works intermittently.
                      *
                      * Finally, there is another problem with failed timeouts:
                      *
@@ -102,25 +115,21 @@ public class Utils {
                      * So...we are forced to use a background thread to be able to kill it.
                      */
 
-                    final ConnectionInfo connInfo = new ConnectionInfo();
+                    // sanity check
+                    URLConnection urlc = url.openConnection();
+                    if (!(urlc instanceof HttpURLConnection)) {
+                        return null;
+                    }
 
-                    connInfo.connection = url.openConnection();
+                    connInfo.connection = (HttpURLConnection) urlc;
                     connInfo.connection.setUseCaches(false);
                     connInfo.connection.setDoInput(true);
                     connInfo.connection.setDoOutput(false);
+                    connInfo.connection.setConnectTimeout(CONNECT_TIMEOUT);
+                    connInfo.connection.setReadTimeout(READ_TIMEOUT);
+                    connInfo.connection.setRequestMethod("GET");
 
-                    HttpURLConnection connection;
-                    if (connInfo.connection instanceof HttpURLConnection) {
-                        connection = (HttpURLConnection) connInfo.connection;
-                        connection.setRequestMethod("GET");
-                    } else {
-                        connection = null;
-                    }
-
-                    connInfo.connection.setConnectTimeout(30000);
-                    connInfo.connection.setReadTimeout(30000);
-
-                    // start the connection as a background task, so that we can cancel any runaway timeouts.
+                    // close the connection on a background task, so that we can cancel any runaway timeouts.
                     Terminator.enqueue(new Runnable() {
                         @Override
                         public void run() {
@@ -128,23 +137,23 @@ public class Utils {
                                 if (connInfo.inputStream.isOpen()) {
                                     try {
                                         connInfo.inputStream.close();
-                                        ((HttpURLConnection) connInfo.connection).disconnect();
+                                        connInfo.connection.disconnect();
                                     } catch (IOException e) {
                                         Logger.error(e);
                                     }
                                 }
                             } else {
-                                ((HttpURLConnection) connInfo.connection).disconnect();
+                                connInfo.connection.disconnect();
                             }
 
                         }
-                    }, 30000);
+                    }, KILL_CONNECT_DELAY);
 
                     connInfo.inputStream = new StatefulBufferedInputStream(connInfo.connection.getInputStream());
 
-                    if (connection != null && connection.getResponseCode() >= 300) {
-                        Logger.error("URL lookup failed: " + connection.getResponseCode()
-                                + " " + connection.getResponseMessage() + ", URL: " + url);
+                    if (connInfo.connection != null && connInfo.connection.getResponseCode() >= 300) {
+                        Logger.error("URL lookup failed: " + connInfo.connection.getResponseCode()
+                                + " " + connInfo.connection.getResponseMessage() + ", URL: " + url);
                         return null;
                     }
 
@@ -159,8 +168,20 @@ public class Utils {
                         Thread.sleep(500);
                     } catch (Exception ignored) {
                     }
+                    if (connInfo.connection != null) {
+                        connInfo.connection.disconnect();
+                    }
+                } catch(InterruptedIOException e) {
+                    Logger.info(Terminator.class,"InterruptedIOException: " + e.getLocalizedMessage());
+                    if (connInfo.connection != null) {
+                        connInfo.connection.disconnect();
+                    }
                 } catch (Exception e) {
                     Logger.error(e);
+
+                    if (connInfo.connection != null) {
+                        connInfo.connection.disconnect();
+                    }
                     throw new RuntimeException(e);
                 }
             }
@@ -393,7 +414,7 @@ public class Utils {
 
     private static class ConnectionInfo {
         @Nullable
-        URLConnection connection = null;
+        HttpURLConnection connection = null;
         @Nullable
         StatefulBufferedInputStream inputStream = null;
     }

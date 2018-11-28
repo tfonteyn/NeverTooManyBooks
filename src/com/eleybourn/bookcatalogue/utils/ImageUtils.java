@@ -16,7 +16,7 @@ import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
-import com.eleybourn.bookcatalogue.database.CoversDbAdapter;
+import com.eleybourn.bookcatalogue.database.CoversDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.tasks.GetThumbnailTask;
@@ -195,8 +195,8 @@ public class ImageUtils {
         /* If we want to check the cache, AND we don't have cache building happening, then check it. */
         if (checkCache && destView != null
                 && !GetThumbnailTask.hasActiveTasks() && !ThumbnailCacheWriterTask.hasActiveTasks()) {
-            try (CoversDbAdapter coversDbAdapter = CoversDbAdapter.getInstance()) {
-                final Bitmap bm = coversDbAdapter.fetchCachedImageIntoImageView(coverFile, destView, uuid, maxWidth, maxHeight);
+            try (CoversDBAdapter coversDBAdapter = CoversDBAdapter.getInstance()) {
+                final Bitmap bm = coversDBAdapter.fetchCachedImageIntoImageView(coverFile, destView, uuid, maxWidth, maxHeight);
                 if (bm != null) {
                     return bm;
                 }

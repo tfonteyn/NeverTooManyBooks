@@ -28,42 +28,28 @@ import java.util.Date;
 /**
  * Interface definition for a 'books' exporter.
  *
- * Currently (Feb 2013) there is only one, but there will probably be an XML export/import one day.
+ * Currently (Feb 2013) there is only one, but there will probably be an XML exportBooks/import one day.
  * or JSON?
  *
  * @author pjw
  */
 public interface Exporter {
-    /** Options value to indicate new books and books with more recent update_date fields should be exported */
-    int EXPORT_NOTHING = 0;
-    int EXPORT_SINCE = (1 << 1);
-    int EXPORT_PREFERENCES = (1 << 2);
-    int EXPORT_STYLES = (1 << 3);
-    int EXPORT_COVERS = (1 << 4);
-    int EXPORT_DETAILS = (1 << 5);
-
-    /** Options value to indicate ALL books should be exported */
-    int EXPORT_ALL = EXPORT_PREFERENCES | EXPORT_STYLES | EXPORT_COVERS | EXPORT_DETAILS;
-    int EXPORT_ALL_SINCE = EXPORT_PREFERENCES | EXPORT_STYLES | EXPORT_COVERS | EXPORT_DETAILS | EXPORT_SINCE;
-    int EXPORT_MASK = EXPORT_ALL | EXPORT_SINCE;
 
     /**
-     * Export function
+     * Export to an OutputStream.
      *
-     * @param outputStream Stream to send data
-     * @param listener     Progress & cancellation interface
+     * @param outputStream Stream for writing data
+     * @param listener     Progress and cancellation interface
      *
-     * @return <tt>true</tt>on onTextFieldEditorSave
+     * @return <tt>true</tt>on success
+     *
+     * @throws IOException on any error
      */
-    boolean export(final @NonNull OutputStream outputStream,
-                   final @NonNull ExportListener listener,
-                   final int backupFlags,
-                   final Date since) throws IOException;
+    boolean exportBooks(final @NonNull OutputStream outputStream,
+                        final @NonNull ExportListener listener) throws IOException;
 
     /**
      * Listener interface to get progress messages.
-     *
-     * @author pjw
      */
     interface ExportListener {
         void setMax(final int max);

@@ -21,6 +21,10 @@ import com.eleybourn.bookcatalogue.tasks.managedtasks.TaskManager;
 public final class DEBUG_SWITCHES {
 
     public static final boolean TMP_ANTHOLOGY = true;
+    /** dumps the raw Bundle at insert time of a book - LARGE! , not recommended during imports. */
+    public static final boolean DUMP_BOOK_BUNDLE_AT_INSERT = false;
+    /** dumps the raw Bundle at update time of a book - LARGE! */
+    public static final boolean DUMP_BOOK_BUNDLE_AT_UPDATE = false;
 
     public static final boolean BOOKLIST_BUILDER = false;
 
@@ -72,6 +76,7 @@ public final class DEBUG_SWITCHES {
 
     /** all things related to {@link com.eleybourn.bookcatalogue.tasks.managedtasks.ManagedTask} */
     public static final boolean MANAGED_TASKS = false;
+
     /** all things related to {@link com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue.SimpleTask} */
     public static final boolean SIMPLE_TASKS = false;
 
@@ -95,7 +100,7 @@ public final class DEBUG_SWITCHES {
 
     /**
      * Dump entire HTTP response to System.out
-     * WARNING: usually aborts the function it's in.
+     * WARNING: can abort the function it's in.
      */
     public static final boolean DUMP_HTTP_RESPONSE = false;
 }

@@ -76,6 +76,10 @@ abstract public class ManagedTask extends Thread {
     private boolean mFinished = false;
     /** Indicates the user has requested a cancel. Up to the subclass to decide what to do. */
     private boolean mCancelFlg = false;
+
+    /** message to send to the TaskManager when all is said and done */
+    protected String mFinalMessage;
+
     /**
      * Constructor.
      *
@@ -118,17 +122,15 @@ abstract public class ManagedTask extends Thread {
      * Called when the task has finished, override if needed.
      */
     protected void onTaskFinish() {
-        //do nothing
     }
 
     /**
      * Called to do the main thread work.
-     * Can use {@link #doProgress} and {@link #showUserMessage} to display messages.
      */
-    abstract protected void runTask() throws InterruptedException;
+    abstract protected void runTask() throws Exception;
 
     /**
-     * Utility routine to ask the TaskManager to get a String from a resource ID.
+     * Convinience routine to ask the TaskManager to get a String from a resource ID.
      *
      * @param id Resource ID
      *
@@ -137,25 +139,6 @@ abstract public class ManagedTask extends Thread {
     @NonNull
     protected String getString(final @StringRes int id) {
         return mTaskManager.getContext().getString(id);
-    }
-
-    /**
-     * Utility to ask the TaskManager to update the ProgressDialog
-     *
-     * @param message Message to display
-     * @param count   Counter. 0 if Max not set.
-     */
-    protected void doProgress(final @NonNull String message, final int count) {
-        mTaskManager.sendTaskProgressMessage(this, message, count);
-    }
-
-    /**
-     * Utility to ask TaskManager to display a message
-     *
-     * @param message Message to display
-     */
-    protected void showUserMessage(final @NonNull String message) {
-        mTaskManager.sendTaskUserMessage(message);
     }
 
     /**
@@ -224,12 +207,18 @@ abstract public class ManagedTask extends Thread {
         return mMessageSenderId;
     }
 
+    public String getFinalMessage() {
+        return mFinalMessage;
+    }
+
     /**
      * Controller interface for this object
      */
     public interface ManagedTaskController {
+        @SuppressWarnings("unused")
         void requestAbort();
 
+        @SuppressWarnings("unused")
         @NonNull
         ManagedTask getManagedTask();
     }

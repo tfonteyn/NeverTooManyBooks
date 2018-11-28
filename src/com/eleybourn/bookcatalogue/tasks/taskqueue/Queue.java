@@ -20,14 +20,13 @@
 
 package com.eleybourn.bookcatalogue.tasks.taskqueue;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.tasks.taskqueue.DBAdapter.ScheduledTask;
 import com.eleybourn.bookcatalogue.tasks.taskqueue.Listeners.TaskActions;
 import com.eleybourn.bookcatalogue.tasks.taskqueue.Task.TaskState;
+import com.eleybourn.bookcatalogue.tasks.taskqueue.TaskQueueDBAdapter.ScheduledTask;
 
 import java.lang.ref.WeakReference;
 
@@ -37,16 +36,14 @@ import java.lang.ref.WeakReference;
  * @author Philip Warner
  */
 public class Queue extends Thread {
-    /** Application context. Needed for DB access */
-    private final Context mApplicationContext;
     /** QueueManager that owns this Queue object */
     @NonNull
     private final QueueManager mManager;
     /** Name of this Queue */
     @NonNull
     private final String mName;
-    /** DBAdapter used internally */
-    private DBAdapter mDb;
+    /** TaskQueueDBAdapter used internally */
+    private TaskQueueDBAdapter mDb;
 
     /** Currently running task */
     private WeakReference<Task> mTask = null;
@@ -59,10 +56,9 @@ public class Queue extends Thread {
      *
      * @author Philip Warner
      */
-    public Queue(final @NonNull Context context,
-                 final @NonNull QueueManager manager,
+    public Queue(final @NonNull QueueManager manager,
                  final @NonNull String queueName) {
-        mApplicationContext = context.getApplicationContext();
+
         mName = queueName;
         mManager = manager;
         // Set the thread name to something helpful. This is distinct from the Queue name.
@@ -98,7 +94,7 @@ public class Queue extends Thread {
     public void run() {
         try {
             // Get a database adapter
-            mDb = new DBAdapter(mApplicationContext);
+            mDb = new TaskQueueDBAdapter();
             // Run until we're told not to or until we decide not to.
             while (!mTerminate) {
                 ScheduledTask scheduledTask;
@@ -161,7 +157,7 @@ public class Queue extends Thread {
             task.setState(TaskState.running);
             // notify here, as we allow mManager.runTask to be overridden
             mManager.notifyTaskChange(task, TaskActions.running);
-            result = mManager.runTask(mApplicationContext, task);
+            result = mManager.runTask(task);
             requeue = !result;
         } catch (Exception e) {
             // Don't overwrite exception set by handler

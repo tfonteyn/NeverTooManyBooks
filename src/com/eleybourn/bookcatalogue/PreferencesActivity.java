@@ -50,7 +50,6 @@ import java.util.Locale;
 public class PreferencesActivity extends PreferencesBaseActivity {
 
     public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_PREFERENCES;
-    public static final int RESULT_CODE_GLOBAL_CHANGES = UniqueId.ACTIVITY_RESULT_CODE_GLOBAL_CHANGES_PREFERENCES;
 
     /** Camera image rotation property values */
     private static final ItemEntries<Integer> mRotationListItems = new ItemEntries<Integer>()

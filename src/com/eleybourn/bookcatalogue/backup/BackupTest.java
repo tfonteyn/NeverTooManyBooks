@@ -28,7 +28,7 @@ import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.backup.BackupReader.BackupReaderListener;
 import com.eleybourn.bookcatalogue.backup.BackupWriter.BackupWriterListener;
-import com.eleybourn.bookcatalogue.backup.tar.TarBackupContainer;
+import com.eleybourn.bookcatalogue.backup.tararchive.TarBackupContainer;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
@@ -65,9 +65,11 @@ public class BackupTest {
         if (DEBUG_SWITCHES.BACKUP && BuildConfig.DEBUG) {
             Logger.info(BackupTest.class,"Starting " + file.getAbsolutePath());
         }
+        ExportSettings settings = new ExportSettings(file);
+        settings.options = ExportSettings.EXPORT_ALL;
         new TarBackupContainer(context, file)
                 .newWriter()
-                .backup(new BackupWriterListener() {
+                .backup(settings, new BackupWriterListener() {
                     private final boolean mIsCancelled = false;
                     private long mMax;
                     @Nullable
@@ -104,7 +106,7 @@ public class BackupTest {
                     public void setTotalBooks(int books) {
                         mTotalBooks = books;
                     }
-                }, Exporter.EXPORT_ALL, null);
+                });
         if (DEBUG_SWITCHES.BACKUP && BuildConfig.DEBUG) {
             Logger.info(BackupTest.class,"Finished " + file.getAbsolutePath() + ", size = " + file.length());
         }
@@ -121,7 +123,9 @@ public class BackupTest {
             throw new IOException("Not a valid backup file");
         }
 
-        bkp.newReader().restore(new BackupReaderListener() {
+        ImportSettings settings = new ImportSettings(file);
+        settings.options = ImportSettings.IMPORT_ALL;
+        bkp.newReader().restore(settings, new BackupReaderListener() {
             private final boolean mIsCancelled = false;
             private long mMax;
             @Nullable
@@ -148,7 +152,7 @@ public class BackupTest {
             public boolean isCancelled() {
                 return mIsCancelled;
             }
-        }, Importer.IMPORT_ALL);
+        });
 
         if (DEBUG_SWITCHES.BACKUP && BuildConfig.DEBUG) {
             Logger.info(BackupTest.class,"Finished " + file.getAbsolutePath() + ", size = " + file.length());

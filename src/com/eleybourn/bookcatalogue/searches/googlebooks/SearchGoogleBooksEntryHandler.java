@@ -30,7 +30,6 @@ import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
-import com.eleybourn.bookcatalogue.utils.StringList;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -149,7 +148,7 @@ class SearchGoogleBooksEntryHandler extends DefaultHandler {
     @NonNull
     private final ArrayList<Author> mAuthors = new ArrayList<>();
     /** XML content */
-    private StringBuilder mBuilder = new StringBuilder();
+    private final StringBuilder mBuilder = new StringBuilder();
 
     /**
      * Constructor

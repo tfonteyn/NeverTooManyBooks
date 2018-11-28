@@ -23,7 +23,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue;
 import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue.SimpleTaskContext;
 
 import java.io.Serializable;
@@ -60,7 +59,7 @@ public class Terminator {
      * Enqueue the passed runnable to be run after the specified delay.
      *
      * @param runnable      Runnable to execute
-     * @param delay         Delay before execution
+     * @param delay         Delay in milliseconds before execution
      */
     public static void enqueue(final @NonNull Runnable runnable, final long delay) {
         // Compute actual time

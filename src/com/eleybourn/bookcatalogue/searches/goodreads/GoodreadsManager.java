@@ -33,14 +33,14 @@ import android.support.annotation.Nullable;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
-import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.BookNotFoundException;
-import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.NetworkException;
-import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.NotAuthorizedException;
+import com.eleybourn.bookcatalogue.goodreads.GoodreadsAuthorizationResultCheckTask;
+import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.BookNotFoundException;
+import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.NetworkException;
+import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.NotAuthorizedException;
 import com.eleybourn.bookcatalogue.searches.goodreads.api.AuthUserApiHandler;
 import com.eleybourn.bookcatalogue.searches.goodreads.api.BookshelfListApiHandler;
 import com.eleybourn.bookcatalogue.searches.goodreads.api.BookshelfListApiHandler.BookshelfListFieldNames;
@@ -51,6 +51,8 @@ import com.eleybourn.bookcatalogue.searches.goodreads.api.ShelfAddBookHandler;
 import com.eleybourn.bookcatalogue.searches.goodreads.api.ShowBookApiHandler.ShowBookFieldNames;
 import com.eleybourn.bookcatalogue.searches.goodreads.api.ShowBookByIdApiHandler;
 import com.eleybourn.bookcatalogue.searches.goodreads.api.ShowBookByIsbnApiHandler;
+import com.eleybourn.bookcatalogue.tasks.simpletasks.Terminator;
+import com.eleybourn.bookcatalogue.tasks.taskqueue.Event;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.IsbnUtils;
 import com.eleybourn.bookcatalogue.utils.RTE;
@@ -89,17 +91,18 @@ import oauth.signpost.exception.OAuthMessageSignerException;
 /**
  * Class to wrap all Goodreads API calls and manage an API connection.
  *
- * ENHANCE: Link an Event to a book, and display in book list with exclamation triangle overwriting cover.
- * ENHANCE: MAYBE Replace Events with something similar in local DB?
+ * ENHANCE: Link an {@link Event} to a book, and display in book list with exclamation triangle overwriting cover.
  *
  * @author Philip Warner
  */
 public class GoodreadsManager {
 
     /**
-     * Root URL for API calls
+     * website & Root URL for API calls. Right now, identical, but this leaves future changes easier.
      */
-    public static final String GOODREADS_API_ROOT = "https://www.goodreads.com";
+    public static final String WEBSITE = "https://www.goodreads.com";
+    public static final String BASE_URL = WEBSITE;
+
     /** last time we synced with Goodreads */
     private static final String PREFS_LAST_SYNC_DATE = "GoodreadsManager.LastSyncDate";
 
@@ -163,9 +166,9 @@ public class GoodreadsManager {
 
         mConsumer = new CommonsHttpOAuthConsumer(DEV_KEY, DEV_SECRET);
         mProvider = new CommonsHttpOAuthProvider(
-                GOODREADS_API_ROOT + "/oauth/request_token",
-                GOODREADS_API_ROOT + "/oauth/access_token",
-                GOODREADS_API_ROOT + "/oauth/authorize");
+                BASE_URL + "/oauth/request_token",
+                BASE_URL + "/oauth/access_token",
+                BASE_URL + "/oauth/authorize");
 
         if (hasCredentials()) {
             mConsumer.setTokenWithSecret(mAccessToken, mAccessSecret);
@@ -207,7 +210,7 @@ public class GoodreadsManager {
     /**
      * Create canonical representation based on the best guess as to the goodreads rules.
      */
-    static String canonicalizeBookshelfName(@NonNull String name) {
+    public static String canonicalizeBookshelfName(@NonNull String name) {
         StringBuilder canonical = new StringBuilder();
         name = name.toLowerCase();
         for (int i = 0; i < name.length(); i++) {
@@ -256,7 +259,7 @@ public class GoodreadsManager {
      * @return Last date
      */
     @Nullable
-    static Date getLastSyncDate() {
+    public static Date getLastSyncDate() {
         String last = BookCatalogueApp.getStringPreference(PREFS_LAST_SYNC_DATE, null);
         if (last == null || last.isEmpty()) {
             return null;
@@ -275,14 +278,14 @@ public class GoodreadsManager {
      *
      * @param d Last date
      */
-    static void setLastSyncDate(final @Nullable Date d) {
+    public static void setLastSyncDate(final @Nullable Date d) {
         BookCatalogueApp.getSharedPreferences().edit().putString(PREFS_LAST_SYNC_DATE, d == null ? null : DateUtils.utcSqlDateTime(d)).apply();
     }
 
     /**
      * Clear the credentials from the preferences and local cache
      */
-    static void forgetCredentials() {
+    public static void forgetCredentials() {
         mAccessToken = "";
         mAccessSecret = "";
         mHasValidCredentials = false;
@@ -297,7 +300,7 @@ public class GoodreadsManager {
      * Check if the access tokens are available (not if they are valid).
      * No network access.
      */
-    static boolean hasCredentials() {
+    public static boolean hasCredentials() {
         if (mAccessToken != null && !mAccessToken.isEmpty()
                 && mAccessSecret != null && !mAccessSecret.isEmpty()) {
             return true;
@@ -579,7 +582,7 @@ public class GoodreadsManager {
      * @return Disposition of book
      */
     @NonNull
-    ExportDisposition sendOneBook(final @NonNull CatalogueDBAdapter db,
+    public ExportDisposition sendOneBook(final @NonNull CatalogueDBAdapter db,
                                   final @NonNull BookRowView bookCursorRow) throws
             OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException,
             NotAuthorizedException, IOException, NetworkException, BookNotFoundException {
@@ -794,7 +797,7 @@ public class GoodreadsManager {
      * @return Bundle of GoodreadsWork objects
      */
     @NonNull
-    Bundle getBookById(final long bookId) throws
+    private Bundle getBookById(final long bookId) throws
             OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException,
             NotAuthorizedException, BookNotFoundException, IOException, NetworkException {
         if (bookId != 0) {
@@ -813,7 +816,7 @@ public class GoodreadsManager {
      * @return Bundle of GoodreadsWork objects
      */
     @NonNull
-    Bundle getBookByIsbn(final @Nullable String isbn) throws
+    private Bundle getBookByIsbn(final @Nullable String isbn) throws
             OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException,
             NotAuthorizedException, BookNotFoundException, IOException, NetworkException {
         if (IsbnUtils.isValid(isbn)) {
@@ -902,7 +905,7 @@ public class GoodreadsManager {
      *
      * @author Philip Warner
      */
-    void requestAuthorization(final @NonNull Context context) throws NetworkException {
+    public void requestAuthorization(final @NonNull Context context) throws NetworkException {
         String authUrl;
 
         // Don't do this; this is just part of OAuth and not the Goodreads API
@@ -941,12 +944,12 @@ public class GoodreadsManager {
     }
 
     /**
-     * Called by the callback activity, {@link GoodreadsAuthorizationResultCheck},
+     * Called by the callback activity, {@link GoodreadsAuthorizationResultCheckTask},
      * when a request has been authorized by the user.
      *
      * @author Philip Warner
      */
-    void handleAuthentication() throws NotAuthorizedException {
+    public void handleAuthentication() throws NotAuthorizedException {
         // Get the saved request tokens.
         String tokenString = BookCatalogueApp.getStringPreference(REQUEST_TOKEN, null);
         String secretString = BookCatalogueApp.getStringPreference(REQUEST_SECRET, null);
@@ -985,60 +988,6 @@ public class GoodreadsManager {
      */
     public enum ExportDisposition {
         error, sent, noIsbn, notFound, networkError
-    }
-
-    /**
-     * Exceptions that may be thrown and used to wrap more varied inner exceptions
-     */
-    public static class Exceptions {
-        static class GeneralException extends Exception {
-            private static final long serialVersionUID = 5762518476144652354L;
-
-            GeneralException() {
-            }
-
-            GeneralException(final @Nullable String message) {
-                super(message);
-
-            }
-
-            GeneralException(final String message, final Throwable inner) {
-                super(message, inner);
-            }
-        }
-
-        public static class NotAuthorizedException extends GeneralException {
-            private static final long serialVersionUID = 5589234170614368111L;
-
-            public NotAuthorizedException() {
-                super(BookCatalogueApp.getResourceString(R.string.gr_auth_failed), null);
-            }
-
-            public NotAuthorizedException(final Throwable inner) {
-                super(BookCatalogueApp.getResourceString(R.string.gr_auth_failed), inner);
-            }
-        }
-
-        public static class BookNotFoundException extends GeneralException {
-            private static final long serialVersionUID = 872113355903361212L;
-
-            public BookNotFoundException() {
-                super();
-            }
-        }
-
-        public static class NetworkException extends GeneralException {
-            private static final long serialVersionUID = -4233137984910957925L;
-
-            public NetworkException(final @Nullable Throwable inner) {
-                super(BookCatalogueApp.getResourceString(R.string.gr_access_error), inner);
-            }
-
-            public NetworkException(final @Nullable String message) {
-                super(message);
-
-            }
-        }
     }
 
     private class GoodreadsBookshelf {

@@ -20,19 +20,18 @@
 
 package com.eleybourn.bookcatalogue.tasks.taskqueue;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.tasks.taskqueue.Listeners.EventActions;
 import com.eleybourn.bookcatalogue.tasks.taskqueue.Listeners.OnEventChangeListener;
 import com.eleybourn.bookcatalogue.tasks.taskqueue.Listeners.OnTaskChangeListener;
 import com.eleybourn.bookcatalogue.tasks.taskqueue.Listeners.TaskActions;
-import com.eleybourn.bookcatalogue.tasks.taskqueue.TasksCursor.TaskCursorSubtype;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -48,11 +47,19 @@ import java.util.Map;
  *
  * @author Philip Warner
  */
-public abstract class QueueManager {
+public class QueueManager {
 
     private static final String INTERNAL = "__internal";
     private static final String MESSAGE = "message";
     private static final String TOAST = "toast";
+
+    /*
+     * Queues we need:
+     * main: long-running tasks, or tasks that can just wait
+     * small_jobs: trivial background tasks that will only take a few seconds.
+     */
+    public static final String QUEUE_MAIN = "main";
+    public static final String QUEUE_SMALL_JOBS = "small_jobs";
 
     /**
      * Static reference to the active QueueManager - singleton
@@ -61,7 +68,7 @@ public abstract class QueueManager {
 
     /** Database access layer */
     @NonNull
-    private final DBAdapter mDb;
+    private final TaskQueueDBAdapter mDb;
     /** Collection of currently active queues */
     private final Map<String, Queue> mActiveQueues = new Hashtable<>();
     /** The UI thread */
@@ -80,8 +87,7 @@ public abstract class QueueManager {
      * Reminder: as we're a singleton, we cannot cache the Context.
      * That would cause memory leaks according to Android docs.
      */
-    protected QueueManager(final @NonNull Context context) {
-        super();
+    private QueueManager() {
         if (mInstance != null) {
             /* This is an essential requirement because (a) synchronization will not work with
              more than one and (b) we want to store a static reference in the class. */
@@ -94,20 +100,29 @@ public abstract class QueueManager {
         // setup the handler with access to ourselves
         mMessageHandler = new MessageHandler(new WeakReference<>(this));
 
-        mDb = new DBAdapter(context.getApplicationContext());
+        mDb = new TaskQueueDBAdapter();
 
         // Get active queues.
         synchronized (this) {
             mDb.getAllQueues(this);
         }
         mTaskChangeListeners = new ArrayList<>();
+
+        /*
+         * Create the queues we need, if they do not already exist.
+         */
+        initializeQueue(QUEUE_MAIN);
+        initializeQueue(QUEUE_SMALL_JOBS);
     }
 
     public static QueueManager getQueueManager() {
+        if (mInstance == null) {
+            mInstance = new QueueManager();
+        }
         return mInstance;
     }
 
-    public void registerEventListener(final @NonNull OnEventChangeListener listener) {
+    void registerEventListener(final @NonNull OnEventChangeListener listener) {
         synchronized (mEventChangeListeners) {
             for (WeakReference<OnEventChangeListener> lr : mEventChangeListeners) {
                 OnEventChangeListener l = lr.get();
@@ -119,7 +134,7 @@ public abstract class QueueManager {
         }
     }
 
-    public void unregisterEventListener(final @NonNull OnEventChangeListener listener) {
+    void unregisterEventListener(final @NonNull OnEventChangeListener listener) {
         synchronized (mEventChangeListeners) {
             List<WeakReference<OnEventChangeListener>> ll = new ArrayList<>();
             for (WeakReference<OnEventChangeListener> l : mEventChangeListeners) {
@@ -218,12 +233,10 @@ public abstract class QueueManager {
     /**
      * Store a Task in the database to run on the specified Queue and start queue if necessary.
      *
-     * @param context   context to use for the database
      * @param task      task to queue
      * @param queueName Name of queue
      */
-    public void enqueueTask(final @NonNull Context context,
-                            final @NonNull Task task,
+    public void enqueueTask(final @NonNull Task task,
                             final @NonNull String queueName) {
         synchronized (this) {
             // Save it
@@ -234,7 +247,7 @@ public abstract class QueueManager {
                 }
             } else {
                 // Create the queue; it will start and add itself to the manager
-                new Queue(context.getApplicationContext(), this, queueName);
+                new Queue(this, queueName);
             }
         }
         this.notifyTaskChange(task, TaskActions.created);
@@ -245,7 +258,7 @@ public abstract class QueueManager {
      *
      * @param name Name of the queue
      */
-    void initializeQueue(final @NonNull String name) {
+    private void initializeQueue(final @NonNull String name) {
         mDb.createQueue(name);
     }
 
@@ -285,11 +298,11 @@ public abstract class QueueManager {
      *
      * @param task Task to run
      *
-     * @return Result from run(...) method
+     * @return false to requeue, true for success
      */
-    boolean runTask(final @NonNull Context context, final @NonNull Task task) {
-        if (task instanceof RunnableTask) {
-            return ((RunnableTask) task).run(this, context);
+    boolean runTask(final @NonNull Task task) {
+        if (task instanceof GoodreadsTask) {
+            return ((GoodreadsTask) task).run(this, BookCatalogueApp.getAppContext());
         } else {
             // Either extend RunnableTask, or override QueueManager.runTask()
             throw new IllegalStateException("Can not handle tasks that are not RunnableTasks");
@@ -344,7 +357,7 @@ public abstract class QueueManager {
      * @return Cursor of exceptions
      */
     @NonNull
-    public EventsCursor getAllEvents() {
+    EventsCursor getAllEvents() {
         return mDb.getAllEvents();
     }
 
@@ -356,20 +369,18 @@ public abstract class QueueManager {
      * @return Cursor of exceptions
      */
     @NonNull
-    public EventsCursor getTaskEvents(final long taskId) {
+    EventsCursor getTaskEvents(final long taskId) {
         return mDb.getTaskEvents(taskId);
     }
 
     /**
      * Return as TasksCursor for the specified type.
      *
-     * @param type Subtype of cursor to retrieve
-     *
      * @return Cursor of exceptions
      */
     @NonNull
-    TasksCursor getTasks(final @NonNull TaskCursorSubtype type) {
-        return mDb.getTasks(type);
+    TasksCursor getTasks() {
+        return mDb.getTasks();
     }
 
     /**
@@ -380,7 +391,7 @@ public abstract class QueueManager {
      * @return Cursor of exceptions
      */
     public boolean hasActiveTasks(final long category) {
-        try (TasksCursor c = mDb.getTasks(category, TaskCursorSubtype.active)) {
+        try (TasksCursor c = mDb.getTasks(category)) {
             return c.moveToFirst();
         }
     }
@@ -434,12 +445,10 @@ public abstract class QueueManager {
     }
 
     /**
-     * Delete Event records more than a certain age.
-     *
-     * @param ageInDays Age in days for stale records
+     * Delete Event records more than 7 days old.
      */
-    public void cleanupOldEvents(final int ageInDays) {
-        mDb.cleanupOldEvents(ageInDays);
+    void cleanupOldEvents() {
+        mDb.cleanupOldEvents();
         mDb.cleanupOrphans();
         // This is non-optimal, but ... it's easy and clear.
         this.notifyEventChange(null, EventActions.deleted);
@@ -447,12 +456,11 @@ public abstract class QueueManager {
     }
 
     /**
-     * Delete Task records more than a certain age.
+     * Delete Task records more than 7 days old.
      *
-     * @param ageInDays Age in days for stale records
      */
-    void cleanupOldTasks(final int ageInDays) {
-        mDb.cleanupOldTasks(ageInDays);
+    void cleanupOldTasks() {
+        mDb.cleanupOldTasks();
         mDb.cleanupOrphans();
         // This is non-optimal, but ... it's easy and clear.
         this.notifyEventChange(null, EventActions.deleted);
@@ -462,16 +470,25 @@ public abstract class QueueManager {
     /**
      * Get a new Event object capable of representing a non-deserializable Event object.
      *
+     * This method is used when deserialization fails, most likely as a result of changes
+     * to the underlying serialized class.
+     *
      * @param original	original serialization source
      */
-    public abstract LegacyEvent newLegacyEvent(byte[] original);
+    @NonNull
+    LegacyEvent newLegacyEvent(byte[] original) {
+        return new LegacyEvent(original);
+    }
 
     /**
      * Get a new Task object capable of representing a non-deserializable Task object.
      *
      * @param original	original serialization source
      */
-    public abstract LegacyTask newLegacyTask(byte[] original);
+    @NonNull
+    LegacyTask newLegacyTask(byte[] original) {
+        return new LegacyTask(original);
+    }
 
     /**
      * Handler for internal UI thread messages.

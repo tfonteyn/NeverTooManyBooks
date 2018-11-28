@@ -58,7 +58,6 @@ import com.eleybourn.bookcatalogue.entities.TOCEntry;
 import com.eleybourn.bookcatalogue.searches.SearchSites;
 import com.eleybourn.bookcatalogue.searches.isfdb.ISFDBManager;
 import com.eleybourn.bookcatalogue.searches.isfdb.ISFDBResultsListener;
-import com.eleybourn.bookcatalogue.utils.BundleUtils;
 
 import java.util.ArrayList;
 import java.util.List;

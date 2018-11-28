@@ -24,9 +24,9 @@ package com.eleybourn.bookcatalogue.searches.goodreads.api;
 import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
-import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.BookNotFoundException;
-import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.NetworkException;
-import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.NotAuthorizedException;
+import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.BookNotFoundException;
+import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.NetworkException;
+import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.NotAuthorizedException;
 import com.eleybourn.bookcatalogue.searches.goodreads.api.XmlFilter.ElementContext;
 import com.eleybourn.bookcatalogue.searches.goodreads.api.XmlFilter.XmlHandler;
 
@@ -106,7 +106,7 @@ public class ShelfAddBookHandler extends ApiHandler {
 	{
 		mReviewId = 0;
 
-		HttpPost post = new HttpPost(GoodreadsManager.GOODREADS_API_ROOT + "/shelf/add_to_shelf.xml");
+		HttpPost post = new HttpPost(GoodreadsManager.BASE_URL + "/shelf/add_to_shelf.xml");
 
 		ArrayList<NameValuePair> parameters = new ArrayList<>();
         if (isRemove)

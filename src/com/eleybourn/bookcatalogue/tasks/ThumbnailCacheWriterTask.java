@@ -24,7 +24,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.database.CoversDbAdapter;
+import com.eleybourn.bookcatalogue.database.CoversDBAdapter;
 import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue;
 import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue.SimpleTaskContext;
 
@@ -105,8 +105,8 @@ public class ThumbnailCacheWriterTask implements SimpleTaskQueue.SimpleTask {
             mBitmap = null;
         } else {
             // do not close this db.
-            CoversDbAdapter coversDbAdapter = taskContext.getCoversDb();
-            coversDbAdapter.saveFile(mBitmap, mCacheId);
+            CoversDBAdapter coversDBAdapter = taskContext.getCoversDb();
+            coversDBAdapter.saveFile(mBitmap, mCacheId);
 
             if (mCanRecycle) {
                 mBitmap.recycle();

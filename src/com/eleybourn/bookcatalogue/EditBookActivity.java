@@ -26,7 +26,6 @@ import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.debug.Tracker;
@@ -84,10 +83,10 @@ public class EditBookActivity extends BaseActivity {
     @Override
     protected void onActivityResult(final int requestCode, final int resultCode, final @Nullable Intent data) {
         Tracker.enterOnActivityResult(this,requestCode,resultCode, data);
-        // Dispatch incoming result to the current visible fragment.
-        Fragment frag = getSupportFragmentManager().findFragmentByTag(EditBookFragment.TAG);
-        frag.onActivityResult(requestCode, resultCode, data);
-
+//        // Dispatch incoming result to the current visible fragment.
+//        Fragment frag = getSupportFragmentManager().findFragmentByTag(EditBookFragment.TAG);
+//        frag.onActivityResult(requestCode, resultCode, data);
+        super.onActivityResult(requestCode, resultCode, data);
         Tracker.exitOnActivityResult(this);
     }
 }

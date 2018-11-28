@@ -40,7 +40,7 @@ public interface BackupReader extends Closeable {
      *
      * @param listener Listener to receive progress information.
      */
-    void restore(final @NonNull BackupReaderListener listener, final int importFlags) throws IOException;
+    void restore(final @NonNull ImportSettings settings, final @NonNull BackupReaderListener listener) throws IOException;
 
     /**
      * Read the next ReaderEntity from the backup.

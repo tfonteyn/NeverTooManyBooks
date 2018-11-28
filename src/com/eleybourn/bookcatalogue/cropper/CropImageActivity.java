@@ -32,7 +32,6 @@ import android.graphics.Region;
 import android.media.FaceDetector;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
@@ -42,8 +41,6 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
-import com.eleybourn.bookcatalogue.BuildConfig;
-import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -77,17 +74,33 @@ import java.util.concurrent.CountDownLatch;
 public class CropImageActivity extends CropMonitoredActivity {
 
     public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_CROP_IMAGE;
+    public static final String BKEY_OUTPUT_X = "outputX";
+    public static final String BKEY_OUTPUT_Y = "outputY";
+    public static final String REQUEST_KEY_SCALE = "scale";
+    public static final String BKEY_SCALE_UP_IF_NEEDED = "scaleUpIfNeeded";
+    public static final String BKEY_ASPECT_X = "aspectX";
+    public static final String BKEY_ASPECT_Y = "aspectY";
+    public static final String BKEY_RETURN_DATA = "return-data";
+    public static final String BKEY_DATA = "data";
+    /*
+        Not sure on docs yet. Might be BC itself, but at least some are used by external cropper code.
+         */
+    public static final String BKEY_CIRCLE_CROP = "circleCrop";
+    public static final String REQUEST_KEY_IMAGE_ABSOLUTE_PATH = "image-path";
+    public static final String REQUEST_KEY_OUTPUT_ABSOLUTE_PATH = "output";
+    public static final String REQUEST_KEY_WHOLE_IMAGE = "whole-image";
+    public static final String REQUEST_KEY_NO_FACE_DETECTION = "noFaceDetection";
 
     public static void startActivityForResult(final @NonNull Activity activity,
                                               final @NonNull File thumbFile,
                                               final File cropped,
                                               final boolean cropFrameWholeImage) {
             Intent intent = new Intent(activity, CropImageActivity.class);
-            intent.putExtra(CropIImage.REQUEST_KEY_IMAGE_ABSOLUTE_PATH, thumbFile.getAbsolutePath());
-            intent.putExtra(CropIImage.REQUEST_KEY_SCALE, true);
-            intent.putExtra(CropIImage.REQUEST_KEY_NO_FACE_DETECTION, true);
-            intent.putExtra(CropIImage.REQUEST_KEY_WHOLE_IMAGE, cropFrameWholeImage);
-            intent.putExtra(CropIImage.REQUEST_KEY_OUTPUT_ABSOLUTE_PATH, cropped.getAbsolutePath());
+            intent.putExtra(REQUEST_KEY_IMAGE_ABSOLUTE_PATH, thumbFile.getAbsolutePath());
+            intent.putExtra(REQUEST_KEY_SCALE, true);
+            intent.putExtra(REQUEST_KEY_NO_FACE_DETECTION, true);
+            intent.putExtra(REQUEST_KEY_WHOLE_IMAGE, cropFrameWholeImage);
+            intent.putExtra(REQUEST_KEY_OUTPUT_ABSOLUTE_PATH, cropped.getAbsolutePath());
 
         activity.startActivityForResult(intent, CropImageActivity.REQUEST_CODE); /* 31c90366-d352-496f-9b7d-3237dd199a77 */
     }
@@ -280,6 +293,13 @@ public class CropImageActivity extends CropMonitoredActivity {
         return R.layout.activity_cropimage;
     }
 
+    /**
+     * intent.putExtra(CropIImage.REQUEST_KEY_SCALE, true);
+     * intent.putExtra(CropIImage.REQUEST_KEY_NO_FACE_DETECTION, true);
+     * intent.putExtra(CropIImage.REQUEST_KEY_WHOLE_IMAGE, cropFrameWholeImage);
+     * intent.putExtra(CropIImage.REQUEST_KEY_IMAGE_ABSOLUTE_PATH, thumbFile.getAbsolutePath());
+     * intent.putExtra(CropIImage.REQUEST_KEY_OUTPUT_ABSOLUTE_PATH, cropped.getAbsolutePath());
+     */
     @Override
     @CallSuper
     public void onCreate(final @Nullable Bundle savedInstanceState) {
@@ -291,36 +311,36 @@ public class CropImageActivity extends CropMonitoredActivity {
 
         mImageView = findViewById(R.id.coverImage);
 
-        showUserMessage(this);
+        warnUserAboutStorageIfNeeded();
 
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
         if (extras != null) {
-            if (extras.getString(CropIImage.BKEY_CIRCLE_CROP) != null) {
+            if (extras.getString(BKEY_CIRCLE_CROP) != null) {
                 mOptionCircleCrop = true;
                 mOptionAspectX = 1;
                 mOptionAspectY = 1;
             }
 
-            String imagePath = extras.getString(CropIImage.REQUEST_KEY_IMAGE_ABSOLUTE_PATH);
+            String imagePath = extras.getString(REQUEST_KEY_IMAGE_ABSOLUTE_PATH);
             Objects.requireNonNull(imagePath);
             mBitmap = getBitmap(imagePath);
 
             // Use the "output" parameter if present, otherwise overwrite existing file
-            String imgUri = extras.getString(CropIImage.REQUEST_KEY_OUTPUT_ABSOLUTE_PATH);
+            String imgUri = extras.getString(REQUEST_KEY_OUTPUT_ABSOLUTE_PATH);
             if (imgUri == null) {
                 imgUri = imagePath;
             }
             mOptionSaveUri = getImageUri(imgUri);
 
-            mOptionAspectX = extras.getInt(CropIImage.BKEY_ASPECT_X);
-            mOptionAspectY = extras.getInt(CropIImage.BKEY_ASPECT_Y);
-            mOptionOutputX = extras.getInt(CropIImage.BKEY_OUTPUT_X);
-            mOptionOutputY = extras.getInt(CropIImage.BKEY_OUTPUT_Y);
-            mOptionScale = extras.getBoolean(CropIImage.REQUEST_KEY_SCALE, true);
-            mOptionScaleUp = extras.getBoolean(CropIImage.BKEY_SCALE_UP_IF_NEEDED, true);
-            mOptionCropWholeImage = extras.getBoolean(CropIImage.REQUEST_KEY_WHOLE_IMAGE, false);
-            mOptionNoFaceDetection = extras.getBoolean(CropIImage.REQUEST_KEY_NO_FACE_DETECTION, true);
+            mOptionAspectX = extras.getInt(BKEY_ASPECT_X);
+            mOptionAspectY = extras.getInt(BKEY_ASPECT_Y);
+            mOptionOutputX = extras.getInt(BKEY_OUTPUT_X);
+            mOptionOutputY = extras.getInt(BKEY_OUTPUT_Y);
+            mOptionScale = extras.getBoolean(REQUEST_KEY_SCALE, true);
+            mOptionScaleUp = extras.getBoolean(BKEY_SCALE_UP_IF_NEEDED, true);
+            mOptionCropWholeImage = extras.getBoolean(REQUEST_KEY_WHOLE_IMAGE, false);
+            mOptionNoFaceDetection = extras.getBoolean(REQUEST_KEY_NO_FACE_DETECTION, true);
         }
 
         if (mBitmap != null) {
@@ -346,38 +366,6 @@ public class CropImageActivity extends CropMonitoredActivity {
             finish();
         }
         Tracker.exitOnCreate(this);
-    }
-
-
-    private static void showUserMessage(final @NonNull Activity activity) {
-        int remaining = calculatePicturesRemaining();
-        @StringRes
-        int msgId = 0;
-
-        if (remaining == NO_STORAGE_ERROR) {
-            if (Environment.MEDIA_CHECKING.equals(Environment.getExternalStorageState())) {
-                msgId = R.string.error_storage_preparing_card;
-            } else {
-                msgId = R.string.error_storage_no_card;
-            }
-        } else if (remaining < 1) {
-            msgId = R.string.error_storage_no_space;
-        }
-
-        if (msgId != 0) {
-            StandardDialogs.showUserMessage(activity, msgId);
-        }
-    }
-
-    private static int calculatePicturesRemaining() {
-        try {
-            long remaining = StorageUtils.getFreeSpace();
-            return (int) (remaining / ESTIMATED_PICTURE_SIZE);
-        } catch (Exception ex) {
-            // if we can't stat the filesystem then we don't know how many pictures are remaining.
-            // It might be zero but just leave it blank since we really don't know.
-            return CANNOT_STAT_ERROR;
-        }
     }
 
     @NonNull
@@ -522,16 +510,17 @@ public class CropImageActivity extends CropMonitoredActivity {
 
         // Return the cropped image directly or save it to the specified URI.
         Bundle extras = getIntent().getExtras();
-        if (extras != null && (extras.getParcelable(CropIImage.BKEY_DATA) != null
-                || extras.getBoolean(CropIImage.BKEY_RETURN_DATA))) {
+        if (extras != null && (extras.getParcelable(BKEY_DATA) != null
+                || extras.getBoolean(BKEY_RETURN_DATA))) {
 
             Bundle resultExtras = new Bundle();
-            resultExtras.putParcelable(CropIImage.BKEY_DATA, croppedImage);
+            resultExtras.putParcelable(BKEY_DATA, croppedImage);
             Intent data = new Intent("inline-data");
             data.putExtras(resultExtras);
             setResult(Activity.RESULT_OK, data); /* 31c90366-d352-496f-9b7d-3237dd199a77 */
             finish();
         } else {
+            // save to the URI in a background task
             final Bitmap bitmap = croppedImage;
             CropUtil.startBackgroundJob(this, null, getString(R.string.saving_image),
                     new Runnable() {
@@ -553,14 +542,15 @@ public class CropImageActivity extends CropMonitoredActivity {
                     croppedImage.compress(COMPRESS_FORMAT, 75, outputStream);
                 }
             } catch (IOException e) {
-                // TODO: report error to caller + should we set RESULT_CANCELED ?
                 Logger.error(e);
+                setResult(Activity.RESULT_CANCELED); /* 31c90366-d352-496f-9b7d-3237dd199a77 */
             }
 
+            // we saved the image
             setResult(Activity.RESULT_OK, intent); /* 31c90366-d352-496f-9b7d-3237dd199a77 */
         } else {
             // we were not asked to save anything, but we're ok with that
-            setResult(Activity.RESULT_OK);
+            setResult(Activity.RESULT_OK); /* 31c90366-d352-496f-9b7d-3237dd199a77 */
         }
 
         croppedImage.recycle();
@@ -588,5 +578,28 @@ public class CropImageActivity extends CropMonitoredActivity {
         }
         super.onDestroy();
         Tracker.exitOnDestroy(this);
+    }
+
+    private void warnUserAboutStorageIfNeeded() {
+        @StringRes
+        int msgId = StorageUtils.getMediaStateMessageId();
+        if (msgId == 0) {
+            // stat the filesystem
+            long freeSpace = StorageUtils.getExternalStorageFreeSpace();
+            if (freeSpace == StorageUtils.ERROR_CANNOT_STAT) {
+                msgId = R.string.error_storage_no_access;
+            } else {
+                // make an educated guess how many pics we can store.
+                long remaining = StorageUtils.getExternalStorageFreeSpace() / ESTIMATED_PICTURE_SIZE;
+                if (remaining < 1) {
+                    msgId = R.string.error_storage_no_space_left;
+                }
+            }
+        }
+
+        // tell user if needed.
+        if (msgId != 0) {
+            StandardDialogs.showUserMessage(this, msgId);
+        }
     }
 }

@@ -82,7 +82,7 @@ public class GoodreadsWork {
 	 * 
 	 * @param imageView		ImageView to display cover image
 	 */
-	void fillImageView(final @NonNull SimpleTaskQueue queue, final @NonNull ImageView imageView) {
+	public void fillImageView(final @NonNull SimpleTaskQueue queue, final @NonNull ImageView imageView) {
 		synchronized (this) {
 			if (this.imageBytes == null) {
 				// Image not retrieved yet, so clear any existing image

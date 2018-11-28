@@ -43,7 +43,7 @@ public interface BackupWriter extends Closeable {
      *
      * See BackupWriterAbstract for a default implementation.
      */
-    void backup(final @NonNull BackupWriterListener listener, final int backupFlags, final @Nullable Date since) throws IOException;
+    void backup(final @NonNull ExportSettings settings, final @NonNull BackupWriterListener listener) throws IOException;
 
     /**
      * Get the containing archive
@@ -57,7 +57,7 @@ public interface BackupWriter extends Closeable {
     void putInfo(final @NonNull BackupInfo info) throws IOException;
 
     /**
-     * Write an export file to the archive
+     * Write an exportBooks file to the archive
      */
     void putBooks(final @NonNull File books) throws IOException;
 

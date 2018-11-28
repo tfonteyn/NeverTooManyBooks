@@ -27,10 +27,13 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresPermission;
+import android.support.annotation.StringRes;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
-import com.eleybourn.bookcatalogue.database.DatabaseHelper;
+import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.database.CatalogueDBHelper;
+import com.eleybourn.bookcatalogue.database.CoversDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
 import java.io.BufferedReader;
@@ -62,43 +65,41 @@ import java.util.regex.Pattern;
  */
 public class StorageUtils {
 
+    /** error result code for {@link #getExternalStorageFreeSpace} */
+    public static final int ERROR_CANNOT_STAT = -2;
     /** buffer size for file copy operations */
     private static final int FILE_COPY_BUFFER_SIZE = 8192;
-
     /** our root directory to be created on the 'external storage' */
 
     private static final String DIRECTORY_NAME = "bookCatalogue";
     private static final String UTF8 = "utf8";
     /** root external storage */
     private static final String EXTERNAL_FILE_PATH = Environment.getExternalStorageDirectory() + File.separator + DIRECTORY_NAME;
-
     /** sub directory for temporary images TODO: Not properly used really */
     private static final String TEMP_FILE_PATH = EXTERNAL_FILE_PATH + File.separator + "tmp_images";
-
     /** permanent location for cover files. For now hardcoded, but the intention is to allow user-defined. */
     private static final String COVER_FILE_PATH = EXTERNAL_FILE_PATH + File.separator + "covers";
-
     /** permanent location for log files. */
     private static final String LOG_FILE_PATH = EXTERNAL_FILE_PATH + File.separator + "log";
-
     /** serious errors are written to this file */
     private static final String ERROR_LOG_FILE = "error.log";
-
     /**
      * written to root external storage as 'writable' test + prevent 'detection' by apps who
      * want to 'do things' with media
      */
     private static final String NOMEDIA_FILE_PATH = EXTERNAL_FILE_PATH + File.separator + MediaStore.MEDIA_IGNORE_FILENAME;
-
-
+    /**
+     * Filenames *starting* with this prefix are considered purgeable.
+     */
     private static final String[] mPurgeableFilePrefixes = new String[]{
             "DbUpgrade", "DbExport", "error.log", "tmp"};
-
     /**
      * Loop all mount points for '/bookCatalogue' directory and collect a list
      * of all CSV files.
      */
     private static final Pattern MOUNT_POINT_PATH = Pattern.compile("^\\s*[^\\s]+\\s+([^\\s]+)");
+    /** error result code for {@link #getExternalStorageFreeSpace} */
+    private static final int ERROR_NO_STORAGE = -1;
 
     private StorageUtils() {
     }
@@ -107,12 +108,13 @@ public class StorageUtils {
         return LOG_FILE_PATH + File.separator + ERROR_LOG_FILE;
     }
 
-    private static void createDir(final @NonNull String name) throws SecurityException {
+    /**
+     * Don't log anything, we might not have a log file!
+     */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+    private static boolean createDir(final @NonNull String name) throws SecurityException {
         final File dir = new File(name);
-        boolean ok = dir.mkdirs() || dir.isDirectory();
-        if (!ok) {
-            Logger.error("Could not write to storage. No permission on: " + name);
-        }
+        return dir.isDirectory() || dir.mkdirs();
     }
 
     /**
@@ -131,21 +133,29 @@ public class StorageUtils {
 
     /**
      * Make sure the external shared directory exists
-     * Logs failures themselves, but does NOT fail function
+     * Logs failures only if we we're capable of creating a log directory!
+     * Abort if we don't get that far.
      *
      * Only called from StartupActivity, after permissions have been granted.
      */
     @RequiresPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
     public static void initSharedDirectories() throws SecurityException {
-        File rootDir = new File(EXTERNAL_FILE_PATH);
-        if (rootDir.exists() && rootDir.isDirectory()) {
+        // need root first (duh)
+        if (!createDir(EXTERNAL_FILE_PATH)) {
+            return;
+        }
+        // then log dir!
+        if (!createDir(LOG_FILE_PATH)) {
             return;
         }
 
-        createDir(EXTERNAL_FILE_PATH);
-        createDir(LOG_FILE_PATH);
-        createDir(COVER_FILE_PATH);
-        createDir(TEMP_FILE_PATH);
+        // from here on, we have a log file..
+        if (!createDir(COVER_FILE_PATH)) {
+            Logger.error("Failed to create covers directory");
+        }
+        if (!createDir(TEMP_FILE_PATH)) {
+            Logger.error("Failed to create temp directory");
+        }
 
         // A .nomedia file will be created which will stop the thumbnails showing up in the gallery (thanks Brandon)
         try {
@@ -167,6 +177,9 @@ public class StorageUtils {
     public static File getLogStorage() {
         return new File(LOG_FILE_PATH);
     }
+
+    /* ------------------------------------------------------------------------------------------ */
+
     /**
      * @return the shared root Directory object
      */
@@ -186,8 +199,6 @@ public class StorageUtils {
         return new File(EXTERNAL_FILE_PATH + File.separator + fileName);
     }
 
-    /* ------------------------------------------------------------------------------------------ */
-
     /**
      * Get the 'standard' temp file name for new books
      * Is also used as the standard file name for images downloaded from the internet.
@@ -202,6 +213,8 @@ public class StorageUtils {
     public static void deleteTempCoverFile() {
         deleteFile(getTempCoverFile());
     }
+
+    /* ------------------------------------------------------------------------------------------ */
 
     /**
      * Get the 'standard' temp file name for new books, including a suffix
@@ -220,7 +233,6 @@ public class StorageUtils {
     /* ------------------------------------------------------------------------------------------ */
 
     /**
-     *
      * @param filename a generic filename
      *
      * @return a File with that name, located in the covers directory
@@ -253,8 +265,6 @@ public class StorageUtils {
         return jpg;
     }
 
-    /* ------------------------------------------------------------------------------------------ */
-
     /**
      * Count size + (optional) Cleanup any purgeable files.
      *
@@ -284,6 +294,7 @@ public class StorageUtils {
         }
         return totalSize;
     }
+    /* ------------------------------------------------------------------------------------------ */
 
     private static long purgeFile(final @NonNull String name, final boolean reallyDelete) {
         long totalSize = 0;
@@ -300,6 +311,9 @@ public class StorageUtils {
         }
         return totalSize;
     }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    // Standard File management methods
 
     /**
      * Delete *everything* in the temp file directory
@@ -319,8 +333,13 @@ public class StorageUtils {
             Logger.error(e);
         }
     }
-    /* ------------------------------------------------------------------------------------------ */
 
+    /**
+     * Find all possible CSV files in all accessible filesystems which
+     * have a "bookCatalogue" directory
+     *
+     * @return list of csv files
+     */
     @NonNull
     public static List<File> findCsvFiles() {
         // Make a filter for files ending in .csv
@@ -459,9 +478,6 @@ public class StorageUtils {
         return files;
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    // Standard File management methods
-
     /**
      * Given a InputStream, save it to a file.
      *
@@ -538,62 +554,52 @@ public class StorageUtils {
     }
 
     /**
-     * Create a copy of the database into the ExternalStorage location
-     * with the name "DbExport.db"
+     * Create a copy of the databases into the ExternalStorage location
      */
-    public static void backupDatabaseFile(final @NonNull Context context) {
-        backupDatabaseFile(context,"DbExport.db");
+    public static void exportDatabaseFiles(final @NonNull Context context) {
+        exportFile(CatalogueDBHelper.getDatabasePath(context), "DbExport.db");
+        exportFile(CoversDBAdapter.CoversDbHelper.getDatabasePath(context), "DbExport-covers.db");
     }
 
     /**
-     * Create a copy of the database into the ExternalStorage location
+     * @param sourcePath      absolute path to file to exportBooks
+     * @param destinationPath destination file name, will be stored in our directory on ExternalStorage
      */
-    public static void backupDatabaseFile(final @NonNull Context context, final @NonNull String destFilename) {
-        try {
-            String dbPath = DatabaseHelper.getDatabasePath(context);
-            backupFile(dbPath, destFilename);
-        } catch (Exception e) {
-            Logger.error(e);
-        }
-    }
-
-    /**
-     * @param sourcePath file to backup
-     * @param destPath   destination file name, will be stored in our directory on ExternalStorage
-     */
-    public static void backupFile(final @NonNull String sourcePath, final @NonNull String destPath) {
+    public static void exportFile(final @NonNull String sourcePath, final @NonNull String destinationPath) {
         try {
             // rename the previously copied file
-            StorageUtils.renameFile(getFile(destPath), getFile(destPath + ".bak"));
+            StorageUtils.renameFile(getFile(destinationPath), getFile(destinationPath + ".bak"));
             // and create a new copy. Note that the source is a fully qualified name, so NOT using getFile()
-            copyFile(new File(sourcePath), getFile(destPath));
+            copyFile(new File(sourcePath), getFile(destinationPath));
 
         } catch (Exception e) {
             Logger.error(e);
         }
     }
 
-    public static void copyFile(final @NonNull File src, final @NonNull File dst) throws IOException {
-        // let any IOException escape for the caller to deal with
-        InputStream in = new FileInputStream(src);
-        copyFile(in, FILE_COPY_BUFFER_SIZE, dst);
-        in.close();
+    /**
+     * @throws IOException upon failure
+     */
+    public static void copyFile(final @NonNull File source, final @NonNull File destination) throws IOException {
+        try (InputStream is = new FileInputStream(source)) {
+            copyFile(is, FILE_COPY_BUFFER_SIZE, destination);
+        }
     }
 
     /**
-     * @param in          InputStream, will NOT be closed here. Close it yourself !
+     * @param is          InputStream, will NOT be closed here. Close it yourself !
      * @param bufferSize  the read buffer
      * @param destination destination file, will be properly closed.
      *
      * @throws IOException at failures
      */
-    public static void copyFile(final @NonNull InputStream in,
+    public static void copyFile(final @NonNull InputStream is,
                                 final int bufferSize,
                                 final @NonNull File destination) throws IOException {
         try (OutputStream out = new FileOutputStream(destination)) {
             byte[] buffer = new byte[bufferSize];
             int nRead;
-            while ((nRead = in.read(buffer)) > 0) {
+            while ((nRead = is.read(buffer)) > 0) {
                 out.write(buffer, 0, nRead);
             }
             out.flush();
@@ -607,9 +613,9 @@ public class StorageUtils {
      */
 
     @SuppressWarnings("unused")
-    private static void copyFile2(final @NonNull File src, final @NonNull File dst) throws IOException {
-        FileInputStream fis = new FileInputStream(src);
-        FileOutputStream fos = new FileOutputStream(dst);
+    private static void copyFile2(final @NonNull File source, final @NonNull File destination) throws IOException {
+        FileInputStream fis = new FileInputStream(source);
+        FileOutputStream fos = new FileOutputStream(destination);
         FileChannel inChannel = fis.getChannel();
         FileChannel outChannel = fos.getChannel();
 
@@ -625,9 +631,44 @@ public class StorageUtils {
         }
     }
 
-    public static long getFreeSpace() {
-        StatFs stat = new StatFs(Environment.getExternalStorageDirectory().toString());
-        return (stat.getAvailableBlocksLong() * stat.getBlockSizeLong());
+    /**
+     * @return Space in bytes free on ExternalStorageDirectory,
+     * or {@link #ERROR_CANNOT_STAT} on error accessing it
+     */
+    public static long getExternalStorageFreeSpace() {
+        try {
+            StatFs stat = new StatFs(Environment.getExternalStorageDirectory().getAbsolutePath());
+            return (stat.getAvailableBlocksLong() * stat.getBlockSizeLong());
+        } catch (IllegalArgumentException e) {
+            Logger.error(e);
+            return ERROR_CANNOT_STAT;
+        }
+    }
+
+    /**
+     * Check the current state of the primary shared/external storage media.
+     *
+     * @return a string resource id matching the state; 0 for no issue found.
+     */
+    @StringRes
+    public static int getMediaStateMessageId() {
+        /*
+         * Returns the current state of the primary shared/external storage media.
+         *
+         * @see #getExternalStorageDirectory()
+         * @return one of {@link #MEDIA_UNKNOWN}, {@link #MEDIA_REMOVED},
+         *         {@link #MEDIA_UNMOUNTED}, {@link #MEDIA_CHECKING},
+         *         {@link #MEDIA_NOFS}, {@link #MEDIA_MOUNTED},
+         *         {@link #MEDIA_MOUNTED_READ_ONLY}, {@link #MEDIA_SHARED},
+         *         {@link #MEDIA_BAD_REMOVAL}, or {@link #MEDIA_UNMOUNTABLE}.
+         */
+        switch (Environment.getExternalStorageState()) {
+            case Environment.MEDIA_MOUNTED:
+                // all ok
+                return 0;
+                // should we check on other states ? do we care ?
+        }
+        return R.string.error_storage_not_available;
     }
 
     /**

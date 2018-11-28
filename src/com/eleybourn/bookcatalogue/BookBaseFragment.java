@@ -81,8 +81,6 @@ import java.util.Objects;
  */
 public abstract class BookBaseFragment extends Fragment implements DataEditor {
 
-    public static final int RESULT_CHANGES_MADE = UniqueId.ACTIVITY_RESULT_CHANGES_MADE;
-
     /** */
     protected Fields mFields;
     /** A link to the Activity, cached to avoid requireActivity() all over the place */
@@ -602,6 +600,7 @@ public abstract class BookBaseFragment extends Fragment implements DataEditor {
     @Override
     public void onActivityResult(final int requestCode, final int resultCode, final @Nullable Intent data) {
         Tracker.enterOnActivityResult(this,requestCode,resultCode, data);
+
         switch (requestCode) {
             case UpdateFieldsFromInternetActivity.REQUEST_CODE: /* 98a6d1eb-4df5-4893-9aaf-fac0ce0fee01 */
                 if (resultCode == Activity.RESULT_OK) {
@@ -621,7 +620,7 @@ public abstract class BookBaseFragment extends Fragment implements DataEditor {
 
             default:
                 // lowest level of our Fragment, see if we missed anything
-                Logger.info(this, "onActivityResult: NOT HANDLED: requestCode=" + requestCode + ", resultCode=" + resultCode);
+                Logger.info(this, "BookBaseFragment|onActivityResult|NOT HANDLED: requestCode=" + requestCode + ", resultCode=" + resultCode);
                 super.onActivityResult(requestCode,resultCode,data);
                 break;
         }

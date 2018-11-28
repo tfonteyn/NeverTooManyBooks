@@ -24,9 +24,9 @@ import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
-import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.BookNotFoundException;
-import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.NetworkException;
-import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager.Exceptions.NotAuthorizedException;
+import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.BookNotFoundException;
+import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.NetworkException;
+import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.NotAuthorizedException;
 import com.eleybourn.bookcatalogue.utils.RTE;
 
 import org.apache.http.NameValuePair;
@@ -170,7 +170,7 @@ public class OwnedBookCreateHandler extends ApiHandler {
 			throw new RTE.IsbnInvalidException(e);
 		}
 
-		HttpPost post = new HttpPost(GoodreadsManager.GOODREADS_API_ROOT + "/owned_books.xml");
+		HttpPost post = new HttpPost(GoodreadsManager.BASE_URL + "/owned_books.xml");
 
 		List<NameValuePair> parameters = new ArrayList<>();
         parameters.add(new BasicNameValuePair("owned_book[book_id]", Long.toString(id)));

@@ -56,7 +56,6 @@ import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.BooksMultiTypeListHandler.BooklistChangeListener;
 import com.eleybourn.bookcatalogue.adapters.MultiTypeListCursorAdapter;
-import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.baseactivity.BaseListActivity;
 import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;
 import com.eleybourn.bookcatalogue.booklist.BooklistBuilder.BookRowInfo;
@@ -510,25 +509,31 @@ public class BooksOnBookshelf extends BaseListActivity implements
         mCurrentPositionedBookId = 0;
 
         switch (requestCode) {
-            // a book deleted either from the BookDetailsActivity, EditBookActivity or even BooksOnBooks itself
-            case UniqueId.ACTIVITY_RESULT_BOOK_DELETED:
             case BookDetailsActivity.REQUEST_CODE: /* e63944b6-b63a-42b1-897a-a0e8e0dabf8a */
             case EditBookActivity.REQUEST_CODE: { /* 88a6c414-2d3b-4637-9044-b7291b6b9100,
              91b95a7f-17d6-4f98-af58-5f040b52414f, 01564e26-b463-425e-8889-55a8228c82d5,
               8a5c649a-e97b-4d53-8133-6060ef3c3072, 0308715c-e1d2-4a7f-9ba3-cb8f641e096b */
-                if (resultCode == BaseActivity.RESULT_CHANGES_MADE) {
-                    /* there *has* to be 'data' */
-                    Objects.requireNonNull(data);
-                    long newId = data.getLongExtra(UniqueId.KEY_ID, 0);
-                    if (newId != 0) {
-                        mCurrentPositionedBookId = newId;
+                switch (resultCode) {
+                    case UniqueId.ACTIVITY_RESULT_BOOK_DELETED: {
+                        // handle re-positioning better
+                        //mCurrentPositionedBookId = [somehow get the ID 'above' the deleted one;
+                        initBookList(false);
+                        break;
                     }
-                    initBookList(false);
+                    case Activity.RESULT_OK: {
+                        /* there *has* to be 'data' */
+                        Objects.requireNonNull(data);
+                        long newId = data.getLongExtra(UniqueId.KEY_ID, 0);
+                        if (newId != 0) {
+                            mCurrentPositionedBookId = newId;
+                        }
+                        initBookList(false);
+                        break;
+                    }
                 }
-                break;
             }
             case BookSearchActivity.REQUEST_CODE: /* 59fd9653-f033-40b5-bee8-f1dfa5b5be6b, f1e0d846-852e-451b-9077-6daa5d94f37d */
-                if (resultCode == BookSearchActivity.RESULT_CHANGES_MADE) {
+                if (resultCode == Activity.RESULT_OK) {
                     /* don't enforce having an id. We might not have found or added anything.
                      * but if we do, the data will be what EditBookActivity returns. */
                     if (data != null) {
@@ -543,6 +548,7 @@ public class BooksOnBookshelf extends BaseListActivity implements
                 break;
 
             case SearchLocalActivity.REQUEST_CODE: { /* 6f6e83e1-10fb-445c-8e35-fede41eba03b */
+                // no changes made, but we have data to act on.
                 if (resultCode == Activity.RESULT_OK) {
                     /* there *has* to be 'data' */
                     Objects.requireNonNull(data);
@@ -556,7 +562,7 @@ public class BooksOnBookshelf extends BaseListActivity implements
             }
             // from BaseActivity Nav Panel
             case EditBookshelfListActivity.REQUEST_CODE: { /* 41e84172-5833-4906-a891-8df302ecc190 */
-                if (resultCode == EditBookshelfListActivity.RESULT_CHANGES_MADE) {
+                if (resultCode == Activity.RESULT_OK) {
                     // bookshelves modified, update everything
                     initBookshelfSpinner();
                     populateBookShelfSpinner();
@@ -568,30 +574,29 @@ public class BooksOnBookshelf extends BaseListActivity implements
             // from BaseActivity Nav Panel
             case AdminActivity.REQUEST_CODE: { /* 7f46620d-7951-4637-8783-b410730cd460 */
                 // no results of it's own,
-                // child-activities results:
                 switch (resultCode) {
-                    //ENHANCE these currently always return RESULT_CODE_GLOBAL_CHANGES; can we use OnSharedPreferenceChangeListener instead?
-                    case FieldVisibilityActivity.RESULT_CODE_GLOBAL_CHANGES: /* 2f885b11-27f2-40d7-8c8b-fcb4d95a4151 */
-                    case BooklistPreferencesActivity.RESULT_CODE_GLOBAL_CHANGES: /* 9cdb2cbe-1390-4ed8-a491-87b3b1a1edb9 */
-                    case PreferencesActivity.RESULT_CODE_GLOBAL_CHANGES: /* 46f41e7b-f49c-465d-bea0-80ec85330d1c */
+                    case UniqueId.ACTIVITY_RESULT_PREFS_MIGHT_HAVE_CHANGED: {
+                        // child-activities results:
+//                        PreferencesBaseActivity: /* 9cdb2cbe-1390-4ed8-a491-87b3b1a1edb9, 46f41e7b-f49c-465d-bea0-80ec85330d1c */
+//                        FieldVisibilityActivity: /* 2f885b11-27f2-40d7-8c8b-fcb4d95a4151 */
                         refreshStyle();
                         savePosition();
                         initBookList(true);
-                        break;
+                    }
+                    break;
                 }
-                break;
             }
 
             // from BaseActivity Nav Panel or from sort menu dialog
             case BooklistPreferredStylesActivity.REQUEST_CODE: { /* 13854efe-e8fd-447a-a195-47678c0d87e7 */
                 switch (resultCode) {
-                    case BooklistPreferredStylesActivity.RESULT_CHANGES_MADE: {
+                    case UniqueId.ACTIVITY_RESULT_CHANGES_MADE_BOOKLIST_STYLES: {
                         refreshStyle();
                         savePosition();
                         initBookList(true);
                         break;
                     }
-                    case BooklistStylePropertiesActivity.RESULT_CHANGES_MADE: {
+                    case UniqueId.ACTIVITY_RESULT_CHANGES_MADE_BOOKLIST_STYLE_PROPERTIES: {
                         // we currently don't let the result from this one trickle up. Leaving in place as this might change.
                         handleStyleChange(data);
                         break;
@@ -600,8 +605,8 @@ public class BooksOnBookshelf extends BaseListActivity implements
                 break;
             }
             case BooklistStylePropertiesActivity.REQUEST_CODE: {
-                // we currently don't start the BooklistStylePropertiesActivity. Leaving in place as this might change.
-                if (resultCode == BooklistStylePropertiesActivity.RESULT_CHANGES_MADE) {
+                // we currently don't start the BooklistStylePropertiesActivity from here. Leaving in place as this might change.
+                if (resultCode == UniqueId.ACTIVITY_RESULT_CHANGES_MADE_BOOKLIST_STYLE_PROPERTIES) {
                     handleStyleChange(data);
                 }
                 break;

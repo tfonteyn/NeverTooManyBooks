@@ -123,6 +123,8 @@ public class ISFDBBook extends AbstractBase {
 
     /**
      * @param editionUrls List of url's; example: "http://www.isfdb.org/cgi-bin/pl.cgi?230949"
+     *
+     *
      */
     ISFDBBook(final @NonNull List<String> editionUrls) {
         mEditions = editionUrls;

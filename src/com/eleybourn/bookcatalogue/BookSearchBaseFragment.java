@@ -21,8 +21,9 @@ import com.eleybourn.bookcatalogue.searches.SearchAdminActivity;
 import com.eleybourn.bookcatalogue.searches.SearchManager;
 import com.eleybourn.bookcatalogue.searches.SearchSites;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
-import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
+
+import java.util.Objects;
 
 public abstract class BookSearchBaseFragment extends Fragment
         implements SearchManager.SearchManagerListener {
@@ -160,9 +161,10 @@ public abstract class BookSearchBaseFragment extends Fragment
      *
      * @return true if search was started.
      */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     protected boolean startSearch(final @NonNull String authorSearchText,
-                               final @NonNull String titleSearchText,
-                               final @NonNull String isbnSearchText) {
+                                  final @NonNull String titleSearchText,
+                                  final @NonNull String isbnSearchText) {
 
         if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
             Logger.info(this, "startSearch|isbn=" + isbnSearchText + "|author=" + authorSearchText + "|title=" + titleSearchText);
@@ -220,14 +222,16 @@ public abstract class BookSearchBaseFragment extends Fragment
     public void onActivityResult(final int requestCode, final int resultCode, final @Nullable Intent data) {
         Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
         switch (requestCode) {
+            // no changes committed, we got data to use temporarily
             case SearchAdminActivity.REQUEST_CODE: { /* 1b923299-d966-4ed5-8230-c5a7c491053b */
-                if (resultCode == Activity.RESULT_OK && data != null) {
+                if (resultCode == Activity.RESULT_OK) {
+                    Objects.requireNonNull(data);
                     mSearchSites = data.getIntExtra(SearchAdminActivity.RESULT_SEARCH_SITES, mSearchSites);
                 }
                 break;
             }
             case EditBookActivity.REQUEST_CODE: {/* 341ace23-c2c8-42d6-a71e-909a3a19ba99, 9e2c0b04-8217-4b49-9937-96d160104265 */
-                if (resultCode == EditBookActivity.RESULT_CHANGES_MADE) {
+                if (resultCode == Activity.RESULT_OK) {
                     // Created a book; save the intent
                     mLastBookData = data;
                     // and set that as the default result
@@ -242,7 +246,7 @@ public abstract class BookSearchBaseFragment extends Fragment
             }
             default:
                 // lowest level of our Fragment, see if we missed anything
-                Logger.info(this, "onActivityResult: NOT HANDLED: requestCode=" + requestCode + ", resultCode=" + resultCode);
+                Logger.info(this, "BookSearchBaseFragment|onActivityResult|NOT HANDLED: requestCode=" + requestCode + ", resultCode=" + resultCode);
                 super.onActivityResult(requestCode, resultCode, data);
                 break;
         }

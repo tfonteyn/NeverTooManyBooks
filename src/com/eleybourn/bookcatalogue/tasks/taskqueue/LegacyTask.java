@@ -30,23 +30,29 @@ import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.cursors.BindableItemCursor;
 import com.eleybourn.bookcatalogue.dialogs.ContextDialogItem;
 
 import java.util.List;
 
-public abstract class LegacyTask extends Task {
+public class LegacyTask extends Task {
     private static final long serialVersionUID = 3596858518802582316L;
-
-    protected static final int CAT_LEGACY = 0;
 
     private static final int TEXT_FIELD_1 = 1;
     private static final int TEXT_FIELD_2 = 2;
     private final byte[] mOriginal;
 
-    public LegacyTask(byte[] original, String description) {
-        super(description);
+    public LegacyTask(byte[] original) {
+        super(BookCatalogueApp.getResourceString(R.string.legacy_task));
         mOriginal = original;
+    }
+
+    @Override
+    public int getCategory() {
+        return Task.CAT_LEGACY;
     }
 
     @NonNull
@@ -77,7 +83,7 @@ public abstract class LegacyTask extends Task {
     public void bindView(final @NonNull View view,
                          final @NonNull Context context,
                          final @NonNull BindableItemCursor cursor,
-                         final @NonNull Object appInfo) {
+                         final @NonNull CatalogueDBAdapter db) {
         ((TextView) view.findViewById(TEXT_FIELD_1))
                 .setText("Legacy Task Placeholder for Task #" + this.getId());
         ((TextView) view.findViewById(TEXT_FIELD_2))
@@ -89,12 +95,21 @@ public abstract class LegacyTask extends Task {
     }
 
     @Override
-    public abstract void addContextMenuItems(final @NonNull Context ctx,
-                                             @NonNull AdapterView<?> parent,
-                                             final @NonNull View v,
-                                             final int position,
-                                             final long id,
-                                             final @NonNull List<ContextDialogItem> items,
-                                             final @NonNull Object appInfo);
+    public void addContextMenuItems(final @NonNull Context ctx,
+                                    @NonNull AdapterView<?> parent,
+                                    final @NonNull View v,
+                                    final int position,
+                                    final long id,
+                                    final @NonNull List<ContextDialogItem> items,
+                                    final @NonNull CatalogueDBAdapter db) {
+
+        items.add(new ContextDialogItem(ctx.getString(R.string.menu_delete_task), new Runnable() {
+            @Override
+            public void run() {
+                QueueManager.getQueueManager().deleteTask(LegacyTask.this.getId());
+            }
+        }));
+
+    }
 
 }

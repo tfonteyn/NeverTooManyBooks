@@ -33,7 +33,6 @@ import com.eleybourn.bookcatalogue.tasks.managedtasks.TaskManager;
 import com.eleybourn.bookcatalogue.utils.StringList;
 
 import java.util.ArrayList;
-import java.util.List;
 
 abstract public class ManagedSearchTask extends ManagedTask {
     protected static boolean mFetchThumbnail;
@@ -98,7 +97,7 @@ abstract public class ManagedSearchTask extends ManagedTask {
 
     @Override
     protected void onTaskFinish() {
-        doProgress(getString(R.string.done), 0);
+        mTaskManager.sendTaskProgressMessage(this, R.string.done, 0);
     }
 
     /**
@@ -125,25 +124,23 @@ abstract public class ManagedSearchTask extends ManagedTask {
     }
 
     /**
-     * Show an unexpected exception message
+     * Show an unexpected exception message after task finish
      */
-    protected void showException(final @StringRes int id, final @NonNull Exception e) {
+    protected void setFinalError(final @StringRes int id, final @NonNull Exception e) {
         String s;
         try {
             s = e.getLocalizedMessage();
         } catch (Exception e2) {
             s = e2.getClass().getCanonicalName();
         }
-        String msg = String.format(getString(R.string.error_search_exception), getString(id), s);
-        showUserMessage(msg);
+        mFinalMessage = String.format(getString(R.string.error_search_exception), getString(id), s);
     }
 
     /**
-     * Show a 'known' error, without the dreaded exception message
+     * Show a 'known' error after task finish, without the dreaded exception message
      */
-    protected void showError(final @StringRes int id, final @StringRes int error) {
-        String msg = String.format(getString(R.string.error_search_exception), getString(id), error);
-        showUserMessage(msg);
+    protected void setFinalError(final @StringRes int id, final @StringRes int error) {
+       mFinalMessage = String.format(getString(R.string.error_search_exception), getString(id), error);
     }
 
     /**

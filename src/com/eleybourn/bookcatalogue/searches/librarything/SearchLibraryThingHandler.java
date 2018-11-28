@@ -373,7 +373,7 @@ class SearchLibraryThingHandler extends DefaultHandler {
     @NonNull
     private final ArrayList<Series> mSeries = new ArrayList<>();
     /** XML content */
-    private StringBuilder mBuilder = new StringBuilder();
+    private final StringBuilder mBuilder = new StringBuilder();
     /** Current Field we're in. We need this because the actual data is always in a 'fact' tag. */
     @NonNull
     private FieldTypes mFieldType = FieldTypes.Other;

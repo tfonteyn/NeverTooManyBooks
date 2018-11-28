@@ -448,7 +448,7 @@ public class BookSearchByIsbnFragment extends BookSearchBaseFragment {
             prepareSearch();
         } else {
             // Scanner Cancelled/failed. Pass the last book we got to our caller and finish here.
-            mActivity.setResult(mLastBookData != null ? BookSearchActivity.RESULT_CHANGES_MADE : Activity.RESULT_CANCELED, mLastBookData);
+            mActivity.setResult(mLastBookData != null ? Activity.RESULT_OK : Activity.RESULT_CANCELED, mLastBookData);
             // and exit if no dialog present.
             if (!mDisplayingAlert) {
                 mActivity.finish();

@@ -23,12 +23,12 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.backup.csv.CsvExporter;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
@@ -39,7 +39,6 @@ import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Date;
 
 /**
  * Basic implementation of format-agnostic BackupWriter methods using
@@ -52,6 +51,7 @@ public abstract class BackupWriterAbstract implements BackupWriter {
     private final CatalogueDBAdapter mDb;
     @NonNull
     private final Context mContext;
+
     /**
      * Constructor
      */
@@ -64,7 +64,8 @@ public abstract class BackupWriterAbstract implements BackupWriter {
      * Do a full backup, sending progress to the listener
      */
     @Override
-    public void backup(final @NonNull BackupWriterListener listener, final int backupFlags, @Nullable Date since) throws IOException {
+    public void backup(final @NonNull ExportSettings settings,
+                       final @NonNull BackupWriterListener listener) throws IOException {
         try {
             // Estimate the total steps
             int estTotal = 1;
@@ -72,26 +73,26 @@ public abstract class BackupWriterAbstract implements BackupWriter {
             final int maxBooks = mDb.countBooks();
 
             int coverCount;
-            if ((backupFlags & Exporter.EXPORT_COVERS) != 0) {
-                coverCount = writeCovers(listener, backupFlags, since, true);
+            if ((settings.options & ExportSettings.COVERS) != 0) {
+                coverCount = writeCovers(listener, settings, true);
             } else {
                 coverCount = 0;
             }
 
             // If we are doing books, add them
-            if ((backupFlags & Exporter.EXPORT_DETAILS) != 0) {
+            if ((settings.options & ExportSettings.BOOK_DATA) != 0) {
                 estTotal += maxBooks;
             }
 
             // If we are doing covers, add them
-            if (!listener.isCancelled() && (backupFlags & Exporter.EXPORT_COVERS) != 0) {
+            if (!listener.isCancelled() && (settings.options & ExportSettings.COVERS) != 0) {
                 estTotal += coverCount;
             }
 
             listener.setMax(estTotal);
 
             // Generate the book list first, so we know how many there are.
-            final File temp = generateBooks(listener, backupFlags, since, coverCount);
+            final File temp = generateBooks(listener, settings, coverCount);
 
             listener.setMax(coverCount + listener.getTotalBooks() + 1);
 
@@ -99,16 +100,16 @@ public abstract class BackupWriterAbstract implements BackupWriter {
             if (!listener.isCancelled()) {
                 writeInfo(mContext, listener, listener.getTotalBooks(), coverCount);
             }
-            if (!listener.isCancelled() && (backupFlags & Exporter.EXPORT_DETAILS) != 0) {
+            if (!listener.isCancelled() && (settings.options & ExportSettings.BOOK_DATA) != 0) {
                 writeBooks(temp);
             }
-            if (!listener.isCancelled() && (backupFlags & Exporter.EXPORT_COVERS) != 0) {
-                writeCovers(listener, backupFlags, since, false);
+            if (!listener.isCancelled() && (settings.options & ExportSettings.COVERS) != 0) {
+                writeCovers(listener, settings, false);
             }
-            if (!listener.isCancelled() && (backupFlags & Exporter.EXPORT_PREFERENCES) != 0) {
+            if (!listener.isCancelled() && (settings.options & ExportSettings.PREFERENCES) != 0) {
                 writePreferences(listener);
             }
-            if (!listener.isCancelled() && (backupFlags & Exporter.EXPORT_STYLES) != 0) {
+            if (!listener.isCancelled() && (settings.options & ExportSettings.BOOK_LIST_STYLES) != 0) {
                 writeStyles(listener);
             }
         } finally {
@@ -137,7 +138,7 @@ public abstract class BackupWriterAbstract implements BackupWriter {
     }
 
     /**
-     * Generate a temporary file containing a books export, and send it to the archive
+     * Generate a temporary file containing a books exportBooks, and send it to the archive
      * <p>
      * NOTE: This implementation is built around the TAR format; it is not a fixed design.
      * We could for example pass an Exporter to the writer and leave it to decide if a
@@ -149,12 +150,12 @@ public abstract class BackupWriterAbstract implements BackupWriter {
      */
     @NonNull
     private File generateBooks(final @NonNull BackupWriterListener listener,
-                               final int backupFlags,
-                               final @Nullable Date since,
+                               final @NonNull ExportSettings settings,
                                final int numCovers) throws IOException {
         // This is an estimate only; we actually don't know how many covers there are in the backup.
         listener.setMax((mDb.countBooks() * 2 + 1));
 
+        // Listener for the 'exportBooks' function that just passes on the progress to our own listener
         final Exporter.ExportListener exportListener = new Exporter.ExportListener() {
             private int mLastPos = 0;
 
@@ -182,16 +183,9 @@ public abstract class BackupWriterAbstract implements BackupWriter {
         // Get a temp file and set for delete
         final File temp = File.createTempFile("bc", ".tmp");
         temp.deleteOnExit();
-        FileOutputStream output = null;
-        try {
-            CsvExporter exporter = new CsvExporter(mContext);
-            output = new FileOutputStream(temp);
-            exporter.export(output, exportListener, backupFlags, since);
-            output.close();
-        } finally {
-            if (output != null && output.getChannel().isOpen()) {
-                output.close();
-            }
+        try (FileOutputStream output = new FileOutputStream(temp)) {
+            CsvExporter exporter = new CsvExporter(mContext, settings);
+            exporter.exportBooks(output, exportListener);
         }
 
         return temp;
@@ -212,17 +206,11 @@ public abstract class BackupWriterAbstract implements BackupWriter {
      * Write each cover file corresponding to a book to the archive
      */
     private int writeCovers(final @NonNull BackupWriterListener listener,
-                            final int backupFlags,
-                            final @Nullable Date since,
+                            final @NonNull ExportSettings settings,
                             final boolean dryRun) throws IOException {
         long sinceTime = 0;
-        if (since != null && (backupFlags & Exporter.EXPORT_SINCE) != 0) {
-            try {
-                sinceTime = since.getTime();
-            } catch (Exception e) {
-                // Just ignore; backup everything
-                Logger.error(e);
-            }
+        if (settings.dateFrom != null && (settings.options & ExportSettings.EXPORT_SINCE) != 0) {
+            sinceTime = settings.dateFrom.getTime();
         }
 
         int ok = 0;
@@ -238,7 +226,7 @@ public abstract class BackupWriterAbstract implements BackupWriter {
                 File cover = StorageUtils.getCoverFile(uuid);
                 if (cover.exists()) {
                     if (cover.exists()
-                            && (since == null || sinceTime < cover.lastModified())) {
+                            && (settings.dateFrom == null || sinceTime < cover.lastModified())) {
                         if (!dryRun) {
                             putCoverFile(cover);
                         }

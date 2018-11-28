@@ -114,6 +114,8 @@ abstract public class EditObjectListActivity<T extends Parcelable> extends BaseL
     protected ArrayList<T> mList = null;
     /**
      * Handle 'Save'
+     *
+     * TEST: setResult(RESULT_CHANGES_MADE although we might not have made any. see for setChangesMade ?
      */
     private final OnClickListener mSaveListener = new OnClickListener() {
         @Override

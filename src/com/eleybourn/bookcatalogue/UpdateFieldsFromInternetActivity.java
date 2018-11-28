@@ -49,6 +49,7 @@ import com.eleybourn.bookcatalogue.tasks.managedtasks.ManagedTask;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.util.LinkedHashMap;
+import java.util.Objects;
 
 /**
  * NEWKIND must stay in sync with {@link UpdateFieldsFromInternetTask}
@@ -282,14 +283,10 @@ public class UpdateFieldsFromInternetActivity extends BaseActivityWithTasks {
             }
         });
 
+        // don't start update, just quit.
         findViewById(R.id.cancel).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(final View v) {
-                //TOMF: not sure if needed... can't harm. or can it ?
-                ManagedTask.ManagedTaskController tc = UpdateFieldsFromInternetTask.getMessageSwitch().getController(mUpdateSenderId);
-                if (tc != null) {
-                    tc.requestAbort();
-                }
                 setResult(Activity.RESULT_CANCELED);
                 finish();
             }
@@ -331,8 +328,10 @@ public class UpdateFieldsFromInternetActivity extends BaseActivityWithTasks {
     protected void onActivityResult(final int requestCode, final int resultCode, final @Nullable Intent data) {
         Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
         switch (requestCode) {
+            // no changes committed, we got data to use temporarily
             case SearchAdminActivity.REQUEST_CODE: /* 4266b81b-137b-4647-aa1c-8ec0fc8726e6 */
-                if (resultCode == Activity.RESULT_OK && data != null) {
+                if (resultCode == Activity.RESULT_OK) {
+                    Objects.requireNonNull(data);
                     mSearchSites = data.getIntExtra(SearchAdminActivity.RESULT_SEARCH_SITES, mSearchSites);
                 }
                 break;

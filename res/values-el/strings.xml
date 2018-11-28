@@ -572,7 +572,7 @@
     <!-- For saving and opening exports or backups -->
     <string name="btn_confirm_open">Άνοιγμα</string>
 
-    <!-- Admin option to export books -->
+    <!-- Admin option to exportBooks books -->
     <string name="export_to_csv">Εξαγωγή σε αρχείο CSV</string>
     <!-- Admin option to import books -->
     <string name="import_from_csv">Εισαγωγή από αρχείο CSV</string>
@@ -616,7 +616,7 @@
     <string name="import_books_blurb">Τα βιβλία σε αυτό το Αρχείο θα εισαχθούν. Επιλέξτε μία από τις δύο επιλογές για να αρχίσει η εισαγωγή, ή πατήστε \'Πίσω\' για να ακυρωθεί:</string>
     <!-- Description of the 'import all books' option -->
     <string name="info_all_books_will_be_imported">Όλα τα βιβλία από το Αρχείο θα εισαχθούν, ενημερώνοντας παλιά βιβλία και προσθέτοντας καινούρια.</string>
-    <!-- Menu text for the 'import/export new & changed' option -->
+    <!-- Menu text for the 'import/exportBooks new & changed' option -->
     <string name="new_and_changed_books">Καινούρια και ενημερωμένα βιβλία</string>
     <!-- Description of the 'import new & changed' option -->
     <string name="new_and_changed_books_blurb">Εισαγωγή μόνο βιβλίων που είναι καινούρια, ή που έχουν ενημερωθεί πιο πρόσφατα στο Αρχείο. Χρήσιμο όταν συγχρονίζετε δύο συσκευές.</string>
@@ -625,14 +625,14 @@
     <!-- Part of the progress message displayed when importing books -->
     <string name="progress_msg_n_created_m_updated">%1$s δημιουργήθηκαν, %2$s ενημερώθηκαν</string>
 
-    <!--  Explanatory text for 'export' dialogue -->
+    <!--  Explanatory text for 'exportBooks' dialogue -->
     <string name="export_books_blurb">Τα βιβλία στον κατάλογό σας θα εξαχθούν. Επιλέξτε μία από τις δύο επιλογές για να αρχίσει η εξαγωγή, ή πατήστε \'Πίσω\' για να ακυρωθεί:</string>
     <!-- Displayed in progress dialog when exporting covers in incremental mode -->
     <string name="progress_msg_covers_skip">%1$s εξώφυλλα επεξεργάστηκαν (%2$s λείπουν, %3$s παρελείφθησαν)</string>
 
-    <!-- Explanatory note for 'export all' option -->
+    <!-- Explanatory note for 'exportBooks all' option -->
     <string name="export_all_blurb">Όλα τα βιβλία, εξώφυλλα, ρυθμίσεις και προσαρμοσμένα στυλ θα εξαχθούν στο Αρχείο.</string>
-    <!-- Explanatory note for 'advanced export' option -->
+    <!-- Explanatory note for 'advanced exportBooks' option -->
     <string name="export_advanced_blurb">Επιλέξτε τι θα εξαχθεί στο Αρχείο.</string>
 
     <!-- Text for button -->
@@ -640,18 +640,18 @@
     <!-- Brief description -->
     <string name="info_book_details">Λεπτομέρειες για τα βιβλία</string>
     <!-- Text for button -->
-    <string name="btn_cover_images">Εικόνες εξωφύλλων</string>
+    <string name="lbl_cover_images">Εικόνες εξωφύλλων</string>
     <!-- Brief description -->
     <string name="info_cover_images">Εικόνες εξωφύλλων για όλα τα επιλεγμένα βιβλία. Θα κάνει την εξαγωγή πολύ μεγαλύτερη.</string>
     <!-- Brief description -->
     <string name="info_preferences">Προτιμήσεις και στυλ για λίστες καθορισμένες από το χρήστη</string>
 
-    <!-- Explanatory note for export date (not yet implemented) -->
+    <!-- Explanatory note for exportBooks date (not yet implemented) -->
     <string name="export_advanced_date_blurb">Προαιρετικά καθορίστε μια ημερομηνία να χρησιμοποιηθεί στην επιλογή βιβλίων ή/και εξωφύλλων για εξαγωγή:</string>
 
-    <!-- Explanatory note for export date (not yet implemented) -->
+    <!-- Explanatory note for exportBooks date (not yet implemented) -->
     <string name="all_books_added_or_updated_since">Όλα τα βιβλία που προστέθηκαν ή ενημερώθηκαν από:</string>
-    <!-- Explanatory note for export data since last backup -->
+    <!-- Explanatory note for exportBooks data since last backup -->
     <string name="info_all_books_added_or_updated_since_last_full_backup">Όλα τα βιβλία που προστέθηκαν ή ενημερώθηκαν από το τελευταίο πλήρες αντίγραφο ασφαλείας</string>
 
     <plurals name="displaying_n_books">

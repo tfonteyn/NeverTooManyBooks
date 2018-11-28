@@ -588,7 +588,7 @@ Zie "Meer voorkeuren" voor de relevante instelling.
     <!-- For saving and opening exports or backups -->
     <string name="btn_confirm_open">Open</string>
 
-    <!-- Admin option to export books -->
+    <!-- Admin option to exportBooks books -->
     <string name="export_to_csv">Exporteer naar CSV-bestand</string>
     <!-- Admin option to import books -->
     <string name="import_from_csv">Importeer vanuit CSV-bestand</string>
@@ -632,7 +632,7 @@ Zie "Meer voorkeuren" voor de relevante instelling.
     <string name="import_books_blurb">De boeken in dit archief zullen worden geïmporteerd. Tik op één van de twee opties om de import te starten of druk op \'terug\' om te annuleren:</string>
     <!-- Description of the 'import all books' option -->
     <string name="info_all_books_will_be_imported">Alle boeken in het archief zullen worden geïmporteerd en zo de bestaande boeken bijwerken en nieuwe toevoegen.</string>
-    <!-- Menu text for the 'import/export new & changed' option -->
+    <!-- Menu text for the 'import/exportBooks new & changed' option -->
     <string name="new_and_changed_books">Nieuwe en bijgewerkte boeken</string>
     <!-- Description of the 'import new & changed' option -->
     <string name="new_and_changed_books_blurb">Alleen nieuwe boeken importeren of boeken die onlangs zijn bijgewerkt in het archief. Dit is handig bij het synchroniseren van twee apparaten.</string>
@@ -641,15 +641,15 @@ Zie "Meer voorkeuren" voor de relevante instelling.
     <!-- Part of the progress message displayed when importing books -->
     <string name="progress_msg_n_created_m_updated">%1$s toegevoegd, %2$s bijgewerkt</string>
 
-    <!--  Explanatory text for 'export' dialogue -->
+    <!--  Explanatory text for 'exportBooks' dialogue -->
     <string name="export_books_blurb">De boeken in de catalogus zullen worden geëxporteerd. Tik op één van de twee opties om de export te starten of druk op \'terug\' om te annuleren:</string>
 
     <!-- Displayed in progress dialog when exporting covers in incremental mode -->
     <string name="progress_msg_covers_skip">%1$s boekomslagen verwerkt (%2$s missend, %3$s overgeslagen)</string>
 
-    <!-- Explanatory note for 'export all' option -->
+    <!-- Explanatory note for 'exportBooks all' option -->
     <string name="export_all_blurb">Alle boeken, omslagafbeeldingen, instellingen en aangepaste stijlen zullen worden geëxporteerd naar het archief.</string>
-    <!-- Explanatory note for 'advanced export' option -->
+    <!-- Explanatory note for 'advanced exportBooks' option -->
     <string name="export_advanced_blurb">Selecteer wat geëxporteerd zal worden naar het archief.</string>
 
     <!-- Text for button -->
@@ -657,18 +657,18 @@ Zie "Meer voorkeuren" voor de relevante instelling.
     <!-- Brief description -->
     <string name="info_book_details">De details van het boek zelf</string>
     <!-- Text for button -->
-    <string name="btn_cover_images">Omslagafbeeldingen</string>
+    <string name="lbl_cover_images">Omslagafbeeldingen</string>
     <!-- Brief description -->
     <string name="info_cover_images">Omslagafbeeldingen voor alle geselecteerde boeken. Dit zal de export aanzienlijk groter maken.</string>
     <!-- Brief description -->
     <string name="info_preferences">Voorkeuren en aangepaste boekenlijst stijlen</string>
 
-    <!-- Explanatory note for export date (not yet implemented) -->
+    <!-- Explanatory note for exportBooks date (not yet implemented) -->
     <string name="export_advanced_date_blurb">Specificeer desgewenst een datum voor de selectie van boeken en/of omslagen om te exporteren:</string>
 
-    <!-- Explanatory note for export date (not yet implemented) -->
+    <!-- Explanatory note for exportBooks date (not yet implemented) -->
     <string name="all_books_added_or_updated_since">Alle boeken die zijn toegevoegd of bijgewerkt sinds:</string>
-    <!-- Explanatory note for export data since last backup -->
+    <!-- Explanatory note for exportBooks data since last backup -->
     <string name="info_all_books_added_or_updated_since_last_full_backup">Alle boeken die zijn toegevoegd of bijgewerkt sinds de laatste volledige back-up</string>
 
     <plurals name="displaying_n_books">
@@ -769,9 +769,12 @@ Zie "Meer voorkeuren" voor de relevante instelling.
     <string name="send_mail">Bericht versturen…</string>
     <string name="share">Delen</string>
     <string name="starting">Opstarten</string>
-    <string name="error_storage_no_card">Geen opslag?</string>
-    <string name="error_storage_no_space">Niet genoeg opslag</string>
-    <string name="error_storage_preparing_card">Klaarmaken opslag</string>
+
+    <string name="error_storage_no_access">Opslag niet beschikbaar</string>
+    <string name="error_storage_no_space_left">Niet genoeg opslag</string>
+    <string name="error_storage_not_available">Klaarmaken opslag</string>
+    <string name="error_storage_cannot_write">Opslag niet beschrijfbaar?</string>
+
     <string name="table_of_content">Inhouds tabel</string>
     <string name="tab_info_search_sites">Locale paginas</string>
     <string name="lbl_date_acquired">Datum aangekocht</string>
@@ -786,7 +789,6 @@ Zie "Meer voorkeuren" voor de relevante instelling.
     <string name="usage_skip">Overslaan</string>
     <string name="share_book_im_reading">Ik lees %1$s door %2$s %3$s %4$s</string>
     <string name="gr_search_goodreads">Zoeken op Goodreads</string>
-    <string name="error_storage_cannot_write">Opslag niet beschrijfbaar?</string>
     <string name="error_search_configuration">Configuratie fout</string>
     <string name="lbl_currency">Munt</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>

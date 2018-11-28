@@ -123,6 +123,9 @@ public class SearchManager {
                 @Override
                 public void onTaskFinished(final @NonNull TaskManager manager,
                                            final @NonNull ManagedTask task) {
+                    // display final message from task.
+                    onUserMessage(task.getFinalMessage());
+
                     // Handle the result, and optionally queue another task
                     if (task instanceof ManagedSearchTask) {
                         handleSearchTaskFinished((ManagedSearchTask) task);

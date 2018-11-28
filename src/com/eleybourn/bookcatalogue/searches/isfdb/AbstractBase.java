@@ -40,10 +40,14 @@ abstract class AbstractBase {
     Document mDoc;
 
     /**
+     * Fetch the URL as defined by {@link #mPath} and parse it into {@link #mDoc}
+     *
      * the connect call uses a set of defaults. For example the user-agent:
      * {@link org.jsoup.helper.HttpConnection#DEFAULT_UA}
      *
      * The content encoding by default is: "Accept-Encoding", "gzip"
+     *
+     * @return true when fetched and parsed ok.
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     boolean loadPage() throws SocketTimeoutException {
@@ -87,18 +91,7 @@ abstract class AbstractBase {
                 Logger.error(e, mPath);
                 return false;
             } finally {
-                // W/OkHttpClient: A connection to http://www.isfdb.org/ was leaked. Did you forget to close a response body?
-                // is this what they mean ? Mr. Internet mentions a lot of response.body().close; but that seems to be newer versions.
-                if (mDoc == null && response != null) {
-                    try {
-                        Logger.info(this,"Trying to close the body of " + mPath);
-                        BufferedInputStream s = response.bodyStream();
-                        if (s != null) {
-                            s.close();
-                        }
-                    } catch (IOException ignore) {
-                    }
-                }
+                //con.close() ???  W/OkHttpClient: A connection to http://www.isfdb.org/ was leaked. Did you forget to close a response body?
             }
         }
         return true;

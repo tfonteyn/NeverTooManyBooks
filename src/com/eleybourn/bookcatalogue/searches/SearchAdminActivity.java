@@ -108,6 +108,7 @@ public class SearchAdminActivity extends BaseActivity {
                 }
                 Intent data = new Intent();
                 data.putExtra(RESULT_SEARCH_SITES, sites);
+                // no changes committed, we got data to use temporarily
                 setResult(Activity.RESULT_OK, data); /* 4266b81b-137b-4647-aa1c-8ec0fc8726e6 */
                 finish();
             }
