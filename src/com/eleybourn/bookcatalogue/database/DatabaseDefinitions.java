@@ -82,11 +82,36 @@ public class DatabaseDefinitions {
     private static final String NOT_NULL = "not null";
 
     /**
+     * The original code was a bit vague on the exact meaning of the 'anthology mask'
+     * 0%00 == book by single author
+     * 0%01 == anthology by one author
+     * 0%11 == anthology by multiple authors.
+     * which would mean it missed books with a single story, but multiple authors; e.g. the 0%10
+     *
+     * I think the below is a better definition.
+     *
      * {@link #DOM_BOOK_ANTHOLOGY_BITMASK}
-     * 0%01 = it's an anthology (with a single author)
-     * 0%10 = has multiple authors
+     *
+     * 0%00 = a book contains one 'work' and is written by a single author.
+     * 0%01 = the book has multiple 'work' and is written by a single author (it's an anthology from ONE author)
+     * 0%10 = the book has multiple authors cooperating on a single 'work'
+     * 0%11 = the book has multiple authors and multiple 'work's (it's an anthology from multiple author)
+     *
+     * or in other words:
+     *      * bit 0 indicates if a book has one (bit unset) of multiple (bit set) works
+     *      * bit 1 indicates if a book has one (bit unset) of multiple (bit set) authors.
+     *
+     * Having said all that, the 0%10 should not actually occur, as this is a simple case of
+     * collaborating authors which is covered without the use of {@link #DOM_BOOK_ANTHOLOGY_BITMASK}
+     * Which of course brings it back to the original code meaning.
+     *
+     * Leaving all this here, as it will remind myself (and maybe others) of the 'missing' bit.
+     *
+     * FIXME: run a data cleanup during database upgrade. Find all rows that have 0%10 and reset them to 0%00
+     *
      */
-    public static final int DOM_IS_ANTHOLOGY = 1;
+    public static final int DOM_BOOK_SINGLE_AUTHOR_SINGLE_WORK = 0;
+    public static final int DOM_BOOK_WITH_MULTIPLE_WORKS = 1;
     public static final int DOM_BOOK_WITH_MULTIPLE_AUTHORS = 1 << 1;
 
     /*

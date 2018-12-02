@@ -297,8 +297,6 @@ public class Utils {
         return buffer;
     }
 
-
-
     /**
      * Join the passed array of strings, with 'delim' between them.
      *
@@ -329,7 +327,6 @@ public class Utils {
         return sb.toString();
     }
 
-
     /**
      * Format a number of bytes in a human readable form
      */
@@ -346,44 +343,6 @@ public class Utils {
             space = space / (1024 * 1024);
         }
         return String.format(sizeFmt, space);
-    }
-
-    //ENHANCE: surely this can be done more intelligently ?
-    private static final Map<String,String> CURRENCY_MAP = new HashMap<>();
-    static {
-        CURRENCY_MAP.put("","");
-        CURRENCY_MAP.put("€","EUR");
-        // english
-        CURRENCY_MAP.put("$","USD");
-        CURRENCY_MAP.put("£","GBP"); // British Pound
-        CURRENCY_MAP.put("ir£","IEP"); // Irish Punt
-        CURRENCY_MAP.put("c$","CAD"); // Canadian Dollar
-        CURRENCY_MAP.put("a$","AUD"); // Australian Dollar
-
-        // supported locales (including pre-euro)
-        CURRENCY_MAP.put("kč","CZK "); // Czech Koruna
-        CURRENCY_MAP.put("kc","CZK "); // Czech Koruna
-        CURRENCY_MAP.put("dm","DEM"); //german marks
-        CURRENCY_MAP.put("Δρ","GRD"); // Greek Drachma
-        CURRENCY_MAP.put("pta","ESP"); // Spanish Peseta
-        CURRENCY_MAP.put("f","FRF"); // French Franc
-        CURRENCY_MAP.put("ff","FRF"); // French Franc
-        CURRENCY_MAP.put("fr","BEF"); // Belgian Franc
-        CURRENCY_MAP.put("fr.","BEF"); // Belgian Franc
-        CURRENCY_MAP.put("L","ITL"); // Italian Lira
-        CURRENCY_MAP.put("ƒ","NLG"); // Dutch Guilder
-        CURRENCY_MAP.put("zł","PLN"); // Polish Zloty
-        CURRENCY_MAP.put("r$","BRL"); // Brazilian Real
-        CURRENCY_MAP.put("br","RUB"); // Russian Rouble
-        CURRENCY_MAP.put("₺","TRY "); // Turkish Lira
-
-
-        CURRENCY_MAP.put("kr","DKK"); // Denmark Krone
-        CURRENCY_MAP.put("Ft","HUF"); // Hungarian Forint
-    }
-    public static String currencyToISO(@NonNull String datum) {
-        datum = datum.trim().toLowerCase();
-        return CURRENCY_MAP.get(datum);
     }
 
     /**
@@ -404,7 +363,6 @@ public class Utils {
         }
         return details.toString();
     }
-
 
     public interface ItemWithIdFixup {
         long fixupId(final @NonNull CatalogueDBAdapter db);

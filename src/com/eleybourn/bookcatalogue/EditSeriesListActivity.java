@@ -226,19 +226,18 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
 
     /**
      * Called when user clicks the 'Save' button.
-     *
-     * @param intent A newly created Intent to store output if necessary.
-     *               The super has already stored the list into the intent.
+     * @param data A newly created Intent to store output if necessary.
+     *             Comes pre-populated with data.putExtra(mBKey, mList);
      *
      * @return <tt>true</tt>if activity should exit, false to abort exit.
      */
     @Override
-    protected boolean onSave(final @NonNull Intent intent) {
+    protected boolean onSave(final @NonNull Intent data) {
         final AutoCompleteTextView view = findViewById(R.id.name);
         String s = view.getText().toString().trim();
         if (s.isEmpty()) {
             // no current edit, so we're good to go
-            return true;
+            return super.onSave(data);
         }
 
         StandardDialogs.showConfirmUnsavedEditsDialog(this,

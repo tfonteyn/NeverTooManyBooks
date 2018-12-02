@@ -3,6 +3,7 @@ package com.eleybourn.bookcatalogue.searches.isfdb;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.Size;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
@@ -14,10 +15,9 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.entities.TOCEntry;
-import com.eleybourn.bookcatalogue.utils.StringList;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
-import com.eleybourn.bookcatalogue.utils.Utils;
+import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -39,18 +39,15 @@ public class ISFDBBook extends AbstractBase {
 
     /** file suffix for cover files */
     private static final String FILENAME_SUFFIX = "_ISFDB";
-    
-    /** ISFDB extra fields in the results for potential future usage */
-    private static final String ISFDB_BKEY_AUTHOR_LIST_ID = "__ISFDB_AUTHORS_ID"; // unique ISFDB identifier.
-    private static final String ISFDB_BKEY_AUTHOR_LIST = "__ISFDB_AUTHORS";
-    private static final String ISFDB_BKEY_SERIES_ID = "__ISFDB_SERIES_ID"; // unique ISFDB identifier.
-    private static final String ISFDB_BKEY_PUBLISHER_ID = "__ISFDB_PUBLISHER_ID"; // unique ISFDB identifier.
-    private static final String ISFDB_BKEY_EDITORS_ID = "__ISFDB_EDITORS_ID"; // unique ISFDB identifier.
-    private static final String ISFDB_BKEY_EDITORS = "__ISFDB_EDITORS";
-    private static final String ISFDB_BKEY_BOOK_COVER_ARTIST_ID = "__ISFDB_BOOK_COVER_ARTIST_ID"; // unique ISFDB identifier.
-    private static final String ISFDB_BKEY_BOOK_COVER_ARTIST = "__ISFDB_BOOK_COVER_ARTIST";
-    private static final String ISFDB_BKEY_BOOK_COVER_ART_URL = "__ISFDB_BOOK_COVER_ART_URL";
-    private static final String ISFDB_BKEY_BOOK_COVER_ART_TXT = "__ISFDB_BOOK_COVER_ART_TXT";
+
+    /** ISFDB extra fields in the results for potential future usage
+     * ENHANCE: pass and store these ISFBD id's */
+//    private static final String ISFDB_BKEY_AUTHOR_ID = "__ISFDB_AUTHORS_ID"; // unique ISFDB identifier.
+//    private static final String ISFDB_BKEY_SERIES_ID = "__ISFDB_SERIES_ID"; // unique ISFDB identifier.
+//    private static final String ISFDB_BKEY_PUBLISHER_ID = "__ISFDB_PUBLISHER_ID"; // unique ISFDB identifier.
+//    private static final String ISFDB_BKEY_EDITORS_ID = "__ISFDB_EDITORS_ID"; // unique ISFDB identifier.
+//    private static final String ISFDB_BKEY_BOOK_COVER_ARTIST_ID = "__ISFDB_BOOK_COVER_ARTIST_ID"; // unique ISFDB identifier.
+
     private static final String ISFDB_BKEY_BOOK_TYPE = "__ISFDB_BOOK_TYPE";
     private static final String ISFDB_BKEY_ISBN_2 = "__ISFDB_ISBN2";
 
@@ -59,7 +56,7 @@ public class ISFDBBook extends AbstractBase {
     private static final Map<String, String> TYPE_MAP = new HashMap<>();
 
     private static final Pattern YEAR_FROM_LI = Pattern.compile("&#x2022; \\(([1|2]\\d\\d\\d)\\)");
-    
+
 
     //TODO: externalise this and make some common mapper for all searches using localised resource strings
     static {
@@ -73,14 +70,32 @@ public class ISFDBBook extends AbstractBase {
         FORMAT_MAP.put("audio CD", BookCatalogueApp.getResourceString(R.string.book_format_audiobook));
     }
 
+    /**
+     * http://www.isfdb.org/wiki/index.php/Help:Screen:NewPub#Publication_Type
+     *
+     * ANTHOLOGY. A publication containing fiction by more than one author,
+     * not written in collaboration
+     *
+     * COLLECTION. A publication containing two or more works
+     * by a single author or authors writing in collaboration
+     *
+     * OMNIBUS. A publication may be classified as an omnibus if it contains multiple works
+     * that have previously been published independently
+     * generally this category should not be used
+     *
+     * Boxed sets. Boxed sets which have additional data elements (ISBNs, cover art, etc) not present in the individual books that they collect should be entered as OMNIBUS publications
+     *
+     */
     static {
         // throw all these together into the Anthology bucket. a1/a2 is used in the code to set the bitmask
-        TYPE_MAP.put("coll", "a1"); // one author
-        TYPE_MAP.put("COLLECTION", "a1");
-        TYPE_MAP.put("anth", "a2"); // multiple authors?
-        TYPE_MAP.put("ANTHOLOGY", "a2");
-        TYPE_MAP.put("omni", "a2");  // multiple authors?
-        TYPE_MAP.put("OMNIBUS", "a2");
+        TYPE_MAP.put("coll", "0%01"); // multiple works, one author or collaborating authors
+        TYPE_MAP.put("COLLECTION", "0%01");  // mapped to DOM_BOOK_WITH_MULTIPLE_WORKS; after processing DOM_BOOK_WITH_MULTIPLE_AUTHORS added when needed
+
+        TYPE_MAP.put("anth", "0%11"); // multiple works, multiple authors
+        TYPE_MAP.put("ANTHOLOGY", "0%11"); // mapped to DOM_BOOK_WITH_MULTIPLE_WORKS | DOM_BOOK_WITH_MULTIPLE_AUTHORS)
+
+        TYPE_MAP.put("omni", "0%11");  // multiple works that have previously been published independently
+        TYPE_MAP.put("OMNIBUS", "0%11"); // mapped to DOM_BOOK_WITH_MULTIPLE_WORKS | DOM_BOOK_WITH_MULTIPLE_AUTHORS)
 
         // don't really care about these, but at least unify them for potential future usage
         TYPE_MAP.put("novel", "Novel");
@@ -91,17 +106,9 @@ public class ISFDBBook extends AbstractBase {
 
         TYPE_MAP.put("non-fic", "Non-Fiction");
         TYPE_MAP.put("NONFICTION", "Non-Fiction");
+
+        TYPE_MAP.put("MAGAZINE", "Magazine");
     }
-
-    /** set during book load, used during content table load */
-    @Nullable
-    private String mTitle;
-    /** with some luck we'll get these as well */
-    @Nullable
-    private String mFirstPublication;
-
-    /** ISFDB native book id */
-    private long mPublicationRecord;
 
     /** accumulate all authors for this book */
     @NonNull
@@ -109,9 +116,20 @@ public class ISFDBBook extends AbstractBase {
     /** accumulate all series for this book */
     @NonNull
     private final ArrayList<Series> mSeries = new ArrayList<>();
-
+    /** set during book load, used during content table load */
+    @Nullable
+    private String mTitle;
+    /** with some luck we'll get these as well */
+    @Nullable
+    private String mFirstPublication;
+    /** ISFDB native book id */
+    private long mPublicationRecord;
     /** url list of all editions of this book */
     private List<String> mEditions;
+
+    //ENHANCE: pass and store these ISFBD id's
+//    private final ArrayList<Long> ISFDB_BKEY_AUTHOR_ID_LIST = new ArrayList<>();
+//    private final ArrayList<Long> ISFDB_BKEY_SERIES_ID_LIST = new ArrayList<>();
 
     /**
      * @param publicationRecord ISFDB native book id
@@ -123,10 +141,8 @@ public class ISFDBBook extends AbstractBase {
 
     /**
      * @param editionUrls List of url's; example: "http://www.isfdb.org/cgi-bin/pl.cgi?230949"
-     *
-     *
      */
-    ISFDBBook(final @NonNull List<String> editionUrls) {
+    ISFDBBook(final @NonNull @Size(min = 1) List<String> editionUrls) {
         mEditions = editionUrls;
         mPath = editionUrls.get(0);
         mPublicationRecord = stripNumber(mPath);
@@ -191,7 +207,6 @@ public class ISFDBBook extends AbstractBase {
         }
 
 
-
         Element contentBox = mDoc.select("div.contentbox").first();
         Elements lis = contentBox.select("li");
         String tmp;
@@ -234,7 +249,8 @@ public class ISFDBBook extends AbstractBase {
                     if (as != null) {
                         for (Element a : as) {
                             mAuthors.add(new Author(a.text()));
-                            StringList.addOrAppend(bookData, ISFDB_BKEY_AUTHOR_LIST_ID, Long.toString(stripNumber(a.attr("href"))));
+                            //ENHANCE: pass and store these ISFBD id's
+//                            ISFDB_BKEY_AUTHOR_ID_LIST.add(stripNumber(a.attr("href")));
                         }
                     }
                 } else if ("Date:".equalsIgnoreCase(fieldName)) {
@@ -258,7 +274,8 @@ public class ISFDBBook extends AbstractBase {
 
                 } else if ("Publisher:".equalsIgnoreCase(fieldName)) {
                     tmp = li.childNode(3).attr("href");
-                    bookData.putString(ISFDB_BKEY_PUBLISHER_ID, Long.toString(stripNumber(tmp)));
+                    //ENHANCE: pass and store these ISFBD id's
+//                    bookData.putString(ISFDB_BKEY_PUBLISHER_ID, Long.toString(stripNumber(tmp)));
 
                     tmp = li.childNode(3).childNode(0).toString().trim();
                     bookData.putString(UniqueId.KEY_BOOK_PUBLISHER, tmp);
@@ -268,7 +285,8 @@ public class ISFDBBook extends AbstractBase {
                     if (as != null) {
                         for (Element a : as) {
                             mSeries.add(new Series(a.text()));
-                            StringList.addOrAppend(bookData, ISFDB_BKEY_SERIES_ID, Long.toString(stripNumber(a.attr("href"))));
+                            //ENHANCE: pass and store these ISFBD id's
+//                            ISFDB_BKEY_SERIES_ID_LIST.add(stripNumber(a.attr("href")));
                         }
                     }
 
@@ -285,7 +303,7 @@ public class ISFDBBook extends AbstractBase {
 //                            bookData.putString(UniqueId.KEY_BOOK_PRICE_LISTED_CURRENCY, "???");
 //                        }
                     } else {
-                        String currencyCode = Utils.currencyToISO(data[0]);
+                        String currencyCode = LocaleUtils.currencyToISO(data[0]);
                         try {
                             Currency currency = Currency.getInstance(currencyCode);
                             int decDigits = currency.getDefaultFractionDigits();
@@ -317,13 +335,11 @@ public class ISFDBBook extends AbstractBase {
                     tmp = li.childNode(2).toString().trim();
                     bookData.putString(ISFDB_BKEY_BOOK_TYPE, tmp);
 
-                    if ("a1".equals(TYPE_MAP.get(tmp))) {
+                    if ("0%01".equals(TYPE_MAP.get(tmp))) {
+                        bookData.putInt(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK, DatabaseDefinitions.DOM_BOOK_WITH_MULTIPLE_WORKS);
+                    } else if ("0%11".equals(TYPE_MAP.get(tmp))) {
                         bookData.putInt(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK,
-                                DatabaseDefinitions.DOM_IS_ANTHOLOGY);
-                    } else if ("a2".equals(TYPE_MAP.get(tmp))) {
-                        bookData.putInt(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK,
-                                DatabaseDefinitions.DOM_IS_ANTHOLOGY |
-                                        DatabaseDefinitions.DOM_BOOK_WITH_MULTIPLE_AUTHORS);
+                                DatabaseDefinitions.DOM_BOOK_WITH_MULTIPLE_WORKS | DatabaseDefinitions.DOM_BOOK_WITH_MULTIPLE_AUTHORS);
                     }
 
                 } else if ("Notes:".equalsIgnoreCase(fieldName)) {
@@ -365,8 +381,11 @@ public class ISFDBBook extends AbstractBase {
         //V83: use the code Luke
         bookData.putString(UniqueId.KEY_BOOK_LANGUAGE, Locale.ENGLISH.getISO3Language());
 
-        // store accumulated Authors
+        // store accumulated ArrayList's
         bookData.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, mAuthors);
+        //ENHANCE: pass and store these ISFBD id's
+//        bookData.putParcelableArrayList(ISFDB_BKEY_AUTHOR_ID, ISFDB_BKEY_AUTHOR_ID_LIST);
+//        bookData.putParcelableArrayList(ISFDB_BKEY_SERIES_ID, ISFDB_BKEY_SERIES_ID_LIST);
 
         // the table of content
         ArrayList<TOCEntry> toc = getTableOfContentList(bookData);
@@ -375,16 +394,13 @@ public class ISFDBBook extends AbstractBase {
         // store accumulated Series, do this *after* we go the TOC
         bookData.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, mSeries);
 
-        // check Anthology type
+        // set Anthology type
         if (toc.size() > 0) {
-            boolean sameAuthor = TOCEntry.isSingleAuthor(toc);
-            int type;
-            if (sameAuthor) {
-                type = DatabaseDefinitions.DOM_IS_ANTHOLOGY;
-            } else {
-                type = DatabaseDefinitions.DOM_BOOK_WITH_MULTIPLE_AUTHORS;
-            }
-            bookData.putInt(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK, type | bookData.getInt(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK));
+            int type = DatabaseDefinitions.DOM_BOOK_WITH_MULTIPLE_WORKS;
+           if (!TOCEntry.isSingleAuthor(toc)) {
+               type |= DatabaseDefinitions.DOM_BOOK_WITH_MULTIPLE_AUTHORS;
+           }
+            bookData.putInt(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK, type);
         }
 
         // try to deduce the first publication date

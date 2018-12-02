@@ -53,6 +53,7 @@ import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
 import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
 import com.eleybourn.bookcatalogue.database.cursors.BooklistRowView;
 import com.eleybourn.bookcatalogue.datamanager.Datum;
+import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.SelectOneDialog;
@@ -171,7 +172,8 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
         return holder.absolutePosition;
     }
 
-    private void scaleViewText(@SuppressWarnings("unused") final @NonNull BooklistRowView rowView, final @NonNull View root) {
+    private void scaleViewText(@SuppressWarnings("unused") final @NonNull BooklistRowView rowView,
+                               final @NonNull View root) {
 
         if (root instanceof TextView) {
             TextView txt = (TextView) root;
@@ -471,7 +473,8 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                 return true;
             }
             case R.id.MENU_SHARE: {
-                BookUtils.shareBook(activity, db, bookId);
+                Intent shareIntent = BookUtils.getShareBookIntent(activity, db, bookId);
+                activity.startActivity(Intent.createChooser(shareIntent, activity.getString(R.string.share)));
                 return true;
             }
 

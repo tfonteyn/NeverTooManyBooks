@@ -37,9 +37,9 @@
     <string name="title_search_for">zoeken naar auteurs of titels</string>
     <string name="warning_book_not_found">Het gescande boek is niet gevonden. U kunt de juiste streepjescode aan de achterkant van de omslag vinden. Vul anders de gegevens handmatig in.</string>
     <string name="lbl_series_num">#</string>
-    <string name="title_import_data">Boeken Importeren</string>
+    <string name="title_import_book_data">Boeken Importeren</string>
     <string name="warning_import_be_cautious">Waarschuwing. Het importeren van gegevens kan bestaande boekgegevens onbedoeld bijwerken met nieuwe informatie als de UUID-kolom niet aanwezig is en de id in het import-bestand dezelfde is als het bestaande id. Dit is meestal geen bezwaar als u een veld in een exportbestand heeft veranderd. Als u een nieuwe boek item heeft gemaakt, of iemand anders zijn boeken importeert, zorg dan dat het UUID veld aanwezig is of dat het id veld leeg is.</string>
-    <string name="error_import_failed_is_location_correct">FOUT: Import van gegevens (van SD kaart) mislukt. Staat het bestand op de juiste plaats?</string>
+    <string name="error_import_failed_is_csv_file_location_correct">FOUT: Import van gegevens (van SD kaart) mislukt. Staat het bestand op de juiste plaats?</string>
     <string name="search_title">Book Catalogue: Zoekresultaten</string>
     <string name="results_found">Gevonden resultaten</string>
     <string name="menu_administration_long">Administratieve Functies</string>
@@ -124,7 +124,7 @@
     <string name="progress_end_backup_success">Back-up gelukt</string>
     <string name="error_backup_failed">Back-up mislukt</string>
     <string name="error_file_must_contain_column">Bestandsnaam moet een kolomnaam %s bevatten</string>
-    <string name="error_file_must_contain_any_column">Bestandsnaam moet een kolom met de volgende namen bevatten: %s</string>
+    <string name="error_csv_file_must_contain_any_column">Bestandsnaam moet een kolom met de volgende namen bevatten: %s</string>
     <string name="error_column_is_blank">Kolom %1$s is leeg op rij %2$s</string>
     <string name="error_columns_are_blank">Kolommen %1$s zijn allemaal leeg op rij %2$d</string>
     <string name="btn_confirm_save">Opslaan</string>
@@ -142,7 +142,7 @@
     <string name="warning_required_author">Auteurveld is leeg</string>
     <string name="warning_series_already_in_list">Serie staat al in de lijst</string>
     <string name="warning_required_series">Serieveld is leeg</string>
-    <string name="error_export_failed">Export mislukt - kon niet naar de SD kaart wegschrijven</string>
+    <string name="error_export_csv_failed">Export mislukt - kon niet naar de SD kaart wegschrijven</string>
     <string name="error_download_thumbnail_failed">Miniatuur download mislukt - kon niet naar de SD kaart wegschrijven</string>
     <string name="progress_msg_skip_title">Overslaan van - %s</string>
     <string name="progress_end_num_books_searched">%s Boeken gezocht</string>
@@ -212,7 +212,7 @@
     <string name="lt_correct_key">Uw LibraryThing ontwikkelaarssleutel is geldig.</string>
     <string name="error_no_internet_connection">Geen Internet verbinding beschikbaar.</string>
     <string name="menu_share_this">Delen</string>
-    <string name="email_export">Wilt u dit exportbestand als e-mail ergens heen sturen?</string>
+    <string name="export_csv_email">Wilt u dit exportbestand als e-mail ergens heen sturen?</string>
     <string name="menu_cover_crop">Miniatuur bijsnijden</string>
     <string name="title_task_errors">Taakfouten</string>
     <string name="retry">Opnieuw proberen</string>
@@ -277,14 +277,14 @@
     <string name="x_of_y">%1$d van %2$d</string>
     <string name="gr_send_book_to_goodreads">Zend boek %1$s naar Goodreads</string>
     <string name="erase_cover_cache">Wis boekomslag cache</string>
-    <string name="crash_message_text">BookCatalogue is onverwacht gecrasht. Help ons aub de toepassing beter te maken door deze crash te melden.</string>
-    <string name="crash_notif_ticker_text">BookCatalogue is gecrasht</string>
-    <string name="crash_notif_title">BookCatalogue crash</string>
-    <string name="crash_notif_text">Tik hier voor details</string>
-    <string name="crash_dialog_title">BookCatalogue crash</string>
-    <string name="crash_dialog_text">Het lijkt er op dat BookCatalogue is gecrasht. Beschrijf indien mogelijk hieronder wat de oorzaak kan zijn en druk op "OK" om ons een e-mail te sturen over deze crash. U kunt het bericht inzien voordat het wordt verzonden.</string>
-    <string name="crash_dialog_comment_prompt">Uw commentaar (of laat dit leeg):</string>
-    <string name="crash_dialog_ok_message">Dank u!</string>
+    <string name="acra_resToastText">BookCatalogue is onverwacht gecrasht. Help ons aub de toepassing beter te maken door deze crash te melden.</string>
+    <string name="acra_resNotifTickerText">BookCatalogue is gecrasht</string>
+    <string name="acra_resNotifTitle">BookCatalogue crash</string>
+    <string name="acra_resNotifText">Tik hier voor details</string>
+    <string name="acra_resDialogTitle">BookCatalogue crash</string>
+    <string name="acra_resDialogText">Het lijkt er op dat BookCatalogue is gecrasht. Beschrijf indien mogelijk hieronder wat de oorzaak kan zijn en druk op "OK" om ons een e-mail te sturen over deze crash. U kunt het bericht inzien voordat het wordt verzonden.</string>
+    <string name="acra_resDialogCommentPrompt">Uw commentaar (of laat dit leeg):</string>
+    <string name="acra_resDialogOkToast">Dank u!</string>
     <string name="lbl_read">Gelezen</string>
     <string name="lbl_unread">Ongelezen</string>
     <string name="no_date">(geen datum)</string>
@@ -457,8 +457,8 @@
     <string name="in">In</string>
     <string name="size">Grootte</string>
     <string name="updated">Bijgewerkt</string>
-    <string name="warning_no_export_files_found">Geen exportbestanden gevonden</string>
-    <string name="more_than_one_export_file_blah">Meer dan een exportbestand gevonden. Selecteer aub een exportbestand om te importeren uit de lijst hieronder</string>
+    <string name="warning_csv_file_not_found">Geen exportbestanden gevonden</string>
+    <string name="warning_csv_file_more_then_one_found">Meer dan een exportbestand gevonden. Selecteer aub een exportbestand om te importeren uit de lijst hieronder</string>
     <string name="problem_starting_import_arg">Het is een probleem bij het starten van de import van: %1$s</string>
     <string name="hint_booklist_style_menu">Dit menu laat u de lijststijl selecteren. 
     								\n\nU kunt het menu ook aanpassen of u eigen lijststijl maken door te tikken op \'Aanpassen\' onderaan de lijst.</string>
@@ -567,7 +567,7 @@ Zie "Meer voorkeuren" voor de relevante instelling.
     <string name="import_from_archive">Importeren vanuit archief</string>
 
     <!-- Hint displayed when aCatalogue Backup is done -->
-    <string name="info_archive_complete_details">Een %3$s bestand met de naam %2$s is aangemaakt in de \"%1$s\" map op uw
+    <string name="export_info_success_archive_details">Een %3$s bestand met de naam %2$s is aangemaakt in de \"%1$s\" map op uw
     SD kaart.\n\nU wordt aangeraden dit bestand naar een ander plek te kopiëren om de gegevens veilig te stellen in geval uw apparaat wordt gestolen, beschadigd of kwijt raakt.</string>
 
     <!-- Displayed in progress dialog when exporting covers -->
@@ -610,9 +610,9 @@ Zie "Meer voorkeuren" voor de relevante instelling.
     <!-- Displayed when an archive operation fails -->
     <string name="error_import_failed">Import mislukt.</string>
     <!-- Displayed when any write operation to the sd card fails -->
-    <string name="error_backup_failed_check_sd_writable">Controleer aub of de SD Kaart beschrijfbaar is en voldoende vrije ruimte heeft.</string>
+    <string name="error_storage_not_writable">Controleer aub of de SD Kaart beschrijfbaar is en voldoende vrije ruimte heeft.</string>
     <!-- Displayed when any write operation to the sd card fails -->
-    <string name="error_import_failed_check_sd_readable">Controleer aub of de SD Kaart toegankelijk is.</string>
+    <string name="error_storage_not_readable">Controleer aub of de SD Kaart toegankelijk is.</string>
 
     <!-- Short Heading for 'Language' field in book details -->
     <string name="lbl_language">Taal</string>
@@ -629,28 +629,28 @@ Zie "Meer voorkeuren" voor de relevante instelling.
     <string name="blp_generation_use_recommended_option">Gebruik automatisch de aanbevolen optie</string>
 
     <!--  Explanatory text for 'import' dialogue -->
-    <string name="import_books_blurb">De boeken in dit archief zullen worden geïmporteerd. Tik op één van de twee opties om de import te starten of druk op \'terug\' om te annuleren:</string>
+    <string name="title_import_books_blurb">De boeken in dit archief zullen worden geïmporteerd. Tik op één van de twee opties om de import te starten of druk op \'terug\' om te annuleren:</string>
     <!-- Description of the 'import all books' option -->
-    <string name="info_all_books_will_be_imported">Alle boeken in het archief zullen worden geïmporteerd en zo de bestaande boeken bijwerken en nieuwe toevoegen.</string>
+    <string name="import_option_info_all_books">Alle boeken in het archief zullen worden geïmporteerd en zo de bestaande boeken bijwerken en nieuwe toevoegen.</string>
     <!-- Menu text for the 'import/exportBooks new & changed' option -->
-    <string name="new_and_changed_books">Nieuwe en bijgewerkte boeken</string>
+    <string name="import_option_new_and_changed_books">Nieuwe en bijgewerkte boeken</string>
     <!-- Description of the 'import new & changed' option -->
-    <string name="new_and_changed_books_blurb">Alleen nieuwe boeken importeren of boeken die onlangs zijn bijgewerkt in het archief. Dit is handig bij het synchroniseren van twee apparaten.</string>
+    <string name="import_option_info_new_and_changed_books">Alleen nieuwe boeken importeren of boeken die onlangs zijn bijgewerkt in het archief. Dit is handig bij het synchroniseren van twee apparaten.</string>
     <!-- Descriptive text associated with import options not available with older archives -->
-    <string name="old_archive_blurb">Deze optie wordt niet ondersteund voor oudere archief versies.</string>
+    <string name="import_warning_old_archive">Deze optie wordt niet ondersteund voor oudere archief versies.</string>
     <!-- Part of the progress message displayed when importing books -->
     <string name="progress_msg_n_created_m_updated">%1$s toegevoegd, %2$s bijgewerkt</string>
 
     <!--  Explanatory text for 'exportBooks' dialogue -->
-    <string name="export_books_blurb">De boeken in de catalogus zullen worden geëxporteerd. Tik op één van de twee opties om de export te starten of druk op \'terug\' om te annuleren:</string>
+    <string name="title_export_books">De boeken in de catalogus zullen worden geëxporteerd. Tik op één van de twee opties om de export te starten of druk op \'terug\' om te annuleren:</string>
 
     <!-- Displayed in progress dialog when exporting covers in incremental mode -->
     <string name="progress_msg_covers_skip">%1$s boekomslagen verwerkt (%2$s missend, %3$s overgeslagen)</string>
 
     <!-- Explanatory note for 'exportBooks all' option -->
-    <string name="export_all_blurb">Alle boeken, omslagafbeeldingen, instellingen en aangepaste stijlen zullen worden geëxporteerd naar het archief.</string>
+    <string name="export_dialog_info_all">Alle boeken, omslagafbeeldingen, instellingen en aangepaste stijlen zullen worden geëxporteerd naar het archief.</string>
     <!-- Explanatory note for 'advanced exportBooks' option -->
-    <string name="export_advanced_blurb">Selecteer wat geëxporteerd zal worden naar het archief.</string>
+    <string name="export_options_dialog_title">Selecteer wat geëxporteerd zal worden naar het archief.</string>
 
     <!-- Text for button -->
     <string name="book_details">Boek details</string>
@@ -659,17 +659,17 @@ Zie "Meer voorkeuren" voor de relevante instelling.
     <!-- Text for button -->
     <string name="lbl_cover_images">Omslagafbeeldingen</string>
     <!-- Brief description -->
-    <string name="info_cover_images">Omslagafbeeldingen voor alle geselecteerde boeken. Dit zal de export aanzienlijk groter maken.</string>
+    <string name="export_info_cover_images">Omslagafbeeldingen voor alle geselecteerde boeken. Dit zal de export aanzienlijk groter maken.</string>
     <!-- Brief description -->
     <string name="info_preferences">Voorkeuren en aangepaste boekenlijst stijlen</string>
 
     <!-- Explanatory note for exportBooks date (not yet implemented) -->
-    <string name="export_advanced_date_blurb">Specificeer desgewenst een datum voor de selectie van boeken en/of omslagen om te exporteren:</string>
+    <string name="export_option_info_books_since_date">Specificeer desgewenst een datum voor de selectie van boeken en/of omslagen om te exporteren:</string>
 
     <!-- Explanatory note for exportBooks date (not yet implemented) -->
-    <string name="all_books_added_or_updated_since">Alle boeken die zijn toegevoegd of bijgewerkt sinds:</string>
+    <string name="export_option_books_since_date">Alle boeken die zijn toegevoegd of bijgewerkt sinds:</string>
     <!-- Explanatory note for exportBooks data since last backup -->
-    <string name="info_all_books_added_or_updated_since_last_full_backup">Alle boeken die zijn toegevoegd of bijgewerkt sinds de laatste volledige back-up</string>
+    <string name="export_option_books_since_last_full_backup">Alle boeken die zijn toegevoegd of bijgewerkt sinds de laatste volledige back-up</string>
 
     <plurals name="displaying_n_books">
         <item quantity="one">1 boek op de plank</item>

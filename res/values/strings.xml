@@ -23,21 +23,23 @@
     <string name="debug_subject">Gathered debugging information</string>
     <string name="debug_body">Please take the time to briefly describe the problem you are experiencing.</string>
 
-    <string name="crash_message_text">
-        BookCatalogue has crashed unexpectedly. Please help us to make the application
-        better by reporting this crash.
-    </string>
-    <string name="crash_notif_ticker_text">BookCatalogue has crashed</string>
-    <string name="crash_notif_title">BookCatalogue Crash</string>
-    <string name="crash_notif_text">Please click here for details</string>
-    <string name="crash_dialog_title">BookCatalogue Crash</string>
-    <string name="crash_dialog_text">
+    <string name="acra_resDialogTitle">BookCatalogue Crash</string>
+    <string name="acra_resDialogText">
         It looks like BookCatalogue has crashed. If possible describe anything you think may be
         relevant below and press "OK" to send us an email about the crash.
         You will see the email before it is sent.
     </string>
-    <string name="crash_dialog_comment_prompt">Your comments (or just leave blank):</string>
-    <string name="crash_dialog_ok_message">Thank you!</string>
+
+    <string name="acra_resToastText">
+        BookCatalogue has crashed unexpectedly. Please help us to make the application
+        better by reporting this crash.
+    </string>
+    <string name="acra_resNotifTickerText">BookCatalogue has crashed</string>
+    <string name="acra_resNotifTitle">BookCatalogue Crash</string>
+    <string name="acra_resNotifText">Please click here for details</string>
+
+    <string name="acra_resDialogCommentPrompt">Your comments (or just leave blank):</string>
+    <string name="acra_resDialogOkToast">Thank you!</string>
 
     <!-- ####################################################################################### -->
     <!-- ========== Validation error messages ========== -->
@@ -67,24 +69,13 @@
     <string name="error_columns_are_blank">Columns %1$s are all blank at row %2$d</string>
     <string name="error_automatic_toc_population_failed">Automatic Population of Titles Failed</string>
     <string name="error_no_internet_connection">Internet connection is not available.</string>
-
-    <!-- Displayed when any read operation from the sd card fails -->
-    <string name="error_import_failed_check_sd_readable">Please check that the SD Card is accessible.</string>
-    <!-- Displayed when any write operation to the sd card fails -->
-    <string name="error_backup_failed_check_sd_writable">Please check that the SD Card is writable, and has sufficient space.</string>
-
-    <!-- Displayed when a CSV exportBooks fails -->
-    <string name="error_export_failed">Export failed - could not write to SD card</string>
-    <!-- Displayed when a backup archive fails -->
-    <string name="error_backup_failed">Backup Failed</string>
-
-    <!-- Displayed when a CSV import fails -->
-    <string name="error_file_must_contain_any_column">File must contain a column with one of the following names: %s</string>
-    <!-- Displayed when a CSV import fails -->
-    <string name="error_import_failed_is_location_correct">Import of data failed. Is the file in the correct place?</string>
-    <!-- Displayed when an import fails -->
+    <!-- generic import failure -->
     <string name="error_import_failed">Import failed.</string>
 
+    <!-- Displayed when any read operation from the sd card fails -->
+    <string name="error_storage_not_readable">Please check that the SD Card is accessible.</string>
+    <!-- Displayed when any write operation to the sd card fails -->
+    <string name="error_storage_not_writable">Please check that the SD Card is writable, and has sufficient space.</string>
 
 
     <!-- ####################################################################################### -->
@@ -106,22 +97,12 @@
     <string name="info_click_on_thumb">Click on a thumbnail to display a larger image</string>
     <string name="info_manage_fields">Selected fields are visible in the add/edit book screens. Unselected fields are hidden.</string>
     <string name="info_select_fields_to_update">Selected fields will be updated from the internet. Unselected fields will remain unchanged.</string>
-    <string name="info_book_details">The details of the books themselves</string>
-    <string name="info_cover_images">Cover images for all selected books. Will make the export much larger.</string>
-    <string name="info_preferences">Preferences and user-defined list styles</string>
-    <!-- Explanatory note for exportBooks data since last backup -->
-    <string name="info_all_books_added_or_updated_since_last_full_backup">All books added or updated since last full backup</string>
+
     <string name="info_install_scanner">
         To scan your books via the ISBN barcode, you must install
         one of the Zxing or pic2shop barcode scanner applications.
     </string>
-    <!-- displayed when a Catalogue Backup is done -->
-    <string name="info_archive_complete_details">A %3$s file called %2$s was created in the
-        \"%1$s\" directory on your SD card.\n\nYou should manually copy it elsewhere to protect
-        the data in case your device is damaged, lost, or stolen.
-    </string>
-    <!-- Description of the 'import all books' option -->
-    <string name="info_all_books_will_be_imported">All books in the archive will be imported, updating existing books and adding new ones.</string>
+
 
     <!-- ####################################################################################### -->
     <!-- ========== Warning messages ========== -->
@@ -201,8 +182,6 @@
     <string name="warning_select_an_existing_file">Please select an existing file</string>
     <!-- Displayed when a file/save dialog results in selecting a directory file -->
     <string name="warning_select_a_non_directory">Please select a file that is not a directory</string>
-
-    <string name="warning_no_export_files_found">No export files found</string>
 
     <string name="warning_bad_scanner">
         It looks like your existing barcode scanner app is not compatible with Book Catalogue.
@@ -505,7 +484,7 @@
 
 
     <!-- ####################################################################################### -->
-    <!-- ========== Preferences / Properties ========== -->
+    <!-- ========== Preferences / PropertyList ========== -->
     <!-- ####################################################################################### -->
 
     <!-- Preference VALUE -->
@@ -547,7 +526,6 @@
     <string name="scanning_beep_if_isbn_valid">Beep if scanned ISBN is valid</string>
     <!-- Preference NAME -->
     <string name="scanning_beep_if_isbn_invalid">Beep if scanned ISBN is invalid</string>
-
 
 
     <!-- ========== Book list preferences ========== -->
@@ -647,8 +625,16 @@
     <string name="unknown_uc">UNKNOWN</string>
     <string name="retry">Retry</string>
 
-    <!-- name of something or someone (person a book is loaned to f.e.) -->
+    <!-- Default 'name' for anything that has a name -->
     <string name="name">Name</string>
+
+    <!-- ####################################################################################### -->
+    <!-- == Size measurements; for now only file-sizes.  == -->
+    <!-- ####################################################################################### -->
+
+    <string name="megabytes">%.2fMB</string>
+    <string name="kilobytes">%.2fkB</string>
+    <string name="bytes">%.0f bytes</string>
 
     <!-- ####################################################################################### -->
     <!-- == Menu strings. If a 'dialog_title' is identical, we use the menu string as title == -->
@@ -777,7 +763,7 @@
 
     <string name="title_finding_editions">Finding Editions…</string>
 
-    <string name="title_import_data">Import Books</string>
+    <string name="title_import_book_data">Import Books</string>
     <string name="title_install_scan">Install Barcode Scanner</string>
 
     <string name="title_select_an_action">Select an action</string>
@@ -886,7 +872,7 @@
     <!-- displayed during startup of the application -->
     <string name="lbl_backup_dialog">Backup?</string>
 
-    <!-- Heading in Admin activity and in 'Export' dialogue -->
+    <!-- Heading in Admin activity -->
     <string name="lbl_advanced_options">Advanced Options</string>
 
 
@@ -999,6 +985,71 @@
     <string name="loan_book_available">Available</string>
 
     <!-- ####################################################################################### -->
+    <!-- === Import/Export specific strings == -->
+    <!-- ####################################################################################### -->
+
+    <!-- options to select 'what' will be imported/exported from/to the archive -->
+    <string name="info_book_details">The details of the books themselves</string>
+    <string name="export_info_cover_images">Cover images for all selected books. Will make the export much larger.</string>
+    <string name="info_preferences">Preferences and user-defined list styles</string>
+
+    <!-- Explanatory note for 'import to archive' OPTIONS dialog -->
+    <string name="import_options_dialog_title">Select what will be imported from the archive.</string>
+    <!-- Explanatory note of the 'import from archive' "all books" option -->
+    <string name="import_option_info_all_books">All books in the archive will be imported, updating existing books and adding new ones.</string>
+    <!-- Text for the 'export to archive' option -->
+    <string name="import_option_new_and_changed_books">New and updated books</string>
+    <!-- Description of the 'import new & changed' option -->
+    <string name="import_option_info_new_and_changed_books">Only import books that are new,
+        or which have been updated more recently in the archive.
+        This is useful when synchronizing two devices.</string>
+    <!-- Descriptive text associated with import options not available with older archives -->
+    <string name="import_warning_old_archive">This option is not supported for older archive versions.</string>
+
+    <!-- Explanatory note for 'export to archive' initial 'simple' dialog -->
+    <string name="export_dialog_info_all">All books, covers, settings and custom styles will be exported to the archive.</string>
+
+    <!-- Explanatory note for 'export to archive' OPTIONS dialog -->
+    <string name="export_options_dialog_title">Select what will be exported to the archive.</string>
+    <!-- Explanatory note of the 'export from archive' "all books" option -->
+    <string name="export_option_info_all_books">blah</string>
+    <!-- Explanatory note for exportBooks data since last backup -->
+    <string name="export_option_books_since_last_full_backup">All books added or updated since last full backup</string>
+    <!-- Explanatory note of the 'export from archive' "all books" option -->
+    <string name="export_option_info_new_and_changed_books">blah</string>
+
+    <!-- Explanatory note for 'export from archive' since-date (not yet implemented) -->
+    <string name="export_option_books_since_date">All books added or updated since:</string>
+    <!-- Explanatory note for 'export from archive' since-date (not yet implemented) -->
+    <string name="export_option_info_books_since_date">Optionally specify a date to use in selecting books and/or covers to export:</string>
+
+
+    <!-- displayed when a Catalogue Backup is done -->
+    <string name="export_info_success_archive_details">A %3$s file called %2$s was created in the
+        \"%1$s\" directory on your SD card.\n\nYou should manually copy it elsewhere to protect
+        the data in case your device is damaged, lost, or stolen.
+    </string>
+    <!-- Displayed when a backup archive fails -->
+    <string name="error_backup_failed">Backup Failed</string>
+
+    <!-- ####################################################################################### -->
+    <!-- === Import/Export CSV file specific strings == -->
+    <!-- ####################################################################################### -->
+
+    <string name="warning_csv_file_not_found">No export files found</string>
+    <string name="warning_csv_file_more_then_one_found">More than one export file was found; please select an export file to import from the list below</string>
+
+    <!-- Displayed when a CSV import fails -->
+    <string name="error_csv_file_must_contain_any_column">File must contain a column with one of the following names: %s</string>
+    <!-- Displayed when a CSV import fails -->
+    <string name="error_import_failed_is_csv_file_location_correct">Import of data failed. Is the file in the correct place?</string>
+    <!-- Displayed when an import fails -->
+    <!-- Displayed when a CSV exportBooks fails -->
+    <string name="error_export_csv_failed">Export failed - could not write to SD card</string>
+    <!-- offer to send the CSV exported file as an email attachment -->
+    <string name="export_csv_email">Would you like to send this export as an email somewhere?</string>
+
+    <!-- ####################################################################################### -->
 
     <string name="publication_year">Publication Year</string>
     <string name="publication_month">Publication Month</string>
@@ -1077,11 +1128,9 @@
     <string name="send_info">Send Information</string>
     <string name="cleanup_files">Cleanup Files</string>
 
-    <string name="megabytes">%.2fMB</string>
-    <string name="kilobytes">%.2fkB</string>
-    <string name="bytes">%.0f bytes</string>
 
-    <string name="email_export">Would you like to send this export as an email somewhere?</string>
+
+
 
     <string name="show_results">Show Results</string>
     <string name="rebuild_fts">Rebuild FTS (alpha only!)</string>
@@ -1099,9 +1148,7 @@
     <string name="hints_have_been_reset">Hints have been reset</string>
     <string name="read_amp_unread">Read &amp; Unread</string>
 
-    <string name="more_than_one_export_file_blah">
-        More than one export file was found; please select an export file to import from the list below
-    </string>
+
     <string name="displaying_n_books_in_m_entries">displaying %1$d books, in %2$d entries</string>
 
     <!-- name of virtual bookshelf which displays all books -->
@@ -1109,29 +1156,6 @@
 
     <!-- Content description for the 'up' icon in the folder browser -->
     <string name="up_folder">Up</string>
-
-    <!--  Explanatory text for 'import' dialogue -->
-    <string name="import_books_blurb">The books in this archive will be imported. Select on
-        one of two options to start the import, or press \'back\' to cancel:
-    </string>
-    <!-- Menu text for the 'import/exportBooks new & changed' option -->
-    <string name="new_and_changed_books">New and updated books</string>
-    <!-- Description of the 'import new & changed' option -->
-    <string name="new_and_changed_books_blurb">Only import books that are new, or which have
-        been updated more recently in the archive. This is useful when synchronizing two devices.
-    </string>
-    <!-- Descriptive text associated with import options not available with older archives -->
-    <string name="old_archive_blurb">This option is not supported for older archive versions.</string>
-
-    <!--  Explanatory text for 'exportBooks' dialogue -->
-    <string name="export_books_blurb">
-        The books in your catalogue will be exported. Select on one of two options to start
-        the export, or press \'back\' to cancel:</string>
-    <!-- Explanatory note for 'exportBooks all' option -->
-    <string name="export_all_blurb">
-        All books, covers, settings and custom styles will be exported to the archive.</string>
-    <!-- Explanatory note for 'advanced exportBooks' option -->
-    <string name="export_advanced_blurb">Select what will be exported to the archive.</string>
 
 
     <!-- ####################################################################################### -->
@@ -1178,10 +1202,6 @@
     <string name="textured_background">Textured background image</string>
     <string name="disable_background_image">Disable background image</string>
     <string name="plain_background_b_reduces_flicker_b">Plain background (reduces flicker)</string>
-    <!-- Explanatory note for exportBooks date (not yet implemented) -->
-    <string name="export_advanced_date_blurb">Optionally specify a date to use in selecting books and/or covers to export:</string>
-    <!-- Explanatory note for exportBooks date (not yet implemented) -->
-    <string name="all_books_added_or_updated_since">All books added or updated since:</string>
     <string name="isbn_found">ISBN Scanned. Searching Internet.</string>
     <string name="select_bookshelves">Select Bookshelves</string>
     <string name="my_books">My Books</string>
@@ -1191,7 +1211,11 @@
     <string name="menu_admin_and_prefs">Admin and Preferences</string>
     <string name="problem_starting_import_arg">There was a problem starting the import: %1$s</string>
     <string name="about_lbl_version_number">Version Number:</string>
-
+    <string name="title_export_books">
+        The books in your catalogue will be exported. Select on one of two options to start
+        the export, or press \'back\' to cancel:</string>
+    <string name="title_import_books_blurb">The books in this archive will be imported. Select on
+        one of two options to start the import, or press \'back\' to cancel:</string>
 
     <!-- ####################################################################################### -->
     <!-- ========== Added/Updated in [Next Version]  ========== -->
@@ -1251,6 +1275,15 @@
         <item>Light</item>
     </string-array>
 
+    <!-- Compatibility / bug workaround for some devices-->
+    <!-- Preference NAME -->
+    <string name="pref_layer_type">Cropper Layer Type</string>
+    <!-- Preference HINT -->
+    <string name="hint_pref_layer_type">Leave this setting on \'Use default\' unless you experience crashes while cropping images. Try \'Software\' for safer but slower, or force \'Hardware\' for less safe, but faster</string>
+    <!-- Preference VALUE -->
+    <string name="pref_layer_type_hardware">Hardware</string>
+    <!-- Preference VALUE -->
+    <string name="pref_layer_type_software">Software</string>
 
     <!-- filters -->
     <string name="booklist_filters_select_based_on_signed_status">Select based on \'Signed\' status</string>
@@ -1323,6 +1356,8 @@
     <string name="book_format_ebook">eBook</string>
     <!-- book format string used if a search site indicates in any form it's some sort of Audio (tape, cd, etc..) -->
     <string name="book_format_audiobook">AudioBook</string>
+
+    <string name="btn_options">Options</string>
 
 
     <!-- End: Added/Updated in  [Next Version]  -->

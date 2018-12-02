@@ -400,7 +400,7 @@ public class DbSync {
                 SyncLock exclusiveLock = mSync.getExclusiveLock();
                 try {
                     db = opener.open();
-                    Logger.info(this, db.getPath() + " opened with retriesLeft:" + retriesLeft);
+                    Logger.info(this, db.getPath() + "|retriesLeft=" + retriesLeft);
                     return db;
                 } catch (Exception e) {
                     exclusiveLock.unlock();

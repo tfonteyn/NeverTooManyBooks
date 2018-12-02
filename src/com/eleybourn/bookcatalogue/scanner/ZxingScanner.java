@@ -23,6 +23,8 @@ public class ZxingScanner implements Scanner {
     public static final String ACTION = "com.google.zxing.client.android.SCAN";
     private static final String PACKAGE = "com.google.zxing.client.android";
 
+    private static final String SCAN_RESULT = "SCAN_RESULT";
+
     /** Set to true of the Zxing package is required */
     private final boolean mMustBeZxing;
 
@@ -75,8 +77,8 @@ public class ZxingScanner implements Scanner {
      */
     @NonNull
     @Override
-    public String getBarcode(final @NonNull Intent intent) {
-        return intent.getStringExtra(Scanner.SCAN_RESULT);
+    public String getBarcode(final @NonNull Intent data) {
+        return data.getStringExtra(SCAN_RESULT);
     }
 
 }

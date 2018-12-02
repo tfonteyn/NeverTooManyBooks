@@ -51,7 +51,6 @@ import com.eleybourn.bookcatalogue.searches.goodreads.api.ShelfAddBookHandler;
 import com.eleybourn.bookcatalogue.searches.goodreads.api.ShowBookApiHandler.ShowBookFieldNames;
 import com.eleybourn.bookcatalogue.searches.goodreads.api.ShowBookByIdApiHandler;
 import com.eleybourn.bookcatalogue.searches.goodreads.api.ShowBookByIsbnApiHandler;
-import com.eleybourn.bookcatalogue.tasks.simpletasks.Terminator;
 import com.eleybourn.bookcatalogue.tasks.taskqueue.Event;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.IsbnUtils;

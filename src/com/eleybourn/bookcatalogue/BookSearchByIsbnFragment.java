@@ -24,7 +24,6 @@ import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.scanner.Scanner;
 import com.eleybourn.bookcatalogue.scanner.ScannerManager;
 import com.eleybourn.bookcatalogue.searches.SearchManager;
-import com.eleybourn.bookcatalogue.utils.AsinUtils;
 import com.eleybourn.bookcatalogue.utils.IsbnUtils;
 import com.eleybourn.bookcatalogue.utils.SoundManager;
 
@@ -283,7 +282,7 @@ public class BookSearchByIsbnFragment extends BookSearchBaseFragment {
         final boolean allowAsin = mAllowAsinCb != null && mAllowAsinCb.isChecked();
 
         // not a valid ISBN/ASIN ?
-        if (!IsbnUtils.isValid(mIsbnSearchText) && (!allowAsin || !AsinUtils.isValid(mIsbnSearchText))) {
+        if (!IsbnUtils.isValid(mIsbnSearchText) && (!allowAsin || !IsbnUtils.isValidAsin(mIsbnSearchText))) {
             if (scanMode) {
                 // Optionally beep if scan failed.
                 SoundManager.beepLow(mActivity);
@@ -341,7 +340,7 @@ public class BookSearchByIsbnFragment extends BookSearchBaseFragment {
         dialog.setButton(AlertDialog.BUTTON_NEUTRAL, getString(R.string.menu_edit_book),
                 new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, final int which) {
-                        EditBookActivity.startActivityForResult(mActivity, /* 9e2c0b04-8217-4b49-9937-96d160104265 */
+                        EditBookActivity.startActivityForResult(BookSearchByIsbnFragment.this, /* 9e2c0b04-8217-4b49-9937-96d160104265 */
                                 existingId, EditBookFragment.TAB_EDIT);
                     }
                 });
@@ -434,28 +433,6 @@ public class BookSearchByIsbnFragment extends BookSearchBaseFragment {
         }
     }
 
-    /**
-     * When the scanner activity finished, onActivityResult send us here,
-     * where we'll kick of the search or quit
-     */
-    private void handleScannerResult(final int resultCode, final @Nullable Intent data) {
-        mScannerStarted = false;
-        if (resultCode == Activity.RESULT_OK) {
-            /* there *has* to be 'data' */
-            Objects.requireNonNull(data);
-            //noinspection ConstantConditions
-            mIsbnSearchText = mScanner.getBarcode(data);
-            prepareSearch();
-        } else {
-            // Scanner Cancelled/failed. Pass the last book we got to our caller and finish here.
-            mActivity.setResult(mLastBookData != null ? Activity.RESULT_OK : Activity.RESULT_CANCELED, mLastBookData);
-            // and exit if no dialog present.
-            if (!mDisplayingAlert) {
-                mActivity.finish();
-            }
-        }
-    }
-
     @Override
     @CallSuper
     public void onSaveInstanceState(final @NonNull Bundle outState) {
@@ -474,7 +451,26 @@ public class BookSearchByIsbnFragment extends BookSearchBaseFragment {
         Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
         switch (requestCode) {
             case Scanner.REQUEST_CODE: {/* 4f410d34-dc9c-4ee2-903e-79d69a328517, c2c28575-5327-40c6-827a-c7973bd24d12*/
-                handleScannerResult(resultCode, data);
+                mScannerStarted = false;
+                switch (resultCode) {
+                    case Activity.RESULT_OK: {
+                        Objects.requireNonNull(data);
+                        //noinspection ConstantConditions
+                        mIsbnSearchText = mScanner.getBarcode(data);
+                        prepareSearch();
+                        break;
+                    }
+                    default: {
+                        // Scanner Cancelled/failed. Pass the last book we got to our caller and finish here.
+                        mActivity.setResult(mLastBookData != null ? Activity.RESULT_OK : Activity.RESULT_CANCELED, mLastBookData);
+                        // and exit if no dialog present.
+                        if (!mDisplayingAlert) {
+                            mActivity.finish();
+                        }
+                        break;
+                    }
+                }
+                // go scan next book until the user cancels scanning.
                 startScannerActivity();
                 break;
             }

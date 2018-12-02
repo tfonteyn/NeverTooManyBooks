@@ -20,6 +20,7 @@
 
 package com.eleybourn.bookcatalogue;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
@@ -33,6 +34,7 @@ import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
+import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 
 import java.util.ArrayList;
@@ -132,7 +134,8 @@ public class FieldVisibilityActivity extends BaseActivity {
                     public void onClick(View v) {
                         // Commit the change to the preferences
                         Fields.setVisibility(fieldName, !Fields.isVisible(fieldName));
-                        setChangesMade(true);
+                        // and make sure our caller knows we made changes.
+                        setResult(Activity.RESULT_OK);
                     }
                 });
             }

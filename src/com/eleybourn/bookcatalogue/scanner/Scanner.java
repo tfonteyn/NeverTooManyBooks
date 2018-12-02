@@ -12,15 +12,13 @@ import com.eleybourn.bookcatalogue.UniqueId;
  * @author pjw
  */
 public interface Scanner {
+    /** request code to use with startActivityForResult */
     int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_SCANNER;
-
-    /** tag used in {@link Intent#getStringExtra} */
-    String SCAN_RESULT = "SCAN_RESULT";
 
     /** Request a scan */
     void startActivityForResult(final @NonNull Activity activity, final int requestCode);
 
     /** Get the barcode from the resulting intent */
     @NonNull
-    String getBarcode(final @NonNull Intent intent);
+    String getBarcode(final @NonNull Intent data);
 }

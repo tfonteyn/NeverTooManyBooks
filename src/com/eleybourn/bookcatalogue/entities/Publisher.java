@@ -51,6 +51,7 @@ public class Publisher implements Parcelable {
         dest.writeString(name);
     }
 
+    @SuppressWarnings("SameReturnValue")
     @Override
     public int describeContents() {
         return 0;

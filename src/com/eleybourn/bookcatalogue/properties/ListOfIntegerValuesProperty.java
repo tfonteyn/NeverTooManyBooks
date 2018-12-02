@@ -1,0 +1,165 @@
+/*
+ * @copyright 2012 Philip Warner
+ * @license GNU General Public License
+ *
+ * This file is part of Book Catalogue.
+ *
+ * Book Catalogue is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Book Catalogue is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package com.eleybourn.bookcatalogue.properties;
+
+import android.os.Parcel;
+import android.support.annotation.CallSuper;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.annotation.Size;
+import android.support.annotation.StringRes;
+
+import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.debug.Logger;
+
+import java.util.Objects;
+
+/**
+ * Implements ListOfValuesProperty with an Integer(nullable) value with associated editing support.
+ *
+ * to Parcel the value, use {@link #writeToParcel(Parcel)} and {@link #readFromParcel(Parcel)}
+ *
+ * @author Philip Warner
+ */
+public class ListOfIntegerValuesProperty extends ListOfValuesProperty<Integer> {
+
+    /**
+     * @param list list with options. Minimum 1 element.
+     */
+    public ListOfIntegerValuesProperty(final @NonNull @Size(min = 1) ItemList<Integer> list,
+                                       final @NonNull String uniqueId,
+                                       final @NonNull PropertyGroup group,
+                                       final @StringRes int nameResourceId,
+                                       final @Nullable Integer defaultValue) {
+        super(list, uniqueId, group, nameResourceId, defaultValue);
+    }
+
+    @Override
+    @Nullable
+    protected Integer getGlobalValue() {
+        return BookCatalogueApp.getIntPreference(getPreferenceKey(), Objects.requireNonNull(getDefaultValue()));
+    }
+
+    @Override
+    @NonNull
+    protected ListOfIntegerValuesProperty setGlobalValue(final @Nullable Integer value) {
+        Objects.requireNonNull(value);
+        BookCatalogueApp.getSharedPreferences().edit().putInt(getPreferenceKey(), value).apply();
+        return this;
+    }
+
+    /**
+     * For chaining with correct return type
+     */
+    @NonNull
+    @Override
+    @CallSuper
+    public ListOfIntegerValuesProperty setIsGlobal(final boolean isGlobal) {
+        super.setIsGlobal(isGlobal);
+        return this;
+    }
+
+    /**
+     * For chaining with correct return type
+     */
+    @NonNull
+    @Override
+    @CallSuper
+    public ListOfIntegerValuesProperty setWeight(final int weight) {
+        super.setWeight(weight);
+        return this;
+    }
+
+    /**
+     * For chaining with correct return type
+     */
+    @Nullable
+    @Override
+    @CallSuper
+    public Integer getDefaultValue() {
+        return super.getDefaultValue();
+    }
+
+    /**
+     * For chaining with correct return type
+     */
+    @NonNull
+    @Override
+    @CallSuper
+    public ListOfIntegerValuesProperty setDefaultValue(final Integer value) {
+        super.setDefaultValue(value);
+        return this;
+    }
+
+    /**
+     * For chaining with correct return type
+     */
+    @NonNull
+    @Override
+    @CallSuper
+    public ListOfIntegerValuesProperty setPreferenceKey(final @NonNull String key) {
+        super.setPreferenceKey(key);
+        return this;
+    }
+
+    /**
+     * Convenience accessor to return a non-null value
+     *
+     * Note: should never be needed, this is only to protect us from ourselves...
+     * Mistakes made in the past:
+     * - not having set a defaultValue or value
+     * - used "getValue" when we should have used "getResolvedValue"
+     *
+     * @return value itself, or 0 when null
+     */
+    @CallSuper
+    public int getInt() {
+        Integer value = super.getResolvedValue();
+        if (BuildConfig.DEBUG) {
+            if (value == null) {
+                Logger.debug("getResolvedValue was null");
+            }
+        }
+        return (value != null ? value : 0);
+    }
+
+    /**
+     * Our value is Nullable. To Parcel it, we use Integer.MIN_VALUE for null.
+     *
+     * Note that {@link Parcel#writeValue(Object)} actually writes an Integer as 'int'
+     * So 'null' is NOT preserved.
+     */
+    public void writeToParcel(final @NonNull Parcel dest) {
+        Integer value = this.getValue();
+        if (value == null) {
+            dest.writeInt(Integer.MIN_VALUE);
+        } else {
+            dest.writeInt(value);
+        }
+    }
+
+    public void readFromParcel(final @NonNull Parcel in) {
+        int parceledInt = in.readInt();
+        setValue(parceledInt == Integer.MIN_VALUE ? null : parceledInt);
+    }
+}
+

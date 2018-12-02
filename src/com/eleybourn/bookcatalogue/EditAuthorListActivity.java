@@ -211,17 +211,18 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
 
     /**
      * Called when user clicks the 'Save' button.
-     * @param intent A newly created Intent to store output if necessary.
-     *               The super has already stored the list into the intent.
+     * @param data A newly created Intent to store output if necessary.
+     *             Comes pre-populated with data.putExtra(mBKey, mList);
      *
      * @return <tt>true</tt>if activity should exit, false to abort exit.
      */
     @Override
-    protected boolean onSave(final @NonNull Intent intent) {
+    protected boolean onSave(final @NonNull Intent data) {
         final AutoCompleteTextView view = findViewById(R.id.author);
         String str = view.getText().toString().trim();
         if (str.isEmpty()) {
-            return true;
+            // no current edit, so we're good to go
+            return super.onSave(data);
         }
 
         StandardDialogs.showConfirmUnsavedEditsDialog(this,

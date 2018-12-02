@@ -244,7 +244,7 @@ public class GetThumbnailTask implements SimpleTaskQueue.SimpleTask {
                 // Queue the image to be written to the cache. Do it in a separate queue to avoid
                 // delays in displaying image and to avoid contention -- the cache queue only has
                 // one thread. Tell the cache write it can be recycled if we don't have a valid view.
-                ThumbnailCacheWriterTask.writeToCache(mContext, CoversDBAdapter.getThumbnailCoverCacheId(mUuid, mWidth, mHeight), mBitmap, !viewIsValid);
+                ThumbnailCacheWriterTask.writeToCache(CoversDBAdapter.getThumbnailCoverCacheId(mUuid, mWidth, mHeight), mBitmap, !viewIsValid);
             }
             if (viewIsValid) {
                 //LayoutParams lp = new LayoutParams(mBitmap.getWidth(), mBitmap.getHeight());

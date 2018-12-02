@@ -2,10 +2,8 @@ package com.eleybourn.bookcatalogue.backup.csv;
 
 import android.support.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.ExportSettings;
-import com.eleybourn.bookcatalogue.backup.Exporter;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.ManagedTask;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.TaskManager;
@@ -70,7 +68,7 @@ public class CsvExportTask extends ManagedTask {
             }
         } catch (IOException e) {
             Logger.error(e);
-            mFinalMessage = getString(R.string.error_export_failed);
+            mFinalMessage = getString(R.string.error_export_csv_failed);
         }
     }
 }

@@ -82,35 +82,15 @@ public class CropImageActivity extends CropMonitoredActivity {
     public static final String BKEY_ASPECT_Y = "aspectY";
     public static final String BKEY_RETURN_DATA = "return-data";
     public static final String BKEY_DATA = "data";
-    /*
-        Not sure on docs yet. Might be BC itself, but at least some are used by external cropper code.
-         */
     public static final String BKEY_CIRCLE_CROP = "circleCrop";
+
     public static final String REQUEST_KEY_IMAGE_ABSOLUTE_PATH = "image-path";
     public static final String REQUEST_KEY_OUTPUT_ABSOLUTE_PATH = "output";
     public static final String REQUEST_KEY_WHOLE_IMAGE = "whole-image";
     public static final String REQUEST_KEY_NO_FACE_DETECTION = "noFaceDetection";
 
-    public static void startActivityForResult(final @NonNull Activity activity,
-                                              final @NonNull File thumbFile,
-                                              final File cropped,
-                                              final boolean cropFrameWholeImage) {
-            Intent intent = new Intent(activity, CropImageActivity.class);
-            intent.putExtra(REQUEST_KEY_IMAGE_ABSOLUTE_PATH, thumbFile.getAbsolutePath());
-            intent.putExtra(REQUEST_KEY_SCALE, true);
-            intent.putExtra(REQUEST_KEY_NO_FACE_DETECTION, true);
-            intent.putExtra(REQUEST_KEY_WHOLE_IMAGE, cropFrameWholeImage);
-            intent.putExtra(REQUEST_KEY_OUTPUT_ABSOLUTE_PATH, cropped.getAbsolutePath());
-
-        activity.startActivityForResult(intent, CropImageActivity.REQUEST_CODE); /* 31c90366-d352-496f-9b7d-3237dd199a77 */
-    }
-
-    // private static final String TAG = "CropImage";
-
-    private static final int NO_STORAGE_ERROR = -1;
-    private static final int CANNOT_STAT_ERROR = -2;
-    /** used to calculate free space on storage */
-    private static final long ESTIMATED_PICTURE_SIZE = 400000L;
+    /** used to calculate free space on storage, 400kb per picture is a GUESS */
+    private static final long ESTIMATED_PICTURE_SIZE = 400_000L;
 
     private final Bitmap.CompressFormat COMPRESS_FORMAT = Bitmap.CompressFormat.JPEG; // only used with mOptionSaveUri
 

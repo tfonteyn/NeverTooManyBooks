@@ -20,6 +20,7 @@
 
 package com.eleybourn.bookcatalogue;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
@@ -181,7 +182,7 @@ public class EditBookshelfListActivity extends BaseListActivity {
             @Override
             public void run() {
                 populateList();
-                setChangesMade(true);
+                setResult(Activity.RESULT_OK);
             }
         });
         d.edit(bookshelf);

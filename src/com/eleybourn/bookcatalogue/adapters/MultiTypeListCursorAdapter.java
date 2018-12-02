@@ -51,8 +51,6 @@ public class MultiTypeListCursorAdapter extends CursorAdapter implements FastScr
     @NonNull
     private final MultiTypeListHandler mListHandler;
 
-    //FIXME: https://www.androiddesignpatterns.com/2012/07/loaders-and-loadermanager-background.html
-
     public MultiTypeListCursorAdapter(final @NonNull Activity activity,
                                       final @NonNull Cursor cursor,
                                       final @NonNull MultiTypeListHandler handler) {

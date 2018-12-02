@@ -21,17 +21,26 @@ import java.util.Comparator;
  *
  * @author pjw
  */
-public abstract class FileListerFragmentTask implements FragmentTask {
+public abstract class FileListerFragmentTask extends SimpleTaskQueueProgressDialogFragment.FragmentTaskAbstract {
     @NonNull
     private final File mRoot;
-    private final FileDetailsComparator mComparator = new FileDetailsComparator();
+
+    /**
+     * Perform case-insensitive sorting using default locale.
+     */
+    private final Comparator<FileDetails> mComparator = new Comparator<FileDetails>() {
+
+        public int compare(final @NonNull FileDetails f1, final @NonNull FileDetails f2) {
+            return f1.getFile().getName().toLowerCase().compareTo(f2.getFile().getName().toLowerCase());
+        }
+    };
 
     private ArrayList<FileDetails> mDirs;
 
     /**
      * Constructor
      */
-    FileListerFragmentTask(final @NonNull File root) {
+    protected FileListerFragmentTask(final @NonNull File root) {
         mRoot = root;
     }
 
@@ -70,15 +79,6 @@ public abstract class FileListerFragmentTask implements FragmentTask {
      */
     public interface FileListerListener {
         void onGotFileList(final @NonNull File root, final @NonNull ArrayList<FileDetails> list);
-    }
-
-    /**
-     * Perform case-insensitive sorting using default locale.
-     */
-    private static class FileDetailsComparator implements Comparator<FileDetails> {
-        public int compare(final @NonNull FileDetails f1, final @NonNull FileDetails f2) {
-            return f1.getFile().getName().toUpperCase().compareTo(f2.getFile().getName().toUpperCase());
-        }
     }
 
 }

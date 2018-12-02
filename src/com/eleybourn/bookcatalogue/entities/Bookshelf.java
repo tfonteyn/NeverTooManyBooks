@@ -51,6 +51,7 @@ public class Bookshelf implements Parcelable, Utils.ItemWithIdFixup {
         dest.writeString(name);
     }
 
+    @SuppressWarnings("SameReturnValue")
     @Override
     public int describeContents() {
         return 0;

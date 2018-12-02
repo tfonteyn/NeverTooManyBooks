@@ -11,13 +11,15 @@ import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.properties.ListProperty;
+import com.eleybourn.bookcatalogue.properties.ListOfValuesProperty;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -30,12 +32,54 @@ public class LocaleUtils {
     /** The SharedPreferences name where we'll maintain our language to ISO3 mappings */
     private static final String LANGUAGE_MAP = "language2iso3";
 
-    /** all registered Listeners */
-    private static final Set<WeakReference<OnLocaleChangedListener>> mOnChangedListeners = new HashSet<>();
-
     /** The locale used at startup; so that we can revert to system locale if we want to */
     private static final Locale mInitialLocale;
 
+    /**
+     * A Map to translate currency symbols to their official ISO3 code
+     *
+     * ENHANCE: surely this can be done more intelligently ?
+     */
+    private static final Map<String,String> CURRENCY_MAP = new HashMap<>();
+    static {
+        // key in map should always be lowercase
+        LocaleUtils.CURRENCY_MAP.put("","");
+        LocaleUtils.CURRENCY_MAP.put("€","EUR");
+        /*
+        English
+        https://en.wikipedia.org/wiki/List_of_territorial_entities_where_English_is_an_official_language
+         */
+        LocaleUtils.CURRENCY_MAP.put("a$","AUD"); // Australian Dollar
+        LocaleUtils.CURRENCY_MAP.put("nz$","NZD"); // New Zealand Dollar
+        LocaleUtils.CURRENCY_MAP.put("£","GBP"); // British Pound
+        LocaleUtils.CURRENCY_MAP.put("$","USD"); // Trump Disney's
+
+        LocaleUtils.CURRENCY_MAP.put("c$","CAD"); // Canadian Dollar
+        LocaleUtils.CURRENCY_MAP.put("ir£","IEP"); // Irish Punt
+        LocaleUtils.CURRENCY_MAP.put("s$","SGD"); // Singapore dollar
+
+        // supported locales (including pre-euro)
+
+        LocaleUtils.CURRENCY_MAP.put("br","RUB"); // Russian Rouble
+        LocaleUtils.CURRENCY_MAP.put("zł","PLN"); // Polish Zloty
+        LocaleUtils.CURRENCY_MAP.put("kč","CZK "); // Czech Koruna
+        LocaleUtils.CURRENCY_MAP.put("kc","CZK "); // Czech Koruna
+        LocaleUtils.CURRENCY_MAP.put("dm","DEM"); //german marks
+        LocaleUtils.CURRENCY_MAP.put("ƒ","NLG"); // Dutch Guilder
+        LocaleUtils.CURRENCY_MAP.put("fr","BEF"); // Belgian Franc
+        LocaleUtils.CURRENCY_MAP.put("fr.","BEF"); // Belgian Franc
+        LocaleUtils.CURRENCY_MAP.put("f","FRF"); // French Franc
+        LocaleUtils.CURRENCY_MAP.put("ff","FRF"); // French Franc
+        LocaleUtils.CURRENCY_MAP.put("pta","ESP"); // Spanish Peseta
+        LocaleUtils.CURRENCY_MAP.put("L","ITL"); // Italian Lira
+        LocaleUtils.CURRENCY_MAP.put("Δρ","GRD"); // Greek Drachma
+        LocaleUtils.CURRENCY_MAP.put("₺","TRY "); // Turkish Lira
+
+        // some others as seen on ISFDB site
+        LocaleUtils.CURRENCY_MAP.put("r$","BRL"); // Brazilian Real
+        LocaleUtils.CURRENCY_MAP.put("kr","DKK"); // Denmark Krone
+        LocaleUtils.CURRENCY_MAP.put("Ft","HUF"); // Hungarian Forint
+    }
     /** List of supported locales */
     @Nullable
     private static List<String> mSupportedLocales = null;
@@ -128,15 +172,23 @@ public class LocaleUtils {
     }
 
     /**
-     * Load the current Locale setting from the users SharedPreference.
+     * Load the Locale setting from the users SharedPreference.
+     *
+     * @return true if the Locale was changed
      */
-    public static void loadPreferred() {
+    public static boolean loadPreferred() {
         String loc = BookCatalogueApp.getStringPreference(PREF_APP_LOCALE, null);
         if (loc != null && !loc.isEmpty()) {
             mCurrentLocale = LocaleUtils.getLocaleFromCode(loc);
         } else {
             mCurrentLocale = mInitialLocale;
         }
+
+        if ((!mCurrentLocale.equals(mLastLocale))) {
+            mLastLocale = mCurrentLocale;
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -218,8 +270,8 @@ public class LocaleUtils {
      * @return List of preference items
      */
     @NonNull
-    public static ListProperty.ItemEntries<String> getLocalesPreferencesListItems() {
-        ListProperty.ItemEntries<String> items = new ListProperty.ItemEntries<>();
+    public static ListOfValuesProperty.ItemList<String> getLocalesPreferencesListItems() {
+        ListOfValuesProperty.ItemList<String> items = new ListOfValuesProperty.ItemList<>();
 
         Locale locale = getSystemLocal();
         items.add("", R.string.preferred_language_x,
@@ -270,91 +322,8 @@ public class LocaleUtils {
         editor.apply();
     }
 
-
-    /**
-     * Tests if the Locale has really changed + updates the global setting
-     *
-     * @return true is a change was detected
-     */
-    public synchronized static boolean hasLocalReallyChanged() {
-        if ((!mCurrentLocale.equals(mLastLocale))) {
-            mLastLocale = mCurrentLocale;
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Add a new OnLocaleChangedListener, and cleanup any dead references.
-     */
-    public static void addListener(final @NonNull OnLocaleChangedListener listener) {
-        List<WeakReference<OnLocaleChangedListener>> toRemove = new ArrayList<>();
-
-        boolean alreadyAdded = false;
-
-        // make sure we're not adding the same twice + collect dead listeners
-        for (WeakReference<OnLocaleChangedListener> ref : mOnChangedListeners) {
-            OnLocaleChangedListener localeChangedListener = ref.get();
-            if (localeChangedListener == null) {
-                toRemove.add(ref);
-            } else if (localeChangedListener == listener) {
-                alreadyAdded = true;
-            }
-        }
-
-        for (WeakReference<OnLocaleChangedListener> ref : toRemove) {
-            mOnChangedListeners.remove(ref);
-        }
-
-        if (!alreadyAdded) {
-            mOnChangedListeners.add(new WeakReference<>(listener));
-        }
-    }
-
-    /**
-     * Remove the passed OnLocaleChangedListener, and cleanup any dead references.
-     */
-    public static void removeListener(final @NonNull OnLocaleChangedListener listener) {
-        List<WeakReference<OnLocaleChangedListener>> toRemove = new ArrayList<>();
-
-        // find the listener to remove + collect dead listeners
-        for (WeakReference<OnLocaleChangedListener> ref : mOnChangedListeners) {
-            OnLocaleChangedListener localeChangedListener = ref.get();
-            if ((localeChangedListener == null) || (localeChangedListener == listener)) {
-                toRemove.add(ref);
-            }
-        }
-        for (WeakReference<OnLocaleChangedListener> ref : toRemove) {
-            mOnChangedListeners.remove(ref);
-        }
-    }
-
-    /**
-     * Send a message to all registered OnLocaleChangedListeners, and cleanup any dead references.
-     */
-    public static void notifyListeners() {
-        List<WeakReference<OnLocaleChangedListener>> toRemove = new ArrayList<>();
-
-        for (WeakReference<OnLocaleChangedListener> ref : mOnChangedListeners) {
-            OnLocaleChangedListener listener = ref.get();
-            if (listener == null) {
-                toRemove.add(ref);
-            } else {
-                try {
-                    listener.onLocaleChanged(mCurrentLocale);
-                } catch (Exception ignore) {
-                }
-            }
-        }
-        for (WeakReference<OnLocaleChangedListener> ref : toRemove) {
-            mOnChangedListeners.remove(ref);
-        }
-    }
-
-    /**
-     * Interface definition
-     */
-    public interface OnLocaleChangedListener {
-        void onLocaleChanged(final @NonNull Locale currentLocale);
+    public static String currencyToISO(@NonNull String datum) {
+        datum = datum.trim().toLowerCase();
+        return CURRENCY_MAP.get(datum);
     }
 }

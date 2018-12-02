@@ -30,8 +30,8 @@ import java.io.Serializable;
 /**
  * Abstract base class for all Tasks.
  *
- * A Task MUST be serializable. This means that it can not contain any references to
- * UI components or similar objects.
+ * A Task *MUST* be serializable.
+ * This means that it can not contain any references to UI components or similar objects.
  *
  * When run, it will have access to the Application context, and can use that to interact with the UI.
  *

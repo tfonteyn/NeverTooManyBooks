@@ -26,6 +26,7 @@ import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.debug.Tracker;
@@ -49,6 +50,21 @@ public class EditBookActivity extends BaseActivity {
         intent.putExtra(UniqueId.KEY_ID, id);
         intent.putExtra(EditBookFragment.REQUEST_BKEY_TAB, tab);
         activity.startActivityForResult(intent, EditBookActivity.REQUEST_CODE);
+    }
+    /**
+     * Load with the provided book id. Also open to the provided tab.
+     *
+     * @param fragment the caller
+     * @param id       The id of the book to edit
+     * @param tab      Which tab to open first
+     */
+    public static void startActivityForResult(final @NonNull Fragment fragment,
+                                              final long id,
+                                              final int tab) {
+        Intent intent = new Intent(fragment.getContext(), EditBookActivity.class);
+        intent.putExtra(UniqueId.KEY_ID, id);
+        intent.putExtra(EditBookFragment.REQUEST_BKEY_TAB, tab);
+        fragment.startActivityForResult(intent, EditBookActivity.REQUEST_CODE);
     }
 
     @Override
@@ -74,19 +90,11 @@ public class EditBookActivity extends BaseActivity {
     }
 
     @Override
+    @CallSuper
     public void onBackPressed() {
-        super.onBackPressed();
         // delete any leftover temporary thumbnails
         StorageUtils.deleteTempCoverFile();
-    }
 
-    @Override
-    protected void onActivityResult(final int requestCode, final int resultCode, final @Nullable Intent data) {
-        Tracker.enterOnActivityResult(this,requestCode,resultCode, data);
-//        // Dispatch incoming result to the current visible fragment.
-//        Fragment frag = getSupportFragmentManager().findFragmentByTag(EditBookFragment.TAG);
-//        frag.onActivityResult(requestCode, resultCode, data);
-        super.onActivityResult(requestCode, resultCode, data);
-        Tracker.exitOnActivityResult(this);
+        super.onBackPressed();
     }
 }

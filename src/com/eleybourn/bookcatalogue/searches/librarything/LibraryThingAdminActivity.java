@@ -96,7 +96,7 @@ public class LibraryThingAdminActivity extends BaseActivity {
                         .apply();
 
                 if (!devKey.isEmpty()) {
-                    FragmentTask task = new FragmentTask() {
+                    FragmentTask task = new SimpleTaskQueueProgressDialogFragment.FragmentTaskAbstract() {
                         /**
                          * Validate the key by getting a known cover
                          */

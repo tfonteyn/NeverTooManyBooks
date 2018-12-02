@@ -50,7 +50,7 @@ public class Tracker {
         if (DEBUG_SWITCHES.INSTANCE_STATE && BuildConfig.DEBUG) {
             Logger.info(a, "onCreate|" + States.Enter + "|savedInstanceState=" + savedInstanceState);
             if (a instanceof Activity) {
-                Bundle extras = ((Activity) a).getIntent().getExtras();
+                @SuppressWarnings("UnusedAssignment") Bundle extras = ((Activity) a).getIntent().getExtras();
                 if (extras != null) {
                     Logger.info(a, "onCreate|" + Tracker.States.Running + "|extras=" + extras);
                     if (extras.containsKey(UniqueId.BKEY_BOOK_DATA)) {
@@ -77,7 +77,7 @@ public class Tracker {
         if (DEBUG_SWITCHES.INSTANCE_STATE && BuildConfig.DEBUG) {
             Logger.info(a, "onActivityCreated|" + States.Enter + "|savedInstanceState=" + savedInstanceState);
             if (a instanceof Fragment) {
-                Bundle args = ((Fragment) a).getArguments();
+                @SuppressWarnings("UnusedAssignment") Bundle args = ((Fragment) a).getArguments();
                 if (args != null) {
                     Logger.info(a, "onActivityCreated|" + Tracker.States.Running + "|args=" + args);
                     if (args.containsKey(UniqueId.BKEY_BOOK_DATA)) {

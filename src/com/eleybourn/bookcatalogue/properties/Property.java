@@ -20,53 +20,65 @@
 
 package com.eleybourn.bookcatalogue.properties;
 
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.view.LayoutInflater;
 import android.view.View;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Base class for generic properties.
+ * Base class for generic in-memory properties which can have an optional default set at construction time.
+ *
+ * NOTE ABOUT SERIALIZATION
+ *
+ * It is very tempting to make these serializable, but fraught with danger. Specifically, these
+ * objects contain resource IDs and resource IDs can change across compiling.
+ * This means that any serialized version would only be useful for in-process data passing. But this
+ * can be accomplished by custom serialization in the referencing object much more easily.
+ *
+ * @param <T> type of underlying Value
  *
  * @author Philip Warner
  */
-public abstract class Property {
+public abstract class Property<T> {
     /**
-     * Counter used to generate unique View IDs. Needed to prevent some fields being overwritten when
-     * screen is rotated (if they all have the same ID).
-     *
-     * ENHANCE: allow topological sort of parameters to allow arbitrary grouping and sorting.
-     *
-     * NOTE ABOUT SERIALIZATION
-     *
-     * It is very tempting to make these serializable, but fraught with danger. Specifically, these
-     * objects contain resource IDs and, as far as I can tell, resource IDs can change across versions.
-     * This means that any serialized version would only be useful for in-process data passing. But this
-     * can be accomplished by custom serialization in the referencing object much more easily.
+     * Counter used to generate unique View IDs. Needed to prevent some fields being overwritten
+     * when the screen is rotated (if they all have the same ID).
      */
     @NonNull
-    private static Integer mViewIdCounter = 0;
+    private static AtomicInteger mViewIdCounter = new AtomicInteger();
 
-    /** Unique 'name' of this property. */
+    /** Unique 'name' of this property. In-memory use only (as a key into a Map), not persisted. */
     @NonNull
     private final String mUniqueId;
+    /** Resource ID for displayed name of this property */
+    @StringRes
+    private final transient int mNameResourceId;
+    /** Underlying value */
+    @Nullable
+    protected T mValue = null;
     /** PropertyGroup in which this property should reside. Display-purposes only */
     @NonNull
     private transient PropertyGroup mGroup;
-    /** Resource ID for name of this property */
-    @StringRes
-    private final transient int mNameResourceId;
-
     /** Property weight (for sorting). Most will remain set at 0. */
     private int mWeight = 0;
     /** Hint associated with this property. Subclasses need to use, where appropriate */
+    @StringRes
     private int mHint = 0;
+    /** Default value, for case when not in preferences, or no preferences given */
+    @Nullable
+    private T mDefaultValue = null;
+
+    /** Key in preferences for optional persistence */
+    @Nullable
+    private String mPreferenceKey = null;
 
     /**
-     * Constructor
+     * Constructor, both Value and DefaultValue will be 'null'
      *
      * @param uniqueId       Unique name for this property (ideally, unique for entire app)
      * @param group          PropertyGroup in which this property belongs
@@ -80,17 +92,69 @@ public abstract class Property {
         mNameResourceId = nameResourceId;
     }
 
+    /**
+     * Constructor, both Value and DefaultValue will be set to the parameter 'defaultValue'
+     *
+     * @param uniqueId       Unique name for this property (ideally, unique for entire app)
+     * @param group          PropertyGroup in which this property belongs
+     * @param nameResourceId Resource ID for name of this property
+     * @param defaultValue   value to set as both the default, and as the current actual value.
+     */
+    public Property(final @NonNull String uniqueId,
+                    final @NonNull PropertyGroup group,
+                    final @StringRes int nameResourceId,
+                    final @Nullable T defaultValue) {
+        mUniqueId = uniqueId;
+        mGroup = group;
+        mNameResourceId = nameResourceId;
+        mDefaultValue = defaultValue;
+        mValue = defaultValue;
+    }
+
     /** Increment and return the view counter */
     static int nextViewId() {
-        return ++mViewIdCounter;
+        return mViewIdCounter.incrementAndGet();
+    }
+
+    @Nullable
+    protected T getDefaultValue() {
+        return mDefaultValue;
     }
 
     /**
-     * @return the string name of this property
+     * Set the DefaultValue *and* the Value
+     *
+     * The assumption is that the default will be set at creation time, before we have a valid value
+     * for this property.
      */
     @NonNull
-    public String getName() {
-        return BookCatalogueApp.getResourceString(mNameResourceId);
+    public Property<T> setDefaultValue(final @Nullable T value) {
+        mDefaultValue = value;
+        mValue = value;
+        return this;
+    }
+
+    /** Utility to check if the passed value == the default value */
+    boolean isDefault(final @Nullable T value) {
+        return (value == null && mDefaultValue == null)
+                || (value != null && value.equals(mDefaultValue));
+    }
+
+    /** Utility to check if the current value == the default value */
+    boolean isDefault() {
+        return (mValue == null && mDefaultValue == null)
+                || (mValue != null && mValue.equals(mDefaultValue));
+    }
+
+    @NonNull
+    protected String getPreferenceKey() {
+        return Objects.requireNonNull(mPreferenceKey);
+    }
+
+    @NonNull
+    public Property<T> setPreferenceKey(final @NonNull String key) {
+        mPreferenceKey = key;
+        return this;
     }
 
     public int getWeight() {
@@ -98,9 +162,14 @@ public abstract class Property {
     }
 
     @NonNull
-    public Property setWeight(final int weight) {
+    public Property<T> setWeight(final int weight) {
         mWeight = weight;
         return this;
+    }
+
+    /** check if there is a preference key for persisting the value */
+    public boolean hasPreferenceKey() {
+        return (mPreferenceKey != null && !mPreferenceKey.isEmpty());
     }
 
     @NonNull
@@ -114,13 +183,13 @@ public abstract class Property {
     }
 
     @NonNull
-    public Property setGroup(final @NonNull PropertyGroup group) {
+    public Property<T> setGroup(final @NonNull PropertyGroup group) {
         mGroup = group;
         return this;
     }
 
     @StringRes
-    int getNameResourceId() {
+    protected int getNameResourceId() {
         return mNameResourceId;
     }
 
@@ -128,68 +197,46 @@ public abstract class Property {
         return mHint != 0;
     }
 
+    @StringRes
     public int getHint() {
         return mHint;
     }
 
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    public Property setHint(final int hint) {
+    public Property<T> setHint(final @StringRes int hint) {
         mHint = hint;
         return this;
     }
 
     /** Default validation method. Override to provide validation. */
+    @CallSuper
     public void validate() throws ValidationException {
         //do nothing
     }
 
-    /** Children must implement set(Property) */
-    @SuppressWarnings("UnusedReturnValue")
+    @Nullable
+    public String toString() {
+        return (mValue == null ? null : mValue.toString());
+    }
+
+    @Nullable
+    public T getValue() {
+        return mValue;
+    }
+
+    /** Accessor for underlying (or global) value */
     @NonNull
-    public abstract Property set(final @NonNull Property p);
+    public Property<T> setValue(final @Nullable T value) {
+        this.mValue = value;
+        return this;
+    }
 
     /** Children must implement getView to return an editor for this object */
     @NonNull
     public abstract View getView(final @NonNull LayoutInflater inflater);
 
-    /**
-     * Interface used to help setting one property based on another property value.
-     * eg. there are multiple 'Boolean' properties, and *maybe* one day there will be
-     * a use for type conversions.
-     *
-     * @author Philip Warner
-     */
-    public interface BooleanValue {
-        @Nullable
-        Boolean get();
-    }
-
-    /**
-     * Interface used to help setting one property based on another property value.
-     * eg. there are multiple 'Boolean' properties, and *maybe* one day there will be
-     * a use for type conversions.
-     *
-     * @author Philip Warner
-     */
-    protected interface StringValue {
-        @Nullable
-        String get();
-    }
-
-    /**
-     * Interface used to help setting one property based on another property value.
-     * eg. there are multiple 'Boolean' properties, and *maybe* one day there will be
-     * a use for type conversions.
-     *
-     * @author Philip Warner
-     */
-    public interface IntegerValue {
-        @Nullable
-        Integer get();
-    }
-
-    /**  Exception used by validation code. */
+    /** Exception used by validation code. */
     public static class ValidationException extends IllegalStateException {
         private static final long serialVersionUID = -1086124703257379812L;
 

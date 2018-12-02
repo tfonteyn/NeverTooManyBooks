@@ -23,10 +23,10 @@ import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.backup.BackupInfo;
-import com.eleybourn.bookcatalogue.backup.BackupReaderAbstract;
-import com.eleybourn.bookcatalogue.backup.ReaderEntity;
-import com.eleybourn.bookcatalogue.backup.ReaderEntity.BackupEntityType;
+import com.eleybourn.bookcatalogue.backup.archivebase.BackupInfo;
+import com.eleybourn.bookcatalogue.backup.archivebase.BackupReaderAbstract;
+import com.eleybourn.bookcatalogue.backup.archivebase.ReaderEntity;
+import com.eleybourn.bookcatalogue.backup.archivebase.ReaderEntity.BackupEntityType;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;

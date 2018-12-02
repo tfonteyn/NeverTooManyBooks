@@ -11,6 +11,10 @@ import com.eleybourn.bookcatalogue.tasks.taskqueue.GoodreadsTask;
 import com.eleybourn.bookcatalogue.tasks.taskqueue.QueueManager;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
+/**
+ * A Task *MUST* be serializable.
+ * This means that it can not contain any references to UI components or similar objects.
+ */
 public abstract class SendBooksTask extends GoodreadsTask {
 
     private GoodreadsManager mGrManager;

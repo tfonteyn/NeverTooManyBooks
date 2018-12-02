@@ -5,38 +5,24 @@
     style="@style/row_option_property"
     android:orientation="vertical">
 
-    <FrameLayout
-        android:id="@+id/frame"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_centerVertical="true"
-        android:paddingStart="@dimen/padding_border"
-        android:paddingEnd="@dimen/padding_border">
-
-        <ImageButton
-            android:id="@+id/btn_edit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="?android:selectableItemBackground"
-            android:focusable="true"
-            android:hint="@string/edit"
-            app:srcCompat="@drawable/ic_mode_edit"
-            tools:ignore="ContentDescription" />
-    </FrameLayout>
-
     <TextView
         android:id="@+id/name"
         style="@style/lbl_property_name"
-        android:layout_toStartOf="@id/frame"
+        android:layout_toStartOf="@id/btn_edit"
         tools:text="name of property" />
 
     <TextView
         android:id="@+id/value"
         style="@style/txt_property_value"
         android:layout_below="@id/name"
-        android:layout_toStartOf="@id/frame"
+        android:layout_toStartOf="@id/btn_edit"
         tools:text="current value" />
+
+    <ImageButton
+        android:id="@+id/btn_edit"
+        style="@style/itemEditButton"
+        app:srcCompat="@drawable/ic_mode_edit"
+        tools:ignore="ContentDescription" />
 
     <View style="@style/divider_horizontalList" />
 </RelativeLayout>

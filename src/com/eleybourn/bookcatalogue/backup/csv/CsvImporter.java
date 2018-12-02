@@ -28,7 +28,6 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.backup.ImportException;
 import com.eleybourn.bookcatalogue.backup.ImportSettings;
-import com.eleybourn.bookcatalogue.backup.Importer;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer.SyncLock;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -157,7 +156,7 @@ public class CsvImporter implements Importer {
         );
 
         final boolean updateOnlyIfNewer;
-        if ((mSettings.options & ImportSettings.IMPORT_ONLY_NEW_OR_UPDATED) != 0) {
+        if ((mSettings.what & ImportSettings.IMPORT_ONLY_NEW_OR_UPDATED) != 0) {
             if (!book.containsKey(UniqueId.KEY_LAST_UPDATE_DATE)) {
                 throw new IllegalArgumentException("Imported data does not contain " + UniqueId.KEY_LAST_UPDATE_DATE);
             }
@@ -295,7 +294,11 @@ public class CsvImporter implements Importer {
 
 
     /**
-     * @return new or updated bookId
+     * insert or update a book
+     *
+     * @param bookId of book to insert(bookId==0) or update(bookId>0)
+     *
+     * @return non 0 bookId
      */
     private long importBook(long bookId,
                             final boolean hasNumericId,
@@ -303,50 +306,47 @@ public class CsvImporter implements Importer {
                             final boolean hasUuid,
                             final @NonNull Book book,
                             final boolean updateOnlyIfNewer) {
+
+        // Always import empty IDs...even if they are duplicates.
+        // Would be nice to import a cover, but without ID/UUID that is not possible
         if (!hasUuid && !hasNumericId) {
-            // Always import empty IDs...even if they are duplicates.
-            long id = mDb.insertBookWithId(0, book);
-            book.putLong(UniqueId.KEY_ID, id);
-            // Would be nice to import a cover, but with no ID/UUID that is not possible
-        } else {
-            // we have UUID or ID, so it's an update
-
-            // Let the UUID trump the ID; we may be importing someone else's list with bogus IDs
-            boolean exists = false;
-
-            if (hasUuid) {
-                long tmp_id = mDb.getBookIdFromUuid(uuidVal);
-
-                if (tmp_id != 0) {
-                    bookId = tmp_id;
-                    exists = true;
-                } else {
-                    // We have a UUID, but book does not exist. We will create a book.
-                    // Make sure the ID (if present) is not already used.
-                    if (hasNumericId && mDb.bookExists(bookId)) {
-                        bookId = 0;
-                    }
-                }
-            } else {
-                exists = mDb.bookExists(bookId);
-            }
-
-            if (exists) {
-                if (!updateOnlyIfNewer || updateOnlyIfNewer(mDb, book, bookId)) {
-                    mDb.updateBook(bookId, book,
-                            CatalogueDBAdapter.BOOK_UPDATE_SKIP_PURGE_REFERENCES
-                                    | CatalogueDBAdapter.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
-                    mUpdated++;
-                }
-            } else {
-                bookId = mDb.insertBookWithId(bookId, book);
-                mCreated++;
-            }
-
-            // Save the real ID to the collection (will/may be used later)
-            book.putLong(UniqueId.KEY_ID, bookId);
-
+            return mDb.insertBookWithId(0, book);
         }
+
+        // we have UUID or ID, so it's an update
+
+        // Let the UUID trump the ID; we may be importing someone else's list with bogus IDs
+        boolean exists = false;
+
+        if (hasUuid) {
+            long tmp_id = mDb.getBookIdFromUuid(uuidVal);
+            if (tmp_id != 0) {
+                // use the id from the existing book, as found by UUID lookup
+                bookId = tmp_id;
+                exists = true;
+            } else {
+                // We have a UUID, but book does not exist. We will create a book.
+                // Make sure the ID (if present) is not already used.
+                if (hasNumericId && mDb.bookExists(bookId)) {
+                    bookId = 0;
+                }
+            }
+        } else {
+            exists = mDb.bookExists(bookId);
+        }
+
+        if (exists) {
+            if (!updateOnlyIfNewer || updateOnlyIfNewer(mDb, book, bookId)) {
+                mDb.updateBook(bookId, book,
+                        CatalogueDBAdapter.BOOK_UPDATE_SKIP_PURGE_REFERENCES
+                                | CatalogueDBAdapter.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
+                mUpdated++;
+            }
+        } else {
+            bookId = mDb.insertBookWithId(bookId, book);
+            mCreated++;
+        }
+
         return bookId;
     }
 
@@ -613,7 +613,7 @@ public class CsvImporter implements Importer {
             }
         }
 
-        throw new ImportException(BookCatalogueApp.getResourceString(R.string.error_file_must_contain_any_column,
+        throw new ImportException(BookCatalogueApp.getResourceString(R.string.error_csv_file_must_contain_any_column,
                 Utils.join(",", names)));
     }
 

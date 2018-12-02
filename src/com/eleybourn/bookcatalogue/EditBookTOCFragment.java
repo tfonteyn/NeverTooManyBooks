@@ -55,7 +55,7 @@ import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.BookManager;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.entities.TOCEntry;
-import com.eleybourn.bookcatalogue.searches.SearchSites;
+import com.eleybourn.bookcatalogue.searches.UpdateFieldsFromInternetTask;
 import com.eleybourn.bookcatalogue.searches.isfdb.ISFDBManager;
 import com.eleybourn.bookcatalogue.searches.isfdb.ISFDBResultsListener;
 
@@ -64,6 +64,11 @@ import java.util.List;
 
 /**
  * This class is called by {@link EditBookFragment} and displays the Content Tab
+ *
+ * Doesn't use {@link UpdateFieldsFromInternetTask}
+ * as this would actually introduce the ManagedTask usage which we want to phase out.
+ * The {@link ISFDBResultsListener} should however be seen as temporary as this class should not
+ * have to know about any specific search web site.
  */
 public class EditBookTOCFragment extends BookBaseFragment implements ISFDBResultsListener {
 
@@ -81,11 +86,6 @@ public class EditBookTOCFragment extends BookBaseFragment implements ISFDBResult
     private Integer mEditPosition = null;
     private ArrayList<TOCEntry> mList;
     private ListView mListView;
-
-    /** sites to search on. Can be overridden by the user (option menu) */
-    protected int mSearchSites = SearchSites.Site.SEARCH_ISFDB;
-    /** Objects managing current search. */
-    protected long mSearchManagerId = 0;
 
     /**
      * ISFDB editions (url's) of a book(isbn)
@@ -254,7 +254,7 @@ public class EditBookTOCFragment extends BookBaseFragment implements ISFDBResult
 
     private void populateSingleAuthorStatus(final @NonNull Book book) {
         int bitmask = book.getInt(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK);
-        boolean singleAuthor = (DatabaseDefinitions.DOM_IS_ANTHOLOGY == (bitmask & DatabaseDefinitions.DOM_IS_ANTHOLOGY));
+        boolean singleAuthor = (bitmask & DatabaseDefinitions.DOM_BOOK_WITH_MULTIPLE_AUTHORS) == 0;
         mSingleAuthor.setChecked(singleAuthor);
         mAuthorTextView.setVisibility(singleAuthor ? View.GONE : View.VISIBLE);
     }
@@ -296,10 +296,11 @@ public class EditBookTOCFragment extends BookBaseFragment implements ISFDBResult
         // So while this command is 'correct', it does not stop (and does not bother) the user
         // setting it wrong. insert/update into the database will correctly set it by simply looking at
         // at the toc itself
-        book.putInt(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK,
-                mSingleAuthor.isChecked() ?
-                        DatabaseDefinitions.DOM_IS_ANTHOLOGY
-                        : DatabaseDefinitions.DOM_BOOK_WITH_MULTIPLE_AUTHORS ^ DatabaseDefinitions.DOM_IS_ANTHOLOGY);
+        int type = DatabaseDefinitions.DOM_BOOK_WITH_MULTIPLE_WORKS;
+        if (!mSingleAuthor.isChecked()) {
+            type |= DatabaseDefinitions.DOM_BOOK_WITH_MULTIPLE_AUTHORS;
+        }
+        book.putInt(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK, type);
 
         Tracker.exitOnSaveFieldsToBook(this, book.getBookId());
     }
@@ -481,9 +482,8 @@ public class EditBookTOCFragment extends BookBaseFragment implements ISFDBResult
      * The user approved, so add the TOC to the list on screen (still not saved to database)
      */
     private void commitISFDBData(int tocBitMask, final @NonNull List<TOCEntry> tocEntries) {
-        if (tocBitMask > 0) {
-            getBookManager().getBook().putInt(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK,
-                    tocBitMask | getBookManager().getBook().getInt(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK));
+        if (tocBitMask != 0) {
+            getBookManager().getBook().putInt(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK, tocBitMask);
             populateSingleAuthorStatus(getBookManager().getBook());
         }
 

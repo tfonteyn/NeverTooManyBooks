@@ -1,90 +1,28 @@
-TOMF some 'task' notes...
-
-1. ManagedTask's started from a BaseActivityWithTasks.
-
- * abstract {@link ManagedTask} extends Thread
- * Background task that is managed by TaskManager and uses TaskManager to coordinate display activities.
- *
- * {@link TaskManager}
- * handles the management of multiple tasks and passing messages with the help of a {@link MessageSwitch}
- *
- * {@link BaseActivityWithTasks}
- * Uses a TaskManager (and communicates with it) to handle messages for ManagedTask.
- * Handles progress messages (ProgressDialog) and user messages (toast)
-
-Also involved are:
-- a Client Listener, for example {@link TaskManager.TaskManagerListener},
-  to which Messages can be send by the MessageSwitch
-- a Controller, for example {@link TaskManager.TaskManagerController}
-  which the client can 'get' from the MessageSwitch, and then use to get hold of the Sender.
-
-Used by:
-- BookSearchActivity
-- UpdateFieldsFromInternetActivity
-==> the SearchManager/SearchTasks for getting book information from web sites.
-- AdminActivity
- ==> CSV import/export
-----------------------------------------------------------------------------------------------------
-2. SimpleTask
-   Uses SimpleTaskQueue, with callbacks (listeners) directly to the object which enqueued the task.
-
-3. FragmentTask
-   Almost the same as SimpleTask, but has access to the Fragment that started it.
-   Uses a SimpleTaskQueueProgressDialogFragment, displaying a ProgressDialog
-
-4. Terminator/TerminatorTask: delayed start of SimpleTask's
-----------------------------------------------------------------------------------------------------
-5. taskqueue - minimalistic traditional database backed "Sun MessageQueue" like product
-   Task
-   LegacyTask extends Task
-   RunnableTask extends Task
-   GenericTask extends RunnableTask
-
-Used by:
-- goodreads api
-
- ----------------------------------------------------------------------------------------------------
-6. CropImageActivity
-Has yet another form of background job definition.
- ----------------------------------------------------------------------------------------------------
-
-GOALS:
- 1. Removal of taskqueue
-    replace with SimpleTask.
- 2. Removal of ManagedTask.
- 3. retire...
- 4. Move to using ASyncTask (single-threaded) or Executor (multi-threaded) for all ?
-
-
-
-FIXME: help screen 'cleanup' button. Broken? + move it to admin adv. options ?
-
-TEST TOMF: onActivityResult now that fragments seem to be done correctly
-
-ENHANCE: backup -> offer options to import preferences, bookstyles, etc.... conditionally
-ENHANCE: backup -> if preferences were imported, indicate somehow that we want to switch to the bookshelf as set in the prefs.
-
-
 TOMF ENHANCE New anthology stuff:
  * to think about:
  * - when to delete entries in ANTHOLOGY ? when last book is gone or keep them, for adding to new books / wish list
  * - consider a purge based on book for orphan TOCEntry (a purge based on Author is already done)
 
 TOMF FIXME database stuff
- * FIXME: Very few database methods throw an SQLiteDoneException.
+ * - Very few database methods throw an SQLiteDoneException.
  * The caller is either already catching them, or believes they will never happen.
  *
- * FIXME: database insert methods which return -1 for failing to insert. Not all callers check.
- * FIXME: catch UpdateException (or not?)
- * FIXME: catch NotFoundException (or not?)
- * bind variables versus string concat
+ * - database insert methods which return -1 for failing to insert. Not all callers check.
+ * - catch UpdateException (or not?)
+ * - catch NotFoundException (or not?)
+ * - bind variables versus string concat
 
-TOMF ENHANCE database using 'lower()' in WHERE and ORDER BY clauses. Performance? Better 'Collation' setting?'. LIKE operator ?
-  * check indexes for all lower case, then eliminate the lower() for all that uses those indexes.
-  * force table creation to use NOCASE ? but what about current LOCALIZED then ?
+ENHANCE database using 'lower()' in WHERE and ORDER BY clauses.
+ * Performance? Better 'Collation' setting?'. LIKE operator ?
+ * check indexes for all lower case, then eliminate the lower() for all that uses those indexes.
+ * force table creation to use NOCASE ? but what about current LOCALIZED then ?
 
 ENHANCE finish FTS searching {@link com.eleybourn.bookcatalogue.searches.SearchLocalActivity}
  * and {@link #searchFts(String, String, String)}
+
+ENHANCE: booklist styles:
+- store the id's in preferences, not their names (builtin already modified to use negative numbers)
+- don't serialise...
 
 TOMF: research 'local' search. The code has some stuff enabled, but not tested. -> check BC 5.2.2 release (not master)
 

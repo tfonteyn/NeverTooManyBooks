@@ -258,6 +258,46 @@ public class StandardDialogs {
 
     }
 
+    public static void confirmSaveDuplicateBook(final @NonNull Context context,
+                                                final @NonNull AlertDialogAction nextStep) {
+        /*
+         * If it exists, show a dialog and use it to perform the
+         * next action, according to the users choice.
+         */
+        AlertDialog dialog = new AlertDialog.Builder(context)
+                .setTitle(R.string.title_duplicate_book)
+                .setMessage(context.getString(R.string.warning_duplicate_book_message))
+                .setIconAttribute(android.R.attr.alertDialogIcon)
+                .create();
+
+        dialog.setButton(AlertDialog.BUTTON_POSITIVE,
+                context.getString(android.R.string.ok),
+                new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, final int which) {
+                        nextStep.onPositive();
+                    }
+                });
+        dialog.setButton(AlertDialog.BUTTON_NEGATIVE,
+                context.getString(android.R.string.cancel),
+                new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, final int which) {
+                        nextStep.onNegative();
+                    }
+                });
+        dialog.show();
+    }
+
+    /**
+     * TODO: nice idea, but underused.;  use this wherever AlertDialog is used
+     */
+    public interface AlertDialogAction {
+        void onPositive();
+
+        void onNeutral();
+
+        void onNegative();
+    }
+
 
 
     /* ========================================================================================== */

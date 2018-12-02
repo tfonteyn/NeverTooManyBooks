@@ -103,19 +103,17 @@ abstract public class EditObjectListActivity<T extends Parcelable> extends BaseL
         @Override
         public void onClick(View v) {
             if (onCancel()) {
-                setResult(Activity.RESULT_CANCELED); /* bca659b6-dfb9-4a97-b651-5b05ad102400,
-                dd74343a-50ff-4ce9-a2e4-a75f7bcf9e36, 3f210502-91ab-4b11-b165-605e09bb0c17,
-                13854efe-e8fd-447a-a195-47678c0d87e7 */
                 finish();
             }
         }
     };
     /** the rows */
     protected ArrayList<T> mList = null;
+
     /**
      * Handle 'Save'
      *
-     * TEST: setResult(RESULT_CHANGES_MADE although we might not have made any. see for setChangesMade ?
+     * TEST: setResult(Activity.RESULT_OK although we might not have made any.
      */
     private final OnClickListener mSaveListener = new OnClickListener() {
         @Override
@@ -123,9 +121,6 @@ abstract public class EditObjectListActivity<T extends Parcelable> extends BaseL
             Intent data = new Intent();
             data.putExtra(mBKey, mList);
             if (onSave(data)) {
-                setResult(Activity.RESULT_OK, data); /* bca659b6-dfb9-4a97-b651-5b05ad102400,
-                 dd74343a-50ff-4ce9-a2e4-a75f7bcf9e36, 3f210502-91ab-4b11-b165-605e09bb0c17
-                 13854efe-e8fd-447a-a195-47678c0d87e7 */
                 finish();
             }
         }
@@ -277,11 +272,16 @@ abstract public class EditObjectListActivity<T extends Parcelable> extends BaseL
      *
      * Can be overridden to perform other checks.
      *
-     * @param intent A newly created Intent to store output if necessary.
+     * @param data A newly created Intent to store output if necessary.
+     *            Comes pre-populated with data.putExtra(mBKey, mList);
      *
      * @return <tt>true</tt>if activity should exit, false to abort exit.
      */
-    protected boolean onSave(final @NonNull Intent intent) {
+    protected boolean onSave(final @NonNull Intent data) {
+        setResult(Activity.RESULT_OK, data); /* bca659b6-dfb9-4a97-b651-5b05ad102400,
+                 dd74343a-50ff-4ce9-a2e4-a75f7bcf9e36, 3f210502-91ab-4b11-b165-605e09bb0c17
+                 13854efe-e8fd-447a-a195-47678c0d87e7 */
+
         return true;
     }
 
@@ -295,6 +295,9 @@ abstract public class EditObjectListActivity<T extends Parcelable> extends BaseL
      */
     @SuppressWarnings("SameReturnValue")
     protected boolean onCancel() {
+        setResult(Activity.RESULT_CANCELED); /* bca659b6-dfb9-4a97-b651-5b05ad102400,
+                dd74343a-50ff-4ce9-a2e4-a75f7bcf9e36, 3f210502-91ab-4b11-b165-605e09bb0c17,
+                13854efe-e8fd-447a-a195-47678c0d87e7 */
         return true;
     }
 

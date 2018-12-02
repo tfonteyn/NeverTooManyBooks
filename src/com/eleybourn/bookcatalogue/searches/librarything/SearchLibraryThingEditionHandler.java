@@ -3,8 +3,6 @@ package com.eleybourn.bookcatalogue.searches.librarything;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.utils.IsbnUtils;
-
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 

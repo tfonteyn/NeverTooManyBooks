@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/row_option_property"
+    android:orientation="horizontal">
+
+    <TextView
+        android:id="@+id/name"
+        style="@style/lbl_property_name"
+        android:layout_toStartOf="@id/btn_edit"
+        tools:text="name of property" />
+
+    <TextView
+        android:id="@+id/value"
+        style="@style/txt_property_value"
+        android:layout_below="@id/name"
+        android:layout_toStartOf="@id/btn_edit"
+        tools:text="current value" />
+
+    <ImageButton
+        android:id="@+id/btn_edit"
+        style="@style/itemEditButton"
+        app:srcCompat="@drawable/ic_arrow_drop_down"
+        tools:ignore="ContentDescription" />
+
+    <View style="@style/divider_horizontalList" />
+
+</RelativeLayout>

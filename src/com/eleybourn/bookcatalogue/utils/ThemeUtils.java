@@ -5,13 +5,7 @@ import android.support.annotation.StyleRes;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.properties.ListProperty;
-
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import com.eleybourn.bookcatalogue.properties.ListOfValuesProperty;
 
 /**
  * Static class. There is only ONE Theme *active* at any given time.
@@ -38,9 +32,6 @@ public class ThemeUtils {
             R.style.AppTheme_Dialog_Alert,
             R.style.AppTheme_Dialog_Alert_Light
     };
-
-    /** all registered Listeners */
-    private static final Set<WeakReference<OnThemeChangedListener>> mOnChangedListeners = new HashSet<>();
 
     /** Cache the User-specified theme currently in use */
     private static int mCurrentTheme;
@@ -79,8 +70,8 @@ public class ThemeUtils {
      * @return List of preference themes
      */
     @NonNull
-    public static ListProperty.ItemEntries<Integer> getThemePreferencesListItems() {
-        ListProperty.ItemEntries<Integer> items = new ListProperty.ItemEntries<>();
+    public static ListOfValuesProperty.ItemList<Integer> getThemePreferencesListItems() {
+        ListOfValuesProperty.ItemList<Integer> items = new ListOfValuesProperty.ItemList<>();
 
         String[] themeList = BookCatalogueApp.getResourceStringArray(R.array.user_interface_theme_supported);
         for (int i = 0; i < themeList.length; i++) {
@@ -90,96 +81,16 @@ public class ThemeUtils {
     }
 
     /**
-     * Load the Locale setting from the users SharedPreference.
-     */
-    public static void loadPreferred() {
-        mCurrentTheme = BookCatalogueApp.getIntPreference(PREF_APP_THEME, DEFAULT_THEME);
-    }
-
-    /**
-     * Tests if the Theme has really changed + updates the global setting
+     * Load the Theme setting from the users SharedPreference.
      *
-     * @return true is a change was detected
+     * @return true if the theme was changed
      */
-    public synchronized static boolean hasThemeReallyChanged() {
+    public static boolean loadPreferred() {
+        mCurrentTheme = BookCatalogueApp.getIntPreference(PREF_APP_THEME, DEFAULT_THEME);
         if (mCurrentTheme != mLastTheme) {
             mLastTheme = mCurrentTheme;
             return true;
         }
         return false;
-    }
-
-    /**
-     * Add a new OnLocaleChangedListener, and cleanup any dead references.
-     */
-    public static void addListener(final @NonNull OnThemeChangedListener listener) {
-        List<WeakReference<OnThemeChangedListener>> toRemove = new ArrayList<>();
-
-        boolean alreadyAdded = false;
-
-        // make sure we're not adding the same twice + collect dead listeners
-        for (WeakReference<OnThemeChangedListener> ref : mOnChangedListeners) {
-            OnThemeChangedListener themeChangedListener = ref.get();
-            if (themeChangedListener == null) {
-                toRemove.add(ref);
-            } else if (themeChangedListener == listener) {
-                alreadyAdded = true;
-            }
-        }
-
-        for (WeakReference<OnThemeChangedListener> ref : toRemove) {
-            mOnChangedListeners.remove(ref);
-        }
-
-        if (!alreadyAdded) {
-            mOnChangedListeners.add(new WeakReference<>(listener));
-        }
-    }
-
-    /**
-     * Remove the passed OnLocaleChangedListener, and cleanup any dead references.
-     */
-    public static void removeListener(final @NonNull OnThemeChangedListener listener) {
-        List<WeakReference<OnThemeChangedListener>> toRemove = new ArrayList<>();
-
-        // find the listener to remove + collect dead listeners
-        for (WeakReference<OnThemeChangedListener> ref : mOnChangedListeners) {
-            OnThemeChangedListener themeChangedListener = ref.get();
-            if ((themeChangedListener == null) || (themeChangedListener == listener)) {
-                toRemove.add(ref);
-            }
-        }
-        for (WeakReference<OnThemeChangedListener> ref : toRemove) {
-            mOnChangedListeners.remove(ref);
-        }
-    }
-
-    /**
-     * Send a message to all registered OnLocaleChangedListeners, and cleanup any dead references.
-     */
-    public static void notifyListeners() {
-        List<WeakReference<OnThemeChangedListener>> toRemove = new ArrayList<>();
-
-        for (WeakReference<OnThemeChangedListener> ref : mOnChangedListeners) {
-            OnThemeChangedListener listener = ref.get();
-            if (listener == null) {
-                toRemove.add(ref);
-            } else {
-                try {
-                    listener.onThemeChanged(mCurrentTheme);
-                } catch (Exception ignore) {
-                }
-            }
-        }
-        for (WeakReference<OnThemeChangedListener> ref : toRemove) {
-            mOnChangedListeners.remove(ref);
-        }
-    }
-
-    /**
-     * Interface definition
-     */
-    public interface OnThemeChangedListener {
-        void onThemeChanged(final int currentTheme);
     }
 }

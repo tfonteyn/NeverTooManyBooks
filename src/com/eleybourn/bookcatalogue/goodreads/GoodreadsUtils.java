@@ -130,13 +130,13 @@ public class GoodreadsUtils {
                     QueueManager.getQueueManager().enqueueTask(new SendOneBookTask(bookId), QueueManager.QUEUE_MAIN);
                     msg = R.string.task_has_been_queued_in_background;
                 }
-                setState(msg);
+                setTag(msg);
             }
 
             @Override
             public void onFinish(final @NonNull SimpleTaskQueueProgressDialogFragment fragment,
                                  final @Nullable Exception e) {
-                final int msg = getState();
+                final Integer msg = (Integer) getTag();
                 if (msg == -1) {
                     fragment.post(new Runnable() {
 
@@ -170,14 +170,14 @@ public class GoodreadsUtils {
             public void run(final @NonNull SimpleTaskQueueProgressDialogFragment fragment,
                             final @NonNull SimpleTaskQueue.SimpleTaskContext taskContext) {
                 int msg = checkCanSendToGoodreads();
-                setState(msg);
+                setTag(msg);
             }
 
             @Override
             public void onFinish(final @NonNull SimpleTaskQueueProgressDialogFragment fragment,
                                  final @Nullable Exception e) {
                 final FragmentActivity context = fragment.getActivity();
-                switch (getState()) {
+                switch ((Integer) getTag()) {
                     case 0:
                         if (context != null) {
                             // Get the title
@@ -229,7 +229,7 @@ public class GoodreadsUtils {
                         return;
 
                     default:
-                        fragment.showUserMessage(fragment.getString(getState()));
+                        fragment.showUserMessage(fragment.getString((Integer)getTag()));
                         break;
                 }
             }
@@ -252,13 +252,13 @@ public class GoodreadsUtils {
                     QueueManager.getQueueManager().enqueueTask(new SendAllBooksTask(updatesOnly), QueueManager.QUEUE_MAIN);
                     msg = R.string.task_has_been_queued_in_background;
                 }
-                setState(msg);
+                setTag(msg);
             }
 
             @Override
             public void onFinish(final @NonNull SimpleTaskQueueProgressDialogFragment fragment,
                                  final @Nullable Exception e) {
-                final int msg = getState();
+                final int msg = (Integer)getTag();
                 if (msg == -1) {
                     fragment.post(new Runnable() {
 

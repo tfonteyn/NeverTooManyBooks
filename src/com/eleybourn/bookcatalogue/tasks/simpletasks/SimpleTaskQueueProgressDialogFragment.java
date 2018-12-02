@@ -514,6 +514,8 @@ public class SimpleTaskQueueProgressDialogFragment extends DialogFragment {
      * Interface for 'FragmentTask' objects. Closely based on SimpleTask, but takes the
      * fragment as a parameter to all calls.
      *
+     * The {@link #setTag} & {@link #getTag} calls can be used to store generic info by a caller.
+     *
      * @author pjw
      */
     public interface FragmentTask {
@@ -521,38 +523,45 @@ public class SimpleTaskQueueProgressDialogFragment extends DialogFragment {
          * Run the task in it's own thread
          */
         void run(final @NonNull SimpleTaskQueueProgressDialogFragment fragment,
-                 final @NonNull SimpleTaskContext taskContext);
+                 final @NonNull SimpleTaskContext taskContext) throws Exception;
 
         /**
-         * Called in UI thread after task complete  TODO
+         * Called in UI thread after task complete
          */
         void onFinish(final @NonNull SimpleTaskQueueProgressDialogFragment fragment,
                       final @Nullable Exception exception);
+
+        /** set an optional generic tag */
+        void setTag(final @Nullable Object tag);
+        /** get an optional generic tag */
+        @Nullable
+        Object getTag();
     }
 
     /**
-     * Trivial implementation of {@link FragmentTask} that never calls {@link #onFinish}.
-     * The {@link #setState} & {@link #getState} calls can be used to store state info by a caller.
+     * Trivial implementation of {@link FragmentTask}.
      *
      * @author pjw
      */
     public abstract static class FragmentTaskAbstract implements FragmentTask {
-        private int mState = 0;
+        private Object mTag = 0;
 
         @Override
-        public void onFinish(final @NonNull SimpleTaskQueueProgressDialogFragment fragment, final @Nullable Exception e) {
+        public void onFinish(final @NonNull SimpleTaskQueueProgressDialogFragment fragment,
+                             final @Nullable Exception e) {
             if (e != null) {
                 Logger.error(e);
-                StandardDialogs.showUserMessage(fragment.requireActivity(), R.string.error_unexpected_error);
+                StandardDialogs.showUserMessage(fragment.requireActivity(),
+                        R.string.error_unexpected_error);
             }
         }
 
-        public int getState() {
-            return mState;
+        public Object getTag() {
+            return mTag;
         }
 
-        public void setState(final int state) {
-            mState = state;
+        public void setTag(final Object tag) {
+            mTag = tag;
         }
     }
 
@@ -623,7 +632,7 @@ public class SimpleTaskQueueProgressDialogFragment extends DialogFragment {
         }
 
         @Override
-        public void run(final @NonNull SimpleTaskContext taskContext) {
+        public void run(final @NonNull SimpleTaskContext taskContext) throws Exception {
             try {
                 mInnerTask.run(SimpleTaskQueueProgressDialogFragment.this, taskContext);
             } catch (Exception e) {
@@ -634,6 +643,7 @@ public class SimpleTaskQueueProgressDialogFragment extends DialogFragment {
 
         @Override
         public void onFinish(final @Nullable Exception e) {
+            //  Queue a TaskFinished message to whoever created us.
             SimpleTaskQueueProgressDialogFragment.this.queueTaskFinished(mInnerTask, e);
         }
 

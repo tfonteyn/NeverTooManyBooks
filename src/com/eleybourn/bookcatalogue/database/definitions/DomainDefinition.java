@@ -10,32 +10,42 @@ import android.support.annotation.NonNull;
  * @author Philip Warner
  */
 public class DomainDefinition implements Parcelable {
+    public static final Creator<DomainDefinition> CREATOR = new Creator<DomainDefinition>() {
+        @Override
+        public DomainDefinition createFromParcel(Parcel in) {
+            return new DomainDefinition(in);
+        }
+
+        @Override
+        public DomainDefinition[] newArray(int size) {
+            return new DomainDefinition[size];
+        }
+    };
     @NonNull
     public final String name;
-
     @NonNull
     private final String type;
     @NonNull
     private final String extra;
-
     @NonNull
     private final String constraint;
 
     public DomainDefinition(final @NonNull String name,
                             final @NonNull String type) {
-        this(name,type, "", "");
+        this(name, type, "", "");
     }
+
     public DomainDefinition(final @NonNull String name,
                             final @NonNull String type,
                             final @NonNull String extra) {
-        this(name,type, "", extra);
+        this(name, type, "", extra);
     }
 
     /**
-     *  @param name         column name
-     * @param type          column type (text, int, float, ...)
-     * @param constraint    (optional but non null) for example "not null"
-     * @param extra         (optional, but non null) for example "default 0'
+     * @param name       column name
+     * @param type       column type (text, int, float, ...)
+     * @param constraint (optional but non null) for example "not null"
+     * @param extra      (optional, but non null) for example "default 0'
      */
     public DomainDefinition(final @NonNull String name,
                             final @NonNull String type,
@@ -47,7 +57,7 @@ public class DomainDefinition implements Parcelable {
         this.constraint = constraint;
     }
 
-    protected DomainDefinition(Parcel in) {
+    private DomainDefinition(Parcel in) {
         name = in.readString();
         type = in.readString();
         extra = in.readString();
@@ -62,22 +72,11 @@ public class DomainDefinition implements Parcelable {
         dest.writeString(constraint);
     }
 
+    @SuppressWarnings("SameReturnValue")
     @Override
     public int describeContents() {
         return 0;
     }
-
-    public static final Creator<DomainDefinition> CREATOR = new Creator<DomainDefinition>() {
-        @Override
-        public DomainDefinition createFromParcel(Parcel in) {
-            return new DomainDefinition(in);
-        }
-
-        @Override
-        public DomainDefinition[] newArray(int size) {
-            return new DomainDefinition[size];
-        }
-    };
 
     public boolean isText() {
         return TableInfo.TYPE_TEXT.equals(type.toLowerCase());

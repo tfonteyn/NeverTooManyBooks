@@ -32,10 +32,12 @@ import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.BookNotFoundException;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.NetworkException;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.NotAuthorizedException;
-import com.eleybourn.bookcatalogue.searches.goodreads.api.SimpleXmlFilter.BuilderContext;
-import com.eleybourn.bookcatalogue.searches.goodreads.api.SimpleXmlFilter.XmlListener;
-import com.eleybourn.bookcatalogue.searches.goodreads.api.XmlFilter.ElementContext;
+import com.eleybourn.bookcatalogue.utils.xml.SimpleXmlFilter;
+import com.eleybourn.bookcatalogue.utils.xml.SimpleXmlFilter.BuilderContext;
+import com.eleybourn.bookcatalogue.utils.xml.SimpleXmlFilter.XmlListener;
+import com.eleybourn.bookcatalogue.utils.xml.XmlFilter.ElementContext;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
+import com.eleybourn.bookcatalogue.utils.xml.XmlResponseParser;
 
 import org.apache.http.client.methods.HttpGet;
 

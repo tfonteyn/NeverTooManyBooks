@@ -20,6 +20,9 @@
 
 package com.eleybourn.bookcatalogue.baseactivity;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
@@ -29,7 +32,9 @@ import android.view.ViewGroup;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Tracker;
-import com.eleybourn.bookcatalogue.properties.Properties;
+import com.eleybourn.bookcatalogue.properties.PropertyList;
+
+import java.util.ArrayList;
 
 /**
  * Base class to display simple preference-based options to the user.
@@ -38,8 +43,11 @@ import com.eleybourn.bookcatalogue.properties.Properties;
  */
 abstract public class PreferencesBaseActivity extends BaseActivity {
 
+    private Intent resultData = new Intent();
+    private ArrayList<String> changedPrefKeys = new ArrayList<>();
+
     /** Setup the views in the layout */
-    abstract protected void initFields(final @NonNull Properties globalProps);
+    abstract protected void initFields(final @NonNull PropertyList globalProps);
 
     @Override
     @CallSuper
@@ -47,7 +55,7 @@ abstract public class PreferencesBaseActivity extends BaseActivity {
         Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
 
-        Properties globalProps = new Properties();
+        PropertyList globalProps = new PropertyList();
         initFields(globalProps);
 
         ViewGroup styleProps = findViewById(R.id.dynamic_properties);
@@ -56,12 +64,15 @@ abstract public class PreferencesBaseActivity extends BaseActivity {
         Tracker.exitOnCreate(this);
     }
 
-    /**
-     * For now, we can't be sure. There is no feedback from a pref change.
-     * ENHANCE: use a OnSharedPreferenceChangeListener
-     */
     @Override
-    protected void setActivityResult() {
-        setResult(UniqueId.ACTIVITY_RESULT_PREFS_MIGHT_HAVE_CHANGED);
+    public void onSharedPreferenceChanged(final SharedPreferences sharedPreferences, final String key) {
+        super.onSharedPreferenceChanged(sharedPreferences, key);
+
+        if (!changedPrefKeys.contains(key)) {
+            changedPrefKeys.add(key);
+        }
+
+        resultData.putStringArrayListExtra(UniqueId.BKEY_PREFERENCE_KEYS, changedPrefKeys);
+        setResult(Activity.RESULT_OK, resultData);
     }
 }

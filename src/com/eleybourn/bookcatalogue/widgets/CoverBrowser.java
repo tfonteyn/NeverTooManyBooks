@@ -370,7 +370,7 @@ public class CoverBrowser {
         @Override
         public void run(final @NonNull SimpleTaskContext taskContext) {
             // Get some editions
-            // TOMF ENHANCE: the list of editions should be expanded to somehow include other sites aside of LibraryThingManager
+            // ENHANCE: the list of editions should be expanded to somehow include other sites aside of LibraryThingManager
             // As well as the alternate user-contributed images from LibraryThing. The latter are
             // often the best source but at present could only be obtained by HTML scraping.
             try {

@@ -42,8 +42,9 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.eleybourn.bookcatalogue.Fields.AfterFieldChangeListener;
-import com.eleybourn.bookcatalogue.Fields.Field;
+import com.eleybourn.bookcatalogue.datamanager.Fields;
+import com.eleybourn.bookcatalogue.datamanager.Fields.AfterFieldChangeListener;
+import com.eleybourn.bookcatalogue.datamanager.Fields.Field;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.datamanager.DataEditor;
@@ -204,7 +205,6 @@ public abstract class BookBaseFragment extends Fragment implements DataEditor {
     public void onResume() {
         Tracker.enterOnResume(this);
         super.onResume();
-        //TOMF: reload locale if changed ! register as a listener
 
         populateFrame();
         Tracker.exitOnResume(this);
@@ -387,7 +387,7 @@ public abstract class BookBaseFragment extends Fragment implements DataEditor {
                         new Runnable() {
                             @Override
                             public void run() {
-                                mActivity.setResult(UniqueId.ACTIVITY_RESULT_BOOK_DELETED);
+                                mActivity.setResult(UniqueId.ACTIVITY_RESULT_DELETED_SOMETHING);
                                 mActivity.finish();
                             }
                         });
@@ -397,7 +397,7 @@ public abstract class BookBaseFragment extends Fragment implements DataEditor {
                 Bundle bookData = BookUtils.duplicateBook(mDb, book.getBookId());
                 Intent intent = new Intent(mActivity, EditBookActivity.class);
                 intent.putExtra(UniqueId.BKEY_BOOK_DATA, bookData);
-                mActivity.startActivityForResult(intent, EditBookActivity.REQUEST_CODE); /* result handled by hosting Activity */
+                startActivityForResult(intent, EditBookActivity.REQUEST_CODE); /* result handled by hosting Activity */
                 return true;
             }
             case R.id.MENU_BOOK_UPDATE_FROM_INTERNET: {
@@ -409,11 +409,12 @@ public abstract class BookBaseFragment extends Fragment implements DataEditor {
                 intent.putExtra(UniqueId.KEY_TITLE, book.getString(UniqueId.KEY_TITLE));
                 intent.putExtra(UniqueId.KEY_AUTHOR_FORMATTED, book.getString(UniqueId.KEY_AUTHOR_FORMATTED));
 
-                mActivity.startActivityForResult(intent, UpdateFieldsFromInternetActivity.REQUEST_CODE); /* 98a6d1eb-4df5-4893-9aaf-fac0ce0fee01 */
+                startActivityForResult(intent, UpdateFieldsFromInternetActivity.REQUEST_CODE); /* 98a6d1eb-4df5-4893-9aaf-fac0ce0fee01 */
                 return true;
             }
             case R.id.MENU_SHARE: {
-                BookUtils.shareBook(mActivity, mDb, book.getBookId());
+                Intent shareIntent = BookUtils.getShareBookIntent(mActivity, mDb, book.getBookId());
+                startActivity(Intent.createChooser(shareIntent, getString(R.string.share)));
                 return true;
             }
             case R.id.MENU_BOOK_READ: {

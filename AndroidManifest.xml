@@ -109,12 +109,12 @@
         <!-- AdminActivity: Edit book list styles -->
         <activity android:name=".booklist.BooklistPreferredStylesActivity" />
         <activity
-            android:name=".booklist.BooklistStylePropertiesActivity"
+            android:name=".booklist.EditBooklistStyleActivity"
             android:windowSoftInputMode="stateHidden" />
-        <activity android:name=".booklist.BooklistStyleGroupsActivity" />
+        <activity android:name=".booklist.EditBooklistStyleGroupsActivity" />
 
         <!-- AdminActivity: Data Import/Export -->
-        <activity android:name=".filechooser.BackupChooserActivity" />
+        <activity android:name=".backup.ui.BackupAndRestoreActivity" />
 
         <!-- AdminActivity: Update Fields -->
         <activity android:name=".UpdateFieldsFromInternetActivity" />

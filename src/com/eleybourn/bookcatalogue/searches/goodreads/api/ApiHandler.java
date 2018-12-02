@@ -23,6 +23,7 @@ package com.eleybourn.bookcatalogue.searches.goodreads.api;
 import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
+import com.eleybourn.bookcatalogue.utils.xml.XmlFilter;
 
 /**
  * Base class for all Goodreads API handler classes.

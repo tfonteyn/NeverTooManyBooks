@@ -56,6 +56,8 @@ import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.BooksMultiTypeListHandler.BooklistChangeListener;
 import com.eleybourn.bookcatalogue.adapters.MultiTypeListCursorAdapter;
+import com.eleybourn.bookcatalogue.backup.ExportSettings;
+import com.eleybourn.bookcatalogue.backup.ImportSettings;
 import com.eleybourn.bookcatalogue.baseactivity.BaseListActivity;
 import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;
 import com.eleybourn.bookcatalogue.booklist.BooklistBuilder.BookRowInfo;
@@ -63,8 +65,8 @@ import com.eleybourn.bookcatalogue.booklist.BooklistPreferencesActivity;
 import com.eleybourn.bookcatalogue.booklist.BooklistPreferredStylesActivity;
 import com.eleybourn.bookcatalogue.booklist.BooklistPseudoCursor;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
-import com.eleybourn.bookcatalogue.booklist.BooklistStylePropertiesActivity;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
+import com.eleybourn.bookcatalogue.booklist.EditBooklistStyleActivity;
 import com.eleybourn.bookcatalogue.booklist.RowKinds;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
@@ -90,7 +92,8 @@ import java.util.Objects;
  * @author Philip Warner
  */
 public class BooksOnBookshelf extends BaseListActivity implements
-        BooklistChangeListener {
+        BooklistChangeListener,
+        SharedPreferences.OnSharedPreferenceChangeListener {
     /** Is book info opened in read-only mode. (old name for backwards compatibility) */
     public static final String PREF_OPEN_BOOK_READ_ONLY = "App.OpenBookReadOnly";
 
@@ -192,25 +195,14 @@ public class BooksOnBookshelf extends BaseListActivity implements
         mDb = new CatalogueDBAdapter(this);
 
         // Restore bookshelf
-        String bookshelf_name = BookCatalogueApp.getStringPreference(PREF_BOOKSHELF, null);
-        if (bookshelf_name == null || bookshelf_name.isEmpty()) {
-            // pref not set, start with initial shelf
-            mCurrentBookshelf = new Bookshelf(Bookshelf.DEFAULT_ID, getString(R.string.initial_bookshelf));
-        } else {
-            // try to get the id of the preferred shelf
-            mCurrentBookshelf = mDb.getBookshelfByName(bookshelf_name);
-            if (mCurrentBookshelf == null) {
-                // shelf must have been deleted, switch to 'all book'
-                mCurrentBookshelf = new Bookshelf(Bookshelf.ALL_BOOKS, getString(R.string.all_books));
-            }
-        }
+        mCurrentBookshelf = getPreferredBookshelf();
+
+        // Restore view style
+        refreshCurrentStyle();
 
         // Restore list position on bookshelf
         mTopRow = BookCatalogueApp.getIntPreference(PREF_TOP_ROW, 0);
         mTopRowTop = BookCatalogueApp.getIntPreference(PREF_TOP_ROW_TOP, 0);
-
-        // Restore view style
-        refreshStyle();
 
         // set the search capability to local (application) search
         setDefaultKeyMode(Activity.DEFAULT_KEYS_SEARCH_LOCAL);
@@ -247,6 +239,7 @@ public class BooksOnBookshelf extends BaseListActivity implements
         mCurrentPositionedBookId = -1;
 
         initBookshelfSpinner();
+        // populate and switch to the preferred bookshelf.
         populateBookShelfSpinner();
 
         // global criteria are all null
@@ -256,6 +249,26 @@ public class BooksOnBookshelf extends BaseListActivity implements
             initHints();
         }
         Tracker.exitOnCreate(this);
+    }
+
+    /**
+     * get the preferred bookshelf
+     */
+    private Bookshelf getPreferredBookshelf() {
+        String bookshelf_name = BookCatalogueApp.getStringPreference(PREF_BOOKSHELF, null);
+        Bookshelf bookshelf;
+        if (bookshelf_name == null || bookshelf_name.isEmpty()) {
+            // pref not set, start with initial shelf
+            bookshelf = new Bookshelf(Bookshelf.DEFAULT_ID, getString(R.string.initial_bookshelf));
+        } else {
+            // try to get the id of the preferred shelf
+            bookshelf = mDb.getBookshelfByName(bookshelf_name);
+            if (bookshelf == null) {
+                // shelf must have been deleted, switch to 'all book'
+                bookshelf = new Bookshelf(Bookshelf.ALL_BOOKS, getString(R.string.all_books));
+            }
+        }
+        return bookshelf;
     }
 
     @Override
@@ -514,14 +527,13 @@ public class BooksOnBookshelf extends BaseListActivity implements
              91b95a7f-17d6-4f98-af58-5f040b52414f, 01564e26-b463-425e-8889-55a8228c82d5,
               8a5c649a-e97b-4d53-8133-6060ef3c3072, 0308715c-e1d2-4a7f-9ba3-cb8f641e096b */
                 switch (resultCode) {
-                    case UniqueId.ACTIVITY_RESULT_BOOK_DELETED: {
+                    case UniqueId.ACTIVITY_RESULT_DELETED_SOMETHING: {
                         // handle re-positioning better
                         //mCurrentPositionedBookId = [somehow get the ID 'above' the deleted one;
                         initBookList(false);
                         break;
                     }
                     case Activity.RESULT_OK: {
-                        /* there *has* to be 'data' */
                         Objects.requireNonNull(data);
                         long newId = data.getLongExtra(UniqueId.KEY_ID, 0);
                         if (newId != 0) {
@@ -550,7 +562,6 @@ public class BooksOnBookshelf extends BaseListActivity implements
             case SearchLocalActivity.REQUEST_CODE: { /* 6f6e83e1-10fb-445c-8e35-fede41eba03b */
                 // no changes made, but we have data to act on.
                 if (resultCode == Activity.RESULT_OK) {
-                    /* there *has* to be 'data' */
                     Objects.requireNonNull(data);
                     mSearchText = initSearchField(data.getStringExtra(UniqueId.BKEY_SEARCH_TEXT));
                     mAuthorSearchText = initSearchField(data.getStringExtra(UniqueId.BKEY_SEARCH_AUTHOR));
@@ -571,68 +582,82 @@ public class BooksOnBookshelf extends BaseListActivity implements
                 }
                 break;
             }
+
             // from BaseActivity Nav Panel
             case AdminActivity.REQUEST_CODE: { /* 7f46620d-7951-4637-8783-b410730cd460 */
-                // no results of it's own,
-                switch (resultCode) {
-                    case UniqueId.ACTIVITY_RESULT_PREFS_MIGHT_HAVE_CHANGED: {
-                        // child-activities results:
-//                        PreferencesBaseActivity: /* 9cdb2cbe-1390-4ed8-a491-87b3b1a1edb9, 46f41e7b-f49c-465d-bea0-80ec85330d1c */
-//                        FieldVisibilityActivity: /* 2f885b11-27f2-40d7-8c8b-fcb4d95a4151 */
-                        refreshStyle();
+                if (resultCode == Activity.RESULT_OK) {
+
+                    if ((data != null) && data.hasExtra(UniqueId.BKEY_PREFERENCE_KEYS)) {
+                        // PreferencesBaseActivity: /* 9cdb2cbe-1390-4ed8-a491-87b3b1a1edb9, 46f41e7b-f49c-465d-bea0-80ec85330d1c */
+                        // FieldVisibilityActivity: /* 2f885b11-27f2-40d7-8c8b-fcb4d95a4151 */
+                        //ENHANCE: check *which* prefs have changed, and only reload if needed.
+                        refreshCurrentStyle();
                         savePosition();
                         initBookList(true);
                     }
-                    break;
+
+                    if ((data != null) && data.hasExtra(UniqueId.BKEY_IMPORT_RESULT_OPTIONS)) {
+                        // BackupAndRestoreActivity: {/* 0a27a94b-2b5b-4106-a279-e74b0c770fa8 */
+                        int options = data.getIntExtra(UniqueId.BKEY_IMPORT_RESULT_OPTIONS, ImportSettings.NOTHING);
+
+                        if ((options & ImportSettings.PREFERENCES) != 0) {
+                            // takes care of both bookshelf & style and triggers a rebuild.
+                            Bookshelf newBookshelf = getPreferredBookshelf();
+                            if (!mCurrentBookshelf.equals(newBookshelf)) {
+                                populateBookShelfSpinner();
+                            }
+                        } else if ((options & ImportSettings.BOOK_LIST_STYLES) != 0) {
+                            // did not import preferences, but did import styles (is that actually possible right now ?)
+                            refreshCurrentStyle();
+                        }
+                    } else if ((data != null) && data.hasExtra(UniqueId.BKEY_EXPORT_RESULT_OPTIONS)) {
+                        // BackupAndRestoreActivity: {/* da0cd4d6-baca-46ad-a010-4d91263a9c5f */
+                        int options = data.getIntExtra(UniqueId.BKEY_EXPORT_RESULT_OPTIONS, ExportSettings.NOTHING);
+                    }
+
+//                    if ((data != null) && data.hasExtra(UniqueId.ZZZZ)) {
+//                        // AdminActivity has results of it's own,, but no action needed for them.
+//                        // child-activities results:
+//                        // SearchAdminActivity: /* 293bcc32-6af7-4beb-a4e0-4db2f239cf9f */
+//                        // FieldVisibilityActivity: /* 2f885b11-27f2-40d7-8c8b-fcb4d95a4151 */
+//                    }
+
                 }
             }
 
-            // from BaseActivity Nav Panel or from sort menu dialog
+            // from BaseActivity Nav Panel or from sort menu dialog TODO: more complicated then it should be....
             case BooklistPreferredStylesActivity.REQUEST_CODE: { /* 13854efe-e8fd-447a-a195-47678c0d87e7 */
                 switch (resultCode) {
-                    case UniqueId.ACTIVITY_RESULT_CHANGES_MADE_BOOKLIST_STYLES: {
-                        refreshStyle();
+                    case UniqueId.ACTIVITY_RESULT_DELETED_SOMETHING:
+                    case UniqueId.ACTIVITY_RESULT_OK_BooklistPreferredStylesActivity: {
+                        // no data
+                        refreshCurrentStyle();
                         savePosition();
                         initBookList(true);
                         break;
                     }
-                    case UniqueId.ACTIVITY_RESULT_CHANGES_MADE_BOOKLIST_STYLE_PROPERTIES: {
-                        // we currently don't let the result from this one trickle up. Leaving in place as this might change.
-                        handleStyleChange(data);
+                    case UniqueId.ACTIVITY_RESULT_OK_BooklistStylePropertiesActivity: {
+                        Objects.requireNonNull(data);
+                        BooklistStyle style = data.getParcelableExtra(EditBooklistStyleActivity.REQUEST_BKEY_STYLE);
+                        // can be null if a style was deleted.
+                        if (style != null) {
+                            mCurrentStyle = style;
+                            saveBookShelfAndStyle(mCurrentBookshelf, mCurrentStyle);
+                        }
+                        refreshCurrentStyle();
+                        savePosition();
+                        initBookList(true);
                         break;
                     }
                 }
                 break;
             }
-            case BooklistStylePropertiesActivity.REQUEST_CODE: {
-                // we currently don't start the BooklistStylePropertiesActivity from here. Leaving in place as this might change.
-                if (resultCode == UniqueId.ACTIVITY_RESULT_CHANGES_MADE_BOOKLIST_STYLE_PROPERTIES) {
-                    handleStyleChange(data);
-                }
-                break;
-            }
-
             default:
                 super.onActivityResult(requestCode, resultCode, data);
                 break;
         }
 
         Tracker.exitOnActivityResult(this);
-    }
-
-    /** Future enhancement maybe. See {@link #onActivityResult} */
-    private void handleStyleChange(final @Nullable Intent data) {
-        Logger.error("onActivityResult: BooklistStylePropertiesActivity.RESULT_CHANGES_MADE was supposed to be unused?");
-        /* there *has* to be 'data' */
-        Objects.requireNonNull(data);
-        BooklistStyle style = data.getParcelableExtra(BooklistStylePropertiesActivity.REQUEST_BKEY_STYLE);
-        // can be null if a style was deleted.
-        if (style != null) {
-            mCurrentStyle = style;
-            saveBookShelfAndStyle(mCurrentBookshelf, mCurrentStyle);
-        }
-        savePosition();
-        initBookList(true);
     }
 
     /**
@@ -935,7 +960,8 @@ public class BooksOnBookshelf extends BaseListActivity implements
 
     /**
      * Setup the bookshelf spinner.
-     * The spinner listener will also call {@link #initBookList} when switching bookshelf.
+     * The spinner listener will also set the style associated with the selected Bookshelf
+     * and call {@link #initBookList}.
      */
     private void initBookshelfSpinner() {
         mBookshelfSpinner = findViewById(R.id.bookshelf_name);
@@ -979,7 +1005,7 @@ public class BooksOnBookshelf extends BaseListActivity implements
     }
 
     /**
-     * setup/reload the BookShelf list in the Spinner
+     * Populate the BookShelf list in the Spinner and switch to the preferred bookshelf.
      */
     private void populateBookShelfSpinner() {
         mBookshelfAdapter.clear();
@@ -1095,7 +1121,7 @@ public class BooksOnBookshelf extends BaseListActivity implements
     /**
      * Update and/or create the current style definition.
      */
-    private void refreshStyle() {
+    private void refreshCurrentStyle() {
         BooklistStyles styles = BooklistStyles.getAllStyles(mDb);
 
         BooklistStyle style;
@@ -1107,7 +1133,6 @@ public class BooksOnBookshelf extends BaseListActivity implements
                 style = styles.get(0);
             }
         }
-
         mCurrentStyle = style;
     }
 
@@ -1293,6 +1318,19 @@ public class BooksOnBookshelf extends BaseListActivity implements
                         }
                     });
         }
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(final SharedPreferences sharedPreferences, final String key) {
+        // this will likely not happen while we're actively listening.
+        if (PREF_BOOKSHELF.equals(key)) {
+            Bookshelf newBookshelf = getPreferredBookshelf();
+            if (!mCurrentBookshelf.equals(newBookshelf)) {
+                populateBookShelfSpinner();
+            }
+            return;
+        }
+        super.onSharedPreferenceChanged(sharedPreferences, key);
     }
 
     /**

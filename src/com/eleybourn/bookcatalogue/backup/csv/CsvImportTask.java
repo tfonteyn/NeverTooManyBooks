@@ -3,7 +3,6 @@ package com.eleybourn.bookcatalogue.backup.csv;
 import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.backup.Importer;
 import com.eleybourn.bookcatalogue.backup.LocalCoverFinder;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.backup.ImportSettings;
@@ -72,7 +71,7 @@ public class CsvImportTask extends ManagedTask {
                 mFinalMessage = getString(R.string.progress_end_import_complete);
             }
         } catch (IOException e) {
-            mFinalMessage = getString(R.string.error_import_failed_is_location_correct);
+            mFinalMessage = getString(R.string.error_import_failed_is_csv_file_location_correct);
             Logger.error(e);
         }
     }

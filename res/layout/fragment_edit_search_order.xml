@@ -8,8 +8,9 @@
     android:paddingTop="@dimen/padding_border_double">
     <!-- paddingTop is there to stop the overspill from the TabLayout (bug?)-->
 
-    <com.eleybourn.bookcatalogue.widgets.TouchListViewWithDropListener xmlns:tlv="http://schemas.android.com/apk/res/com.eleybourn.bookcatalogue"
+    <view xmlns:tlv="http://schemas.android.com/apk/res/com.eleybourn.bookcatalogue"
         android:id="@android:id/list"
+        class="com.eleybourn.bookcatalogue.widgets.TouchListViewWithDropListener"
         style="@style/tlv_TouchListView"
         tlv:grabber="@+id/grabber"
         tlv:normal_height="64dip"

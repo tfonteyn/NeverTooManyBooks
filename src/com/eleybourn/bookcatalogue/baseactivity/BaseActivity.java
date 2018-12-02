@@ -2,6 +2,7 @@ package com.eleybourn.bookcatalogue.baseactivity;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
@@ -16,6 +17,7 @@ import android.view.MenuItem;
 
 import com.eleybourn.bookcatalogue.About;
 import com.eleybourn.bookcatalogue.AdminActivity;
+import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.EditBookshelfListActivity;
@@ -29,8 +31,6 @@ import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.ThemeUtils;
 
-import java.util.Locale;
-
 /**
  * Base class for all (most) Activity's
  *
@@ -38,8 +38,7 @@ import java.util.Locale;
  */
 abstract public class BaseActivity extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener,
-        LocaleUtils.OnLocaleChangedListener,
-        ThemeUtils.OnThemeChangedListener,
+        SharedPreferences.OnSharedPreferenceChangeListener,
         CanBeDirty {
 
     /** The side/navigation panel */
@@ -53,8 +52,6 @@ abstract public class BaseActivity extends AppCompatActivity implements
 
     /** universal flag used to indicate something was changed and not saved (yet) */
     private boolean mIsDirty = false;
-    /** we're not (or no longer) dirty, but we did potentially make (local/global/preferences) changes */
-    private boolean mChangesMadeAndSaved = false;
 
     public boolean isDirty() {
         return mIsDirty;
@@ -62,24 +59,6 @@ abstract public class BaseActivity extends AppCompatActivity implements
 
     public void setDirty(final boolean isDirty) {
         this.mIsDirty = isDirty;
-        // if we *are* dirty, then we certainly made changes.
-        if (isDirty) {
-            setChangesMade(true);
-        }
-    }
-
-    public boolean changesMade() {
-        return mChangesMadeAndSaved;
-    }
-
-    /**
-     * If you are not dirty (e.g. nothing needs saving on exit) but have made (saved) changes,
-     * set this to 'true'. Always set to 'true' if at any time we have been dirty.
-     *
-     * TOMF ENHANCE: start using this as a sure way of detecting committed changes in setResult
-     */
-    public void setChangesMade(final boolean changesMade) {
-        this.mChangesMadeAndSaved = changesMade;
     }
 
     protected int getLayoutId() {
@@ -94,10 +73,6 @@ abstract public class BaseActivity extends AppCompatActivity implements
         setTheme(ThemeUtils.getThemeResId());
 
         super.onCreate(savedInstanceState);
-
-        // we want to be notified of changes
-        ThemeUtils.addListener(this);
-        LocaleUtils.addListener(this);
 
         int layoutId = 0;
 
@@ -123,16 +98,6 @@ abstract public class BaseActivity extends AppCompatActivity implements
         initToolbar();
 
         Tracker.exitOnCreate(this);
-    }
-
-    @Override
-    protected void onDestroy() {
-        Tracker.enterOnDestroy(this);
-        LocaleUtils.removeListener(this);
-        ThemeUtils.removeListener(this);
-
-        super.onDestroy();
-        Tracker.exitOnDestroy(this);
     }
 
     private void initToolbar() {
@@ -250,6 +215,7 @@ abstract public class BaseActivity extends AppCompatActivity implements
                     }
                 }
                 // otherwise, home is an 'up' event.
+                setResult(Activity.RESULT_CANCELED);
                 finishIfClean();
                 return true;
             }
@@ -258,18 +224,39 @@ abstract public class BaseActivity extends AppCompatActivity implements
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * Dispatch incoming result to the correct fragment.
-     */
     @Override
+    @CallSuper
     protected void onActivityResult(final int requestCode, final int resultCode, final @Nullable Intent data) {
         Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
 
-        if (DEBUG_SWITCHES.ON_ACTIVITY_RESULT && BuildConfig.DEBUG) {
-            // lowest level of our Activities, see if we missed anything
-            Logger.info(this, "BaseActivity|onActivityResult|NOT HANDLED: requestCode=" + requestCode + ", resultCode=" + resultCode);
+        // some activities MIGHT support the navigation panel, but are not (always) reacting to results,
+        // or need to react. Some debug/reminder logging here
+        switch (requestCode) {
+            case EditBookshelfListActivity.REQUEST_CODE:
+                if (DEBUG_SWITCHES.ON_ACTIVITY_RESULT && BuildConfig.DEBUG) {
+                    Logger.info(this, "navigation panel EditBookshelfListActivity.REQUEST_CODE");
+                }
+                return;
+            case BooklistPreferredStylesActivity.REQUEST_CODE:
+                if (DEBUG_SWITCHES.ON_ACTIVITY_RESULT && BuildConfig.DEBUG) {
+                    Logger.info(this, "navigation panel BooklistPreferredStylesActivity.REQUEST_CODE");
+                }
+                return;
+            case AdminActivity.REQUEST_CODE:
+                if (DEBUG_SWITCHES.ON_ACTIVITY_RESULT && BuildConfig.DEBUG) {
+                    Logger.info(this, "navigation panel AdminActivity.REQUEST_CODE");
+                }
+                return;
+
+            default:
+                if (DEBUG_SWITCHES.ON_ACTIVITY_RESULT && BuildConfig.DEBUG) {
+                    // lowest level of our Activities, see if we missed anything that we should not miss.
+                    Logger.info(this, "BaseActivity|onActivityResult|NOT HANDLED: requestCode=" + requestCode + ", resultCode=" + resultCode);
+                }
+                super.onActivityResult(requestCode, resultCode, data);
+
         }
-        super.onActivityResult(requestCode, resultCode, data);
+
         Tracker.exitOnActivityResult(this);
     }
 
@@ -279,6 +266,7 @@ abstract public class BaseActivity extends AppCompatActivity implements
     @Override
     @CallSuper
     public void onBackPressed() {
+        setResult(Activity.RESULT_CANCELED);
         finishIfClean();
     }
 
@@ -292,26 +280,13 @@ abstract public class BaseActivity extends AppCompatActivity implements
                     new Runnable() {
                         @Override
                         public void run() {
-                            setActivityResult();
                             finish();
                         }
                         /* if they click 'cancel', the dialog just closes without further actions */
                     });
         } else {
-            setActivityResult();
             finish();
         }
-    }
-
-    /**
-     * Always called by {@link BaseActivity#finishIfClean()}
-     *
-     * If your activity needs to send a specific result, override this call.
-     * If your activity does an actual finish() call it *must* take care of the result itself
-     * Of course it can still implement and call this method for the sake of uniformity.
-     */
-    protected void setActivityResult() {
-        setResult(changesMade() ? Activity.RESULT_OK : Activity.RESULT_CANCELED);
     }
 
     /**
@@ -329,25 +304,45 @@ abstract public class BaseActivity extends AppCompatActivity implements
             }
             finish();
             startActivity(getIntent());
+        } else {
+            // listen for changes
+            BookCatalogueApp.getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
         }
+
         Tracker.exitOnResume(this);
     }
 
-    /**
-     * Trigger a restart of this activity in onResume, if the locale has changed.
-     */
     @Override
-    @CallSuper
-    public void onLocaleChanged(final @NonNull Locale currentLocale) {
-        mRestartActivityOnResume = true;
+    protected void onPause() {
+        // stop listening for changes
+        BookCatalogueApp.getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+        super.onPause();
     }
 
     /**
-     * Apply Theme changes
+     * Apply preference changes
      */
     @Override
     @CallSuper
-    public void onThemeChanged(final int currentTheme) {
-        this.setTheme(currentTheme);
+    public void onSharedPreferenceChanged(final SharedPreferences sharedPreferences, final String key) {
+        switch (key) {
+            case ThemeUtils.PREF_APP_THEME: {
+                if (ThemeUtils.loadPreferred()) {
+                    this.setTheme(ThemeUtils.getThemeResId());
+                }
+                break;
+            }
+            case LocaleUtils.PREF_APP_LOCALE: {
+                // Trigger a restart of this activity in onResume, if the locale has changed.
+                LocaleUtils.loadPreferred();
+                if (LocaleUtils.loadPreferred()) {
+                    LocaleUtils.apply(getBaseContext().getResources());
+
+                    mRestartActivityOnResume = true;
+                }
+
+                break;
+            }
+        }
     }
 }

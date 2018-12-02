@@ -31,7 +31,6 @@ import android.view.View;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.utils.ThemeUtils;
 
 /**
  * This class is used by CropImage to display a highlighted cropping rectangle overlaid with
@@ -51,7 +50,7 @@ class CropHighlightView {
 
     /**  The View displaying the image. */
     @NonNull
-    private final View mContext;
+    private final View mImageView;
 
     private final Paint mFocusPaint = new Paint();
     private final Paint mNoFocusPaint = new Paint();
@@ -82,12 +81,14 @@ class CropHighlightView {
     @ColorInt
     private int outlinePaintRectangle;
 
-    CropHighlightView(final @NonNull View ctx) {
-        mContext = ctx;
+    CropHighlightView(final @NonNull View imageView) {
+        mImageView = imageView;
     }
 
     private void init() {
-        Resources resources = mContext.getResources();
+        // ApplicationContext so the Theme gets picked up
+        Resources resources = BookCatalogueApp.getAppContext().getResources();
+
         mResizeDrawableWidth = resources.getDrawable(R.drawable.ic_adjust);
         mResizeDrawableHeight = resources.getDrawable(R.drawable.ic_adjust);
         mResizeDrawableDiagonal = resources.getDrawable(R.drawable.ic_crop);
@@ -120,7 +121,7 @@ class CropHighlightView {
             canvas.drawRect(mDrawRect, mOutlinePaint);
         } else {
             Rect viewDrawingRect = new Rect();
-            mContext.getDrawingRect(viewDrawingRect);
+            mImageView.getDrawingRect(viewDrawingRect);
             if (mCircle) {
                 float width = mDrawRect.width();
                 float height = mDrawRect.height();
@@ -201,7 +202,7 @@ class CropHighlightView {
     public void setMode(final @NonNull ModifyMode mode) {
         if (mode != mMode) {
             mMode = mode;
-            mContext.invalidate();
+            mImageView.invalidate();
         }
     }
 
@@ -314,7 +315,7 @@ class CropHighlightView {
         mDrawRect = computeLayout();
         rect.union(mDrawRect);
         rect.inset(-10, -10);
-        mContext.invalidate(rect);
+        mImageView.invalidate(rect);
     }
 
     /** Grows the cropping rectangle by (dx, dy) in image space. */
@@ -371,7 +372,7 @@ class CropHighlightView {
 
         mCropRect.set(r);
         mDrawRect = computeLayout();
-        mContext.invalidate();
+        mImageView.invalidate();
     }
 
     /** Returns the cropping rectangle in image space. */
@@ -394,7 +395,10 @@ class CropHighlightView {
         mDrawRect = computeLayout();
     }
 
-    public void setup(final @NonNull Matrix m, final @NonNull Rect imageRect, final @NonNull RectF cropRect, final boolean circle,
+    public void setup(final @NonNull Matrix m,
+                      final @NonNull Rect imageRect,
+                      final @NonNull RectF cropRect,
+                      final boolean circle,
                       boolean maintainAspectRatio) {
         if (circle) {
             maintainAspectRatio = true;

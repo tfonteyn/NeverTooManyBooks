@@ -165,6 +165,7 @@ public class BookSearchByTextFragment extends BookSearchBaseFragment {
     @CallSuper
     public void onActivityResult(final int requestCode, final int resultCode, final @Nullable Intent data) {
         Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
+        // for now nothing local.
 //        switch (requestCode) {
 //            default:
                 super.onActivityResult(requestCode, resultCode, data);

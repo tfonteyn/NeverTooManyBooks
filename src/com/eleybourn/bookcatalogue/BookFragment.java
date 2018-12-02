@@ -20,7 +20,8 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckedTextView;
 import android.widget.ListView;
 
-import com.eleybourn.bookcatalogue.Fields.Field;
+import com.eleybourn.bookcatalogue.datamanager.Fields;
+import com.eleybourn.bookcatalogue.datamanager.Fields.Field;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.booklist.FlattenedBooklist;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
@@ -34,7 +35,6 @@ import com.eleybourn.bookcatalogue.entities.TOCEntry;
 import com.eleybourn.bookcatalogue.utils.BundleUtils;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
-import com.eleybourn.bookcatalogue.widgets.CoverHandler;
 
 import java.util.ArrayList;
 
@@ -129,7 +129,17 @@ public class BookFragment extends BookBaseFragment implements BookManager {
         if (savedInstanceState == null) {
             HintManager.displayHint(mActivity.getLayoutInflater(), R.string.hint_view_only_help, null);
         }
+
         Tracker.exitOnActivityCreated(this);
+    }
+
+    /**
+     * Set the current visible book id
+     */
+    public void setDefaultActivityResult() {
+        Intent data = new Intent();
+        data.putExtra(UniqueId.KEY_ID, getBook().getBookId());
+        mActivity.setResult(Activity.RESULT_OK, data); /* e63944b6-b63a-42b1-897a-a0e8e0dabf8a */
     }
 
     @Override
@@ -171,7 +181,7 @@ public class BookFragment extends BookBaseFragment implements BookManager {
         // add the cover image
         Field coverField = mFields.add(R.id.coverImage, "", UniqueId.BKEY_HAVE_THUMBNAIL)
                 .setDoNotFetch(true);
-        mCoverHandler = new CoverHandler(mActivity, mDb, getBookManager(),
+        mCoverHandler = new CoverHandler(this, mDb, getBookManager(),
                 coverField, mFields.getField(R.id.isbn));
 
 
@@ -529,9 +539,9 @@ public class BookFragment extends BookBaseFragment implements BookManager {
         //ENHANCE add to mFields?
         ArrayList<TOCEntry> list = book.getTOC();
 
-        // only show if: used + it's an ant + the ant has titles
+        // only show if: field in use + it's flagged as an ant + the ant has titles
         boolean visible = Fields.isVisible(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK)
-                && book.getBoolean(Book.IS_ANTHOLOGY)
+                && book.getBoolean(Book.HAS_MULTIPLE_WORKS)
                 && !list.isEmpty();
 
         if (visible) {
@@ -584,6 +594,9 @@ public class BookFragment extends BookBaseFragment implements BookManager {
         }
 
         mCoverHandler.dismissCoverBrowser();
+
+        // set the current visible book id
+        setDefaultActivityResult();
 
         super.onPause();
         Tracker.exitOnPause(this);
@@ -663,7 +676,7 @@ public class BookFragment extends BookBaseFragment implements BookManager {
     public boolean onOptionsItemSelected(final @NonNull MenuItem menuItem) {
         switch (menuItem.getItemId()) {
             case R.id.MENU_BOOK_EDIT:
-                EditBookActivity.startActivityForResult(mActivity,  /* a54a7e79-88c3-4b48-89df-711bb28935c5 */
+                EditBookActivity.startActivityForResult(this,  /* a54a7e79-88c3-4b48-89df-711bb28935c5 */
                         getBook().getBookId(), EditBookFragment.TAB_EDIT);
                 return true;
         }
@@ -680,7 +693,6 @@ public class BookFragment extends BookBaseFragment implements BookManager {
             case EditBookFragment.REQUEST_CODE: {
                 if (resultCode == Activity.RESULT_OK) {
                     getBook().reload(mDb);
-                    mActivity.setChangesMade(true);
                 }
                 break;
             }

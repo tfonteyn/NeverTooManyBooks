@@ -19,8 +19,9 @@
         android:fillViewport="true">
         <!--android:layout_above="@+id/buttonbar_cancel_save"-->
 
-        <com.eleybourn.bookcatalogue.widgets.TouchListViewWithDropListener xmlns:tlv="http://schemas.android.com/apk/res/com.eleybourn.bookcatalogue"
+        <view xmlns:tlv="http://schemas.android.com/apk/res/com.eleybourn.bookcatalogue"
             android:id="@android:id/list"
+            class="com.eleybourn.bookcatalogue.widgets.TouchListViewWithDropListener"
             style="@style/tlv_TouchListView"
             tlv:grabber="@+id/grabber"
             tlv:normal_height="32dp"

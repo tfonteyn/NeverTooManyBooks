@@ -117,6 +117,40 @@ public class IsbnUtils {
     }
 
     /**
+     * Validate an ASIN
+     *
+     * Amazon have apparently designed ASINs without (public) validation methods. All we can do
+     * is check length and characters; the apparent rule is that it must be an ISBN10 or be a
+     * 10 character string containing at least on non-numeric.
+     */
+    public static boolean isValidAsin(@NonNull String asin) {
+
+        if (asin.length() != 10) {
+            return false;
+        }
+
+        // Check 10 char field for being ISBN; if true, then it is also an ASIN
+        if (isValid(asin)) {
+            return true;
+        }
+
+        boolean foundAlpha = false;
+        asin = asin.toUpperCase().trim();
+        for (int i = 0; i < asin.length(); i++) {
+            int pos = "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ".indexOf(asin.charAt(i));
+            // Make sure it's a valid char
+            if (pos == -1) {
+                return false;
+            }
+            // See if we got a non-numeric
+            if (pos >= 10) {
+                foundAlpha = true;
+            }
+        }
+        return foundAlpha;
+    }
+
+    /**
      * Validate an ISBN
      * See http://en.wikipedia.org/wiki/International_Standard_Book_Number
      */

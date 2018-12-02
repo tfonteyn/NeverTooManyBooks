@@ -64,6 +64,9 @@ import java.util.Map;
  * Import all a users 'reviews' from goodreads; a users 'reviews' consists of all the books that
  * they have placed on bookshelves, irrespective of whether they have rated or reviewed the book.
  *
+ * A Task *MUST* be serializable.
+ * This means that it can not contain any references to UI components or similar objects.
+ *
  * @author Philip Warner
  */
 public class ImportAllTask extends GoodreadsTask {

@@ -26,7 +26,6 @@ import android.support.annotation.Nullable;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.ExportSettings;
-import com.eleybourn.bookcatalogue.backup.Exporter;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
@@ -186,7 +185,7 @@ public class CsvExporter implements Exporter {
         }
 
         // if we want 'since', we *must* have a valid dateFrom
-        if ((mSettings.options & ExportSettings.EXPORT_SINCE) != 0) {
+        if ((mSettings.what & ExportSettings.EXPORT_SINCE) != 0) {
             Objects.requireNonNull(mSettings.dateFrom,"Export Failed - 'dateFrom' is null");
         } else {
             // sanity check: we don't want 'since', so make sure fromDate is not set.

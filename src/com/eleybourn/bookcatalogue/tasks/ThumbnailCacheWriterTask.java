@@ -20,7 +20,6 @@
 
 package com.eleybourn.bookcatalogue.tasks;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 
@@ -44,7 +43,6 @@ public class ThumbnailCacheWriterTask implements SimpleTaskQueue.SimpleTask {
      * the database will force serialization of the updates.
      */
     private static final SimpleTaskQueue mQueue = new SimpleTaskQueue("ThumbnailCacheWriterTask", 1);
-    private final Context mContext;
     /** Indicates if Bitmap can be recycled when no longer needed */
     private final boolean mCanRecycle;
 
@@ -61,11 +59,9 @@ public class ThumbnailCacheWriterTask implements SimpleTaskQueue.SimpleTask {
      * @param source     Raw bitmap to store
      * @param canRecycle Indicates bitmap should be recycled after use
      */
-    private ThumbnailCacheWriterTask(final @NonNull Context context,
-                                     final @NonNull String cacheId,
+    private ThumbnailCacheWriterTask(final @NonNull String cacheId,
                                      final @NonNull Bitmap source,
                                      final boolean canRecycle) {
-        mContext = context;
         mCacheId = cacheId;
         mBitmap = source;
         mCanRecycle = canRecycle;
@@ -75,16 +71,14 @@ public class ThumbnailCacheWriterTask implements SimpleTaskQueue.SimpleTask {
      * Queue the passed bitmap to be compressed and written to the database, will be recycled if
      * flag is set.
      *
-     * @param context    context to use for database access
      * @param cacheId    Cache ID to use
      * @param source     Raw bitmap to store
      * @param canRecycle Indicates bitmap should be recycled after use
      */
-    public static void writeToCache(final @NonNull Context context,
-                                    final @NonNull String cacheId,
+    public static void writeToCache(final @NonNull String cacheId,
                                     final @NonNull Bitmap source,
                                     final boolean canRecycle) {
-        ThumbnailCacheWriterTask t = new ThumbnailCacheWriterTask(context, cacheId, source, canRecycle);
+        ThumbnailCacheWriterTask t = new ThumbnailCacheWriterTask(cacheId, source, canRecycle);
         mQueue.enqueue(t);
     }
 

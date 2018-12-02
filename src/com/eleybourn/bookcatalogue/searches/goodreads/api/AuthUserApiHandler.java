@@ -24,8 +24,10 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
-import com.eleybourn.bookcatalogue.searches.goodreads.api.XmlFilter.ElementContext;
-import com.eleybourn.bookcatalogue.searches.goodreads.api.XmlFilter.XmlHandler;
+import com.eleybourn.bookcatalogue.utils.xml.XmlFilter;
+import com.eleybourn.bookcatalogue.utils.xml.XmlFilter.ElementContext;
+import com.eleybourn.bookcatalogue.utils.xml.XmlFilter.XmlHandler;
+import com.eleybourn.bookcatalogue.utils.xml.XmlResponseParser;
 
 import org.apache.http.client.methods.HttpPost;
 

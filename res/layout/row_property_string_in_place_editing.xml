@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/row_option_property"
     android:orientation="vertical">
@@ -13,16 +14,11 @@
 
     <EditText
         android:id="@+id/value"
-        style="@style/txt_property_value"
-        android:layout_height="0dip"
-        android:layout_weight="1"
-        android:focusable="true"
-        android:focusableInTouchMode="true"
-        android:inputType="text"
-        android:textAppearance="?android:attr/textAppearanceMedium"
+        style="@style/simpleTextEntry"
+        android:layout_below="@id/name"
         tools:ignore="Autofill"
         tools:text="current value" />
 
     <View style="@style/divider_horizontalList" />
 
-</LinearLayout>
+</RelativeLayout>

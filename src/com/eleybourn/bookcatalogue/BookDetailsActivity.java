@@ -20,15 +20,12 @@
 
 package com.eleybourn.bookcatalogue;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.debug.Tracker;
-import com.eleybourn.bookcatalogue.entities.Book;
 
 public class BookDetailsActivity extends BaseActivity {
 
@@ -54,42 +51,5 @@ public class BookDetailsActivity extends BaseActivity {
                 .replace(R.id.main_fragment, frag, BookFragment.TAG)
                 .commit();
         Tracker.exitOnCreate(this);
-    }
-
-    private Book getBook() {
-        BookFragment frag = (BookFragment) getSupportFragmentManager().findFragmentByTag(BookFragment.TAG);
-        return frag.getBookManager().getBook();
-    }
-
-
-    @Override
-    protected void onActivityResult(final int requestCode, final int resultCode, final @Nullable Intent data) {
-        Tracker.enterOnActivityResult(this,requestCode,resultCode, data);
-        switch (requestCode) {
-            case EditBookActivity.REQUEST_CODE: {
-                if (resultCode == Activity.RESULT_OK) {
-                    setChangesMade(true);
-                }
-                break;
-            }
-
-            default:
-//                // Dispatch incoming result to the current visible fragment.
-//                Fragment frag = getSupportFragmentManager().findFragmentByTag(BookFragment.TAG);
-//                frag.onActivityResult(requestCode, resultCode, data);
-                super.onActivityResult(requestCode, resultCode, data);
-        }
-
-        Tracker.exitOnActivityResult(this);
-    }
-
-    /**
-     * Set default result
-     */
-    @Override
-    public void setActivityResult() {
-        Intent data = new Intent();
-        data.putExtra(UniqueId.KEY_ID, getBook().getBookId());
-        setResult(changesMade() ? Activity.RESULT_OK : Activity.RESULT_CANCELED, data); /* e63944b6-b63a-42b1-897a-a0e8e0dabf8a */
     }
 }

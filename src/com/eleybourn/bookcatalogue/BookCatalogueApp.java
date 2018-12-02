@@ -44,7 +44,6 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.tasks.simpletasks.Terminator;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
-import com.eleybourn.bookcatalogue.utils.ThemeUtils;
 
 import org.acra.ACRA;
 import org.acra.ReportField;
@@ -89,17 +88,17 @@ import java.util.Objects;
 //                ReportField.APPLICATION_LOG,
         }
         //optional, displayed as soon as the crash occurs, before collecting data which can take a few seconds
-        , resToastText = R.string.crash_message_text
-        , resNotifTickerText = R.string.crash_notif_ticker_text
-        , resNotifTitle = R.string.crash_notif_title
-        , resNotifText = R.string.crash_notif_text
-        , resDialogText = R.string.crash_dialog_text
+        , resToastText = R.string.acra_resToastText
+        , resNotifTickerText = R.string.acra_resNotifTickerText
+        , resNotifTitle = R.string.acra_resNotifTitle
+        , resNotifText = R.string.acra_resNotifText
+        , resDialogText = R.string.acra_resDialogText
         // optional. default is your application name
-        , resDialogTitle = R.string.crash_dialog_title
+        , resDialogTitle = R.string.acra_resDialogTitle
         // optional. when defined, adds a user text field input with this text resource as a label
-        , resDialogCommentPrompt = R.string.crash_dialog_comment_prompt
+        , resDialogCommentPrompt = R.string.acra_resDialogCommentPrompt
         // optional. displays a message when the user accepts to send a report.
-        , resDialogOkToast = R.string.crash_dialog_ok_message
+        , resDialogOkToast = R.string.acra_resDialogOkToast
 //        ,applicationLogFile = ""
 //        ,applicationLogFileLines = 1000
 )
@@ -119,39 +118,6 @@ public class BookCatalogueApp extends Application {
 
     /** Used to sent notifications regarding tasks */
     private static NotificationManager mNotifier;
-
-    /**
-     * Shared Preferences Listener
-     */
-    @Nullable
-    private final SharedPreferences.OnSharedPreferenceChangeListener mSharedPreferenceChangeListener =
-            new SharedPreferences.OnSharedPreferenceChangeListener() {
-                @Override
-                public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-                    switch (key) {
-                        case LocaleUtils.PREF_APP_LOCALE:
-                            LocaleUtils.loadPreferred();
-                            if (LocaleUtils.hasLocalReallyChanged()) {
-                                // changing Locale is a global operation, so apply it here.
-                                LocaleUtils.apply(getBaseContext().getResources());
-                                // but still tell the listeners
-                                LocaleUtils.notifyListeners();
-                            }
-                            break;
-
-                        case ThemeUtils.PREF_APP_THEME:
-                            ThemeUtils.loadPreferred();
-                            if (ThemeUtils.hasThemeReallyChanged()) {
-                                // applying Theme changes is a local operation, up to them
-                                ThemeUtils.notifyListeners();
-                            }
-                            break;
-
-                        default:
-                            break;
-                    }
-                }
-            };
 
     /** create a singleton */
     @SuppressWarnings("unused")
@@ -201,9 +167,6 @@ public class BookCatalogueApp extends Application {
         mNotifier = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
         super.onCreate();
-
-        // Watch the preferences and handle changes as necessary
-        getSharedPreferences().registerOnSharedPreferenceChangeListener(mSharedPreferenceChangeListener);
     }
 
     /**

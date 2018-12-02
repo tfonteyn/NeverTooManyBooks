@@ -468,6 +468,13 @@ public class TableDefinition implements AutoCloseable, Cloneable {
     }
 
     /**
+     * delete all rows from this table.
+     */
+    public void deleteAllRows(final @NonNull DbSync.SynchronizedDb db) {
+        db.execSQL("DELETE FROM " + this.mName);
+    }
+
+    /**
      * Drop this table from the passed DB.
      */
     @SuppressWarnings("UnusedReturnValue")

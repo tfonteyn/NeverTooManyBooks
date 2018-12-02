@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <View style="@style/divider_horizontalList"
+        android:paddingTop="2dp"
+        android:layout_height="2dp" />
+
+    <LinearLayout
+        android:id="@+id/row_all_books"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <CheckBox
+            android:id="@+id/books_check"
+            style="@style/row_option_checkable"
+            android:checked="true"
+            android:text="@string/book_details" />
+
+        <TextView
+            android:id="@+id/book_details_blurb"
+            style="@style/row_option_info"
+            android:text="@string/info_book_details" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/row_covers"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <CheckBox
+            android:id="@+id/covers_check"
+            style="@style/row_option_checkable"
+            android:checked="true"
+            android:text="@string/lbl_cover_images" />
+
+        <TextView
+            android:id="@+id/cover_images_blurb"
+            style="@style/row_option_info"
+            android:text="@string/export_info_cover_images" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/row_preferences"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <CheckBox
+            android:id="@+id/preferences_check"
+            style="@style/row_option_checkable"
+            android:checked="true"
+            android:text="@string/lbl_preferences" />
+
+        <TextView
+            android:id="@+id/preferences_blurb"
+            style="@style/row_option_info"
+            android:text="@string/info_preferences" />
+    </LinearLayout>
+
+    <View style="@style/divider_horizontalList"
+        android:layout_height="2dp"
+        android:paddingBottom="2dp"/>
+
+</LinearLayout>

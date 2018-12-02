@@ -23,7 +23,7 @@ import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
-import com.eleybourn.bookcatalogue.backup.ReaderEntityAbstract;
+import com.eleybourn.bookcatalogue.backup.archivebase.ReaderEntityAbstract;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;

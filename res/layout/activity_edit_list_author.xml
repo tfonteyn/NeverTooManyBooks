@@ -5,8 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingEnd="@dimen/padding_border"
-    android:paddingStart="@dimen/padding_border">
+    android:paddingStart="@dimen/padding_border"
+    android:paddingEnd="@dimen/padding_border">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
@@ -16,7 +16,7 @@
         android:id="@+id/title"
         style="@style/txt_row_bookDetail"
         android:layout_below="@id/toolbar"
-        tools:text="Book Title goes here"/>
+        tools:text="Book Title goes here" />
 
     <LinearLayout
         android:id="@+id/top_buttons"
@@ -34,8 +34,8 @@
             android:completionThreshold="2"
             android:hint="@string/lbl_author"
             android:nextFocusDown="@+id/title"
-            android:paddingEnd="@dimen/padding_border"
-            android:paddingStart="@dimen/padding_border" />
+            android:paddingStart="@dimen/padding_border"
+            android:paddingEnd="@dimen/padding_border" />
 
         <Button
             android:id="@+id/add"
@@ -51,8 +51,9 @@
         android:layout_below="@id/top_buttons"
         android:fillViewport="true">
 
-        <com.eleybourn.bookcatalogue.widgets.TouchListViewWithDropListener xmlns:tlv="http://schemas.android.com/apk/res/com.eleybourn.bookcatalogue"
+        <view xmlns:tlv="http://schemas.android.com/apk/res/com.eleybourn.bookcatalogue"
             android:id="@android:id/list"
+            class="com.eleybourn.bookcatalogue.widgets.TouchListViewWithDropListener"
             style="@style/tlv_TouchListView"
             tlv:grabber="@+id/grabber"
             tlv:normal_height="64dip"

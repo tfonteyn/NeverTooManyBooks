@@ -39,6 +39,7 @@ import com.eleybourn.bookcatalogue.backup.ImportSettings;
 import com.eleybourn.bookcatalogue.backup.csv.CsvExportTask;
 import com.eleybourn.bookcatalogue.backup.csv.CsvExporter;
 import com.eleybourn.bookcatalogue.backup.csv.CsvImportTask;
+import com.eleybourn.bookcatalogue.backup.ui.BackupAndRestoreActivity;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivityWithTasks;
 import com.eleybourn.bookcatalogue.booklist.BooklistPreferencesActivity;
 import com.eleybourn.bookcatalogue.database.CoversDBAdapter;
@@ -50,10 +51,9 @@ import com.eleybourn.bookcatalogue.dialogs.SelectOneDialog.SimpleDialogFileItem;
 import com.eleybourn.bookcatalogue.dialogs.SelectOneDialog.SimpleDialogItem;
 import com.eleybourn.bookcatalogue.dialogs.SelectOneDialog.SimpleDialogOnClickListener;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
-import com.eleybourn.bookcatalogue.filechooser.BackupChooserActivity;
+import com.eleybourn.bookcatalogue.goodreads.GoodreadsRegisterActivity;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsUtils;
 import com.eleybourn.bookcatalogue.searches.SearchAdminActivity;
-import com.eleybourn.bookcatalogue.goodreads.GoodreadsRegisterActivity;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingAdminActivity;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.ManagedTask;
 import com.eleybourn.bookcatalogue.tasks.taskqueue.TaskQueueListActivity;
@@ -73,8 +73,6 @@ import java.util.List;
 public class AdminActivity extends BaseActivityWithTasks {
 
     public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_ADMIN;
-    // no local result codes
-
     /**
      * This is not in use right now, but leaving it in place.
      *
@@ -83,8 +81,10 @@ public class AdminActivity extends BaseActivityWithTasks {
     private static final String BKEY_DO_AUTO = "do_auto";
     /** supported action: do an exportBooks to a CSV file + finishes the activity when done */
     private static final String BVAL_DO_AUTO_EXPORT = "exportBooks";
-
-
+    /**
+     * collected results from all started activities, which we'll pass on up in our own setResult
+     */
+    private Intent resultData = new Intent();
     private boolean mExportToCsvOnStartup = false;
     private boolean mFinishAfterExport = false;
 
@@ -174,9 +174,9 @@ public class AdminActivity extends BaseActivityWithTasks {
             v.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(AdminActivity.this, BackupChooserActivity.class);
-                    intent.putExtra(BackupChooserActivity.BKEY_MODE, BackupChooserActivity.BVAL_MODE_SAVE);
-                    startActivityForResult(intent, BackupChooserActivity.REQUEST_CODE); /* da0cd4d6-baca-46ad-a010-4d91263a9c5f */
+                    Intent intent = new Intent(AdminActivity.this, BackupAndRestoreActivity.class);
+                    intent.putExtra(BackupAndRestoreActivity.BKEY_MODE, BackupAndRestoreActivity.BVAL_MODE_SAVE);
+                    startActivityForResult(intent, BackupAndRestoreActivity.REQUEST_CODE); /* da0cd4d6-baca-46ad-a010-4d91263a9c5f */
                 }
             });
         }
@@ -189,9 +189,9 @@ public class AdminActivity extends BaseActivityWithTasks {
             v.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(AdminActivity.this, BackupChooserActivity.class);
-                    intent.putExtra(BackupChooserActivity.BKEY_MODE, BackupChooserActivity.BVAL_MODE_OPEN);
-                    startActivityForResult(intent, BackupChooserActivity.REQUEST_CODE); /* 0a27a94b-2b5b-4106-a279-e74b0c770fa8 */
+                    Intent intent = new Intent(AdminActivity.this, BackupAndRestoreActivity.class);
+                    intent.putExtra(BackupAndRestoreActivity.BKEY_MODE, BackupAndRestoreActivity.BVAL_MODE_OPEN);
+                    startActivityForResult(intent, BackupAndRestoreActivity.REQUEST_CODE); /* 0a27a94b-2b5b-4106-a279-e74b0c770fa8 */
                 }
             });
         }
@@ -385,7 +385,7 @@ public class AdminActivity extends BaseActivityWithTasks {
     private void exportToCSV() {
         File file = StorageUtils.getFile(CsvExporter.EXPORT_FILE_NAME);
         ExportSettings settings = new ExportSettings(file);
-        settings.options = ExportSettings.BOOK_DATA;
+        settings.what = ExportSettings.BOOK_DATA;
         new CsvExportTask(getTaskManager(), settings)
                 .start();
     }
@@ -396,7 +396,7 @@ public class AdminActivity extends BaseActivityWithTasks {
     private void confirmToImportFromCSV() {
         AlertDialog dialog = new AlertDialog.Builder(this)
                 .setMessage(R.string.warning_import_be_cautious)
-                .setTitle(R.string.title_import_data)
+                .setTitle(R.string.title_import_book_data)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .create();
         dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(android.R.string.ok),
@@ -422,7 +422,7 @@ public class AdminActivity extends BaseActivityWithTasks {
         List<File> files = StorageUtils.findCsvFiles();
         // If none, exit with message
         if (files.size() == 0) {
-            StandardDialogs.showUserMessage(this, R.string.warning_no_export_files_found);
+            StandardDialogs.showUserMessage(this, R.string.warning_csv_file_not_found);
         } else {
             if (files.size() == 1) {
                 // If only 1, just use it
@@ -431,7 +431,7 @@ public class AdminActivity extends BaseActivityWithTasks {
                 // If more than one, ask user which file
                 // ENHANCE: Consider asking about importing cover images.
                 SelectOneDialog.selectFileDialog(getLayoutInflater(),
-                        getString(R.string.more_than_one_export_file_blah),
+                        getString(R.string.warning_csv_file_more_then_one_found),
                         files, new SimpleDialogOnClickListener() {
                             @Override
                             public void onClick(final @NonNull SimpleDialogItem item) {
@@ -448,7 +448,7 @@ public class AdminActivity extends BaseActivityWithTasks {
      */
     private void importFromCSV(final @NonNull File file) {
         ImportSettings settings = new ImportSettings(file);
-        settings.options = ImportSettings.BOOK_DATA;
+        settings.what = ImportSettings.BOOK_DATA;
         new CsvImportTask(getTaskManager(), settings)
                 .start();
     }
@@ -458,13 +458,31 @@ public class AdminActivity extends BaseActivityWithTasks {
     protected void onActivityResult(final int requestCode, final int resultCode, final @Nullable Intent data) {
         Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
         switch (requestCode) {
+            case BooklistPreferencesActivity.REQUEST_CODE: /* 9cdb2cbe-1390-4ed8-a491-87b3b1a1edb9 */
+            case PreferencesActivity.REQUEST_CODE: { /* 46f41e7b-f49c-465d-bea0-80ec85330d1c */
+                if (resultCode == Activity.RESULT_OK) {
+                    // accumulate all keys changed before passing results up.
+                    if ((data != null) && data.hasExtra(UniqueId.BKEY_PREFERENCE_KEYS)) {
+                        // never null, can be empty.
+                        ArrayList<String> incomingKeyList = data.getStringArrayListExtra(UniqueId.BKEY_PREFERENCE_KEYS);
+                        // can be null
+                        ArrayList<String> existingKeyList = resultData.getStringArrayListExtra(UniqueId.BKEY_PREFERENCE_KEYS);
+                        if (existingKeyList != null) {
+                            incomingKeyList.addAll(existingKeyList);
+                        }
+                        resultData.putStringArrayListExtra(UniqueId.BKEY_PREFERENCE_KEYS, incomingKeyList);
+                        setResult(resultCode, resultData);
+                    }
+                }
+                break;
+            }
             case SearchAdminActivity.REQUEST_CODE: /* 293bcc32-6af7-4beb-a4e0-4db2f239cf9f */
             case FieldVisibilityActivity.REQUEST_CODE: /* 2f885b11-27f2-40d7-8c8b-fcb4d95a4151 */
-            case BooklistPreferencesActivity.REQUEST_CODE: /* 9cdb2cbe-1390-4ed8-a491-87b3b1a1edb9 */
-            case PreferencesActivity.REQUEST_CODE: /* 46f41e7b-f49c-465d-bea0-80ec85330d1c */
-            case BackupChooserActivity.REQUEST_CODE: {/* da0cd4d6-baca-46ad-a010-4d91263a9c5f, 0a27a94b-2b5b-4106-a279-e74b0c770fa8 */
-                // no local action needed, pass results up
-                setResult(resultCode, data);
+            case BackupAndRestoreActivity.REQUEST_CODE: {/* da0cd4d6-baca-46ad-a010-4d91263a9c5f, 0a27a94b-2b5b-4106-a279-e74b0c770fa8 */
+                if (resultCode == RESULT_OK) {
+                    // no local action needed, pass results up
+                    setResult(resultCode, resultData);
+                }
                 break;
             }
             default: {
@@ -510,7 +528,7 @@ public class AdminActivity extends BaseActivityWithTasks {
         }
 
         AlertDialog dialog = new AlertDialog.Builder(AdminActivity.this)
-                .setTitle(R.string.email_export)
+                .setTitle(R.string.export_csv_email)
                 .setIcon(R.drawable.ic_send)
                 .create();
         dialog.setButton(AlertDialog.BUTTON_POSITIVE,

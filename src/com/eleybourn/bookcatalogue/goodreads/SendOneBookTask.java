@@ -33,6 +33,9 @@ import com.eleybourn.bookcatalogue.tasks.taskqueue.Task;
 /**
  * Task to send a single books details to Goodreads.
  *
+ * A Task *MUST* be serializable.
+ * This means that it can not contain any references to UI components or similar objects.
+ *
  * @author Philip Warner
  */
 public class SendOneBookTask extends SendBooksTask {

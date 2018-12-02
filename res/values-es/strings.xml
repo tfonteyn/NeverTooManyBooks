@@ -36,9 +36,9 @@
     <string name="title_search_for">Buscar autor o título</string>
     <string name="warning_book_not_found">El libro escaneado no ha sido encontrado. El código de barras correcto se encuentra a veces en el interior de la portada. También puede introducir los datos de forma manual.</string>
     <string name="lbl_series_num">#</string>
-    <string name="title_import_data">Importar libros</string>
+    <string name="title_import_book_data">Importar libros</string>
     <string name="warning_import_be_cautious">¡Atención! La importación de datos puede actualizar los datos de libros existentes con nueva información si el ID del fichero de importación existe ya en la base de datos. Esto puede ser aceptable si se modifica un campo de un fichero exportado. Si crea un registro para un nuevo libro, compruebe que el campo ID está en blanco.</string>
-    <string name="error_import_failed_is_location_correct">ERROR: La importación (desde la tarjeta SD) ha fallado. ¿Está el fichero en el lugar correcto?</string>
+    <string name="error_import_failed_is_csv_file_location_correct">ERROR: La importación (desde la tarjeta SD) ha fallado. ¿Está el fichero en el lugar correcto?</string>
     <string name="search_title">Book Catalogue: Buscar resultados</string>
     <string name="results_found">Resultados encontrados</string>
     <string name="menu_administration_long">Administración</string>
@@ -123,7 +123,7 @@
     <string name="progress_end_backup_success">Copia de seguridad correcta</string>
     <string name="error_backup_failed">Copia de seguridad errónea</string>
     <string name="error_file_must_contain_column">El fichero debe tener una columna con el nombre %s</string>
-    <string name="error_file_must_contain_any_column">El fichero debe tener una columna con uno de los nombres siguientes: %s</string>
+    <string name="error_csv_file_must_contain_any_column">El fichero debe tener una columna con uno de los nombres siguientes: %s</string>
     <string name="error_column_is_blank">La columna %1$s tiene en blanco la fila %2$s</string>
     <string name="error_columns_are_blank">Las columnas %1$s tienen en blanco la fila %2$d</string>
     <string name="btn_confirm_save">Guardar</string>
@@ -142,7 +142,7 @@
     <string name="warning_required_author">El campo Autor está en blanco</string>
     <string name="warning_series_already_in_list">Esa serie ya está en la lista</string>
     <string name="warning_required_series">El campo Serie está en blanco</string>
-    <string name="error_export_failed">La exportación falló: no se pudo escribir en la tarjeta SD</string>
+    <string name="error_export_csv_failed">La exportación falló: no se pudo escribir en la tarjeta SD</string>
     <string name="error_download_thumbnail_failed">La descarga de portadas falló: no se pudo escribir en la tarjeta SD</string>
     <string name="progress_msg_skip_title">Excluir - %s</string>
     <string name="progress_end_num_books_searched">%s libros encontrados</string>
@@ -213,7 +213,7 @@
     <string name="lt_correct_key">Su clave de desarrollador de LibraryThing es válida.</string>
     <string name="error_no_internet_connection">No hay conexión a internet.</string>
     <string name="menu_share_this">Compartir</string>
-    <string name="email_export">¿Desea enviar por correo electrónico el fichero exportado?</string>
+    <string name="export_csv_email">¿Desea enviar por correo electrónico el fichero exportado?</string>
     <string name="menu_cover_crop">Recortar miniatura</string>
     <string name="title_task_errors">Errores en tareas</string>
     <string name="retry">Reintentar</string>
@@ -275,14 +275,14 @@
     <string name="gr_send_book_to_goodreads">Enviar libro %1$s a Goodreads</string>
 
     <string name="erase_cover_cache">Borrar caché de portadas</string>
-    <string name="crash_message_text">BookCatalogue se ha detenido de forma inesperada. Por favor, ayúdenos a mejorar la aplicación reportando este problema.</string>
-    <string name="crash_notif_ticker_text">BookCatalogue se ha detenido</string>
-    <string name="crash_notif_title">Error de BookCatalogue</string>
-    <string name="crash_notif_text">Pulse para ver más detalles</string>
-    <string name="crash_dialog_title">Error de BookCatalogue</string>
-    <string name="crash_dialog_text">Parece que BookCatalogue se ha detenido. Si es posible, indique cualquier detalle que usted considere relevante y pulse OK para enviarnos un correo electrónico sobre el problema. Podrá revisar el correo antes de que se envíe.</string>
-    <string name="crash_dialog_comment_prompt">Sus comentarios (puede dejarlos en blanco):</string>
-    <string name="crash_dialog_ok_message">¡Muchas gracias!</string>
+    <string name="acra_resToastText">BookCatalogue se ha detenido de forma inesperada. Por favor, ayúdenos a mejorar la aplicación reportando este problema.</string>
+    <string name="acra_resNotifTickerText">BookCatalogue se ha detenido</string>
+    <string name="acra_resNotifTitle">Error de BookCatalogue</string>
+    <string name="acra_resNotifText">Pulse para ver más detalles</string>
+    <string name="acra_resDialogTitle">Error de BookCatalogue</string>
+    <string name="acra_resDialogText">Parece que BookCatalogue se ha detenido. Si es posible, indique cualquier detalle que usted considere relevante y pulse OK para enviarnos un correo electrónico sobre el problema. Podrá revisar el correo antes de que se envíe.</string>
+    <string name="acra_resDialogCommentPrompt">Sus comentarios (puede dejarlos en blanco):</string>
+    <string name="acra_resDialogOkToast">¡Muchas gracias!</string>
     <string name="lbl_read">Leídos</string>
     <string name="lbl_unread">No leídos</string>
     <string name="no_date">(sin fecha)</string>
@@ -456,8 +456,8 @@
     <string name="in">en</string>
     <string name="size">Tamaño</string>
     <string name="updated">Actualizado</string>
-    <string name="warning_no_export_files_found">No se han encontrado archivos exportados</string>
-    <string name="more_than_one_export_file_blah">Se ha encontrado más de un archivo exportado; por favor, seleccione el archivo que desea importar de la lista siguiente</string>
+    <string name="warning_csv_file_not_found">No se han encontrado archivos exportados</string>
+    <string name="warning_csv_file_more_then_one_found">Se ha encontrado más de un archivo exportado; por favor, seleccione el archivo que desea importar de la lista siguiente</string>
     <string name="problem_starting_import_arg">Ha habido un problema con la importación: %1$s</string>
     <string name="hint_booklist_style_menu">Esta opción le permite seleccionar el estilo de los listados. 
     								\n\nTambién puede modificar este menú, así como crear sus propios estilos de listado, seleccionando \'Configurar\' al final de la lista.</string>
@@ -564,7 +564,7 @@ y puede editar el libro utilizando el menú de opciones.
     <string name="import_from_archive">Importar de fichero</string>
 
     <!-- Hint displayed when aCatalogue Backup is done -->
-    <string name="info_archive_complete_details">Se ha creado un fichero de %3$s llamado %2$s en el directorio \"%1$s\" de su tarjeta SD.
+    <string name="export_info_success_archive_details">Se ha creado un fichero de %3$s llamado %2$s en el directorio \"%1$s\" de su tarjeta SD.
     \n\nDebe copiarlo a otro lugar para proteger los datos en caso de que su dispositivo resulte dañado, se pierda o sea robado.</string>
 
     <!-- Displayed in progress dialog when exporting covers -->
@@ -607,9 +607,9 @@ y puede editar el libro utilizando el menú de opciones.
     <!-- Displayed when an archive operation fails -->
     <string name="error_import_failed">La importación falló.</string>
     <!-- Displayed when any write operation to the sd card fails -->
-    <string name="error_backup_failed_check_sd_writable">Compruebe que se puede escribir en la tarjeta SD, y que tiene suficiente espacio.</string>
+    <string name="error_storage_not_writable">Compruebe que se puede escribir en la tarjeta SD, y que tiene suficiente espacio.</string>
     <!-- Displayed when any write operation to the sd card fails -->
-    <string name="error_import_failed_check_sd_readable">Compruebe que se puede acceder a la tarjeta SD.</string>
+    <string name="error_storage_not_readable">Compruebe que se puede acceder a la tarjeta SD.</string>
 
     <!-- Short Heading for 'Language' field in book details -->
     <string name="lbl_language">Idioma</string>
@@ -626,28 +626,28 @@ y puede editar el libro utilizando el menú de opciones.
     <string name="blp_generation_use_recommended_option">Utilizar la opción recomendada</string>
 
     <!--  Explanatory text for 'import' dialogue -->
-    <string name="import_books_blurb">Se importarán los libros de este fichero. Seleccione una de las dos opciones propuestas para empezar la importación, o pulse \'Atrás\' para cancelar:</string>
+    <string name="title_import_books_blurb">Se importarán los libros de este fichero. Seleccione una de las dos opciones propuestas para empezar la importación, o pulse \'Atrás\' para cancelar:</string>
     <!-- Description of the 'import all books' option -->
-    <string name="info_all_books_will_be_imported">Importar todos los libros del fichero, actualizando los que existan y añadiendo los nuevos.</string>
+    <string name="import_option_info_all_books">Importar todos los libros del fichero, actualizando los que existan y añadiendo los nuevos.</string>
     <!-- Menu text for the 'import/exportBooks new & changed' option -->
-    <string name="new_and_changed_books">Libros nuevos y actualizados</string>
+    <string name="import_option_new_and_changed_books">Libros nuevos y actualizados</string>
     <!-- Description of the 'import new & changed' option -->
-    <string name="new_and_changed_books_blurb">Importar sólo los libros nuevos, o los que tienen fecha de actualización más reciente en el fichero. Esto es útil para sincronizar dispositivos.</string>
+    <string name="import_option_info_new_and_changed_books">Importar sólo los libros nuevos, o los que tienen fecha de actualización más reciente en el fichero. Esto es útil para sincronizar dispositivos.</string>
     <!-- Descriptive text associated with import options not available with older archives -->
-    <string name="old_archive_blurb">Esta opción no está soportada para versiones de archivo antiguas.</string>
+    <string name="import_warning_old_archive">Esta opción no está soportada para versiones de archivo antiguas.</string>
     <!-- Part of the progress message displayed when importing books -->
     <string name="progress_msg_n_created_m_updated">%1$s creados, %2$s actualizados</string>
 
     <!--  Explanatory text for 'exportBooks' dialogue -->
-    <string name="export_books_blurb">Se exportarán los libros de su catálogo. Seleccione una opción para iniciar la exportación, o pulse \'Atrás\' para cancelar:</string>
+    <string name="title_export_books">Se exportarán los libros de su catálogo. Seleccione una opción para iniciar la exportación, o pulse \'Atrás\' para cancelar:</string>
 
     <!-- Displayed in progress dialog when exporting covers in incremental mode -->
     <string name="progress_msg_covers_skip">%1$s portadas procesadas (%2$s no encontradas, %3$s saltadas)</string>
 
     <!-- Explanatory note for 'exportBooks all' option -->
-    <string name="export_all_blurb">Se exportarán al fichero todos los libros, portadas, configuraciones y estilos personalizados.</string>
+    <string name="export_dialog_info_all">Se exportarán al fichero todos los libros, portadas, configuraciones y estilos personalizados.</string>
     <!-- Explanatory note for 'advanced exportBooks' option -->
-    <string name="export_advanced_blurb">Seleccione lo que desea exportar al fichero.</string>
+    <string name="export_options_dialog_title">Seleccione lo que desea exportar al fichero.</string>
 
     <!-- Text for button -->
     <string name="book_details">Detalles de los libros</string>
@@ -656,17 +656,17 @@ y puede editar el libro utilizando el menú de opciones.
     <!-- Text for button -->
     <string name="lbl_cover_images">Portadas</string>
     <!-- Brief description -->
-    <string name="info_cover_images">Portadas de todos los libros seleccionadas. La exportación requerirá mucho más tiempo.</string>
+    <string name="export_info_cover_images">Portadas de todos los libros seleccionadas. La exportación requerirá mucho más tiempo.</string>
     <!-- Brief description -->
     <string name="info_preferences">Preferencias y estilos definidos por el usuario</string>
 
     <!-- Explanatory note for exportBooks date (not yet implemented) -->
-    <string name="export_advanced_date_blurb">Si lo desea, especifique una fecha para seleccionar los libros o portadas que se exportarán:</string>
+    <string name="export_option_info_books_since_date">Si lo desea, especifique una fecha para seleccionar los libros o portadas que se exportarán:</string>
 
     <!-- Explanatory note for exportBooks date (not yet implemented) -->
-    <string name="all_books_added_or_updated_since">Todos los libros añadidos o actualizados desde:</string>
+    <string name="export_option_books_since_date">Todos los libros añadidos o actualizados desde:</string>
     <!-- Explanatory note for exportBooks data since last backup -->
-    <string name="info_all_books_added_or_updated_since_last_full_backup">Todos los libros añadidos o actualizados desde la última copia de seguridad completa</string>
+    <string name="export_option_books_since_last_full_backup">Todos los libros añadidos o actualizados desde la última copia de seguridad completa</string>
 
     <plurals name="displaying_n_books">
         <!--<item quantity="zero">ningún libro mostrado</item>-->

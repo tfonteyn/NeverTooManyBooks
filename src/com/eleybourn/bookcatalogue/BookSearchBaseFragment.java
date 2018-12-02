@@ -236,7 +236,6 @@ public abstract class BookSearchBaseFragment extends Fragment
                     mLastBookData = data;
                     // and set that as the default result
                     mActivity.setResult(resultCode, mLastBookData);
-                    mActivity.setChangesMade(true);
 
                 } else if (resultCode == Activity.RESULT_CANCELED) {
                     // if the edit was cancelled, set that as the default result code

@@ -562,7 +562,7 @@ public class Datum {
         }
 
         if (o == null) {
-            return new ArrayList<T>();
+            return new ArrayList<>();
         }
         //noinspection unchecked
         return (ArrayList<T>) o;

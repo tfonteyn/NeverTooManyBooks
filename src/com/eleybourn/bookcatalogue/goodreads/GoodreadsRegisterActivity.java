@@ -55,7 +55,7 @@ public class GoodreadsRegisterActivity extends BaseActivity {
      * Called by button click to start a non-UI-thread task to do the work.
      */
     public static void requestAuthorizationInBackground(final @NonNull FragmentActivity activity) {
-        FragmentTask task = new FragmentTask() {
+        FragmentTask task = new SimpleTaskQueueProgressDialogFragment.FragmentTaskAbstract() {
             @StringRes
             private int mMessage = 0;
 

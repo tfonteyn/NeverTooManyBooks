@@ -110,7 +110,7 @@
 
             <ImageButton
                 android:id="@+id/btn_price_paid_currency"
-                style="@style/dropDownMenuButton"
+                style="@style/itemEditButton"
                 android:layout_alignBottom="@id/price_paid"
                 app:srcCompat="@drawable/ic_arrow_drop_down"
                 tools:ignore="ContentDescription" />
@@ -218,7 +218,7 @@
 
             <ImageButton
                 android:id="@+id/btn_location"
-                style="@style/dropDownMenuButton"
+                style="@style/itemEditButton"
                 android:layout_alignBottom="@id/location"
                 app:srcCompat="@drawable/ic_expand_more"
                 tools:ignore="ContentDescription" />

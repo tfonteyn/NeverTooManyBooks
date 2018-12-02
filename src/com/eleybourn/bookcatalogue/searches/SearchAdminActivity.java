@@ -187,6 +187,7 @@ public class SearchAdminActivity extends BaseActivity {
                 if (list != null) {
                     SearchSites.setCoverSearchOrder(list);
                 }
+                // no data to return
                 setResult(Activity.RESULT_OK);
                 finish();
             }

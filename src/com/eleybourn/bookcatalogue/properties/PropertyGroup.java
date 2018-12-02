@@ -58,8 +58,8 @@ public class PropertyGroup {
     public static final PropertyGroup GRP_SERIES = mGroups.addGroup(GRP_SERIES_ID, R.string.lbl_series, 50);
 
     /** Global PropertyGroup definition */
-    private static final int GRP_EXTRA_FILTERS_ID = ++GRP_COUNT;
-    public static final PropertyGroup GRP_EXTRA_FILTERS = mGroups.addGroup(GRP_EXTRA_FILTERS_ID, R.string.booklist_filters, 70);
+    private static final int GRP_FILTERS_ID = ++GRP_COUNT;
+    public static final PropertyGroup GRP_FILTERS = mGroups.addGroup(GRP_FILTERS_ID, R.string.booklist_filters, 70);
 
     /** Global PropertyGroup definition */
     private static final int GRP_USER_INTERFACE_ID = ++GRP_COUNT;
@@ -81,31 +81,31 @@ public class PropertyGroup {
     private final int id;
     /** String resource ID for group name */
     @StringRes
-    private final int nameId;
+    private final int mNameResourceId;
     /** Weight of this group, for sorting */
-    private final Integer weight;
+    private final Integer mWeight;
     /** Name of this group (from resource ID) */
     @Nullable
     private String mName = null;
 
     /** Constructor */
-    private PropertyGroup(final int id, final @StringRes int nameId, final int weight) {
+    private PropertyGroup(final int id, final @StringRes int nameResourceId, final int weight) {
         this.id = id;
-        this.nameId = nameId;
-        this.weight = weight;
+        this.mNameResourceId = nameResourceId;
+        this.mWeight = weight;
         mGroups.addGroup(this);
     }
 
     /** Compare two groups for sorting purposes */
     public static int compare(final @NonNull PropertyGroup lhs, final @NonNull PropertyGroup rhs) {
         // Compare weights
-        final int wCmp = lhs.weight.compareTo(rhs.weight);
+        final int wCmp = lhs.mWeight.compareTo(rhs.mWeight);
         if (wCmp != 0) {
             return wCmp;
         }
 
         // Weights match, compare names
-        if (lhs.nameId != rhs.nameId) {
+        if (lhs.mNameResourceId != rhs.mNameResourceId) {
             return lhs.getName().compareTo(rhs.getName());
         } else {
             return 0;
@@ -114,14 +114,14 @@ public class PropertyGroup {
 
     @StringRes
     int getNameId() {
-        return nameId;
+        return mNameResourceId;
     }
 
     /** Realize and return the group name */
     @NonNull
     private String getName() {
         if (mName == null) {
-            mName = BookCatalogueApp.getResourceString(nameId);
+            mName = BookCatalogueApp.getResourceString(mNameResourceId);
         }
         return mName;
     }
@@ -136,7 +136,6 @@ public class PropertyGroup {
 
         /** Add the passed group */
         @NonNull
-        @SuppressWarnings("UnusedReturnValue")
         PropertyGroup addGroup(final @NonNull PropertyGroup g) {
             if (this.containsKey(g.id) && (this.get(g.id) != g)) {
                 throw new IllegalArgumentException("Duplicate PropertyGroup ID " + g.id);
@@ -149,9 +148,7 @@ public class PropertyGroup {
         /** Construct and add a group based on parameters */
         @NonNull
         PropertyGroup addGroup(final int id, final @StringRes int nameId, final int weight) {
-            PropertyGroup g = new PropertyGroup(id, nameId, weight);
-            addGroup(g);
-            return g;
+            return addGroup(new PropertyGroup(id, nameId, weight));
         }
     }
 }

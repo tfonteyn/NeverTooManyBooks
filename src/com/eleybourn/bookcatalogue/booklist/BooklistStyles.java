@@ -107,6 +107,9 @@ public class BooklistStyles extends ArrayList<BooklistStyle> {
      *
      * NOTE: Do NOT call this in static initialization of application.
      * This method requires the application context to be present.
+     * 
+     * Note the hardcoded negative id's. These number should never be changed as they will
+     * get stored in preferences. Take care not to add duplicates.
      */
     @NonNull
     private static List<BooklistStyle> getBuiltinStyles() {
@@ -114,105 +117,105 @@ public class BooklistStyles extends ArrayList<BooklistStyle> {
         BooklistStyle style;
 
         // Author/Series
-        style = new BooklistStyle(R.string.style_builtin_author_series);
+        style = new BooklistStyle(-1, R.string.style_builtin_author_series);
         list.add(style);
         style.addGroups(ROW_KIND_AUTHOR, ROW_KIND_SERIES);
 
         // Unread
-        style = new BooklistStyle(R.string.style_builtin_unread);
+        style = new BooklistStyle(-2, R.string.style_builtin_unread);
         list.add(style);
         style.addGroups(ROW_KIND_AUTHOR, ROW_KIND_SERIES);
-        style.setReadFilter(BooklistStyle.FILTER_NO);
+        style.setReadFilter(false);
 
         // Compact
-        style = new BooklistStyle(R.string.style_builtin_compact);
+        style = new BooklistStyle(-3, R.string.style_builtin_compact);
         list.add(style);
         style.addGroups(ROW_KIND_AUTHOR);
-        style.setCondensed(true);
+        style.setFontSize(BooklistStyle.LIST_FONT_SIZE_USE_SMALLER);
         style.setShowThumbnails(false);
 
         // Title
-        style = new BooklistStyle(R.string.style_builtin_title_first_letter);
+        style = new BooklistStyle(-4, R.string.style_builtin_title_first_letter);
         list.add(style);
         style.addGroups(RowKinds.ROW_KIND_TITLE_LETTER);
 
         // Series
-        style = new BooklistStyle(R.string.style_builtin_series);
+        style = new BooklistStyle(-5, R.string.style_builtin_series);
         list.add(style);
         style.addGroup(RowKinds.ROW_KIND_SERIES);
 
         // Genre
-        style = new BooklistStyle(R.string.style_builtin_genre);
+        style = new BooklistStyle(-6, R.string.style_builtin_genre);
         list.add(style);
         style.addGroups(ROW_KIND_GENRE, ROW_KIND_AUTHOR, ROW_KIND_SERIES);
 
         // Loaned
-        style = new BooklistStyle(R.string.style_builtin_loaned);
+        style = new BooklistStyle(-7, R.string.style_builtin_loaned);
         list.add(style);
         style.addGroups(ROW_KIND_LOANED, ROW_KIND_AUTHOR, ROW_KIND_SERIES);
 
         // Read & Unread
-        style = new BooklistStyle(R.string.style_builtin_read_and_unread);
+        style = new BooklistStyle(-8, R.string.style_builtin_read_and_unread);
         list.add(style);
         style.addGroups(ROW_KIND_READ_AND_UNREAD, ROW_KIND_AUTHOR, ROW_KIND_SERIES);
 
         // Publication date
-        style = new BooklistStyle(R.string.style_builtin_publication_date);
+        style = new BooklistStyle(-9, R.string.style_builtin_publication_date);
         list.add(style);
         style.addGroups(ROW_KIND_DATE_PUBLISHED_YEAR, ROW_KIND_DATE_PUBLISHED_MONTH, ROW_KIND_AUTHOR, ROW_KIND_SERIES);
 
         // Added date
-        style = new BooklistStyle(R.string.style_builtin_added_date);
+        style = new BooklistStyle(-10, R.string.style_builtin_added_date);
         list.add(style);
         style.addGroups(ROW_KIND_DATE_ADDED_YEAR, ROW_KIND_DATE_ADDED_MONTH, ROW_KIND_DATE_ADDED_DAY, ROW_KIND_AUTHOR);
 
         // Acquired date
-        style = new BooklistStyle(R.string.style_builtin_acquired_date);
+        style = new BooklistStyle(-11, R.string.style_builtin_acquired_date);
         list.add(style);
         style.addGroups(ROW_KIND_DATE_ACQUIRED_YEAR, ROW_KIND_DATE_ACQUIRED_MONTH, ROW_KIND_DATE_ACQUIRED_DAY, ROW_KIND_AUTHOR);
 
         // Author/Publication date
-        style = new BooklistStyle(R.string.style_builtin_author_year);
+        style = new BooklistStyle(-12, R.string.style_builtin_author_year);
         list.add(style);
         style.addGroups(ROW_KIND_AUTHOR, ROW_KIND_DATE_PUBLISHED_YEAR, ROW_KIND_SERIES);
 
         // Format
-        style = new BooklistStyle(R.string.lbl_format);
+        style = new BooklistStyle(-13, R.string.lbl_format);
         list.add(style);
         style.addGroups(ROW_KIND_FORMAT);
 
         // Read date
-        style = new BooklistStyle(R.string.style_builtin_read_date);
+        style = new BooklistStyle(-14, R.string.style_builtin_read_date);
         list.add(style);
         style.addGroups(ROW_KIND_DATE_READ_YEAR, ROW_KIND_DATE_READ_MONTH, ROW_KIND_AUTHOR);
 
         // Location
-        style = new BooklistStyle(R.string.lbl_location);
+        style = new BooklistStyle(-15, R.string.lbl_location);
         list.add(style);
         style.addGroups(ROW_KIND_LOCATION, ROW_KIND_AUTHOR, ROW_KIND_SERIES);
 
         // Location
-        style = new BooklistStyle(R.string.lbl_language);
+        style = new BooklistStyle(-16, R.string.lbl_language);
         list.add(style);
         style.addGroups(ROW_KIND_LANGUAGE, ROW_KIND_AUTHOR, ROW_KIND_SERIES);
 
         // Rating
-        style = new BooklistStyle(R.string.lbl_rating);
+        style = new BooklistStyle(-17, R.string.lbl_rating);
         list.add(style);
         style.addGroups(ROW_KIND_RATING, ROW_KIND_AUTHOR, ROW_KIND_SERIES);
 
         // Bookshelf
-        style = new BooklistStyle(R.string.lbl_bookshelf);
+        style = new BooklistStyle(-18, R.string.lbl_bookshelf);
         list.add(style);
         style.addGroups(ROW_KIND_BOOKSHELF, ROW_KIND_AUTHOR, ROW_KIND_SERIES);
 
         // Update date
-        style = new BooklistStyle(R.string.update_date);
+        style = new BooklistStyle(-19, R.string.update_date);
         list.add(style);
         style.addGroups(ROW_KIND_DATE_LAST_UPDATE_YEAR, ROW_KIND_DATE_LAST_UPDATE_MONTH, ROW_KIND_DATE_LAST_UPDATE_DAY);
         style.setShowAuthor(true);
 
-        // NEWKIND: BooklistStyle.
+        // NEWKIND: BooklistStyle. next is -20
 
         return list;
     }

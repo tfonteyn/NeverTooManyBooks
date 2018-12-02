@@ -29,6 +29,7 @@ import android.support.annotation.NonNull;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
+import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.UpdateFieldsFromInternetActivity;
@@ -276,7 +277,7 @@ public class UpdateFieldsFromInternetTask extends ManagedTask
             final @NonNull UpdateFieldsFromInternetActivity.FieldUsages requestedFields) {
 
         UpdateFieldsFromInternetActivity.FieldUsages fieldUsages = new UpdateFieldsFromInternetActivity.FieldUsages();
-        for (UpdateFieldsFromInternetActivity.FieldUsage usage : requestedFields.values()) {
+        for (Fields.FieldUsage usage : requestedFields.values()) {
             // Not selected, we don't want it
             if (usage.isSelected()) {
                 switch (usage.usage) {
@@ -287,7 +288,7 @@ public class UpdateFieldsFromInternetTask extends ManagedTask
                         break;
                     case CopyIfBlank:
                         // Handle special cases first, 'default:' for the rest
-                        switch (usage.key) {
+                        switch (usage.fieldId) {
                             // - If it's a thumbnail, then see if it's missing or empty.
                             case UniqueId.BKEY_HAVE_THUMBNAIL:
                                 File file = StorageUtils.getCoverFile(mCurrentUuid);
@@ -298,7 +299,7 @@ public class UpdateFieldsFromInternetTask extends ManagedTask
 
                             case UniqueId.BKEY_AUTHOR_ARRAY:
                                 // We should never have a book without authors, but lets be paranoid
-                                if (mOriginalBookData.containsKey(usage.key)) {
+                                if (mOriginalBookData.containsKey(usage.fieldId)) {
                                     ArrayList<Author> list = mOriginalBookData.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
                                     if (list == null || list.size() == 0) {
                                         fieldUsages.put(usage);
@@ -307,7 +308,7 @@ public class UpdateFieldsFromInternetTask extends ManagedTask
                                 break;
 
                             case UniqueId.BKEY_SERIES_ARRAY:
-                                if (mOriginalBookData.containsKey(usage.key)) {
+                                if (mOriginalBookData.containsKey(usage.fieldId)) {
                                     ArrayList<Series> list = mOriginalBookData.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
                                     if (list == null || list.size() == 0) {
                                         fieldUsages.put(usage);
@@ -316,7 +317,7 @@ public class UpdateFieldsFromInternetTask extends ManagedTask
                                 break;
 
                             case UniqueId.BKEY_TOC_TITLES_ARRAY:
-                                if (mOriginalBookData.containsKey(usage.key)) {
+                                if (mOriginalBookData.containsKey(usage.fieldId)) {
                                     ArrayList<TOCEntry> list = mOriginalBookData.getParcelableArrayList(UniqueId.BKEY_TOC_TITLES_ARRAY);
                                     if (list == null || list.size() == 0) {
                                         fieldUsages.put(usage);
@@ -326,7 +327,7 @@ public class UpdateFieldsFromInternetTask extends ManagedTask
 
                             default:
                                 // If the original was blank, add to list
-                                String value = mOriginalBookData.getString(usage.key);
+                                String value = mOriginalBookData.getString(usage.fieldId);
                                 if (value == null || value.isEmpty()) {
                                     fieldUsages.put(usage);
                                 }
@@ -412,16 +413,16 @@ public class UpdateFieldsFromInternetTask extends ManagedTask
         }
 
         // For each field, process it according the the usage.
-        for (UpdateFieldsFromInternetActivity.FieldUsage usage : requestedFields.values()) {
-            if (newBookData.containsKey(usage.key)) {
+        for (Fields.FieldUsage usage : requestedFields.values()) {
+            if (newBookData.containsKey(usage.fieldId)) {
                 // Handle thumbnail specially
-                if (usage.key.equals(UniqueId.BKEY_HAVE_THUMBNAIL)) {
+                if (usage.fieldId.equals(UniqueId.BKEY_HAVE_THUMBNAIL)) {
                     File downloadedFile = StorageUtils.getTempCoverFile();
                     boolean copyThumb = false;
-                    if (usage.usage == UpdateFieldsFromInternetActivity.FieldUsage.Usage.CopyIfBlank) {
+                    if (usage.usage == Fields.FieldUsage.Usage.CopyIfBlank) {
                         File file = StorageUtils.getCoverFile(uuid);
                         copyThumb = (!file.exists() || file.length() == 0);
-                    } else if (usage.usage == UpdateFieldsFromInternetActivity.FieldUsage.Usage.Overwrite) {
+                    } else if (usage.usage == Fields.FieldUsage.Usage.Overwrite) {
                         copyThumb = true;
                     }
                     if (copyThumb) {
@@ -437,36 +438,36 @@ public class UpdateFieldsFromInternetTask extends ManagedTask
                             break;
                         case CopyIfBlank:
                             // Handle special cases
-                            switch (usage.key) {
+                            switch (usage.fieldId) {
                                 case UniqueId.BKEY_AUTHOR_ARRAY:
-                                    if (originalBookData.containsKey(usage.key)) {
+                                    if (originalBookData.containsKey(usage.fieldId)) {
                                         ArrayList<Author> list = originalBookData.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
                                         if (list != null && list.size() > 0) {
-                                            newBookData.remove(usage.key);
+                                            newBookData.remove(usage.fieldId);
                                         }
                                     }
                                     break;
                                 case UniqueId.BKEY_SERIES_ARRAY:
-                                    if (originalBookData.containsKey(usage.key)) {
+                                    if (originalBookData.containsKey(usage.fieldId)) {
                                         ArrayList<Series> list = originalBookData.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
                                         if (list != null && list.size() > 0) {
-                                            newBookData.remove(usage.key);
+                                            newBookData.remove(usage.fieldId);
                                         }
                                     }
                                     break;
                                 case UniqueId.BKEY_TOC_TITLES_ARRAY:
-                                    if (originalBookData.containsKey(usage.key)) {
+                                    if (originalBookData.containsKey(usage.fieldId)) {
                                         ArrayList<TOCEntry> list = originalBookData.getParcelableArrayList(UniqueId.BKEY_TOC_TITLES_ARRAY);
                                         if (list != null && list.size() > 0) {
-                                            newBookData.remove(usage.key);
+                                            newBookData.remove(usage.fieldId);
                                         }
                                     }
                                     break;
                                 default:
                                     // If the original was non-blank, erase from list
-                                    String value = originalBookData.getString(usage.key);
+                                    String value = originalBookData.getString(usage.fieldId);
                                     if (value != null && !value.isEmpty()) {
-                                        newBookData.remove(usage.key);
+                                        newBookData.remove(usage.fieldId);
                                     }
                                     break;
                             }
@@ -474,19 +475,19 @@ public class UpdateFieldsFromInternetTask extends ManagedTask
 
                         case AddExtra:
                             // Handle arrays (note: before you're clever, and collapse this to one... Android Studio hides the type in the <~> notation!
-                            switch (usage.key) {
+                            switch (usage.fieldId) {
                                 case UniqueId.BKEY_AUTHOR_ARRAY:
-                                    UpdateFieldsFromInternetTask.<Author>combineArrays(usage.key, originalBookData, newBookData);
+                                    UpdateFieldsFromInternetTask.<Author>combineArrays(usage.fieldId, originalBookData, newBookData);
                                     break;
                                 case UniqueId.BKEY_SERIES_ARRAY:
-                                    UpdateFieldsFromInternetTask.<Series>combineArrays(usage.key, originalBookData, newBookData);
+                                    UpdateFieldsFromInternetTask.<Series>combineArrays(usage.fieldId, originalBookData, newBookData);
                                     break;
                                 case UniqueId.BKEY_TOC_TITLES_ARRAY:
-                                    UpdateFieldsFromInternetTask.<TOCEntry>combineArrays(usage.key, originalBookData, newBookData);
+                                    UpdateFieldsFromInternetTask.<TOCEntry>combineArrays(usage.fieldId, originalBookData, newBookData);
                                     break;
                                 default:
                                     // No idea how to handle this for non-arrays
-                                    throw new RTE.IllegalTypeException("Illegal usage '" + usage.usage + "' specified for field '" + usage.key + "'");
+                                    throw new RTE.IllegalTypeException("Illegal usage '" + usage.usage + "' specified for field '" + usage.fieldId + "'");
                             }
                             break;
                     }

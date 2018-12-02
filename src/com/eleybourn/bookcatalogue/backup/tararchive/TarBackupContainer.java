@@ -22,9 +22,9 @@ package com.eleybourn.bookcatalogue.backup.tararchive;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.backup.BackupContainer;
-import com.eleybourn.bookcatalogue.backup.BackupReader;
-import com.eleybourn.bookcatalogue.backup.BackupWriter;
+import com.eleybourn.bookcatalogue.backup.archivebase.BackupContainer;
+import com.eleybourn.bookcatalogue.backup.archivebase.BackupReader;
+import com.eleybourn.bookcatalogue.backup.archivebase.BackupWriter;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
 import java.io.File;

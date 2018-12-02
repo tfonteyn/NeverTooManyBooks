@@ -118,6 +118,7 @@ public class Series implements Parcelable, Utils.ItemWithIdFixup {
         dest.writeString(number);
     }
 
+    @SuppressWarnings("SameReturnValue")
     @Override
     public int describeContents() {
         return 0;

@@ -44,6 +44,9 @@ import java.util.List;
 /**
  * Base class for tasks. This builds and populates simple View objects to display the task.
  *
+ * A Task *MUST* be serializable.
+ * This means that it can not contain any references to UI components or similar objects.
+ *
  * @author Philip Warner
  */
 public abstract class GoodreadsTask extends Task implements Serializable {

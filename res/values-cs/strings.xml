@@ -36,9 +36,9 @@
     <string name="title_search_for">Hledat autora nebo titul</string>
     <string name="warning_book_not_found">Nepodařilo se nalézt hledanou knihu. Zkuste prosím zadat potřebné údaje manuálně.</string>
     <string name="lbl_series_num">#</string>
-    <string name="title_import_data">Importovat knihy</string>
+    <string name="title_import_book_data">Importovat knihy</string>
     <string name="warning_import_be_cautious">Pozor: Importovaná data mohou upravit existující záznamy knih - k takové situaci dojde v případě, že není vyplněno uuid, a id v importovaném souboru je totožné s již existujícím id. Doporučujeme proto zkontrolovat - a případně upravit - toto pole v exportovaném souboru. Pokud byl vytvořen nový záznam, nebo jsou importovány další knihy, tak se ujistěte, že je vyplněno uuid, nebo že pole id je prázdné.</string>
-    <string name="error_import_failed_is_location_correct">ERROR: Import dat (z SD karty) selhal. Je soubor na správném místě?</string>
+    <string name="error_import_failed_is_csv_file_location_correct">ERROR: Import dat (z SD karty) selhal. Je soubor na správném místě?</string>
     <string name="search_title">Book Catalogue: Výsledky vyhledávání</string>
     <string name="results_found">Nalezené výsledky</string>
     <string name="menu_administration_long">Administrační funkce</string>
@@ -123,7 +123,7 @@
     <string name="progress_end_backup_success">Zálohování úspěšně dokončeno</string>
     <string name="error_backup_failed">Zálohování selhalo</string>
     <string name="error_file_must_contain_column">Soubor musí obsahovat sloupec jménem %s</string>
-    <string name="error_file_must_contain_any_column">Soubor musí obsahovat sloupec s jedním z následujících jmen: %s</string>
+    <string name="error_csv_file_must_contain_any_column">Soubor musí obsahovat sloupec s jedním z následujících jmen: %s</string>
     <string name="error_column_is_blank">Sloupec %1$s je prázdný na řádku %2$s</string>
     <string name="error_columns_are_blank">Sloupce %1$s jsou prázdné na řádku %2$d</string>
     <string name="btn_confirm_save">Uložit</string>
@@ -141,7 +141,7 @@
     <string name="warning_required_author">Pole pro autora je prázdné</string>
     <string name="warning_series_already_in_list">Série je již v seznamu</string>
     <string name="warning_required_series">Pole pro sérii je prázdné</string>
-    <string name="error_export_failed">Exportování selhalo - nelze zapisovat na SD kartu</string>
+    <string name="error_export_csv_failed">Exportování selhalo - nelze zapisovat na SD kartu</string>
     <string name="error_download_thumbnail_failed">Stahování náhledu selhalo - nelze zapisovat na SD kartu</string>
     <string name="progress_msg_skip_title">Vynechat - %s</string>
     <string name="progress_end_num_books_searched">%s knih nalezeno</string>
@@ -211,7 +211,7 @@
     <string name="lt_correct_key">Váš vývojářský klíč LibraryThing je platný.</string>
     <string name="error_no_internet_connection">Připojení k internetu není k dispozici.</string>
     <string name="menu_share_this">Sdílet</string>
-    <string name="email_export">Přejete si odeslat tento export prostřednictvím mailu?</string>
+    <string name="export_csv_email">Přejete si odeslat tento export prostřednictvím mailu?</string>
     <string name="menu_cover_crop">Oříznout náhled</string>
     <string name="title_task_errors">Chyby</string>
     <string name="retry">Opakovat</string>
@@ -267,14 +267,14 @@
     <string name="x_of_y">%1$d z %2$d</string>
     <string name="gr_send_book_to_goodreads">Poslat knihu %1$s do Goodreads</string>
     <string name="erase_cover_cache">Vymazat vyrovnávací paměť pro obálky</string>
-    <string name="crash_message_text">Došlo k neočekávanému pádu aplikace BookCatalogue. Prosím pomozte nám zlepšit aplikaci a informujte nás o tomto problému.</string>
-    <string name="crash_notif_ticker_text">BookCatalogue spadl</string>
-    <string name="crash_notif_title">BookCatalogue spadl</string>
-    <string name="crash_notif_text">Klikněte zde pro více informací</string>
-    <string name="crash_dialog_title">BookCatalogue spadl</string>
-    <string name="crash_dialog_text">Vypadá to, že došlo k neočekávanému pádu aplikace BookCatalogue. Napište nám prosím o tomto problému všechny informace, které považujete za relevantní, a tlačítkem "OK" nám je odešlete. Před odesláním mailu budete mít ještě možnost jej zkontrolovat.</string>
-    <string name="crash_dialog_comment_prompt">Váš komentář (nepovinné):</string>
-    <string name="crash_dialog_ok_message">Děkujeme!</string>
+    <string name="acra_resToastText">Došlo k neočekávanému pádu aplikace BookCatalogue. Prosím pomozte nám zlepšit aplikaci a informujte nás o tomto problému.</string>
+    <string name="acra_resNotifTickerText">BookCatalogue spadl</string>
+    <string name="acra_resNotifTitle">BookCatalogue spadl</string>
+    <string name="acra_resNotifText">Klikněte zde pro více informací</string>
+    <string name="acra_resDialogTitle">BookCatalogue spadl</string>
+    <string name="acra_resDialogText">Vypadá to, že došlo k neočekávanému pádu aplikace BookCatalogue. Napište nám prosím o tomto problému všechny informace, které považujete za relevantní, a tlačítkem "OK" nám je odešlete. Před odesláním mailu budete mít ještě možnost jej zkontrolovat.</string>
+    <string name="acra_resDialogCommentPrompt">Váš komentář (nepovinné):</string>
+    <string name="acra_resDialogOkToast">Děkujeme!</string>
     <string name="lbl_read">Přečteno</string>
     <string name="lbl_unread">Nepřečteno</string>
     <string name="no_date">(žádné datum)</string>
@@ -429,8 +429,8 @@
     <string name="in">V</string>
     <string name="size">Velikost</string>
     <string name="updated">Aktualizování</string>
-    <string name="warning_no_export_files_found">Nebyl nalezen exportovaný soubor</string>
-    <string name="more_than_one_export_file_blah">Bylo nalezeno více exportovaných souborů; zvolte prosím soubor pro importování knih</string>
+    <string name="warning_csv_file_not_found">Nebyl nalezen exportovaný soubor</string>
+    <string name="warning_csv_file_more_then_one_found">Bylo nalezeno více exportovaných souborů; zvolte prosím soubor pro importování knih</string>
     <string name="problem_starting_import_arg">Vyskytl se problém při zahájení importu: %1$s</string>
     <string name="hint_booklist_style_menu">Toto menu umožňuje zvolit si styl seznamu.
     								\n\nProstřednictvím tlačítka \'Přizpůsobit\' (na konci seznamu) máte možnost si toto menu přizpůsobit, nebo si vytvořit vlastní styl.</string>

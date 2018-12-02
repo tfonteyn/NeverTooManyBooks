@@ -26,10 +26,10 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.searches.goodreads.api.XmlFilter;
-import com.eleybourn.bookcatalogue.searches.goodreads.api.XmlFilter.ElementContext;
-import com.eleybourn.bookcatalogue.searches.goodreads.api.XmlFilter.XmlHandler;
-import com.eleybourn.bookcatalogue.searches.goodreads.api.XmlResponseParser;
+import com.eleybourn.bookcatalogue.utils.xml.XmlFilter;
+import com.eleybourn.bookcatalogue.utils.xml.XmlFilter.ElementContext;
+import com.eleybourn.bookcatalogue.utils.xml.XmlFilter.XmlHandler;
+import com.eleybourn.bookcatalogue.utils.xml.XmlResponseParser;
 import com.eleybourn.bookcatalogue.utils.RTE;
 
 import org.xml.sax.InputSource;
@@ -109,6 +109,9 @@ public class BackupUtils {
 
     /**
      * Internal routine to send the passed CollectionAccessor data to an XML file.
+     *
+     * Creates a 'flat' xml file with a hardcoded root element of "collection"
+     * and entries with name/type/value.
      */
     private static void collectionToXml(final @NonNull BufferedWriter out,
                                         final @NonNull CollectionAccessor<String> col) throws IOException {
@@ -153,6 +156,8 @@ public class BackupUtils {
 
     /**
      * Internal routine to update the passed CollectionAccessor from an XML file.
+     *
+     * ENHANCE: make this capable of using different XmlFilter
      */
     private static void collectionFromXml(final @NonNull BufferedReader in,
                                           final @NonNull CollectionAccessor<String> accessor) throws IOException {

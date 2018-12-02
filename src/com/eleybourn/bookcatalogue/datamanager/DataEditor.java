@@ -24,9 +24,6 @@ import android.support.annotation.NonNull;
 /**
  * Interface supported by an editor object
  *
- * Note that the interface itself is not generic, but only the methods are.
- * This avoids lint complaining when we cast... ok, not a very good reason I admit. FIXME
- *
  * @author pjw
  */
 public interface DataEditor {

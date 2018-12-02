@@ -35,7 +35,8 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Checkable;
 
-import com.eleybourn.bookcatalogue.Fields.Field;
+import com.eleybourn.bookcatalogue.datamanager.Fields;
+import com.eleybourn.bookcatalogue.datamanager.Fields.Field;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.editordialog.CheckListEditorDialogFragment;
@@ -49,7 +50,6 @@ import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
-import com.eleybourn.bookcatalogue.widgets.CoverHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -204,7 +204,7 @@ public class EditBookFieldsFragment extends BookBaseFragment implements
         initValuePicker(field, R.string.lbl_currency, R.id.btn_price_listed_currency, getListPriceCurrencyCodes());
 
         /* Anthology is provided as a boolean, see {@link Book#initValidators()}*/
-        mFields.add(R.id.is_anthology, Book.IS_ANTHOLOGY)
+        mFields.add(R.id.is_anthology, Book.HAS_MULTIPLE_WORKS)
                 .getView().setOnClickListener(
                 new View.OnClickListener() {
                     public void onClick(View view) {
@@ -218,7 +218,7 @@ public class EditBookFieldsFragment extends BookBaseFragment implements
         // define the cover image
         Field coverField = mFields.add(R.id.coverImage, "", UniqueId.BKEY_HAVE_THUMBNAIL)
                 .setDoNotFetch(true);
-        mCoverHandler = new CoverHandler(requireActivity(), mDb, getBookManager(),
+        mCoverHandler = new CoverHandler(this, mDb, getBookManager(),
                 coverField, mFields.getField(R.id.isbn));
 
         // Personal fields
@@ -254,7 +254,7 @@ public class EditBookFieldsFragment extends BookBaseFragment implements
         populateSeriesListField(book);
 
         mCoverHandler.populateCoverView();
-        mFields.getField(R.id.is_anthology).setValue(book.getString(Book.IS_ANTHOLOGY));
+        mFields.getField(R.id.is_anthology).setValue(book.getString(Book.HAS_MULTIPLE_WORKS));
 
         mFields.getField(R.id.bookshelves).setValue(book.getBookshelfListAsText());
 

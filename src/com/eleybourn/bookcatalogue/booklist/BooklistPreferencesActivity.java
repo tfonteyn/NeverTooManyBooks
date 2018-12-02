@@ -31,13 +31,13 @@ import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.baseactivity.PreferencesBaseActivity;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
-import com.eleybourn.bookcatalogue.properties.BooleanListProperty;
-import com.eleybourn.bookcatalogue.properties.IntegerListProperty;
-import com.eleybourn.bookcatalogue.properties.ListProperty.ItemEntries;
-import com.eleybourn.bookcatalogue.properties.Properties;
+import com.eleybourn.bookcatalogue.properties.BooleanProperty;
+import com.eleybourn.bookcatalogue.properties.ListOfIntegerValuesProperty;
+import com.eleybourn.bookcatalogue.properties.ListOfValuesProperty.ItemList;
 import com.eleybourn.bookcatalogue.properties.Property;
 import com.eleybourn.bookcatalogue.properties.PropertyGroup;
-import com.eleybourn.bookcatalogue.properties.ValuePropertyWithGlobalDefault;
+import com.eleybourn.bookcatalogue.properties.PropertyList;
+import com.eleybourn.bookcatalogue.properties.PropertyWithGlobalValue;
 
 import java.util.Objects;
 
@@ -49,7 +49,6 @@ import java.util.Objects;
 public class BooklistPreferencesActivity extends PreferencesBaseActivity {
 
     public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_BOOKLIST_PREFERENCES;
-
     // ID values for state preservation property
     public static final int BOOK_LIST_ALWAYS_EXPANDED = 1; // default
     public static final int BOOK_LIST_ALWAYS_COLLAPSED = 2;
@@ -63,7 +62,6 @@ public class BooklistPreferencesActivity extends PreferencesBaseActivity {
 
     /** Force list construction to compatible mode (compatible with Android 1.6) (name kept for backwards compatibility) */
     private static final String PREF_BOOKLIST_GENERATION_MODE = "App.BooklistGenerationMode";
-
     /** Prefix for all preferences */
     private static final String TAG = "BookList.Global";
     /** Show flat backgrounds in Book lists */
@@ -74,70 +72,72 @@ public class BooklistPreferencesActivity extends PreferencesBaseActivity {
     private static final String PREF_BOOK_LIST_STATE = TAG + ".BooklistState";
 
     /** Booklist state preservation property */
-    private static final ItemEntries<Integer> mBooklistStateListItems = new ItemEntries<>();
-    private static final IntegerListProperty mBooklistStateProperty =
-            new IntegerListProperty(mBooklistStateListItems, PREF_BOOK_LIST_STATE,
-                    PropertyGroup.GRP_GENERAL, R.string.blp_list_state)
-                    .setPreferenceKey(PREF_BOOK_LIST_STATE)
-                    .setDefaultValue(BOOK_LIST_ALWAYS_EXPANDED)
-                    .setGlobal(true);
-
+    private static ListOfIntegerValuesProperty mBooklistStateProperty;
     /** Booklist Compatibility mode property values */
-    private static final ItemEntries<Integer> mBooklistCompatibilityModeListItems = new ItemEntries<>();
-    private static final IntegerListProperty mBooklistCompatibilityModeProperty =
-            new IntegerListProperty(mBooklistCompatibilityModeListItems, PREF_BOOKLIST_GENERATION_MODE,
-                    PropertyGroup.GRP_ADVANCED_OPTIONS, R.string.blp_generation)
-                    .setDefaultValue(BOOKLIST_GENERATE_AUTOMATIC)
-                    .setPreferenceKey(PREF_BOOKLIST_GENERATION_MODE)
-                    .setGlobal(true)
-                    .setWeight(1000);
+    private static ListOfIntegerValuesProperty mBooklistCompatibilityModeProperty;
 
     /** Enable Thumbnail Cache property definition */
-    private static final ItemEntries<Boolean> mCacheThumbnailsListItems = new ItemEntries<>();
-    private static final BooleanListProperty mCacheThumbnailsProperty =
-            new BooleanListProperty(mCacheThumbnailsListItems, PREF_CACHE_THUMBNAILS,
-                    PropertyGroup.GRP_THUMBNAILS, R.string.thumbnails_resizing)
-                    .setPreferenceKey(PREF_CACHE_THUMBNAILS)
-                    .setDefaultValue(false)
-                    .setGlobal(true)
-                    .setWeight(110);
-
+    private static BooleanProperty mCacheThumbnailsProperty;
     /** Enable Background Thumbnail fetch property definition */
-    private static final ItemEntries<Boolean> mBackgroundThumbnailsListItems = new ItemEntries<>();
-    private static final BooleanListProperty mBackgroundThumbnailsProperty =
-            new BooleanListProperty(mBackgroundThumbnailsListItems, PREF_BACKGROUND_THUMBNAILS,
-                    PropertyGroup.GRP_THUMBNAILS, R.string.thumbnails_generating_mode)
-                    .setPreferenceKey(PREF_BACKGROUND_THUMBNAILS)
-                    .setDefaultValue(false)
-                    .setGlobal(true)
-                    .setWeight(100);
+    private static BooleanProperty mBackgroundThumbnailsProperty;
 
     static {
-        mBooklistStateListItems.add(null, R.string.use_default_setting)
+        ItemList<Integer> mBooklistStateListItems = new ItemList<Integer>()
                 .add(BOOK_LIST_ALWAYS_EXPANDED, R.string.blp_state_start_expanded)
                 .add(BOOK_LIST_ALWAYS_COLLAPSED, R.string.blp_state_start_collapsed)
                 .add(BOOK_LIST_STATE_PRESERVED, R.string.blp_state_remember);
+        mBooklistStateProperty =
+                new ListOfIntegerValuesProperty(mBooklistStateListItems,
+                        PREF_BOOK_LIST_STATE,
+                        PropertyGroup.GRP_GENERAL,
+                        R.string.blp_list_state,
+                        BOOK_LIST_ALWAYS_EXPANDED)
+                        .setPreferenceKey(PREF_BOOK_LIST_STATE)
+                        .setIsGlobal(true);
 
-        mBooklistCompatibilityModeListItems.add(null, R.string.use_default_setting)
+        ItemList<Integer> mBooklistCompatibilityModeListItems = new ItemList<Integer>()
+                .add(BOOKLIST_GENERATE_AUTOMATIC, R.string.blp_generation_use_recommended_option)
                 .add(BOOKLIST_GENERATE_OLD_STYLE, R.string.blp_generation_force_compatibility_mode)
                 .add(BOOKLIST_GENERATE_FLAT_TRIGGER, R.string.blp_generation_force_enhanced_compatibility_mode)
-                .add(BOOKLIST_GENERATE_NESTED_TRIGGER, R.string.blp_generation_force_fully_featured)
-                .add(BOOKLIST_GENERATE_AUTOMATIC, R.string.blp_generation_use_recommended_option);
+                .add(BOOKLIST_GENERATE_NESTED_TRIGGER, R.string.blp_generation_force_fully_featured);
+        mBooklistCompatibilityModeProperty =
+                new ListOfIntegerValuesProperty(mBooklistCompatibilityModeListItems,
+                        PREF_BOOKLIST_GENERATION_MODE,
+                        PropertyGroup.GRP_ADVANCED_OPTIONS,
+                        R.string.blp_generation,
+                        BOOKLIST_GENERATE_AUTOMATIC)
+                        .setPreferenceKey(PREF_BOOKLIST_GENERATION_MODE)
+                        .setIsGlobal(true)
+                        .setWeight(1000);
 
-        mCacheThumbnailsListItems.add(null, R.string.use_default_setting)
-                .add(false, R.string.thumbnails_resizing_each_time)
-                .add(true, R.string.thumbnails_resizing_cache_for_later_use);
+        mCacheThumbnailsProperty =
+                new BooleanProperty(PREF_CACHE_THUMBNAILS,
+                        PropertyGroup.GRP_THUMBNAILS,
+                        R.string.thumbnails_resizing,
+                        Boolean.FALSE)
+                        .setOptionLabels(R.string.thumbnails_resizing_cache_for_later_use,
+                                R.string.thumbnails_resizing_each_time)
+                        .setPreferenceKey(PREF_CACHE_THUMBNAILS)
+                        .setIsGlobal(true)
+                        .setWeight(110);
 
-        mBackgroundThumbnailsListItems.add(null, R.string.use_default_setting)
-                .add(false, R.string.thumbnails_generating_mode_generate_immediately)
-                .add(true, R.string.thumbnails_generating_mode_use_background_thread);
+        mBackgroundThumbnailsProperty =
+                new BooleanProperty(PREF_BACKGROUND_THUMBNAILS,
+                        PropertyGroup.GRP_THUMBNAILS,
+                        R.string.thumbnails_generating_mode,
+                        Boolean.FALSE)
+                        .setOptionLabels(R.string.thumbnails_generating_mode_use_background_thread,
+                                R.string.thumbnails_generating_mode_generate_immediately)
+                        .setPreferenceKey(PREF_BACKGROUND_THUMBNAILS)
+                        .setIsGlobal(true)
+                        .setWeight(100);
     }
 
     /**
      * Get the current preferred rebuild state for the list
      */
     public static int getRebuildState() {
-        Integer value = mBooklistStateProperty.get();
+        Integer value = mBooklistStateProperty.getValue();
         if (value == null) {
             value = mBooklistStateProperty.getDefaultValue();
             Objects.requireNonNull(value);
@@ -149,7 +149,7 @@ public class BooklistPreferencesActivity extends PreferencesBaseActivity {
      * Get the current preferred compatibility mode for the list
      */
     public static int getCompatibilityMode() {
-        Integer value = mBooklistCompatibilityModeProperty.get();
+        Integer value = mBooklistCompatibilityModeProperty.getValue();
         if (value == null) {
             value = mBooklistCompatibilityModeProperty.getDefaultValue();
             Objects.requireNonNull(value);
@@ -192,7 +192,7 @@ public class BooklistPreferencesActivity extends PreferencesBaseActivity {
      * Setup each component of the layout using the passed preferences
      */
     @Override
-    protected void initFields(final @NonNull Properties globalProperties) {
+    protected void initFields(final @NonNull PropertyList globalPropertyList) {
         // Create a dummy style and add one group of each kind
         BooklistStyle style = new BooklistStyle("");
         // skip BOOK
@@ -202,18 +202,18 @@ public class BooklistPreferencesActivity extends PreferencesBaseActivity {
 
         // Get all the properties from the style that have global defaults.
         for (Property property : style.getProperties()) {
-            if (property instanceof ValuePropertyWithGlobalDefault) {
-                ValuePropertyWithGlobalDefault<?> globProp = (ValuePropertyWithGlobalDefault<?>) property;
-                if (globProp.hasGlobalDefault()) {
-                    globProp.setGlobal(true);
-                    globalProperties.add(globProp);
+            if (property instanceof PropertyWithGlobalValue) {
+                PropertyWithGlobalValue<?> globProp = (PropertyWithGlobalValue<?>) property;
+                if (globProp.hasPreferenceKey()) {
+                    globProp.setIsGlobal(true);
+                    globalPropertyList.add(globProp);
                 }
             }
         }
         // Add the locally constructed global properties
-        globalProperties.add(mBooklistStateProperty);
-        globalProperties.add(mCacheThumbnailsProperty);
-        globalProperties.add(mBackgroundThumbnailsProperty);
-        globalProperties.add(mBooklistCompatibilityModeProperty);
+        globalPropertyList.add(mBooklistStateProperty);
+        globalPropertyList.add(mCacheThumbnailsProperty);
+        globalPropertyList.add(mBackgroundThumbnailsProperty);
+        globalPropertyList.add(mBooklistCompatibilityModeProperty);
     }
 }

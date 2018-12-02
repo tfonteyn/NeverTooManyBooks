@@ -36,9 +36,9 @@
     <string name="title_search_for">Szukaj autora lub tytułu</string>
     <string name="warning_book_not_found">Zeskanowana książka nie została odnaleziona. Spóbuj ponownie z kodem, który może znajdować się w środku okładki lub wprowadź dane ręcznie.</string>
     <string name="lbl_series_num">tom#</string>
-    <string name="title_import_data">Importuj książki</string>
+    <string name="title_import_book_data">Importuj książki</string>
     <string name="warning_import_be_cautious">Uwaga! Zaimportowane dane mogą nadpisać istniejące, jeśli pokryje się identyfikator (pole _id). Jest to zwykle oczekiwane zachowanie, gdy edytowałeś wyeksportowany wcześniej plik. Jeśli dodajesz nową książkę, pozostaw pole _id puste.</string>
-    <string name="error_import_failed_is_location_correct">Błąd!: Import z karty SD nie powiódł się. Upewnij się, czy plik export.csv jest w prawidłowym miejscu.</string>
+    <string name="error_import_failed_is_csv_file_location_correct">Błąd!: Import z karty SD nie powiódł się. Upewnij się, czy plik export.csv jest w prawidłowym miejscu.</string>
     <string name="search_title">Katalog książek: Wynik wyszukiwania</string>
     <string name="results_found">Znaleziono</string>
     <string name="menu_administration_long">Funkcje administracyjne</string>
@@ -123,7 +123,7 @@
     <string name="progress_end_backup_success">Kopia zapasowa wykonana</string>
     <string name="error_backup_failed">Kopia zapasowa nie powiodła się</string>
     <string name="error_file_must_contain_column">Plik musi zawierać pole %s</string>
-    <string name="error_file_must_contain_any_column">Plik musi zawierać jedno z pól: %s</string>
+    <string name="error_csv_file_must_contain_any_column">Plik musi zawierać jedno z pól: %s</string>
     <string name="error_column_is_blank">Pole %1$s jest puste w linii %2$s</string>
     <string name="error_columns_are_blank">Pola %1$s są puste w linii %2$d</string>
     <string name="btn_confirm_save">Zapisz</string>
@@ -141,7 +141,7 @@
     <string name="warning_required_author">Pole autor jest puste</string>
     <string name="warning_series_already_in_list">Seria (tom) jest na liście</string>
     <string name="warning_required_series">Pole serii(tomu) jest puste</string>
-    <string name="error_export_failed">Eksport nie powiódł się - nie mogę zapisać na karcie SD</string>
+    <string name="error_export_csv_failed">Eksport nie powiódł się - nie mogę zapisać na karcie SD</string>
     <string name="error_download_thumbnail_failed">Pobranie okładki nie powiodło się - nie mogę zapisać na karcie SD</string>
     <string name="progress_msg_skip_title">Pomiń - %s</string>
     <string name="progress_end_num_books_searched">%s książek przeszukano</string>

@@ -130,7 +130,7 @@
         <item name="android:textIsSelectable">false</item>
     </style>
 
-    <!-- fields specific for property/preference names; can be TextView or EditText -->
+    <!-- fields specific for property/preference names; can be TextView -->
     <style name="txt_property_value">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
@@ -365,43 +365,26 @@
     </style>
 
     <!-- *************************************************************************************** -->
-    <!-- action buttons; for example drop down menu button, edit icon button, ...  -->
+    <!-- 'edit' buttons; for example drop down menu button, edit icon button, ...  -->
     <!-- *************************************************************************************** -->
-
-    <style name="dropDownMenuButton">
-        <item name="android:background">?android:selectableItemBackground</item>
-        <item name="android:layout_alignParentEnd">true</item>
-        <item name="android:focusable">true</item>
-        <item name="android:paddingEnd">@dimen/padding_border</item>
-        <item name="android:paddingStart">@dimen/padding_border</item>
+    <style name="itemEditButton">
         <item name="android:layout_width">48dp</item>
         <item name="android:layout_height">48dp</item>
+        <item name="android:layout_alignParentEnd">true</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:layout_centerHorizontal">true</item>
+        <item name="android:paddingEnd">@dimen/padding_border</item>
+        <item name="android:paddingStart">@dimen/padding_border</item>
+        <item name="android:background">?android:selectableItemBackground</item>
+        <item name="android:focusable">true</item>
     </style>
 
     <!-- *************************************************************************************** -->
     <!-- row, button and blurb for 'options' in a an option list (f.e. on a dialog) -->
     <!-- *************************************************************************************** -->
 
-    <!-- Used for a dedicated 'help' TextView associated with an option -->
-    <style name="row_option_blurb">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:paddingStart">@dimen/padding_border_quad</item>
-        <item name="android:paddingEnd">@dimen/padding_border_quad</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
-    </style>
-
-    <!-- Option in the list shown as a RadioButton -->
-    <style name="row_option_radio_button">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:clickable">false</item>
-        <item name="android:focusable">false</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
-    </style>
-
-    <!-- Option in the list shown as a TextView -->
-    <style name="row_option_text">
+    <!-- Field or Menu label for options in a list -->
+    <style name="row_option_label">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:gravity">center_vertical</item>
@@ -410,7 +393,23 @@
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
     </style>
 
-    <!-- Option in the list is a property/preference -->
+    <!-- Option in the list shown as a Checkable (RadioButton, Checkbox ...) -->
+    <style name="row_option_checkable">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+    </style>
+
+    <!-- Used for a dedicated 'help' TextView associated with an option -->
+    <style name="row_option_info">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingStart">@dimen/padding_border_quad</item>
+        <item name="android:paddingEnd">@dimen/padding_border_quad</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+    </style>
+
+    <!-- Option in the list is a property/preference which bring their own row view -->
     <style name="row_option_property">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>

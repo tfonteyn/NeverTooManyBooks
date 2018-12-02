@@ -1,6 +1,12 @@
 package com.eleybourn.bookcatalogue;
 
+import com.eleybourn.bookcatalogue.backup.ExportSettings;
+import com.eleybourn.bookcatalogue.backup.ImportSettings;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
+import com.eleybourn.bookcatalogue.baseactivity.PreferencesBaseActivity;
+import com.eleybourn.bookcatalogue.booklist.BooklistPreferredStylesActivity;
+import com.eleybourn.bookcatalogue.booklist.EditBooklistStyleActivity;
+import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.entities.Book;
 
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FAMILY_NAME;
@@ -97,14 +103,15 @@ public class UniqueId {
 
     // BEGIN Result Codes used for setResult / onActivityResult
 
-    /** need distinct code as it can trickle up */
-    public static final int ACTIVITY_RESULT_BOOK_DELETED = 10_001;
-    /** need distinct code as it can trickle up */
-    public static final int ACTIVITY_RESULT_PREFS_MIGHT_HAVE_CHANGED = 10_010;
-    /** need distinct code as it can trickle up */
-    public static final int ACTIVITY_RESULT_CHANGES_MADE_BOOKLIST_STYLE_PROPERTIES = 10_120;
-    /** need distinct code as it can trickle up */
-    public static final int ACTIVITY_RESULT_CHANGES_MADE_BOOKLIST_STYLES = 10_130;
+    /** generic delete */
+    public static final int ACTIVITY_RESULT_DELETED_SOMETHING = 10_001;
+
+    /** {@link BooklistPreferredStylesActivity} need distinct code as it can trickle up */
+    public static final int ACTIVITY_RESULT_OK_BooklistPreferredStylesActivity = 10_130;
+
+    /** {@link EditBooklistStyleActivity} need distinct code as it can trickle up */
+    public static final int ACTIVITY_RESULT_OK_BooklistStylePropertiesActivity = 10_131;
+
 
     // END Result Codes used for setResult / onActivityResult
 
@@ -136,7 +143,7 @@ public class UniqueId {
      * 3 uses:
      * Boolean indicating if we have a thumbnail or not.
      * Visibility indicator, see {@link FieldVisibilityActivity}
-     * Flag to indicate we 'want' a thumbnail, in {@link UpdateFieldsFromInternetActivity.FieldUsage.Usage}
+     * Flag to indicate we 'want' a thumbnail, in {@link Fields.FieldUsage.Usage}
      */
     public static final String BKEY_HAVE_THUMBNAIL = "thumbnail";
 
@@ -150,6 +157,15 @@ public class UniqueId {
 
 
     public static final String BKEY_NO_COVER = "noCover";
+
+    /** ArrayList<String> of preference keys tht have changed */
+    public static final String BKEY_PREFERENCE_KEYS = "prefKeys";
+
+    /** the resulting {@link ImportSettings#what} flags after an import */
+    public static final String BKEY_IMPORT_RESULT_OPTIONS = "importResult";
+
+    /** the resulting {@link ExportSettings#what} flags after an export */
+    public static final String BKEY_EXPORT_RESULT_OPTIONS = "exportResult";
 
     /** to return the status of a startActivityForResult when a task was 'isCancelled' */
     public static final String BKEY_CANCELED = "cancelled";

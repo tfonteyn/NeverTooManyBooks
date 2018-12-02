@@ -49,7 +49,7 @@ import com.eleybourn.bookcatalogue.database.CoversDBAdapter;
 import com.eleybourn.bookcatalogue.database.UpgradeDatabase;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
-import com.eleybourn.bookcatalogue.filechooser.BackupChooserActivity;
+import com.eleybourn.bookcatalogue.backup.ui.BackupAndRestoreActivity;
 import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue;
 import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue.OnTaskFinishListener;
 import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue.SimpleTaskContext;
@@ -417,8 +417,8 @@ public class StartupActivity extends AppCompatActivity {
         startActivity(intent);
 
         if (mBackupRequired) {
-            Intent backupIntent = new Intent(this, BackupChooserActivity.class);
-            backupIntent.putExtra(BackupChooserActivity.BKEY_MODE, BackupChooserActivity.BVAL_MODE_SAVE);
+            Intent backupIntent = new Intent(this, BackupAndRestoreActivity.class);
+            backupIntent.putExtra(BackupAndRestoreActivity.BKEY_MODE, BackupAndRestoreActivity.BVAL_MODE_SAVE);
             startActivity(backupIntent);
         }
 

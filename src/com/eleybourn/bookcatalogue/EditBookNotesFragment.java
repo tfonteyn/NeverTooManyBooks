@@ -30,7 +30,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Checkable;
 
-import com.eleybourn.bookcatalogue.Fields.Field;
+import com.eleybourn.bookcatalogue.datamanager.Fields;
+import com.eleybourn.bookcatalogue.datamanager.Fields.Field;
 import com.eleybourn.bookcatalogue.datamanager.validators.ValidatorException;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;

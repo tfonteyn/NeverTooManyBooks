@@ -121,7 +121,7 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_BO
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_BOOK_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_SERIES_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FTS_AUTHOR_NAME;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_IS_ANTHOLOGY;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_WITH_MULTIPLE_WORKS;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LAST_UPDATE_DATE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LOANED_TO;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PK_DOCID;
@@ -1220,9 +1220,9 @@ public class CatalogueDBAdapter implements AutoCloseable {
         ArrayList<TOCEntry> TOCEntries = book.getTOC();
         if (TOCEntries.size() > 0) {
             // definitively an anthology, overrule whatever the KEY_BOOK_ANTHOLOGY_BITMASK was.
-            int type = DOM_IS_ANTHOLOGY;
-            if (TOCEntry.isSingleAuthor(TOCEntries)) {
-                type = type ^ DOM_BOOK_WITH_MULTIPLE_AUTHORS;
+            int type = DOM_BOOK_WITH_MULTIPLE_WORKS;
+            if (!TOCEntry.isSingleAuthor(TOCEntries)) {
+                type |= DOM_BOOK_WITH_MULTIPLE_AUTHORS;
             }
             book.putInt(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK, type);
         }
@@ -1510,7 +1510,12 @@ public class CatalogueDBAdapter implements AutoCloseable {
                     mSyncedDb.setTransactionSuccessful();
                 }
             }
+
+            // set the new id on the Book itself
+            book.putLong(UniqueId.KEY_ID, newBookId);
+            // and return it
             return newBookId;
+
         } catch (Exception e) {
             Logger.error(e, "Error creating book from\n" + book);
             return -1L;
@@ -1524,7 +1529,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
     /**
      * Transaction: participate, or run in new.
      *
-     * @param bookId of the book
+     * @param bookId of the book; takes precedence over the id of the book itself.
      * @param book   A collection with the columns to be set. May contain extra data.
      * @param flags  See {@link #BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT} an others for flag definitions
      *
@@ -1575,6 +1580,9 @@ public class CatalogueDBAdapter implements AutoCloseable {
             if (txLock != null) {
                 mSyncedDb.setTransactionSuccessful();
             }
+            // make sure the Book has the correct id.
+            book.putLong(UniqueId.KEY_ID, bookId);
+
             return rowsAffected;
         } catch (Exception e) {
             Logger.error(e);
@@ -2773,6 +2781,13 @@ public class CatalogueDBAdapter implements AutoCloseable {
         }
         mDeleteBooklistStyleStmt.bindLong(1, id);
         mDeleteBooklistStyleStmt.executeUpdateDelete();
+    }
+
+    /**
+     * Really meant for use during development when {@link BooklistStyle} has internal changes
+     */
+    public void deleteAllBooklistStyle() {
+        TBL_BOOKLIST_STYLES.deleteAllRows(mSyncedDb);
     }
 
     /**

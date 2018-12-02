@@ -20,7 +20,6 @@
 
 package com.eleybourn.bookcatalogue;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.Nullable;
@@ -88,15 +87,5 @@ public class BookSearchActivity extends BaseActivityWithTasks {
                 .commit();
 
         Tracker.exitOnCreate(this);
-    }
-
-    @Override
-    protected void onActivityResult(final int requestCode, final int resultCode, final @Nullable Intent data) {
-        Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
-//        // Dispatch incoming result to the current visible fragment.
-//        Fragment frag = getSupportFragmentManager().findFragmentById(R.id.main_fragment);
-//        frag.onActivityResult(requestCode, resultCode, data);
-        super.onActivityResult(requestCode, resultCode, data);
-        Tracker.exitOnActivityResult(this);
     }
 }

@@ -37,7 +37,7 @@
     <string name="title_search_for">Поиск автора или названия</string>
     <string name="warning_book_not_found">Не найдена книга, соответствующая отсканированному штрих-коду. Возможно правильный штрих-код находится внутри книги. Иначе, пожалуйста, введите детализированную информацию о книге вручную.</string>
     <string name="lbl_series_num">№</string>
-    <string name="title_import_data">Импортировать книги</string>
+    <string name="title_import_book_data">Импортировать книги</string>
     <string name="warning_import_be_cautious">Предупреждение. Импорт данных может заменить существующие записи книг обновлённой информацией, в случае, если номер в файле совпадает с существующим номером. Обычно это то, что требуется, если вы обновляете поле в файле экспорта. Если вы добавляете запись новой книге, убедитесь, что поле id не заполнено.</string>
     <string name="search_title">Книжный каталог: результаты поиска</string>
     <string name="results_found">Найденные результаты</string>
@@ -123,7 +123,7 @@
     <string name="progress_end_backup_success">Резервное копирование успешно</string>
     <string name="error_backup_failed">Резервное копирование не удалось</string>
     <string name="error_file_must_contain_column">В файле должен быть столбец с названием %s</string>
-    <string name="error_file_must_contain_any_column">Файл должен содержать столбец с одним из следующих имён: %s</string>
+    <string name="error_csv_file_must_contain_any_column">Файл должен содержать столбец с одним из следующих имён: %s</string>
     <string name="error_column_is_blank">Столбец %1$s в строке %2$s пуст</string>
     <string name="error_columns_are_blank">В строке %2$d столбцы %1$s пусты</string>
     <string name="btn_confirm_save">Сохранить</string>
@@ -141,7 +141,7 @@
     <string name="warning_required_author">Не заполнено поле Автор</string>
     <string name="warning_series_already_in_list">Серия уже есть в списке</string>
     <string name="warning_required_series">Не заполнено поле Серия</string>
-    <string name="error_export_failed">Экспорт не удался. Не могу записать на SD-карту</string>
+    <string name="error_export_csv_failed">Экспорт не удался. Не могу записать на SD-карту</string>
     <string name="error_download_thumbnail_failed">Загрузка миниатюр не удалась. Запись на SD-карту невозможна</string>
     <string name="progress_msg_skip_title">Пропустить - %s</string>
     <string name="progress_end_num_books_searched">%s книг искалось</string>
@@ -211,7 +211,7 @@
     <string name="lt_correct_key">Ваш ключ разработика LibraryThing действителен.</string>
     <string name="error_no_internet_connection">Интернет соединение отсутствует.</string>
     <string name="menu_share_this">Поделиться</string>
-    <string name="email_export">Желаете ли Вы отправить этот экспорт по почте?</string>
+    <string name="export_csv_email">Желаете ли Вы отправить этот экспорт по почте?</string>
     <string name="menu_cover_crop">Обрезать эскиз</string>
     <string name="title_task_errors">Ошибки задач</string>
     <string name="retry">Повторить</string>
@@ -271,14 +271,14 @@
     <string name="x_of_y">%1$d из %2$d</string>
     <string name="gr_send_book_to_goodreads">Отправить книгу %1$s на Goodreads</string>
     <string name="erase_cover_cache">Очистить кэш обложек</string>
-    <string name="crash_message_text">BookCatalogue завершилось с ошибкой. Пожалуйста, помогите нам сделать приложение лучше, отправив эту ошибку.</string>
-    <string name="crash_notif_ticker_text">BookCatalogue завершилось с ошибкой</string>
-    <string name="crash_notif_title">Ошибка BookCatalogue</string>
-    <string name="crash_notif_text">Пожайлуйста, нажмите сюда для подробностей</string>
-    <string name="crash_dialog_title">Ошибка BookCatalogue</string>
-    <string name="crash_dialog_text">BookCatalogue завершился с ошибкой. Пожалуйста, если хотите, опишите что-нибудь, что, по вашему мнению, могло быть связано с этим. Нажмите "ОК", чтобы отправить по почте. Вы увидите e-mail перед отправлением.</string>
-    <string name="crash_dialog_comment_prompt">Ваши комментарии (или оставьте пустым):</string>
-    <string name="crash_dialog_ok_message">Спасибо!</string>
+    <string name="acra_resToastText">BookCatalogue завершилось с ошибкой. Пожалуйста, помогите нам сделать приложение лучше, отправив эту ошибку.</string>
+    <string name="acra_resNotifTickerText">BookCatalogue завершилось с ошибкой</string>
+    <string name="acra_resNotifTitle">Ошибка BookCatalogue</string>
+    <string name="acra_resNotifText">Пожайлуйста, нажмите сюда для подробностей</string>
+    <string name="acra_resDialogTitle">Ошибка BookCatalogue</string>
+    <string name="acra_resDialogText">BookCatalogue завершился с ошибкой. Пожалуйста, если хотите, опишите что-нибудь, что, по вашему мнению, могло быть связано с этим. Нажмите "ОК", чтобы отправить по почте. Вы увидите e-mail перед отправлением.</string>
+    <string name="acra_resDialogCommentPrompt">Ваши комментарии (или оставьте пустым):</string>
+    <string name="acra_resDialogOkToast">Спасибо!</string>
     <string name="lbl_read">Прочитана</string>
     <string name="lbl_unread">Не прочитана</string>
     <string name="no_date">(без даты)</string>
@@ -436,8 +436,8 @@
     <string name="in">В</string>
     <string name="size">Размер</string>
     <string name="updated">Обновлено</string>
-    <string name="warning_no_export_files_found">Файлы экспорта не найдены</string>
-    <string name="more_than_one_export_file_blah">Найдено больше одного файла экспорта; пожалуйста, выберите файл экспорта для импортирования из списка</string>
+    <string name="warning_csv_file_not_found">Файлы экспорта не найдены</string>
+    <string name="warning_csv_file_more_then_one_found">Найдено больше одного файла экспорта; пожалуйста, выберите файл экспорта для импортирования из списка</string>
     <string name="problem_starting_import_arg">Возникла проблема при начале импорта: %1$s</string>
     <string name="hint_booklist_style_menu">        Это меню позволяет Вам выбрать стиль списка. 
     	\n\nВы можете также настроить это меню и создать свои стили списков нажатием на \'Настроить\' в конце списка.</string>
@@ -517,7 +517,7 @@
     <string name="progress_msg_connecting_to_web_site">Соединение с сайтом…</string>
     <string name="backup_to_archive">Бэкап в архив</string>
     <string name="import_from_archive">Импорт из архива</string>
-    <string name="info_archive_complete_details">Файл %3$s с именем %2$s был создан в папке \"%1$s\" на вашей SD карте.
+    <string name="export_info_success_archive_details">Файл %3$s с именем %2$s был создан в папке \"%1$s\" на вашей SD карте.
     \n\nВам следует вручную скопировать его, чтобы защитить данные в случае утери или повреждения телефона.</string>
     <string name="progress_msg_covers">%1$s обложек обработано (%2$s пропущено)</string>
     <string name="lbl_advanced_options">Тонкие настройки</string>
@@ -535,8 +535,8 @@
     <string name="blp_summary_first_level_and_book_count">Показывать первыми заголовок и номер книг</string>
     <string name="blp_summary_show_all">Показать все детали</string>
     <string name="error_import_failed">Импорт не удался.</string>
-    <string name="error_backup_failed_check_sd_writable">Пожалуйста, проверьте что на SD карте достаточно места и возможна запись.</string>
-    <string name="error_import_failed_check_sd_readable">Пожалуйста, проверьте что SD карта доступна.</string>
+    <string name="error_storage_not_writable">Пожалуйста, проверьте что на SD карте достаточно места и возможна запись.</string>
+    <string name="error_storage_not_readable">Пожалуйста, проверьте что SD карта доступна.</string>
     <string name="lbl_language">Язык</string>
 
     <string name="blp_generation">Составление списка книг</string>
@@ -545,30 +545,30 @@
     <string name="blp_generation_force_fully_featured">Полная функциональность</string>
     <string name="blp_generation_use_recommended_option">Автоматически использовать рекомендованный вариант</string>
 
-    <string name="import_books_blurb">Книги этого архива будут импортированы. Выберите один из вариантов, чтобы начать импорт, или \'НАЗАД\' для отмены:</string>
-    <string name="info_all_books_will_be_imported">Все книги архива будут импортированы, обновив существующие и добавив новые.</string>
-    <string name="new_and_changed_books">Новые и обновленные книги</string>
-    <string name="new_and_changed_books_blurb">Импортировать только новые книги или только те, что обновлены более поздно. Это удобно, когда синхронизируются несклоько устройств.</string>
-    <string name="old_archive_blurb">Эта опция не поддерживается для архивов более ранних версий.</string>
+    <string name="title_import_books_blurb">Книги этого архива будут импортированы. Выберите один из вариантов, чтобы начать импорт, или \'НАЗАД\' для отмены:</string>
+    <string name="import_option_info_all_books">Все книги архива будут импортированы, обновив существующие и добавив новые.</string>
+    <string name="import_option_new_and_changed_books">Новые и обновленные книги</string>
+    <string name="import_option_info_new_and_changed_books">Импортировать только новые книги или только те, что обновлены более поздно. Это удобно, когда синхронизируются несклоько устройств.</string>
+    <string name="import_warning_old_archive">Эта опция не поддерживается для архивов более ранних версий.</string>
     <string name="progress_msg_n_created_m_updated">%1$s создано, %2$s обновлено</string>
-    <string name="export_books_blurb">Книги этого архива будут экспортированы. Выберите один из вариантов, чтобы начать экспорт, или \'НАЗАД\' для отмены:</string>
+    <string name="title_export_books">Книги этого архива будут экспортированы. Выберите один из вариантов, чтобы начать экспорт, или \'НАЗАД\' для отмены:</string>
     <string name="progress_msg_covers_skip">%1$s обложек обработано (%2$s не хватает, %3$s пропущено)</string>
 
-    <string name="error_import_failed_is_location_correct">Импорт не удался.</string>
+    <string name="error_import_failed_is_csv_file_location_correct">Импорт не удался.</string>
 
-    <string name="export_all_blurb">Все книги, обложки, настройки и пользовательские стили будут экспортированы в архив.</string>
-    <string name="export_advanced_blurb">Выберите, что будет экспортировано в архив.</string>
+    <string name="export_dialog_info_all">Все книги, обложки, настройки и пользовательские стили будут экспортированы в архив.</string>
+    <string name="export_options_dialog_title">Выберите, что будет экспортировано в архив.</string>
 
     <string name="book_details">Детальное инфо</string>
     <string name="info_book_details">Подробная информация о самой книге</string>
     <string name="lbl_cover_images">Обложки</string>
-    <string name="info_cover_images">Обложки для всех выбранных книг. Это сделает экспорт значительно больше.</string>
+    <string name="export_info_cover_images">Обложки для всех выбранных книг. Это сделает экспорт значительно больше.</string>
     <string name="info_preferences">Настройки и пользовательские стили</string>
 
-    <string name="export_advanced_date_blurb">Опционально укажите дату при выборе книг и/или обложек для экспорта:</string>
+    <string name="export_option_info_books_since_date">Опционально укажите дату при выборе книг и/или обложек для экспорта:</string>
 
-    <string name="all_books_added_or_updated_since">Все добавленные или обновленные книги с:</string>
-    <string name="info_all_books_added_or_updated_since_last_full_backup">Все добавленные или обновленные книги с последнего бэкапа</string>
+    <string name="export_option_books_since_date">Все добавленные или обновленные книги с:</string>
+    <string name="export_option_books_since_last_full_backup">Все добавленные или обновленные книги с последнего бэкапа</string>
 
 
     <plurals name="displaying_n_books">

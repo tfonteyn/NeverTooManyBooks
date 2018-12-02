@@ -21,7 +21,6 @@
 package com.eleybourn.bookcatalogue;
 
 import android.app.Activity;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
@@ -29,7 +28,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -39,6 +37,7 @@ import android.widget.Button;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.datamanager.DataEditor;
+import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.entities.Book;
@@ -151,23 +150,35 @@ public class EditBookFragment extends BookBaseFragment implements BookManager {
         confirmButton.setText(isExistingBook ? R.string.btn_confirm_save_book : R.string.btn_confirm_add_book);
         confirmButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                saveBook(new PostSaveAction());
+                doSave(new StandardDialogs.AlertDialogAction(){
+                    @Override
+                    public void onPositive() {
+                        saveBook();
+                        Intent data = new Intent();
+                        data.putExtra(UniqueId.KEY_ID, getBook().getBookId());
+                        mActivity.setResult(Activity.RESULT_OK, data);
+                        mActivity.finish();
+                    }
+
+                    @Override
+                    public void onNeutral() {
+                        // Remain editing
+                    }
+
+                    @Override
+                    public void onNegative() {
+                        doCancel();
+                    }
+                });
             }
         });
 
         getView().findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                // Cleanup because we may have made global changes
-                // 2018-11-02: no longer doing this explicitly now... sooner or later a purge will happen anyhow
-//                mDb.purgeAuthors();
-//                mDb.purgeSeries();
-
-                // delete any leftover temporary thumbnails
-                StorageUtils.deleteTempCoverFile();
-
-                mActivity.finishIfClean();
+                doCancel();
             }
         });
+
         Tracker.exitOnActivityCreated(this);
     }
 
@@ -216,7 +227,7 @@ public class EditBookFragment extends BookBaseFragment implements BookManager {
         tab = mTabLayout.newTab().setText(R.string.tab_lbl_notes).setTag(fragmentHolder);
         mTabLayout.addTab(tab);
 
-        addTOCTab(getBook().getBoolean(Book.IS_ANTHOLOGY));
+        addTOCTab(getBook().getBoolean(Book.HAS_MULTIPLE_WORKS));
 
         // can't loan out a new book yet (or user does not like loaning)
         if (isExistingBook && Fields.isVisible(UniqueId.KEY_LOAN_LOANED_TO)) {
@@ -347,34 +358,8 @@ public class EditBookFragment extends BookBaseFragment implements BookManager {
     }
 
     /**
-     * Dispatch incoming result to the correct fragment.
-     * Called from the hosting {@link EditBookActivity#onActivityResult(int, int, Intent)}
-     */
-    @Override
-    public void onActivityResult(final int requestCode, final int resultCode, final @Nullable Intent data) {
-        Tracker.enterOnActivityResult(this,requestCode,resultCode, data);
-
-//        // Dispatch incoming result to the current visible fragment.
-//        Fragment frag = getChildFragmentManager().findFragmentById(R.id.tab_fragment);
-//        frag.onActivityResult(requestCode, resultCode, data);
-        super.onActivityResult(requestCode, resultCode, data);
-
-        Tracker.exitOnActivityResult(this);
-    }
-
-    /**
-     * Default result: the id of the edited book
-     */
-    protected void setActivityResult() {
-        Intent data = new Intent();
-        data.putExtra(UniqueId.KEY_ID, getBook().getBookId());
-        // if some day we can detect global changes, use this:
-//        mActivity.setResult(mActivity.changesMade() ? Activity.RESULT_OK : Activity.RESULT_CANCELED, data); /* many places */
-        //ENHANCE: global changes not detected, so assume they happened.
-        mActivity.setResult(Activity.RESULT_OK, data); /* many places */
-    }
-
-    /**
+     * Called when the user clicks 'save'
+     *
      * This will save a book into the database, by either updating or created a book.
      *
      * It will check if the book already exists (isbn search) if you are creating a book;
@@ -386,7 +371,7 @@ public class EditBookFragment extends BookBaseFragment implements BookManager {
      *
      * @param nextStep The next step to be executed on confirm/cancel.
      */
-    private void saveBook(final @NonNull PostConfirmOrCancelAction nextStep) {
+    private void doSave(final @NonNull StandardDialogs.AlertDialogAction nextStep) {
         Book book = getBook();
 
         // ask the currently displayed tab fragment to add it's fields; the others did when they went in hiding
@@ -416,45 +401,30 @@ public class EditBookFragment extends BookBaseFragment implements BookManager {
             String isbn = book.getString(UniqueId.KEY_BOOK_ISBN);
             /* Check if the book currently exists */
             if (!isbn.isEmpty() && ((mDb.getIdFromIsbn(isbn, true) > 0))) {
-                /*
-                 * If it exists, show a dialog and use it to perform the
-                 * next action, according to the users choice.
-                 */
-                AlertDialog dialog = new AlertDialog.Builder(requireContext())
-                        .setMessage(getString(R.string.warning_duplicate_book_message))
-                        .setTitle(R.string.title_duplicate_book)
-                        .setIconAttribute(android.R.attr.alertDialogIcon)
-                        .create();
-
-                dialog.setButton(AlertDialog.BUTTON_POSITIVE,
-                        getString(android.R.string.ok),
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(final DialogInterface dialog, final int which) {
-                                doSaveBook();
-                                nextStep.onConfirm();
-                            }
-                        });
-                dialog.setButton(AlertDialog.BUTTON_NEGATIVE,
-                        getString(android.R.string.cancel),
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(final DialogInterface dialog, final int which) {
-                                nextStep.onCancel();
-                            }
-                        });
-                dialog.show();
+                StandardDialogs.confirmSaveDuplicateBook(requireContext(),nextStep);
                 return;
             }
         }
 
         // No special actions required...just do it.
-        doSaveBook();
-        nextStep.onConfirm();
+        nextStep.onPositive();
+    }
+
+    private void doCancel() {
+        // delete any leftover temporary thumbnails
+        StorageUtils.deleteTempCoverFile();
+
+        Intent data = new Intent();
+        data.putExtra(UniqueId.KEY_ID, getBook().getBookId());
+        //ENHANCE: global changes not detected, so assume they happened.
+        mActivity.setResult(Activity.RESULT_OK, data);
+        mActivity.finishIfClean();
     }
 
     /**
      * Save the collected book details
      */
-    private void doSaveBook() {
+    private void saveBook() {
         Book book = getBook();
         if (book.getBookId() == 0) {
             long id = mDb.insertBook(book);
@@ -472,23 +442,6 @@ public class EditBookFragment extends BookBaseFragment implements BookManager {
         } else {
             mDb.updateBook(book.getBookId(), book, 0);
         }
-
-        // certainly made changes to the Book. Might be redundant, but I'm paranoid.
-        mActivity.setChangesMade(true);
-    }
-
-
-    /**
-     * TODO: nice idea, but underused.
-     * Ideas:
-     * name the methods:  onPositive/onNegative + add a onNeutral
-     * and use this wherever AlertDialog is used
-     */
-    public interface PostConfirmOrCancelAction {
-        void onConfirm();
-
-        @SuppressWarnings("EmptyMethod")
-        void onCancel();
     }
 
     private class FragmentHolder {
@@ -496,15 +449,4 @@ public class EditBookFragment extends BookBaseFragment implements BookManager {
         String tag;
     }
 
-    private class PostSaveAction implements PostConfirmOrCancelAction {
-
-        public void onConfirm() {
-            EditBookFragment.this.setActivityResult();
-            mActivity.finish();
-        }
-
-        public void onCancel() {
-            // Do nothing
-        }
-    }
 }

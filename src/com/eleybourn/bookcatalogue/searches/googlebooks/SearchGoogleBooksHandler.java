@@ -132,7 +132,7 @@ class SearchGoogleBooksHandler extends DefaultHandler {
 
     private final StringBuilder mBuilder = new StringBuilder();
     @NonNull
-    private ArrayList<String> url = new ArrayList<>();
+    private final ArrayList<String> url = new ArrayList<>();
 
     private boolean mInEntry = false;
     private boolean mEntryDone = false;

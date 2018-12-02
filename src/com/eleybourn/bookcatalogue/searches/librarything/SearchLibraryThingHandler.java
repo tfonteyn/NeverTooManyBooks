@@ -442,7 +442,7 @@ class SearchLibraryThingHandler extends DefaultHandler {
             }
 //          } else if (localName.equalsIgnoreCase(XML_RESPONSE)){
 //			    // Not really much to do; we *could* look for the <err> element, then report it.
-//				String stat = attributes.getValue("", "stat");
+//				String stat = attributes.get("", "stat");
         }
     }
 
@@ -480,17 +480,17 @@ class SearchLibraryThingHandler extends DefaultHandler {
                     mSeries.add(new Series(mBuilder.toString()));
                     break;
 
-                case Places:
-                    StringList.addOrAppend(mBookData, LT_PLACES, mBuilder.toString());
-                    break;
-
-                case Characters:
-                    StringList.addOrAppend(mBookData, LT_CHARACTERS, mBuilder.toString());
-                    break;
-
-                case OriginalPubDate:
-                    StringList.addOrAppend(mBookData, LT_ORIG_PUB_DATE, mBuilder.toString());
-                    break;
+//                case Places:
+//                    StringList.addOrAppend(mBookData, LT_PLACES, mBuilder.toString());
+//                    break;
+//
+//                case Characters:
+//                    StringList.addOrAppend(mBookData, LT_CHARACTERS, mBuilder.toString());
+//                    break;
+//
+//                case OriginalPubDate:
+//                    StringList.addOrAppend(mBookData, LT_ORIG_PUB_DATE, mBuilder.toString());
+//                    break;
             }
         }
         // Note:

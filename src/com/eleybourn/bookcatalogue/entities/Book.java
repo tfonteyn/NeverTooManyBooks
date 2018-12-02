@@ -64,7 +64,7 @@ public class Book extends DataManager {
      * Type: Boolean
      * true: anthology by one or more authors
      */
-    public static final String IS_ANTHOLOGY = "+IsAnthology";
+    public static final String HAS_MULTIPLE_WORKS = "+IsAnthology";
 
     /**
      * Key for accessor to the underlying {@link UniqueId#KEY_BOOK_READ}
@@ -478,8 +478,8 @@ public class Book extends DataManager {
         addAccessor(IS_READ, new BooleanDataAccessor(UniqueId.KEY_BOOK_READ));
 
         /* This only handles the fact of being an anthology or not. Does not handle 'multiple authors' */
-        addAccessor(IS_ANTHOLOGY,
-                new BitmaskDataAccessor(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK, DatabaseDefinitions.DOM_IS_ANTHOLOGY));
+        addAccessor(HAS_MULTIPLE_WORKS,
+                new BitmaskDataAccessor(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK, DatabaseDefinitions.DOM_BOOK_WITH_MULTIPLE_WORKS));
 
     }
 
@@ -536,14 +536,12 @@ public class Book extends DataManager {
 
         BookshelfCheckListItem(final @NonNull Parcel in) {
             super(in);
-            //API_UPGRADE 23 use readTypedObject(Bookshelf.CREATOR) which is more efficient
-            item = in.readParcelable(Bookshelf.class.getClassLoader());
+            item = in.readParcelable(getClass().getClassLoader());
         }
 
         @Override
         public void writeToParcel(Parcel dest, final int flags) {
             super.writeToParcel(dest, flags);
-            //API_UPGRADE 23 use writeTypedObject which is more efficient
             dest.writeParcelable(item, flags);
         }
 

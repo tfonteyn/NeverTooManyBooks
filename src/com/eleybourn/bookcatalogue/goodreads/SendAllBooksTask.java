@@ -34,6 +34,9 @@ import com.eleybourn.bookcatalogue.tasks.taskqueue.Task;
 /**
  * Background task class to send all books in the database to Goodreads.
  *
+ * A Task *MUST* be serializable.
+ * This means that it can not contain any references to UI components or similar objects.
+ *
  * @author Philip Warner
  */
 public class SendAllBooksTask extends SendBooksTask {

@@ -24,15 +24,16 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle.CompoundKey;
 import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
-import com.eleybourn.bookcatalogue.properties.BooleanListProperty;
-import com.eleybourn.bookcatalogue.properties.ListProperty.ItemEntries;
-import com.eleybourn.bookcatalogue.properties.Properties;
+import com.eleybourn.bookcatalogue.properties.BooleanProperty;
 import com.eleybourn.bookcatalogue.properties.PropertyGroup;
+import com.eleybourn.bookcatalogue.properties.PropertyList;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -50,17 +51,25 @@ import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_SERIES;
  * @author Philip Warner
  */
 public class BooklistGroup implements Serializable, Parcelable {
+    public static final Parcelable.Creator<BooklistGroup> CREATOR = new Parcelable.Creator<BooklistGroup>() {
+        @Override
+        public BooklistGroup createFromParcel(final @NonNull Parcel in) {
+            return new BooklistGroup(in);
+        }
+
+        @Override
+        public BooklistGroup[] newArray(final int size) {
+            return new BooklistGroup[size];
+        }
+    };
     private static final long serialVersionUID = 1012206875683862714L;
-
-    private static final String PREF_SHOW_ALL_AUTHORS = "APP.ShowAllAuthors";
-    private static final String PREF_SHOW_ALL_SERIES = "APP.ShowAllSeries";
-    private static final String PREF_DISPLAY_FIRST_THEN_LAST_NAMES = "APP.DisplayFirstThenLast";
-
     /** The Row Kind of this group */
     public final int kind;
     /** The domains represented by this group. Set at runtime by builder based on current group and outer groups */
+    @Nullable
     transient ArrayList<DomainDefinition> groupDomains;
     /** The domain used to display this group. Set at runtime by builder based on internal logic of builder */
+    @Nullable
     transient DomainDefinition displayDomain;
     /** Compound key of this group. Set at runtime by builder based on current group and outer groups */
     private transient CompoundKey mCompoundKey;
@@ -72,31 +81,13 @@ public class BooklistGroup implements Serializable, Parcelable {
         this.kind = kind;
     }
 
-    protected BooklistGroup(Parcel in) {
+    BooklistGroup(final @NonNull Parcel in) {
         kind = in.readInt();
+        displayDomain = in.readParcelable(getClass().getClassLoader());
+        mCompoundKey = in.readParcelable(getClass().getClassLoader());
+        groupDomains = new ArrayList<>();
+        in.readList(groupDomains, getClass().getClassLoader());
     }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(kind);
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    public static final Creator<BooklistGroup> CREATOR = new Creator<BooklistGroup>() {
-        @Override
-        public BooklistGroup createFromParcel(Parcel in) {
-            return new BooklistGroup(in);
-        }
-
-        @Override
-        public BooklistGroup[] newArray(int size) {
-            return new BooklistGroup[size];
-        }
-    };
 
     /**
      * Return a list of BooklistGroups, one for each defined row kind
@@ -106,23 +97,23 @@ public class BooklistGroup implements Serializable, Parcelable {
         List<BooklistGroup> list = new ArrayList<>();
         //skip BOOK KIND
         for (int kind = 1; kind < RowKinds.size(); kind++) {
-            list.add(newGroup(kind));
+            list.add(newInstance(kind));
         }
         return list;
     }
 
     /**
-     * Create a new BooklistGroup of the specified kind, creating any more specific subclasses as necessary.
+     * Create a new BooklistGroup of the specified kind, creating any specific subclasses as necessary.
      *
      * @param kind Kind of group to create
      */
     @NonNull
-    static BooklistGroup newGroup(final int kind) {
+    static BooklistGroup newInstance(final int kind) {
         switch (kind) {
             case ROW_KIND_AUTHOR:
-                return new BooklistGroup.BooklistAuthorGroup();
+                return new BooklistAuthorGroup();
             case ROW_KIND_SERIES:
-                return new BooklistGroup.BooklistSeriesGroup();
+                return new BooklistSeriesGroup();
             default:
                 return new BooklistGroup(kind);
         }
@@ -136,6 +127,11 @@ public class BooklistGroup implements Serializable, Parcelable {
     /** Getter for compound key */
     @NonNull
     CompoundKey getCompoundKey() {
+        if (BuildConfig.DEBUG) {
+            if (mCompoundKey == null) {
+                throw new IllegalStateException("mCompoundKey was null");
+            }
+        }
         return mCompoundKey;
     }
 
@@ -144,7 +140,10 @@ public class BooklistGroup implements Serializable, Parcelable {
         return RowKinds.getName(kind);
     }
 
-    public void getStyleProperties(final @NonNull Properties list) {
+    /**
+     * Get the Property objects that this group will contribute to a Style.
+     */
+    public void getStyleProperties(final @NonNull PropertyList /* in/out */ list) {
     }
 
     /**
@@ -165,113 +164,70 @@ public class BooklistGroup implements Serializable, Parcelable {
         in.defaultReadObject();
     }
 
+    @SuppressWarnings("SameReturnValue")
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(final @NonNull Parcel dest, int flags) {
+        dest.writeInt(kind);
+        // TEST: displayDomain, mCompoundKey, groupDomains are marked as transient. Do we need to do this ?
+        dest.writeParcelable(displayDomain, 0);
+        dest.writeParcelable(mCompoundKey, 0);
+        dest.writeList(groupDomains);
+    }
 
     /**
+     * Note to self: do not rename or move this class, deserialization will break.
+     *
      * Specialized BooklistGroup representing an Series group. Includes extra attributes based
      * on preferences.
      *
      * @author Philip Warner
      */
-    public static class BooklistSeriesGroup extends BooklistGroup /* implements Parcelable */ {
+    public static class BooklistSeriesGroup extends BooklistGroup implements Serializable, Parcelable {
+        public static final Creator<BooklistSeriesGroup> CREATOR = new Creator<BooklistSeriesGroup>() {
+            @Override
+            public BooklistSeriesGroup createFromParcel(Parcel in) {
+                return new BooklistSeriesGroup(in);
+            }
+
+            @Override
+            public BooklistSeriesGroup[] newArray(int size) {
+                return new BooklistSeriesGroup[size];
+            }
+        };
+        private static final String PREF_SHOW_ALL_SERIES = "APP.ShowAllSeries";
         private static final long serialVersionUID = 9023218506278704155L;
         /** mAllSeries Parameter values and descriptions */
-        private static final ItemEntries<Boolean> mAllSeriesItems = new ItemEntries<>();
+        private static final String kind = BookCatalogueApp.getResourceString(R.string.lbl_series);
 
         static {
-            String kind = BookCatalogueApp.getResourceString(R.string.lbl_series);
-            mAllSeriesItems.add(null, R.string.use_default_setting);
-            mAllSeriesItems.add(false, R.string.books_with_multiple_show_book_under_primary_1s_only, kind);
-            mAllSeriesItems.add(true, R.string.books_with_multiple_show_book_under_each_1s, kind);
+
+
         }
 
         /** Show book under each series it appears in? */
-        transient BooleanListProperty mAllSeries;
+        private transient BooleanProperty mAllSeries;
 
         BooklistSeriesGroup() {
             super(ROW_KIND_SERIES);
             initProperties();
-            mAllSeries.set((Boolean) null);
+            mAllSeries.setValue(null);
         }
 
-        private void initProperties() {
-            mAllSeries = new BooleanListProperty(mAllSeriesItems, "AllSeries",
-                    PropertyGroup.GRP_SERIES, R.string.books_with_multiple_series)
-                    .setPreferenceKey(PREF_SHOW_ALL_SERIES)
-                    .setDefaultValue(false)
-                    .setHint(R.string.hint_series_book_may_appear_more_than_once);
-        }
-
-        /**
-         * Custom serialization support. The signature of this method should never be changed.
-         *
-         * @see Serializable
-         */
-        private void writeObject(ObjectOutputStream out) throws IOException {
-            out.defaultWriteObject();
-            // We use read/write Object so that NULL values are preserved
-            out.writeObject(mAllSeries.get());
-        }
-
-        /**
-         * We need to set the name resource ID for the properties since these may change across versions.
-         *
-         * Custom serialization support. The signature of this method should never be changed.
-         *
-         * @see Serializable
-         */
-        private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-            in.defaultReadObject();
+        BooklistSeriesGroup(Parcel in) {
+            super(in);
             initProperties();
-            // We use read/write Object so that NULL values are preserved
-            mAllSeries.set((Boolean) in.readObject());
-        }
-
-        boolean showAllSeries() {
-            return mAllSeries.isTrue();
+            mAllSeries.readFromParcel(in);
         }
 
         @Override
-        @CallSuper
-        public void getStyleProperties(final @NonNull Properties list) {
-            super.getStyleProperties(list);
-            list.add(mAllSeries);
-        }
-    }
-
-    /**
-     * Specialized BooklistGroup representing an Author group. Includes extra attributes based
-     * on preferences.
-     *
-     * @author Philip Warner
-     */
-    public static class BooklistAuthorGroup extends BooklistGroup {
-        private static final long serialVersionUID = -1984868877792780113L;
-        private static final ItemEntries<Boolean> mGivenNameFirstItems = new ItemEntries<>();
-        private static final ItemEntries<Boolean> mAllAuthorsItems = new ItemEntries<>();
-
-        static {
-            mGivenNameFirstItems.add(null, R.string.use_default_setting);
-            mGivenNameFirstItems.add(false, R.string.blp_format_author_name_family_first);
-            mGivenNameFirstItems.add(true, R.string.blp_format_author_name_given_first);
-        }
-
-        static {
-            String kind = BookCatalogueApp.getResourceString(R.string.lbl_author);
-            mAllAuthorsItems.add(null, R.string.use_default_setting);
-            mAllAuthorsItems.add(false, R.string.books_with_multiple_show_book_under_primary_1s_only, kind);
-            mAllAuthorsItems.add(true, R.string.books_with_multiple_show_book_under_each_1s, kind);
-        }
-
-        /** Support for 'Show Given Name' property */
-        transient BooleanListProperty mGivenName;
-        /** Support for 'Show All Authors of Book' property */
-        transient BooleanListProperty mAllAuthors;
-
-        BooklistAuthorGroup() {
-            super(ROW_KIND_AUTHOR);
-            initProperties();
-            mAllAuthors.set((Boolean) null);
-            mGivenName.set((Boolean) null);
+        public void writeToParcel(@NonNull Parcel dest, int flags) {
+            super.writeToParcel(dest, flags);
+            mAllSeries.writeToParcel(dest);
         }
 
         /**
@@ -279,14 +235,27 @@ public class BooklistGroup implements Serializable, Parcelable {
          * and need to be created in constructors as well.
          */
         private void initProperties() {
-            mAllAuthors = new BooleanListProperty(mAllAuthorsItems, "AllAuthors",
-                    PropertyGroup.GRP_AUTHOR, R.string.books_with_multiple_authors)
-                    .setPreferenceKey(PREF_SHOW_ALL_AUTHORS)
-                    .setHint(R.string.hint_authors_book_may_appear_more_than_once);
+            mAllSeries = new BooleanProperty("AllSeries",
+                    PropertyGroup.GRP_SERIES, R.string.books_with_multiple_series,
+                    Boolean.FALSE)
+                    .setPreferenceKey(PREF_SHOW_ALL_SERIES)
+                    .setHint(R.string.hint_series_book_may_appear_more_than_once)
+                    .setTrueLabel(R.string.books_with_multiple_show_book_under_each_1s, kind)
+                    .setFalseLabel(R.string.books_with_multiple_show_book_under_primary_1s_only, kind);
+        }
 
-            mGivenName = new BooleanListProperty(mGivenNameFirstItems, "GivenName",
-                    PropertyGroup.GRP_AUTHOR, R.string.blp_format_author_name)
-                    .setPreferenceKey(PREF_DISPLAY_FIRST_THEN_LAST_NAMES);
+        boolean showAllSeries() {
+            return mAllSeries.isTrue();
+        }
+
+        /**
+         * Get the Property objects that this group will contribute to a Style.
+         */
+        @Override
+        @CallSuper
+        public void getStyleProperties(final @NonNull PropertyList list) {
+            super.getStyleProperties(list);
+            list.add(mAllSeries);
         }
 
         /**
@@ -297,8 +266,7 @@ public class BooklistGroup implements Serializable, Parcelable {
         private void writeObject(ObjectOutputStream out) throws IOException {
             out.defaultWriteObject();
             // We use read/write Object so that NULL values are preserved
-            out.writeObject(mAllAuthors.get());
-            out.writeObject(mGivenName.get());
+            out.writeObject(mAllSeries.getValue());
         }
 
         /**
@@ -312,8 +280,77 @@ public class BooklistGroup implements Serializable, Parcelable {
             in.defaultReadObject();
             initProperties();
             // We use read/write Object so that NULL values are preserved
-            mAllAuthors.set((Boolean) in.readObject());
-            mGivenName.set((Boolean) in.readObject());
+            mAllSeries.setValue((Boolean) in.readObject());
+        }
+    }
+
+    /**
+     * Note to self: do not rename or move this class, deserialization will break.
+     *
+     * Specialized BooklistGroup representing an Author group. Includes extra attributes based
+     * on preferences.
+     *
+     * @author Philip Warner
+     */
+    public static class BooklistAuthorGroup extends BooklistGroup implements Serializable, Parcelable {
+        public static final Creator<BooklistAuthorGroup> CREATOR = new Creator<BooklistAuthorGroup>() {
+            @Override
+            public BooklistAuthorGroup createFromParcel(Parcel in) {
+                return new BooklistAuthorGroup(in);
+            }
+
+            @Override
+            public BooklistAuthorGroup[] newArray(int size) {
+                return new BooklistAuthorGroup[size];
+            }
+        };
+        private static final String PREF_SHOW_ALL_AUTHORS = "APP.ShowAllAuthors";
+        private static final String PREF_DISPLAY_FIRST_THEN_LAST_NAMES = "APP.DisplayFirstThenLast";
+        private static final long serialVersionUID = -1984868877792780113L;
+
+        private static final String kind = BookCatalogueApp.getResourceString(R.string.lbl_author);
+
+        /** Support for 'Show Given Name' property */
+        private transient BooleanProperty mGivenName;
+        /** Support for 'Show All Authors of Book' property */
+        private transient BooleanProperty mAllAuthors;
+
+        BooklistAuthorGroup() {
+            super(ROW_KIND_AUTHOR);
+            initProperties();
+        }
+
+        BooklistAuthorGroup(final @NonNull Parcel in) {
+            super(in);
+            initProperties();
+            mAllAuthors.readFromParcel(in);
+            mGivenName.readFromParcel(in);
+        }
+
+        @Override
+        public void writeToParcel(final @NonNull Parcel dest, final int flags) {
+            super.writeToParcel(dest, flags);
+            mAllAuthors.writeToParcel(dest);
+            mGivenName.writeToParcel(dest);
+        }
+
+        /**
+         * Create the properties objects; these are transient, so not created by deserialization,
+         * and need to be created in constructors as well.
+         */
+        private void initProperties() {
+            mAllAuthors = new BooleanProperty("AllAuthors",
+                    PropertyGroup.GRP_AUTHOR, R.string.books_with_multiple_authors,
+                    Boolean.FALSE);
+            mAllAuthors.setPreferenceKey(PREF_SHOW_ALL_AUTHORS);
+            mAllAuthors.setHint(R.string.hint_authors_book_may_appear_more_than_once)
+                    .setTrueLabel(R.string.books_with_multiple_show_book_under_each_1s, kind)
+                    .setFalseLabel(R.string.books_with_multiple_show_book_under_primary_1s_only, kind);
+
+            mGivenName = new BooleanProperty("GivenName",
+                    PropertyGroup.GRP_AUTHOR, R.string.blp_format_author_name, Boolean.TRUE)
+                    .setPreferenceKey(PREF_DISPLAY_FIRST_THEN_LAST_NAMES)
+                    .setOptionLabels(R.string.blp_format_author_name_given_first, R.string.blp_format_author_name_family_first);
         }
 
         boolean showAllAuthors() {
@@ -329,13 +366,38 @@ public class BooklistGroup implements Serializable, Parcelable {
          */
         @Override
         @CallSuper
-        public void getStyleProperties(final @NonNull Properties list) {
+        public void getStyleProperties(final @NonNull PropertyList /* in/out */ list) {
             super.getStyleProperties(list);
-
             list.add(mAllAuthors);
             list.add(mGivenName);
         }
 
+        /**
+         * Custom serialization support. The signature of this method should never be changed.
+         *
+         * @see Serializable
+         */
+        private void writeObject(ObjectOutputStream out) throws IOException {
+            out.defaultWriteObject();
+            // We use read/write Object so that NULL values are preserved
+            out.writeObject(mAllAuthors.getValue());
+            out.writeObject(mGivenName.getValue());
+        }
+
+        /**
+         * We need to set the name resource ID for the properties since these may change across versions.
+         *
+         * Custom serialization support. The signature of this method should never be changed.
+         *
+         * @see Serializable
+         */
+        private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+            in.defaultReadObject();
+            initProperties();
+            // We use read/write Object so that NULL values are preserved
+            mAllAuthors.setValue((Boolean) in.readObject());
+            mGivenName.setValue((Boolean) in.readObject());
+        }
     }
 }
 

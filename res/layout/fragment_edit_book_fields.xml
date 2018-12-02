@@ -135,7 +135,7 @@
 
             <ImageButton
                 android:id="@+id/btn_publisher"
-                style="@style/dropDownMenuButton"
+                style="@style/itemEditButton"
                 android:layout_alignBottom="@id/publisher"
                 app:srcCompat="@drawable/ic_arrow_drop_down"
                 tools:ignore="ContentDescription" />
@@ -253,7 +253,7 @@
 
             <ImageButton
                 android:id="@+id/btn_price_listed_currency"
-                style="@style/dropDownMenuButton"
+                style="@style/itemEditButton"
                 android:layout_alignBottom="@id/price_listed"
                 app:srcCompat="@drawable/ic_arrow_drop_down"
                 tools:ignore="ContentDescription" />
@@ -281,7 +281,7 @@
 
             <ImageButton
                 android:id="@+id/btn_format"
-                style="@style/dropDownMenuButton"
+                style="@style/itemEditButton"
                 android:layout_alignBottom="@id/format"
                 app:srcCompat="@drawable/ic_arrow_drop_down"
                 tools:ignore="ContentDescription" />
@@ -309,7 +309,7 @@
 
             <ImageButton
                 android:id="@+id/btn_genre"
-                style="@style/dropDownMenuButton"
+                style="@style/itemEditButton"
                 android:layout_alignBottom="@id/genre"
                 app:srcCompat="@drawable/ic_arrow_drop_down"
                 tools:ignore="ContentDescription" />
@@ -337,7 +337,7 @@
 
             <ImageButton
                 android:id="@+id/btn_language"
-                style="@style/dropDownMenuButton"
+                style="@style/itemEditButton"
                 android:layout_alignBottom="@id/language"
                 app:srcCompat="@drawable/ic_arrow_drop_down"
                 tools:ignore="ContentDescription" />
@@ -359,7 +359,7 @@
 
             <ImageButton
                 android:id="@+id/btn_description"
-                style="@style/dropDownMenuButton"
+                style="@style/itemEditButton"
                 android:layout_alignBottom="@id/lbl_description"
                 app:srcCompat="@drawable/ic_mode_edit"
                 tools:ignore="ContentDescription" />

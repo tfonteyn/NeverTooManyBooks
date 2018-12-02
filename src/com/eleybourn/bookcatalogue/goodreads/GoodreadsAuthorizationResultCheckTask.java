@@ -40,6 +40,9 @@ import com.eleybourn.bookcatalogue.tasks.taskqueue.Task;
  *
  * Runs in background because it can take several seconds.
  *
+ * A Task *MUST* be serializable.
+ * This means that it can not contain any references to UI components or similar objects.
+ *
  * @author Philip Warner
  */
 public class GoodreadsAuthorizationResultCheckTask extends GoodreadsTask {

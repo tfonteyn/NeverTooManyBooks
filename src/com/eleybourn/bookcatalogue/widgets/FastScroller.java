@@ -159,10 +159,7 @@ public class FastScroller {
 
         // Get both the scrollbar states drawables
         final Resources res = context.getResources();
-//        mOverlayDrawable = res.getDrawable(R.drawable.border);
         mOverlayDrawable = res.getDrawable(android.R.drawable.alert_dark_frame);
-        //mOverlayDrawable = res.getDrawable(android.R.drawable.alert_light_frame);
-//        mOverlayDrawable = res.getDrawable(R.drawable.bc_fastscroller_overlay_background);
         mThumbDrawable = res.getDrawable(R.drawable.scrollbar_handle_accelerated_anim2);
         init(context);
     }

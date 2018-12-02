@@ -36,10 +36,12 @@ import android.widget.CheckedTextView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
+import com.eleybourn.bookcatalogue.BooksOnBookshelf;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter;
 import com.eleybourn.bookcatalogue.adapters.SimpleListAdapterRowActionListener;
+import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
@@ -53,8 +55,26 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 /**
- * Activity to edit the list of styles and enable/disable their presence in the styles menu.
- * Individual context menus allow cloning/editing/deleting of styles.
+ * Activity to edit the list of styles
+ * - enable/disable their presence in the styles menu.
+ * - Individual context menus allow cloning/editing/deleting of styles.
+ *
+ * Started from:
+ * - {@link BooksOnBookshelf} sort-menu dialog box
+ * - {@link BaseActivity}  nav panel
+ *
+ *
+ * Starts
+ * - {@link EditBooklistStyleActivity}
+ * Consumes + forwards
+ * - UniqueId.ACTIVITY_RESULT_OK_BooklistStylePropertiesActivity
+ * --> setResult(UniqueId.ACTIVITY_RESULT_OK_BooklistStylePropertiesActivity, data);
+ *
+ * onChanged:
+ * - setResult(UniqueId.ACTIVITY_RESULT_OK_BooklistPreferredStylesActivity, null)
+ *
+ * onDelete
+ * - setResult(UniqueId.ACTIVITY_RESULT_DELETED_SOMETHING, null);
  *
  * @author Philip Warner
  */
@@ -109,7 +129,7 @@ public class BooklistPreferredStylesActivity extends EditObjectListActivity<Book
             case R.id.MENU_STYLE_DELETE: {
                 mList.get(menuInfo.position).delete(mDb);
                 setList(getList()); // Refresh the list
-                setChangesMade(true);
+                setResult(UniqueId.ACTIVITY_RESULT_DELETED_SOMETHING);
                 return true;
             }
             case R.id.MENU_STYLE_EDIT: {
@@ -147,9 +167,9 @@ public class BooklistPreferredStylesActivity extends EditObjectListActivity<Book
             }
         }
 
-        Intent intent = new Intent(this, BooklistStylePropertiesActivity.class);
-        intent.putExtra(BooklistStylePropertiesActivity.REQUEST_BKEY_STYLE, (Parcelable)style);
-        startActivityForResult(intent, BooklistStylePropertiesActivity.REQUEST_CODE); /* fadd7b9a-7eaf-4af9-90ce-6ffb7b93afe6 */
+        Intent intent = new Intent(this, EditBooklistStyleActivity.class);
+        intent.putExtra(EditBooklistStyleActivity.REQUEST_BKEY_STYLE, (Parcelable)style);
+        startActivityForResult(intent, EditBooklistStyleActivity.REQUEST_CODE); /* fadd7b9a-7eaf-4af9-90ce-6ffb7b93afe6 */
     }
 
     @Override
@@ -157,13 +177,18 @@ public class BooklistPreferredStylesActivity extends EditObjectListActivity<Book
     protected void onActivityResult(final int requestCode, final int resultCode, final @Nullable Intent data) {
         Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
         switch (requestCode) {
-            case BooklistStylePropertiesActivity.REQUEST_CODE: { /* fadd7b9a-7eaf-4af9-90ce-6ffb7b93afe6 */
-                if (resultCode == UniqueId.ACTIVITY_RESULT_CHANGES_MADE_BOOKLIST_STYLE_PROPERTIES) {
-                    /* there *has* to be 'data' */
-                    Objects.requireNonNull(data);
-                    BooklistStyle style = data.getParcelableExtra(BooklistStylePropertiesActivity.REQUEST_BKEY_STYLE);
-                    handleStyleChange(style);
-                    setChangesMade(true);
+            case EditBooklistStyleActivity.REQUEST_CODE: { /* fadd7b9a-7eaf-4af9-90ce-6ffb7b93afe6 */
+                switch (resultCode) {
+                    case UniqueId.ACTIVITY_RESULT_OK_BooklistStylePropertiesActivity:
+                        Objects.requireNonNull(data);
+                        BooklistStyle style = data.getParcelableExtra(EditBooklistStyleActivity.REQUEST_BKEY_STYLE);
+                        handleStyleChange(style);
+                        // need to send up the chain as-is
+                        setResult(UniqueId.ACTIVITY_RESULT_OK_BooklistStylePropertiesActivity, data);
+                        break;
+
+                    default:
+                        break;
                 }
                 break;
             }
@@ -312,7 +337,7 @@ public class BooklistPreferredStylesActivity extends EditObjectListActivity<Book
         @Override
         public void onListChanged() {
             BooklistStyles.saveMenuOrder(mList);
-            setChangesMade(true);
+            setResult(UniqueId.ACTIVITY_RESULT_OK_BooklistPreferredStylesActivity);
         }
     }
 

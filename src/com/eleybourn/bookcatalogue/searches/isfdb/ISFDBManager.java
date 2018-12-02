@@ -92,7 +92,7 @@ public class ISFDBManager {
 
 
     /**
-     * FIXME this has been shoehorned in here. Need to redo this by using the SearchISFDBTask really
+     * FIXME Need to redo this by using the SearchISFDBTask really but do this *after* migrating away from ManagedTask
      *
      * specifically used by {@link EditBookTOCFragment}
      * First step, get all editions for the ISBN
@@ -106,8 +106,6 @@ public class ISFDBManager {
     }
 
     /**
-     * FIXME this has been shoehorned in here. Need to redo this by using the SearchISFDBTask really
-     *
      * specifically used by {@link EditBookTOCFragment}
      * First step, get all editions for the ISBN via {@link #searchEditions(String, ISFDBResultsListener)}
      * That will then call this one

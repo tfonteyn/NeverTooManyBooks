@@ -77,10 +77,10 @@ public class Pic2ShopScanner implements Scanner {
      */
     @Override
     @NonNull
-    public String getBarcode(final @NonNull Intent intent) {
-        String barcode = intent.getStringExtra(BARCODE);
+    public String getBarcode(final @NonNull Intent data) {
+        String barcode = data.getStringExtra(BARCODE);
         // only for Pro:
-        String barcodeFormat = intent.getStringExtra(Pro.FORMAT);
+        String barcodeFormat = data.getStringExtra(Pro.FORMAT);
         if (barcodeFormat != null && !Arrays.asList(Pro.BARCODE_TYPES).contains(barcodeFormat)) {
             throw new RTE.IllegalTypeException("Unexpected format for barcode: " + barcodeFormat);
         }

@@ -43,7 +43,7 @@ public class Author implements Parcelable, Utils.ItemWithIdFixup {
     private static final char SEPARATOR = ',';
 
     /**
-     * FIXME: author middle name; needs internationalisation ?
+     * ENHANCE: author middle name; needs internationalisation ?
      *
      * Ursula Le Guin
      * Marianne De Pierres
@@ -53,7 +53,7 @@ public class Author implements Parcelable, Utils.ItemWithIdFixup {
     private static final Pattern FAMILY_NAME_PREFIX = Pattern.compile("[LlDd]e|[Vv][oa]n");
 
     /**
-     * FIXME: author name suffixes; needs internationalisation ? probably not.
+     * ENHANCE author name suffixes; needs internationalisation ? probably not.
      *
      * j/s lower or upper case
      *
@@ -63,8 +63,10 @@ public class Author implements Parcelable, Utils.ItemWithIdFixup {
      * Foo Bar Sr.
      * Foo Bar Sr
      * Foo Bar Senior
+     * Foo Bar II
+     * Charles Emerson Winchester III
      *
-     * same again, but with comma:
+     * same as above, but with comma:
      * Foo Bar, Jr.
      *
      *
@@ -72,7 +74,7 @@ public class Author implements Parcelable, Utils.ItemWithIdFixup {
      * "James jr. Tiptree" -> suffix as a middle name.
      * "Dr. Asimov" -> titles... pre or suffixed
      */
-    private static final Pattern FAMILY_NAME_SUFFIX = Pattern.compile("[Jj]r\\.|[Jj]r|[Jj]unior|[Ss]r\\.|[Ss]r|[Ss]enior");
+    private static final Pattern FAMILY_NAME_SUFFIX = Pattern.compile("[Jj]r\\.|[Jj]r|[Jj]unior|[Ss]r\\.|[Ss]r|[Ss]enior|II|III");
 
     public long id;
     public String familyName;
@@ -121,6 +123,7 @@ public class Author implements Parcelable, Utils.ItemWithIdFixup {
         dest.writeString(givenNames);
     }
 
+    @SuppressWarnings("SameReturnValue")
     @Override
     public int describeContents() {
         return 0;

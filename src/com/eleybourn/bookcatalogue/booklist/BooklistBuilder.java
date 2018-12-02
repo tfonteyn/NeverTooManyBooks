@@ -33,12 +33,9 @@ import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.booklist.BooklistGroup.BooklistAuthorGroup;
-import com.eleybourn.bookcatalogue.booklist.BooklistGroup.BooklistSeriesGroup;
-import com.eleybourn.bookcatalogue.booklist.BooklistStyle.CompoundKey;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
-import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.database.CatalogueDBHelper;
+import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedDb;
 import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedStatement;
 import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer.SyncLock;
@@ -216,7 +213,7 @@ public class BooklistBuilder implements AutoCloseable {
 
     /** Database to use */
     @NonNull
-    private CatalogueDBAdapter mDb;
+    private final CatalogueDBAdapter mDb;
     /** Database to use */
     @NonNull
     private final SynchronizedDb mSyncedDb;
@@ -292,8 +289,8 @@ public class BooklistBuilder implements AutoCloseable {
     /**
      * Constructor
      *
-     * @param context    context for database
-     * @param style Book list style to use
+     * @param context context for database
+     * @param style   Book list style to use
      */
     public BooklistBuilder(final @NonNull Context context, final @NonNull BooklistStyle style) {
         if (DEBUG_SWITCHES.BOOKLIST_BUILDER && BuildConfig.DEBUG) {
@@ -1147,7 +1144,7 @@ public class BooklistBuilder implements AutoCloseable {
                 // series id, eg. 's/18'.
                 booklistGroup.setKeyComponents(RowKinds.getPrefix(ROW_KIND_SERIES), DOM_FK_SERIES_ID);
                 // Save this for later use
-                styleInfo.seriesGroup = (BooklistSeriesGroup) booklistGroup;
+                styleInfo.seriesGroup = (BooklistGroup.BooklistSeriesGroup) booklistGroup;
                 // Group and sort by name
                 summary.addDomain(DOM_SERIES_NAME,
                         TBL_SERIES.dot(DOM_SERIES_NAME),
@@ -1182,7 +1179,7 @@ public class BooklistBuilder implements AutoCloseable {
                 // author id, eg. 'a/18'.
                 booklistGroup.setKeyComponents(RowKinds.getPrefix(ROW_KIND_AUTHOR), DOM_FK_AUTHOR_ID);
                 // Save this for later use
-                styleInfo.authorGroup = (BooklistAuthorGroup) booklistGroup;
+                styleInfo.authorGroup = (BooklistGroup.BooklistAuthorGroup) booklistGroup;
 
                 // Always group & sort by 'Last, Given' expression
                 summary.addDomain(DOM_AUTHOR_SORT,
@@ -1594,8 +1591,14 @@ public class BooklistBuilder implements AutoCloseable {
                     .append("'))");
         }
 
-        build_whereClause_addFilters(where);
+        /* Add all enabled Filters */
+        build_whereClause_addFilter(where, DOM_BOOK_READ, mStyle.filterRead());
+        build_whereClause_addFilter(where, DOM_BOOK_SIGNED, mStyle.filterSigned());
+        build_whereClause_addFilter(where, DOM_BOOK_ANTHOLOGY_BITMASK, mStyle.filterAnthology());
+        build_whereClause_addFilter(where, DOM_LOANED_TO, mStyle.filterLoaned());
 
+
+        // all done
         if (where.length() > 0) {
             return where.insert(0, " WHERE ").toString();
         } else {
@@ -1604,80 +1607,23 @@ public class BooklistBuilder implements AutoCloseable {
     }
 
     /**
-     * Add all possible/enabled Filters
+     * Add a Boolean filter to the where clause
      */
-    private void build_whereClause_addFilters(final @NonNull StringBuilder /* in/out */ where) {
-        // Add support for book filter: READ
-        {
-            String extra = null;
-            switch (mStyle.getReadFilter()) {
-                case BooklistStyle.FILTER_YES:
-                    extra = TBL_BOOKS.dot(DOM_BOOK_READ) + "=1";
-                    break;
-                case BooklistStyle.FILTER_NO:
-                    extra = TBL_BOOKS.dot(DOM_BOOK_READ) + "=0";
-                    break;
+    private void build_whereClause_addFilter(final @NonNull StringBuilder where,
+                                             final @NonNull DomainDefinition domain,
+                                             final @NonNull Boolean filterValue) {
+        String filterSql = null;
+        if (Boolean.TRUE.equals(filterValue)) {
+            filterSql = TBL_BOOKS.dot(domain) + "=1";
+        } else if (Boolean.FALSE.equals(filterValue)) {
+            filterSql = TBL_BOOKS.dot(domain) + "=0";
+        } // else null -> don't use filter
+
+        if (filterSql != null) {
+            if (where.length() != 0) {
+                where.append(" AND ");
             }
-            if (extra != null) {
-                if (where.length() != 0) {
-                    where.append(" AND ");
-                }
-                where.append(" ").append(extra);
-            }
-        }
-        // Add support for book filter: SIGNED
-        {
-            String extra = null;
-            switch (mStyle.getSignedFilter()) {
-                case BooklistStyle.FILTER_YES:
-                    extra = TBL_BOOKS.dot(DOM_BOOK_SIGNED) + "=1";
-                    break;
-                case BooklistStyle.FILTER_NO:
-                    extra = TBL_BOOKS.dot(DOM_BOOK_SIGNED) + "=0";
-                    break;
-            }
-            if (extra != null) {
-                if (where.length() != 0) {
-                    where.append(" AND ");
-                }
-                where.append(" ").append(extra);
-            }
-        }
-        // Add support for book filter: ANTHOLOGY
-        {
-            String extra = null;
-            switch (mStyle.getAnthologyFilter()) {
-                case BooklistStyle.FILTER_YES:
-                    extra = TBL_BOOKS.dot(DOM_BOOK_ANTHOLOGY_BITMASK) + ">0";
-                    break;
-                case BooklistStyle.FILTER_NO:
-                    extra = TBL_BOOKS.dot(DOM_BOOK_ANTHOLOGY_BITMASK) + "=0";
-                    break;
-            }
-            if (extra != null) {
-                if (where.length() != 0) {
-                    where.append(" AND ");
-                }
-                where.append(" ").append(extra);
-            }
-        }
-        // Add support for book filter: LOANED
-        {
-            String extra = null;
-            switch (mStyle.getLoanedFilter()) {
-                case BooklistStyle.FILTER_YES:
-                    extra = TBL_BOOKS.dot(DOM_LOANED_TO) + "=1";
-                    break;
-                case BooklistStyle.FILTER_NO:
-                    extra = TBL_BOOKS.dot(DOM_LOANED_TO) + "=0";
-                    break;
-            }
-            if (extra != null) {
-                if (where.length() != 0) {
-                    where.append(" AND ");
-                }
-                where.append(" ").append(extra);
-            }
+            where.append(" ").append(filterSql);
         }
     }
 
@@ -2512,9 +2458,9 @@ public class BooklistBuilder implements AutoCloseable {
     // used so we can break up the big 'build' method as it existed in the original code
     private class StyleInfo {
         // Will be set to appropriate Group if a Series group exists in style
-        BooklistSeriesGroup seriesGroup = null;
+        BooklistGroup.BooklistSeriesGroup seriesGroup = null;
         // Will be set to appropriate Group if an Author group exists in style
-        BooklistAuthorGroup authorGroup = null;
+        BooklistGroup.BooklistAuthorGroup authorGroup = null;
         // Will be set to TRUE if a LOANED group exists in style
         boolean hasGroupLOANED = false;
         // Will be set to TRUE if a BOOKSHELF group exists in style
@@ -2673,7 +2619,7 @@ public class BooklistBuilder implements AutoCloseable {
          * @return SqlComponents structure
          */
         @NonNull
-        SqlComponents buildSqlComponents(final @NonNull CompoundKey rootKey) {
+        SqlComponents buildSqlComponents(final @NonNull BooklistStyle.CompoundKey rootKey) {
             // Rebuild the data table
             recreateTable();
             // List of column names for the INSERT... part
@@ -2868,7 +2814,7 @@ public class BooklistBuilder implements AutoCloseable {
 //
 //		// Ensure any caller-specified extras (eg. title) are added at the end.
 //		for(Entry<String,ExtraDomainInfo> d : mExtraDomains.entrySet()) {
-//			ExtraDomainInfo info = d.getValue();
+//			ExtraDomainInfo info = d.get();
 //			int flags;
 //			if (info.isSorted)
 //				flags = SummaryBuilder.FLAG_SORTED;

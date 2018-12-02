@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/dialogFrame">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="@dimen/padding_border"
+        android:text="@string/export_options_dialog_title"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <include
+        layout="@layout/inc_import_export_options"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <RadioGroup
+        android:id="@+id/radioGroup1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RadioButton
+            android:id="@+id/radioAllBooks"
+            style="@style/row_option_checkable"
+            android:checked="true"
+            android:text="@string/all_books"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+
+        <!--<TextView-->
+            <!--android:id="@+id/export_option_info_all_books"-->
+            <!--style="@style/row_option_blurb"-->
+            <!--android:text="@string/export_option_info_all_books" />-->
+
+        <RadioButton
+            android:id="@+id/radioSinceLastBackup"
+            style="@style/row_option_checkable"
+            android:text="@string/export_option_books_since_last_full_backup"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+
+        <!--<TextView-->
+            <!--android:id="@+id/new_and_changed_books_blurb"-->
+            <!--style="@style/row_option_blurb"-->
+            <!--android:text="@string/export_option_info_new_and_changed_books" />-->
+
+        <!-- Disabled to reduce complexity of UI and app; may enable one day. Deemed to be too rarely of use. -->
+        <RadioButton
+            android:id="@+id/radioSinceDate"
+            style="@style/row_option_checkable"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="@string/export_option_books_since_date"
+            android:visibility="gone"
+            tools:visibility="visible"/>
+
+        <TextView
+            android:id="@+id/export_advanced_date_blurb"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/padding_border_double"
+            android:paddingBottom="@dimen/padding_border"
+            android:text="@string/export_option_info_books_since_date"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    </RadioGroup>
+    <!-- Disabled to reduce complexity of UI and app; may enable one day. Deemed to be too rarely of use. -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <EditText
+            android:id="@+id/txtDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@id/date_button"
+            android:layout_alignParentStart="true"
+            android:layout_toStartOf="@id/date_button"
+            android:ems="10"
+            android:inputType="date"
+            tools:ignore="LabelFor,Autofill" />
+
+        <Button
+            android:id="@+id/date_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:text="&#8230;"
+            tools:ignore="HardcodedText" />
+
+    </RelativeLayout>
+
+    <include
+        android:id="@+id/buttonbar_cancel_ok"
+        layout="@layout/inc_buttonbar_cancel_ok"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+</LinearLayout>

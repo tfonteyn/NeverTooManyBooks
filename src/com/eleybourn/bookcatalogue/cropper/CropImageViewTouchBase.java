@@ -28,10 +28,12 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
-import android.view.View;
 import android.widget.ImageView;
 
-abstract class CropImageViewTouchBase extends AppCompatImageView {
+import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.CoverHandler;
+
+public abstract class CropImageViewTouchBase extends AppCompatImageView {
 
     private static final float SCALE_RATE = 1.25F;
     /** Maximum upscaling for a viewed image */
@@ -95,6 +97,35 @@ abstract class CropImageViewTouchBase extends AppCompatImageView {
     public CropImageViewTouchBase(final @NonNull Context context, final @NonNull AttributeSet attrs) {
         super(context, attrs);
         init();
+    }
+    private void init() {
+        setScaleType(ImageView.ScaleType.MATRIX);
+        initRenderer();
+    }
+
+    /**
+     * We get 'unsupported feature' crashes if the option to always use GL is turned on.
+     * See:
+     * http://developer.android.com/guide/topics/graphics/hardware-accel.html
+     * http://stackoverflow.com/questions/13676059/android-unsupportedoperationexception-at-canvas-clippath
+     * so for API level > 11, we turn it off manually.
+     *
+     * 2018-11-30: making this a configuration option
+     *
+     * Actual system values:
+     *
+     *         View.LAYER_TYPE_SOFTWARE 1
+     *         View.LAYER_TYPE_HARDWARE 2
+     *
+     * We use 1 and 2; and 'abuse' -1 to mean 'leave it unset'
+     *
+     */
+    private void initRenderer() {
+        int type = BookCatalogueApp.getIntPreference(CoverHandler.PREF_VIEW_LAYER_TYPE, -1);
+        if (type == -1) {
+            return;
+        }
+        this.setLayerType(type, null);
     }
 
     @SuppressWarnings("unused")
@@ -245,22 +276,6 @@ abstract class CropImageViewTouchBase extends AppCompatImageView {
 
         postTranslate(deltaX, deltaY);
         setImageMatrix(getImageViewMatrix());
-    }
-
-    private void init() {
-        setScaleType(ImageView.ScaleType.MATRIX);
-        forceSoftwareRenderer();
-    }
-
-    /**
-     * FIXME: We get 'unsupported feature' crashes if the option to always use GL is turned on.
-     * See:
-     * http://developer.android.com/guide/topics/graphics/hardware-accel.html
-     * http://stackoverflow.com/questions/13676059/android-unsupportedoperationexception-at-canvas-clippath
-     * so for API level > 11, we turn it off manually.
-     */
-    private void forceSoftwareRenderer() {
-        this.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
     }
 
     protected float getValue(final @NonNull Matrix matrix, @SuppressWarnings("SameParameterValue") final int whichValue) {

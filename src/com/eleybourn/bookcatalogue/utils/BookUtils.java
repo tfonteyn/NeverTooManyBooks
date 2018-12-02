@@ -28,7 +28,6 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v4.content.FileProvider;
 
-import com.eleybourn.bookcatalogue.EditBookFragment;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
@@ -139,9 +138,9 @@ public class BookUtils {
      *
      * @param bookId to share
      */
-    public static void shareBook(final @NonNull Activity activity,
-                                 final @NonNull CatalogueDBAdapter db,
-                                 final long bookId) {
+    public static Intent getShareBookIntent(final @NonNull Activity activity,
+                                          final @NonNull CatalogueDBAdapter db,
+                                          final long bookId) {
         String title;
         double rating;
         String author;
@@ -156,7 +155,7 @@ public class BookUtils {
                 series = bookCursorRow.getPrimarySeriesFormatted();
             } else {
                 StandardDialogs.showUserMessage(activity, R.string.warning_unable_to_find_book);
-                return;
+                return null;
             }
         }
 
@@ -190,13 +189,13 @@ public class BookUtils {
         TEST: There's a problem with the facebook app in android,
          so despite it being shown on the list it will not post any text unless the user types it.
 		 */
-        Intent share = new Intent(Intent.ACTION_SEND);
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
         String text = activity.getString(R.string.share_book_im_reading, title, author, series, ratingString);
-        share.putExtra(Intent.EXTRA_TEXT, text);
-        share.putExtra(Intent.EXTRA_STREAM, coverURI);
-        share.setType("text/plain");
+        shareIntent.putExtra(Intent.EXTRA_TEXT, text);
+        shareIntent.putExtra(Intent.EXTRA_STREAM, coverURI);
+        shareIntent.setType("text/plain");
 
-        activity.startActivity(Intent.createChooser(share, activity.getString(R.string.share)));
+        return shareIntent;
     }
 
     /**
