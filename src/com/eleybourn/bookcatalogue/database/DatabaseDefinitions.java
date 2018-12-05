@@ -107,7 +107,8 @@ public class DatabaseDefinitions {
      *
      * Leaving all this here, as it will remind myself (and maybe others) of the 'missing' bit.
      *
-     * FIXME: run a data cleanup during database upgrade. Find all rows that have 0%10 and reset them to 0%00
+     * Think about actually updating the column to 0%10 as a cache for a book having multiple authors
+     * without the need to 'count' them in the book_author table ?
      *
      */
     public static final int DOM_BOOK_SINGLE_AUTHOR_SINGLE_WORK = 0;
@@ -255,13 +256,13 @@ public class DatabaseDefinitions {
     /* ========================================================================================== */
 
     /** {@link #TBL_SERIES) */
-    public static final DomainDefinition DOM_SERIES_NAME = new DomainDefinition("series_name", TableInfo.TYPE_TEXT);
+    public static final DomainDefinition DOM_SERIES = new DomainDefinition("series_name", TableInfo.TYPE_TEXT);
     /** {@link #TBL_SERIES) */
     public static final DomainDefinition DOM_SERIES_FORMATTED = new DomainDefinition("series_formatted", TableInfo.TYPE_TEXT, NOT_NULL, "");
     /** Partial representation of SERIES table */
     public static final TableDefinition TBL_SERIES =
             new TableDefinition(DB_TB_SERIES)
-            .addDomains(DOM_PK_ID, DOM_SERIES_NAME)
+            .addDomains(DOM_PK_ID, DOM_SERIES)
             .setAlias(ALIAS_SERIES)
             .setPrimaryKey(DOM_PK_ID);
 

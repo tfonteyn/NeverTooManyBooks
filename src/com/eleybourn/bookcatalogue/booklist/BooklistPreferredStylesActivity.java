@@ -32,6 +32,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
 import android.widget.CheckedTextView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
@@ -40,7 +41,6 @@ import com.eleybourn.bookcatalogue.BooksOnBookshelf;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter;
-import com.eleybourn.bookcatalogue.adapters.SimpleListAdapterRowActionListener;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -62,7 +62,6 @@ import java.util.Objects;
  * Started from:
  * - {@link BooksOnBookshelf} sort-menu dialog box
  * - {@link BaseActivity}  nav panel
- *
  *
  * Starts
  * - {@link EditBooklistStyleActivity}
@@ -98,14 +97,16 @@ public class BooklistPreferredStylesActivity extends EditObjectListActivity<Book
     protected void onCreate(final @Nullable Bundle savedInstanceState) {
         Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
-        this.setTitle(R.string.lbl_preferred_styles);
+        setTitle(R.string.lbl_preferred_styles);
 
         // We want context menus on the ListView
         registerForContextMenu(getListView());
 
         if (savedInstanceState == null) {
-            HintManager.displayHint(this.getLayoutInflater(), R.string.hint_booklist_styles_editor, null);
+            HintManager.displayHint(this.getLayoutInflater(),
+                    R.string.hint_booklist_styles_editor, null);
         }
+
         Tracker.exitOnCreate(this);
     }
 
@@ -162,7 +163,8 @@ public class BooklistPreferredStylesActivity extends EditObjectListActivity<Book
                 style.setName(style.getDisplayName());
             } catch (RTE.DeserializationException e) {
                 Logger.error(e);
-                StandardDialogs.showUserMessage(this, R.string.error_unexpected_error);
+                StandardDialogs.showUserMessage(this,
+                        R.string.error_unexpected_error);
                 return;
             }
         }
@@ -170,6 +172,14 @@ public class BooklistPreferredStylesActivity extends EditObjectListActivity<Book
         Intent intent = new Intent(this, EditBooklistStyleActivity.class);
         intent.putExtra(EditBooklistStyleActivity.REQUEST_BKEY_STYLE, (Parcelable)style);
         startActivityForResult(intent, EditBooklistStyleActivity.REQUEST_CODE); /* fadd7b9a-7eaf-4af9-90ce-6ffb7b93afe6 */
+    }
+
+    @Override
+    protected void onListChanged() {
+        super.onListChanged();
+        // we save after each change. ENHANCE: use setDirty.
+        BooklistStyles.saveMenuOrder(mList);
+        setResult(UniqueId.ACTIVITY_RESULT_OK_BooklistPreferredStylesActivity);
     }
 
     @Override
@@ -215,8 +225,6 @@ public class BooklistPreferredStylesActivity extends EditObjectListActivity<Book
                 // Was added. So put at top and set as preferred
                 mList.add(0, style);
                 style.setPreferred(true);
-                BooklistStyles.saveMenuOrder(mList);
-
             } else {
                 BooklistStyle origStyle = mList.get(mEditedRow);
                 if (origStyle.id != style.id) {
@@ -233,17 +241,15 @@ public class BooklistPreferredStylesActivity extends EditObjectListActivity<Book
                             mList.add(mEditedRow, style);
                         }
                     } else {
-                        // A clone of an original. Put it directly after the original
+                        // A clone of an user-defined. Put it directly after the user-defined
                         mList.add(mEditedRow, style);
-                    }
-                    if (style.isPreferred()) {
-                        BooklistStyles.saveMenuOrder(mList);
                     }
                 } else {
                     mList.set(mEditedRow, style);
                 }
             }
             setList(mList);
+            onListChanged();
 
         } catch (Exception e) {
             Logger.error(e);
@@ -252,53 +258,53 @@ public class BooklistPreferredStylesActivity extends EditObjectListActivity<Book
         }
     }
 
-    protected SimpleListAdapter<BooklistStyle> createListAdapter(final @LayoutRes int rowViewId, final @NonNull ArrayList<BooklistStyle> list) {
+    protected SimpleListAdapter<BooklistStyle> createListAdapter(final @LayoutRes int rowViewId,
+                                                                 final @NonNull ArrayList<BooklistStyle> list) {
         return new BooklistStyleListAdapter(this, rowViewId, list);
     }
 
-    protected class BooklistStyleListAdapter extends SimpleListAdapter<BooklistStyle> implements
-            SimpleListAdapterRowActionListener<BooklistStyle> {
 
-        @NonNull
-        private final Context mContext;
 
-        BooklistStyleListAdapter(final @NonNull Context context, final @LayoutRes int rowViewId, final @NonNull ArrayList<BooklistStyle> items) {
+    private class BooklistStyleListAdapter extends SimpleListAdapter<BooklistStyle> {
+
+        BooklistStyleListAdapter(final @NonNull Context context,
+                                 final @LayoutRes int rowViewId,
+                                 final @NonNull ArrayList<BooklistStyle> items) {
             super(context, rowViewId, items);
-            mContext = context;
         }
 
         @Override
         public void onGetView(final @NonNull View target, final @NonNull BooklistStyle style) {
-            Holder holder = ViewTagger.getTag(target, R.id.TAG_HOLDER);// value: BooklistPreferredStylesActivity.Holder
+            Holder holder = ViewTagger.getTag(target, R.id.TAG_HOLDER);
             if (holder == null) {
+                // New view, so build the Holder
                 holder = new Holder();
-                holder.preferred = target.findViewById(R.id.preferred);
                 holder.name = target.findViewById(R.id.name);
+                holder.checkable = target.findViewById(R.id.preferred);
                 holder.groups = target.findViewById(R.id.groups);
                 holder.kind = target.findViewById(R.id.kind);
-                // Tag relevant views
-                ViewTagger.setTag(holder.preferred, R.id.TAG_HOLDER, holder);// value: BooklistPreferredStylesActivity.Holder
-                ViewTagger.setTag(target, R.id.TAG_HOLDER, holder);// value: BooklistPreferredStylesActivity.Holder
+                // Tag the parts that need it
+                ViewTagger.setTag(target, R.id.TAG_HOLDER, holder);
+                ViewTagger.setTag(holder.checkable, R.id.TAG_HOLDER, holder);
 
                 // Handle clicks on the CheckedTextView
-                holder.preferred.setOnClickListener(new OnClickListener() {
+                holder.checkable.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(@NonNull View v) {
-                        Holder h = ViewTagger.getTagOrThrow(v, R.id.TAG_HOLDER);// value: BooklistPreferredStylesActivity.Holder
+                        Holder h = ViewTagger.getTagOrThrow(v, R.id.TAG_HOLDER);
                         boolean newStatus = !h.style.isPreferred();
                         h.style.setPreferred(newStatus);
-                        h.preferred.setChecked(newStatus);
-                        onListChanged();
+                        h.checkable.setChecked(newStatus);
                     }
                 });
             }
 
-            // Set the volatile fields in the holder
+            // Setup the variant fields in the holder
             holder.style = style;
             holder.name.setText(style.getDisplayName());
-            holder.groups.setText(style.getGroupListDisplayNames());
-            holder.preferred.setChecked(style.isPreferred());
+            holder.checkable.setChecked(style.isPreferred());
 
+            holder.groups.setText(style.getGroupListDisplayNames());
             if (style.isUserDefined()) {
                 holder.kind.setText(R.string.style_is_user_defined);
             } else {
@@ -307,17 +313,19 @@ public class BooklistPreferredStylesActivity extends EditObjectListActivity<Book
         }
 
         /**
-         * TODO: use {@link SelectOneDialog.SimpleDialogMenuItem}
          * Use the onRowLongClick to present a context menu.
          */
         @Override
-        public boolean onRowLongClick(final @NonNull View target, final @NonNull BooklistStyle style, final int position) {
+        public boolean onRowLongClick(final @NonNull View target,
+                                      final @NonNull BooklistStyle style,
+                                      final int position) {
             String menuTitle = style.getDisplayName();
 
             // legal trick to get an instance of Menu.
-            mListViewContextMenu = new PopupMenu(mContext, null).getMenu();
+            mListViewContextMenu = new PopupMenu(getContext(), null).getMenu();
             // custom menuInfo
-            SelectOneDialog.SimpleDialogMenuInfo menuInfo = new SelectOneDialog.SimpleDialogMenuInfo(menuTitle, target, position);
+            SelectOneDialog.SimpleDialogMenuInfo menuInfo =
+                    new SelectOneDialog.SimpleDialogMenuInfo(menuTitle, target, position);
             // populate the menu
             if (style.isUserDefined()) {
                 mListViewContextMenu.add(Menu.NONE, R.id.MENU_STYLE_DELETE, 0, R.string.menu_delete_style)
@@ -334,10 +342,14 @@ public class BooklistPreferredStylesActivity extends EditObjectListActivity<Book
 
         }
 
+        /**
+         * Delegate to ListView host
+         */
         @Override
         public void onListChanged() {
-            BooklistStyles.saveMenuOrder(mList);
-            setResult(UniqueId.ACTIVITY_RESULT_OK_BooklistPreferredStylesActivity);
+            super.onListChanged();
+            // go save the menu order and setResult.
+            BooklistPreferredStylesActivity.this.onListChanged();
         }
     }
 
@@ -348,8 +360,9 @@ public class BooklistPreferredStylesActivity extends EditObjectListActivity<Book
      */
     private class Holder {
         BooklistStyle style;
-        CheckedTextView preferred;
+        CheckedTextView checkable;
         TextView name;
+
         TextView groups;
         TextView kind;
     }

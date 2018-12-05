@@ -54,6 +54,7 @@ public class PreferencesActivity extends PreferencesBaseActivity {
      * Build the complete list of all preferences
      */
     private static final PropertyList mProperties = new PropertyList();
+
     static {
         /* *****************************************************************************
          * GRP_USER_INTERFACE:
@@ -62,26 +63,25 @@ public class PreferencesActivity extends PreferencesBaseActivity {
          * Enabling/disabling read-only mode when opening book. If enabled book
          * is opened in read-only mode (editing through menu), else in edit mode.
          */
-        mProperties.add(new BooleanProperty(BooksOnBookshelf.PREF_OPEN_BOOK_READ_ONLY,
-                PropertyGroup.GRP_USER_INTERFACE, R.string.user_interface_open_book_read_only,
-                Boolean.TRUE)
-                .setPreferenceKey(BooksOnBookshelf.PREF_OPEN_BOOK_READ_ONLY)
+        mProperties.add(new BooleanProperty(R.string.user_interface_open_book_read_only,
+                PropertyGroup.GRP_USER_INTERFACE, Boolean.TRUE)
+                .setPreferenceKey(BooksOnBookshelf.PREF_BOB_OPEN_BOOK_READ_ONLY)
                 .setIsGlobal(true));
 
         /* List of supported locales */
         final ItemList<String> mLocalesListItems = LocaleUtils.getLocalesPreferencesListItems();
-        mProperties.add(new ListOfStringValuesProperty(mLocalesListItems, LocaleUtils.PREF_APP_LOCALE,
-                PropertyGroup.GRP_USER_INTERFACE, R.string.user_interface_preferred_language,
-                Locale.ENGLISH.getISO3Language())
+        mProperties.add(new ListOfStringValuesProperty(R.string.user_interface_preferred_language,
+                PropertyGroup.GRP_USER_INTERFACE,
+                Locale.ENGLISH.getISO3Language(), mLocalesListItems)
                 .setPreferenceKey(LocaleUtils.PREF_APP_LOCALE)
                 .setIsGlobal(true)
                 .setWeight(200));
 
         /* List of supported themes */
         final ItemList<Integer> mAppThemeItems = ThemeUtils.getThemePreferencesListItems();
-        mProperties.add(new ListOfIntegerValuesProperty(mAppThemeItems, ThemeUtils.PREF_APP_THEME,
-                PropertyGroup.GRP_USER_INTERFACE, R.string.user_interface_theme,
-                ThemeUtils.DEFAULT_THEME)
+        mProperties.add(new ListOfIntegerValuesProperty(R.string.user_interface_theme,
+                PropertyGroup.GRP_USER_INTERFACE,
+                ThemeUtils.DEFAULT_THEME, mAppThemeItems)
                 .setPreferenceKey(ThemeUtils.PREF_APP_THEME)
                 .setIsGlobal(true)
                 .setWeight(200));
@@ -90,9 +90,9 @@ public class PreferencesActivity extends PreferencesBaseActivity {
         final ItemList<Integer> mMessageImplementationItems = new ItemList<Integer>()
                 .add(0, R.string.user_interface_messages_use_toast)
                 .add(1, R.string.user_interface_messages_use_snackbar);
-        mProperties.add(new ListOfIntegerValuesProperty(mMessageImplementationItems, BookCatalogueApp.PREF_APP_USER_MESSAGE,
-                PropertyGroup.GRP_USER_INTERFACE, R.string.user_interface_messages_use,
-                0)
+        mProperties.add(new ListOfIntegerValuesProperty(R.string.user_interface_messages_use,
+                PropertyGroup.GRP_USER_INTERFACE,
+                0, mMessageImplementationItems)
                 .setPreferenceKey(BookCatalogueApp.PREF_APP_USER_MESSAGE)
                 .setIsGlobal(true)
                 .setWeight(200));
@@ -101,29 +101,26 @@ public class PreferencesActivity extends PreferencesBaseActivity {
          * GRP_SCANNER:
          ******************************************************************************/
 
-        mProperties.add(new BooleanProperty(SoundManager.PREF_BEEP_IF_SCANNED_ISBN_INVALID,
-                PropertyGroup.GRP_SCANNER, R.string.scanning_beep_if_isbn_invalid,
-                Boolean.TRUE)
+        mProperties.add(new BooleanProperty(R.string.scanning_beep_if_isbn_invalid,
+                PropertyGroup.GRP_SCANNER, Boolean.TRUE)
                 .setPreferenceKey(SoundManager.PREF_BEEP_IF_SCANNED_ISBN_INVALID)
                 .setIsGlobal(true)
                 .setWeight(300));
 
-        mProperties.add(new BooleanProperty(SoundManager.PREF_BEEP_IF_SCANNED_ISBN_VALID,
-                PropertyGroup.GRP_SCANNER, R.string.scanning_beep_if_isbn_valid,
-                Boolean.FALSE)
+        mProperties.add(new BooleanProperty(R.string.scanning_beep_if_isbn_valid,
+                PropertyGroup.GRP_SCANNER)
                 .setPreferenceKey(SoundManager.PREF_BEEP_IF_SCANNED_ISBN_VALID)
                 .setIsGlobal(true)
                 .setWeight(300));
 
         /* Supported scanners*/
         final ItemList<Integer> mScannerListItems = new ItemList<Integer>()
-                .add(null, R.string.use_default_setting)
-                .add(ScannerManager.SCANNER_ZXING_COMPATIBLE, R.string.scanning_preferred_scanner_zxing_compatible)
+                .add(ScannerManager.SCANNER_ZXING_COMPATIBLE, R.string.scanning_preferred_scanner_zxing_compatible) // default
                 .add(ScannerManager.SCANNER_ZXING, R.string.scanning_preferred_scanner_zxing)
                 .add(ScannerManager.SCANNER_PIC2SHOP, R.string.scanning_preferred_scanner_pic2shop);
-        mProperties.add(new ListOfIntegerValuesProperty(mScannerListItems, ScannerManager.PREF_PREFERRED_SCANNER,
-                PropertyGroup.GRP_SCANNER, R.string.scanning_preferred_scanner,
-                ScannerManager.SCANNER_ZXING_COMPATIBLE)
+        mProperties.add(new ListOfIntegerValuesProperty(R.string.scanning_preferred_scanner,
+                PropertyGroup.GRP_SCANNER,
+                ScannerManager.SCANNER_ZXING_COMPATIBLE, mScannerListItems)
                 .setPreferenceKey(ScannerManager.PREF_PREFERRED_SCANNER)
                 .setIsGlobal(true));
 
@@ -131,10 +128,9 @@ public class PreferencesActivity extends PreferencesBaseActivity {
          * GRP_THUMBNAILS:
          ******************************************************************************/
 
-        mProperties.add(new BooleanProperty(CoverHandler.PREF_CROP_FRAME_WHOLE_IMAGE,
-                PropertyGroup.GRP_THUMBNAILS, R.string.thumbnails_default_crop_frame_is_whole_image,
-                Boolean.FALSE)
-                .setPreferenceKey(CoverHandler.PREF_CROP_FRAME_WHOLE_IMAGE)
+        mProperties.add(new BooleanProperty(R.string.thumbnails_default_crop_frame_is_whole_image,
+                PropertyGroup.GRP_THUMBNAILS)
+                .setPreferenceKey(CoverHandler.PREF_CROPPER_FRAME_IS_WHOLE_IMAGE)
                 .setIsGlobal(true));
 
         /* Camera image rotation property values */
@@ -143,16 +139,14 @@ public class PreferencesActivity extends PreferencesBaseActivity {
                 .add(90, R.string.menu_cover_rotate_cw)
                 .add(-90, R.string.menu_cover_rotate_ccw)
                 .add(180, R.string.menu_cover_rotate_180);
-        mProperties.add(new ListOfIntegerValuesProperty(mRotationListItems, CoverHandler.PREF_AUTOROTATE_CAMERA_IMAGES,
-                PropertyGroup.GRP_THUMBNAILS, R.string.thumbnails_rotate_auto,
-                CoverHandler.PREF_AUTOROTATE_CAMERA_IMAGES_DEFAULT)
-                .setPreferenceKey(CoverHandler.PREF_AUTOROTATE_CAMERA_IMAGES)
+        mProperties.add(new ListOfIntegerValuesProperty(R.string.thumbnails_rotate_auto,
+                PropertyGroup.GRP_THUMBNAILS,0, mRotationListItems)
+                .setPreferenceKey(CoverHandler.PREF_CAMERA_AUTOROTATE)
                 .setIsGlobal(true));
 
-        mProperties.add(new BooleanProperty(CoverHandler.PREF_USE_EXTERNAL_IMAGE_CROPPER,
-                PropertyGroup.GRP_THUMBNAILS, R.string.thumbnails_use_external_image_cropper,
-                Boolean.FALSE)
-                .setPreferenceKey(CoverHandler.PREF_USE_EXTERNAL_IMAGE_CROPPER)
+        mProperties.add(new BooleanProperty(R.string.thumbnails_use_external_image_cropper,
+                PropertyGroup.GRP_THUMBNAILS)
+                .setPreferenceKey(CoverHandler.PREF_CROPPER_USE_EXTERNAL_APP)
                 .setIsGlobal(true));
 
         /*
@@ -164,16 +158,16 @@ public class PreferencesActivity extends PreferencesBaseActivity {
          * http://stackoverflow.com/questions/13676059/android-unsupportedoperationexception-at-canvas-clippath
          * so for API level > 11, we turn it off manually.
          *
-         * 2018-11-30: making this a configuration option; default '-1' == use device default  (0 is another system value)
+         * 2018-11-30: making this a configuration option;
+          * default CoverHandler.PREF_IMAGE_VIEW_LAYER_TYPE_DEFAULT('-1') == use device default
          */
         final ItemList<Integer> mViewLayerType = new ItemList<Integer>()
-                .add(-1, R.string.use_default_setting)
                 .add(View.LAYER_TYPE_HARDWARE, R.string.pref_layer_type_hardware)
                 .add(View.LAYER_TYPE_SOFTWARE, R.string.pref_layer_type_software);
-        mProperties.add(new ListOfIntegerValuesProperty(mViewLayerType, CoverHandler.PREF_VIEW_LAYER_TYPE,
-                PropertyGroup.GRP_THUMBNAILS, R.string.pref_layer_type,
-                -1)
-                .setPreferenceKey(CoverHandler.PREF_VIEW_LAYER_TYPE)
+        mProperties.add(new ListOfIntegerValuesProperty(R.string.pref_layer_type,
+                PropertyGroup.GRP_THUMBNAILS,
+                CoverHandler.PREF_IMAGE_VIEW_LAYER_TYPE_DEFAULT, mViewLayerType)
+                .setPreferenceKey(CoverHandler.PREF_IMAGE_VIEW_LAYER_TYPE)
                 .setIsGlobal(true)
                 .setHint(R.string.hint_pref_layer_type)
                 .setWeight(100));

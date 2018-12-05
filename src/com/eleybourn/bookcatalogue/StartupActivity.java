@@ -46,6 +46,7 @@ import android.util.Log;
 import com.eleybourn.bookcatalogue.booklist.BooklistPreferencesActivity;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.CoversDBAdapter;
+import com.eleybourn.bookcatalogue.database.DBCleaner;
 import com.eleybourn.bookcatalogue.database.UpgradeDatabase;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
@@ -69,19 +70,20 @@ import java.util.Locale;
  */
 public class StartupActivity extends AppCompatActivity {
 
-    private static final String TAG = "StartupActivity";
-    /** obsolete from v74 */
-    public static final String V74_PREF_AUTHOR_SERIES_FIX_UP_REQUIRED = TAG + ".FAuthorSeriesFixupRequired";
-    /** Options to indicate FTS rebuild is required at startup */
-    private static final String PREF_FTS_REBUILD_REQUIRED = TAG + ".FtsRebuildRequired";
-    private static final String PREFS_STATE_OPENED = "state_opened";
+    public static final String TAG = "Startup.";
+    /** the 'LastVersion' e.g. the version which was installed before the current one. */
+    public final static String PREF_STARTUP_LAST_VERSION = TAG + "LastVersion";
     /** Number of times the app has been started */
-    private static final String PREF_START_COUNT = "Startup.StartCount";
-
+    public static final String PREF_STARTUP_COUNT = TAG + "StartCount";
+    /** Triggers some actions when the countdown reaches 0; then gets reset. */
+    public static final String PREFS_STARTUP_COUNTDOWN =  TAG + "StartCountdown";
     /** Number of app startup's between offers to backup */
     private static final int PROMPT_WAIT_BACKUP = 5;
     /** Number of app startup's between displaying the Amazon hint */
     private static final int PROMPT_WAIT_AMAZON = 7;
+
+    /** Options to indicate FTS rebuild is required at startup */
+    private static final String PREF_STARTUP_FTS_REBUILD_REQUIRED = TAG + "FtsRebuildRequired";
 
     /** Indicates the upgrade message has been shown */
     private static boolean mUpgradeMessageShown = false;
@@ -97,7 +99,7 @@ public class StartupActivity extends AppCompatActivity {
     private SimpleTaskQueue mTaskQueue = null;
     /**
      * Progress Dialog for startup tasks
-     * ENHANCE: this is a global requirement: ProgressDialog is deprecated in API 26
+     * API_UPGRADE 26 this is a global requirement: ProgressDialog is deprecated
      * https://developer.android.com/reference/android/app/ProgressDialog
      * Suggested: ProgressBar or Notification.
      * Alternative maybe: SnackBar (recommended replacement for Toast)
@@ -115,7 +117,7 @@ public class StartupActivity extends AppCompatActivity {
 
     /** Set the flag to indicate an FTS rebuild is required */
     public static void scheduleFtsRebuild() {
-        BookCatalogueApp.getSharedPreferences().edit().putBoolean(PREF_FTS_REBUILD_REQUIRED, true).apply();
+        BookCatalogueApp.getSharedPreferences().edit().putBoolean(PREF_STARTUP_FTS_REBUILD_REQUIRED, true).apply();
     }
 
     /**
@@ -220,6 +222,7 @@ public class StartupActivity extends AppCompatActivity {
             q.enqueue(new RebuildFtsTask());
             q.enqueue(new BuildLanguageMappingsTask());
             q.enqueue(new AnalyzeDbTask());
+            q.enqueue(new DBCleanerTask());
 
             // Remove old logs
             Logger.clearLog();
@@ -393,16 +396,16 @@ public class StartupActivity extends AppCompatActivity {
      * @return true when counter reached 0
      */
     private boolean proposeBackup() {
-        int opened = BookCatalogueApp.getIntPreference(PREFS_STATE_OPENED, PROMPT_WAIT_BACKUP);
-        int startCount = BookCatalogueApp.getIntPreference(PREF_START_COUNT, 0) + 1;
+        int opened = BookCatalogueApp.getIntPreference(PREFS_STARTUP_COUNTDOWN, PROMPT_WAIT_BACKUP);
+        int startCount = BookCatalogueApp.getIntPreference(PREF_STARTUP_COUNT, 0) + 1;
 
         final SharedPreferences.Editor ed = BookCatalogueApp.getSharedPreferences().edit();
         if (opened == 0) {
-            ed.putInt(PREFS_STATE_OPENED, PROMPT_WAIT_BACKUP);
+            ed.putInt(PREFS_STARTUP_COUNTDOWN, PROMPT_WAIT_BACKUP);
         } else {
-            ed.putInt(PREFS_STATE_OPENED, opened - 1);
+            ed.putInt(PREFS_STARTUP_COUNTDOWN, opened - 1);
         }
-        ed.putInt(PREF_START_COUNT, startCount);
+        ed.putInt(PREF_STARTUP_COUNT, startCount);
         ed.apply();
 
         mShowAmazonHint = ((startCount % PROMPT_WAIT_AMAZON) == 0);
@@ -475,9 +478,6 @@ public class StartupActivity extends AppCompatActivity {
     /**
      * Build the dedicated SharedPreferences file with the language mappings.
      * Only build once per Locale.
-     *
-     * Secondly, do a mass update of any languages not yet converted.
-     * This is done each startup. TODO: is that needed ?
      */
     public class BuildLanguageMappingsTask implements SimpleTaskQueue.SimpleTask {
         @Override
@@ -488,10 +488,30 @@ public class StartupActivity extends AppCompatActivity {
             LocaleUtils.createLanguageMappingCache(LocaleUtils.getSystemLocal());
             // the one the user has configured our app into using
             LocaleUtils.createLanguageMappingCache(Locale.getDefault());
+            // and English
             LocaleUtils.createLanguageMappingCache(Locale.ENGLISH);
+        }
+
+        @Override
+        public void onFinish(Exception e) {
+        }
+    }
+
+
+    /**
+     * Data cleaning. This is done each startup. TODO: is that needed ?
+     */
+    public class DBCleanerTask implements SimpleTaskQueue.SimpleTask {
+        @Override
+        public void run(final @NonNull SimpleTaskContext taskContext) {
+            updateProgress(R.string.progress_msg_cleaning_database);
 
             // Get a DB, do not close the database!
             CatalogueDBAdapter db = taskContext.getDb();
+
+            /*
+             * do a mass update of any languages not yet converted to ISO3 codes
+             */
             List<String> names = db.getLanguageCodes();
             for (String name : names) {
                 if (name != null && name.length() > 3) {
@@ -502,6 +522,10 @@ public class StartupActivity extends AppCompatActivity {
                     }
                 }
             }
+
+
+            DBCleaner cleaner = new DBCleaner(db);
+            cleaner.all(true);
         }
 
         @Override
@@ -520,10 +544,10 @@ public class StartupActivity extends AppCompatActivity {
         public void run(final @NonNull SimpleTaskContext taskContext) {
             // Get a DB to make sure the FTS rebuild flag is set appropriately, do not close the database!
             CatalogueDBAdapter db = taskContext.getDb();
-            if (BookCatalogueApp.getBooleanPreference(PREF_FTS_REBUILD_REQUIRED, false)) {
+            if (BookCatalogueApp.getBooleanPreference(PREF_STARTUP_FTS_REBUILD_REQUIRED, false)) {
                 updateProgress(R.string.progress_msg_rebuilding_search_index);
                 db.rebuildFts();
-                BookCatalogueApp.getSharedPreferences().edit().putBoolean(PREF_FTS_REBUILD_REQUIRED, false).apply();
+                BookCatalogueApp.getSharedPreferences().edit().putBoolean(PREF_STARTUP_FTS_REBUILD_REQUIRED, false).apply();
             }
         }
 
@@ -542,14 +566,14 @@ public class StartupActivity extends AppCompatActivity {
             CatalogueDBAdapter db = taskContext.getDb();
             db.analyzeDb();
 
-            if (BooklistPreferencesActivity.isThumbnailCacheEnabled()) {
+            if (BooklistPreferencesActivity.thumbnailsAreCached()) {
                 CoversDBAdapter coversDBAdapter = taskContext.getCoversDb();
                 coversDBAdapter.analyze();
             }
 
-            if (BookCatalogueApp.getBooleanPreference(V74_PREF_AUTHOR_SERIES_FIX_UP_REQUIRED, false)) {
+            if (BookCatalogueApp.getBooleanPreference(UpgradeDatabase.V74_PREF_AUTHOR_SERIES_FIX_UP_REQUIRED, false)) {
                 UpgradeDatabase.v74_fixupAuthorsAndSeries(db);
-                BookCatalogueApp.getSharedPreferences().edit().remove(V74_PREF_AUTHOR_SERIES_FIX_UP_REQUIRED).apply();
+                BookCatalogueApp.getSharedPreferences().edit().remove(UpgradeDatabase.V74_PREF_AUTHOR_SERIES_FIX_UP_REQUIRED).apply();
             }
         }
 

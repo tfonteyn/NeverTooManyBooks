@@ -140,7 +140,7 @@ public class UpdateFieldsFromInternetActivity extends BaseActivityWithTasks {
      * Entries are displayed in the order they are added here.
      */
     private void initFields() {
-        addIfVisible(UniqueId.BKEY_AUTHOR_ARRAY, UniqueId.KEY_AUTHOR_ID,
+        addIfVisible(UniqueId.BKEY_AUTHOR_ARRAY, UniqueId.KEY_AUTHOR,
                 R.string.lbl_author, Fields.FieldUsage.Usage.AddExtra, true);
         addIfVisible(UniqueId.KEY_TITLE,
                 R.string.lbl_title, Fields.FieldUsage.Usage.CopyIfBlank, false);
@@ -148,7 +148,7 @@ public class UpdateFieldsFromInternetActivity extends BaseActivityWithTasks {
                 R.string.lbl_isbn, Fields.FieldUsage.Usage.CopyIfBlank, false);
         addIfVisible(UniqueId.BKEY_HAVE_THUMBNAIL,
                 R.string.lbl_cover, Fields.FieldUsage.Usage.CopyIfBlank, false);
-        addIfVisible(UniqueId.BKEY_SERIES_ARRAY, UniqueId.KEY_SERIES_NAME,
+        addIfVisible(UniqueId.BKEY_SERIES_ARRAY, UniqueId.KEY_SERIES,
                 R.string.lbl_series, Fields.FieldUsage.Usage.AddExtra, true);
         addIfVisible(UniqueId.BKEY_TOC_TITLES_ARRAY, UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK,
                 R.string.table_of_content, Fields.FieldUsage.Usage.AddExtra, true);

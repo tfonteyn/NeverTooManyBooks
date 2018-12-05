@@ -27,7 +27,6 @@ import android.support.annotation.StringRes;
 import android.view.LayoutInflater;
 import android.view.View;
 
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -52,63 +51,43 @@ public abstract class Property<T> {
     @NonNull
     private static AtomicInteger mViewIdCounter = new AtomicInteger();
 
-    /** Unique 'name' of this property. In-memory use only (as a key into a Map), not persisted. */
+    /**
+     * Counter used to generate values for the {@link #mUniqueId} field.
+     */
     @NonNull
-    private final String mUniqueId;
+    private static AtomicInteger mUniqueIdCounter = new AtomicInteger();
+    private final int mUniqueId;
+
     /** Resource ID for displayed name of this property */
     @StringRes
-    private final transient int mNameResourceId;
+    private final int mNameResourceId;
     /** Underlying value */
     @Nullable
-    protected T mValue = null;
+    T mValue = null;
     /** PropertyGroup in which this property should reside. Display-purposes only */
     @NonNull
-    private transient PropertyGroup mGroup;
+    private PropertyGroup mGroup;
     /** Property weight (for sorting). Most will remain set at 0. */
     private int mWeight = 0;
     /** Hint associated with this property. Subclasses need to use, where appropriate */
     @StringRes
     private int mHint = 0;
     /** Default value, for case when not in preferences, or no preferences given */
-    @Nullable
-    private T mDefaultValue = null;
-
-    /** Key in preferences for optional persistence */
-    @Nullable
-    private String mPreferenceKey = null;
+    @NonNull
+    private T mDefaultValue;
 
     /**
-     * Constructor, both Value and DefaultValue will be 'null'
-     *
-     * @param uniqueId       Unique name for this property (ideally, unique for entire app)
-     * @param group          PropertyGroup in which this property belongs
      * @param nameResourceId Resource ID for name of this property
-     */
-    public Property(final @NonNull String uniqueId,
-                    final @NonNull PropertyGroup group,
-                    final @StringRes int nameResourceId) {
-        mUniqueId = uniqueId;
-        mGroup = group;
-        mNameResourceId = nameResourceId;
-    }
-
-    /**
-     * Constructor, both Value and DefaultValue will be set to the parameter 'defaultValue'
-     *
-     * @param uniqueId       Unique name for this property (ideally, unique for entire app)
      * @param group          PropertyGroup in which this property belongs
-     * @param nameResourceId Resource ID for name of this property
-     * @param defaultValue   value to set as both the default, and as the current actual value.
+     * @param defaultValue   value to set as the default, used when the actual value is null.
      */
-    public Property(final @NonNull String uniqueId,
+    public Property(final @StringRes int nameResourceId,
                     final @NonNull PropertyGroup group,
-                    final @StringRes int nameResourceId,
-                    final @Nullable T defaultValue) {
-        mUniqueId = uniqueId;
+                    final @NonNull T defaultValue) {
+        mUniqueId = mUniqueIdCounter.incrementAndGet();
         mGroup = group;
         mNameResourceId = nameResourceId;
         mDefaultValue = defaultValue;
-        mValue = defaultValue;
     }
 
     /** Increment and return the view counter */
@@ -116,48 +95,31 @@ public abstract class Property<T> {
         return mViewIdCounter.incrementAndGet();
     }
 
-    @Nullable
+    @NonNull
     protected T getDefaultValue() {
         return mDefaultValue;
     }
 
     /**
-     * Set the DefaultValue *and* the Value
-     *
-     * The assumption is that the default will be set at creation time, before we have a valid value
-     * for this property.
+     * Set the DefaultValue
      */
     @NonNull
-    public Property<T> setDefaultValue(final @Nullable T value) {
+    public Property<T> setDefaultValue(final @NonNull T value) {
         mDefaultValue = value;
-        mValue = value;
         return this;
     }
 
     /** Utility to check if the passed value == the default value */
     boolean isDefault(final @Nullable T value) {
-        return (value == null && mDefaultValue == null)
-                || (value != null && value.equals(mDefaultValue));
+        return value != null && value.equals(mDefaultValue);
     }
 
     /** Utility to check if the current value == the default value */
     boolean isDefault() {
-        return (mValue == null && mDefaultValue == null)
-                || (mValue != null && mValue.equals(mDefaultValue));
+        return mValue != null && mValue.equals(mDefaultValue);
     }
 
-    @NonNull
-    protected String getPreferenceKey() {
-        return Objects.requireNonNull(mPreferenceKey);
-    }
-
-    @NonNull
-    public Property<T> setPreferenceKey(final @NonNull String key) {
-        mPreferenceKey = key;
-        return this;
-    }
-
-    public int getWeight() {
+    int getWeight() {
         return mWeight;
     }
 
@@ -167,13 +129,7 @@ public abstract class Property<T> {
         return this;
     }
 
-    /** check if there is a preference key for persisting the value */
-    public boolean hasPreferenceKey() {
-        return (mPreferenceKey != null && !mPreferenceKey.isEmpty());
-    }
-
-    @NonNull
-    public String getUniqueName() {
+    public int getUniqueId() {
         return mUniqueId;
     }
 
@@ -225,7 +181,7 @@ public abstract class Property<T> {
         return mValue;
     }
 
-    /** Accessor for underlying (or global) value */
+    /** Accessor for underlying value */
     @NonNull
     public Property<T> setValue(final @Nullable T value) {
         this.mValue = value;

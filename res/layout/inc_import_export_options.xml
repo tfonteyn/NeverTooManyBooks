@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical">
 
     <View style="@style/divider_horizontalList"
@@ -23,7 +24,7 @@
         <TextView
             android:id="@+id/book_details_blurb"
             style="@style/row_option_info"
-            android:text="@string/info_book_details" />
+            android:text="@string/import_export_info_book_details" />
     </LinearLayout>
 
     <LinearLayout
@@ -40,7 +41,7 @@
         <TextView
             android:id="@+id/cover_images_blurb"
             style="@style/row_option_info"
-            android:text="@string/export_info_cover_images" />
+            tools:text="cover images" />
     </LinearLayout>
 
     <LinearLayout
@@ -58,7 +59,7 @@
         <TextView
             android:id="@+id/preferences_blurb"
             style="@style/row_option_info"
-            android:text="@string/info_preferences" />
+            android:text="@string/import_export_info_preferences" />
     </LinearLayout>
 
     <View style="@style/divider_horizontalList"

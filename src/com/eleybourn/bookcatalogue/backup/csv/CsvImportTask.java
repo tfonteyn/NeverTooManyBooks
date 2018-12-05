@@ -71,7 +71,7 @@ public class CsvImportTask extends ManagedTask {
                 mFinalMessage = getString(R.string.progress_end_import_complete);
             }
         } catch (IOException e) {
-            mFinalMessage = getString(R.string.error_import_failed_is_csv_file_location_correct);
+            mFinalMessage = getString(R.string.import_error_failed_is_csv_file_location_correct);
             Logger.error(e);
         }
     }

@@ -43,6 +43,7 @@ import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueueProgressDial
 import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueueProgressDialogFragment.FragmentTask;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
+import com.eleybourn.bookcatalogue.utils.UpgradeMigrations;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 import java.io.File;
@@ -182,7 +183,7 @@ public class BackupAndRestoreActivity extends FileChooserBaseActivity implements
 
         AlertDialog dialog = new AlertDialog.Builder(this)
                 .setTitle(R.string.backup_to_archive)
-                .setMessage(R.string.export_dialog_info_all)
+                .setMessage(R.string.export_info_backup_all)
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(final DialogInterface dialog, final int which) {
@@ -287,6 +288,11 @@ public class BackupAndRestoreActivity extends FileChooserBaseActivity implements
             return;
         }
 
+        // see if there are any pre-200 preferences that need migrating.
+        if ((resultSettings.what & ImportSettings.PREFERENCES) != 0) {
+            UpgradeMigrations.v200preferences(BookCatalogueApp.getSharedPreferences(), false);
+        }
+
         // all done
         AlertDialog dialog = new AlertDialog.Builder(this)
                 .setTitle(R.string.import_from_archive)
@@ -309,7 +315,7 @@ public class BackupAndRestoreActivity extends FileChooserBaseActivity implements
                                             final boolean cancelled,
                                             final @NonNull ExportSettings resultSettings) {
         if (!success) {
-            String msg = getString(R.string.error_backup_failed)
+            String msg = getString(R.string.export_error_backup_failed)
                     + " " + getString(R.string.error_storage_not_writable)
                     + "\n\n" + getString(R.string.error_if_the_problem_persists);
 

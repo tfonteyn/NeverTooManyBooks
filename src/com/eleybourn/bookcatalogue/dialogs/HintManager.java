@@ -33,6 +33,7 @@ import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 import java.util.HashMap;
@@ -50,9 +51,9 @@ import java.util.Map;
  */
 public class HintManager {
     /** Preferences getPrefix */
-    private final static String TAG = "HintManager";
+    private final static String TAG = "HintManager.";
     /** Preferences getPrefix for hints */
-    private final static String PREF_HINT = TAG + ".Hint.";
+    private final static String PREF_HINT = TAG + "Hint.";
     /** All hints managed by this class */
     @SuppressLint("UseSparseArrays")
     private static final  Map<Integer, Hint> mHints = new HashMap<>();
@@ -83,6 +84,8 @@ public class HintManager {
         mHints.put(R.string.hint_book_list, new Hint("hint_book_list"));
         mHints.put(R.string.hint_amazon_links_blurb, new Hint("hint_amazon_links_blurb"));
         mHints.put(R.string.hint_book_search_by_text, new Hint("hint_book_search_by_text"));
+        // v83
+        mHints.put(R.string.hint_pref_layer_type, new Hint("hint_pref_layer_type"));
     }
 
     private HintManager() {
@@ -107,6 +110,10 @@ public class HintManager {
                                    final @Nullable Object... args) {
         // Get the hint and return if it has been disabled.
         final Hint hint = mHints.get(stringId);
+        if (hint == null) {
+            Logger.error("displayHint|not found|stringId=" + stringId);
+            return;
+        }
         if (!hint.shouldBeShown()) {
             if (postRun != null)
                 postRun.run();

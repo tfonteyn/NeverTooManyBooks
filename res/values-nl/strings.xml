@@ -39,7 +39,7 @@
     <string name="lbl_series_num">#</string>
     <string name="title_import_book_data">Boeken Importeren</string>
     <string name="warning_import_be_cautious">Waarschuwing. Het importeren van gegevens kan bestaande boekgegevens onbedoeld bijwerken met nieuwe informatie als de UUID-kolom niet aanwezig is en de id in het import-bestand dezelfde is als het bestaande id. Dit is meestal geen bezwaar als u een veld in een exportbestand heeft veranderd. Als u een nieuwe boek item heeft gemaakt, of iemand anders zijn boeken importeert, zorg dan dat het UUID veld aanwezig is of dat het id veld leeg is.</string>
-    <string name="error_import_failed_is_csv_file_location_correct">FOUT: Import van gegevens (van SD kaart) mislukt. Staat het bestand op de juiste plaats?</string>
+    <string name="import_error_failed_is_csv_file_location_correct">FOUT: Import van gegevens (van SD kaart) mislukt. Staat het bestand op de juiste plaats?</string>
     <string name="search_title">Book Catalogue: Zoekresultaten</string>
     <string name="results_found">Gevonden resultaten</string>
     <string name="menu_administration_long">Administratieve Functies</string>
@@ -122,9 +122,9 @@
     <string name="vldt_failed">Validatie mislukt voor \'%s\'</string>
     <string name="vldt_read_start_after_end">De begindatum voor lezen moet vóór de einddatum liggen</string>
     <string name="progress_end_backup_success">Back-up gelukt</string>
-    <string name="error_backup_failed">Back-up mislukt</string>
+    <string name="export_error_backup_failed">Back-up mislukt</string>
     <string name="error_file_must_contain_column">Bestandsnaam moet een kolomnaam %s bevatten</string>
-    <string name="error_csv_file_must_contain_any_column">Bestandsnaam moet een kolom met de volgende namen bevatten: %s</string>
+    <string name="import_error_csv_file_must_contain_any_column">Bestandsnaam moet een kolom met de volgende namen bevatten: %s</string>
     <string name="error_column_is_blank">Kolom %1$s is leeg op rij %2$s</string>
     <string name="error_columns_are_blank">Kolommen %1$s zijn allemaal leeg op rij %2$d</string>
     <string name="btn_confirm_save">Opslaan</string>
@@ -142,7 +142,7 @@
     <string name="warning_required_author">Auteurveld is leeg</string>
     <string name="warning_series_already_in_list">Serie staat al in de lijst</string>
     <string name="warning_required_series">Serieveld is leeg</string>
-    <string name="error_export_csv_failed">Export mislukt - kon niet naar de SD kaart wegschrijven</string>
+    <string name="export_error_csv_failed">Export mislukt - kon niet naar de SD kaart wegschrijven</string>
     <string name="error_download_thumbnail_failed">Miniatuur download mislukt - kon niet naar de SD kaart wegschrijven</string>
     <string name="progress_msg_skip_title">Overslaan van - %s</string>
     <string name="progress_end_num_books_searched">%s Boeken gezocht</string>
@@ -306,7 +306,7 @@
     <string name="lbl_bookshelves_long">Boekenplanken</string>
     <string name="lbl_bookshelves">Planken</string>
     <string name="lbl_location">Locatie</string>
-    <string name="credentials">Inloggegevens</string>
+    <string name="menu_credentials">Inloggegevens</string>
     <string name="data_import_export">Gegevens Import/Export</string>
     <string name="unrecognized_task">Onherkenbare taak</string>
     <string name="progress_msg_rebuilding_search_index">Zoekindex opnieuw opbouwen…</string>
@@ -448,17 +448,17 @@
     </string>
     <string name="read_amp_unread">Gelezen &amp; Ongelezen</string>
     <string name="loaned">Uitgeleend</string>
-    <string name="publication_year">Jaar</string>
-    <string name="publication_month">Maand</string>
-    <string name="added_year">Jaar</string>
-    <string name="added_month">Maand</string>
-    <string name="added_day">Dag</string>
+    <string name="lbl_publication_year">Jaar</string>
+    <string name="lbl_publication_month">Maand</string>
+    <string name="lbl_added_year">Jaar</string>
+    <string name="lbl_added_month">Maand</string>
+    <string name="lbl_added_day">Dag</string>
     <string name="lbl_book">Boek</string>
     <string name="in">In</string>
     <string name="size">Grootte</string>
     <string name="updated">Bijgewerkt</string>
-    <string name="warning_csv_file_not_found">Geen exportbestanden gevonden</string>
-    <string name="warning_csv_file_more_then_one_found">Meer dan een exportbestand gevonden. Selecteer aub een exportbestand om te importeren uit de lijst hieronder</string>
+    <string name="import_error_csv_file_not_found">Geen exportbestanden gevonden</string>
+    <string name="import_warning_csv_file_more_then_one_found">Meer dan een exportbestand gevonden. Selecteer aub een exportbestand om te importeren uit de lijst hieronder</string>
     <string name="problem_starting_import_arg">Het is een probleem bij het starten van de import van: %1$s</string>
     <string name="hint_booklist_style_menu">Dit menu laat u de lijststijl selecteren. 
     								\n\nU kunt het menu ook aanpassen of u eigen lijststijl maken door te tikken op \'Aanpassen\' onderaan de lijst.</string>
@@ -488,9 +488,9 @@
     <string name="menu_add_book_by_isbn">Invullen ISBN</string>
     <string name="lbl_allow_asin">Toestaan ASIN</string>
     <string name="warning_x_is_not_a_valid_isbn_or_asin">%1$s is geen geldig ISBN of ASIN</string>
-    <string name="read_year">Jaar</string>
-    <string name="read_month">Maand</string>
-    <string name="read_day">Dag</string>
+    <string name="lbl_read_year">Jaar</string>
+    <string name="lbl_read_month">Maand</string>
+    <string name="lbl_read_day">Dag</string>
     <string name="style_builtin_read_date">Datum gelezen</string>
     <string name="lbl_details_have_changed">De details zijn veranderd</string>
     <string name="warning_unsaved_changes">U heeft niet opgeslagen veranderingen. Als u nu afsluit gaan die verloren.</string>
@@ -648,20 +648,20 @@ Zie "Meer voorkeuren" voor de relevante instelling.
     <string name="progress_msg_covers_skip">%1$s boekomslagen verwerkt (%2$s missend, %3$s overgeslagen)</string>
 
     <!-- Explanatory note for 'exportBooks all' option -->
-    <string name="export_dialog_info_all">Alle boeken, omslagafbeeldingen, instellingen en aangepaste stijlen zullen worden geëxporteerd naar het archief.</string>
+    <string name="export_info_backup_all">Alle boeken, omslagafbeeldingen, instellingen en aangepaste stijlen zullen worden geëxporteerd naar het archief.</string>
     <!-- Explanatory note for 'advanced exportBooks' option -->
     <string name="export_options_dialog_title">Selecteer wat geëxporteerd zal worden naar het archief.</string>
 
     <!-- Text for button -->
     <string name="book_details">Boek details</string>
     <!-- Brief description -->
-    <string name="info_book_details">De details van het boek zelf</string>
+    <string name="import_export_info_book_details">De details van het boek zelf</string>
     <!-- Text for button -->
     <string name="lbl_cover_images">Omslagafbeeldingen</string>
     <!-- Brief description -->
     <string name="export_info_cover_images">Omslagafbeeldingen voor alle geselecteerde boeken. Dit zal de export aanzienlijk groter maken.</string>
     <!-- Brief description -->
-    <string name="info_preferences">Voorkeuren en aangepaste boekenlijst stijlen</string>
+    <string name="import_export_info_preferences">Voorkeuren en aangepaste boekenlijst stijlen</string>
 
     <!-- Explanatory note for exportBooks date (not yet implemented) -->
     <string name="export_option_info_books_since_date">Specificeer desgewenst een datum voor de selectie van boeken en/of omslagen om te exporteren:</string>
@@ -719,13 +719,13 @@ Zie "Meer voorkeuren" voor de relevante instelling.
     <!-- A hint describing the benefit of folowing the Amazon links -->
     <string name="hint_amazon_links_blurb">&lt;p&gt;Indien u boeken koopt bij Amazon na het selecteren van de &lt;i&gt;\"%1$s\"&lt;/i&gt;, &lt;i&gt;\"%2$s\"&lt;/i&gt; of &lt;i&gt;\"%3$s\"&lt;/i&gt; menu items, zal een deel van de aankoopprijs gezonden worden naar de ontwikkelaars van  %4$s.&lt;/p&gt;&lt;p&gt;U kunt ook de &lt;a href=\"https://github.com/eleybourn/Book-Catalogue/wiki/Frequently-Asked-Questions-%%28FAQ%%29\"&gt;links op de FAQ pagina&lt;/a&gt; gebruiken om direct naar Amazon of Paypal te gaan.&lt;/p&gt;</string>
     <!-- Name of the new style grouping (needs to be short). -->
-    <string name="update_date">Datum update</string>
+    <string name="style_builtin_update_date">Datum update</string>
     <!-- Name of the new style grouping (needs to be short). -->
-    <string name="update_year">Jaar update</string>
+    <string name="lbl_update_year">Jaar update</string>
     <!-- Name of the new style grouping (needs to be short). -->
-    <string name="update_month">Maand update</string>
+    <string name="lbl_update_month">Maand update</string>
     <!-- Name of the new style grouping (needs to be short). -->
-    <string name="update_day">Dag update</string>
+    <string name="lbl_update_day">Dag update</string>
 
     <!-- Preference name (fairly short) for preferred language -->
     <string name="user_interface_preferred_language">Interface taal</string>

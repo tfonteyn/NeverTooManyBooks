@@ -24,12 +24,14 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 
+import java.util.Objects;
+
 /**
  * Implements a property with an optional global value stored in preferences.
  *
  * Normally the LOCAL value is used, unless:
- * - we force to use the global only, see {@link #mIsGlobal}
- * - we don't have a local value set, and there is a global.
+ * - we force to use the global only, see {@link #setIsGlobal}
+ * - we don't have a local value set, and there is a global. See {@link #hasGlobal()}
  *
  * @param <T> type of underlying Value
  *
@@ -37,33 +39,36 @@ import android.support.annotation.StringRes;
  */
 public abstract class PropertyWithGlobalValue<T> extends Property<T> {
 
+    /** Key in preferences for optional global persistence */
+    @Nullable
+    private String mPreferenceKey = null;
+
     /** Indicates that this instance is to use the global value instead of the local */
     private boolean mIsGlobal = false;
 
-    PropertyWithGlobalValue(final @NonNull String uniqueId,
-                            final @NonNull PropertyGroup group,
-                            final @StringRes int nameResourceId) {
-        super(uniqueId, group, nameResourceId);
-    }
-
-    PropertyWithGlobalValue(final @NonNull String uniqueId,
-                    final @NonNull PropertyGroup group,
-                    final @StringRes int nameResourceId,
-                    final @Nullable T defaultValue) {
-        super(uniqueId, group, nameResourceId, defaultValue);
-
+    PropertyWithGlobalValue(final @NonNull PropertyGroup group,
+                            final @StringRes int nameResourceId,
+                            final @NonNull T defaultValue) {
+        super(nameResourceId, group, defaultValue);
     }
 
     /** Children must implement accessor for the global value */
-    @Nullable
+    @NonNull
     protected abstract T getGlobalValue();
 
     /** Children must implement accessor for the global value */
     @SuppressWarnings("UnusedReturnValue")
-    @Nullable
-    protected abstract PropertyWithGlobalValue<T> setGlobalValue(final @Nullable T value);
+    @NonNull
+    protected abstract PropertyWithGlobalValue<T> setGlobalValue(final @NonNull T value);
 
-    /** Accessor for underlying (or global) value */
+    /**
+     * Accessor for underlying value
+     *
+     * Always think twice when using this method.
+     * It should only be used for *editing* the value.
+     *
+     * If you want to *use* the value, use {@link #getResolvedValue()}
+     */
     @Nullable
     public T getValue() {
         if (mIsGlobal) {
@@ -73,22 +78,22 @@ public abstract class PropertyWithGlobalValue<T> extends Property<T> {
     }
 
     /** Accessor for for fully resolved/defaulted value */
-    @Nullable
+    @NonNull
     public T getResolvedValue() {
         if (mIsGlobal) {
             return getGlobalValue();
         }
 
         if (mValue == null) {
-            if (hasPreferenceKey()) {
+            if (hasGlobal()) {
                 // we did not have a value, but we have a global one.
                 return getGlobalValue();
             } else {
-                // we did not have a value, nor a global one, so use the in-memory default.
+                // we did not have a value, nor a global one in prefs yet, so use the default.
                 return getDefaultValue();
             }
         } else {
-            // we had a non-null value
+            // NonNull
             return mValue;
         }
     }
@@ -100,6 +105,7 @@ public abstract class PropertyWithGlobalValue<T> extends Property<T> {
     @NonNull
     public PropertyWithGlobalValue<T> setValue(final @Nullable T value) {
         if (mIsGlobal) {
+            Objects.requireNonNull(value);
             setGlobalValue(value);
         }
         super.setValue(value);
@@ -111,12 +117,13 @@ public abstract class PropertyWithGlobalValue<T> extends Property<T> {
     }
 
     /**
-     * declare this property to be a global.
+     * Declare this property to be a global.
+     * A preference key MUST be set prior.
      */
     @NonNull
     public PropertyWithGlobalValue<T> setIsGlobal(final boolean isGlobal) {
         // to be a global, a preference key MUST be set prior.
-        if (isGlobal && !hasPreferenceKey()) {
+        if (isGlobal && !hasGlobal()) {
             throw new IllegalStateException();
         }
 
@@ -124,12 +131,26 @@ public abstract class PropertyWithGlobalValue<T> extends Property<T> {
         return this;
     }
 
+    @NonNull
+    String getPreferenceKey() {
+        return Objects.requireNonNull(mPreferenceKey);
+    }
+
+    @NonNull
+    public Property<T> setPreferenceKey(final @NonNull String key) {
+        mPreferenceKey = key;
+        return this;
+    }
+    /** check if there is a preference key for persisting the value */
+    public boolean hasGlobal() {
+        return (mPreferenceKey != null && !mPreferenceKey.isEmpty());
+    }
 
     /**
      * Utility to check if the passed value == the default value
      */
     boolean isDefault(final @Nullable T value) {
-        if (hasPreferenceKey() && !isGlobal())
+        if (hasGlobal() && !mIsGlobal)
             return (value == null);
 
         // We have a default value, and no global prefs

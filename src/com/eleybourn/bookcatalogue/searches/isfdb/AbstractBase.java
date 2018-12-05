@@ -51,14 +51,16 @@ abstract class AbstractBase {
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     boolean loadPage() throws SocketTimeoutException {
         if (mDoc == null) {
-            /* Originally using:  mDoc = Jsoup.connect(mPath).followRedirects(true).get();
-               but that seems to leak connections upon error
-             */
             Connection con = Jsoup.connect(mPath)
+                    // Default is true.
                     .followRedirects(true)
-                    .method(Connection.Method.GET)
-                    .ignoreHttpErrors(false);
-            Connection.Response response = null;
+                    // Default is false
+                    .ignoreHttpErrors(false)
+                    // connect and read-timeout. Default is 30.
+                    .timeout(60_000)
+                    // maximum bytes to read before connection is closed, default 1mb
+                    .maxBodySize(2_000_000);
+
             try {
                 /*
                  * @throws java.net.MalformedURLException if the request URL is not a HTTP or HTTPS URL, or is otherwise malformed
@@ -67,30 +69,13 @@ abstract class AbstractBase {
                  * @throws java.net.SocketTimeoutException if the connection times out
                  * @throws IOException on error
                  */
-                response = con.execute();
-
-                /*
-                 * @throws IOException on error
-                 */
-                mDoc = response.parse();
+                mDoc = con.get();
 
             } catch (java.net.SocketTimeoutException e) {
                 throw e;
             } catch (IOException e) {
-                if (BuildConfig.DEBUG) {
-                    //FIXME: need to debug the JSoup leaking issue
-                    if (response != null) {
-                        Logger.info(this,"charset      : " + response.charset());
-                        Logger.info(this,"contentType  : " + response.contentType());
-                        Logger.info(this,"statusCode   : " + response.statusCode());
-                        Logger.info(this,"statusMessage: " + response.statusMessage());
-                        Logger.info(this,"contentType  : " + response.contentType());
-                    }
-                }
                 Logger.error(e, mPath);
                 return false;
-            } finally {
-                //con.close() ???  W/OkHttpClient: A connection to http://www.isfdb.org/ was leaked. Did you forget to close a response body?
             }
         }
         return true;

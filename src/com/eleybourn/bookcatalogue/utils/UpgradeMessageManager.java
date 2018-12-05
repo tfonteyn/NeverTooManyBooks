@@ -26,6 +26,7 @@ import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.StartupActivity;
 import com.eleybourn.bookcatalogue.database.CatalogueDBHelper;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
@@ -42,11 +43,7 @@ import java.util.ArrayList;
  * @author pjw
  */
 public class UpgradeMessageManager {
-    /**
-     * the string is misleading (but backwards compatibility rules), this is actually the
-     * 'LastVersion' e.g. the version which was installed before the current one.
-     */
-    private final static String PREF_PREVIOUS_VERSION = "UpgradeMessages.LastMessage";
+
     /** List of version-specific messages */
     private static final UpgradeMessages mMessages = new UpgradeMessages()
 
@@ -91,7 +88,7 @@ public class UpgradeMessageManager {
         final StringBuilder message = new StringBuilder();
 
         // See if we have a saved version id. If not, it's an pre-98 install.
-        long lastVersion = BookCatalogueApp.getIntPreference(PREF_PREVIOUS_VERSION, 0);
+        long lastVersion = BookCatalogueApp.getIntPreference(StartupActivity.PREF_STARTUP_LAST_VERSION, 0);
         if (lastVersion == 0) {
             // It was an old install using old database-based message system
             // set the version to the last installed version that used the old method.
@@ -120,7 +117,7 @@ public class UpgradeMessageManager {
             Context context = BookCatalogueApp.getAppContext();
             int currVersion = context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionCode;
 
-            BookCatalogueApp.getSharedPreferences().edit().putInt(PREF_PREVIOUS_VERSION, currVersion).apply();
+            BookCatalogueApp.getSharedPreferences().edit().putInt(StartupActivity.PREF_STARTUP_LAST_VERSION, currVersion).apply();
         } catch (NameNotFoundException e) {
             Logger.error(e, "Failed to get package version code");
         }

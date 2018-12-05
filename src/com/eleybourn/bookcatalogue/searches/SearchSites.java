@@ -13,6 +13,7 @@ import com.eleybourn.bookcatalogue.searches.isfdb.SearchISFDBTask;
 import com.eleybourn.bookcatalogue.searches.librarything.SearchLibraryThingTask;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.TaskManager;
 import com.eleybourn.bookcatalogue.utils.RTE;
+import com.eleybourn.bookcatalogue.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,15 +31,14 @@ public class SearchSites {
     private static final String TAG = "SearchManager";
     /** the default search site order for standard data/covers */
     private static final ArrayList<Site> mSearchOrderDefaults = new ArrayList<>();
-    /** the default search site order for _dedicated_ cover searches*/
+    /** the default search site order for _dedicated_ cover searches */
     private static final ArrayList<Site> mCoverSearchOrderDefaults = new ArrayList<>();
-
+    /** TODO: not user configurable for now, but plumbing installed */
+    private static final List<Site> mPreferredReliabilityOrder;
     /** the users preferred search site order */
     private static ArrayList<Site> mPreferredSearchOrder;
     /** the users preferred search site order */
     private static ArrayList<Site> mPreferredCoverSearchOrder;
-    /** TODO: not user configurable for now, but plumbing installed */
-    private static final List<Site> mPreferredReliabilityOrder;
 
     /*
      * default search order
@@ -169,20 +169,29 @@ public class SearchSites {
          * If previously stored to SharedPreferences, the stored values will be used instead.
          *
          * @param id       Internal id, bitmask based
-         * @param name     Internal AND user-visible name.
-         * @param order the search priority
+         * @param name     user-visible name.
+         * @param priority the search priority order
          */
         @SuppressWarnings("SameParameterValue")
-        Site(final int id, final @NonNull String name, final int order) {
+        Site(final int id, final @NonNull String name, final int priority) {
             this.id = id;
             this.name = name;
-            this.priority = order;
+            this.priority = priority;
             // by default, reliability == order.
-            this.reliability = order;
+            this.reliability = priority;
 
             loadFromPrefs();
         }
 
+        /**
+         * Create the Site with whatever suitable default values.
+         * If previously stored to SharedPreferences, the stored values will be used instead.
+         *
+         * @param id          Internal id, bitmask based
+         * @param name        user-visible name.
+         * @param priority    the search priority order
+         * @param reliability the search reliability order
+         */
         @SuppressWarnings("SameParameterValue")
         Site(final int id, final @NonNull String name, final int priority, final int reliability) {
             this.id = id;

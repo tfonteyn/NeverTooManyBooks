@@ -127,7 +127,7 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LOANE
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PK_DOCID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PK_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_FORMATTED;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_NAME;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_STYLE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_ANTHOLOGY;
@@ -1197,7 +1197,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
         // If present, get the author ID from the author name (it may have changed with a name change)
         if (book.containsKey(UniqueId.KEY_AUTHOR_FORMATTED)) {
             Author author = new Author(book.getString(UniqueId.KEY_AUTHOR_FORMATTED));
-            book.putLong(UniqueId.KEY_AUTHOR_ID, getOrInsertAuthorId(author));
+            book.putLong(UniqueId.KEY_AUTHOR, getOrInsertAuthorId(author));
         } else {
             if (book.containsKey(UniqueId.KEY_AUTHOR_FAMILY_NAME)) {
                 String family = book.getString(UniqueId.KEY_AUTHOR_FAMILY_NAME);
@@ -1207,7 +1207,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
                 } else {
                     given = "";
                 }
-                book.putLong(UniqueId.KEY_AUTHOR_ID, getOrInsertAuthorId(new Author(family, given)));
+                book.putLong(UniqueId.KEY_AUTHOR, getOrInsertAuthorId(new Author(family, given)));
             }
         }
 
@@ -2248,7 +2248,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
             }
 
             int idCol = series.getColumnIndex(DOM_PK_ID.name);
-            int nameCol = series.getColumnIndex(DOM_SERIES_NAME.name);
+            int nameCol = series.getColumnIndex(DOM_SERIES.name);
             int numCol = series.getColumnIndex(DOM_BOOK_SERIES_NUM.name);
 
             while (series.moveToNext()) {
@@ -2311,7 +2311,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
                 "a." + DOM_FK_AUTHOR_ID + " AS " + DOM_FK_AUTHOR_ID + "," +
 
                 "Coalesce(s." + DOM_FK_SERIES_ID + ", 0) AS " + DOM_FK_SERIES_ID + "," +
-                "Coalesce(s." + DOM_SERIES_NAME + ", '') AS " + DOM_SERIES_NAME + "," +
+                "Coalesce(s." + DOM_SERIES + ", '') AS " + DOM_SERIES + "," +
                 "Coalesce(s." + DOM_BOOK_SERIES_NUM + ", '') AS " + DOM_BOOK_SERIES_NUM + "," +
                 // if in more then one series, concat " et al"
                 " Case" +
@@ -2342,13 +2342,13 @@ public class CatalogueDBAdapter implements AutoCloseable {
                 " LEFT OUTER JOIN (" +
                 /* */ "SELECT " +
                 /* */ DOM_FK_SERIES_ID + "," +
-                /* */ DOM_SERIES_NAME + "," +
+                /* */ DOM_SERIES + "," +
                 /* */ DOM_BOOK_SERIES_NUM + "," +
                 /* */ TBL_BOOK_SERIES.dotAs(DOM_FK_BOOK_ID) + "," +
                 /* */ " Case" +
                 /* */ " When " + DOM_BOOK_SERIES_NUM + " = ''" +
-                /* */ "  Then " + DOM_SERIES_NAME + "" +
-                /* */ "  Else " + DOM_SERIES_NAME + "||' #'||" + DOM_BOOK_SERIES_NUM +
+                /* */ "  Then " + DOM_SERIES + "" +
+                /* */ "  Else " + DOM_SERIES + "||' #'||" + DOM_BOOK_SERIES_NUM +
                 /* */ " End AS " + DOM_SERIES_FORMATTED +
                 /* */ " FROM " + TBL_BOOK_SERIES.ref() + TBL_BOOK_SERIES.join(TBL_SERIES) +
                 ") s ON s." + DOM_FK_BOOK_ID + "=b." + DOM_PK_ID +
@@ -3112,7 +3112,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
      */
     private long insertSeries(final @NonNull String name) {
         ContentValues cv = new ContentValues();
-        cv.put(DOM_SERIES_NAME.name, name);
+        cv.put(DOM_SERIES.name, name);
         return mSyncedDb.insert(TBL_SERIES.getName(), null, cv);
     }
 
@@ -3141,7 +3141,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
     @Nullable
     public Series getSeries(final long id) {
         String sql = "SELECT " +
-                DOM_SERIES_NAME +
+                DOM_SERIES +
                 " FROM " + TBL_SERIES +
                 " WHERE " + DOM_PK_ID + "=?";
 
@@ -3169,7 +3169,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
             }
 
             ContentValues cv = new ContentValues();
-            cv.put(DOM_SERIES_NAME.name, series.name);
+            cv.put(DOM_SERIES.name, series.name);
 
             int rowsAffected = mSyncedDb.update(TBL_SERIES.getName(), cv, DOM_PK_ID + "=?", new String[]{Long.toString(series.id)});
             if (rowsAffected == 1) {
@@ -3201,7 +3201,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
                     "SELECT " +
                             DOM_PK_ID +
                             " FROM " + TBL_SERIES +
-                            " WHERE lower(" + DOM_SERIES_NAME + ") = lower(?)" + COLLATION);
+                            " WHERE lower(" + DOM_SERIES + ") = lower(?)" + COLLATION);
         }
         mGetSeriesIdQuery.bindString(1, name);
         return mGetSeriesIdQuery.simpleQueryForLongOrZero();
@@ -3328,10 +3328,10 @@ public class CatalogueDBAdapter implements AutoCloseable {
     @NonNull
     public ArrayList<String> getAllSeries() {
         String sql = "SELECT DISTINCT " +
-                DOM_SERIES_NAME +
+                DOM_SERIES +
                 " FROM " + TBL_SERIES +
-                " ORDER BY lower(" + DOM_SERIES_NAME + ") " + COLLATION;
-        return getColumnAsList(sql, DOM_SERIES_NAME.name);
+                " ORDER BY lower(" + DOM_SERIES + ") " + COLLATION;
+        return getColumnAsList(sql, DOM_SERIES.name);
     }
 
     /**
@@ -3348,13 +3348,13 @@ public class CatalogueDBAdapter implements AutoCloseable {
         if (sql == null) {
             sql = "SELECT DISTINCT " +
                     TBL_SERIES.dotAs(DOM_PK_ID) + "," +
-                    TBL_SERIES.dotAs(DOM_SERIES_NAME) + "," +
+                    TBL_SERIES.dotAs(DOM_SERIES) + "," +
                     TBL_BOOK_SERIES.dotAs(DOM_BOOK_SERIES_NUM) + "," +
                     TBL_BOOK_SERIES.dotAs(DOM_BOOK_SERIES_POSITION) + "," +
-                    DOM_SERIES_NAME + "||' ('||" + DOM_BOOK_SERIES_NUM + "||')' AS " + DOM_SERIES_FORMATTED +
+                    DOM_SERIES + "||' ('||" + DOM_BOOK_SERIES_NUM + "||')' AS " + DOM_SERIES_FORMATTED +
                     " FROM " + TBL_BOOK_SERIES.ref() + TBL_BOOK_SERIES.join(TBL_SERIES) +
                     " WHERE " + TBL_BOOK_SERIES.dot(DOM_FK_BOOK_ID) + "=?" +
-                    " ORDER BY " + TBL_BOOK_SERIES.dot(DOM_BOOK_SERIES_POSITION) + ", lower(" + TBL_SERIES.dot(DOM_SERIES_NAME) + ") " + COLLATION + " ASC";
+                    " ORDER BY " + TBL_BOOK_SERIES.dot(DOM_BOOK_SERIES_POSITION) + ", lower(" + TBL_SERIES.dot(DOM_SERIES) + ") " + COLLATION + " ASC";
             SqlString.map.put("fetchAllSeriesByBookId", sql);
         }
 
@@ -3579,7 +3579,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
         String seriesBaseSql = SqlString.map.get("ftsSendBooks.seriesBaseSql");
         if (seriesBaseSql == null) {
             seriesBaseSql = "SELECT " +
-                    TBL_SERIES.dot(DOM_SERIES_NAME) + " || ' ' || Coalesce(" + TBL_BOOK_SERIES.dot(DOM_BOOK_SERIES_NUM) + ",'') AS seriesInfo" +
+                    TBL_SERIES.dot(DOM_SERIES) + " || ' ' || Coalesce(" + TBL_BOOK_SERIES.dot(DOM_BOOK_SERIES_NUM) + ",'') AS seriesInfo" +
                     " FROM " + TBL_BOOK_SERIES.ref() + TBL_BOOK_SERIES.join(TBL_SERIES) +
                     " WHERE " + TBL_BOOK_SERIES.dot(DOM_FK_BOOK_ID) + "=?";
             SqlString.map.put("ftsSendBooks.seriesBaseSql", seriesBaseSql);
@@ -3914,7 +3914,6 @@ public class CatalogueDBAdapter implements AutoCloseable {
 
         return mSyncedDb.rawQuery(sql.toString(), new String[]{});
     }
-
 
     /**
      * DEBUG only

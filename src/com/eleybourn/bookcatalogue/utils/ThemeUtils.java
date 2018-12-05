@@ -72,7 +72,6 @@ public class ThemeUtils {
     @NonNull
     public static ListOfValuesProperty.ItemList<Integer> getThemePreferencesListItems() {
         ListOfValuesProperty.ItemList<Integer> items = new ListOfValuesProperty.ItemList<>();
-
         String[] themeList = BookCatalogueApp.getResourceStringArray(R.array.user_interface_theme_supported);
         for (int i = 0; i < themeList.length; i++) {
             items.add(i, R.string.single_string, themeList[i]);

@@ -94,29 +94,28 @@ import java.util.Objects;
 public class BooksOnBookshelf extends BaseListActivity implements
         BooklistChangeListener,
         SharedPreferences.OnSharedPreferenceChangeListener {
-    /** Is book info opened in read-only mode. (old name for backwards compatibility) */
-    public static final String PREF_OPEN_BOOK_READ_ONLY = "App.OpenBookReadOnly";
 
     /** Prefix used in preferences for this activity */
-    private final static String TAG = "BooksOnBookshelf";
-
-    /** Preference name for the bookshelf to load next time we startup */
-    public final static String PREF_BOOKSHELF = TAG + ".BOOKSHELF";
-    /** Preference name for the default style to use */
-    private final static String PREF_LIST_STYLE = TAG + ".LIST_STYLE";
-    @StringRes
-    private final static int DEFAULT_STYLE = R.string.style_builtin_author_series;
-    /** Preference name for the style to use specific to a bookshelf */
-    private final static String PREF_LIST_STYLE_FOR_BOOKSHELF = TAG + ".LIST_STYLE.BOOKSHELF." /* + name of shelf */;
-
-    /** Preference name */
-    private final static String PREF_TOP_ROW = TAG + ".TOP_ROW";
-    /** Preference name */
-    private final static String PREF_TOP_ROW_TOP = TAG + ".TOP_ROW_TOP";
+    private final static String TAG = "BooksOnBookshelf.";
+    /** Preference name - Click on book row opens the book in read-only mode (or 'false': in edit mode)*/
+    public static final String PREF_BOB_OPEN_BOOK_READ_ONLY = TAG + "OpenBookReadOnly";
+    /**
+     * Preference name - the bookshelf to load next time we startup
+     * Storing the name and not the id. If you export/import... the id will be different.
+     */
+    public final static String PREF_BOB_CURRENT_BOOKSHELF = TAG + "CurrentBookshelf";
+    /**
+     * Preference name - the style to use specific to a bookshelf
+     * Storing the name and not the id. If you export/import... the id will be different.
+     */
+    public final static String PREF_BOB_CURRENT_BOOKSHELF_STYLE = TAG + "ListStyle." /* + name of shelf */;
+    /** Preference name - Saved position of last top row */
+    public final static String PREF_BOB_TOP_ROW = TAG + "TopRow";
+    /** Preference name - Saved position of last top row offset from view top */
+    public final static String PREF_BOB_TOP_ROW_OFFSET = TAG + "TopRowOffset";
 
     /** Task queue to get book lists in background */
     private final SimpleTaskQueue mTaskQueue = new SimpleTaskQueue("BoB-GetBookListTask", 1);
-
 
     /** Options indicating activity has been destroyed. Used for background tasks */
     private boolean mIsDead = false;
@@ -186,10 +185,10 @@ public class BooksOnBookshelf extends BaseListActivity implements
         if (savedInstanceState == null) {
             // Get preferred booklist state to use from preferences;
             // default to always expanded (MUCH faster than 'preserve' with lots of books)
-            mRebuildState = BooklistPreferencesActivity.getRebuildState();
+            mRebuildState = BooklistPreferencesActivity.getListRebuildState();
         } else {
             // Always preserve state when rebuilding/recreating etc
-            mRebuildState = BooklistPreferencesActivity.BOOK_LIST_STATE_PRESERVED;
+            mRebuildState = BooklistPreferencesActivity.PREF_LIST_REBUILD_STATE_PRESERVED;
         }
 
         mDb = new CatalogueDBAdapter(this);
@@ -201,8 +200,8 @@ public class BooksOnBookshelf extends BaseListActivity implements
         refreshCurrentStyle();
 
         // Restore list position on bookshelf
-        mTopRow = BookCatalogueApp.getIntPreference(PREF_TOP_ROW, 0);
-        mTopRowTop = BookCatalogueApp.getIntPreference(PREF_TOP_ROW_TOP, 0);
+        mTopRow = BookCatalogueApp.getIntPreference(PREF_BOB_TOP_ROW, 0);
+        mTopRowTop = BookCatalogueApp.getIntPreference(PREF_BOB_TOP_ROW_OFFSET, 0);
 
         // set the search capability to local (application) search
         setDefaultKeyMode(Activity.DEFAULT_KEYS_SEARCH_LOCAL);
@@ -255,7 +254,7 @@ public class BooksOnBookshelf extends BaseListActivity implements
      * get the preferred bookshelf
      */
     private Bookshelf getPreferredBookshelf() {
-        String bookshelf_name = BookCatalogueApp.getStringPreference(PREF_BOOKSHELF, null);
+        String bookshelf_name = BookCatalogueApp.getStringPreference(PREF_BOB_CURRENT_BOOKSHELF, null);
         Bookshelf bookshelf;
         if (bookshelf_name == null || bookshelf_name.isEmpty()) {
             // pref not set, start with initial shelf
@@ -368,7 +367,7 @@ public class BooksOnBookshelf extends BaseListActivity implements
             // If it's a book, view or edit it.
             case RowKinds.ROW_KIND_BOOK: {
                 long bookId = mListCursor.getCursorRow().getBookId();
-                boolean openInReadOnly = BookCatalogueApp.getBooleanPreference(PREF_OPEN_BOOK_READ_ONLY, true);
+                boolean openInReadOnly = BookCatalogueApp.getBooleanPreference(PREF_BOB_OPEN_BOOK_READ_ONLY, true);
 
                 if (openInReadOnly) {
                     String listTable = mListCursor.getBuilder().createFlattenedBooklist().getTable().getName();
@@ -914,11 +913,11 @@ public class BooksOnBookshelf extends BaseListActivity implements
             final SharedPreferences.Editor ed = BookCatalogueApp.getSharedPreferences().edit();
             final ListView lv = getListView();
             mTopRow = lv.getFirstVisiblePosition();
-            ed.putInt(PREF_TOP_ROW, mTopRow);
+            ed.putInt(PREF_BOB_TOP_ROW, mTopRow);
 
             View v = lv.getChildAt(0);
             mTopRowTop = v == null ? 0 : v.getTop();
-            ed.putInt(PREF_TOP_ROW_TOP, mTopRowTop);
+            ed.putInt(PREF_BOB_TOP_ROW_OFFSET, mTopRowTop);
 
             ed.apply();
         }
@@ -1071,14 +1070,16 @@ public class BooksOnBookshelf extends BaseListActivity implements
     /**
      * Save the bookshelf + it's style + the style as the new default.
      */
-    private void saveBookShelfAndStyle(final @NonNull Bookshelf bookshelf, final @NonNull BooklistStyle style) {
+    private void saveBookShelfAndStyle(final @NonNull Bookshelf bookshelf,
+                                       final @NonNull BooklistStyle style) {
+
         SharedPreferences.Editor ed = BookCatalogueApp.getSharedPreferences().edit();
         // current bookshelf
-        ed.putString(PREF_BOOKSHELF, bookshelf.name);
+        ed.putString(PREF_BOB_CURRENT_BOOKSHELF, bookshelf.name);
         // current global style, used as default if a bookshelf has no own style yet
-        ed.putString(PREF_LIST_STYLE, style.getCanonicalName());
+        ed.putLong(BooklistStyles.PREF_BL_STYLE_CURRENT_DEFAULT, style.getId());
         // current style for current bookshelf
-        ed.putString(PREF_LIST_STYLE_FOR_BOOKSHELF + bookshelf.name, style.getCanonicalName());
+        ed.putLong(PREF_BOB_CURRENT_BOOKSHELF_STYLE + bookshelf.name, style.getId());
         ed.apply();
     }
 
@@ -1103,18 +1104,16 @@ public class BooksOnBookshelf extends BaseListActivity implements
      * @see #getBookshelfStyle(Bookshelf)
      */
     @NonNull
-    private BooklistStyle getBookshelfStyle(final @NonNull Bookshelf bookshelf, final @NonNull BooklistStyles styles) {
-        String globalDefaultStyle = BookCatalogueApp.getStringPreference(PREF_LIST_STYLE, getString(DEFAULT_STYLE));
-        String key = PREF_LIST_STYLE_FOR_BOOKSHELF + bookshelf.name;
-        String styleName = BookCatalogueApp.getStringPreference(key, globalDefaultStyle);
+    private BooklistStyle getBookshelfStyle(final @NonNull Bookshelf bookshelf,
+                                            final @NonNull BooklistStyles styles) {
+        String key = PREF_BOB_CURRENT_BOOKSHELF_STYLE + bookshelf.name;
+        long id = BookCatalogueApp.getLongPreference(key, BooklistStyles.getDefaultStyle());
 
-        // styleName is never null, see above, always a default available.
-        @SuppressWarnings("ConstantConditions")
-        BooklistStyle style = styles.findCanonical(styleName);
-
+        BooklistStyle style = styles.getStyle(id);
         if (style == null) {
-            style = styles.get(0);
+            style = styles.getStyle(BooklistStyles.DEFAULT_STYLE);
         }
+        //noinspection ConstantConditions
         return style;
     }
 
@@ -1128,9 +1127,9 @@ public class BooksOnBookshelf extends BaseListActivity implements
         if (mCurrentStyle == null) {
             style = getBookshelfStyle(mCurrentBookshelf, styles);
         } else {
-            style = styles.findCanonical(mCurrentStyle.getCanonicalName());
+            style = styles.getStyle(mCurrentStyle.getId());
             if (style == null) {
-                style = styles.get(0);
+                style = styles.getStyle(BooklistStyles.DEFAULT_STYLE);
             }
         }
         mCurrentStyle = style;
@@ -1192,14 +1191,14 @@ public class BooksOnBookshelf extends BaseListActivity implements
                                         final @NonNull BooklistStyle style) {
         CompoundButton btn = (CompoundButton) inf.inflate(R.layout.booklist_style_menu_radio, dialog.getListView());
         btn.setText(style.getDisplayName());
-        btn.setChecked(mCurrentStyle.getCanonicalName().equalsIgnoreCase(style.getCanonicalName()));
+        btn.setChecked(mCurrentStyle.getId() == style.getId());
 
         parent.addView(btn);
 
         btn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                onStyleSelected(style.getCanonicalName());
+                onStyleSelected(style.getId());
                 dialog.dismiss();
             }
         });
@@ -1225,12 +1224,12 @@ public class BooksOnBookshelf extends BaseListActivity implements
     /**
      * Handle the style that a user has selected.
      *
-     * @param name Name of the selected style
+     * @param id of the selected style
      */
-    private void onStyleSelected(final @NonNull String name) {
+    private void onStyleSelected(final long id) {
         // Find the style, if no match warn user and exit
         BooklistStyles styles = BooklistStyles.getAllStyles(mDb);
-        BooklistStyle style = styles.findCanonical(name);
+        BooklistStyle style = styles.getStyle(id);
         if (style == null) {
             StandardDialogs.showUserMessage(this, R.string.error_no_style_found);
             return;
@@ -1255,7 +1254,7 @@ public class BooksOnBookshelf extends BaseListActivity implements
         }
 
         // New style, so use user-pref for rebuild
-        mRebuildState = BooklistPreferencesActivity.getRebuildState();
+        mRebuildState = BooklistPreferencesActivity.getListRebuildState();
 
         // Do a rebuild
         initBookList(true);
@@ -1323,7 +1322,7 @@ public class BooksOnBookshelf extends BaseListActivity implements
     @Override
     public void onSharedPreferenceChanged(final SharedPreferences sharedPreferences, final String key) {
         // this will likely not happen while we're actively listening.
-        if (PREF_BOOKSHELF.equals(key)) {
+        if (PREF_BOB_CURRENT_BOOKSHELF.equals(key)) {
             Bookshelf newBookshelf = getPreferredBookshelf();
             if (!mCurrentBookshelf.equals(newBookshelf)) {
                 populateBookShelfSpinner();
@@ -1396,7 +1395,7 @@ public class BooksOnBookshelf extends BaseListActivity implements
                 } else {
                     bookListBuilder.build(mRebuildState, mCurrentPositionedBookId);
                     // After first build, always preserve this object state
-                    mRebuildState = BooklistPreferencesActivity.BOOK_LIST_STATE_PRESERVED;
+                    mRebuildState = BooklistPreferencesActivity.PREF_LIST_REBUILD_STATE_PRESERVED;
                 }
 
                 long t1;

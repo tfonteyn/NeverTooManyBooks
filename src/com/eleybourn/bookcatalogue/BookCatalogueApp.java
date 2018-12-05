@@ -170,14 +170,27 @@ public class BookCatalogueApp extends Application {
     }
 
     /**
-     * Monitor configuration changes (like rotation) to make sure we reset the locale
-     * TEST: why update the locale when the config changed ? we're already doing this in SharePreferences listener
+     * Monitor configuration changes to make sure we reset the locale. Overkill ?
+     * This would cover the user putting us to sleep, modify the device locale, then waking us up again.
+     *
+     * Called by the system when the device configuration changes while your
+     * component is running.  Note that, unlike activities, other components
+     * are never restarted when a configuration changes: they must always deal
+     * with the results of the change, such as by re-retrieving resources.
+     *
+     * <p>At the time that this function has been called, your Resources
+     * object will have been updated to return resource values matching the
+     * new configuration.
+     *
+     * <p>For more information, read <a href="{@docRoot}guide/topics/resources/runtime-changes.html"
+     * >Handling Runtime Changes</a>.
+     *
+     * @param newConfig The new device configuration.
      */
     @Override
     @CallSuper
     public void onConfigurationChanged(final @NonNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-
         LocaleUtils.apply(getBaseContext().getResources());
     }
 
@@ -294,7 +307,6 @@ public class BookCatalogueApp extends Application {
         return mInstance.getApplicationContext().getString(resId, objects).trim();
     }
 
-
     @NonNull
     public static SharedPreferences getSharedPreferences() {
         // no point in storing a local reference, the thing itself is a singleton
@@ -323,6 +335,29 @@ public class BookCatalogueApp extends Application {
         return result;
     }
 
+    /** ClassCastException protected - Get a named long preference */
+    public static long getLongPreference(final String name, final long defaultValue) {
+        long result;
+        try {
+            result = getSharedPreferences().getLong(name, defaultValue);
+        } catch (ClassCastException e) {
+            result = defaultValue;
+        }
+        return result;
+    }
+
+    /** ClassCastException protected - Get a named string preference */
+    @NonNull
+    public static String getStringPreference(final @Nullable String name, final @StringRes int defaultValue) {
+        String result;
+        try {
+            result = getSharedPreferences().getString(name, getResourceString(defaultValue));
+        } catch (ClassCastException e) {
+            result = getResourceString(defaultValue);
+        }
+        return result;
+    }
+
     /** ClassCastException protected - Get a named string preference */
     @Nullable
     public static String getStringPreference(final @Nullable String name, final @Nullable String defaultValue) {
@@ -338,7 +373,6 @@ public class BookCatalogueApp extends Application {
     /**
      * DEBUG method
      */
-    @SuppressWarnings("unused")
     public static void dumpPreferences() {
         if (/* always show debug */ BuildConfig.DEBUG) {
             StringBuilder sb = new StringBuilder("\n\nSharedPreferences: ");

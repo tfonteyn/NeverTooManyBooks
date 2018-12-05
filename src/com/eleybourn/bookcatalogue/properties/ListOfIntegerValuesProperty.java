@@ -28,8 +28,6 @@ import android.support.annotation.Size;
 import android.support.annotation.StringRes;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.BuildConfig;
-import com.eleybourn.bookcatalogue.debug.Logger;
 
 import java.util.Objects;
 
@@ -43,20 +41,19 @@ import java.util.Objects;
 public class ListOfIntegerValuesProperty extends ListOfValuesProperty<Integer> {
 
     /**
-     * @param list list with options. Minimum 1 element.
+     * @param list list with options. Minimum 0 element; a 'use default' is added automatically.
      */
-    public ListOfIntegerValuesProperty(final @NonNull @Size(min = 1) ItemList<Integer> list,
-                                       final @NonNull String uniqueId,
+    public ListOfIntegerValuesProperty(final @StringRes int nameResourceId,
                                        final @NonNull PropertyGroup group,
-                                       final @StringRes int nameResourceId,
-                                       final @Nullable Integer defaultValue) {
-        super(list, uniqueId, group, nameResourceId, defaultValue);
+                                       final @NonNull Integer defaultValue,
+                                       final @NonNull @Size(min = 0) ItemList<Integer> list) {
+        super(nameResourceId, group, defaultValue, list);
     }
 
     @Override
-    @Nullable
+    @NonNull
     protected Integer getGlobalValue() {
-        return BookCatalogueApp.getIntPreference(getPreferenceKey(), Objects.requireNonNull(getDefaultValue()));
+        return BookCatalogueApp.getIntPreference(getPreferenceKey(), getDefaultValue());
     }
 
     @Override
@@ -92,20 +89,10 @@ public class ListOfIntegerValuesProperty extends ListOfValuesProperty<Integer> {
     /**
      * For chaining with correct return type
      */
-    @Nullable
-    @Override
-    @CallSuper
-    public Integer getDefaultValue() {
-        return super.getDefaultValue();
-    }
-
-    /**
-     * For chaining with correct return type
-     */
     @NonNull
     @Override
     @CallSuper
-    public ListOfIntegerValuesProperty setDefaultValue(final Integer value) {
+    public ListOfIntegerValuesProperty setDefaultValue(@NonNull final Integer value) {
         super.setDefaultValue(value);
         return this;
     }
@@ -122,28 +109,9 @@ public class ListOfIntegerValuesProperty extends ListOfValuesProperty<Integer> {
     }
 
     /**
-     * Convenience accessor to return a non-null value
-     *
-     * Note: should never be needed, this is only to protect us from ourselves...
-     * Mistakes made in the past:
-     * - not having set a defaultValue or value
-     * - used "getValue" when we should have used "getResolvedValue"
-     *
-     * @return value itself, or 0 when null
-     */
-    @CallSuper
-    public int getInt() {
-        Integer value = super.getResolvedValue();
-        if (BuildConfig.DEBUG) {
-            if (value == null) {
-                Logger.debug("getResolvedValue was null");
-            }
-        }
-        return (value != null ? value : 0);
-    }
-
-    /**
      * Our value is Nullable. To Parcel it, we use Integer.MIN_VALUE for null.
+     * Note: Boolean uses -1, but we can't use that here, as an 'int' is far wider.
+     * Let's simply hope we never need Integer.MIN_VALUE as a real value.
      *
      * Note that {@link Parcel#writeValue(Object)} actually writes an Integer as 'int'
      * So 'null' is NOT preserved.

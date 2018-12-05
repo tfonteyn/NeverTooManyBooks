@@ -136,7 +136,7 @@ public class CsvImporter implements Importer {
         // See if we can deduce the kind of escaping to use based on column names.
         // Version 1->3.3 exportBooks with family_name and author_id. Version 3.4+ do not; latest versions
         // make an attempt at escaping characters etc to preserve formatting.
-        boolean fullEscaping = !book.containsKey(UniqueId.KEY_AUTHOR_ID) || !book.containsKey(UniqueId.KEY_AUTHOR_FAMILY_NAME);
+        boolean fullEscaping = !book.containsKey(UniqueId.KEY_AUTHOR) || !book.containsKey(UniqueId.KEY_AUTHOR_FAMILY_NAME);
 
         // Make sure required fields in Book bundle are present.
         // ENHANCE: Rationalize import to allow updates using 1 or 2 columns. For now we require complete data.
@@ -267,7 +267,8 @@ public class CsvImporter implements Importer {
                 }
 
                 row++;
-            }
+            } // end while
+
         } catch (Exception e) {
             Logger.error(e);
             throw new RuntimeException(e);
@@ -277,7 +278,7 @@ public class CsvImporter implements Importer {
                 mDb.endTransaction(txLock);
             }
             try {
-                // purging is justified here... or not ?
+                // now do some cleaning
                 mDb.purgeAuthors();
                 mDb.purgeSeries();
                 mDb.analyzeDb();
@@ -420,8 +421,8 @@ public class CsvImporter implements Importer {
         String encodedList = book.getString(CsvExporter.CSV_COLUMN_SERIES);
         if (encodedList.isEmpty()) {
             // Try to build from SERIES_NAME and SERIES_NUM. It may all be blank
-            if (book.containsKey(UniqueId.KEY_SERIES_NAME)) {
-                encodedList = book.getString(UniqueId.KEY_SERIES_NAME);
+            if (book.containsKey(UniqueId.KEY_SERIES)) {
+                encodedList = book.getString(UniqueId.KEY_SERIES);
                 if (!encodedList.isEmpty()) {
                     String seriesNum = book.getString(UniqueId.KEY_SERIES_NUM);
                     encodedList += "(" + seriesNum + ")";
@@ -613,7 +614,7 @@ public class CsvImporter implements Importer {
             }
         }
 
-        throw new ImportException(BookCatalogueApp.getResourceString(R.string.error_csv_file_must_contain_any_column,
+        throw new ImportException(BookCatalogueApp.getResourceString(R.string.import_error_csv_file_must_contain_any_column,
                 Utils.join(",", names)));
     }
 

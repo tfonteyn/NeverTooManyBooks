@@ -14,15 +14,13 @@ TOMF FIXME database stuff
 
 ENHANCE database using 'lower()' in WHERE and ORDER BY clauses.
  * Performance? Better 'Collation' setting?'. LIKE operator ?
- * check indexes for all lower case, then eliminate the lower() for all that uses those indexes.
+ * check indexes for using all lower case, then eliminate the lower() for all that uses those indexes.
  * force table creation to use NOCASE ? but what about current LOCALIZED then ?
 
 ENHANCE finish FTS searching {@link com.eleybourn.bookcatalogue.searches.SearchLocalActivity}
  * and {@link #searchFts(String, String, String)}
 
-ENHANCE: booklist styles:
-- store the id's in preferences, not their names (builtin already modified to use negative numbers)
-- don't serialise...
+ENHANCE: booklist styles: don't serialise...
 
 TOMF: research 'local' search. The code has some stuff enabled, but not tested. -> check BC 5.2.2 release (not master)
 
@@ -30,18 +28,15 @@ ENHANCE instead of string encoding of lists, at the very least use ArrayList<Str
 
 ENHANCE: JSON or XML Exporter / Importer
  * pro: easier / (sort of) foolproof / FLEXIBLE!
- * con: fools / fields will be bigger due to labels/tags / not easy to get 'others' to provide import files
-
-TODO: dialogs/* -> eliminate the pass up of the actual dialog. -> dismiss earlier
+ * con: fools / fields will be bigger due to labels/tags / not easy to get 'others' to create import files
 
 TODO: remove the Apache http client; it's removed from API 23.
 
 Issues checked: 800 down to 677 (inc)
 
 New fields:
-ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/763 - Feature request: Series/Author complete/done checkbox
+ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/763 - Feature request: Series/Author complete/done checkbox (and see 542)
 ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/753 - Add Edition, Print, and condition (book / dustcover)
-ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/481 - field for the number of a limited series
 ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/799 - original title (for translations, so also original language)
 
 Make some behavior optional:
@@ -50,6 +45,7 @@ ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/696 - Order by autho
 
 General:
 ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/317 - Add statistics to 'About' tab
+ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/542 - Feature request: collapsed series (and see 763)
 
 Searches
 ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/546 - Worldcat support
@@ -65,11 +61,9 @@ ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/686 - Filter by sign
 
 Bugs:
 FIXME: https://github.com/eleybourn/Book-Catalogue/issues/740 - Date prompt appears to be UCT, not local time
---> set phone to EST, play with date published.
+--> set phone to EST, play with date published. Reproduced.
 
 
-Should be tested:
--
 
 Implemented:
 https://github.com/eleybourn/Book-Catalogue/issues/800 - Bulk edit (lang,pub)
@@ -82,22 +76,25 @@ https://github.com/eleybourn/Book-Catalogue/issues/732 - Mark as read from the m
 https://github.com/eleybourn/Book-Catalogue/issues/728 - Option to re-download the cover -> fixed by simply adding the current isbn to the 'alternative editions' list to search
 https://github.com/eleybourn/Book-Catalogue/issues/725 - share-function
 https://github.com/eleybourn/Book-Catalogue/issues/721 - The application directory should be cleaned
-https://github.com/eleybourn/Book-Catalogue/issues/519 - == 721
 https://github.com/eleybourn/Book-Catalogue/issues/720 - Moving user-created styles doesn't work
 https://github.com/eleybourn/Book-Catalogue/issues/719 - "Language" field content should be translated
 https://github.com/eleybourn/Book-Catalogue/issues/713 - Completely switch to Android Studio project hierarchy
 https://github.com/eleybourn/Book-Catalogue/issues/709 - Add 'date acquired' field
 https://github.com/eleybourn/Book-Catalogue/issues/690 - Currency for each book
 https://github.com/eleybourn/Book-Catalogue/issues/678 - List price needs to be listed to two decimal points.
-
 https://github.com/eleybourn/Book-Catalogue/issues/597 - Merging of bookshelves
 https://github.com/eleybourn/Book-Catalogue/issues/587 - residual thumbnail after Cancel entry-by-isbn
 https://github.com/eleybourn/Book-Catalogue/issues/567 - Read-only display does not display anthology titles
 https://github.com/eleybourn/Book-Catalogue/issues/547 - UPC bar-codes
 https://github.com/eleybourn/Book-Catalogue/issues/534 - Display Anthology Titles in Read-only view
+https://github.com/eleybourn/Book-Catalogue/issues/519 - == 721
 https://github.com/eleybourn/Book-Catalogue/issues/493 - auto fill 'read end date' when checkbox "I've read this book" is clicked.
 https://github.com/eleybourn/Book-Catalogue/issues/451 - Suffixed in names not handled well. eg "William F. Buckley, Jr
 https://github.com/eleybourn/Book-Catalogue/issues/323 - Add Field for Editions
 https://github.com/eleybourn/Book-Catalogue/issues/281 - A field for copyright date
-https://github.com/eleybourn/Book-Catalogue/issues/113 - Add a 'Date Bought' Field
 https://github.com/eleybourn/Book-Catalogue/issues/239 - Currency field in list price
+https://github.com/eleybourn/Book-Catalogue/issues/113 - Add a 'Date Bought' Field
+
+Rejected:
+https://github.com/eleybourn/Book-Catalogue/issues/481 - field for the number of a limited series
+-> use notes field.

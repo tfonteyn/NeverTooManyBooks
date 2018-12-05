@@ -7,49 +7,60 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter;
-import com.eleybourn.bookcatalogue.adapters.SimpleListAdapterRowActionListener;
 import com.eleybourn.bookcatalogue.entities.TOCEntry;
+import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.util.ArrayList;
 
 /**
  * code sharing between edit and showing anthology titles, editing extends this class
  */
-public class TOCListAdapter extends SimpleListAdapter<TOCEntry> implements SimpleListAdapterRowActionListener<TOCEntry> {
+public class TOCListAdapter extends SimpleListAdapter<TOCEntry> {
 
-    @NonNull
-    private final Context mContext;
-
-    public TOCListAdapter(final @NonNull Context context,
-                          final @LayoutRes int rowViewId,
-                          final @NonNull ArrayList<TOCEntry> items) {
+    protected TOCListAdapter(final @NonNull Context context,
+                             final @LayoutRes int rowViewId,
+                             final @NonNull ArrayList<TOCEntry> items) {
         super(context, rowViewId, items);
-        mContext = context;
     }
 
     @Override
-    public void onGetView(final @NonNull View convertView,
-                          final @NonNull TOCEntry item) {
+    public void onGetView(final @NonNull View target,
+                          final @NonNull TOCEntry tocEntry) {
 
-        TextView vTitle = convertView.findViewById(R.id.title);
-        vTitle.setText(item.getTitle());
-
-        // optional
-        TextView vAuthor = convertView.findViewById(R.id.author);
-        if (vAuthor != null) {
-            vAuthor.setText(item.getAuthor().getDisplayName());
+        Holder holder = ViewTagger.getTag(target, R.id.TAG_HOLDER);
+        if (holder == null) {
+            // New view, so build the Holder
+            holder = new Holder();
+            holder.title = target.findViewById(R.id.title);
+            holder.author = target.findViewById(R.id.author);
+            holder.firstPublication = target.findViewById(R.id.year);
+            // Tag the parts that need it
+            ViewTagger.setTag(target, R.id.TAG_HOLDER, holder);
         }
 
+        holder.title.setText(tocEntry.getTitle());
         // optional
-        TextView vYear = convertView.findViewById(R.id.year);
-        if (vYear != null) {
-            String year = item.getFirstPublication();
+        if (holder.author != null) {
+            holder.author.setText(tocEntry.getAuthor().getDisplayName());
+        }
+        // optional
+        if (holder.firstPublication != null) {
+            String year = tocEntry.getFirstPublication();
             if (year.isEmpty()) {
-                vYear.setVisibility(View.GONE);
+                holder.firstPublication.setVisibility(View.GONE);
             } else {
-                vYear.setVisibility(View.VISIBLE);
-                vYear.setText(mContext.getString(R.string.brackets, item.getFirstPublication()));
+                holder.firstPublication.setVisibility(View.VISIBLE);
+                holder.firstPublication.setText(getContext().getString(R.string.brackets, tocEntry.getFirstPublication()));
             }
         }
+    }
+
+    /**
+     * Holder pattern for each row.
+     */
+    private class Holder {
+        TextView title;
+        TextView author;
+        TextView firstPublication;
     }
 }

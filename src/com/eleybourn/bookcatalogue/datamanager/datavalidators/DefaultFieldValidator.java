@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.eleybourn.bookcatalogue.datamanager.validators;
+package com.eleybourn.bookcatalogue.datamanager.datavalidators;
 
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
@@ -27,14 +27,28 @@ import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.datamanager.Datum;
 
 /**
- * Validator to apply a default value and validate as Float
+ * Validator to apply a default String value to empty fields.
  *
  * @author Philip Warner
  */
-public class FloatValidator extends DefaultFieldValidator {
+public class DefaultFieldValidator implements DataValidator {
+    @NonNull
+    private final String mDefault;
 
-    public FloatValidator(final @NonNull String defaultValue) {
-        super(defaultValue);
+    /**
+     * Allow for no default value.
+     */
+    DefaultFieldValidator() {
+        this("");
+    }
+
+    /**
+     * Constructor with default value
+     *
+     * @param defaultValue Default to apply
+     */
+    DefaultFieldValidator(final @NonNull String defaultValue) {
+        mDefault = defaultValue;
     }
 
     @Override
@@ -45,26 +59,18 @@ public class FloatValidator extends DefaultFieldValidator {
             // No validation required for invisible fields
             return;
         }
+
+        // Default validator does not cross-validate
         if (crossValidating)
             return;
 
-        super.validate(data, datum, false);
+        Object value = data.get(datum);
         try {
-            Float value;
-            Object o = data.get(datum);
-            if (o instanceof Float) {
-                value = (Float) o;
-            } else if (o instanceof Double) {
-                value = ((Double) o).floatValue();
-            } else if (o instanceof Integer) {
-                value = ((Integer) o).floatValue();
-            } else {
-                //noinspection ConstantConditions
-                value = Float.parseFloat(o.toString());
+            if (value != null && value.toString().trim().isEmpty()) {
+                data.putString(datum, mDefault);
             }
-            data.putFloat(datum, value);
         } catch (Exception e) {
-            throw new ValidatorException(R.string.vldt_real_expected, new Object[]{datum.getKey()});
+            throw new ValidatorException(R.string.vldt_unable_to_get_value, new Object[]{datum.getKey()});
         }
     }
 }

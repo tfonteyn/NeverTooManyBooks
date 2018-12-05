@@ -23,6 +23,7 @@ package com.eleybourn.bookcatalogue.booklist;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
@@ -41,23 +42,23 @@ import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_ACQUIR
 import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_ACQUIRED_MONTH;
 import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_ACQUIRED_YEAR;
 import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_ADDED_DAY;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_ADDED_MONTH;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_ADDED_YEAR;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_LAST_UPDATE_DAY;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_LAST_UPDATE_MONTH;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_LAST_UPDATE_YEAR;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_PUBLISHED_MONTH;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_PUBLISHED_YEAR;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_READ_MONTH;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_READ_YEAR;
 import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_FORMAT;
 import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_GENRE;
 import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_LANGUAGE;
 import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_LOANED;
 import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_LOCATION;
-import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_ADDED_MONTH;
-import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_PUBLISHED_MONTH;
-import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_READ_MONTH;
 import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_RATING;
 import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_READ_AND_UNREAD;
 import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_SERIES;
-import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_LAST_UPDATE_DAY;
-import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_LAST_UPDATE_MONTH;
-import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_LAST_UPDATE_YEAR;
-import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_ADDED_YEAR;
-import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_PUBLISHED_YEAR;
-import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_READ_YEAR;
 
 /**
  * Collection of system-defined and user-defined Book List styles.
@@ -65,41 +66,60 @@ import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_READ_Y
  * @author Philip Warner
  */
 public class BooklistStyles extends ArrayList<BooklistStyle> {
-    private static final String TAG = "BooklistStyles";
-    /**
-     * StringList encoded.
-     *
-     * ENHANCE: don't store as (localized) names; at least the builtin ones can be stored as an id.
-     */
-    private static final String PREF_MENU_ITEMS = TAG + ".Menu.Items";
+
+    /** Preference name for the current default style to use */
+    public final static String PREF_BL_STYLE_CURRENT_DEFAULT = BooklistStyle.TAG + "CurrentListStyle";
+
+    /** default style when none is set yet -1 -> R.string.style_builtin_author_series */
+    @StringRes
+    public final static int DEFAULT_STYLE = -1;
 
     /** Internal storage for preferred styles represented by this object */
     @NonNull
-    private final Set<String> mPreferredStyleNames;
+    private final Set<Long> mPreferredStyles;
 
     /**
      * Constructor
      */
     private BooklistStyles() {
-        mPreferredStyleNames = getPreferredStyleNames();
+        mPreferredStyles = getPreferredStyleIds();
     }
 
     /**
-     * Get a list of canonical names of the preferred styles from user preferences.
+     * Get the ids of the preferred styles from user preferences.
      */
     @NonNull
-    private static Set<String> getPreferredStyleNames() {
-        Set<String> names = new HashSet<>();
-        String itemStr = BookCatalogueApp.getStringPreference(PREF_MENU_ITEMS, null);
+    private static Set<Long> getPreferredStyleIds() {
+        Set<Long> ids = new HashSet<>();
+        String itemStr = BookCatalogueApp.getStringPreference(BooklistStyle.PREF_BL_STYLE_MENU_ITEMS, null);
         if (itemStr != null && !itemStr.isEmpty()) {
             List<String> list = StringList.decode(itemStr);
-            for (String name : list) {
-                if (name != null && !name.isEmpty()) {
-                    names.add(name);
+            for (String entry : list) {
+                if (entry != null && !entry.isEmpty()) {
+                    ids.add(Long.parseLong(entry));
                 }
             }
         }
-        return names;
+        return ids;
+    }
+
+    public static long getDefaultStyle() {
+        return BookCatalogueApp.getLongPreference(PREF_BL_STYLE_CURRENT_DEFAULT, DEFAULT_STYLE);
+    }
+
+    /**
+     * Get the preferred styles using system and user-defined styles.
+     */
+    @NonNull
+    public static BooklistStyles getPreferredStyles(final @NonNull CatalogueDBAdapter db) {
+        BooklistStyles allStyles = new BooklistStyles();
+
+        // Get all styles: user & builtin
+        allStyles.addAll(db.getBooklistStyles());
+        allStyles.addAll(getBuiltinStyles());
+
+        // Return filtered list
+        return filterPreferredStyles(allStyles);
     }
 
     /**
@@ -107,7 +127,7 @@ public class BooklistStyles extends ArrayList<BooklistStyle> {
      *
      * NOTE: Do NOT call this in static initialization of application.
      * This method requires the application context to be present.
-     * 
+     *
      * Note the hardcoded negative id's. These number should never be changed as they will
      * get stored in preferences. Take care not to add duplicates.
      */
@@ -125,13 +145,13 @@ public class BooklistStyles extends ArrayList<BooklistStyle> {
         style = new BooklistStyle(-2, R.string.style_builtin_unread);
         list.add(style);
         style.addGroups(ROW_KIND_AUTHOR, ROW_KIND_SERIES);
-        style.setReadFilter(false);
+        style.setReadFilter(BooklistStyle.FILTER_NO);
 
         // Compact
         style = new BooklistStyle(-3, R.string.style_builtin_compact);
         list.add(style);
         style.addGroups(ROW_KIND_AUTHOR);
-        style.setFontSize(BooklistStyle.LIST_FONT_SIZE_USE_SMALLER);
+        style.setScaleSize(BooklistStyle.SCALE_SIZE_SMALLER);
         style.setShowThumbnails(false);
 
         // Title
@@ -210,7 +230,7 @@ public class BooklistStyles extends ArrayList<BooklistStyle> {
         style.addGroups(ROW_KIND_BOOKSHELF, ROW_KIND_AUTHOR, ROW_KIND_SERIES);
 
         // Update date
-        style = new BooklistStyle(-19, R.string.update_date);
+        style = new BooklistStyle(-19, R.string.style_builtin_update_date);
         list.add(style);
         style.addGroups(ROW_KIND_DATE_LAST_UPDATE_YEAR, ROW_KIND_DATE_LAST_UPDATE_MONTH, ROW_KIND_DATE_LAST_UPDATE_DAY);
         style.setShowAuthor(true);
@@ -221,22 +241,22 @@ public class BooklistStyles extends ArrayList<BooklistStyle> {
     }
 
     /**
-     * @param allStyles a collection of styles
+     * @param allStyles a list of styles
      *
-     * @return the ordered set of preferred styles.
+     * @return list of preferred styles.
      */
     @NonNull
     private static BooklistStyles filterPreferredStyles(final @NonNull BooklistStyles allStyles) {
         BooklistStyles styles = new BooklistStyles();
 
         // Get the user preference
-        String itemStr = BookCatalogueApp.getStringPreference(PREF_MENU_ITEMS, null);
+        String itemStr = BookCatalogueApp.getStringPreference(BooklistStyle.PREF_BL_STYLE_MENU_ITEMS, null);
         if (itemStr != null && !itemStr.isEmpty()) {
             // Break it up and process in order
             List<String> list = StringList.decode(itemStr);
-            for (String n : list) {
+            for (String entry : list) {
                 // Add any exiting style that is preferred
-                BooklistStyle s = allStyles.findCanonical(n);
+                BooklistStyle s = allStyles.getStyle(Long.parseLong(entry));
                 if (s != null)
                     styles.add(s);
             }
@@ -248,21 +268,6 @@ public class BooklistStyles extends ArrayList<BooklistStyle> {
         else {
             return allStyles;
         }
-    }
-
-    /**
-     * Get the preferred styles using system and user-defined styles.
-     */
-    @NonNull
-    public static BooklistStyles getPreferredStyles(final @NonNull CatalogueDBAdapter db) {
-        BooklistStyles allStyles = new BooklistStyles();
-
-        // Get all styles: user & builtin
-        allStyles.addAll(db.getBooklistStyles());
-        allStyles.addAll(getBuiltinStyles());
-
-        // Return filtered list
-        return filterPreferredStyles(allStyles);
     }
 
     /**
@@ -289,7 +294,7 @@ public class BooklistStyles extends ArrayList<BooklistStyle> {
     }
 
     /**
-     * Save the preferred style menu list.
+     * Save the preferred style menu list as a {@link StringList}
      */
     static void saveMenuOrder(final @NonNull List<BooklistStyle> list) {
         StringBuilder items = new StringBuilder();
@@ -298,10 +303,24 @@ public class BooklistStyles extends ArrayList<BooklistStyle> {
                 if (items.length() > 0) {
                     items.append(StringList.MULTI_STRING_SEPARATOR);
                 }
-                items.append(StringList.encodeListItem(style.getCanonicalName()));
+                items.append(style.getId());
             }
         }
-        BookCatalogueApp.getSharedPreferences().edit().putString(PREF_MENU_ITEMS, items.toString()).apply();
+        BookCatalogueApp.getSharedPreferences().edit().putString(BooklistStyle.PREF_BL_STYLE_MENU_ITEMS, items.toString()).apply();
+    }
+
+    /**
+     * Used in migration/import. Convert the style name to the id.
+     *
+     * @return internal id, or the default style id if not found.
+     */
+    public static long getBuiltinStyleId(final @NonNull String name) {
+        for (BooklistStyle style : getBuiltinStyles()) {
+            if (style.getDisplayName().equals(name)) {
+                return style.getId();
+            }
+        }
+        return DEFAULT_STYLE;
     }
 
     /**
@@ -314,21 +333,29 @@ public class BooklistStyles extends ArrayList<BooklistStyle> {
     @CallSuper
     @Override
     public boolean add(final @NonNull BooklistStyle style) {
-        style.setPreferred(mPreferredStyleNames.contains(style.getCanonicalName()));
+        style.setPreferred(mPreferredStyles.contains(style.getId()));
         return super.add(style);
+    }
+
+    /**
+     * Method should never be used, always use {@link #getStyle}
+     */
+    @Override
+    public BooklistStyle get(final int index) {
+        throw new IllegalStateException();
     }
 
     /**
      * Find a style based on the passed name.
      *
-     * @param name Style to find
+     * @param id Style to find
      *
-     * @return Named style, or null
+     * @return style, or null
      */
     @Nullable
-    public BooklistStyle findCanonical(final @NonNull String name) {
+    public BooklistStyle getStyle(final long id) {
         for (BooklistStyle style : this) {
-            if (style.getCanonicalName().equalsIgnoreCase(name)) {
+            if (style.getId() == id) {
                 return style;
             }
         }

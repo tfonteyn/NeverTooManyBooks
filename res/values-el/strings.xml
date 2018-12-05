@@ -38,7 +38,7 @@
     <string name="lbl_series_num">#</string>
     <string name="title_import_book_data">Εισαγωγή Βιβλιων</string>
     <string name="warning_import_be_cautious">Προσοχή. Η εισαγωγή δεδομένων μπορεί να ενημερώσει υπάρχοντα βιβλία με νέες πληροφορίες εαν η στήλη uuid δεν είναι παρούσα και το id στο αρχείο εισαγωγής είναι το ίδιο με κάποιο υπάρχον id. Αυτό είναι εντάξει εαν έχει αλλαχτεί κάποιο πεδίο σε ένα εξαγμένο αρχείο. Εαν δημιουργήσατε μια νεα βιβλιογραφική εγγραφή ή εαν εισάγετε τα βιβλία κάποιου άλλου, σιγουρευτείτε ότι το πεδίο uuid είναι παρόν ή το πεδίο id είναι κενό.</string>
-    <string name="error_import_failed_is_csv_file_location_correct">ΣΦΑΛΜΑ: Εισαγωγή δεδομένων (από SDCard) απέτυχε. Βρίσκεται το αρχείο στη σωστή τοποθεσία;</string>
+    <string name="import_error_failed_is_csv_file_location_correct">ΣΦΑΛΜΑ: Εισαγωγή δεδομένων (από SDCard) απέτυχε. Βρίσκεται το αρχείο στη σωστή τοποθεσία;</string>
     <string name="search_title">Book Catalogue: Αποτελέσματα αναζήτησης</string>
     <string name="results_found">Αποτελέσματα βρέθηκαν</string>
     <string name="menu_administration_long">Λειτουργίες διαχείρισης</string>
@@ -121,9 +121,9 @@
     <string name="vldt_failed">Η επικύρωση απέτυχε για \'%s\'</string>
     <string name="vldt_read_start_after_end">Η ημερομηνία έναρξης ανάγνωσης είναι μετά την ημερομηνία λήξης</string>
     <string name="progress_end_backup_success">Αντίγραφο δημιουργήθηκε επιτυχώς</string>
-    <string name="error_backup_failed">Αντίγραφο απέτυχε</string>
+    <string name="export_error_backup_failed">Αντίγραφο απέτυχε</string>
     <string name="error_file_must_contain_column">Το αρχείο πρέπει να περιέχει στήλη με όνομα %s</string>
-    <string name="error_csv_file_must_contain_any_column">Το αρχείο πρέπει να περιέχει στήλη με ένα από τα ακόλουθα όνοματα: %s</string>
+    <string name="import_error_csv_file_must_contain_any_column">Το αρχείο πρέπει να περιέχει στήλη με ένα από τα ακόλουθα όνοματα: %s</string>
     <string name="error_column_is_blank">Η στήλη %1$s είναι κενή στη σειρά %2$s</string>
     <string name="error_columns_are_blank">Οι στήλες %1$s είναι όλες κενές στη σειρά %2$d</string>
     <string name="btn_confirm_save">Αποθήκευση</string>
@@ -141,7 +141,7 @@
     <string name="warning_required_author">Το πεδίο συγγραφέας είναι κενό</string>
     <string name="warning_series_already_in_list">Η σειρά βρίσκεται ήδη στη λίστα</string>
     <string name="warning_required_series">Το πεδίο σειρά είναι κενό</string>
-    <string name="error_export_csv_failed">Η εξαγωγή απέτυχε - Δεν μπόρεσε να γίνει εγγραφή στην SD card</string>
+    <string name="export_error_csv_failed">Η εξαγωγή απέτυχε - Δεν μπόρεσε να γίνει εγγραφή στην SD card</string>
     <string name="error_download_thumbnail_failed">Το κατέβασμα της μικρογραφίας απέτυχε - Δεν μπόρεσε να γίνει εγγραφή στην SD card</string>
     <string name="progress_msg_skip_title">Παράβλεψη - %s</string>
     <string name="progress_end_num_books_searched">%s Βιβλία αναζητήθηκαν</string>
@@ -302,7 +302,7 @@
     <string name="lbl_bookshelves_long">Ράφια Βιβλιοθήκης</string>
     <string name="lbl_bookshelves">Ράφια</string>
     <string name="lbl_location">Τοποθεσία</string>
-    <string name="credentials">Διαπιστευτήρια</string>
+    <string name="menu_credentials">Διαπιστευτήρια</string>
     <string name="data_import_export">Εισαγωγή/Εξαγωγή Δεδομένων</string>
     <string name="unrecognized_task">Μη αναγνωρίσιμη Εργασία</string>
     <string name="progress_msg_rebuilding_search_index">Ανακατασκευή Ευρετηρίου Αναζήτησης…</string>
@@ -434,17 +434,17 @@
 		μέσω της ιστοσελίδας του. Μόλις γίνει αυτό, μπορείτε να δοκιμάσετε να ξαναστείλετε το βιβλίο.</string>
     <string name="read_amp_unread">Αναγνωσμένο &amp; Μη Αναγνωσμένο</string>
     <string name="loaned">Δανεισμένο</string>
-    <string name="publication_year">Έτος Εκδοσης</string>
-    <string name="publication_month">Μήνας Έκδοσης</string>
-    <string name="added_year">Έτος Πρόσθεσης</string>
-    <string name="added_month">Μήνας Πρόσθεσης</string>
-    <string name="added_day">Ημέρα Πρόσθεσης</string>
+    <string name="lbl_publication_year">Έτος Εκδοσης</string>
+    <string name="lbl_publication_month">Μήνας Έκδοσης</string>
+    <string name="lbl_added_year">Έτος Πρόσθεσης</string>
+    <string name="lbl_added_month">Μήνας Πρόσθεσης</string>
+    <string name="lbl_added_day">Ημέρα Πρόσθεσης</string>
     <string name="lbl_book">Βιβλίο</string>
     <string name="in">Μέσα</string>
     <string name="size">Μέγεθος</string>
     <string name="updated">Ενημερωμένο</string>
-    <string name="warning_csv_file_not_found">Δε βρέθηκαν αρχεία για εξαγωγή</string>
-    <string name="warning_csv_file_more_then_one_found">Βρέθηκε πάνω από ένα αρχείο για εξαγωγή - παρακαλούμε επιλέξτε να εισάγετε ένα αρχείο για εξαγωγή από τη λίστα παρακάτω</string>
+    <string name="import_error_csv_file_not_found">Δε βρέθηκαν αρχεία για εξαγωγή</string>
+    <string name="import_warning_csv_file_more_then_one_found">Βρέθηκε πάνω από ένα αρχείο για εξαγωγή - παρακαλούμε επιλέξτε να εισάγετε ένα αρχείο για εξαγωγή από τη λίστα παρακάτω</string>
     <string name="problem_starting_import_arg">Υπήρξε ένα πρόβλημα στην έναρξη της εισαγωγής: %1$s</string>
     <string name="hint_booklist_style_menu">Σε αυτό το μενού μπορείτε να επιλέξετε το στυλ της λίστας.
     								\n\nΜπορείτε επίσης να προσαρμόσετε και αυτό το μενού, καθώς και να δημιουργήσετε το δικό σας στυλ για λίστες, πατώντας \'Προσαρμογή\' στο τέλος της λίστας.</string>
@@ -473,9 +473,9 @@
     <string name="menu_add_book_by_isbn">Εισαγωγή κωδικού ISBN</string>
     <string name="lbl_allow_asin">Να επιτρέπεται κωδικός ASIN</string>
     <string name="warning_x_is_not_a_valid_isbn_or_asin">%1$s δεν είναι έγκυρος κωδικός ISBN ή ASIN</string>
-    <string name="read_year">Έτος Ανάγνωσης</string>
-    <string name="read_month">Μήνας Ανάγνωσης</string>
-    <string name="read_day">Ημέρα Ανάγνωσης</string>
+    <string name="lbl_read_year">Έτος Ανάγνωσης</string>
+    <string name="lbl_read_month">Μήνας Ανάγνωσης</string>
+    <string name="lbl_read_day">Ημέρα Ανάγνωσης</string>
     <string name="style_builtin_read_date">Ημερομηνία Ανάγνωσης</string>
     <string name="lbl_details_have_changed">Κάποιες λεπτομέρειες έχουν αλλάξει</string>
     <string name="warning_unsaved_changes">Υπάρχουν αλλαγές που δεν έχουν αποθηκευτεί, αν γίνει έξοδος τώρα θα χαθούν.</string>
@@ -631,20 +631,20 @@
     <string name="progress_msg_covers_skip">%1$s εξώφυλλα επεξεργάστηκαν (%2$s λείπουν, %3$s παρελείφθησαν)</string>
 
     <!-- Explanatory note for 'exportBooks all' option -->
-    <string name="export_dialog_info_all">Όλα τα βιβλία, εξώφυλλα, ρυθμίσεις και προσαρμοσμένα στυλ θα εξαχθούν στο Αρχείο.</string>
+    <string name="export_info_backup_all">Όλα τα βιβλία, εξώφυλλα, ρυθμίσεις και προσαρμοσμένα στυλ θα εξαχθούν στο Αρχείο.</string>
     <!-- Explanatory note for 'advanced exportBooks' option -->
     <string name="export_options_dialog_title">Επιλέξτε τι θα εξαχθεί στο Αρχείο.</string>
 
     <!-- Text for button -->
     <string name="book_details">Λεπτομέρειες βιβλίου</string>
     <!-- Brief description -->
-    <string name="info_book_details">Λεπτομέρειες για τα βιβλία</string>
+    <string name="import_export_info_book_details">Λεπτομέρειες για τα βιβλία</string>
     <!-- Text for button -->
     <string name="lbl_cover_images">Εικόνες εξωφύλλων</string>
     <!-- Brief description -->
     <string name="export_info_cover_images">Εικόνες εξωφύλλων για όλα τα επιλεγμένα βιβλία. Θα κάνει την εξαγωγή πολύ μεγαλύτερη.</string>
     <!-- Brief description -->
-    <string name="info_preferences">Προτιμήσεις και στυλ για λίστες καθορισμένες από το χρήστη</string>
+    <string name="import_export_info_preferences">Προτιμήσεις και στυλ για λίστες καθορισμένες από το χρήστη</string>
 
     <!-- Explanatory note for exportBooks date (not yet implemented) -->
     <string name="export_option_info_books_since_date">Προαιρετικά καθορίστε μια ημερομηνία να χρησιμοποιηθεί στην επιλογή βιβλίων ή/και εξωφύλλων για εξαγωγή:</string>
@@ -706,13 +706,13 @@
     <string name="hint_amazon_links_blurb">&lt;p&gt;If you buy things from Amazon after selecting the &lt;i&gt;\"%1$s\"&lt;/i&gt;, &lt;i&gt;\"%2$s\"&lt;/i&gt; or &lt;i&gt;\"%3$s\"&lt;/i&gt; menu items, a proportion of the purchase price will be sent to the developers of %4$s.&lt;/p&gt;&lt;p&gt;You can also use the &lt;a href=\"https://github.com/eleybourn/Book-Catalogue/wiki/Frequently-Asked-Questions-%%28FAQ%%29\"&gt;links on our FAQ&lt;/a&gt; to navigate directly to Amazon or PayPal.&lt;/p&gt;</string>
 
     <!-- Name of the new style grouping (needs to be short). -->
-    <string name="update_date">Ημερομηνία ενημέρωσης</string>
+    <string name="style_builtin_update_date">Ημερομηνία ενημέρωσης</string>
     <!-- Name of the new style grouping (needs to be short). -->
-    <string name="update_year">Έτος ενημέρωσης</string>
+    <string name="lbl_update_year">Έτος ενημέρωσης</string>
     <!-- Name of the new style grouping (needs to be short). -->
-    <string name="update_month">Μήνας ενημέρωσης</string>
+    <string name="lbl_update_month">Μήνας ενημέρωσης</string>
     <!-- Name of the new style grouping (needs to be short). -->
-    <string name="update_day">Ημέρα ενημέρωσης</string>
+    <string name="lbl_update_day">Ημέρα ενημέρωσης</string>
 
     <!-- Preference name (fairly short) for preferred language -->
     <string name="user_interface_preferred_language">Προτιμώμενη Γλώσσα Διεπαφής</string>

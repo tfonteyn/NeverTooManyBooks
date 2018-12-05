@@ -190,7 +190,7 @@ public abstract class BookBaseFragment extends Fragment implements DataEditor {
      *
      * Note this is NOT where we set values.
      *
-     * Override as needed, but call super first
+     * Override as needed, but call super FIRST
      */
     @CallSuper
     protected void initFields() {

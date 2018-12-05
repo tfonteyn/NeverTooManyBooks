@@ -55,7 +55,8 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * ENHANCE: make timeouts configurable; global ? or per {@link SearchSites.Site} ? (ISFDB is slooow)
+ * ENHANCE: make timeouts configurable; global ? or per {@link SearchSites.Site} ?
+ * However, not all connections actually use this method + this is old... do we still need this ?
  */
 public class Utils {
 
@@ -68,7 +69,7 @@ public class Utils {
     public static final int READ_TIMEOUT = 30_000;
 
     /** kill connections after this delay */
-    public static final int KILL_CONNECT_DELAY = 60_000;
+    public static final int KILL_CONNECT_DELAY = 30_000;
 
     private Utils() {
     }
@@ -100,28 +101,19 @@ public class Utils {
 
                 try {
                     /*
-                     * This is quite nasty; there seems to be a bug with URL.openConnection
-                     *
-                     * It CAN be reduced by doing the following:
-                     *
-                     *     ((HttpURLConnection)connection).setRequestMethod("GET");
-                     *
-                     *
-                     *
-                     * Finally, there is another problem with failed timeouts:
-                     *
-                     *     http://thushw.blogspot.hu/2010/10/java-urlconnection-provides-no-fail.html
+                     * There is a problem with failed timeouts:
+                     *   http://thushw.blogspot.hu/2010/10/java-urlconnection-provides-no-fail.html
                      *
                      * So...we are forced to use a background thread to be able to kill it.
                      */
 
-                    // sanity check
-                    URLConnection urlc = url.openConnection();
-                    if (!(urlc instanceof HttpURLConnection)) {
+                    // paranoid sanity check
+                    URLConnection urlConnection = url.openConnection();
+                    if (!(urlConnection instanceof HttpURLConnection)) {
                         return null;
                     }
 
-                    connInfo.connection = (HttpURLConnection) urlc;
+                    connInfo.connection = (HttpURLConnection) urlConnection;
                     connInfo.connection.setUseCaches(false);
                     connInfo.connection.setDoInput(true);
                     connInfo.connection.setDoOutput(false);
@@ -145,7 +137,6 @@ public class Utils {
                             } else {
                                 connInfo.connection.disconnect();
                             }
-
                         }
                     }, KILL_CONNECT_DELAY);
 

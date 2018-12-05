@@ -44,7 +44,7 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PK_ID
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LAST_UPDATE_DATE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LOANED_TO;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_SERIES_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_NAME;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_ANTHOLOGY;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_AUTHORS;
@@ -71,6 +71,9 @@ import static com.eleybourn.bookcatalogue.database.CatalogueDBHelper.DATABASE_CR
  *
  */
 public class UpgradeDatabase {
+
+    /** obsolete from v74  {@link #v74_fixupAuthorsAndSeries} */
+    public static final String V74_PREF_AUTHOR_SERIES_FIX_UP_REQUIRED = "v74.FAuthorSeriesFixupRequired";
 
     // column names from 'old' versions, used to upgrade
     private static final String OLD_KEY_AUDIOBOOK = "audiobook";
@@ -814,7 +817,7 @@ public class UpgradeDatabase {
                     // We need to create a series table with series that are unique wrt case and unicode. The old
                     // system allowed for series with slightly different case. So we capture these by using
                     // max() to pick and arbitrary matching name to use as our canonical version.
-                    db.execSQL("INSERT INTO " + TBL_SERIES + " (" + DOM_SERIES_NAME + ") "
+                    db.execSQL("INSERT INTO " + TBL_SERIES + " (" + DOM_SERIES + ") "
                             + "SELECT name FROM ("
                             + "    SELECT Upper(" + OLD_KEY_SERIES + ") " + COLLATION + " AS ucName, "
                             + "    max(" + OLD_KEY_SERIES + ")" + COLLATION + " AS name FROM " + TBL_BOOKS
@@ -829,7 +832,7 @@ public class UpgradeDatabase {
                     db.execSQL("INSERT INTO " + TBL_BOOK_SERIES + " (" + DOM_FK_BOOK_ID + ", " + DOM_FK_SERIES_ID + ", " + DOM_BOOK_SERIES_NUM + ", " + DOM_BOOK_SERIES_POSITION + ") "
                             + "SELECT DISTINCT b." + DOM_PK_ID + ", s." + DOM_PK_ID + ", b." + DOM_BOOK_SERIES_NUM + ", 1"
                             + " FROM " + TBL_BOOKS + " b "
-                            + " JOIN " + TBL_SERIES + " s ON Upper(s." + DOM_SERIES_NAME + ") = Upper(b." + OLD_KEY_SERIES + ")" + COLLATION
+                            + " JOIN " + TBL_SERIES + " s ON Upper(s." + DOM_SERIES + ") = Upper(b." + OLD_KEY_SERIES + ")" + COLLATION
                             + " WHERE Coalesce(b." + OLD_KEY_SERIES + ", '') <> ''");
 
                     db.execSQL("INSERT INTO " + TBL_BOOK_AUTHOR + " (" + DOM_FK_BOOK_ID + ", " + DOM_FK_AUTHOR_ID + ", " + DOM_AUTHOR_POSITION + ") "
@@ -878,7 +881,7 @@ public class UpgradeDatabase {
                         // We need to create a series table with series that are unique wrt case and unicode. The old
                         // system allowed for series with slightly different case. So we capture these by using
                         // max() to pick and arbitrary matching name to use as our canonical version.
-                        db.execSQL("INSERT INTO " + TBL_SERIES + " (" + DOM_SERIES_NAME + ") "
+                        db.execSQL("INSERT INTO " + TBL_SERIES + " (" + DOM_SERIES + ") "
                                 + "SELECT name FROM ("
                                 + "    SELECT Upper(" + OLD_KEY_SERIES + ") " + COLLATION + " AS ucName, "
                                 + "    max(" + OLD_KEY_SERIES + ")" + COLLATION + " AS name FROM " + TBL_BOOKS
@@ -893,7 +896,7 @@ public class UpgradeDatabase {
                         db.execSQL("INSERT INTO " + TBL_BOOK_SERIES + " (" + DOM_FK_BOOK_ID + ", " + DOM_FK_SERIES_ID + ", " + DOM_BOOK_SERIES_NUM + ", " + DOM_BOOK_SERIES_POSITION + ") "
                                 + "SELECT DISTINCT b." + DOM_PK_ID + ", s." + DOM_PK_ID + ", b." + DOM_BOOK_SERIES_NUM + ", 1"
                                 + " FROM " + TBL_BOOKS + " b "
-                                + " JOIN " + TBL_SERIES + " s ON Upper(s." + DOM_SERIES_NAME + ") = Upper(b." + OLD_KEY_SERIES + ")" + COLLATION
+                                + " JOIN " + TBL_SERIES + " s ON Upper(s." + DOM_SERIES + ") = Upper(b." + OLD_KEY_SERIES + ")" + COLLATION
                                 + " WHERE Coalesce(b." + OLD_KEY_SERIES + ", '') <> ''");
 
                         db.execSQL("INSERT INTO " + TBL_BOOK_AUTHOR + " (" + DOM_FK_BOOK_ID + ", " + DOM_FK_AUTHOR_ID + ", " + DOM_AUTHOR_POSITION + ") "
@@ -952,7 +955,7 @@ public class UpgradeDatabase {
                     try (Cursor results2 = db.rawQuery("SELECT * FROM " + TBL_BOOKS, new String[]{})) {
                         if (results2.getCount() > 0) {
                             if (results2.getColumnIndex(OLD_KEY_SERIES) > -1) {
-                                db.execSQL("INSERT INTO " + TBL_SERIES + " (" + DOM_SERIES_NAME + ") "
+                                db.execSQL("INSERT INTO " + TBL_SERIES + " (" + DOM_SERIES + ") "
                                         + "SELECT name FROM ("
                                         + "    SELECT Upper(" + OLD_KEY_SERIES + ") " + COLLATION + " AS ucName, "
                                         + "    max(" + OLD_KEY_SERIES + ")" + COLLATION + " AS name FROM " + TBL_BOOKS
@@ -996,7 +999,7 @@ public class UpgradeDatabase {
                     db.execSQL("INSERT INTO " + TBL_BOOK_SERIES + " (" + DOM_FK_BOOK_ID + ", " + DOM_FK_SERIES_ID + ", " + DOM_BOOK_SERIES_NUM + ", " + DOM_BOOK_SERIES_POSITION + ") "
                             + "SELECT DISTINCT b." + DOM_PK_ID + ", s." + DOM_PK_ID + ", b." + DOM_BOOK_SERIES_NUM + ", 1"
                             + " FROM " + TBL_BOOKS + " b "
-                            + " JOIN " + TBL_SERIES + " s ON Upper(s." + DOM_SERIES_NAME + ") = Upper(b." + OLD_KEY_SERIES + ")" + COLLATION
+                            + " JOIN " + TBL_SERIES + " s ON Upper(s." + DOM_SERIES + ") = Upper(b." + OLD_KEY_SERIES + ")" + COLLATION
                             + " WHERE Coalesce(b." + OLD_KEY_SERIES + ", '') <> ''");
                 }
             }
@@ -1146,7 +1149,7 @@ public class UpgradeDatabase {
 
         if (curVersion == 74) {
             curVersion++;
-            BookCatalogueApp.getSharedPreferences().edit().putBoolean(StartupActivity.V74_PREF_AUTHOR_SERIES_FIX_UP_REQUIRED, true).apply();
+            BookCatalogueApp.getSharedPreferences().edit().putBoolean(V74_PREF_AUTHOR_SERIES_FIX_UP_REQUIRED, true).apply();
             mMessage += "New in v4.0.3\n\n";
             mMessage += "* ISBN validation when searching/scanning and error beep when scanning (with preference to turn it off)\n\n";
             mMessage += "* 'Loaned' list now shows available books under the heading 'Available'\n\n";

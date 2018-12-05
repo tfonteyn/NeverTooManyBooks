@@ -59,11 +59,18 @@ public class BooleanProperty extends PropertyWithGlobalValue<Boolean> {
     @Nullable
     private Object[] mNegativeTextArgs;
 
-    public BooleanProperty(final @NonNull String uniqueId,
+    /**
+     * Convenience constructor which sets the defaultValue to Boolean.FALSE
+     */
+    public BooleanProperty(final @StringRes int nameResourceId,
+                           final @NonNull PropertyGroup group) {
+        super(group, nameResourceId, Boolean.FALSE);
+    }
+
+    public BooleanProperty(final @StringRes int nameResourceId,
                            final @NonNull PropertyGroup group,
-                           final @StringRes int nameResourceId,
-                           final @Nullable Boolean defaultValue) {
-        super(uniqueId, group, nameResourceId, defaultValue);
+                           final @NonNull Boolean defaultValue) {
+        super(group, nameResourceId, defaultValue);
     }
 
     /**
@@ -155,12 +162,12 @@ public class BooleanProperty extends PropertyWithGlobalValue<Boolean> {
     @Override
     @NonNull
     protected Boolean getGlobalValue() {
-        return BookCatalogueApp.getBooleanPreference(getPreferenceKey(), Objects.requireNonNull(getDefaultValue()));
+        return BookCatalogueApp.getBooleanPreference(getPreferenceKey(), getDefaultValue());
     }
 
     @Override
-    @Nullable
-    protected BooleanProperty setGlobalValue(final @Nullable Boolean value) {
+    @NonNull
+    public BooleanProperty setGlobalValue(final @Nullable Boolean value) {
         Objects.requireNonNull(value);
         BookCatalogueApp.getSharedPreferences().edit().putBoolean(getPreferenceKey(), value).apply();
         return this;
@@ -172,8 +179,7 @@ public class BooleanProperty extends PropertyWithGlobalValue<Boolean> {
      * Uses the resolved value to check for 'true'
      */
     public boolean isTrue() {
-        Boolean b = super.getResolvedValue();
-        return (b != null ? b : false);
+        return getResolvedValue();
     }
 
     /**
@@ -190,7 +196,7 @@ public class BooleanProperty extends PropertyWithGlobalValue<Boolean> {
     @NonNull
     @Override
     @CallSuper
-    public BooleanProperty setDefaultValue(final @Nullable Boolean value) {
+    public BooleanProperty setDefaultValue(final @NonNull Boolean value) {
         super.setDefaultValue(value);
         return this;
     }
@@ -232,7 +238,7 @@ public class BooleanProperty extends PropertyWithGlobalValue<Boolean> {
      * Our value is Nullable. To Parcel it, we use three values:
      * true : 1
      * false: 0
-     * null : Integer.MIN_VALUE
+     * null : -1
      *
      * Note that {@link Parcel#writeValue(Object)} actually writes a Boolean as 'int'
      * So 'null' is NOT preserved.
@@ -240,7 +246,7 @@ public class BooleanProperty extends PropertyWithGlobalValue<Boolean> {
     public void writeToParcel(final @NonNull Parcel dest) {
         Boolean value = this.getValue();
         if (value == null) {
-            dest.writeInt(Integer.MIN_VALUE);
+            dest.writeInt(-1);
         } else {
             dest.writeInt(value ? 1 : 0);
         }
@@ -248,7 +254,7 @@ public class BooleanProperty extends PropertyWithGlobalValue<Boolean> {
 
     public void readFromParcel(final @NonNull Parcel in) {
         int parceledInt = in.readInt();
-        if (parceledInt == Integer.MIN_VALUE) {
+        if (parceledInt == -1) {
             setValue(null);
         } else {
             setValue(parceledInt == 1 ? Boolean.TRUE : Boolean.FALSE);

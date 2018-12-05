@@ -57,7 +57,8 @@
                 android:paddingStart="@dimen/padding_border"
                 android:singleLine="true"
                 android:textSize="16sp"
-                android:textIsSelectable="false" />
+                android:textIsSelectable="false"
+                tools:text="row_series"/>
 
             <TextView
                 android:id="@+id/row_series_sort"
@@ -71,7 +72,8 @@
                 android:paddingStart="@dimen/padding_border"
                 android:singleLine="true"
                 android:textSize="12sp"
-                android:textIsSelectable="false" />
+                android:textIsSelectable="false"
+                tools:text="row_series_sort"/>
         </RelativeLayout>
     </RelativeLayout>
 

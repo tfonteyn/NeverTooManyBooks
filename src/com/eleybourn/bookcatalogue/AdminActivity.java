@@ -125,6 +125,34 @@ public class AdminActivity extends BaseActivityWithTasks {
      * 4. Advanced Options
      */
     private void setupAdminPage() {
+        /* DEBUG */
+        if (BuildConfig.DEBUG) {
+            View v = findViewById(R.id.lbl_debug);
+            v.setVisibility(View.VISIBLE);
+
+            v = findViewById(R.id.lbl_debug_tracker_history);
+            v.setVisibility(View.VISIBLE);
+            // Make line flash when clicked.
+            v.setBackgroundResource(android.R.drawable.list_selector_background);
+            v.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Logger.info(this, Tracker.getEventsInfo());
+                }
+            });
+
+            v = findViewById(R.id.lbl_debug_preferences);
+            v.setVisibility(View.VISIBLE);
+            // Make line flash when clicked.
+            v.setBackgroundResource(android.R.drawable.list_selector_background);
+            v.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    BookCatalogueApp.dumpPreferences();
+                }
+            });
+        }
+
         /* Manage Field Visibility */
         {
             View v = findViewById(R.id.lbl_field_visibility);
@@ -422,7 +450,7 @@ public class AdminActivity extends BaseActivityWithTasks {
         List<File> files = StorageUtils.findCsvFiles();
         // If none, exit with message
         if (files.size() == 0) {
-            StandardDialogs.showUserMessage(this, R.string.warning_csv_file_not_found);
+            StandardDialogs.showUserMessage(this, R.string.import_error_csv_file_not_found);
         } else {
             if (files.size() == 1) {
                 // If only 1, just use it
@@ -431,7 +459,7 @@ public class AdminActivity extends BaseActivityWithTasks {
                 // If more than one, ask user which file
                 // ENHANCE: Consider asking about importing cover images.
                 SelectOneDialog.selectFileDialog(getLayoutInflater(),
-                        getString(R.string.warning_csv_file_more_then_one_found),
+                        getString(R.string.import_warning_csv_file_more_then_one_found),
                         files, new SimpleDialogOnClickListener() {
                             @Override
                             public void onClick(final @NonNull SimpleDialogItem item) {

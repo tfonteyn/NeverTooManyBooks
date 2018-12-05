@@ -96,6 +96,8 @@ import oauth.signpost.exception.OAuthMessageSignerException;
  */
 public class GoodreadsManager {
 
+    private static final String TAG = "GoodReads.";
+
     /**
      * website & Root URL for API calls. Right now, identical, but this leaves future changes easier.
      */
@@ -103,17 +105,16 @@ public class GoodreadsManager {
     public static final String BASE_URL = WEBSITE;
 
     /** last time we synced with Goodreads */
-    private static final String PREFS_LAST_SYNC_DATE = "GoodreadsManager.LastSyncDate";
+    private static final String PREFS_LAST_SYNC_DATE = TAG + "LastSyncDate";
+    /* authorization tokens */
+    private static final String ACCESS_TOKEN = TAG + "AccessToken.Token";
+    private static final String ACCESS_SECRET = TAG + "AccessToken.Secret";
+    private static final String REQUEST_TOKEN = TAG + "RequestToken.Token";
+    private static final String REQUEST_SECRET = TAG + "RequestToken.Secret";
 
     /* meta data keys in manifest */
     private static final String GOODREADS_DEV_KEY = "goodreads.dev_key";
     private static final String GOODREADS_DEV_SECRET = "goodreads.dev_secret";
-
-    /* authorization tokens */
-    private static final String ACCESS_TOKEN = "GoodReads.AccessToken.Token";
-    private static final String ACCESS_SECRET = "GoodReads.AccessToken.Secret";
-    private static final String REQUEST_TOKEN = "GoodReads.RequestToken.Token";
-    private static final String REQUEST_SECRET = "GoodReads.RequestToken.Secret";
     /** the developer keys */
     private final static String DEV_KEY = BookCatalogueApp.getManifestString(GOODREADS_DEV_KEY);
     private final static String DEV_SECRET = BookCatalogueApp.getManifestString(GOODREADS_DEV_SECRET);
@@ -724,7 +725,7 @@ public class GoodreadsManager {
              */
             if (reviewId == 0) {
                 try {
-                    reviewId = this.addBookToShelf("Default", grId); //TEST: goodreads name!?
+                    reviewId = this.addBookToShelf("Default", grId); // Goodreads name
                 } catch (Exception e) {
                     return ExportDisposition.error;
                 }

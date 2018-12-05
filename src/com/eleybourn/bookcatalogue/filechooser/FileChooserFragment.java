@@ -36,13 +36,12 @@ import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
-import com.eleybourn.bookcatalogue.adapters.SimpleListAdapterRowActionListener;
+import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter;
+import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter.ViewProvider;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.filechooser.FileListerFragmentTask.FileListerListener;
 import com.eleybourn.bookcatalogue.utils.RTE;
-import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter;
-import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter.ViewProvider;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -229,7 +228,7 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
      *
      * @author pjw
      */
-    protected class FileDetailsAdapter extends SimpleListAdapter<FileDetails> implements SimpleListAdapterRowActionListener<FileDetails>{
+    protected class FileDetailsAdapter extends SimpleListAdapter<FileDetails> {
 
         FileDetailsAdapter(final @NonNull Context context, final @NonNull ArrayList<FileDetails> items) {
             super(context, 0, items);
@@ -240,6 +239,9 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
             item.onGetView(convertView, requireActivity());
         }
 
+        /**
+         * Put the name of the file we clicked on into the filename field
+         */
         @Override
         public void onRowClick(final @NonNull View v, final @Nullable FileDetails item, final int position) {
             if (item != null) {

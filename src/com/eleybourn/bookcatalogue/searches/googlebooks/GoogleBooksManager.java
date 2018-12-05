@@ -26,8 +26,9 @@ import javax.xml.parsers.SAXParserFactory;
 // ENHANCE: Get editions via: http://books.google.com/books/feeds/volumes?q=editions:ISBN0380014300
 
 public class GoogleBooksManager {
+    private static final String TAG = "GoogleBooks.";
 
-    private static final String PREFS_HOST_URL = "GoogleBooksManager.hostUrl";
+    private static final String PREFS_HOST_URL = TAG + "hostUrl";
 
     @NonNull
     public static String getBaseURL() {

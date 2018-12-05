@@ -17,33 +17,22 @@
  * You should have received a copy of the GNU General Public License
  * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.eleybourn.bookcatalogue.datamanager.validators;
+package com.eleybourn.bookcatalogue.datamanager.datavalidators;
 
-import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.datamanager.Datum;
-import com.eleybourn.bookcatalogue.utils.DateUtils;
 
 /**
- * Validator to apply a default value and validate as a Date
+ * Validator to require a non-blank field
  *
  * @author Philip Warner
  */
-public class DateValidator extends DefaultFieldValidator {
-
-    public DateValidator() {
-        super();
-    }
-
-    public DateValidator(final @NonNull String defaultValue) {
-        super(defaultValue);
-    }
+public class NonBlankValidator implements DataValidator {
 
     @Override
-    @CallSuper
     public void validate(final @NonNull DataManager data, final @NonNull Datum datum, final boolean crossValidating)
             throws ValidatorException {
         if (datum.isHidden()) {
@@ -53,16 +42,9 @@ public class DateValidator extends DefaultFieldValidator {
         if (crossValidating)
             return;
 
-        super.validate(data, datum, false);
-
-        try {
-            java.util.Date d = DateUtils.parseDate(data.getString(datum));
-            if (d == null) {
-                throw new ValidatorException(R.string.vldt_date_expected, new Object[]{datum.getKey()});
-            }
-            data.putString(datum, DateUtils.utcSqlDateTime(d));
-        } catch (Exception e) {
-            throw new ValidatorException(R.string.vldt_date_expected, new Object[]{datum.getKey()});
+        String v = data.getString(datum).trim();
+        if (v.isEmpty()) {
+            throw new ValidatorException(R.string.vldt_non_blank_required, new Object[]{datum.getKey()});
         }
     }
 }

@@ -104,20 +104,6 @@ public class EditBookTOCFragment extends BookBaseFragment implements ISFDBResult
 
     //<editor-fold desc="Fragment startup">
 
-//    /**
-//     * Ensure activity supports interface
-//     */
-//    @Override
-//    @CallSuper
-//    public void onAttach(final @NonNull Context context) {
-//        super.onAttach(context);
-//    }
-
-//    @Override
-//    public void onCreate(@Nullable final Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//    }
-
     @Override
     public View onCreateView(final @NonNull LayoutInflater inflater,
                              final @Nullable ViewGroup container,
@@ -189,12 +175,13 @@ public class EditBookTOCFragment extends BookBaseFragment implements ISFDBResult
         Tracker.exitOnActivityCreated(this);
     }
 
-    /**
-     * No real Field's - commenting this out, but leaving as a reminder
-     */
+
     @Override
     protected void initFields() {
         super.initFields();
+        /*
+         * No real Field's but might as well do these here.
+         */
 
         // mSingleAuthor checkbox
         //noinspection ConstantConditions
@@ -223,12 +210,6 @@ public class EditBookTOCFragment extends BookBaseFragment implements ISFDBResult
             }
         });
     }
-
-//    @CallSuper
-//    @Override
-//    public void onResume() {
-//        super.onResume();
-//    }
 
     @Override
     @CallSuper
@@ -277,12 +258,6 @@ public class EditBookTOCFragment extends BookBaseFragment implements ISFDBResult
 
     //<editor-fold desc="Fragment shutdown">
 
-//    @Override
-//    @CallSuper
-//    public void onPause() {
-//        super.onPause();
-//    }
-
     @Override
     @CallSuper
     protected void onSaveFieldsToBook(final @NonNull Book book) {
@@ -305,10 +280,6 @@ public class EditBookTOCFragment extends BookBaseFragment implements ISFDBResult
         Tracker.exitOnSaveFieldsToBook(this, book.getBookId());
     }
 
-//    @Override
-//    public void onDestroy() {
-//        super.onDestroy();
-//    }
     //</editor-fold>
 
     /* ------------------------------------------------------------------------------------------ */
@@ -519,8 +490,12 @@ public class EditBookTOCFragment extends BookBaseFragment implements ISFDBResult
             mAddButton.setText(R.string.btn_confirm_save);
         }
 
+        /**
+         * We're dirty...
+         */
         @Override
         public void onListChanged() {
+            super.onListChanged();
             getBookManager().setDirty(true);
         }
     }

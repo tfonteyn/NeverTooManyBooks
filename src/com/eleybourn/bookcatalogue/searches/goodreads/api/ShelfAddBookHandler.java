@@ -111,8 +111,9 @@ public class ShelfAddBookHandler extends ApiHandler {
 		HttpPost post = new HttpPost(GoodreadsManager.BASE_URL + "/shelf/add_to_shelf.xml");
 
 		ArrayList<NameValuePair> parameters = new ArrayList<>();
-        if (isRemove)
-            parameters.add(new BasicNameValuePair("a", "remove"));
+        if (isRemove) {
+			parameters.add(new BasicNameValuePair("a", "remove"));
+		}
         parameters.add(new BasicNameValuePair("book_id", Long.toString(grBookId)));
         parameters.add(new BasicNameValuePair("name", shelfName));
 

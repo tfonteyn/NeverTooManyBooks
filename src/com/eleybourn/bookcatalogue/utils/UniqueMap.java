@@ -29,6 +29,10 @@ public class UniqueMap<K, V> extends HashMap<K, V> {
         if (super.put(key, value) != null) {
             throw new IllegalArgumentException("Map already contains key value" + key);
         }
+        /*
+         * collection contract says to return the previous value associated with <tt>key</tt>,
+         * or <tt>null</tt> if there was no mapping for <tt>key</tt>.
+         */
         return value;
     }
 }

@@ -57,10 +57,12 @@ import java.util.Objects;
  */
 public class BackupManager {
 
+    private static final String TAG = "Backup.";
+
     /** Last full backup date */
-    public static final String PREF_LAST_BACKUP_DATE = "Backup.LastDate";
+    public static final String PREF_LAST_BACKUP_DATE = TAG + "LastDate";
     /** Last full backup file path */
-    public static final String PREF_LAST_BACKUP_FILE = "Backup.LastFile";
+    public static final String PREF_LAST_BACKUP_FILE = TAG + "LastFile";
 
     /**
      * Start a foreground task that backs up the entire catalogue.
@@ -131,7 +133,7 @@ public class BackupManager {
                         });
                     } catch (Exception e) {
                         // add user-friendly message
-                        throw new Exception(BookCatalogueApp.getResourceString(R.string.error_backup_failed), e);
+                        throw new Exception(BookCatalogueApp.getResourceString(R.string.export_error_backup_failed), e);
                     }
 
                     // all done. we handle the result here, still in the background.

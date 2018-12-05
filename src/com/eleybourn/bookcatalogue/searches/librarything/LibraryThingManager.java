@@ -79,14 +79,16 @@ import javax.xml.parsers.SAXParserFactory;
  * @author Philip Warner
  */
 public class LibraryThingManager {
-    /** Name of preference that controls display of alert about LibraryThing */
-    public static final String PREFS_LT_HIDE_ALERT = "lt_hide_alert";
-
-    /** file suffix for cover files */
-    public static final String FILENAME_SUFFIX = "_LT";
+    private static final String TAG = "LibraryThing.";
 
     /** Name of preference that contains the dev key for the user */
-    static final String PREFS_LT_DEV_KEY = "lt_devkey";
+    public static final String PREFS_DEV_KEY = TAG + "dev_key";
+
+    /** Name of preference that controls display of alert about LibraryThing */
+    public static final String PREFS_HIDE_ALERT = TAG + "hide_alert.";
+
+    /** file suffix for cover files */
+    private static final String FILENAME_SUFFIX = "_LT";
 
     /** base urls */
     private static final String BASE_URL = "https://www.librarything.com";
@@ -154,11 +156,11 @@ public class LibraryThingManager {
 
 
     public static void showLtAlertIfNecessary(final @NonNull Context context,
-                                              final boolean always,
+                                              final boolean required,
                                               final @NonNull String prefSuffix) {
         LibraryThingManager ltm = new LibraryThingManager();
         if (!ltm.isAvailable()) {
-            needLibraryThingAlert(context, always, prefSuffix);
+            needLibraryThingAlert(context, required, prefSuffix);
         }
     }
 
@@ -171,7 +173,7 @@ public class LibraryThingManager {
         boolean showAlert;
         @StringRes
         int msgId;
-        final String prefName = PREFS_LT_HIDE_ALERT + "_" + prefSuffix;
+        final String prefName = PREFS_HIDE_ALERT  + prefSuffix;
         if (required) {
             msgId = R.string.lt_required_info;
             showAlert = true;
@@ -396,7 +398,7 @@ public class LibraryThingManager {
      */
     @NonNull
     private String getDevKey() {
-        String key = BookCatalogueApp.getStringPreference(PREFS_LT_DEV_KEY, null);
+        String key = BookCatalogueApp.getStringPreference(PREFS_DEV_KEY, null);
         if (key != null && !key.isEmpty()) {
             return key.replaceAll("[\\r\\t\\n\\s]*", "");
         }

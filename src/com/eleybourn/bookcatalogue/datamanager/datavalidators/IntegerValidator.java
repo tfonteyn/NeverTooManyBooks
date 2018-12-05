@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.eleybourn.bookcatalogue.datamanager.validators;
+package com.eleybourn.bookcatalogue.datamanager.datavalidators;
 
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
@@ -27,16 +27,13 @@ import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.datamanager.Datum;
 
 /**
- * Validator to apply a default value and validate as Boolean
+ * Validator to apply a default value and validate as integer.
  *
  * @author Philip Warner
  */
-public class BooleanValidator extends DefaultFieldValidator {
-    public BooleanValidator() {
-        super();
-    }
+public class IntegerValidator extends DefaultFieldValidator {
 
-    public BooleanValidator(final @NonNull String defaultValue) {
+    public IntegerValidator(final @NonNull String defaultValue) {
         super(defaultValue);
     }
 
@@ -53,21 +50,17 @@ public class BooleanValidator extends DefaultFieldValidator {
 
         super.validate(data, datum, false);
         try {
-            Boolean value;
+            Integer value;
             Object o = data.get(datum);
-            if (o instanceof Boolean) {
-                value = (Boolean) o;
-            } else if (o instanceof Integer) {
-                value = (((Integer) o) != 0);
-            } else if (o != null){
-                String s = o.toString();
-                value = Datum.toBoolean(s, true);
+            if (o instanceof Integer) {
+                value = (Integer) o;
             } else {
-                value = false;
+                //noinspection ConstantConditions
+                value = Integer.parseInt(o.toString());
             }
-            data.putBoolean(datum, value);
+            data.putInt(datum, value);
         } catch (Exception e) {
-            throw new ValidatorException(R.string.vldt_boolean_expected, new Object[]{datum.getKey()});
+            throw new ValidatorException(R.string.vldt_integer_expected, new Object[]{datum.getKey()});
         }
     }
 }

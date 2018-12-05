@@ -19,7 +19,9 @@ import javax.xml.parsers.SAXParserFactory;
 
 public class AmazonManager {
 
-    private static final String PREFS_HOST_URL = "AmazonManager.hostUrl";
+    private static final String TAG = "Amazon.";
+
+    private static final String PREFS_HOST_URL = TAG + "hostUrl";
 
     @NonNull
     public static String getBaseURL() {

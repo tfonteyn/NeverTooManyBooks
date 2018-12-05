@@ -327,11 +327,6 @@ public class DbSync {
         SynchronizedDb(final @NonNull SQLiteDatabase db, final @NonNull Synchronizer sync) {
             mSqlDb = db;
             mSync = sync;
-            if (/* always print debug */ BuildConfig.DEBUG) {
-                Logger.info(this, "\n\nReminder: Use of this method is not recommended. It is better to use\n" +
-                        "\t\t  the methods that take a {@link SQLiteOpenHelper} object since opening the database may block\n" +
-                        "\t\t  another thread, or vice versa.\n\n\n\n");
-            }
         }
 
         /**

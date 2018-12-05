@@ -20,6 +20,7 @@
 package com.eleybourn.bookcatalogue.adapters;
 
 import android.content.Context;
+import android.support.annotation.CallSuper;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -52,15 +53,13 @@ import java.util.Objects;
  *
  * The layout must have the top id of:
  * <pre>
- *    SLA_ROW  {@link SimpleListAdapterRowActionListener<T>#onRowClick}, unless SLA_ROW_DETAILS is defined.
+ *    SLA_ROW  {@link #onRowClick}, unless SLA_ROW_DETAILS is defined.
  * </pre>
  *
  * The layout can optionally contain these "@+id/"  which will trigger the listed methods
  * <pre>
- *    SLA_ROW_DETAILS     {@link SimpleListAdapterRowActionListener<T>#onRowClick};
- *    SLA_ROW_UP          {@link SimpleListAdapterRowActionListener<T>#onRowUp}
- *    SLA_ROW_DOWN        {@link SimpleListAdapterRowActionListener<T>#onRowDown}
- *    SLA_ROW_DELETE      {@link SimpleListAdapterRowActionListener<T>#onRowDelete}
+ *    SLA_ROW_DETAILS     {@link #onRowClick}; {@link #onRowLongClick}
+ *    SLA_ROW_DELETE      {@link #onRowDelete}
  * </pre>
  *
  * SLA_ROW is the complete row, SLA_ROW_DETAIL is a child of SLA_ROW.
@@ -70,8 +69,6 @@ import java.util.Objects;
  * <pre>
  *     <item name="SLA_ROW" type="id" />
  *     <item name="SLA_ROW_DETAILS" type="id" />
- *     <item name="SLA_ROW_UP" type="id"/>
- *     <item name="SLA_ROW_DOWN" type="id"/>
  *     <item name="SLA_ROW_DELETE" type="id"/>
  *     <item name="SLA_ROW_POSITION" type="id"/>
  *     <item name="SLA_ROW_POSITION_TAG" type="id" />
@@ -82,11 +79,8 @@ import java.util.Objects;
 public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
     @LayoutRes
     private final int mRowViewId;
+
     @NonNull
-    private final List<T> mList;
-
-
-    @Nullable
     private final View.OnClickListener mRowClickListener = new View.OnClickListener() {
         @Override
         public void onClick(@NonNull View v) {
@@ -101,7 +95,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
             }
         }
     };
-    @Nullable
+    @NonNull
     private final View.OnLongClickListener mRowLongClickListener = new View.OnLongClickListener() {
         @Override
         public boolean onLongClick(final @NonNull View v) {
@@ -115,16 +109,16 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
             return false;
         }
     };
-    @Nullable
+
+    @NonNull
     private final View.OnClickListener mRowDeleteListener = new View.OnClickListener() {
         @Override
         public void onClick(@NonNull View v) {
             try {
                 int pos = getViewRow(v);
-                T old = getItem(pos);
-                if (old != null && onRowDelete(v, old, pos)) {
-                    remove(old);
-                    notifyDataSetChanged();
+                T item = getItem(pos);
+                if (item != null && onRowDelete(v, item, pos)) {
+                    remove(item);
                     onListChanged();
                 }
             } catch (Exception e) {
@@ -133,61 +127,10 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
             }
         }
     };
-    @Nullable
-    private final View.OnClickListener mRowDownListener = new View.OnClickListener() {
-        @Override
-        public void onClick(@NonNull View v) {
-            int pos = getViewRow(v);
-            if (pos == (getCount() - 1))
-                return;
-            T old = getItem(pos);
-            if (old == null) {
-                return;
-            }
-            try {
-                onRowDown(v, old, pos);
-
-                mList.set(pos, getItem(pos + 1));
-                mList.set(pos + 1, old);
-                notifyDataSetChanged();
-                onListChanged();
-            } catch (Exception e) {
-                // TODO: Allow a specific exception to cancel the action
-                Logger.error(e);
-            }
-        }
-    };
-    @Nullable
-    private final View.OnClickListener mRowUpListener = new View.OnClickListener() {
-        @Override
-        public void onClick(@NonNull View v) {
-            int pos = getViewRow(v);
-            if (pos == 0)
-                return;
-            T old = getItem(pos - 1);
-            if (old == null) {
-                return;
-            }
-            try {
-                onRowUp(v, old, pos);
-
-                mList.set(pos - 1, getItem(pos));
-                mList.set(pos, old);
-                notifyDataSetChanged();
-                onListChanged();
-            } catch (Exception e) {
-                // TODO: Allow a specific exception to cancel the action
-                Logger.error(e);
-            }
-
-        }
-    };
 
     // Options fields to (slightly) optimize lookups and prevent looking for fields that are not there.
     private boolean mCheckedFields = false;
     private boolean mHasPosition = false;
-    private boolean mHasUp = false;
-    private boolean mHasDown = false;
     private boolean mHasDelete = false;
 
     protected SimpleListAdapter(final @NonNull Context context,
@@ -195,7 +138,6 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
                                 final @NonNull List<T> list) {
         super(context, rowViewId, list);
         mRowViewId = rowViewId;
-        mList = list;
     }
 
     @NonNull
@@ -246,24 +188,6 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
                 }
             }
 
-            // Try to set the UP handler
-            if (mHasUp || !mCheckedFields) {
-                View up = convertView.findViewById(R.id.SLA_ROW_UP);
-                if (up != null) {
-                    up.setOnClickListener(mRowUpListener);
-                    mHasUp = true;
-                }
-            }
-
-            // Try to set the DOWN handler
-            if (mHasDown || !mCheckedFields) {
-                View dn = convertView.findViewById(R.id.SLA_ROW_DOWN);
-                if (dn != null) {
-                    dn.setOnClickListener(mRowDownListener);
-                    mHasDown = true;
-                }
-            }
-
             // Try to set the DELETE handler
             if (mHasDelete || !mCheckedFields) {
                 View del = convertView.findViewById(R.id.SLA_ROW_DELETE);
@@ -279,6 +203,8 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
             } catch (Exception e) {
                 Logger.error(e);
             }
+
+            // make it flash
             convertView.setBackgroundResource(android.R.drawable.list_selector_background);
 
             mCheckedFields = true;
@@ -313,18 +239,12 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
         return (Integer) o;
     }
 
-    public void onRowDown(@NonNull final View target, @NonNull final T item, final int position) {
-        // do nothing
-    }
-
-    public void onRowUp(@NonNull final View target, @NonNull final T item, final int position) {
-        // do nothing
-    }
-
     /**
+     * Default implementation always returns true.
+     *
      * @return <tt>true</tt>if delete is allowed to happen
      */
-    public boolean onRowDelete(@NonNull final View target, @NonNull final T item, final int position) {
+    protected boolean onRowDelete(@NonNull final View target, @NonNull final T item, final int position) {
         return true;
     }
 
@@ -334,7 +254,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
      * @param target The view clicked
      * @param item   The object associated with this row
      */
-    public void onRowClick(@NonNull final View target, @NonNull final T item, final int position) {
+    protected void onRowClick(@NonNull final View target, @NonNull final T item, final int position) {
     }
 
     /**
@@ -345,11 +265,19 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
      *
      * @return <tt>true</tt>if handled
      */
-    public boolean onRowLongClick(@NonNull final View target, @NonNull final T item, final int position) {
+    protected boolean onRowLongClick(@NonNull final View target, @NonNull final T item, final int position) {
         return false;
     }
 
-    public void onListChanged() {
+    /**
+     * Called when the list had been modified in some way.
+     * By default, tells the adapter that the list was changed
+     *
+     * Child classes should override when needed and call super FIRST
+     */
+    @CallSuper
+    protected void onListChanged() {
+        notifyDataSetChanged();
     }
 
     /**

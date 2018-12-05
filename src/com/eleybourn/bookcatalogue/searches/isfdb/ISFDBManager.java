@@ -19,7 +19,9 @@ import java.util.List;
 
 public class ISFDBManager {
 
-    private static final String PREFS_HOST_URL = "ISFDBManager.hostUrl";
+    private static final String TAG = "ISFDB.";
+
+    private static final String PREFS_HOST_URL = TAG + "hostUrl";
     /**
      * task queue for the searching/parsing of content (ant titles)
      * specifically used for direct search calls from {@link EditBookTOCFragment}

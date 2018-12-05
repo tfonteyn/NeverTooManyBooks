@@ -137,7 +137,8 @@ public class EditBooklistStyleActivity extends BaseActivity {
 
         // Display hint if required
         if (savedInstanceState == null) {
-            HintManager.displayHint(this.getLayoutInflater(), R.string.hint_booklist_style_properties, null);
+            HintManager.displayHint(this.getLayoutInflater(),
+                    R.string.hint_booklist_style_properties, null);
         }
 
         Tracker.exitOnCreate(this);
@@ -229,7 +230,8 @@ public class EditBooklistStyleActivity extends BaseActivity {
          * Constructor
          */
         GroupsProperty() {
-            super("StyleGroups", PropertyGroup.GRP_GENERAL, R.string.groupings, null);
+            // default "" is a dummy
+            super(R.string.groupings, PropertyGroup.GRP_GENERAL, "");
         }
 
         /**

@@ -38,7 +38,7 @@
     <string name="lbl_series_num">#</string>
     <string name="title_import_book_data">Importa libri</string>
     <string name="warning_import_be_cautious">Attenzione. L\'importazione dei dati potrebbe aggiornare i record esistenti con nuove informazioni se manca la colonna uuid e l\'id nel file di importazione è identico a un id esistente. Ciò è corretto se hai modificato un campo nel file di esportazione. Se hai registrato un nuovo libro, o stai importando libri di qualcun altro, assicurati che vi sia il campo uuid o il campo id sia vuoto.</string>
-    <string name="error_import_failed_is_csv_file_location_correct">ERRORE: Importazione dei dati dalla SDCard non riuscita. Il file è nel posto corretto?</string>
+    <string name="import_error_failed_is_csv_file_location_correct">ERRORE: Importazione dei dati dalla SDCard non riuscita. Il file è nel posto corretto?</string>
     <string name="search_title">Book Catalogue: Risultati ricerca</string>
     <string name="results_found">Risultati trovati</string>
     <string name="menu_administration_long">Funzioni amministratore</string>
@@ -120,9 +120,9 @@
     <string name="vldt_failed">Convalida di \'%s\' non riuscita</string>
     <string name="vldt_read_start_after_end">Data di inizio lettura posteriore alla data di fine lettura</string>
     <string name="progress_end_backup_success">Backup completato</string>
-    <string name="error_backup_failed">Backup fallito</string>
+    <string name="export_error_backup_failed">Backup fallito</string>
     <string name="error_file_must_contain_column">Il file deve contenere una colonna con nome %s</string>
-    <string name="error_csv_file_must_contain_any_column">Il file deve contenere una colonna con uno dei seguenti nomi: %s</string>
+    <string name="import_error_csv_file_must_contain_any_column">Il file deve contenere una colonna con uno dei seguenti nomi: %s</string>
     <string name="error_column_is_blank">La colonna %1$s è vuota alla riga %2$s</string>
     <string name="error_columns_are_blank">Tutte le colonne %1$s sono vuote alla riga %2$d</string>
     <string name="btn_confirm_save">Salva</string>
@@ -140,7 +140,7 @@
     <string name="warning_required_author">Il campo Autore è vuoto</string>
     <string name="warning_series_already_in_list">La serie è già presente in elenco</string>
     <string name="warning_required_series">Il campo Serie è vuoto</string>
-    <string name="error_export_csv_failed">Esportazione fallina - impossibile scrivere sulla scheda SD</string>
+    <string name="export_error_csv_failed">Esportazione fallina - impossibile scrivere sulla scheda SD</string>
     <string name="error_download_thumbnail_failed">Scarico miniatura fallito - Impossibile scrivere sulla scheda SD</string>
     <string name="progress_msg_skip_title">Salta - %s</string>
     <string name="progress_end_num_books_searched">%s libri cercati</string>
@@ -297,7 +297,7 @@
     <string name="lbl_bookshelves_long">Librerie</string>
     <string name="lbl_bookshelves">Scaffali</string>
     <string name="lbl_location">Locazione</string>
-    <string name="credentials">Credenziali</string>
+    <string name="menu_credentials">Credenziali</string>
     <string name="data_import_export">Importa/Esporta dati</string>
     <string name="unrecognized_task">Comando sconosciuto</string>
     <string name="progress_msg_rebuilding_search_index">Ricostruzione indice di ricerca…</string>
@@ -426,17 +426,17 @@
 										sul loro sito web. Una volta fatto, si può riprovare ad inviare il libro.</string>
     <string name="read_amp_unread">Letto &amp; Non letto</string>
     <string name="loaned">Prestato</string>
-    <string name="publication_year">Anno di Pubblicazione</string>
-    <string name="publication_month">Mese di Pubblicazione</string>
-    <string name="added_year">Anno di inserimento</string>
-    <string name="added_month">Mese di inserimento</string>
-    <string name="added_day">Giorno di inserimento</string>
+    <string name="lbl_publication_year">Anno di Pubblicazione</string>
+    <string name="lbl_publication_month">Mese di Pubblicazione</string>
+    <string name="lbl_added_year">Anno di inserimento</string>
+    <string name="lbl_added_month">Mese di inserimento</string>
+    <string name="lbl_added_day">Giorno di inserimento</string>
     <string name="lbl_book">Libro</string>
     <string name="in">In</string>
     <string name="size">Dimensioni</string>
     <string name="updated">Aggiornato</string>
-    <string name="warning_csv_file_not_found">Nessun file di esportazione trovato</string>
-    <string name="warning_csv_file_more_then_one_found">È stato trovato più di un file di esportazione; scegli un file di esportazione da importare dall\'elenco qui sotto</string>
+    <string name="import_error_csv_file_not_found">Nessun file di esportazione trovato</string>
+    <string name="import_warning_csv_file_more_then_one_found">È stato trovato più di un file di esportazione; scegli un file di esportazione da importare dall\'elenco qui sotto</string>
     <string name="problem_starting_import_arg">Si è verificato un problema all\'avvio dell\'importazione: %1$s</string>
     <string name="hint_booklist_style_menu">Questo menu permette di scegliere lo stile dell\'elenco. 
     								\n\nÈ anche possibile personalizzare questo menu, così come creare i propri stili di elenco, facendo click su \'Personalizza\' in fondo dell\'elenco.</string>
@@ -465,9 +465,9 @@
     <string name="menu_add_book_by_isbn">Inserisci codice ISBN</string>
     <string name="lbl_allow_asin">Consenti codice ASIN</string>
     <string name="warning_x_is_not_a_valid_isbn_or_asin">%1$s non è un codice ISBN o ASIN valido</string>
-    <string name="read_year">Leggi Anno</string>
-    <string name="read_month">Leggi Mese</string>
-    <string name="read_day">Leggi Giorno</string>
+    <string name="lbl_read_year">Leggi Anno</string>
+    <string name="lbl_read_month">Leggi Mese</string>
+    <string name="lbl_read_day">Leggi Giorno</string>
     <string name="style_builtin_read_date">Lettura Data</string>
     <string name="lbl_details_have_changed">Dettagli modificati</string>
     <string name="warning_unsaved_changes">Vi sono modifiche non salvate, se esci adesso saranno perse.</string>
@@ -626,19 +626,19 @@
     <string name="progress_msg_covers_skip">%1$s copertine elaborate (%2$s mancanti, %3$s saltate)</string>
 
     <!-- Explanatory note for 'exportBooks all' option -->
-    <string name="export_dialog_info_all">Tutti i libri, copertine, impostazioni e stili personalizzati saranno esportati nell\'archivio.</string>
+    <string name="export_info_backup_all">Tutti i libri, copertine, impostazioni e stili personalizzati saranno esportati nell\'archivio.</string>
     <!-- Explanatory note for 'advanced exportBooks' option -->
     <string name="export_options_dialog_title">Seleziona cosa esportare nell\'archivio.</string>
     <!-- Text for button -->
     <string name="book_details">Dettagli dei libri</string>
     <!-- Brief description -->
-    <string name="info_book_details">Le informazioni dettagliate stesse</string>
+    <string name="import_export_info_book_details">Le informazioni dettagliate stesse</string>
     <!-- Text for button -->
     <string name="lbl_cover_images">Immagini delle copertine</string>
     <!-- Brief description -->
     <string name="export_info_cover_images">Copertine di tutti i libri selezionati. Ciò renderà l\'esportazione molto più pesante.</string>
     <!-- Brief description -->
-    <string name="info_preferences">Preferenze e stili di elencazione personalizzati</string>
+    <string name="import_export_info_preferences">Preferenze e stili di elencazione personalizzati</string>
 
     <!-- Explanatory note for exportBooks date (not yet implemented) -->
     <string name="export_option_info_books_since_date">In via opzionale, specifica una data da usare per selezionare libri e/o copertine da esportare:</string>
@@ -680,13 +680,13 @@
     <string name="hint_amazon_links_blurb">&lt;p&gt;Se acquisti da Amazon dopo aver selezionato le voci &lt;i&gt;\"%1$s\"&lt;/i&gt;, &lt;i&gt;\"%2$s\"&lt;/i&gt; oppure &lt;i&gt;\"%3$s\"&lt;/i&gt;, una parte del prezzo d\'acquisto sarà inviata agli sviluppatori di %4$s.&lt;/p&gt;&lt;p&gt;In alternativa, puoi usare i &lt;a href=\"https://github.com/eleybourn/Book-Catalogue/wiki/Frequently-Asked-Questions-%%28FAQ%%29\"&gt;link alle nostre FAQ&lt;/a&gt; per andare direttamente su Amazon o PayPal.&lt;/p&gt;</string>
 
     <!-- Name of the new style grouping (needs to be short). -->
-    <string name="update_date">Data aggiornamento</string>
+    <string name="style_builtin_update_date">Data aggiornamento</string>
     <!-- Name of the new style grouping (needs to be short). -->
-    <string name="update_year">Anno</string>
+    <string name="lbl_update_year">Anno</string>
     <!-- Name of the new style grouping (needs to be short). -->
-    <string name="update_month">Mese</string>
+    <string name="lbl_update_month">Mese</string>
     <!-- Name of the new style grouping (needs to be short). -->
-    <string name="update_day">Giorno</string>
+    <string name="lbl_update_day">Giorno</string>
 
     <!-- Preference name (fairly short) for preferred language -->
     <string name="user_interface_preferred_language">Lingua preferita</string>

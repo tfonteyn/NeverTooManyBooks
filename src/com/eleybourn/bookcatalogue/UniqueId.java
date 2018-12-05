@@ -3,7 +3,6 @@ package com.eleybourn.bookcatalogue;
 import com.eleybourn.bookcatalogue.backup.ExportSettings;
 import com.eleybourn.bookcatalogue.backup.ImportSettings;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
-import com.eleybourn.bookcatalogue.baseactivity.PreferencesBaseActivity;
 import com.eleybourn.bookcatalogue.booklist.BooklistPreferredStylesActivity;
 import com.eleybourn.bookcatalogue.booklist.EditBooklistStyleActivity;
 import com.eleybourn.bookcatalogue.datamanager.Fields;
@@ -46,7 +45,7 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FIRST
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PK_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LAST_UPDATE_DATE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LOANED_TO;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_NAME;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE;
 
 /**
@@ -187,10 +186,9 @@ public class UniqueId {
     public static final String KEY_BOOK_ANTHOLOGY_BITMASK = DOM_BOOK_ANTHOLOGY_BITMASK.name;
     public static final String KEY_BOOK_EDITION_BITMASK = DOM_BOOK_EDITION_BITMASK.name;
 
-    public static final String KEY_AUTHOR_ID = DOM_FK_AUTHOR_ID.name;
+    public static final String KEY_AUTHOR = DOM_FK_AUTHOR_ID.name;
     public static final String KEY_AUTHOR_FAMILY_NAME = DOM_AUTHOR_FAMILY_NAME.name;
     public static final String KEY_AUTHOR_GIVEN_NAMES = DOM_AUTHOR_GIVEN_NAMES.name;
-
     public static final String KEY_AUTHOR_FORMATTED = DOM_AUTHOR_FORMATTED.name;
 
     public static final String KEY_BOOKSHELF_NAME = DOM_BOOKSHELF.name;
@@ -218,7 +216,7 @@ public class UniqueId {
     public static final String KEY_BOOK_READ_START = DOM_BOOK_READ_START.name;
     public static final String KEY_BOOK_SIGNED = DOM_BOOK_SIGNED.name;
 
-    public static final String KEY_SERIES_NAME = DOM_SERIES_NAME.name;
+    public static final String KEY_SERIES = DOM_SERIES.name;
     public static final String KEY_SERIES_NUM = DOM_BOOK_SERIES_NUM.name;
 
     public static final String KEY_BOOK_LIBRARY_THING_ID = DOM_BOOK_LIBRARY_THING_ID.name;

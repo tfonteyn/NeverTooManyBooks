@@ -86,20 +86,6 @@ public class EditBookFieldsFragment extends BookBaseFragment implements
 
     //<editor-fold desc="Fragment startup">
 
-//    /**
-//     * Ensure activity supports interface
-//     */
-//    @Override
-//    @CallSuper
-//    public void onAttach(final @NonNull Context context) {
-//        super.onAttach(context);
-//    }
-
-//    @Override
-//    public void onCreate(@Nullable final Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//    }
-
     @Override
     public View onCreateView(final @NonNull LayoutInflater inflater,
                              final @Nullable ViewGroup container,
@@ -143,8 +129,10 @@ public class EditBookFieldsFragment extends BookBaseFragment implements
         Field field;
 
         // book fields
-        // ENHANCE: simplify the SQL and use a formatter instead.
-        mFields.add(R.id.author, "", UniqueId.KEY_AUTHOR_FORMATTED)
+
+
+        // defined, but handled manually
+        mFields.add(R.id.author, "", UniqueId.KEY_AUTHOR)
                 .getView().setOnClickListener(
                 new OnClickListener() {
                     @Override
@@ -157,7 +145,8 @@ public class EditBookFieldsFragment extends BookBaseFragment implements
                     }
                 });
 
-        mFields.add(R.id.name, UniqueId.KEY_SERIES_NAME)
+        // defined, but handled manually
+        mFields.add(R.id.name, "", UniqueId.KEY_SERIES)
                 .getView().setOnClickListener(
                 new OnClickListener() {
                     @Override
@@ -215,15 +204,16 @@ public class EditBookFieldsFragment extends BookBaseFragment implements
                     }
                 });
 
-        // define the cover image
-        Field coverField = mFields.add(R.id.coverImage, "", UniqueId.BKEY_HAVE_THUMBNAIL)
-                .setDoNotFetch(true);
+        // defined, but handled manually
+        Field coverField = mFields.add(R.id.coverImage, "", UniqueId.BKEY_HAVE_THUMBNAIL);
         mCoverHandler = new CoverHandler(this, mDb, getBookManager(),
                 coverField, mFields.getField(R.id.isbn));
 
+
         // Personal fields
-        field = mFields.add(R.id.bookshelves, UniqueId.KEY_BOOKSHELF_NAME)
-                .setDoNotFetch(true);
+
+        // defined, but handled manually (reminder: storing the list into the book is handled by onCheckListEditorSave)
+        field = mFields.add(R.id.bookshelves, "", UniqueId.KEY_BOOKSHELF_NAME);
         initCheckListEditor(TAG, field, R.string.lbl_bookshelves_long, new CheckListEditorListGetter<Bookshelf>() {
             @Override
             public ArrayList<CheckListItem<Bookshelf>> getList() {
@@ -231,12 +221,6 @@ public class EditBookFieldsFragment extends BookBaseFragment implements
             }
         });
     }
-
-//    @CallSuper
-//    @Override
-//    public void onResume() {
-//        super.onResume();
-//    }
 
     @Override
     @CallSuper
@@ -247,16 +231,15 @@ public class EditBookFieldsFragment extends BookBaseFragment implements
         // new book ? load data fields from Extras
         if (book.getBookId() <= 0) {
             Bundle extras = requireActivity().getIntent().getExtras();
-            populateFieldsFromBundle(book, extras);
+            populateNewBookFieldsFromBundle(book, extras);
         }
 
         populateAuthorListField(book);
         populateSeriesListField(book);
-
-        mCoverHandler.populateCoverView();
+        mFields.getField(R.id.bookshelves).setValue(book.getBookshelfListAsText());
         mFields.getField(R.id.is_anthology).setValue(book.getString(Book.HAS_MULTIPLE_WORKS));
 
-        mFields.getField(R.id.bookshelves).setValue(book.getBookshelfListAsText());
+        mCoverHandler.populateCoverView();
 
         // Restore default visibility
         showHideFields(false);
@@ -269,31 +252,23 @@ public class EditBookFieldsFragment extends BookBaseFragment implements
     /* ------------------------------------------------------------------------------------------ */
 
     //<editor-fold desc="Populate">
-    private void populateFieldsFromBundle(final @NonNull Book book, final @Nullable Bundle bundle) {
+
+    private void populateNewBookFieldsFromBundle(final @NonNull Book book, final @Nullable Bundle bundle) {
+        // Check if we have any data, for example from a Search
         if (bundle != null) {
-            /*
-             * From the ISBN Search (add if not there yet)
-             */
             Bundle values = bundle.getBundle(UniqueId.BKEY_BOOK_DATA);
             if (values != null) {
-                for (Field field : mFields) {
-                    if (!field.column.isEmpty() && values.containsKey(field.column)) {
-                        String val = values.getString(field.column);
-                        if (val != null) {
-                            field.setValue(val);
-                        }
-                    }
-                }
+                // if we do, add if not there yet
+                mFields.setAllFrom(values, false);
             }
         }
 
-        /*
-         * Use the currently selected bookshelf as default for a new book
-         */
-        final List<Bookshelf> list = book.getBookshelfList();
+        // If the new book is not on any Bookshelf, use the current bookshelf as default
+        final ArrayList<Bookshelf> list = book.getBookshelfList();
         if (list.isEmpty()) {
+
             Bookshelf bookshelf = null;
-            String name = BookCatalogueApp.getStringPreference(BooksOnBookshelf.PREF_BOOKSHELF, null);
+            String name = BookCatalogueApp.getStringPreference(BooksOnBookshelf.PREF_BOB_CURRENT_BOOKSHELF, null);
             if (name != null && !name.isEmpty()) {
                 bookshelf = mDb.getBookshelfByName(name);
             }
@@ -303,10 +278,9 @@ public class EditBookFieldsFragment extends BookBaseFragment implements
             }
 
             mFields.getField(R.id.bookshelves).setValue(bookshelf.name);
-
-            ArrayList<Bookshelf> bsList = new ArrayList<>();
-            bsList.add(bookshelf);
-            book.putBookshelfList(bsList);
+            // add to set, and store in book.
+            list.add(bookshelf);
+            book.putBookshelfList(list);
         }
     }
 
@@ -345,6 +319,7 @@ public class EditBookFieldsFragment extends BookBaseFragment implements
         getView().findViewById(R.id.lbl_series).setVisibility(visible ? View.VISIBLE : View.GONE);
         getView().findViewById(R.id.name).setVisibility(visible ? View.VISIBLE : View.GONE);
     }
+
     //</editor-fold>
 
     /* ------------------------------------------------------------------------------------------ */
@@ -361,6 +336,9 @@ public class EditBookFieldsFragment extends BookBaseFragment implements
         Tracker.exitOnPause(this);
     }
 
+    /**
+     * Overriding to get extra debug
+     */
     @Override
     protected void onSaveFieldsToBook(@NonNull final Book book) {
         Tracker.enterOnSaveFieldsToBook(this, book.getBookId());
@@ -368,10 +346,6 @@ public class EditBookFieldsFragment extends BookBaseFragment implements
         Tracker.exitOnSaveFieldsToBook(this, book.getBookId());
     }
 
-//    @Override
-//    public void onDestroy() {
-//        super.onDestroy();
-//    }
     //</editor-fold>
 
     /* ------------------------------------------------------------------------------------------ */
@@ -420,8 +394,8 @@ public class EditBookFieldsFragment extends BookBaseFragment implements
     //<editor-fold desc="Field editors callbacks">
     @Override
     public void onCheckListEditorSave(final @NonNull CheckListEditorDialogFragment dialog,
-                                          final int destinationFieldId,
-                                          final @NonNull List<CheckListItem<Bookshelf>> list) {
+                                      final int destinationFieldId,
+                                      final @NonNull List<CheckListItem<Bookshelf>> list) {
         dialog.dismiss();
 
         if (destinationFieldId == R.id.bookshelves) {

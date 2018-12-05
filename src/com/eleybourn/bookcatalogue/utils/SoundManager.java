@@ -12,9 +12,9 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
 public class SoundManager {
-    private static final String TAG = "SoundManager";
-    public static final String PREF_BEEP_IF_SCANNED_ISBN_INVALID = TAG + "." + "BeepIfScannedIsbnInvalid";
-    public static final String PREF_BEEP_IF_SCANNED_ISBN_VALID = TAG + "." + "BeepIfScannedIsbnValid";
+    private static final String TAG = "SoundManager.";
+    public static final String PREF_BEEP_IF_SCANNED_ISBN_INVALID = TAG + "BeepIfScannedIsbnInvalid";
+    public static final String PREF_BEEP_IF_SCANNED_ISBN_VALID = TAG + "BeepIfScannedIsbnValid";
 
     private SoundManager() {
     }

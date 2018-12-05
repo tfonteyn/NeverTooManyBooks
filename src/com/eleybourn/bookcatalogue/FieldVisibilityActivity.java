@@ -36,6 +36,7 @@ import android.widget.LinearLayout;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.debug.Tracker;
+import com.eleybourn.bookcatalogue.entities.Book;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +47,7 @@ import java.util.List;
  *
  * Places to add them:
  * {@link BookBaseFragment#showHideFields(boolean)}
- * {@link BookFragment#populateReadStatus} and similar show methods in that class
+ * {@link BookFragment#populateAuthorListField(Book)} and similar show methods in that class
  * or the parent classes
  *
  * Note that the Booklist related preferences do NOT observe visibility of these fields.
@@ -61,11 +62,11 @@ public class FieldVisibilityActivity extends BaseActivity {
     private static final List<FieldInfo> mFields = new ArrayList<>();
 
     static {
-        mFields.add(new FieldInfo(UniqueId.KEY_AUTHOR_ID, R.string.lbl_author, true));
+        mFields.add(new FieldInfo(UniqueId.KEY_AUTHOR, R.string.lbl_author, true));
         mFields.add(new FieldInfo(UniqueId.KEY_TITLE, R.string.lbl_title, true));
         mFields.add(new FieldInfo(UniqueId.BKEY_HAVE_THUMBNAIL, R.string.lbl_cover, false));
         mFields.add(new FieldInfo(UniqueId.KEY_BOOK_ISBN, R.string.lbl_isbn, false));
-        mFields.add(new FieldInfo(UniqueId.KEY_SERIES_NAME, R.string.lbl_series, false));
+        mFields.add(new FieldInfo(UniqueId.KEY_SERIES, R.string.lbl_series, false));
         mFields.add(new FieldInfo(UniqueId.KEY_SERIES_NUM, R.string.lbl_series_num, false));
         mFields.add(new FieldInfo(UniqueId.KEY_DESCRIPTION, R.string.lbl_description, false));
 

@@ -199,15 +199,12 @@ public class BooklistGroup implements Serializable, Parcelable {
                 return new BooklistSeriesGroup[size];
             }
         };
-        private static final String PREF_SHOW_ALL_SERIES = "APP.ShowAllSeries";
+
+        public static final String PREF_SHOW_ALL_SERIES = BooklistStyle.TAG + "Group.Show.AllSeries";
+
         private static final long serialVersionUID = 9023218506278704155L;
         /** mAllSeries Parameter values and descriptions */
         private static final String kind = BookCatalogueApp.getResourceString(R.string.lbl_series);
-
-        static {
-
-
-        }
 
         /** Show book under each series it appears in? */
         private transient BooleanProperty mAllSeries;
@@ -235,9 +232,8 @@ public class BooklistGroup implements Serializable, Parcelable {
          * and need to be created in constructors as well.
          */
         private void initProperties() {
-            mAllSeries = new BooleanProperty("AllSeries",
-                    PropertyGroup.GRP_SERIES, R.string.books_with_multiple_series,
-                    Boolean.FALSE)
+            mAllSeries = new BooleanProperty(R.string.books_with_multiple_series,
+                    PropertyGroup.GRP_SERIES)
                     .setPreferenceKey(PREF_SHOW_ALL_SERIES)
                     .setHint(R.string.hint_series_book_may_appear_more_than_once)
                     .setTrueLabel(R.string.books_with_multiple_show_book_under_each_1s, kind)
@@ -304,8 +300,8 @@ public class BooklistGroup implements Serializable, Parcelable {
                 return new BooklistAuthorGroup[size];
             }
         };
-        private static final String PREF_SHOW_ALL_AUTHORS = "APP.ShowAllAuthors";
-        private static final String PREF_DISPLAY_FIRST_THEN_LAST_NAMES = "APP.DisplayFirstThenLast";
+        public static final String PREF_SHOW_ALL_AUTHORS = BooklistStyle.TAG + "Group.Show.AllAuthors";
+        public static final String PREF_DISPLAY_FIRST_THEN_LAST_NAMES = BooklistStyle.TAG + "Group.Show.AllAuthors.DisplayFirstThenLast";
         private static final long serialVersionUID = -1984868877792780113L;
 
         private static final String kind = BookCatalogueApp.getResourceString(R.string.lbl_author);
@@ -339,16 +335,14 @@ public class BooklistGroup implements Serializable, Parcelable {
          * and need to be created in constructors as well.
          */
         private void initProperties() {
-            mAllAuthors = new BooleanProperty("AllAuthors",
-                    PropertyGroup.GRP_AUTHOR, R.string.books_with_multiple_authors,
-                    Boolean.FALSE);
-            mAllAuthors.setPreferenceKey(PREF_SHOW_ALL_AUTHORS);
-            mAllAuthors.setHint(R.string.hint_authors_book_may_appear_more_than_once)
+            mAllAuthors = new BooleanProperty(R.string.books_with_multiple_authors,
+                    PropertyGroup.GRP_AUTHOR)
+                    .setPreferenceKey(PREF_SHOW_ALL_AUTHORS)
+                    .setHint(R.string.hint_authors_book_may_appear_more_than_once)
                     .setTrueLabel(R.string.books_with_multiple_show_book_under_each_1s, kind)
                     .setFalseLabel(R.string.books_with_multiple_show_book_under_primary_1s_only, kind);
 
-            mGivenName = new BooleanProperty("GivenName",
-                    PropertyGroup.GRP_AUTHOR, R.string.blp_format_author_name, Boolean.TRUE)
+            mGivenName = new BooleanProperty(R.string.blp_format_author_name, PropertyGroup.GRP_AUTHOR, Boolean.TRUE)
                     .setPreferenceKey(PREF_DISPLAY_FIRST_THEN_LAST_NAMES)
                     .setOptionLabels(R.string.blp_format_author_name_given_first, R.string.blp_format_author_name_family_first);
         }

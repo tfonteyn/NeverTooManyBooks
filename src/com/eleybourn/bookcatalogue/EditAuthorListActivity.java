@@ -36,13 +36,13 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter;
-import com.eleybourn.bookcatalogue.adapters.SimpleListAdapterRowActionListener;
 import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.dialogs.fieldeditdialog.EditAuthorDialog;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.utils.Utils;
+import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.util.ArrayList;
 
@@ -98,14 +98,13 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
                 }
             }
             mList.add(author);
-            mListAdapter.notifyDataSetChanged();
+            onListChanged();
             authorField.setText("");
         } else {
             //Snackbar.make(target, R.string.author_is_blank, Snackbar.LENGTH_LONG).show();
             StandardDialogs.showUserMessage(this, R.string.warning_required_author);
         }
     }
-
 
     /** TOMF: TODO: almost duplicate code in {@link EditAuthorDialog} */
     private void edit(final @NonNull Author author) {
@@ -174,7 +173,7 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
                 from.id = mDb.getAuthorIdByName(from.familyName, from.givenNames);
             }
             mDb.insertOrUpdateAuthor(from);
-            mListAdapter.notifyDataSetChanged();
+            onListChanged();
             return;
         }
 
@@ -191,7 +190,7 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
             public void onClick(final @NonNull DialogInterface dialog, final int which) {
                 from.copyFrom(to);
                 Utils.pruneList(mDb, mList);
-                mListAdapter.notifyDataSetChanged();
+                onListChanged();
                 dialog.dismiss();
             }
         });
@@ -201,7 +200,7 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
                 mDb.globalReplaceAuthor(from, to);
                 from.copyFrom(to);
                 Utils.pruneList(mDb, mList);
-                mListAdapter.notifyDataSetChanged();
+                onListChanged();
                 dialog.dismiss();
             }
         });
@@ -242,27 +241,64 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
         return new AuthorListAdapter(this,rowViewId,list);
     }
 
-    protected class AuthorListAdapter extends SimpleListAdapter<Author> implements SimpleListAdapterRowActionListener<Author> {
-        AuthorListAdapter(final @NonNull Context context, final @LayoutRes int rowViewId, final @NonNull ArrayList<Author> items) {
+    protected class AuthorListAdapter extends SimpleListAdapter<Author> {
+
+        AuthorListAdapter(final @NonNull Context context,
+                          final @LayoutRes int rowViewId,
+                          final @NonNull ArrayList<Author> items) {
             super(context, rowViewId, items);
         }
 
         @Override
-        public void onGetView(final @NonNull View target, final @NonNull Author object) {
-            TextView at = target.findViewById(R.id.row_author);
-            if (at != null) {
-                at.setText(object.getDisplayName());
+        protected void onGetView(final @NonNull View target, final @NonNull Author author) {
+            Holder holder = ViewTagger.getTag(target, R.id.TAG_HOLDER);
+            if (holder == null) {
+                // New view, so build the Holder
+                holder = new Holder();
+                holder.row_author = target.findViewById(R.id.row_series);
+                holder.row_author_sort = target.findViewById(R.id.row_series_sort);
+                // Tag the parts that need it
+                ViewTagger.setTag(target, R.id.TAG_HOLDER, holder);
             }
-            at = target.findViewById(R.id.row_author_sort);
-            if (at != null) {
-                at.setText(object.getSortName());
+            // Setup the variant fields in the holder
+            if (holder.row_author != null) {
+                holder.row_author.setText(author.getDisplayName());
+            }
+            if (holder.row_author_sort != null) {
+                if (author.getDisplayName().equals(author.getSortName())) {
+                    holder.row_author_sort.setVisibility(View.GONE);
+                } else {
+                    holder.row_author_sort.setVisibility(View.VISIBLE);
+                    holder.row_author_sort.setText(author.getSortName());
+                }
             }
         }
 
+        /**
+         * edit the Author we clicked on
+         */
         @Override
-        public void onRowClick(final @NonNull View target, final @NonNull Author author, final int position) {
+        protected void onRowClick(final @NonNull View target,
+                                  final @NonNull Author author,
+                                  final int position) {
             edit(author);
+        }
+
+        /**
+         * delegate to the ListView host
+         */
+        @Override
+        protected void onListChanged() {
+            super.onListChanged();
+            EditAuthorListActivity.this.onListChanged();
         }
     }
 
+    /**
+     * Holder pattern for each row.
+     */
+    private class Holder {
+        TextView row_author;
+        TextView row_author_sort;
+    }
 }

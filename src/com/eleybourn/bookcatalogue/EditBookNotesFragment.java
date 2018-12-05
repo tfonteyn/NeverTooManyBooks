@@ -32,7 +32,7 @@ import android.widget.Checkable;
 
 import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.datamanager.Fields.Field;
-import com.eleybourn.bookcatalogue.datamanager.validators.ValidatorException;
+import com.eleybourn.bookcatalogue.datamanager.datavalidators.ValidatorException;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.editordialog.CheckListEditorDialogFragment;
@@ -65,26 +65,12 @@ public class EditBookNotesFragment extends BookBaseFragment implements
     @NonNull
     protected BookManager getBookManager() {
         //noinspection ConstantConditions
-        return ((EditBookFragment)this.getParentFragment()).getBookManager();
+        return ((EditBookFragment) this.getParentFragment()).getBookManager();
     }
 
     /* ------------------------------------------------------------------------------------------ */
 
     //<editor-fold desc="Fragment startup">
-
-//    /**
-//     * Ensure activity supports interface
-//     */
-//    @Override
-//    @CallSuper
-//    public void onAttach(final @NonNull Context context) {
-//        super.onAttach(context);
-//    }
-
-//    @Override
-//    public void onCreate(@Nullable final Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//    }
 
     @Override
     public View onCreateView(final @NonNull LayoutInflater inflater,
@@ -97,7 +83,8 @@ public class EditBookNotesFragment extends BookBaseFragment implements
      * has no specific Arguments or savedInstanceState as all is done via
      * {@link BookManager#getBook()} on the hosting Activity
      * {@link #onLoadFieldsFromBook(Book, boolean)} from base class onResume
-     * {@link #onSaveFieldsToBook(Book)} from base class onPause     */
+     * {@link #onSaveFieldsToBook(Book)} from base class onPause
+     */
     @Override
     @CallSuper
     public void onActivityCreated(final @Nullable Bundle savedInstanceState) {
@@ -126,13 +113,12 @@ public class EditBookNotesFragment extends BookBaseFragment implements
 
         Field field;
 
-        // non-text; simple checkbox
-        field = mFields.add(R.id.read, UniqueId.KEY_BOOK_READ);
-        // when clicked to 'read', set the read-end date to today (unless set before)
-        field.getView().setOnClickListener(new View.OnClickListener() {
+        mFields.add(R.id.read, UniqueId.KEY_BOOK_READ)
+                .getView().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                Checkable cb = (Checkable)v;
+                // when user sets 'read', also set the read-end date to today (unless set before)
+                Checkable cb = (Checkable) v;
                 if (cb.isChecked()) {
                     Field end = mFields.getField(R.id.read_end);
                     if (end.getValue().toString().trim().isEmpty()) {
@@ -177,7 +163,7 @@ public class EditBookNotesFragment extends BookBaseFragment implements
         initPartialDatePicker(TAG, field, R.string.lbl_read_end, true);
 
         mFields.addCrossValidator(new Fields.FieldCrossValidator() {
-            public void validate(final @NonNull Fields fields, final @NonNull Bundle values) throws ValidatorException{
+            public void validate(final @NonNull Fields fields, final @NonNull Bundle values) throws ValidatorException {
                 String start = values.getString(UniqueId.KEY_BOOK_READ_START);
                 if (start == null || start.isEmpty()) {
                     return;
@@ -192,12 +178,6 @@ public class EditBookNotesFragment extends BookBaseFragment implements
             }
         });
     }
-
-//    @CallSuper
-//    @Override
-//    public void onResume() {
-//        super.onResume();
-//    }
 
     @Override
     @CallSuper
@@ -236,10 +216,6 @@ public class EditBookNotesFragment extends BookBaseFragment implements
         Tracker.exitOnSaveFieldsToBook(this, book.getBookId());
     }
 
-//    @Override
-//    public void onDestroy() {
-//        super.onDestroy();
-//    }
     //</editor-fold>
 
     /* ------------------------------------------------------------------------------------------ */
@@ -247,8 +223,8 @@ public class EditBookNotesFragment extends BookBaseFragment implements
     //<editor-fold desc="Field editors callbacks">
     @Override
     public void onCheckListEditorSave(final @NonNull CheckListEditorDialogFragment dialog,
-                                          final int destinationFieldId,
-                                          final @NonNull List<CheckListItem<Integer>> list) {
+                                      final int destinationFieldId,
+                                      final @NonNull List<CheckListItem<Integer>> list) {
         dialog.dismiss();
 
         if (destinationFieldId == R.id.edition) {
@@ -282,6 +258,7 @@ public class EditBookNotesFragment extends BookBaseFragment implements
     //</editor-fold>
 
     //<editor-fold desc="Field drop down lists">
+
     /**
      * Load a location list; reloading this list every time a tab changes is slow.
      * So we cache it.

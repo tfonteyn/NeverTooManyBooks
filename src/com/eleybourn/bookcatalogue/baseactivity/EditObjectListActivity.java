@@ -31,39 +31,40 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
+import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter;
-import com.eleybourn.bookcatalogue.adapters.SimpleListAdapterRowActionListener;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.utils.BundleUtils;
 import com.eleybourn.bookcatalogue.widgets.TouchListView;
-import com.eleybourn.bookcatalogue.widgets.TouchListViewWithDropListener;
 
 import java.util.ArrayList;
 import java.util.Objects;
 
 /**
+ * ENHANCE: Ultimately, this should become a Fragment.
+ *
  * Base class for editing a list of objects. The inheritor must specify a view id and a row view
  * id to the constructor of this class.
  *
- * This Activity uses {@link TouchListViewWithDropListener} extended from {@link TouchListView}
- * from CommonsWare which is in turn based on Android code
+ * This Activity uses {@link TouchListView} from CommonsWare which is in turn based on Android code
  * for TouchInterceptor which was (reputedly) removed in Android 2.2.
  *
- * {@link #createListAdapter} needs to be implemented returning a suitable {@link SimpleListAdapter}
- * which implements {@link SimpleListAdapterRowActionListener}.
- * The method {@link SimpleListAdapterRowActionListener<T>#onGetView} should be implemented.
+ * Mandatory: {@link #createListAdapter}
+ * needs to be implemented returning a suitable {@link SimpleListAdapter}
+ * The method {@link SimpleListAdapter#onGetView} should be implemented.
  * Others are optional to override.
  *
- * Method {@link #onAdd} has an implementation that throws an {@link UnsupportedOperationException}
- * So if your list supports adding to, you must implement {@link #onAdd}.
  *
- * For this code to work, the main view must contain a {@link TouchListViewWithDropListener}
+ * For this code to work, the main view must contain a {@link TouchListView}
  * <pre>
  *     id:
  *        android:id="@android:id/list"
@@ -74,9 +75,14 @@ import java.util.Objects;
  *  </pre>
  *
  * Main View buttons:
- * - R.id.cancel
- * - R.id.confirm
- * - R.id.add (OPTIONAL) see above for {@link #onAdd}
+ * - R.id.cancel         calls {@link #onSave(Intent)}
+ * - R.id.confirm        calls {@link #onCancel()}
+ * - R.id.add (OPTIONAL) calls {@link #onAdd}
+ *
+ * Method {@link #onAdd} has an implementation that throws an {@link UnsupportedOperationException}
+ * So if your list supports adding to the list, you must implement {@link #onAdd}.
+ *
+ * Moving an item in the list calls {@link #onListChanged()}
  *
  * Each row view must use id's as listed in {@link SimpleListAdapter} and in addition have
  * an {@link ImageView} with an ID of "@+id/<SOME ID FOR AN IMAGE>" matching the TLV one as above.
@@ -85,7 +91,8 @@ import java.util.Objects;
  *
  * @author Philip Warner
  */
-abstract public class EditObjectListActivity<T extends Parcelable> extends BaseListActivity {
+abstract public class EditObjectListActivity<T extends Parcelable> extends BaseListActivity
+        implements TouchListView.OnDropListener {
 
     /** The key to use in the Bundle to get the array */
     @Nullable
@@ -96,6 +103,7 @@ abstract public class EditObjectListActivity<T extends Parcelable> extends BaseL
     /** The resource ID for the row view */
     @LayoutRes
     private final int mRowViewId;
+
     /**
      * Handle 'Cancel'
      */
@@ -109,7 +117,6 @@ abstract public class EditObjectListActivity<T extends Parcelable> extends BaseL
     };
     /** the rows */
     protected ArrayList<T> mList = null;
-
     /**
      * Handle 'Save'
      *
@@ -129,11 +136,11 @@ abstract public class EditObjectListActivity<T extends Parcelable> extends BaseL
     /**
      * Handle 'Add'
      */
-    private final OnClickListener mAddListener = new OnClickListener() {
+    private final OnClickListener mOnAddListener = new OnClickListener() {
         @Override
         public void onClick(@NonNull View v) {
             onAdd(v);
-            mListAdapter.onListChanged();
+            onListChanged();
         }
     };
     protected CatalogueDBAdapter mDb;
@@ -141,7 +148,6 @@ abstract public class EditObjectListActivity<T extends Parcelable> extends BaseL
     protected String mBookTitle;
     /** Row ID... mainly used (if list is from a book) to know if book is new. */
     protected long mRowId = 0;
-
     /**
      * Constructor
      *
@@ -172,7 +178,9 @@ abstract public class EditObjectListActivity<T extends Parcelable> extends BaseL
 
         // see getList for full details as to where we "get" the list from
         mList = getList(mBKey, savedInstanceState);
-        initListAdapter(mList);
+        // setup the adapter
+        mListAdapter = createListAdapter(mRowViewId, mList);
+        setListAdapter(mListAdapter);
 
         // Look for id and title
         Bundle extras = getIntent().getExtras();
@@ -185,7 +193,12 @@ abstract public class EditObjectListActivity<T extends Parcelable> extends BaseL
         // Add handlers for 'Save', 'Cancel' and 'Add' (if resources are defined)
         setOnClickListener(R.id.confirm, mSaveListener);
         setOnClickListener(R.id.cancel, mCancelListener);
-        setOnClickListener(R.id.add, mAddListener);
+        setOnClickListener(R.id.add, mOnAddListener);
+
+        //getListView().setOnItemLongClickListener(this);
+
+        // Add handler for 'onDrop' from the TouchListView
+        ((TouchListView) getListView()).setOnDropListener(this);
 
         Tracker.exitOnCreate(this);
     }
@@ -228,12 +241,13 @@ abstract public class EditObjectListActivity<T extends Parcelable> extends BaseL
      * Replace the current list
      */
     protected void setList(final @NonNull ArrayList<T> newList) {
-        View listView = this.getListView().getChildAt(0);
+        View listView = getListView().getChildAt(0);
         final int savedTop = listView == null ? 0 : listView.getTop();
-        final int savedRow = this.getListView().getFirstVisiblePosition();
+        final int savedRow = getListView().getFirstVisiblePosition();
 
         mList = newList;
-        initListAdapter(mList);
+        mListAdapter = createListAdapter(mRowViewId, mList);
+        setListAdapter(mListAdapter);
 
         getListView().post(new Runnable() {
             @Override
@@ -244,18 +258,16 @@ abstract public class EditObjectListActivity<T extends Parcelable> extends BaseL
     }
 
     /**
-     * Set up list handling
-     */
-    private void initListAdapter(ArrayList<T> list) {
-        this.mListAdapter = createListAdapter(mRowViewId, list);
-        setListAdapter(this.mListAdapter);
-    }
-
-    /**
      * get the specific list adapter from the child class
      */
-    abstract protected SimpleListAdapter<T> createListAdapter(final @LayoutRes int rowViewId, final @NonNull ArrayList<T> list);
+    abstract protected SimpleListAdapter<T> createListAdapter(final @LayoutRes int rowViewId,
+                                                              final @NonNull ArrayList<T> list);
 
+//    @Override
+//    public boolean onItemLongClick(final AdapterView<?> parent, final View view, final int position, final long id) {
+//        T item = mListAdapter.getItem(position);
+//        return item != null && onRowLongClick(view, item, position);
+//    }
 
     /**
      * Called when user clicks the 'Add' button (if present).
@@ -267,13 +279,68 @@ abstract public class EditObjectListActivity<T extends Parcelable> extends BaseL
     }
 
     /**
+     * Handle drop events; also preserves current position.
+     */
+    @Override
+    @CallSuper
+    public void onDrop(final int fromPosition, final int toPosition) {
+        // Check if nothing to do; also avoids the nasty case where list size == 1
+        if (fromPosition == toPosition) {
+            return;
+        }
+        final ListView mListView = getListView();
+        final int firstPos = mListView.getFirstVisiblePosition();
+
+        T item = mListAdapter.getItem(fromPosition);
+        mListAdapter.remove(item);
+        mListAdapter.insert(item, toPosition);
+        onListChanged();
+
+        if (BuildConfig.DEBUG) {
+            final int first2 = mListView.getFirstVisiblePosition();
+            Logger.info(this, fromPosition + " -> " + toPosition + ", first " + firstPos + "(" + first2 + ")");
+        }
+        final int newFirst = (toPosition > fromPosition && fromPosition < firstPos) ? (firstPos - 1) : firstPos;
+
+        View firstView = mListView.getChildAt(0);
+        final int offset = firstView.getTop();
+        // re-position the list
+        mListView.post(new Runnable() {
+            @Override
+            public void run() {
+                if (BuildConfig.DEBUG) {
+                    Logger.info(this, "Positioning to " + newFirst + "+{" + offset + "}");
+                }
+                mListView.requestFocusFromTouch();
+                mListView.setSelectionFromTop(newFirst, offset);
+                mListView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        for (int i = 0; ; i++) {
+                            View c = mListView.getChildAt(i);
+                            if (c == null) {
+                                break;
+                            }
+                            if (mListView.getPositionForView(c) == toPosition) {
+                                mListView.setSelectionFromTop(toPosition, c.getTop());
+                                //c.requestFocusFromTouch();
+                                break;
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    /**
      * Called when user clicks the 'Save' button (if present). Primary task is
      * to return a boolean indicating it is OK to continue.
      *
      * Can be overridden to perform other checks.
      *
      * @param data A newly created Intent to store output if necessary.
-     *            Comes pre-populated with data.putExtra(mBKey, mList);
+     *             Comes pre-populated with data.putExtra(mBKey, mList);
      *
      * @return <tt>true</tt>if activity should exit, false to abort exit.
      */
@@ -302,13 +369,24 @@ abstract public class EditObjectListActivity<T extends Parcelable> extends BaseL
     }
 
     /**
-     * Utility routine to setup a listener for the specified view id
+     * Called when the list had been modified in some way.
+     * By default, tells the adapter that the list was changed
+     *
+     * Child classes should override when needed and call super FIRST
+     */
+    @CallSuper
+    protected void onListChanged() {
+        mListAdapter.notifyDataSetChanged();
+    }
+
+    /**
+     * Utility routine to setup a listener for the specified view id if such id exist.
      *
      * @param viewId   Resource ID
      * @param listener Listener
      */
     private void setOnClickListener(final @IdRes int viewId, final @NonNull OnClickListener listener) {
-        View view = this.findViewById(viewId);
+        View view = findViewById(viewId);
         if (view != null) {
             view.setOnClickListener(listener);
         }
@@ -374,4 +452,5 @@ abstract public class EditObjectListActivity<T extends Parcelable> extends BaseL
         super.onDestroy();
         Tracker.exitOnDestroy(this);
     }
+
 }

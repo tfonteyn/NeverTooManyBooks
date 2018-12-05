@@ -39,6 +39,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -115,8 +116,13 @@ public class BackupUtils {
      */
     private static void collectionToXml(final @NonNull BufferedWriter out,
                                         final @NonNull CollectionAccessor<String> col) throws IOException {
+
+        // sure, not needed, but if you want to eyeball the resulting file...
+        String[] keys = col.keySet().toArray(new String[]{});
+        Arrays.sort(keys);
+
         out.append("<" + COLLECTION + ">\n");
-        for (String key : col.keySet()) {
+        for (String key : keys) {
             final String type;
             final String value;
             Object object = col.get(key);

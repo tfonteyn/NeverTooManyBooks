@@ -38,7 +38,7 @@
     <string name="lbl_series_num">#</string>
     <string name="title_import_book_data">Bücher importieren</string>
     <string name="warning_import_be_cautious">Warnung. Der Import von Daten kann Informationen von bestehenden Büchern überschreiben, wenn die ID der Importdatei mit der bestehenden ID übereinstimmt. Normalerweise ist es kein Problem wenn ein Feld in der exportierten Datei geändert wurde. Bitte stellen Sie bei einem neuen Buch sicher, dass das ID-Feld leer ist.</string>
-    <string name="error_import_failed_is_csv_file_location_correct">FEHLER: Der Import von Daten von der SD-Karte ist fehlgeschlagen. Ist die Datei bereits vorhanden?</string>
+    <string name="import_error_failed_is_csv_file_location_correct">FEHLER: Der Import von Daten von der SD-Karte ist fehlgeschlagen. Ist die Datei bereits vorhanden?</string>
     <string name="search_title">Book Catalogue: Suchergebnisse</string>
     <string name="results_found">Bücher gefunden</string>
     <string name="menu_administration_long">Verwaltungsfunktionen</string>
@@ -119,9 +119,9 @@
     <string name="vldt_failed">Die Überprüfung für \'%s\' ist fehlgeschlagen</string>
     <string name="vldt_read_start_after_end">Das Datum Lesen beendet ist vor dem Datum mit Lesen begonnen</string>
     <string name="progress_end_backup_success">Sicherungskopie erfolgreich erstellt</string>
-    <string name="error_backup_failed">Sicherungskopie erstellen fehlgeschlagen</string>
+    <string name="export_error_backup_failed">Sicherungskopie erstellen fehlgeschlagen</string>
     <string name="error_file_must_contain_column">Die Datei muss eine Spalte mit dem Namen %s enthalten</string>
-    <string name="error_csv_file_must_contain_any_column">Die Datei muss eine Spalte mit den folgenden Namen enthalten: %s</string>
+    <string name="import_error_csv_file_must_contain_any_column">Die Datei muss eine Spalte mit den folgenden Namen enthalten: %s</string>
     <string name="error_column_is_blank">Die Spalte %1$s ist in Zeile %2$s leer</string>
     <string name="error_columns_are_blank">Die Spalten %1$s sind in der Zeile %2$d leer</string>
     <string name="btn_confirm_save">Speichern</string>
@@ -139,7 +139,7 @@
     <string name="warning_required_author">Das Feld des Autors ist leer</string>
     <string name="warning_series_already_in_list">Die Serie befindet sich bereits in der Liste</string>
     <string name="warning_required_series">Das Feld Serie ist leer</string>
-    <string name="error_export_csv_failed">Der Export ist fehlgeschlagen - Auf die SD-Karte konnte nicht geschrieben werden</string>
+    <string name="export_error_csv_failed">Der Export ist fehlgeschlagen - Auf die SD-Karte konnte nicht geschrieben werden</string>
     <string name="error_download_thumbnail_failed">Der Download des Cover-Bilds ist fehlgeschlagen - Auf die SD-Karte konnte nicht geschrieben werden</string>
     <string name="progress_msg_skip_title">Überspringe - %s</string>
     <string name="progress_end_num_books_searched">%s Bücher gesucht</string>
@@ -297,7 +297,7 @@ anschließend auf eine leeren Seite landen. Klicken Sie einfach auf den "Zurück
     <string name="lbl_bookshelves_long">Bücherregale</string>
     <string name="lbl_bookshelves">Regale</string>
     <string name="lbl_location">Standort</string>
-    <string name="credentials">Zugangsdaten</string>
+    <string name="menu_credentials">Zugangsdaten</string>
     <string name="data_import_export">Daten-Import/Export</string>
     <string name="unrecognized_task">Unbekannte Aufgabe</string>
     <string name="progress_msg_rebuilding_search_index">Suchindex wird regeneriert…</string>
@@ -419,17 +419,17 @@ Entweder sind die Daten des Buchs falsch (Sie sollten die ISBN überprüfen) ode
         </string>
     <string name="read_amp_unread">Gelesen und ungelesen</string>
     <string name="loaned">Verliehen</string>
-    <string name="publication_year">Jahr der Veröffentlichung</string>
-    <string name="publication_month">Monat der Veröffentlichung</string>
-    <string name="added_year">Jahr der Erfassung</string>
-    <string name="added_month">Monat der Erfassung</string>
-    <string name="added_day">Tag der Erfassung</string>
+    <string name="lbl_publication_year">Jahr der Veröffentlichung</string>
+    <string name="lbl_publication_month">Monat der Veröffentlichung</string>
+    <string name="lbl_added_year">Jahr der Erfassung</string>
+    <string name="lbl_added_month">Monat der Erfassung</string>
+    <string name="lbl_added_day">Tag der Erfassung</string>
     <string name="lbl_book">Buch</string>
     <string name="in">in</string>
     <string name="size">Größe</string>
     <string name="updated">Geändert</string>
-    <string name="warning_csv_file_not_found">Keine Exportdatei gefunden</string>
-    <string name="warning_csv_file_more_then_one_found">Mehr als eine Exportdatei gefunden. Bitte wählen Sie eine aus der nachstehenden Liste</string>
+    <string name="import_error_csv_file_not_found">Keine Exportdatei gefunden</string>
+    <string name="import_warning_csv_file_more_then_one_found">Mehr als eine Exportdatei gefunden. Bitte wählen Sie eine aus der nachstehenden Liste</string>
     <string name="problem_starting_import_arg">Problem beim Start des Imports: %1$s</string>
     <string name="hint_booklist_style_menu">Hier können Sie den Stil der Liste wählen.
         \n\nSie können auch dieses Menü anpassen und Ihre eigenen Stile erzeugen. Klicken Sie dafür auf \'Anpassen\' am Ende der Liste.
@@ -459,9 +459,9 @@ Entweder sind die Daten des Buchs falsch (Sie sollten die ISBN überprüfen) ode
     <string name="menu_add_book_by_isbn">ISBN eingeben</string>
     <string name="lbl_allow_asin">ASIN erlauben</string>
     <string name="warning_x_is_not_a_valid_isbn_or_asin">%1$s ist keine gültige ISBN oder ASIN</string>
-    <string name="read_year">Jahr</string>
-    <string name="read_month">Monat</string>
-    <string name="read_day">Tag</string>
+    <string name="lbl_read_year">Jahr</string>
+    <string name="lbl_read_month">Monat</string>
+    <string name="lbl_read_day">Tag</string>
     <string name="style_builtin_read_date">Gelesen am</string>
     <string name="lbl_details_have_changed">Details wurden geändert</string>
     <string name="warning_unsaved_changes">Einige Änderungen wurden noch nicht gespeichert. Beim Beenden gehen diese Änderungen verloren.</string>
@@ -594,20 +594,20 @@ Entweder sind die Daten des Buchs falsch (Sie sollten die ISBN überprüfen) ode
     <string name="progress_msg_covers_skip">%1$s Cover bearbeitet (%2$s fehlen, %3$s übersprungen)</string>
 
     <!-- Explanatory note for 'exportBooks all' option -->
-    <string name="export_dialog_info_all">Alle Bücher, Cover, Einstellungen und benutzerdefinierten Stile werden in das Archiv exportiert.</string>
+    <string name="export_info_backup_all">Alle Bücher, Cover, Einstellungen und benutzerdefinierten Stile werden in das Archiv exportiert.</string>
     <!-- Explanatory note for 'advanced exportBooks' option -->
     <string name="export_options_dialog_title">Wählen Sie, was in das Archiv exportiert wird.</string>
 
     <!-- Text for button -->
     <string name="book_details">Buchdetails</string>
     <!-- Brief description -->
-    <string name="info_book_details">Die Details der Bücher</string>
+    <string name="import_export_info_book_details">Die Details der Bücher</string>
     <!-- Text for button -->
     <string name="lbl_cover_images">Cover-Bilder</string>
     <!-- Brief description -->
     <string name="export_info_cover_images">Cover-Bilder für alle ausgewählten Bücher. Der Export wird dadurch viel größer.</string>
     <!-- Brief description -->
-    <string name="info_preferences">Einstellungen und benutzerdefinierte Stile</string>
+    <string name="import_export_info_preferences">Einstellungen und benutzerdefinierte Stile</string>
 
     <!-- Explanatory note for exportBooks date (not yet implemented) -->
     <string name="export_option_info_books_since_date">Geben Sie wahlweise ein Datum an, um Bücher und Cover auszuwählen:</string>
@@ -669,13 +669,13 @@ Entweder sind die Daten des Buchs falsch (Sie sollten die ISBN überprüfen) ode
     <string name="hint_amazon_links_blurb">&lt;p&gt;Wenn Sie Produkte von Amazon kaufen, nachdem Sie die Menüpunkte &lt;i&gt;\"%1$s\"&lt;/i&gt;, &lt;i&gt;\"%2$s\"&lt;/i&gt; oder &lt;i&gt;\"%3$s\"&lt;/i&gt; gewählt haben, wird ein Anteil des Kaufpreises an die Entwickler von %4$s weitergeleitet.&lt;/p&gt;&lt;p&gt;Sie können auch die &lt;a href=""https://github.com/eleybourn/Book-Catalogue/wiki/Frequently-Asked-Questions-%%28FAQ%%29""&gt;Links in unserer Hilfe&lt;/a&gt; verwenden, um direkt zu Amazon oder PayPal zu gelangen.&lt;/p&gt;</string>
 
     <!-- Name of the new style grouping (needs to be short). -->
-    <string name="update_date">Änderungsdatum</string>
+    <string name="style_builtin_update_date">Änderungsdatum</string>
     <!-- Name of the new style grouping (needs to be short). -->
-    <string name="update_year">Änderungsjahr</string>
+    <string name="lbl_update_year">Änderungsjahr</string>
     <!-- Name of the new style grouping (needs to be short). -->
-    <string name="update_month">Anderungsmonat</string>
+    <string name="lbl_update_month">Anderungsmonat</string>
     <!-- Name of the new style grouping (needs to be short). -->
-    <string name="update_day">Änderungstag</string>
+    <string name="lbl_update_day">Änderungstag</string>
 
     <!-- Preference name (fairly short) for preferred language -->
     <string name="user_interface_preferred_language">Bevorzugte Bediensprache</string>

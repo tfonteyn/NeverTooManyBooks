@@ -178,10 +178,6 @@ abstract public class BaseActivity extends AppCompatActivity implements
                 startActivity(intent);
                 return true;
             }
-            case R.id.nav_debug_dump_events: {
-                Logger.info(this, Tracker.getEventsInfo());
-                return true;
-            }
         }
 
         return false;

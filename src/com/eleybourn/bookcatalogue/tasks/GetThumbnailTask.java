@@ -240,7 +240,7 @@ public class GetThumbnailTask implements SimpleTaskQueue.SimpleTask {
         }
 
         if (mBitmap != null) {
-            if (!mWasInCache && BooklistPreferencesActivity.isThumbnailCacheEnabled()) {
+            if (!mWasInCache && BooklistPreferencesActivity.thumbnailsAreCached()) {
                 // Queue the image to be written to the cache. Do it in a separate queue to avoid
                 // delays in displaying image and to avoid contention -- the cache queue only has
                 // one thread. Tell the cache write it can be recycled if we don't have a valid view.

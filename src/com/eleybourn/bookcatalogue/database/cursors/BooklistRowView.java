@@ -208,9 +208,9 @@ public class BooklistRowView extends BookRowViewBase {
     @Nullable
     public String getSeriesName() {
         if (mSeriesNameCol < 0) {
-            mSeriesNameCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_SERIES_NAME.name);
+            mSeriesNameCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_SERIES.name);
             if (mSeriesNameCol < 0) {
-                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_SERIES_NAME.name);
+                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_SERIES.name);
             }
         }
         return mCursor.getString(mSeriesNameCol);

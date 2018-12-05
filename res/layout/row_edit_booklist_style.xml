@@ -13,7 +13,7 @@
         android:orientation="horizontal">
 
         <CheckedTextView
-            android:id="@+id/present"
+            android:id="@+id/row_check"
             style="@style/tlv_checkable_button" />
 
         <RelativeLayout
@@ -23,7 +23,7 @@
             android:layout_alignParentTop="true"
             android:layout_alignParentBottom="true"
             android:layout_toStartOf="@id/grabber"
-            android:layout_toEndOf="@id/present"
+            android:layout_toEndOf="@id/row_check"
             android:orientation="vertical"
             android:padding="2dp">
 

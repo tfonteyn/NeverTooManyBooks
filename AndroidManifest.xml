@@ -30,7 +30,7 @@
         android:supportsRtl="false"
         android:theme="@style/AppTheme">
 
-        <!-- application developer keys -->
+        <!-- application developer keys - stripped out in a git pre-commit script. -->
         <meta-data
             android:name="amazon.app_key"
             android:value="" />
@@ -62,15 +62,15 @@
             android:finishOnTaskLaunch="true"
             android:launchMode="singleInstance" />
 
-        <!-- .BookCatalogue is now just a forwarder to .StartupActivity. -->
+        <!-- .BookCatalogue is just a forwarder to .StartupActivity. -->
         <activity android:name=".BookCatalogue" />
 
         <!--
             The StartupActivity activity takes care of all pre-UI tasks.
             It does not rebuild on orientation changes so progress dialogs are easier
 
-            The .StartupActivity activity is just a forwarder to the .BooksOnBookshelf Activity.
-            So in theory it is OK to make is singleInstance
+            The StartupActivity activity is just a forwarder to the BooksOnBookshelf Activity.
+            So in theory it is OK to make it singleInstance
         -->
         <activity
             android:name=".StartupActivity"
@@ -83,6 +83,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <!-- the main activity -->
         <activity android:name=".BooksOnBookshelf">
             <intent-filter>
@@ -121,7 +122,57 @@
 
         <!-- AdminActivity: Credentials Goodreads -->
         <activity android:name=".goodreads.GoodreadsRegisterActivity" />
-        <!-- the callback-activity after we requested authorizing this application for the current user to Goodreads -->
+
+        <!-- AdminActivity: Credentials LibraryThing -->
+        <activity android:name=".searches.librarything.LibraryThingAdminActivity" />
+
+        <!-- AdminActivity: Background tasks / Events -->
+        <activity android:name=".tasks.taskqueue.TaskQueueListActivity" />
+        <activity android:name=".tasks.taskqueue.EventQueueListActivity" />
+
+        <!-- AdminActivity: Search Sites configuration -->
+        <activity
+            android:name=".searches.SearchAdminActivity"
+            android:windowSoftInputMode="adjustResize" />
+
+        <!-- Local Search -->
+        <activity
+            android:name=".searches.SearchLocalActivity"
+            android:windowSoftInputMode="adjustResize" />
+
+        <!-- Booklist Preferences -->
+        <activity android:name=".booklist.BooklistPreferencesActivity" />
+
+        <!-- Other preferences (e.g. non-booklist -->
+        <activity android:name=".PreferencesActivity" />
+
+        <!-- view a book -->
+        <activity android:name=".BookDetailsActivity" />
+
+        <!-- Add Book; this activity then sub divides Add by scan,isbn,internet, or add manually -->
+        <activity
+            android:name=".BookSearchActivity"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
+
+        <!-- Edit a book + the related author/series -->
+        <activity android:name=".EditBookActivity" />
+        <activity android:name=".EditAuthorListActivity" />
+        <activity android:name=".EditSeriesListActivity" />
+
+        <!-- view an Author and all of his details -->
+        <activity android:name=".AuthorActivity" />
+
+        <!-- cropping an image, either from the cover of a book, or direct from a new scan -->
+        <activity android:name=".cropper.CropImageActivity" />
+
+
+        <!-- These Goodreads activities are commented out (waiting on API access) -->
+        <activity android:name=".goodreads.GoodreadsSearchCriteriaActivity" />
+        <activity android:name=".goodreads.GoodreadsSearchResultsActivity" />
+
+
+        <!-- the callback-activity after we requested authorizing this application
+             for the current user to Goodreads -->
         <activity
             android:name=".goodreads.GoodreadsAuthorizationActivity"
             android:launchMode="singleInstance">
@@ -150,15 +201,15 @@
                     android:host="goodreadsauth"
                     android:scheme="${packageName}" />
             </intent-filter>
-            <!--<intent-filter>-->
-            <!--<action android:name="android.intent.action.VIEW" />-->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
 
-            <!--<category android:name="android.intent.category.BROWSABLE" />-->
+                <category android:name="android.intent.category.BROWSABLE" />
 
-            <!--<data-->
-            <!--android:host="goodreadsauth"-->
-            <!--android:scheme="${packageName}" />-->
-            <!--</intent-filter>-->
+                <data
+                    android:host="goodreadsauth"
+                    android:scheme="${packageName}" />
+            </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.GET" />
 
@@ -198,55 +249,6 @@
                 <category android:name="android.intent.category.BROWSABLE" />
             </intent-filter>
         </activity>
-
-        <!-- AdminActivity: Credentials LibraryThing -->
-        <activity android:name=".searches.librarything.LibraryThingAdminActivity" />
-
-        <!-- AdminActivity: Background tasks -->
-        <activity android:name=".tasks.taskqueue.TaskQueueListActivity" />
-
-        <!-- AdminActivity: Search Sites configuration -->
-        <activity
-            android:name=".searches.SearchAdminActivity"
-            android:windowSoftInputMode="adjustResize" />
-
-        <!-- Local Search -->
-        <activity
-            android:name=".searches.SearchLocalActivity"
-            android:windowSoftInputMode="adjustResize" />
-
-        <!-- Booklist Preferences -->
-        <activity android:name=".booklist.BooklistPreferencesActivity" />
-
-        <!-- Other preferences (e.g. non-booklist -->
-        <activity android:name=".PreferencesActivity" />
-
-        <!-- view a book -->
-        <activity android:name=".BookDetailsActivity" />
-
-        <!-- Add Book; this activity then sub divides Add by scan,isbn,internet, or add manually -->
-        <activity
-            android:name=".BookSearchActivity"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
-
-        <!-- Edit a book + the related author/series -->
-        <activity android:name=".EditBookActivity" />
-        <activity android:name=".EditAuthorListActivity" />
-        <activity android:name=".EditSeriesListActivity" />
-
-        <!-- view an Author and all of his details -->
-        <activity android:name=".AuthorActivity" />
-
-        <!-- cropping an image, either from the cover of a book, or direct from a new scan -->
-        <activity android:name=".cropper.CropImageActivity" />
-
-
-        <!-- and then some Goodreads activities... TODO: satisfy curiosity later -->
-        <activity android:name=".goodreads.notinuse.GoodreadsSearchCriteriaActivity" />
-        <activity android:name=".goodreads.notinuse.GoodreadsSearchResultsActivity" />
-        <activity android:name=".tasks.taskqueue.EventQueueListActivity" />
-
-
     </application>
 
 </manifest>

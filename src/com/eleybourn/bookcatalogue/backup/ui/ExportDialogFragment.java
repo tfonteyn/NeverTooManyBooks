@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Checkable;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
@@ -37,6 +38,7 @@ public class ExportDialogFragment extends DialogFragment {
     public static ExportDialogFragment newInstance(final @NonNull ExportSettings settings) {
         final ExportDialogFragment frag = new ExportDialogFragment();
         final Bundle args = new Bundle();
+        //noinspection ConstantConditions
         args.putString(UniqueId.BKEY_FILE_SPEC, settings.file.getAbsolutePath());
         frag.setArguments(args);
         return frag;
@@ -87,6 +89,9 @@ public class ExportDialogFragment extends DialogFragment {
 
 //        setRelatedView(root, R.id.books_check, R.id.row_all_books);
 //        setRelatedView(root, R.id.covers_check, R.id.row_covers);
+
+        TextView coverBlurb = root.findViewById(R.id.cover_images_blurb);
+        coverBlurb.setText(R.string.export_info_cover_images);
 
         AlertDialog dialog = new AlertDialog.Builder(requireActivity())
                 .setView(root)

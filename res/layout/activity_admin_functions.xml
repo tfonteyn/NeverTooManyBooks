@@ -22,6 +22,27 @@
             android:paddingEnd="@dimen/padding_border"
             android:paddingStart="@dimen/padding_border">
 
+            <!-- DEBUG, hidden by default -->
+            <TextView
+                android:id="@+id/lbl_debug"
+                style="@style/hdr_preferencesSection"
+                android:text="@string/debug"
+                android:visibility="gone"/>
+
+            <TextView
+                android:id="@+id/lbl_debug_tracker_history"
+                style="@style/row_option_label"
+                android:drawableStart="@android:drawable/ic_menu_help"
+                android:text="@string/history"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/lbl_debug_preferences"
+                style="@style/row_option_label"
+                android:drawableStart="@android:drawable/ic_menu_help"
+                android:text="@string/lbl_preferences"
+                android:visibility="gone" />
+
             <!-- GENERAL -->
 
             <TextView
@@ -115,7 +136,7 @@
 
             <TextView
                 style="@style/hdr_preferencesSection"
-                android:text="@string/credentials" />
+                android:text="@string/menu_credentials" />
 
             <TextView
                 android:id="@+id/goodreads_auth"

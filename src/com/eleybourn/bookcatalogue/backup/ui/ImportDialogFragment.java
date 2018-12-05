@@ -86,6 +86,9 @@ public class ImportDialogFragment extends DialogFragment {
             }
         });
 
+        TextView coverBlurb = root.findViewById(R.id.cover_images_blurb);
+        coverBlurb.setText(R.string.lbl_cover_images);
+
         if (!archiveHasValidDates()) {
             View radioNewAndUpdatedBooks = root.findViewById(R.id.radioNewAndUpdatedBooks);
             radioNewAndUpdatedBooks.setEnabled(false);

@@ -73,7 +73,7 @@ import com.eleybourn.bookcatalogue.R;
  *
  * NOTE: remove_mode of slide is equivalent to slideRight, but slideRight is recommended.
  */
-public class TouchListView extends ListView {
+public class TouchListView<T> extends ListView {
     private static final int FLING = 0;
     private static final int SLIDE_RIGHT = 1;
     private static final int SLIDE_LEFT = 2;
@@ -92,9 +92,9 @@ public class TouchListView extends ListView {
     private int mDragPoint;
     /** the difference between screen coordinates and coordinates in this view */
     private int mCoordinatesOffset;
-    private DragListener mDragListener;
-    private DropListener mDropListener;
-    private RemoveListener mRemoveListener;
+    private OnDragListener mOnDragListener;
+    private OnDropListener mOnDropListener;
+    private OnRemoveListener mOnRemoveListener;
     private int mUpperBound;
     private int mLowerBound;
     private int mHeight;
@@ -159,10 +159,13 @@ public class TouchListView extends ListView {
         }
     }
 
+    /**
+     * React to touch events
+     */
     @Override
     @CallSuper
     public boolean onInterceptTouchEvent(final @NonNull MotionEvent ev) {
-        if (mRemoveListener != null && mGestureDetector == null) {
+        if (mOnRemoveListener != null && mGestureDetector == null) {
             if (mRemoveMode == FLING) {
                 mGestureDetector = new GestureDetector(getContext(), new SimpleOnGestureListener() {
                     @Override
@@ -175,7 +178,7 @@ public class TouchListView extends ListView {
                                 if (e2.getX() > r.right * 2 / 3) {
                                     // fast fling right with release near the right edge of the screen
                                     stopDragging();
-                                    mRemoveListener.remove(mFirstDragPos);
+                                    mOnRemoveListener.onRemove(mFirstDragPos);
                                     unExpandViews(true);
                                 }
                             }
@@ -187,7 +190,7 @@ public class TouchListView extends ListView {
                 });
             }
         }
-        if (mDragListener != null || mDropListener != null) {
+        if (mOnDragListener != null || mOnDropListener != null) {
             switch (ev.getAction()) {
                 case MotionEvent.ACTION_DOWN:
                     int x = (int) ev.getX();
@@ -241,6 +244,9 @@ public class TouchListView extends ListView {
         return super.onInterceptTouchEvent(ev);
     }
 
+    /**
+     * A row is draggable if it has a drag icon
+     */
     private boolean isDraggableRow(final @NonNull View view) {
         return (view.findViewById(grabberId) != null);
     }
@@ -414,7 +420,7 @@ public class TouchListView extends ListView {
         if (mGestureDetector != null) {
             mGestureDetector.onTouchEvent(ev);
         }
-        if ((mDragListener != null || mDropListener != null) && mDragView != null) {
+        if ((mOnDragListener != null || mOnDropListener != null) && mDragView != null) {
             int action = ev.getAction();
             switch (action) {
                 case MotionEvent.ACTION_UP:
@@ -424,18 +430,18 @@ public class TouchListView extends ListView {
                     stopDragging();
 
                     if (mRemoveMode == SLIDE_RIGHT && ev.getX() > r.left + (r.width() * 3 / 4)) {
-                        if (mRemoveListener != null) {
-                            mRemoveListener.remove(mFirstDragPos);
+                        if (mOnRemoveListener != null) {
+                            mOnRemoveListener.onRemove(mFirstDragPos);
                         }
                         unExpandViews(true);
                     } else if (mRemoveMode == SLIDE_LEFT && ev.getX() < r.left + (r.width() / 4)) {
-                        if (mRemoveListener != null) {
-                            mRemoveListener.remove(mFirstDragPos);
+                        if (mOnRemoveListener != null) {
+                            mOnRemoveListener.onRemove(mFirstDragPos);
                         }
                         unExpandViews(true);
                     } else {
-                        if (mDropListener != null && mDragPos >= 0 && mDragPos < getCount()) {
-                            mDropListener.drop(mFirstDragPos, mDragPos);
+                        if (mOnDropListener != null && mDragPos >= 0 && mDragPos < getCount()) {
+                            mOnDropListener.onDrop(mFirstDragPos, mDragPos);
                         }
                         unExpandViews(false);
                     }
@@ -449,8 +455,8 @@ public class TouchListView extends ListView {
                     int item = getItemForPosition(y);
                     if (item >= 0) {
                         if (action == MotionEvent.ACTION_DOWN || item != mDragPos) {
-                            if (mDragListener != null) {
-                                mDragListener.drag(mDragPos, item);
+                            if (mOnDragListener != null) {
+                                mOnDragListener.onDrag(mDragPos, item);
                             }
                             mDragPos = item;
                             doExpansion(mWasFirstExpansion);
@@ -495,6 +501,7 @@ public class TouchListView extends ListView {
         //noinspection ConstantConditions
         return mWindowManager;
     }
+
     private void startDragging(final @NonNull Bitmap bm, final int x, final int y) {
         stopDragging();
 
@@ -520,7 +527,6 @@ public class TouchListView extends ListView {
         getWindowManager().addView(v, mWindowParams);
         mDragView = v;
     }
-
     private void dragView(final int x, final int y) {
         float alpha = 1.0f;
         int width = mDragView.getWidth();
@@ -539,7 +545,6 @@ public class TouchListView extends ListView {
         mWindowParams.y = y - mDragPoint + mCoordinatesOffset;
         mWindowManager.updateViewLayout(mDragView, mWindowParams);
     }
-
     private void stopDragging() {
         if (mDragView != null) {
             getWindowManager().removeView(mDragView);
@@ -553,28 +558,28 @@ public class TouchListView extends ListView {
     }
 
     @SuppressWarnings("unused")
-    public void setDragListener(final @NonNull DragListener l) {
-        mDragListener = l;
+    public void setOnDragListener(final @NonNull OnDragListener listener) {
+        mOnDragListener = listener;
     }
 
-    public void setDropListener(final @NonNull DropListener l) {
-        mDropListener = l;
+    public void setOnDropListener(final @NonNull OnDropListener listener) {
+        mOnDropListener = listener;
     }
 
     @SuppressWarnings("unused")
-    public void setRemoveListener(final @NonNull RemoveListener l) {
-        mRemoveListener = l;
+    public void setOnRemoveListener(final @NonNull OnRemoveListener listener) {
+        mOnRemoveListener = listener;
     }
 
-    public interface DragListener {
-        void drag(final int from, final int to);
+    public interface OnDragListener {
+        void onDrag(final int fromPosition, final int toPosition);
     }
 
-    public interface DropListener {
-        void drop(final int from, final int to);
+    public interface OnDropListener {
+        void onDrop(final int fromPosition, final int toPosition);
     }
 
-    public interface RemoveListener {
-        void remove(final int which);
+    public interface OnRemoveListener {
+        void onRemove(final int position);
     }
 }

@@ -20,6 +20,7 @@
 
 package com.eleybourn.bookcatalogue.properties;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
@@ -43,24 +44,20 @@ import java.util.Map;
  * @author Philip Warner
  */
 public class PropertyList extends ArrayList<Property> {
-    private final Map<String, Property> mMap = new HashMap<>();
-
-    /** Sort the properties based on their group weight, group name, weight and name. */
-    private void sort() {
-        Collections.sort(this, new PropertyComparator(BookCatalogueApp.getAppContext()));
-    }
+    @SuppressLint("UseSparseArrays")
+    private final Map<Integer, Property> mMap = new HashMap<>();
 
     /** Add a property to this collection */
     public boolean add(final @NonNull Property p) {
-            mMap.put(p.getUniqueName(), p);
+        mMap.put(p.getUniqueId(), p);
         return super.add(p);
     }
 
     /**
-     * @return the named property from this collection.
+     * @return the required property from this collection.
      */
-    public Property get(final @NonNull String name) {
-        return mMap.get(name);
+    public Property get(final int id) {
+        return mMap.get(id);
     }
 
     /**
@@ -68,8 +65,8 @@ public class PropertyList extends ArrayList<Property> {
      * inside the parent.
      */
     public void buildView(final @NonNull LayoutInflater inflater, final @NonNull ViewGroup parent) {
-        // Sort them correctly
-        sort();
+        // Sort the properties based on their group weight, group name, weight and name.
+        Collections.sort(this, new PropertyComparator(BookCatalogueApp.getAppContext()));
         // Record last group used, so we know when to output a header.
         PropertyGroup lastGroup = null;
         for (Property property : this) {
@@ -82,7 +79,7 @@ public class PropertyList extends ArrayList<Property> {
                 parent.addView(header);
             }
 
-            // add the property editor
+            // put the property editor
             View pv = property.getView(inflater);
             parent.addView(pv);
             lastGroup = currGroup;
@@ -101,11 +98,11 @@ public class PropertyList extends ArrayList<Property> {
     }
 
     /**
-     * Class to compare to properties for the purpose of sorting.
+     * Class to compare two properties for the purpose of sorting.
      *
      * @author Philip Warner
      */
-    public static class PropertyComparator implements Comparator<Property> {
+    private static class PropertyComparator implements Comparator<Property> {
 
         @NonNull
         private Context mContext;
@@ -117,7 +114,7 @@ public class PropertyList extends ArrayList<Property> {
         @Override
         public int compare(final @NonNull Property lhs, final @NonNull Property rhs) {
             // First compare their groups
-            int gCmp = PropertyGroup.compare(lhs.getGroup(), rhs.getGroup());
+            int gCmp = lhs.getGroup().compareTo(rhs.getGroup());
             if (gCmp != 0) {
                 return gCmp;
             }

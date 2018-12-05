@@ -54,9 +54,9 @@ public abstract class BackupReaderAbstract implements BackupReader {
     @NonNull
     private final Context mContext;
 
-    private final String processPreferences = BookCatalogueApp.getResourceString(R.string.progress_msg_process_preferences);
-    private final String processCover = BookCatalogueApp.getResourceString(R.string.progress_msg_process_cover);
-    private final String processBooklistStyles = BookCatalogueApp.getResourceString(R.string.progress_msg_process_booklist_style);
+    private String processPreferences;
+    private String processCover;
+    private String processBooklistStyles;
 
     /**
      * Constructor
@@ -64,6 +64,10 @@ public abstract class BackupReaderAbstract implements BackupReader {
     protected BackupReaderAbstract(@NonNull final Context context) {
         mContext = context;
         mDb = new CatalogueDBAdapter(mContext);
+
+        processPreferences = context.getString(R.string.progress_msg_process_preferences);
+        processCover = context.getString(R.string.progress_msg_process_cover);
+        processBooklistStyles = context.getString(R.string.progress_msg_process_booklist_style);
     }
 
     /**

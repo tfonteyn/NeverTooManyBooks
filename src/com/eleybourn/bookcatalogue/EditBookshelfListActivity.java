@@ -41,7 +41,7 @@ import com.eleybourn.bookcatalogue.dialogs.SelectOneDialog;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.dialogs.fieldeditdialog.EditBookshelfDialog;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
-import com.eleybourn.bookcatalogue.widgets.TouchListViewWithDropListener;
+import com.eleybourn.bookcatalogue.widgets.TouchListView;
 
 import java.util.ArrayList;
 
@@ -50,7 +50,7 @@ import java.util.ArrayList;
  * Admin Activity where we list all bookshelves and can add/delete/edit them.
  *
  * refit with extends {@link EditObjectListActivity} ? => no point,
- * we don't want/need a {@link TouchListViewWithDropListener}
+ * we don't want/need a {@link TouchListView}
  */
 public class EditBookshelfListActivity extends BaseListActivity {
 

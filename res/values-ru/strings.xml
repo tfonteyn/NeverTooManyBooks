@@ -121,9 +121,9 @@
     <string name="vldt_failed">Проверка не удалась для \'%s\'</string>
     <string name="vldt_read_start_after_end">Дата начала чтения позже даты завершения</string>
     <string name="progress_end_backup_success">Резервное копирование успешно</string>
-    <string name="error_backup_failed">Резервное копирование не удалось</string>
+    <string name="export_error_backup_failed">Резервное копирование не удалось</string>
     <string name="error_file_must_contain_column">В файле должен быть столбец с названием %s</string>
-    <string name="error_csv_file_must_contain_any_column">Файл должен содержать столбец с одним из следующих имён: %s</string>
+    <string name="import_error_csv_file_must_contain_any_column">Файл должен содержать столбец с одним из следующих имён: %s</string>
     <string name="error_column_is_blank">Столбец %1$s в строке %2$s пуст</string>
     <string name="error_columns_are_blank">В строке %2$d столбцы %1$s пусты</string>
     <string name="btn_confirm_save">Сохранить</string>
@@ -141,7 +141,7 @@
     <string name="warning_required_author">Не заполнено поле Автор</string>
     <string name="warning_series_already_in_list">Серия уже есть в списке</string>
     <string name="warning_required_series">Не заполнено поле Серия</string>
-    <string name="error_export_csv_failed">Экспорт не удался. Не могу записать на SD-карту</string>
+    <string name="export_error_csv_failed">Экспорт не удался. Не могу записать на SD-карту</string>
     <string name="error_download_thumbnail_failed">Загрузка миниатюр не удалась. Запись на SD-карту невозможна</string>
     <string name="progress_msg_skip_title">Пропустить - %s</string>
     <string name="progress_end_num_books_searched">%s книг искалось</string>
@@ -300,7 +300,7 @@
     <string name="lbl_bookshelves_long">Книжные полки</string>
     <string name="lbl_bookshelves">Полки</string>
     <string name="lbl_location">Местоположение</string>
-    <string name="credentials">Удостоверения (Credentials)</string>
+    <string name="menu_credentials">Удостоверения (Credentials)</string>
     <string name="data_import_export">Импорт/Экспорт данных</string>
     <string name="unrecognized_task">Неопознаная задача</string>
     <string name="progress_msg_rebuilding_search_index">Перестроение индексов поиска…</string>
@@ -427,17 +427,17 @@
         После того, как это будет сделано, Вы можете повторить отправление книги.</string>
     <string name="read_amp_unread">Прочитано &amp; Не прочитано</string>
     <string name="loaned">Одолжено</string>
-    <string name="publication_year">Год публикации</string>
-    <string name="publication_month">Месяц публикации</string>
-    <string name="added_year">Добавленый год</string>
-    <string name="added_month">Добавленый месяц</string>
-    <string name="added_day">Добавленый день</string>
+    <string name="lbl_publication_year">Год публикации</string>
+    <string name="lbl_publication_month">Месяц публикации</string>
+    <string name="lbl_added_year">Добавленый год</string>
+    <string name="lbl_added_month">Добавленый месяц</string>
+    <string name="lbl_added_day">Добавленый день</string>
     <string name="lbl_book">Книга</string>
     <string name="in">В</string>
     <string name="size">Размер</string>
     <string name="updated">Обновлено</string>
-    <string name="warning_csv_file_not_found">Файлы экспорта не найдены</string>
-    <string name="warning_csv_file_more_then_one_found">Найдено больше одного файла экспорта; пожалуйста, выберите файл экспорта для импортирования из списка</string>
+    <string name="import_error_csv_file_not_found">Файлы экспорта не найдены</string>
+    <string name="import_warning_csv_file_more_then_one_found">Найдено больше одного файла экспорта; пожалуйста, выберите файл экспорта для импортирования из списка</string>
     <string name="problem_starting_import_arg">Возникла проблема при начале импорта: %1$s</string>
     <string name="hint_booklist_style_menu">        Это меню позволяет Вам выбрать стиль списка. 
     	\n\nВы можете также настроить это меню и создать свои стили списков нажатием на \'Настроить\' в конце списка.</string>
@@ -466,9 +466,9 @@
     <string name="menu_add_book_by_isbn">Ввести ISBN</string>
     <string name="lbl_allow_asin">Позволить ASIN</string>
     <string name="warning_x_is_not_a_valid_isbn_or_asin">%1$s неправильный ISBN или ASIN</string>
-    <string name="read_year">Год прочтения</string>
-    <string name="read_month">Месяц прочтения</string>
-    <string name="read_day">День прочтения</string>
+    <string name="lbl_read_year">Год прочтения</string>
+    <string name="lbl_read_month">Месяц прочтения</string>
+    <string name="lbl_read_day">День прочтения</string>
     <string name="style_builtin_read_date">Дата прочтения</string>
     <string name="lbl_details_have_changed">Детали были измененны</string>
     <string name="warning_unsaved_changes">Если вы выйдете сейчас, не сохраненные изменения будут потеряны.</string>
@@ -554,16 +554,16 @@
     <string name="title_export_books">Книги этого архива будут экспортированы. Выберите один из вариантов, чтобы начать экспорт, или \'НАЗАД\' для отмены:</string>
     <string name="progress_msg_covers_skip">%1$s обложек обработано (%2$s не хватает, %3$s пропущено)</string>
 
-    <string name="error_import_failed_is_csv_file_location_correct">Импорт не удался.</string>
+    <string name="import_error_failed_is_csv_file_location_correct">Импорт не удался.</string>
 
-    <string name="export_dialog_info_all">Все книги, обложки, настройки и пользовательские стили будут экспортированы в архив.</string>
+    <string name="export_info_backup_all">Все книги, обложки, настройки и пользовательские стили будут экспортированы в архив.</string>
     <string name="export_options_dialog_title">Выберите, что будет экспортировано в архив.</string>
 
     <string name="book_details">Детальное инфо</string>
-    <string name="info_book_details">Подробная информация о самой книге</string>
+    <string name="import_export_info_book_details">Подробная информация о самой книге</string>
     <string name="lbl_cover_images">Обложки</string>
     <string name="export_info_cover_images">Обложки для всех выбранных книг. Это сделает экспорт значительно больше.</string>
-    <string name="info_preferences">Настройки и пользовательские стили</string>
+    <string name="import_export_info_preferences">Настройки и пользовательские стили</string>
 
     <string name="export_option_info_books_since_date">Опционально укажите дату при выборе книг и/или обложек для экспорта:</string>
 
@@ -615,10 +615,10 @@
 
     <string name="hint_amazon_links_blurb">&lt;p&gt;Если вы покупаете вещи на Amazon после выбора &lt;i&gt;\"%1$s\"&lt;/i&gt;, &lt;i&gt;\"%2$s\"&lt;/i&gt; or &lt;i&gt;\"%3$s\"&lt;/i&gt; элементов меню, часть стоимости заказa будет отослана разработчикам %4$s.&lt;/p&gt;&lt;p&gt; Вы также можете использовать &lt;a href=""https://github.com/eleybourn/Book-Catalogue/wiki/Frequently-Asked-Questions-%%28FAQ%%29""&gt; ссылки нашего FAQ&lt;/a&gt;, чтобы перейти прямо на Amazon или PayPal.&lt;/p&gt;</string>
 
-    <string name="update_date">Дата обновления</string>
-    <string name="update_year">Год обновления</string>
-    <string name="update_month">Месяц обновления</string>
-    <string name="update_day">День обновленияy</string>
+    <string name="style_builtin_update_date">Дата обновления</string>
+    <string name="lbl_update_year">Год обновления</string>
+    <string name="lbl_update_month">Месяц обновления</string>
+    <string name="lbl_update_day">День обновленияy</string>
 
     <string name="scanning_beep_if_isbn_valid">Подать звуковой сигнал, если сканируемый ISBN правильный</string>
     <string name="scanning_preferred_scanner_pic2shop">Pic2Shop сканер</string>

@@ -867,6 +867,22 @@
     <string name="lbl_read">Read</string>
     <string name="lbl_unread">Unread</string>
 
+    <!-- Individual fields for "date added" -->
+    <string name="lbl_added_year">Added Year</string>
+    <string name="lbl_added_month">Added Month</string>
+    <string name="lbl_added_day">Added Day</string>
+    <!-- Individual fields for "date read" -->
+    <string name="lbl_read_year">Read Year</string>
+    <string name="lbl_read_month">Read Month</string>
+    <string name="lbl_read_day">Read Day</string>
+    <!-- Individual fields for "date last updated" -->
+    <string name="lbl_update_year">Update Year</string>
+    <string name="lbl_update_month">Update Month</string>
+    <string name="lbl_update_day">Update Day</string>
+    <!-- Individual fields for "original publication date" -->
+    <string name="lbl_publication_year">Publication Year</string>
+    <string name="lbl_publication_month">Publication Month</string>
+
     <!-- displayed during startup of the application -->
     <string name="lbl_book_catalogue_startup">BookCatalogue Startup</string>
     <!-- displayed during startup of the application -->
@@ -899,6 +915,16 @@
     <string name="style_builtin_compact">Compact</string>
     <string name="style_builtin_read_date">Date Read</string>
     <string name="style_builtin_unread">Unread (Author/Series)</string>
+    <string name="style_builtin_update_date">Update date</string>
+
+    <!-- ####################################################################################### -->
+    <!-- == Booklist Filters - need to be short == -->
+    <!-- ####################################################################################### -->
+
+    <string name="booklist_filters">Book filters</string>
+    <string name="booklist_filters_read">Select read books only</string>
+    <string name="booklist_filters_unread">Select unread books only</string>
+    <string name="booklist_filters_select_based_on_read_status">Select based on \'Read\' status</string>
 
     <!-- ####################################################################################### -->
     <!-- == TAB labels - need to be short == -->
@@ -989,9 +1015,8 @@
     <!-- ####################################################################################### -->
 
     <!-- options to select 'what' will be imported/exported from/to the archive -->
-    <string name="info_book_details">The details of the books themselves</string>
-    <string name="export_info_cover_images">Cover images for all selected books. Will make the export much larger.</string>
-    <string name="info_preferences">Preferences and user-defined list styles</string>
+    <string name="import_export_info_book_details">The details of the books themselves</string>
+    <string name="import_export_info_preferences">Preferences and user-defined list styles</string>
 
     <!-- Explanatory note for 'import to archive' OPTIONS dialog -->
     <string name="import_options_dialog_title">Select what will be imported from the archive.</string>
@@ -1007,8 +1032,7 @@
     <string name="import_warning_old_archive">This option is not supported for older archive versions.</string>
 
     <!-- Explanatory note for 'export to archive' initial 'simple' dialog -->
-    <string name="export_dialog_info_all">All books, covers, settings and custom styles will be exported to the archive.</string>
-
+    <string name="export_info_backup_all">All books, covers, settings and custom styles will be exported to the archive.</string>
     <!-- Explanatory note for 'export to archive' OPTIONS dialog -->
     <string name="export_options_dialog_title">Select what will be exported to the archive.</string>
     <!-- Explanatory note of the 'export from archive' "all books" option -->
@@ -1017,65 +1041,42 @@
     <string name="export_option_books_since_last_full_backup">All books added or updated since last full backup</string>
     <!-- Explanatory note of the 'export from archive' "all books" option -->
     <string name="export_option_info_new_and_changed_books">blah</string>
-
+    <!-- options to select 'what' will be exported to the archive -->
+    <string name="export_info_cover_images">Cover images for all selected books. Will make the export much larger.</string>
     <!-- Explanatory note for 'export from archive' since-date (not yet implemented) -->
     <string name="export_option_books_since_date">All books added or updated since:</string>
     <!-- Explanatory note for 'export from archive' since-date (not yet implemented) -->
     <string name="export_option_info_books_since_date">Optionally specify a date to use in selecting books and/or covers to export:</string>
-
-
     <!-- displayed when a Catalogue Backup is done -->
     <string name="export_info_success_archive_details">A %3$s file called %2$s was created in the
         \"%1$s\" directory on your SD card.\n\nYou should manually copy it elsewhere to protect
         the data in case your device is damaged, lost, or stolen.
     </string>
     <!-- Displayed when a backup archive fails -->
-    <string name="error_backup_failed">Backup Failed</string>
+    <string name="export_error_backup_failed">Backup Failed</string>
 
     <!-- ####################################################################################### -->
     <!-- === Import/Export CSV file specific strings == -->
     <!-- ####################################################################################### -->
 
-    <string name="warning_csv_file_not_found">No export files found</string>
-    <string name="warning_csv_file_more_then_one_found">More than one export file was found; please select an export file to import from the list below</string>
+    <string name="import_error_csv_file_not_found">No export files found</string>
+    <string name="import_warning_csv_file_more_then_one_found">More than one export file was found; please select an export file to import from the list below</string>
 
     <!-- Displayed when a CSV import fails -->
-    <string name="error_csv_file_must_contain_any_column">File must contain a column with one of the following names: %s</string>
+    <string name="import_error_csv_file_must_contain_any_column">File must contain a column with one of the following names: %s</string>
     <!-- Displayed when a CSV import fails -->
-    <string name="error_import_failed_is_csv_file_location_correct">Import of data failed. Is the file in the correct place?</string>
+    <string name="import_error_failed_is_csv_file_location_correct">Import of data failed. Is the file in the correct place?</string>
     <!-- Displayed when an import fails -->
     <!-- Displayed when a CSV exportBooks fails -->
-    <string name="error_export_csv_failed">Export failed - could not write to SD card</string>
+    <string name="export_error_csv_failed">Export failed - could not write to SD card</string>
     <!-- offer to send the CSV exported file as an email attachment -->
     <string name="export_csv_email">Would you like to send this export as an email somewhere?</string>
 
     <!-- ####################################################################################### -->
 
-    <string name="publication_year">Publication Year</string>
-    <string name="publication_month">Publication Month</string>
-
     <string name="year">Year</string>
     <string name="month">Month</string>
     <string name="day">Day</string>
-
-    <string name="added_year">Added Year</string>
-    <string name="added_month">Added Month</string>
-    <string name="added_day">Added Day</string>
-
-    <string name="read_year">Read Year</string>
-    <string name="read_month">Read Month</string>
-    <string name="read_day">Read Day</string>
-
-    <!-- Name of the new style grouping (needs to be short). -->
-    <string name="update_date">Update date</string>
-    <!-- Name of the new style grouping (needs to be short). -->
-    <string name="update_year">Update Year</string>
-    <!-- Name of the new style grouping (needs to be short). -->
-    <string name="update_month">Update Month</string>
-    <!-- Name of the new style grouping (needs to be short). -->
-    <string name="update_day">Update Day</string>
-
-    <!-- ####################################################################################### -->
 
     <string name="in">In</string>
     <string name="size">Size</string>
@@ -1129,21 +1130,15 @@
     <string name="cleanup_files">Cleanup Files</string>
 
 
-
-
-
     <string name="show_results">Show Results</string>
     <string name="rebuild_fts">Rebuild FTS (alpha only!)</string>
     <string name="authorized">Authorized</string>
     <string name="not_authorized">Not Authorized</string>
     <string name="please_enter_search_criteria">Please enter search criteria</string>
 
-    <string name="credentials">Credentials</string>
+    <string name="menu_credentials">Credentials</string>
 
-    <string name="booklist_filters">Book filters</string>
-    <string name="booklist_filters_read">Select read books only</string>
-    <string name="booklist_filters_unread">Select unread books only</string>
-    <string name="booklist_filters_select_based_on_read_status">Select based on \'Read\' status</string>
+
 
     <string name="hints_have_been_reset">Hints have been reset</string>
     <string name="read_amp_unread">Read &amp; Unread</string>
@@ -1225,7 +1220,20 @@
     <string name="new_in_600">
 		<![CDATA[
 			<p><b>New in 6.0.0</b>\n\n
-				* Modernisation to Android 5\n\n
+				* Modernisation to Android 5.0 bringing lots of new UI goodies.\n
+                * Cover thumbnails and log files moved to dedicated sub folders.\n
+                * Configurable websites search order.\n
+                * New Search website: ISFDB.\n
+                * Better Anthology support (Edit/View/cross-book) and morphed into \'Table of Content\' or \'TOC\'\n
+                * TOC auto populated (ISFDB site only!).\n
+                * Language field wil show the translated name for the current locale.\n
+                * Removed the old \'Classic\' view (sorry)\n
+                * Books & Anthology/TOC titles now have a \'first published\' field\n
+                * Books Editions (1st, book-club, etc)\n
+                * Book paid price\n
+                * Book date acquired\n
+                * Currency support for prices\n
+                * LibraryThing & ISFDB local id for future usage\n
 			</p>
 		]]>
     </string>
@@ -1340,6 +1348,7 @@
     <string name="progress_msg_process_booklist_style">Booklist Styles…</string>
     <!-- msg at startup while doing mass conversion from Language names to ISO3 codes -->
     <string name="progress_msg_updating_languages">Updating languages…</string>
+    <string name="progress_msg_cleaning_database">Cleaning Database…</string>
 
     <!-- some unique field already exists; example: when trying to create a duplicate Bookshelf -->
     <string name="warning_thing_already_exists">%1$s already exists</string>
@@ -1358,6 +1367,8 @@
     <string name="book_format_audiobook">AudioBook</string>
 
     <string name="btn_options">Options</string>
+    <string name="debug">Debug</string>
+    <string name="history">History</string>
 
 
     <!-- End: Added/Updated in  [Next Version]  -->

@@ -17,14 +17,13 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.CheckedTextView;
 import android.widget.ListView;
 
-import com.eleybourn.bookcatalogue.datamanager.Fields;
-import com.eleybourn.bookcatalogue.datamanager.Fields.Field;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.booklist.FlattenedBooklist;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
+import com.eleybourn.bookcatalogue.datamanager.Fields;
+import com.eleybourn.bookcatalogue.datamanager.Fields.Field;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.entities.Author;
@@ -34,11 +33,8 @@ import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.entities.TOCEntry;
 import com.eleybourn.bookcatalogue.utils.BundleUtils;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
-import com.eleybourn.bookcatalogue.utils.Utils;
 
 import java.util.ArrayList;
-
-import static android.view.GestureDetector.SimpleOnGestureListener;
 
 /**
  * Class for representing read-only book details.
@@ -91,17 +87,6 @@ public class BookFragment extends BookBaseFragment implements BookManager {
 
     //<editor-fold desc="Fragment startup">
 
-//    @Override
-//    @CallSuper
-//    public void onAttach(final @NonNull Context context) {
-//        super.onAttach(context);
-//    }
-
-//    @Override
-//    public void onCreate(@Nullable final Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//    }
-
     @Override
     public View onCreateView(final @NonNull LayoutInflater inflater,
                              final @Nullable ViewGroup container,
@@ -149,70 +134,80 @@ public class BookFragment extends BookBaseFragment implements BookManager {
         // multiple use
         Fields.FieldFormatter dateFormatter = new Fields.DateFieldFormatter();
 
-        // not added here are the two non-text fields: TOC & Read.
+        // not added here: non-text TOC
 
         // book fields
-        // ENHANCE: simplify the SQL and use a formatter instead.
-        mFields.add(R.id.author, "", UniqueId.KEY_AUTHOR_FORMATTED);
-
-        mFields.add(R.id.name, UniqueId.KEY_SERIES_NAME);
         mFields.add(R.id.title, UniqueId.KEY_TITLE);
         mFields.add(R.id.isbn, UniqueId.KEY_BOOK_ISBN);
         mFields.add(R.id.description, UniqueId.KEY_DESCRIPTION)
                 .setShowHtml(true);
         mFields.add(R.id.genre, UniqueId.KEY_BOOK_GENRE);
-
         mFields.add(R.id.language, UniqueId.KEY_BOOK_LANGUAGE)
                 .setFormatter(new Fields.LanguageFormatter());
+        mFields.add(R.id.pages, UniqueId.KEY_BOOK_PAGES)
+                .setFormatter(new Fields.FieldFormatter() {
+                    @NonNull
+                    @Override
+                    public String format(@NonNull final Field field, @Nullable final String source) {
+                        if (source != null && !source.isEmpty()) {
+                            return getString(R.string.lbl_x_pages, source);
+                        }
+                        return "";
+                    }
 
-        mFields.add(R.id.pages, UniqueId.KEY_BOOK_PAGES);
+                    @NonNull
+                    @Override
+                    public String extract(@NonNull final Field field, @NonNull final String source) {
+                        throw new UnsupportedOperationException();
+                    }
+                });
         mFields.add(R.id.format, UniqueId.KEY_BOOK_FORMAT);
-        mFields.add(R.id.publisher, UniqueId.KEY_BOOK_PUBLISHER);
-
-        mFields.add(R.id.date_published, UniqueId.KEY_BOOK_DATE_PUBLISHED)
-                .setFormatter(dateFormatter);
-
+        mFields.add(R.id.price_listed, UniqueId.KEY_BOOK_PRICE_LISTED)
+                .setFormatter(new Fields.PriceFormatter(getBook().getString(UniqueId.KEY_BOOK_PRICE_LISTED_CURRENCY)));
         mFields.add(R.id.first_publication, UniqueId.KEY_FIRST_PUBLICATION)
                 .setFormatter(dateFormatter);
 
-        mFields.add(R.id.price_listed, UniqueId.KEY_BOOK_PRICE_LISTED)
-                .setFormatter(new Fields.PriceFormatter(getBook().getString(UniqueId.KEY_BOOK_PRICE_LISTED_CURRENCY)));
+        // defined, but handled manually
+        mFields.add(R.id.author, "", UniqueId.KEY_AUTHOR);
+        // defined, but handled manually
+        mFields.add(R.id.series, "", UniqueId.KEY_SERIES);
 
-        // add the cover image
-        Field coverField = mFields.add(R.id.coverImage, "", UniqueId.BKEY_HAVE_THUMBNAIL)
-                .setDoNotFetch(true);
+        // populated, but manually re-populated.
+        mFields.add(R.id.publisher, UniqueId.KEY_BOOK_PUBLISHER);
+        // not a field on the screen, but used in re-population of publisher.
+        mFields.add(R.id.date_published, UniqueId.KEY_BOOK_DATE_PUBLISHED)
+                .setFormatter(dateFormatter);
+
+        // defined, but handled manually
+        Field coverField = mFields.add(R.id.coverImage, "", UniqueId.BKEY_HAVE_THUMBNAIL);
         mCoverHandler = new CoverHandler(this, mDb, getBookManager(),
                 coverField, mFields.getField(R.id.isbn));
 
 
         // Personal fields
-        mFields.add(R.id.bookshelves, UniqueId.KEY_BOOKSHELF_NAME)
-                .setDoNotFetch(true);
-
         mFields.add(R.id.date_acquired, UniqueId.KEY_BOOK_DATE_ACQUIRED)
                 .setFormatter(dateFormatter);
-
         mFields.add(R.id.price_paid, UniqueId.KEY_BOOK_PRICE_PAID)
                 .setFormatter(new Fields.PriceFormatter(getBook().getString(UniqueId.KEY_BOOK_PRICE_PAID_CURRENCY)));
-
         mFields.add(R.id.edition, UniqueId.KEY_BOOK_EDITION_BITMASK)
                 .setFormatter(new Fields.BookEditionsFormatter());
-
         mFields.add(R.id.signed, UniqueId.KEY_BOOK_SIGNED)
                 .setFormatter(new Fields.BinaryYesNoEmptyFormatter(this.getResources()));
-
         mFields.add(R.id.location, UniqueId.KEY_BOOK_LOCATION);
         mFields.add(R.id.rating, UniqueId.KEY_BOOK_RATING);
         mFields.add(R.id.notes, UniqueId.KEY_NOTES)
                 .setShowHtml(true);
-
         mFields.add(R.id.read_start, UniqueId.KEY_BOOK_READ_START)
                 .setFormatter(dateFormatter);
         mFields.add(R.id.read_end, UniqueId.KEY_BOOK_READ_END)
                 .setFormatter(dateFormatter);
 
-        mFields.add(R.id.loaned_to, UniqueId.KEY_LOAN_LOANED_TO)
-                .setDoNotFetch(true);
+        // note the use of the accessor instead of a real column.
+        mFields.add(R.id.read, Book.IS_READ, UniqueId.KEY_BOOK_READ);
+        // defined, but handled manually
+        mFields.add(R.id.bookshelves, "", UniqueId.KEY_BOOKSHELF_NAME);
+        // defined, but handled manually
+        mFields.add(R.id.loaned_to, "", UniqueId.KEY_LOAN_LOANED_TO);
     }
 
     /**
@@ -256,12 +251,10 @@ public class BookFragment extends BookBaseFragment implements BookManager {
         populateLoanedToField(book.getBookId());
 
         // handle composite fields
-        populateFormatSection(book);
         populatePublishingSection(book);
 
         // handle non-text fields
         populateTOC(book);
-        populateReadStatus(book);
 
         // hide unwanted and empty text fields
         showHideFields(true);
@@ -336,7 +329,7 @@ public class BookFragment extends BookBaseFragment implements BookManager {
      * careful about possible clicks and scrolling.
      */
     private void initGestureDetector() {
-        mGestureDetector = new GestureDetector(this.getContext(), new SimpleOnGestureListener() {
+        mGestureDetector = new GestureDetector(this.getContext(), new GestureDetector.SimpleOnGestureListener() {
             @Override
             public boolean onDown(MotionEvent e) {
                 return true;
@@ -410,74 +403,62 @@ public class BookFragment extends BookBaseFragment implements BookManager {
     protected void populateSeriesListField(final @NonNull Book book) {
         ArrayList<Series> list = book.getSeriesList();
         int seriesCount = list.size();
-        boolean visible = seriesCount != 0 && mFields.getField(R.id.name).visible;
+        boolean visible = seriesCount != 0 && mFields.getField(R.id.series).visible;
         if (visible) {
-            Series.pruneSeriesList(list);
-            Utils.pruneList(mDb, list);
             StringBuilder builder = new StringBuilder();
             for (int i = 0; i < seriesCount; i++) {
-                builder.append("    ").append(list.get(i).getDisplayName());
+                builder.append(list.get(i).getDisplayName());
                 if (i != seriesCount - 1) {
                     builder.append("\n");
                 }
             }
 
-            mFields.getField(R.id.name).setValue(builder.toString());
+            mFields.getField(R.id.series).setValue(builder.toString());
         }
         //noinspection ConstantConditions
         getView().findViewById(R.id.lbl_series).setVisibility(visible ? View.VISIBLE : View.GONE);
-        getView().findViewById(R.id.name).setVisibility(visible ? View.VISIBLE : View.GONE);
+        getView().findViewById(R.id.series).setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
     /**
-     * Formats 'format' section of the book depending on values of 'pages' and 'format' fields.
-     */
-    private void populateFormatSection(final @NonNull Book book) {
-        Field pagesField = mFields.getField(R.id.pages);
-        String pages = book.getString(UniqueId.KEY_BOOK_PAGES);
-        boolean hasPages = !pages.isEmpty();
-        if (hasPages) {
-            pages = getString(R.string.lbl_x_pages, pages);
-        }
-        pagesField.setValue(pages);
-
-
-        Field formatField = mFields.getField(R.id.format);
-        String format = book.getString(UniqueId.KEY_BOOK_FORMAT);
-        boolean hasFormat = !format.isEmpty();
-        if (hasPages && hasFormat) {
-            formatField.setValue(getString(R.string.brackets, format));
-        } else {
-            formatField.setValue(format);
-        }
-    }
-
-    /**
-     * Formats 'Publishing' section depending on values of 'publisher' and 'date published' fields.
+     * Formats 'Publishing' section
+     *
+     * 'publisher' and 'date published' are combined
+     * 'first published' and 'list price' are previously handled automatically
+     *
+     * If all 4 are empty, the section header is hidden.
      */
     private void populatePublishingSection(final @NonNull Book book) {
 
         String datePublished = mFields.getField(R.id.date_published).format(book.getString(UniqueId.KEY_BOOK_DATE_PUBLISHED));
         boolean hasPublishDate = !datePublished.isEmpty();
 
-        String pub = book.getString(UniqueId.KEY_BOOK_PUBLISHER);
-        boolean hasPublisher = !pub.isEmpty();
+        String publisher = book.getString(UniqueId.KEY_BOOK_PUBLISHER);
+        boolean hasPublisher = !publisher.isEmpty();
 
         String result = "";
         if (hasPublisher && hasPublishDate) {
             // combine publisher and date into one field
-            result = pub + " (" + datePublished + ")";
+            result = publisher + " (" + datePublished + ")";
         } else if (hasPublisher) {
-            result = pub;
+            result = publisher;
         } else if (hasPublishDate) {
             result = datePublished;
         }
-
         mFields.getField(R.id.publisher).setValue(result);
+
+        // hide header if no fields populated.
+        if (result.isEmpty()
+                && !mFields.getField(R.id.price_listed).getValue().toString().isEmpty()
+                && !mFields.getField(R.id.first_publication).getValue().toString().isEmpty()) {
+            //noinspection ConstantConditions
+            getView().findViewById(R.id.lbl_publishing).setVisibility(View.GONE);
+        }
     }
 
     /**
      * Inflates 'Loaned' field showing a person the book loaned to.
+     * Allows returning the book via a context menu.
      *
      * @param bookId of the loaned book
      */
@@ -500,36 +481,6 @@ public class BookFragment extends BookBaseFragment implements BookManager {
                                 .setIcon(R.drawable.ic_people);
                     }
                 });
-    }
-
-    /**
-     * Sets read status of the book if needed. Shows green tick if book is read.
-     *
-     * @param book the book
-     */
-    private void populateReadStatus(final @NonNull Book book) {
-        //ENHANCE add to mFields?
-
-        //noinspection ConstantConditions
-        final CheckedTextView readField = getView().findViewById(R.id.read);
-        boolean visible = Fields.isVisible(UniqueId.KEY_BOOK_READ);
-        if (visible) {
-            // set initial display state
-            readField.setChecked(book.getBoolean(Book.IS_READ));
-
-            // disabled. Not such a good idea. Instead adding an option to the options menu.
-//            readField.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(final View v) {
-//                    // allow flipping 'read' status quickly
-//                    boolean newState = !readField.isChecked();
-//                    if (BookUtils.setRead(mDb, book, newState)) {
-//                        readField.setChecked(newState);
-//                    }
-//                }
-//            });
-        }
-        readField.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
     /**
@@ -627,11 +578,6 @@ public class BookFragment extends BookBaseFragment implements BookManager {
         super.onSaveInstanceState(outState);
     }
 
-//    @Override
-//    public void onDestroy() {
-//        super.onDestroy();
-//    }
-
     //</editor-fold>
 
     /* ------------------------------------------------------------------------------------------ */
@@ -688,7 +634,7 @@ public class BookFragment extends BookBaseFragment implements BookManager {
 
     @Override
     public void onActivityResult(final int requestCode, final int resultCode, final @Nullable Intent data) {
-        Tracker.enterOnActivityResult(this,requestCode,resultCode, data);
+        Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
         switch (requestCode) {
             case EditBookFragment.REQUEST_CODE: {
                 if (resultCode == Activity.RESULT_OK) {

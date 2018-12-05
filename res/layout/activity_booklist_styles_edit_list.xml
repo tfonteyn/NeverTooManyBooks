@@ -21,7 +21,7 @@
 
         <view xmlns:tlv="http://schemas.android.com/apk/res/com.eleybourn.bookcatalogue"
             android:id="@android:id/list"
-            class="com.eleybourn.bookcatalogue.widgets.TouchListViewWithDropListener"
+            class="com.eleybourn.bookcatalogue.widgets.TouchListView"
             style="@style/tlv_TouchListView"
             tlv:grabber="@+id/grabber"
             tlv:normal_height="32dp"

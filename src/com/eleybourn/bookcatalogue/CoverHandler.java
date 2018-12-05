@@ -20,10 +20,10 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 
-import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.cropper.CropImageActivity;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.CoversDBAdapter;
+import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
@@ -48,13 +48,20 @@ import java.util.Objects;
  */
 public class CoverHandler implements SelectOneDialog.hasViewContextMenu {
 
-    public static final String PREF_USE_EXTERNAL_IMAGE_CROPPER = "App.UseExternalImageCropper";
-    public static final String PREF_CROP_FRAME_WHOLE_IMAGE = "App.CropFrameWholeImage";
-    /** Degrees by which to rotate images automatically */
-    public static final String PREF_AUTOROTATE_CAMERA_IMAGES = "App.AutorotateCameraImages";
-    public static final int PREF_AUTOROTATE_CAMERA_IMAGES_DEFAULT = 90;
+    private static final String TAG = "Image.";
+
+    /** use an external app. (Intent) to handle cropping */
+    public static final String PREF_CROPPER_USE_EXTERNAL_APP = TAG + "Cropper.UseExternalApp";
+    /** start the cropper with the cropper frame set to the whole image */
+    public static final String PREF_CROPPER_FRAME_IS_WHOLE_IMAGE = TAG + "Cropper.FrameIsWholeImage";
+
+    /** Degrees by which to rotate camera images automatically */
+    public static final String PREF_CAMERA_AUTOROTATE = TAG + "Camera.Autorotate";
+
     /** see {@link View#setLayerType(int, Paint)} and {@link PreferencesActivity} */
-    public static final String PREF_VIEW_LAYER_TYPE = "App.ViewLayerType";
+    public static final String PREF_IMAGE_VIEW_LAYER_TYPE = TAG + "ViewLayerType";
+    /** default for setLayerType. Using -1 == don't set it */
+    public static final int PREF_IMAGE_VIEW_LAYER_TYPE_DEFAULT = -1;
 
     /** Counter used to prevent images being reused accidentally */
     private static int mTempImageCounter = 0;
@@ -332,7 +339,7 @@ public class CoverHandler implements SelectOneDialog.hasViewContextMenu {
         Bitmap bitmap = (Bitmap) bundle.get(CropImageActivity.BKEY_DATA);
         if (bitmap != null && bitmap.getWidth() > 0 && bitmap.getHeight() > 0) {
             Matrix m = new Matrix();
-            m.postRotate(BookCatalogueApp.getIntPreference(PREF_AUTOROTATE_CAMERA_IMAGES, PREF_AUTOROTATE_CAMERA_IMAGES_DEFAULT));
+            m.postRotate(BookCatalogueApp.getIntPreference(PREF_CAMERA_AUTOROTATE, 0));
             bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), m, true);
 
             File cameraFile = StorageUtils.getTempCoverFile("camera", "" + CoverHandler.mTempImageCounter);
@@ -444,7 +451,7 @@ public class CoverHandler implements SelectOneDialog.hasViewContextMenu {
 
 
     private void cropCoverImage(final @NonNull File thumbFile) {
-        boolean external = BookCatalogueApp.getBooleanPreference(PREF_USE_EXTERNAL_IMAGE_CROPPER, false);
+        boolean external = BookCatalogueApp.getBooleanPreference(PREF_CROPPER_USE_EXTERNAL_APP, false);
         if (external) {
             cropCoverImageExternal(thumbFile);
         } else {
@@ -458,7 +465,7 @@ public class CoverHandler implements SelectOneDialog.hasViewContextMenu {
      * @param thumbFile to crop
      */
     private void cropCoverImageInternal(final @NonNull File thumbFile) {
-        boolean cropFrameWholeImage = BookCatalogueApp.getBooleanPreference(PREF_CROP_FRAME_WHOLE_IMAGE, false);
+        boolean cropFrameWholeImage = BookCatalogueApp.getBooleanPreference(PREF_CROPPER_FRAME_IS_WHOLE_IMAGE, false);
 
         // Get the output file spec, and make sure it does not already exist.
         File cropped = this.getCroppedTempCoverFile();

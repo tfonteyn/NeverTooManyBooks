@@ -104,8 +104,6 @@
     <!-- BEGIN used by {@link SimpleListAdapter} and {@link EditObjectListActivity} -->
     <item name="SLA_ROW" type="id" />
     <item name="SLA_ROW_DETAILS" type="id" />
-    <item name="SLA_ROW_UP" type="id"/>
-    <item name="SLA_ROW_DOWN" type="id"/>
     <item name="SLA_ROW_DELETE" type="id"/>
     <item name="SLA_ROW_POSITION" type="id"/>
     <item name="SLA_ROW_POSITION_TAG" type="id" />

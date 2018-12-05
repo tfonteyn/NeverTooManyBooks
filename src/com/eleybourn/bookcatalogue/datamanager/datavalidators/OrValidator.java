@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.eleybourn.bookcatalogue.datamanager.validators;
+package com.eleybourn.bookcatalogue.datamanager.datavalidators;
 
 import android.support.annotation.NonNull;
 
@@ -26,31 +26,39 @@ import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.datamanager.Datum;
 
 /**
- * Validator that requires a blank field
+ * 'Meta' Validator to evaluate a list of validators; any one being true is OK.
  *
  * @author Philip Warner
  */
-public class BlankValidator implements DataValidator {
+public class OrValidator extends MetaValidator implements DataValidator {
+    public static final long serialVersionUID = 1L;
+
+    public OrValidator(final @NonNull DataValidator v1, final @NonNull DataValidator v2) {
+        super(v1, v2);
+    }
+
+    public OrValidator(final @NonNull DataValidator v1, final @NonNull DataValidator v2, final @NonNull DataValidator v3) {
+        super(v1, v2, v3);
+    }
+
     @Override
     public void validate(final @NonNull DataManager data, final @NonNull Datum datum, final boolean crossValidating)
             throws ValidatorException {
-        if (datum.isHidden()) {
-            // No validation required for invisible fields
-            return;
-        }
-
-        if (crossValidating) {
-            return;
-        }
-
-        try {
-            String s = data.getString(datum).trim();
-            if (!s.isEmpty()) {
-                throw new ValidatorException(R.string.vldt_blank_required, new Object[]{datum.getKey()});
+       ValidatorException lastException = null;
+       for (DataValidator v : this) {
+            try {
+                v.validate(data, datum, crossValidating);
+                return;
+            } catch (ValidatorException e) {
+                // Do nothing...try next validator, but keep it for later
+                lastException = e;
+            } catch (Exception e) {
+                // Do nothing...try next validator
             }
-            data.putString(datum, s);
-        } catch (Exception e) {
-            throw new ValidatorException(R.string.vldt_blank_required, new Object[]{datum.getKey()});
         }
+        if (lastException != null)
+            throw lastException;
+        else
+            throw new ValidatorException(R.string.vldt_failed, new Object[]{datum.getKey()});
     }
 }

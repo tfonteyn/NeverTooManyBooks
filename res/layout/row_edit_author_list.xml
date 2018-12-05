@@ -56,7 +56,8 @@
                 android:paddingStart="@dimen/padding_border"
                 android:singleLine="true"
                 android:textSize="16sp"
-                android:textIsSelectable="false" />
+                android:textIsSelectable="false"
+                tools:text="row_author"/>
 
             <TextView
                 android:id="@+id/row_author_sort"
@@ -70,7 +71,8 @@
                 android:paddingStart="@dimen/padding_border"
                 android:singleLine="true"
                 android:textSize="12sp"
-                android:textIsSelectable="false" />
+                android:textIsSelectable="false"
+                tools:text="row_author_sort"/>
         </RelativeLayout>
     </RelativeLayout>
 

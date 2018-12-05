@@ -18,7 +18,7 @@
  * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.eleybourn.bookcatalogue.goodreads.notinuse;
+package com.eleybourn.bookcatalogue.goodreads;
 
 import android.app.Activity;
 import android.content.Context;
@@ -53,6 +53,9 @@ import java.util.Objects;
 /**
  * Search goodreads for a book and display the list of results.
  * Use background tasks to get thumbnails and update when retrieved.
+ *
+ * Used by {@link GoodreadsSearchCriteriaActivity} which is currently
+ * commented out in {@link SendBookEvents}
  *
  * @author Philip Warner
  */

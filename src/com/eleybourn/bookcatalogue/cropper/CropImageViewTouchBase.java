@@ -121,7 +121,7 @@ public abstract class CropImageViewTouchBase extends AppCompatImageView {
      *
      */
     private void initRenderer() {
-        int type = BookCatalogueApp.getIntPreference(CoverHandler.PREF_VIEW_LAYER_TYPE, -1);
+        int type = BookCatalogueApp.getIntPreference(CoverHandler.PREF_IMAGE_VIEW_LAYER_TYPE, -1);
         if (type == -1) {
             return;
         }

@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.eleybourn.bookcatalogue.datamanager.validators;
+package com.eleybourn.bookcatalogue.datamanager.datavalidators;
 
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
@@ -25,30 +25,21 @@ import android.support.annotation.NonNull;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.datamanager.Datum;
+import com.eleybourn.bookcatalogue.utils.DateUtils;
 
 /**
- * Validator to apply a default String value to empty fields.
+ * Validator to apply a default value and validate as a Date
  *
  * @author Philip Warner
  */
-public class DefaultFieldValidator implements DataValidator {
-    @NonNull
-    private final String mDefault;
+public class DateValidator extends DefaultFieldValidator {
 
-    /**
-     * Allow for no default value.
-     */
-    DefaultFieldValidator() {
-        this("");
+    public DateValidator() {
+        super();
     }
 
-    /**
-     * Constructor with default value
-     *
-     * @param defaultValue Default to apply
-     */
-    DefaultFieldValidator(final @NonNull String defaultValue) {
-        mDefault = defaultValue;
+    public DateValidator(final @NonNull String defaultValue) {
+        super(defaultValue);
     }
 
     @Override
@@ -59,18 +50,19 @@ public class DefaultFieldValidator implements DataValidator {
             // No validation required for invisible fields
             return;
         }
-
-        // Default validator does not cross-validate
         if (crossValidating)
             return;
 
-        Object value = data.get(datum);
+        super.validate(data, datum, false);
+
         try {
-            if (value != null && value.toString().trim().isEmpty()) {
-                data.putString(datum, mDefault);
+            java.util.Date d = DateUtils.parseDate(data.getString(datum));
+            if (d == null) {
+                throw new ValidatorException(R.string.vldt_date_expected, new Object[]{datum.getKey()});
             }
+            data.putString(datum, DateUtils.utcSqlDateTime(d));
         } catch (Exception e) {
-            throw new ValidatorException(R.string.vldt_unable_to_get_value, new Object[]{datum.getKey()});
+            throw new ValidatorException(R.string.vldt_date_expected, new Object[]{datum.getKey()});
         }
     }
 }

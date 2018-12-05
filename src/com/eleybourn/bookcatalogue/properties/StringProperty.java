@@ -36,6 +36,8 @@ import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
+import java.util.Objects;
+
 /**
  * Implement a String-based property with optional (non-empty) validation.
  *
@@ -45,12 +47,10 @@ public class StringProperty extends PropertyWithGlobalValue<String> {
     /** Options indicating value must be non-blank */
     private boolean mRequireNonBlank = false;
 
-    public StringProperty(final @NonNull String uniqueId,
+    public StringProperty(final @StringRes int nameResourceId,
                           final @NonNull PropertyGroup group,
-                          final @StringRes int nameResourceId,
-                          final @Nullable String defaultValue) {
-        super(uniqueId, group, nameResourceId, defaultValue);
-
+                          final @NonNull String defaultValue) {
+        super(group, nameResourceId, defaultValue);
     }
 
     /** Build the editor for this property */
@@ -96,7 +96,7 @@ public class StringProperty extends PropertyWithGlobalValue<String> {
 
     /** Get underlying preferences value */
     @Override
-    @Nullable
+    @NonNull
     protected String getGlobalValue() {
         return BookCatalogueApp.getStringPreference(getPreferenceKey(), getDefaultValue());
     }
@@ -105,10 +105,10 @@ public class StringProperty extends PropertyWithGlobalValue<String> {
     @Override
     @NonNull
     protected StringProperty setGlobalValue(final @Nullable String value) {
+        Objects.requireNonNull(value);
         BookCatalogueApp.getSharedPreferences().edit().putString(getPreferenceKey(), value).apply();
         return this;
     }
-
 
     /**
      * Validation if wanted
@@ -124,6 +124,7 @@ public class StringProperty extends PropertyWithGlobalValue<String> {
     @CallSuper
     public void validate() throws ValidationException {
         if (mRequireNonBlank) {
+            // check actual (non-resolved)
             String s = getValue();
             if (s == null || s.trim().isEmpty()) {
                 String fieldName = BookCatalogueApp.getResourceString(getNameResourceId());
@@ -149,7 +150,7 @@ public class StringProperty extends PropertyWithGlobalValue<String> {
     @Override
     @NonNull
     @CallSuper
-    public StringProperty setDefaultValue(final @Nullable String value) {
+    public StringProperty setDefaultValue(final @NonNull String value) {
         super.setDefaultValue(value);
         return this;
     }

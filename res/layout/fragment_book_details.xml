@@ -153,7 +153,7 @@
             android:text="@string/lbl_series" />
 
         <TextView
-            android:id="@+id/name"
+            android:id="@+id/series"
             style="@style/txt_row_bookDetail"
             android:textIsSelectable="true"
             tools:text="Series name (1)\nSeries name (2)" />
@@ -202,18 +202,55 @@
             style="@style/lbl_textField"
             android:text="@string/lbl_publishing" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <!-- Publishing - Publisher + date published -->
+        <TextView
+            android:id="@+id/publisher"
+            style="@style/txt_row_bookDetail"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textIsSelectable="true"
+            tools:text="Publisher name (Jan 25, 2012)" />
+
+        <!-- Publishing - List price -->
+        <LinearLayout
+            android:id="@+id/row_price_listed"
+            style="@style/txt_row_bookDetail"
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/publisher"
-                style="@style/txt_row_bookDetail"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="@string/lbl_price_listed"
+                android:textAppearance="?android:attr/textAppearanceSmall" />
+
+            <TextView
+                android:id="@+id/price_listed"
+                style="@style/txt_row_bookDetail"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:textIsSelectable="true"
-                tools:text="Publisher name (Jan 25, 2012)" />
+                tools:text="$45" />
+        </LinearLayout>
+
+        <!-- Publishing - first_publication -->
+        <LinearLayout
+            android:id="@+id/row_first_publication"
+            style="@style/txt_row_bookDetail"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/lbl_first_publication"
+                android:textAppearance="?android:attr/textAppearanceSmall" />
+
+            <TextView
+                android:id="@+id/first_publication"
+                style="@style/txt_row_bookDetail"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:textIsSelectable="true"
+                tools:text="1938" />
         </LinearLayout>
 
         <!-- Book Shelves -->
@@ -240,61 +277,18 @@
             android:textIsSelectable="true"
             tools:text="Science Fiction" />
 
-        <TableLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <!-- Language -->
-            <TableRow
-                android:id="@+id/row_language"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+        <!-- Language -->
+        <TextView
+            android:id="@+id/lbl_language"
+            style="@style/lbl_textField"
+            android:text="@string/lbl_language" />
 
-                <TextView
-                    android:id="@+id/lbl_language"
-                    style="@style/lbl_textField"
-                    android:text="@string/lbl_language" />
+        <TextView
+            android:id="@+id/language"
+            style="@style/txt_row_bookDetail"
+            android:textIsSelectable="true"
+            tools:text="Quenya" />
 
-                <TextView
-                    android:id="@+id/language"
-                    style="@style/txt_row_bookDetail"
-                    android:textIsSelectable="true"
-                    tools:text="Quenya" />
-            </TableRow>
-
-            <TableRow
-                android:id="@+id/row_first_publication"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    style="@style/lbl_textField"
-                    android:text="@string/lbl_first_publication" />
-
-                <TextView
-                    android:id="@+id/first_publication"
-                    style="@style/txt_row_bookDetail"
-                    android:layout_weight="1"
-                    android:textIsSelectable="true"
-                    tools:text="1938" />
-            </TableRow>
-            <!-- List price -->
-            <TableRow
-                android:id="@+id/row_price_listed"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    style="@style/lbl_textField"
-                    android:text="@string/lbl_price_listed" />
-
-                <TextView
-                    android:id="@+id/price_listed"
-                    style="@style/txt_row_bookDetail"
-                    android:layout_weight="1"
-                    android:textIsSelectable="true"
-                    tools:text="$45" />
-            </TableRow>
-        </TableLayout>
 
         <!-- Notes section starts here -->
         <TextView

@@ -28,6 +28,8 @@ import android.support.annotation.StringRes;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 
+import java.util.Objects;
+
 /**
  * Implements ListOfValuesProperty with a String(nullable) value with associated editing support.
  *
@@ -36,17 +38,17 @@ import com.eleybourn.bookcatalogue.BookCatalogueApp;
 public class ListOfStringValuesProperty extends ListOfValuesProperty<String> {
 
     /**
-     * @param list list with options. Minimum 1 element.
+     * @param list list with options. Minimum 0 element; a 'use default' is added automatically.
      */
-    public ListOfStringValuesProperty(final @NonNull @Size(min = 1) ItemList<String> list,
-                                      final @NonNull String uniqueId,
+    public ListOfStringValuesProperty(final @StringRes int nameResourceId,
                                       final @NonNull PropertyGroup group,
-                                      final @StringRes int nameResourceId,
-                                      final @Nullable String defaultValue) {
-        super(list, uniqueId, group, nameResourceId, defaultValue);
+                                      final @NonNull String defaultValue,
+                                      final @NonNull @Size(min = 0) ItemList<String> list) {
+        super(nameResourceId, group, defaultValue, list);
     }
 
     @Override
+    @NonNull
     protected String getGlobalValue() {
         return BookCatalogueApp.getStringPreference(getPreferenceKey(), getDefaultValue());
     }
@@ -54,6 +56,7 @@ public class ListOfStringValuesProperty extends ListOfValuesProperty<String> {
     @NonNull
     @Override
     protected ListOfStringValuesProperty setGlobalValue(final @Nullable String value) {
+        Objects.requireNonNull(value);
         BookCatalogueApp.getSharedPreferences().edit().putString(getPreferenceKey(), value).apply();
         return this;
     }
@@ -64,7 +67,7 @@ public class ListOfStringValuesProperty extends ListOfValuesProperty<String> {
     @NonNull
     @Override
     @CallSuper
-    public ListOfStringValuesProperty setDefaultValue(final String value) {
+    public ListOfStringValuesProperty setDefaultValue(final @NonNull String value) {
         super.setDefaultValue(value);
         return this;
     }

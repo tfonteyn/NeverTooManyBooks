@@ -57,14 +57,14 @@ public abstract class ListOfValuesProperty<T> extends PropertyWithGlobalValue<T>
     private final ItemList<T> mList;
 
     /**
-     * @param list list with options. Minimum 1 element.
+     * @param list list with options. Minimum 0 element; a 'use default' is added automatically.
      */
-    protected ListOfValuesProperty(final @NonNull @Size(min = 1) ItemList<T> list,
-                                   final @NonNull String uniqueId,
-                                   final @NonNull PropertyGroup group,
-                                   final @StringRes int nameResourceId,
-                                   final @Nullable T defaultValue) {
-        super(uniqueId, group, nameResourceId, defaultValue);
+    ListOfValuesProperty(final @StringRes int nameResourceId,
+                         final @NonNull PropertyGroup group,
+                         final @NonNull T defaultValue,
+                         final @NonNull @Size(min = 0) ItemList<T> list) {
+        super(group, nameResourceId, defaultValue);
+        list.add(0, new ListEntry<T>(null,R.string.use_default_setting));
         mList = list;
     }
 

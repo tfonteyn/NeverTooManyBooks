@@ -68,7 +68,7 @@ public class CsvExportTask extends ManagedTask {
             }
         } catch (IOException e) {
             Logger.error(e);
-            mFinalMessage = getString(R.string.error_export_csv_failed);
+            mFinalMessage = getString(R.string.export_error_csv_failed);
         }
     }
 }

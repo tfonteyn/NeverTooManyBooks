@@ -26,8 +26,10 @@ import java.util.Map;
  * @author pjw
  */
 public class ScannerManager {
+    private static final String TAG = "ScannerManager.";
+
     /** Preference key */
-    public static final String PREF_PREFERRED_SCANNER = "ScannerManager.PreferredScanner";
+    public static final String PREF_PREFERRED_SCANNER = TAG + "PreferredScanner";
 
     /** Unique IDs to associate with each supported scanner intent */
     public static final int SCANNER_ZXING_COMPATIBLE = 1;

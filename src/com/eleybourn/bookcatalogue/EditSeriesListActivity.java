@@ -36,14 +36,15 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter;
-import com.eleybourn.bookcatalogue.adapters.SimpleListAdapterRowActionListener;
 import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
+import com.eleybourn.bookcatalogue.booklist.EditBooklistStyleGroupsActivity;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.dialogs.fieldeditdialog.EditAuthorDialog;
 import com.eleybourn.bookcatalogue.dialogs.fieldeditdialog.EditSeriesDialog;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.utils.Utils;
+import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.util.ArrayList;
 
@@ -99,7 +100,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
                 }
             }
             mList.add(newSeries);
-            mListAdapter.notifyDataSetChanged();
+            onListChanged();
             seriesField.setText("");
             numberField.setText("");
         } else {
@@ -165,7 +166,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
             from.copyFrom(to);
             Series.pruneSeriesList(mList);
             Utils.pruneList(mDb, mList);
-            mListAdapter.notifyDataSetChanged();
+            onListChanged();
             return;
         }
 
@@ -187,7 +188,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
                 from.id = mDb.getSeriesId(from);
             }
             mDb.insertOrUpdateSeries(from);
-            mListAdapter.notifyDataSetChanged();
+            onListChanged();
             return;
         }
 
@@ -205,7 +206,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
                 from.copyFrom(to);
                 Series.pruneSeriesList(mList);
                 Utils.pruneList(mDb, mList);
-                mListAdapter.notifyDataSetChanged();
+                onListChanged();
                 dialog.dismiss();
             }
         });
@@ -216,7 +217,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
                 from.copyFrom(to);
                 Series.pruneSeriesList(mList);
                 Utils.pruneList(mDb, mList);
-                mListAdapter.notifyDataSetChanged();
+                onListChanged();
                 dialog.dismiss();
             }
         });
@@ -258,32 +259,64 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
         return new SeriesListAdapter(this, rowViewId, list);
     }
 
-    protected class SeriesListAdapter extends SimpleListAdapter<Series> implements SimpleListAdapterRowActionListener<Series> {
-        SeriesListAdapter(final @NonNull Context context, final @LayoutRes int rowViewId, final @NonNull ArrayList<Series> items) {
+    protected class SeriesListAdapter extends SimpleListAdapter<Series> {
+
+        SeriesListAdapter(final @NonNull Context context,
+                          final @LayoutRes int rowViewId,
+                          final @NonNull ArrayList<Series> items) {
             super(context, rowViewId, items);
         }
 
         @Override
         public void onGetView(final @NonNull View target, final @NonNull Series series) {
-            TextView dt = target.findViewById(R.id.row_series);
-            if (dt != null) {
-                dt.setText(series.getDisplayName());
+            Holder holder = ViewTagger.getTag(target, R.id.TAG_HOLDER);
+            if (holder == null) {
+                // New view, so build the Holder
+                holder = new Holder();
+                holder.row_series = target.findViewById(R.id.row_series);
+                holder.row_series_sort = target.findViewById(R.id.row_series_sort);
+                // Tag the parts that need it
+                ViewTagger.setTag(target, R.id.TAG_HOLDER, holder);
             }
-            TextView st = target.findViewById(R.id.row_series_sort);
-            if (st != null) {
+            // Setup the variant fields in the holder
+            if (holder.row_series != null) {
+                holder.row_series.setText(series.getDisplayName());
+            }
+            if (holder.row_series_sort != null) {
                 if (series.getDisplayName().equals(series.getSortName())) {
-                    st.setVisibility(View.GONE);
+                    holder.row_series_sort.setVisibility(View.GONE);
                 } else {
-                    st.setVisibility(View.VISIBLE);
-                    st.setText(series.getSortName());
+                    holder.row_series_sort.setVisibility(View.VISIBLE);
+                    holder.row_series_sort.setText(series.getSortName());
                 }
             }
         }
 
+        /**
+         * edit the Series we clicked on
+         */
         @Override
-        public void onRowClick(final @NonNull View target, final @NonNull Series series, final int position) {
+        public void onRowClick(final @NonNull View target,
+                               final @NonNull Series series,
+                               final int position) {
             edit(series);
+        }
+
+        /**
+         * delegate to the ListView host
+         */
+        @Override
+        public void onListChanged() {
+            super.onListChanged();
+            EditSeriesListActivity.this.onListChanged();
         }
     }
 
+    /**
+     * Holder pattern for each row.
+     */
+    private class Holder {
+        TextView row_series;
+        TextView row_series_sort;
+    }
 }

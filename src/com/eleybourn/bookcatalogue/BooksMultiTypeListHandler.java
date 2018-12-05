@@ -107,7 +107,7 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_UPDATE_MONTH;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LOANED_TO;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_READ_STATUS;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_NAME;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE_LETTER;
 
 /**
@@ -172,13 +172,14 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
         return holder.absolutePosition;
     }
 
-    private void scaleViewText(@SuppressWarnings("unused") final @NonNull BooklistRowView rowView,
+    private void scaleViewText(final float scale,
+                               @SuppressWarnings("unused") final @NonNull BooklistRowView rowView,
                                final @NonNull View root) {
 
         if (root instanceof TextView) {
             TextView txt = (TextView) root;
             float px = txt.getTextSize();
-            txt.setTextSize(TypedValue.COMPLEX_UNIT_PX, px * BooklistStyle.SCALE);
+            txt.setTextSize(TypedValue.COMPLEX_UNIT_PX, px * scale);
         }
 		/*
 		 * No matter what I tried, this particular piece of code does not seem to work.
@@ -206,17 +207,17 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
 		 */
 
         root.setPadding(
-                (int) (BooklistStyle.SCALE * root.getPaddingLeft()),
-                (int) (BooklistStyle.SCALE * root.getPaddingTop()),
-                (int) (BooklistStyle.SCALE * root.getPaddingRight()),
-                (int) (BooklistStyle.SCALE * root.getPaddingBottom()));
+                (int) (scale * root.getPaddingLeft()),
+                (int) (scale * root.getPaddingTop()),
+                (int) (scale * root.getPaddingRight()),
+                (int) (scale * root.getPaddingBottom()));
 
         root.getPaddingBottom();
         if (root instanceof ViewGroup) {
             ViewGroup grp = (ViewGroup) root;
             for (int i = 0; i < grp.getChildCount(); i++) {
                 View v = grp.getChildAt(i);
-                scaleViewText(rowView, v);
+                scaleViewText(scale, rowView, v);
             }
         }
     }
@@ -244,8 +245,8 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
             holder = newHolder(rowView);
             convertView = holder.newView(rowView, inflater, parent, level);
             // Scale the text if necessary
-            if (rowView.getStyle().isCondensed()) {
-                scaleViewText(rowView, convertView);
+            if (rowView.getStyle().getScaleSize() != 0f) {
+                scaleViewText(rowView.getStyle().getScaleSize(), rowView, convertView);
             }
             convertView.setPadding((level - 1) * 5, 0, 0, 0);
             holder.map(rowView, convertView);
@@ -683,7 +684,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
             case RowKinds.ROW_KIND_AUTHOR:
                 return new GenericStringHolder(rowView, DOM_AUTHOR_FORMATTED.name, R.string.not_set_with_brackets);
             case RowKinds.ROW_KIND_SERIES:
-                return new GenericStringHolder(rowView, DOM_SERIES_NAME.name, R.string.not_set_with_brackets);
+                return new GenericStringHolder(rowView, DOM_SERIES.name, R.string.not_set_with_brackets);
             case RowKinds.ROW_KIND_TITLE_LETTER:
                 return new GenericStringHolder(rowView, DOM_TITLE_LETTER.name, R.string.not_set_with_brackets);
             case RowKinds.ROW_KIND_PUBLISHER:
@@ -1180,11 +1181,11 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
         public void map(final @NonNull BooklistRowView rowView, final @NonNull View bookView) {
             final BooklistStyle style = rowView.getStyle();
             // scaling is done on the covers and on the 'read' icon
-            float scale = style.isCondensed() ? BooklistStyle.SCALE : 1.0f;
+            float scale = style.getScaleSize();
 
             title = bookView.findViewById(R.id.title);
 
-            // theoretically we should check Fields.isVisible(UniqueId.KEY_SERIES_NAME) but BooklistBuilder is not taking those settings into account
+            // theoretically we should check Fields.isVisible(UniqueId.KEY_SERIES) but BooklistBuilder is not taking those settings into account
             seriesNum = bookView.findViewById(R.id.series_num);
             seriesNumLong = bookView.findViewById(R.id.series_num_long);
             if (!rowView.hasSeriesNumber()) {
@@ -1295,8 +1296,8 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                 ImageUtils.fetchFileIntoImageView(cover,
                         rowView.getBookUuid(), rowView.getMaxThumbnailWidth(), rowView.getMaxThumbnailHeight(),
                         true,
-                        BooklistPreferencesActivity.isThumbnailCacheEnabled(),
-                        BooklistPreferencesActivity.isBackgroundThumbnailsEnabled());
+                        BooklistPreferencesActivity.thumbnailsAreCached(),
+                        BooklistPreferencesActivity.thumbnailsAreGeneratedInBackground());
             }
 
             // Extras

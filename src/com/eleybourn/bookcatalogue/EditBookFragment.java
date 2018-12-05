@@ -112,20 +112,6 @@ public class EditBookFragment extends BookBaseFragment implements BookManager {
 
     //<editor-fold desc="Fragment startup">
 
-//    /**
-//     * Ensure activity supports interface
-//     */
-//    @Override
-//    @CallSuper
-//    public void onAttach(final @NonNull Context context) {
-//        super.onAttach(context);
-//    }
-
-//    @Override
-//    public void onCreate(@Nullable final Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//    }
-
     @Override
     public View onCreateView(final @NonNull LayoutInflater inflater,
                              final @Nullable ViewGroup container,
@@ -185,12 +171,6 @@ public class EditBookFragment extends BookBaseFragment implements BookManager {
 //    @Override
 //    protected void initFields() {
 //        super.initFields();
-//    }
-
-//    @CallSuper
-//    @Override
-//    public void onResume() {
-//        super.onResume();
 //    }
 
 //    @Override
@@ -324,12 +304,6 @@ public class EditBookFragment extends BookBaseFragment implements BookManager {
 
 //    @Override
 //    @CallSuper
-//    public void onPause() {
-//        super.onPause();
-//    }
-
-//    @Override
-//    @CallSuper
 //    protected void onSaveFieldsToBook(final @NonNull Book book) {
 //        super.onSaveFieldsToBook(book);
 //    }
@@ -344,10 +318,6 @@ public class EditBookFragment extends BookBaseFragment implements BookManager {
         super.onSaveInstanceState(outState);
     }
 
-//    @Override
-//    public void onDestroy() {
-//        super.onDestroy();
-//    }
     //</editor-fold>
 
     /* ------------------------------------------------------------------------------------------ */

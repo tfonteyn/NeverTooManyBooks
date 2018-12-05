@@ -54,7 +54,7 @@ import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.DBExceptions;
-import com.eleybourn.bookcatalogue.datamanager.validators.ValidatorException;
+import com.eleybourn.bookcatalogue.datamanager.datavalidators.ValidatorException;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
@@ -134,7 +134,9 @@ import java.util.Objects;
 public class Fields extends ArrayList<Fields.Field> {
     public static final long serialVersionUID = 1L;
     /** Prefix for all preferences */
-    private final static String PREFS_FIELD_VISIBILITY = "field_visibility_";
+    public final static String TAG = "fields.";
+    /** whether the user wants a field visible or not */
+    public final static String PREFS_FIELD_VISIBILITY = TAG + "visibility."; /* + fieldName */
 
     /** The activity related to this object. */
     @NonNull
@@ -311,11 +313,11 @@ public class Fields extends ArrayList<Fields.Field> {
     }
 
     /**
-     * Load all fields from the passed cursor
+     * Load all fields from the passed Cursor
      *
-     * @param cursor Cursor to load Field objects from.
+     * @param cursor with data to load.
      *
-     * @throws DBExceptions.ColumnNotPresent if the cursor does not have a required column
+     * @throws DBExceptions.ColumnNotPresent if the Cursor does not have a required column
      */
     @SuppressWarnings("unused")
     public void setAllFrom(final @NonNull Cursor cursor) {
@@ -327,9 +329,9 @@ public class Fields extends ArrayList<Fields.Field> {
     /**
      * Load all fields from the passed bundle
      *
-     * @param values Bundle to load Field objects from.
+     * @param values with data to load.
      */
-    @SuppressWarnings("unused")
+    @SuppressWarnings("WeakerAccess")
     public void setAllFrom(final @NonNull Bundle values) {
         for (Field field : this) {
             field.setValueFrom(values);
@@ -337,9 +339,31 @@ public class Fields extends ArrayList<Fields.Field> {
     }
 
     /**
+     * Load fields from the passed bundle
+     *
+     * @param values        with data to load.
+     * @param withOverwrite if true, all fields are copied. If false, only non-existent fields are copied.
+     */
+    public void setAllFrom(final @NonNull Bundle values, final boolean withOverwrite) {
+        if (withOverwrite) {
+            setAllFrom(values);
+        } else {
+            for (Field field : this) {
+                if (!field.column.isEmpty() && values.containsKey(field.column)) {
+                    String val = values.getString(field.column);
+                    if (val != null) {
+                        field.setValue(val);
+                    }
+                }
+            }
+        }
+
+    }
+
+    /**
      * Load all fields from the passed {@link DataManager}
      *
-     * @param data Cursor to load Field objects from.
+     * @param data DataManager to load Field objects from.
      */
     public void setAllFrom(final @NonNull DataManager data) {
         for (Field field : this) {
@@ -350,7 +374,7 @@ public class Fields extends ArrayList<Fields.Field> {
     /**
      * Save all fields to the passed {@link DataManager}
      *
-     * @param data Cursor to load Field objects from.
+     * @param data DataManager to put Field objects in.
      */
     public void putAllInto(final @NonNull DataManager data) {
         for (Field field : this) {
@@ -555,7 +579,7 @@ public class Fields extends ArrayList<Fields.Field> {
         void setFieldValueFrom(final @NonNull Field field, final @NonNull Cursor cursor);
 
         /**
-         * Passed a Field and a Cursor get the column from the cursor and set the view value.
+         * Passed a Field and a Bundle get the column from the Bundle and set the view value.
          *
          * @param field  which defines the View details
          * @param values with data to load.
@@ -563,7 +587,7 @@ public class Fields extends ArrayList<Fields.Field> {
         void setFieldValueFrom(final @NonNull Field field, final @NonNull Bundle values);
 
         /**
-         * Passed a Field and a DataManager get the column from the data manager and set the view value.
+         * Passed a Field and a DataManager get the column from the DataManager and set the view value.
          *
          * @param field  which defines the View details
          * @param values with data to load.
@@ -1163,6 +1187,91 @@ public class Fields extends ArrayList<Fields.Field> {
         }
     }
 
+    public static class FieldUsage {
+        /** a key, usually from {@link UniqueId} */
+        @NonNull
+        public final String fieldId;
+        /** is the field a list type */
+        private final boolean isList;
+        /** label to show to the user */
+        @StringRes
+        private final int nameStringId;
+        /** how to use this field */
+        @NonNull
+        public Usage usage;
+
+
+        public FieldUsage(final @NonNull String fieldId,
+                          final @StringRes int nameStringId,
+                          final @NonNull Usage usage,
+                          final boolean isList) {
+            this.fieldId = fieldId;
+            this.nameStringId = nameStringId;
+            this.usage = usage;
+            this.isList = isList;
+        }
+
+        public boolean isSelected() {
+            return (usage != Usage.Skip);
+        }
+
+        public String getLabel(final @NonNull Context context) {
+            return context.getString(nameStringId);
+        }
+
+        public String getUsageInfo(final @NonNull Context context) {
+            return context.getString(usage.getStringId());
+        }
+
+        /**
+         * Cycle to the next Usage stage:
+         *
+         * if (isList): Skip -> CopyIfBlank -> AddExtra -> Overwrite -> Skip
+         * else          : Skip -> CopyIfBlank -> Overwrite -> Skip
+         */
+        public void nextState() {
+            usage = usage.nextState(isList);
+        }
+
+        public enum Usage {
+            Skip, CopyIfBlank, AddExtra, Overwrite;
+
+            public Usage nextState(final boolean isList) {
+                switch (this) {
+                    case Skip:
+                        return CopyIfBlank;
+                    case CopyIfBlank:
+                        if (isList) {
+                            return AddExtra;
+                        } else {
+                            return Overwrite;
+                        }
+                    case AddExtra:
+                        return Overwrite;
+                    case Overwrite:
+                        return Skip;
+                    default:
+                        // never reached
+                        return Skip;
+                }
+            }
+
+            @StringRes
+            int getStringId() {
+                switch (this) {
+                    case CopyIfBlank:
+                        return R.string.lbl_field_usage_copy_if_blank;
+                    case AddExtra:
+                        return R.string.lbl_field_usage_add_extra;
+                    case Overwrite:
+                        return R.string.lbl_field_usage_overwrite;
+                    default:
+                        return R.string.usage_skip;
+                }
+            }
+        }
+    }
+
     /** fronts an Activity context */
     private class ActivityContext implements FieldsContext {
         @NonNull
@@ -1229,12 +1338,24 @@ public class Fields extends ArrayList<Fields.Field> {
         /** Field ID */
         @IdRes
         public final int id;
-        /** database column name (can be blank) */
-        @NonNull
-        public final String column;
         /** Visibility group name. Used in conjunction with preferences to show/hide Views */
         @NonNull
         public final String group;
+        /**
+         * column name (can be blank) used to access a {@link DataManager} (or Bundle/Cursor)
+         *
+         * - column is set, and doNoFetch==false:
+         * ===> fetched from the {@link DataManager} (or Bundle/Cursor), and populated on the screen
+         * ===> extracted from the screen and put in {@link DataManager} (or Bundle)
+         *
+         * - column is set, and doNoFetch==true:
+         * ===> fetched from the {@link DataManager} (or Bundle/Cursor), but populating the screen must be done manually.
+         * ===> extracted from the screen and put in {@link DataManager} (or Bundle)
+         *
+         * - column is not set: field is defined, but data handling is fully manual.
+         */
+        @NonNull
+        public final String column;
         /** Owning collection */
         @NonNull
         final WeakReference<Fields> mFields;
@@ -1250,7 +1371,8 @@ public class Fields extends ArrayList<Fields.Field> {
         private FieldDataAccessor accessor;
         /**
          * Option indicating that even though field has a column name, it should NOT be fetched
-         * from a Cursor. This is usually done for synthetic fields needed when saving the data
+         * from a {@link DataManager} (or Bundle/Cursor).
+         * This is usually done for synthetic fields needed when putting the data into the {@link DataManager} (or Bundle)
          */
         private boolean doNoFetch = false;
 
@@ -1571,91 +1693,6 @@ public class Fields extends ArrayList<Fields.Field> {
                 return s;
             }
             return formatter.extract(this, s);
-        }
-    }
-
-    public static class FieldUsage {
-        /** a key, usually from {@link UniqueId} */
-        @NonNull
-        public final String fieldId;
-        /** is the field a list type */
-        private final boolean isList;
-        /** label to show to the user */
-        @StringRes
-        private final int nameStringId;
-        /** how to use this field */
-        @NonNull
-        public Usage usage;
-
-
-        public FieldUsage(final @NonNull String fieldId,
-                          final @StringRes int nameStringId,
-                          final @NonNull Usage usage,
-                          final boolean isList) {
-            this.fieldId = fieldId;
-            this.nameStringId = nameStringId;
-            this.usage = usage;
-            this.isList = isList;
-        }
-
-        public boolean isSelected() {
-            return (usage != Usage.Skip);
-        }
-
-        public String getLabel(final @NonNull Context context) {
-            return context.getString(nameStringId);
-        }
-
-        public String getUsageInfo(final @NonNull Context context) {
-            return context.getString(usage.getStringId());
-        }
-
-        /**
-         * Cycle to the next Usage stage:
-         *
-         * if (isList): Skip -> CopyIfBlank -> AddExtra -> Overwrite -> Skip
-         * else          : Skip -> CopyIfBlank -> Overwrite -> Skip
-         */
-        public void nextState() {
-            usage = usage.nextState(isList);
-        }
-
-        public enum Usage {
-            Skip, CopyIfBlank, AddExtra, Overwrite;
-
-            public Usage nextState(final boolean isList) {
-                switch (this) {
-                    case Skip:
-                        return CopyIfBlank;
-                    case CopyIfBlank:
-                        if (isList) {
-                            return AddExtra;
-                        } else {
-                            return Overwrite;
-                        }
-                    case AddExtra:
-                        return Overwrite;
-                    case Overwrite:
-                        return Skip;
-                    default:
-                        // never reached
-                        return Skip;
-                }
-            }
-
-            @StringRes
-            int getStringId() {
-                switch (this) {
-                    case CopyIfBlank:
-                        return R.string.lbl_field_usage_copy_if_blank;
-                    case AddExtra:
-                        return R.string.lbl_field_usage_add_extra;
-                    case Overwrite:
-                        return R.string.lbl_field_usage_overwrite;
-                    default:
-                        return R.string.usage_skip;
-                }
-            }
         }
     }
 }

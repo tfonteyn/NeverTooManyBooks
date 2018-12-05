@@ -25,7 +25,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.datamanager.validators.DataValidator;
+import com.eleybourn.bookcatalogue.datamanager.datavalidators.DataValidator;
 import com.eleybourn.bookcatalogue.utils.RTE;
 
 import java.io.Serializable;

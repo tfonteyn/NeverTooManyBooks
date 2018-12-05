@@ -1,7 +1,6 @@
 package com.eleybourn.bookcatalogue.database;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -16,8 +15,7 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.UpgradeMessageManager;
-
-import java.io.File;
+import com.eleybourn.bookcatalogue.utils.UpgradeMigrations;
 
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FAMILY_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_GIVEN_NAMES;
@@ -63,7 +61,7 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_SE
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LAST_UPDATE_DATE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LOANED_TO;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PK_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_NAME;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_ANTHOLOGY;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_AUTHORS;
@@ -89,9 +87,6 @@ public class CatalogueDBHelper extends SQLiteOpenHelper {
 
     /** RELEASE: Update database version */
     public static final int DATABASE_VERSION = 83; // last official version was 82
-    /** the one and only */
-    private static final String DATABASE_NAME = "book_catalogue";
-
     /**
      * In addition to SQLite's default BINARY collator (others: NOCASE and RTRIM)
      * Android supplies two more:
@@ -152,7 +147,7 @@ public class CatalogueDBHelper extends SQLiteOpenHelper {
                     ")";
     static final String DATABASE_CREATE_SERIES =
             "CREATE TABLE " + TBL_SERIES + " (_id integer primary key autoincrement, " +
-                    DOM_SERIES_NAME + " text not null " +
+                    DOM_SERIES + " text not null " +
                     ")";
     static final String DATABASE_CREATE_BOOK_SERIES =
             "CREATE TABLE " + TBL_BOOK_SERIES + "(" +
@@ -169,6 +164,8 @@ public class CatalogueDBHelper extends SQLiteOpenHelper {
                     DOM_AUTHOR_POSITION + " integer NOT NULL, " +
                     "PRIMARY KEY(" + DOM_FK_BOOK_ID + ", " + DOM_AUTHOR_POSITION + ")" +
                     ")";
+    /** the one and only */
+    private static final String DATABASE_NAME = "book_catalogue";
     private static final String DATABASE_CREATE_ANTHOLOGY =
             "CREATE TABLE " + TBL_ANTHOLOGY + " (_id integer primary key autoincrement, " +
                     DOM_FK_AUTHOR_ID + " integer not null REFERENCES " + TBL_AUTHORS + ", " +
@@ -294,10 +291,9 @@ public class CatalogueDBHelper extends SQLiteOpenHelper {
     private static String mMessage = "";
 
     /**
-     *
-     * @param context   the context
-     * @param factory   the cursor factor
-     * @param synchronizer  needed in onCreate/onUpgrade
+     * @param context      the context
+     * @param factory      the cursor factor
+     * @param synchronizer needed in onCreate/onUpgrade
      */
     CatalogueDBHelper(final @NonNull Context context,
                       @SuppressWarnings("SameParameterValue") final @NonNull SQLiteDatabase.CursorFactory factory,
@@ -312,29 +308,6 @@ public class CatalogueDBHelper extends SQLiteOpenHelper {
 
     public static String getDatabasePath(final @NonNull Context context) {
         return context.getDatabasePath(DATABASE_NAME).getAbsolutePath();
-    }
-
-    /**
-     * For the upgrade to version 83, all cover files were moved to a sub directory.
-     *
-     * This routine renames all files, if they exist.
-     */
-    private static void v83_moveCoversToDedicatedDirectory(final @NonNull DbSync.SynchronizedDb db) {
-
-        try (Cursor cur = db.rawQuery("SELECT " + DOM_BOOK_UUID + " FROM " + TBL_BOOKS, new String[]{})) {
-            while (cur.moveToNext()) {
-                final String uuid = cur.getString(0);
-                File source = StorageUtils.getFile(uuid + ".jpg");
-                if (!source.exists()) {
-                    source = StorageUtils.getFile(uuid + ".png");
-                    if (!source.exists()) {
-                        continue;
-                    }
-                }
-                File destination = StorageUtils.getCoverFile(uuid);
-                StorageUtils.renameFile(source, destination);
-            }
-        }
     }
 
     /**
@@ -463,40 +436,22 @@ public class CatalogueDBHelper extends SQLiteOpenHelper {
         if (curVersion < newVersion && curVersion == 82) {
             //noinspection UnusedAssignment
             curVersion++;
-            mMessage += "New in v83:\n\n";
-            mMessage += "* Moved to base Android 5.0 bringing lots of new UI goodies.";
-            mMessage += "* Removed the old 'Classic' view (sorry)\n";
-            mMessage += "* Cover thumbnails and log files are moved to dedicated sub folders to clean up the root folder.\n\n";
-            mMessage += "* Configurable website search order.\n";
-            mMessage += "* New Search website: ISFDB.\n";
-            mMessage += "* Better Anthology support (Edit/View/cross-book)\n";
-            mMessage += "* Anthology titles auto populated (ISFDB site only!)\n\n";
-            mMessage += "* The language field wil show the translated name for the current locale.\n";
-            mMessage += "* New fields:\n";
-            mMessage += "*   Books & Anthology titles now have a 'first published' field\n";
-            mMessage += "*   Books Editions (1st, book-club, etc)\n";
-            mMessage += "*   Book paid price\n";
-            mMessage += "*   Book date acquired\n";
-            mMessage += "*   Currency support for prices\n";
-            mMessage += "*   LibraryThing & ISFDB local id for future usage\n";
+            mMessage += "Major upgrade; restart to see what's new\n\n";
 
-            // cleanup of obsolete preferences
-            SharedPreferences.Editor ed = BookCatalogueApp.getSharedPreferences().edit();
-            ed.remove("StartupActivity.FAuthorSeriesFixupRequired");
-            ed.remove("start_in_my_books");
-            ed.remove("App.includeClassicView");
-            ed.remove("App.DisableBackgroundImage");
-            ed.remove("App.BooklistStyle");
-            ed.apply();
+            /* move cover files to a sub-folder.
+               There is now also a dedicated log directory.
+               Any leftover files can be cleaned by a Help/purge.
+              */
+            UpgradeMigrations.v200moveCoversToDedicatedDirectory(syncedDb);
 
-            // move cover files
-            v83_moveCoversToDedicatedDirectory(syncedDb);
-            // there is also a dedicated log directory now. Any left over files will be cleaned by a Help/purge.
+            // migrate the properties.
+            UpgradeMigrations.v200preferences(BookCatalogueApp.getSharedPreferences(), true);
 
-            //TEST a proper upgrade from 82 to 83
+            //TEST a proper upgrade from 82 to 83 with non-clean data
 
-            // move the existing book-anthology links to the new table
+            // anthology-titles are now cross-book; e.g. one 'story' can be present in multiple books
             db.execSQL(DATABASE_CREATE_BOOK_TOC_ENTRIES);
+            // move the existing book-anthology links to the new table
             db.execSQL("INSERT INTO " + TBL_BOOK_TOC_ENTRIES +
                     " SELECT " + DOM_FK_BOOK_ID + ", " + DOM_PK_ID + ", " + DOM_BOOK_TOC_ENTRY_POSITION + " FROM " + TBL_ANTHOLOGY);
 
@@ -504,8 +459,10 @@ public class CatalogueDBHelper extends SQLiteOpenHelper {
             UpgradeDatabase.recreateAndReloadTable(syncedDb, TBL_ANTHOLOGY.getName(), DATABASE_CREATE_ANTHOLOGY,
                     /* remove fields: */ DOM_FK_BOOK_ID.name, DOM_BOOK_TOC_ENTRY_POSITION.name);
 
-            // could use UpgradeDatabase.recreateAndReloadTable
+            // ENHANCE: could use UpgradeDatabase.recreateAndReloadTable
             // but how does that react to large tables ? memory ? storage space ? ...
+            // also: new constraints forced on old data ?
+            //
             // add new fields
             db.execSQL("ALTER TABLE " + TBL_BOOKS + " ADD " + DOM_BOOK_DATE_ACQUIRED + " date");
             db.execSQL("ALTER TABLE " + TBL_BOOKS + " ADD " + DOM_FIRST_PUBLICATION + " date");
@@ -518,9 +475,13 @@ public class CatalogueDBHelper extends SQLiteOpenHelper {
             db.execSQL("ALTER TABLE " + TBL_BOOKS + " ADD " + DOM_BOOK_ISFDB_ID + " integer");
             db.execSQL("ALTER TABLE " + TBL_BOOKS + " ADD " + DOM_BOOK_LIBRARY_THING_ID + " integer");
 
-            // all books with a list price are assumed to be USD based on the only search up to v82 being Amazon US.
-            // FIXME if a user has manually edited the list price, ouch....
-            // set all rows which have a price, to being in USD. Do not change the price field.
+            /* all books with a list price are assumed to be USD based on the only search up to v82
+             * being Amazon US (via proxy... so this is my best guess).
+             *
+             * FIXME if a user has manually edited the list price, can we scan for currencies ?
+             *
+             * set all rows which have a price, to being in USD. Does not change the price field.
+             */
             db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_PRICE_LISTED_CURRENCY + "='USD' WHERE NOT " + DOM_BOOK_PRICE_LISTED + "=''");
         }
 

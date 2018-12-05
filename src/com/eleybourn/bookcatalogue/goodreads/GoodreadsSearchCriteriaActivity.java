@@ -18,7 +18,7 @@
  * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.eleybourn.bookcatalogue.goodreads.notinuse;
+package com.eleybourn.bookcatalogue.goodreads;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -41,11 +41,13 @@ import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 
 /**
- * Activity to handle searching Goodreads for books that did not automatically convert. These
- * are typically books with no ISBN.
+ * Activity to handle searching Goodreads for books that did not automatically convert.
+ * These are typically books with no ISBN.
  *
- * The search criteria is setup to contain the book author, title and ISBN. The user can edit
- * these and search Goodreads, then review the results.
+ * The search criteria is setup to contain the book author, title and ISBN.
+ * The user can edit these, search Goodreads, and then review the results.
+ *
+ * See {@link SendBookEvents} where the use of this activity is commented out.
  *
  * @author Philip Warner
  */
@@ -55,6 +57,8 @@ public class GoodreadsSearchCriteriaActivity extends BaseActivity {
 
     private CatalogueDBAdapter mDb;
     private long mBookId = 0;
+
+    private TextView mCriteriaView;
 
     @Override
     protected int getLayoutId() {
@@ -69,6 +73,8 @@ public class GoodreadsSearchCriteriaActivity extends BaseActivity {
 
         mDb = new CatalogueDBAdapter(this);
 
+        mCriteriaView = findViewById(R.id.search_text);
+
         Bundle extras = this.getIntent().getExtras();
 
         // Look for a book ID
@@ -81,9 +87,9 @@ public class GoodreadsSearchCriteriaActivity extends BaseActivity {
             // Initial value; try to build from passed book, if available.
             StringBuilder criteria = new StringBuilder();
 
-            setViewVisibility(R.id.original_details, true);
+            findViewById(R.id.original_details).setVisibility(View.VISIBLE);
 
-            try (BookCursor cursor = mDb.fetchBookById(mBookId)){
+            try (BookCursor cursor = mDb.fetchBookById(mBookId)) {
                 if (!cursor.moveToFirst()) {
                     StandardDialogs.showUserMessage(this, R.string.warning_book_no_longer_exists);
                     setResult(Activity.RESULT_CANCELED);
@@ -93,28 +99,28 @@ public class GoodreadsSearchCriteriaActivity extends BaseActivity {
                 final BookRowView bookCursorRow = cursor.getCursorRow();
                 {
                     String s = bookCursorRow.getPrimaryAuthorNameFormattedGivenFirst();
-                    setViewText(R.id.author, s);
+                    ((TextView)findViewById(R.id.author)).setText(s);
                     criteria.append(s).append(" ");
                 }
                 {
                     String s = bookCursorRow.getTitle();
-                    setViewText(R.id.title, s);
+                    ((TextView)findViewById(R.id.title)).setText(s);
                     criteria.append(s).append(" ");
                 }
                 {
                     String s = bookCursorRow.getIsbn();
-                    setViewText(R.id.isbn, s);
+                    ((TextView)findViewById(R.id.isbn)).setText(s);
                     criteria.append(s).append(" ");
                 }
             }
 
-            setViewText(R.id.search_text, criteria.toString().trim());
+            mCriteriaView.setText(criteria.toString().trim());
             doSearch();
         } else {
-            setViewVisibility(R.id.original_details, false);
+            findViewById(R.id.original_details).setVisibility(View.GONE);
         }
 
-        setClickListener(R.id.search, new OnClickListener() {
+        findViewById(R.id.search).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 doSearch();
@@ -124,48 +130,18 @@ public class GoodreadsSearchCriteriaActivity extends BaseActivity {
     }
 
     /**
-     * Set the visibility of the passed view.
-     */
-    private void setViewVisibility(@SuppressWarnings("SameParameterValue") final @IdRes int id, final boolean visible) {
-        this.findViewById(id).setVisibility(visible ? View.VISIBLE : View.GONE);
-    }
-
-    /**
-     * Set the text of the passed view
-     */
-    private void setViewText(final @IdRes int id, final @NonNull String s) {
-        ((TextView) this.findViewById(id)).setText(s);
-    }
-
-    /**
-     * Get the text of the passed view
-     */
-    private String getViewText(@SuppressWarnings("SameParameterValue") final @IdRes int id) {
-        return ((TextView) this.findViewById(id)).getText().toString().trim();
-    }
-
-    /**
-     * Set the OnClickListener for the passed view
-     */
-    private void setClickListener(@SuppressWarnings("SameParameterValue") final @IdRes int id, final @NonNull OnClickListener listener) {
-        this.findViewById(id).setOnClickListener(listener);
-    }
-
-
-    /**
      * Start the search results activity.
      */
     private void doSearch() {
-        String criteria = getViewText(R.id.search_text);
-
+        String criteria = mCriteriaView.getText().toString().trim();
         if (criteria.isEmpty()) {
             StandardDialogs.showUserMessage(this, R.string.please_enter_search_criteria);
             return;
         }
 
-        Intent i = new Intent(this, GoodreadsSearchResultsActivity.class);
-        i.putExtra(GoodreadsSearchResultsActivity.BKEY_SEARCH_CRITERIA, criteria);
-        this.startActivity(i);
+        Intent intent = new Intent(this, GoodreadsSearchResultsActivity.class);
+        intent.putExtra(GoodreadsSearchResultsActivity.BKEY_SEARCH_CRITERIA, criteria);
+        startActivity(intent);
     }
 
     @Override

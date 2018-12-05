@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.eleybourn.bookcatalogue.datamanager.validators;
+package com.eleybourn.bookcatalogue.datamanager.datavalidators;
 
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
@@ -27,13 +27,13 @@ import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.datamanager.Datum;
 
 /**
- * Validator to apply a default value and validate as integer.
+ * Validator to apply a default value and validate as Float
  *
  * @author Philip Warner
  */
-public class IntegerValidator extends DefaultFieldValidator {
+public class FloatValidator extends DefaultFieldValidator {
 
-    public IntegerValidator(final @NonNull String defaultValue) {
+    public FloatValidator(final @NonNull String defaultValue) {
         super(defaultValue);
     }
 
@@ -50,17 +50,21 @@ public class IntegerValidator extends DefaultFieldValidator {
 
         super.validate(data, datum, false);
         try {
-            Integer value;
+            Float value;
             Object o = data.get(datum);
-            if (o instanceof Integer) {
-                value = (Integer) o;
+            if (o instanceof Float) {
+                value = (Float) o;
+            } else if (o instanceof Double) {
+                value = ((Double) o).floatValue();
+            } else if (o instanceof Integer) {
+                value = ((Integer) o).floatValue();
             } else {
                 //noinspection ConstantConditions
-                value = Integer.parseInt(o.toString());
+                value = Float.parseFloat(o.toString());
             }
-            data.putInt(datum, value);
+            data.putFloat(datum, value);
         } catch (Exception e) {
-            throw new ValidatorException(R.string.vldt_integer_expected, new Object[]{datum.getKey()});
+            throw new ValidatorException(R.string.vldt_real_expected, new Object[]{datum.getKey()});
         }
     }
 }
