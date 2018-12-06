@@ -1,30 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <item name="TAG_EVENT" type="id" />
+
+    <!-- BEGIN named tags for use with ViewTagger -->
+        <item name="TAG_EVENT" type="id" />
     <item name="TAG_TASK" type="id" />
     <item name="TAG_TASK_HOLDER" type="id" />
-
     <!-- Goodreads BookEvent Holder -->
     <item name="TAG_BOOK_EVENT_HOLDER" type="id" />
-
     <!-- only used in {@link GoodreadsWork} but the Tagger class wants a @IdRes -->
     <item name="TAG_GOODREADS_WORK" type="id" />
-
     <!-- tags a Cover Image View with the SimpleTask responsible to fetch the image -->
     <item name="TAG_GET_THUMBNAIL_TASK" type="id" />
-
-    <!-- storing a Property.Holder or the Property itself. See {@link BooleanProperty} for example
-    TODO: could just use TAG_HOLDER ? -->
+    <!-- storing a Property.Holder or the Property itself. See {@link BooleanProperty} for example -->
     <item name="TAG_PROPERTY" type="id" />
-
-    <!-- storing a generic Holder object -->
-    <item name="TAG_HOLDER" type="id" />
-
-    <!-- used for tagging items in a list of items used in a selection dialog -->
+        <!-- used for tagging items in a list of items used in a selection dialog -->
     <item name="TAG_DIALOG_ITEM" type="id" />
-
-    <!-- used by {@link BooksMultiTypeListHandler} for the row details (book, level 1,2,3) -->
-    <item name="BLB_ROW_DETAILS" type="id" />
+    <!-- END named tags for use with ViewTagger -->
 
     <!-- BEGIN predefined menu items -->
 
@@ -108,5 +99,8 @@
     <item name="SLA_ROW_POSITION" type="id"/>
     <item name="SLA_ROW_POSITION_TAG" type="id" />
     <!-- END used by {@link SimpleListAdapter} and {@link EditObjectListActivity} -->
+
+    <!-- used by {@link BooksMultiTypeListHandler} for the row details (book, level 1,2,3) -->
+    <item name="BLB_ROW_DETAILS" type="id" />
 
 </resources>

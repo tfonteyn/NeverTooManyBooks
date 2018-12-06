@@ -141,7 +141,7 @@ public class EditBookFieldsFragment extends BookBaseFragment implements
                         intent.putExtra(UniqueId.BKEY_AUTHOR_ARRAY, getBookManager().getBook().getAuthorList());
                         intent.putExtra(UniqueId.KEY_ID, getBookManager().getBook().getBookId());
                         intent.putExtra(UniqueId.KEY_TITLE, mFields.getField(R.id.title).getValue().toString());
-                        requireActivity().startActivityForResult(intent, EditAuthorListActivity.REQUEST_CODE); /* dd74343a-50ff-4ce9-a2e4-a75f7bcf9e36 */
+                        startActivityForResult(intent, EditAuthorListActivity.REQUEST_CODE); /* dd74343a-50ff-4ce9-a2e4-a75f7bcf9e36 */
                     }
                 });
 
@@ -155,7 +155,7 @@ public class EditBookFieldsFragment extends BookBaseFragment implements
                         intent.putExtra(UniqueId.BKEY_SERIES_ARRAY, getBookManager().getBook().getSeriesList());
                         intent.putExtra(UniqueId.KEY_ID, getBookManager().getBook().getBookId());
                         intent.putExtra(UniqueId.KEY_TITLE, mFields.getField(R.id.title).getValue().toString());
-                        requireActivity().startActivityForResult(intent, EditSeriesListActivity.REQUEST_CODE); /* bca659b6-dfb9-4a97-b651-5b05ad102400 */
+                        startActivityForResult(intent, EditSeriesListActivity.REQUEST_CODE); /* bca659b6-dfb9-4a97-b651-5b05ad102400 */
                     }
                 });
 

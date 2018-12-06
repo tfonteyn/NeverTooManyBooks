@@ -239,25 +239,27 @@ public class EditBooklistStyleGroupsActivity extends EditObjectListActivity<Grou
         }
 
         @Override
-        public void onGetView(final @NonNull View target, final @NonNull GroupWrapper groupWrapper) {
-            Holder holder = ViewTagger.getTag(target, R.id.TAG_HOLDER);
+        public void onGetView(final @NonNull View convertView, final @NonNull GroupWrapper groupWrapper) {
+            Holder holder = ViewTagger.getTag(convertView);
             if (holder == null) {
                 // New view, so build the Holder
                 holder = new Holder();
-                holder.name = target.findViewById(R.id.name);
-                holder.checkable = target.findViewById(R.id.row_check);
+                holder.name = convertView.findViewById(R.id.name);
+                holder.checkable = convertView.findViewById(R.id.row_check);
                 // Tag the parts that need it
-                ViewTagger.setTag(target, R.id.TAG_HOLDER, holder);
-                ViewTagger.setTag(holder.checkable, R.id.TAG_HOLDER, holder);
+                ViewTagger.setTag(convertView, holder);
+                ViewTagger.setTag(holder.checkable, holder);
 
                 // Handle a click on the CheckedTextView
                 holder.checkable.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(@NonNull View v) {
-                        Holder h = ViewTagger.getTagOrThrow(v, R.id.TAG_HOLDER);
+                        Holder h = ViewTagger.getTagOrThrow(v);
                         boolean newStatus = !h.groupWrapper.present;
                         h.groupWrapper.present = newStatus;
                         h.checkable.setChecked(newStatus);
+                        // no need to update the list, item itself is updated
+                        //onListChanged();
                     }
                 });
             }

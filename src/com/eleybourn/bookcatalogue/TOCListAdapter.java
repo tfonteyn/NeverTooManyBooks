@@ -24,18 +24,18 @@ public class TOCListAdapter extends SimpleListAdapter<TOCEntry> {
     }
 
     @Override
-    public void onGetView(final @NonNull View target,
+    public void onGetView(final @NonNull View convertView,
                           final @NonNull TOCEntry tocEntry) {
 
-        Holder holder = ViewTagger.getTag(target, R.id.TAG_HOLDER);
+        Holder holder = ViewTagger.getTag(convertView);
         if (holder == null) {
             // New view, so build the Holder
             holder = new Holder();
-            holder.title = target.findViewById(R.id.title);
-            holder.author = target.findViewById(R.id.author);
-            holder.firstPublication = target.findViewById(R.id.year);
+            holder.title = convertView.findViewById(R.id.title);
+            holder.author = convertView.findViewById(R.id.author);
+            holder.firstPublication = convertView.findViewById(R.id.year);
             // Tag the parts that need it
-            ViewTagger.setTag(target, R.id.TAG_HOLDER, holder);
+            ViewTagger.setTag(convertView, holder);
         }
 
         holder.title.setText(tocEntry.getTitle());

@@ -22,12 +22,11 @@
         tools:ignore="Autofill,HardcodedText" />
 
     <!-- FIXME: Amazon is currently searched through a proxy, see {@link AmazonManager}
-         , so not showing this one. Keeping it for future use -->
+         , but... without a dev-key, the website is used.-->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/amazon"
-        android:visibility="gone"/>
+        android:text="@string/amazon"/>
 
     <!-- no style used on purpose -->
     <EditText
@@ -36,10 +35,9 @@
         android:layout_height="wrap_content"
         android:hint="http://www.amazon.com"
         android:inputType="textUri"
-        tools:ignore="Autofill,HardcodedText"
-        android:visibility="gone" />
+        tools:ignore="Autofill,HardcodedText" />
 
-    <!-- there is only one valid URL, so not showing this one. Keeping it for completeness sake -->
+    <!-- there is only one valid URL, so not showing ISFDB. Keeping it for completeness sake -->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

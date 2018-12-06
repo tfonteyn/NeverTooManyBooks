@@ -167,6 +167,7 @@ public class GoodreadsSearchResultsActivity extends BaseListActivity {
         GoodreadsWork work;
         TextView title;
         TextView author;
+
         ListHolder(final @NonNull ImageView cover) {
             this.cover = cover;
         }
@@ -193,46 +194,38 @@ public class GoodreadsSearchResultsActivity extends BaseListActivity {
         public View getView(final int position, @Nullable View convertView, final @NonNull ViewGroup parent) {
             ListHolder holder;
             if (convertView == null) {
-                // Not recycling
-                try {
-                    // Get a new View and make the holder for it.
-                    convertView = mInflater.inflate(R.layout.goodreads_work_item, parent, false);
+                // Not recycling, get a new View and make the holder for it.
+                convertView = mInflater.inflate(R.layout.goodreads_work_item, parent, false);
 
-                    holder = new ListHolder((ImageView) convertView.findViewById(R.id.coverImage));
-                    holder.author = convertView.findViewById(R.id.author);
-                    holder.title = convertView.findViewById(R.id.title);
+                holder = new ListHolder((ImageView) convertView.findViewById(R.id.coverImage));
+                holder.author = convertView.findViewById(R.id.author);
+                holder.title = convertView.findViewById(R.id.title);
 
-                    // Save the holder
-                    ViewTagger.setTag(convertView, holder);
+                // Save the holder
+                ViewTagger.setTag(convertView, holder);
 
-                    // Set the click listener
-                    convertView.setOnClickListener(new OnClickListener() {
-                        @Override
-                        public void onClick(@NonNull View v) {
-                            doItemClick(v);
-                        }
-                    });
+                // Set the click listener
+                convertView.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(@NonNull View v) {
+                        doItemClick(v);
+                    }
+                });
 
-                } catch (Exception e) {
-                    Logger.error(e);
-                    throw new RuntimeException(e);
-                }
             } else {
                 // Recycling: just get the holder
                 holder = ViewTagger.getTagOrThrow(convertView);
             }
 
-            synchronized (convertView) {
-                synchronized (holder.cover) {
-                    // Save the work details
-                    holder.work = mList.get(position);
-                    // get the cover (or put it in background task)
-                    holder.work.fillImageView(mTaskQueue, holder.cover);
+            synchronized (holder.cover) {
+                // Save the work details
+                holder.work = mList.get(position);
+                // get the cover (or put it in background task)
+                holder.work.fillImageView(mTaskQueue, holder.cover);
 
-                    // Update the views based on the work
-                    holder.author.setText(holder.work.authorName);
-                    holder.title.setText(holder.work.title);
-                }
+                // Update the views based on the work
+                holder.author.setText(holder.work.authorName);
+                holder.title.setText(holder.work.title);
             }
 
             return convertView;

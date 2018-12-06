@@ -49,9 +49,10 @@ import java.util.Objects;
  * @author Philip Warner
  */
 public class ViewTagger {
-    /** Stores the basic tag referred to without an ID */
+    /** Stores a basic tag referred to without an ID */
     @Nullable
     private Object mBareTag = null;
+    /** and/or, store multiple id'd tags in the array */
     @Nullable
     private SparseArray<Object> mTags = null;
 
@@ -90,40 +91,39 @@ public class ViewTagger {
 
     /**
      * Static method to get the bare tag from the view.
-     * Use this method if you the tag *could* be there
+     * Use this method if the tag *could* be there
      *
      * @see #getTagOrThrow(View)
      *
      * @param view View from which to retrieve tag
      */
-    @SuppressWarnings("unchecked")
     @Nullable
     public static <T> T getTag(final @NonNull View view) {
         ViewTagger tagger = getTagger(view, false);
         if (tagger == null) {
             return null;
         }
+        //noinspection unchecked
         return (T) tagger.get();
     }
 
     /**
      * Static method to get the bare tag from the view.
-     * Use this method if you the tag *should* be there
+     * Use this method if the tag *should* be there
      *
      * @see #getTag(View)
      *
      * @param view View from which to retrieve tag
      */
-    @SuppressWarnings("unchecked")
     @NonNull
     public static <T> T getTagOrThrow(final @NonNull View view) {
+        //noinspection unchecked
         return (T) Objects.requireNonNull(getTag(view), "tag  was null");
-
     }
 
     /**
      * Static method to get the tag matching the ID from the view
-     * Use this method if you the tag *could* be there
+     * Use this method if the tag *could* be there
      *
      * @param view View from which to retrieve tag
      * @param key  Key of required tag
@@ -189,7 +189,7 @@ public class ViewTagger {
      *
      * @param value Value of id-less tag
      */
-    public void set(final @Nullable Object value) {
+    private void set(final @Nullable Object value) {
         mBareTag = value;
     }
 
@@ -199,7 +199,7 @@ public class ViewTagger {
      * @param key   Key of new tag
      * @param value Object to store at specified tag
      */
-    public void set(final @IdRes int key, final @Nullable Object value) {
+    private void set(final @IdRes int key, final @Nullable Object value) {
         synchronized (this) {
             if (mTags == null) {
                 mTags = new SparseArray<>();
@@ -214,7 +214,7 @@ public class ViewTagger {
      * @return The bare tag object
      */
     @Nullable
-    public Object get() {
+    private Object get() {
         return mBareTag;
     }
 
@@ -226,7 +226,7 @@ public class ViewTagger {
      * @return Object at specified key
      */
     @Nullable
-    public Object get(final int key) {
+    private Object get(final int key) {
         synchronized (this) {
             if (mTags == null) {
                 return null;

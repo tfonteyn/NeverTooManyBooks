@@ -50,6 +50,7 @@ public class ListOfStringValuesProperty extends ListOfValuesProperty<String> {
     @Override
     @NonNull
     protected String getGlobalValue() {
+        //noinspection ConstantConditions
         return BookCatalogueApp.getStringPreference(getPreferenceKey(), getDefaultValue());
     }
 

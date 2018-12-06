@@ -20,7 +20,6 @@
 
 package com.eleybourn.bookcatalogue.tasks;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -88,8 +87,6 @@ public class GetThumbnailTask implements SimpleTaskQueue.SimpleTask {
     private final int mWidth;
     /** The height of the thumbnail retrieved (based on preferences) */
     private final int mHeight;
-    @NonNull
-    private final Context mContext;
     /** Resulting bitmap object */
     @Nullable
     private Bitmap mBitmap = null;
@@ -101,14 +98,12 @@ public class GetThumbnailTask implements SimpleTaskQueue.SimpleTask {
     /**
      * Constructor. Clean the view and save the details of what we want.
      */
-    private GetThumbnailTask(final @NonNull Context context,
-                             final @NonNull String hash,
+    private GetThumbnailTask(final @NonNull String hash,
                              final @NonNull ImageView v,
                              final int maxWidth,
                              final int maxHeight,
                              final boolean cacheWasChecked) {
         clearOldTaskFromView(v);
-        mContext = context;
         mView = new WeakReference<>(v);
         mCacheWasChecked = cacheWasChecked;
 
@@ -131,13 +126,12 @@ public class GetThumbnailTask implements SimpleTaskQueue.SimpleTask {
      * thread checks the cache only if there are no background cache-related tasks
      * currently running.
      */
-    public static void getThumbnail(final @NonNull Context context,
-                                    final @NonNull String hash,
+    public static void getThumbnail(final @NonNull String uuid,
                                     final @NonNull ImageView view,
                                     final int maxWidth,
                                     final int maxHeight,
                                     final boolean cacheWasChecked) {
-        GetThumbnailTask t = new GetThumbnailTask(context, hash, view, maxWidth, maxHeight, cacheWasChecked);
+        GetThumbnailTask t = new GetThumbnailTask(uuid, view, maxWidth, maxHeight, cacheWasChecked);
         mQueue.enqueue(t);
     }
 

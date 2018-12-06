@@ -155,10 +155,10 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable, Par
     /** Show publisher for each book */
     public static final String PREF_BL_STYLE_SHOW_PUBLISHER = TAG + "Show.Publisher";
     /** Show format for each book */
-    public static final String PREF_BL_STYLE_SHOW_FORMAT = TAG + "Show.Format";
+    private static final String PREF_BL_STYLE_SHOW_FORMAT = TAG + "Show.Format";
 
     /** Support for 'Font Size' property */
-    private static final ItemList<Integer> mListFontSizeListItems = new ItemList<>();
+    private static final ItemList<Integer> mListFontSizeListItems;
     /** Support for 'Show List Header Info' property */
     private static final ItemList<Integer> mShowHeaderInfoListItems = new ItemList<>();
 
@@ -172,26 +172,33 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable, Par
     private static final ItemList<Integer> mLoanedFilterListItems = new ItemList<>();
 
     static {
+        mListFontSizeListItems = new ItemList<>();
+        mListFontSizeListItems.add(null, R.string.use_default_setting);
         mListFontSizeListItems.add(SCALE_SIZE_NORMAL, R.string.blp_item_size_normal);
         mListFontSizeListItems.add(SCALE_SIZE_SMALLER, R.string.blp_item_size_smaller);
 
+        mShowHeaderInfoListItems.add(null, R.string.use_default_setting);
         mShowHeaderInfoListItems.add(SUMMARY_HIDE, R.string.blp_summary_hide);
         mShowHeaderInfoListItems.add(SUMMARY_SHOW_COUNT, R.string.blp_summary_book_count);
         mShowHeaderInfoListItems.add(SUMMARY_SHOW_COUNT ^ SUMMARY_SHOW_LEVEL_1, R.string.blp_summary_first_level_and_book_count);
         mShowHeaderInfoListItems.add(SUMMARY_SHOW_ALL, R.string.blp_summary_show_all);
 
+        mReadFilterListItems.add(null, R.string.use_default_setting);
         mReadFilterListItems.add(FILTER_NOT_USED, R.string.all_books);
         mReadFilterListItems.add(FILTER_NO, R.string.booklist_filters_unread);
         mReadFilterListItems.add(FILTER_YES, R.string.booklist_filters_read);
 
+        mSignedFilterListItems.add(null, R.string.use_default_setting);
         mSignedFilterListItems.add(FILTER_NOT_USED, R.string.all_books);
         mSignedFilterListItems.add(FILTER_NO, R.string.booklist_filters_signed_no);
         mSignedFilterListItems.add(FILTER_YES, R.string.booklist_filters_signed_yes);
 
+        mAnthologyFilterListItems.add(null, R.string.use_default_setting);
         mAnthologyFilterListItems.add(FILTER_NOT_USED, R.string.all_books);
         mAnthologyFilterListItems.add(FILTER_NO, R.string.booklist_filters_is_anthology_no);
         mAnthologyFilterListItems.add(FILTER_YES, R.string.booklist_filters_is_anthology_yes);
 
+        mLoanedFilterListItems.add(null, R.string.use_default_setting);
         mLoanedFilterListItems.add(FILTER_NOT_USED, R.string.all_books);
         mLoanedFilterListItems.add(FILTER_NO, R.string.booklist_filters_loaned_no);
         mLoanedFilterListItems.add(FILTER_YES, R.string.booklist_filters_loaned_yes);
@@ -292,7 +299,7 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable, Par
         mIsPreferred = in.readByte() != 0;
         // init first, then set their actual values afterwards
         initProperties();
-        mNameProperty.setDefaultValue(in.readString());
+        mNameProperty.readFromParcel(in);
 
         mScaleSize.readFromParcel(in);
         mShowHeaderInfo.readFromParcel(in);
@@ -324,8 +331,8 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable, Par
         dest.writeInt(mNameStringId);
         dest.writeList(mGroups);
         dest.writeByte((byte) (mIsPreferred ? 1 : 0));
-        // don't save the properties themselves, but save their actual values
-        dest.writeString(mNameProperty.getValue());
+
+        mNameProperty.writeToParcel(dest);
 
         mScaleSize.writeToParcel(dest);
         mShowHeaderInfo.writeToParcel(dest);
@@ -579,7 +586,7 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable, Par
             Property thisProp = props.get(newVal.getUniqueId());
             if (thisProp != null) {
                 //noinspection unchecked
-                thisProp.setValue(newVal);
+                thisProp.setValue(newVal.getValue());
             }
         }
     }

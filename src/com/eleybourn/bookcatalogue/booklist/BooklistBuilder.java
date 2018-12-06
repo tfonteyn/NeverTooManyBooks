@@ -1063,7 +1063,7 @@ public class BooklistBuilder implements AutoCloseable {
         int timer = 1;
         // Loop from innermost group to outermost, building summary at each level
         for (int i = mStyle.size() - 1; i >= 0; i--) {
-            final BooklistGroup g = mStyle.getGroupAt(i);
+            final BooklistGroup group = mStyle.getGroupAt(i);
             final int levelId = i + 1;
             // cols is the list of column names for the 'Insert' and 'Select' parts
             StringBuilder cols = new StringBuilder();
@@ -1071,7 +1071,7 @@ public class BooklistBuilder implements AutoCloseable {
             StringBuilder collatedCols = new StringBuilder();
 
             // Build the column lists for this group
-            for (DomainDefinition d : g.groupDomains) {
+            for (DomainDefinition d : group.groupDomains) {
                 if (collatedCols.length() > 0) {
                     collatedCols.append(",");
                 }
@@ -1082,7 +1082,7 @@ public class BooklistBuilder implements AutoCloseable {
             String summarySql = "INSERT INTO " + mListTable + " (" + DOM_BL_NODE_LEVEL + "," + DOM_BL_NODE_ROW_KIND + cols + "," + DOM_ROOT_KEY + ")" +
                     " SELECT " +
                     levelId + " AS " + DOM_BL_NODE_LEVEL + "," +
-                    g.kind + " AS " + DOM_BL_NODE_ROW_KIND + cols + "," +
+                    group.kind + " AS " + DOM_BL_NODE_ROW_KIND + cols + "," +
                     DOM_ROOT_KEY +
                     " FROM " + mListTable + " WHERE " + DOM_BL_NODE_LEVEL + "=" + (levelId + 1) +
                     " GROUP BY " + collatedCols + "," + DOM_ROOT_KEY + CatalogueDBHelper.COLLATION;

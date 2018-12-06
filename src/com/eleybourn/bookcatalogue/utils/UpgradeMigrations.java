@@ -16,7 +16,6 @@ import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
 import com.eleybourn.bookcatalogue.database.DbSync;
 import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
 
 import java.io.File;
@@ -110,6 +109,7 @@ public class UpgradeMigrations {
                                     prefs.getBoolean(key, false));
                             break;
 
+
                         case "APP.DisplayFirstThenLast":
                             ed.putBoolean(BooklistGroup.BooklistAuthorGroup.PREF_DISPLAY_FIRST_THEN_LAST_NAMES,
                                     prefs.getBoolean(key, false));
@@ -123,10 +123,12 @@ public class UpgradeMigrations {
                                     prefs.getBoolean(key, false));
                             break;
 
+
                         case "App.BooklistGenerationMode":
                             ed.putInt(BooklistPreferencesActivity.PREF_COMPATIBILITY_MODE,
                                     prefs.getInt(key, BooklistPreferencesActivity.PREF_COMPATIBILITY_MODE_DEFAULT));
                             break;
+
 
                         case "App.OpenBookReadOnly":
                             ed.putBoolean(BooksOnBookshelf.PREF_BOB_OPEN_BOOK_READ_ONLY,
@@ -143,6 +145,7 @@ public class UpgradeMigrations {
                             ed.putInt(BooksOnBookshelf.PREF_BOB_TOP_ROW_OFFSET, prefs.getInt(key, 0));
                             break;
 
+
                         case "BookList.Global.BooklistState":
                             ed.putInt(BooklistPreferencesActivity.PREF_LIST_REBUILD_STATE,
                                     prefs.getInt(key, BooklistPreferencesActivity.PREF_LIST_REBUILD_ALWAYS_EXPANDED));
@@ -156,6 +159,19 @@ public class UpgradeMigrations {
                                     prefs.getBoolean(key, false));
                             break;
 
+
+                        case "BooksOnBookshelf.LIST_STYLE": {
+                            v200preferencesStyle(prefs, key, ed, BooklistStyles.PREF_BL_STYLE_CURRENT_DEFAULT);
+                            break;
+                        }
+                        case "BooklistStyles.Menu.Items": {
+                            v200preferencesStyle(prefs, key, ed, BooklistStyle.PREF_BL_STYLE_MENU_ITEMS);
+                            break;
+                        }
+                        case "BookList.Condensed":
+                            ed.putInt(BooklistStyle.PREF_BL_STYLE_SCALE_SIZE,
+                                    prefs.getBoolean(key, false) ? BooklistStyle.SCALE_SIZE_SMALLER : BooklistStyle.SCALE_SIZE_NORMAL);
+                            break;
 
                         case "BookList.ShowHeaderInfo":
                             ed.putInt(BooklistStyle.PREF_BL_STYLE_SHOW_HEADER_INFO,
@@ -173,19 +189,18 @@ public class UpgradeMigrations {
                             ed.putBoolean(BooklistStyle.PREF_BL_STYLE_SHOW_PUBLISHER,
                                     prefs.getBoolean(key, false));
                             break;
-                        case "BookList.Condensed":
-                            ed.putInt(BooklistStyle.PREF_BL_STYLE_SCALE_SIZE,
-                                    prefs.getBoolean(key, false) ? BooklistStyle.SCALE_SIZE_SMALLER : BooklistStyle.SCALE_SIZE_NORMAL);
+                        case "BookList.ShowThumbnails":
+                            ed.putBoolean(BooklistStyle.PREF_BL_STYLE_SHOW_THUMBNAILS,
+                                    prefs.getBoolean(key, false));
                             break;
-
-                        case "BooksOnBookshelf.LIST_STYLE": {
-                            v200preferencesStyle(prefs, key, ed, BooklistStyles.PREF_BL_STYLE_CURRENT_DEFAULT);
+                        case "BookList.LargeThumbnails":
+                            ed.putBoolean(BooklistStyle.PREF_BL_STYLE_SHOW_LARGE_THUMBNAILS,
+                                    prefs.getBoolean(key, false));
                             break;
-                        }
-                        case "BooklistStyles.Menu.Items": {
-                            v200preferencesStyle(prefs, key, ed, BooklistStyle.PREF_BL_STYLE_MENU_ITEMS);
+                        case "BookList.ShowLocation":
+                            ed.putBoolean(BooklistStyle.PREF_BL_STYLE_SHOW_LOCATION,
+                                    prefs.getBoolean(key, false));
                             break;
-                        }
 
                         default:
                             Logger.info(UpgradeMigrations.class, "unknown|key=" + key + "|value=" + oldMap.get(key).toString());

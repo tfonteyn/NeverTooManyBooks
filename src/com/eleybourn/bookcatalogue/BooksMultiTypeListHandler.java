@@ -168,7 +168,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
      * Return the *absolute* position of the passed view in the list of books.
      */
     int getAbsolutePosition(@NonNull View v) {
-        final BooklistHolder holder = ViewTagger.getTagOrThrow(v, R.id.TAG_HOLDER);// value: BooklistHolder suited for the ROW_KIND
+        final BooklistHolder holder = ViewTagger.getTagOrThrow(v);
         return holder.absolutePosition;
     }
 
@@ -250,11 +250,11 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
             }
             convertView.setPadding((level - 1) * 5, 0, 0, 0);
             holder.map(rowView, convertView);
-            ViewTagger.setTag(convertView, R.id.TAG_HOLDER, holder);// value: BooklistHolder suited for the ROW_KIND
+            ViewTagger.setTag(convertView, holder);
             // Indent based on level; we assume rows of a given type only occur at the same level
         } else {
             // recycling convertView
-            holder = ViewTagger.getTagOrThrow(convertView, R.id.TAG_HOLDER);// value: BooklistHolder suited for the ROW_KIND
+            holder = ViewTagger.getTagOrThrow(convertView);
         }
 
         holder.absolutePosition = rowView.getAbsolutePosition();

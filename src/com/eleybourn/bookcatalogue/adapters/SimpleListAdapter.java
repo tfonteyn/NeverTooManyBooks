@@ -36,7 +36,6 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.util.List;
-import java.util.Objects;
 
 /**
  * TODO: RecyclerView
@@ -58,7 +57,7 @@ import java.util.Objects;
  *
  * The layout can optionally contain these "@+id/"  which will trigger the listed methods
  * <pre>
- *    SLA_ROW_DETAILS     {@link #onRowClick}; {@link #onRowLongClick}
+ *    SLA_ROW_DETAILS     {@link #onRowClick}
  *    SLA_ROW_DELETE      {@link #onRowDelete}
  * </pre>
  *
@@ -93,20 +92,6 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
             } catch (Exception e) {
                 Logger.error(e);
             }
-        }
-    };
-    @NonNull
-    private final View.OnLongClickListener mRowLongClickListener = new View.OnLongClickListener() {
-        @Override
-        public boolean onLongClick(final @NonNull View v) {
-            try {
-                int pos = getViewRow(v);
-                T item = getItem(pos);
-                return item != null && onRowLongClick(v, item, pos);
-            } catch (Exception e) {
-                Logger.error(e);
-            }
-            return false;
         }
     };
 
@@ -172,7 +157,6 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
 
         if (row != null) {
             row.setOnClickListener(mRowClickListener);
-            row.setOnLongClickListener(mRowLongClickListener);
             row.setFocusable(false);
         }
 
@@ -234,9 +218,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
             }
             view = (View) parent;
         }
-        Object o = ViewTagger.getTag(view, R.id.SLA_ROW_POSITION_TAG);
-        Objects.requireNonNull(o, "A view with the tag R.id.SLA_ROW was found, but it is not the view for the row");
-        return (Integer) o;
+        return ViewTagger.getTagOrThrow(view, R.id.SLA_ROW_POSITION_TAG);
     }
 
     /**
@@ -255,18 +237,6 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
      * @param item   The object associated with this row
      */
     protected void onRowClick(@NonNull final View target, @NonNull final T item, final int position) {
-    }
-
-    /**
-     * Called when an otherwise inactive part of the row is long clicked.
-     *
-     * @param target The view clicked
-     * @param item   The object associated with this row
-     *
-     * @return <tt>true</tt>if handled
-     */
-    protected boolean onRowLongClick(@NonNull final View target, @NonNull final T item, final int position) {
-        return false;
     }
 
     /**

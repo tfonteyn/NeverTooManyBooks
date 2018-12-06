@@ -174,7 +174,7 @@ public class BooleanProperty extends PropertyWithGlobalValue<Boolean> {
     }
 
     /**
-     * Convenience method to check for true (with null == false)
+     * Convenience method to check for true
      *
      * Uses the resolved value to check for 'true'
      */
@@ -244,7 +244,8 @@ public class BooleanProperty extends PropertyWithGlobalValue<Boolean> {
      * So 'null' is NOT preserved.
      */
     public void writeToParcel(final @NonNull Parcel dest) {
-        Boolean value = this.getValue();
+        Object o = this.getValue();
+        Boolean value = (Boolean)o;
         if (value == null) {
             dest.writeInt(-1);
         } else {
@@ -253,11 +254,11 @@ public class BooleanProperty extends PropertyWithGlobalValue<Boolean> {
     }
 
     public void readFromParcel(final @NonNull Parcel in) {
-        int parceledInt = in.readInt();
-        if (parceledInt == -1) {
+        int value = in.readInt();
+        if (value == -1) {
             setValue(null);
         } else {
-            setValue(parceledInt == 1 ? Boolean.TRUE : Boolean.FALSE);
+            setValue(value == 1 ? Boolean.TRUE : Boolean.FALSE);
         }
     }
 

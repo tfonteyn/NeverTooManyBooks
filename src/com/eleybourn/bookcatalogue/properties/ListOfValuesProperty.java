@@ -64,7 +64,6 @@ public abstract class ListOfValuesProperty<T> extends PropertyWithGlobalValue<T>
                          final @NonNull T defaultValue,
                          final @NonNull @Size(min = 0) ItemList<T> list) {
         super(group, nameResourceId, defaultValue);
-        list.add(0, new ListEntry<T>(null,R.string.use_default_setting));
         mList = list;
     }
 
@@ -77,7 +76,7 @@ public abstract class ListOfValuesProperty<T> extends PropertyWithGlobalValue<T>
         // create Holder -> not needed here
 
         // tags used
-        ViewTagger.setTag(root, R.id.TAG_PROPERTY, this);// value: ListOfValuesProperty
+        ViewTagger.setTag(root, R.id.TAG_PROPERTY, this);
 
         // Try to find the list item that corresponds to the current stored value.
         ListEntry<T> currentlyEntry = null;
@@ -172,7 +171,7 @@ public abstract class ListOfValuesProperty<T> extends PropertyWithGlobalValue<T>
             @Override
             public void onClick(@NonNull View v) {
                 dialog.dismiss();
-                Holder<T> holder = ViewTagger.getTagOrThrow(v, R.id.TAG_HOLDER);// value: ListOfValuesProperty.Holder
+                Holder<T> holder = ViewTagger.getTagOrThrow(v);
                 setValue(holder.item.value);
                 setValueInView(holder.baseView, holder.item);
             }
@@ -204,7 +203,7 @@ public abstract class ListOfValuesProperty<T> extends PropertyWithGlobalValue<T>
                 sel.setOnClickListener(clickListener);
 
                 // Set the tags used by the listeners
-                ViewTagger.setTag(sel, R.id.TAG_HOLDER, new Holder<>(entry, baseView));// value: ListOfValuesProperty.Holder
+                ViewTagger.setTag(sel, new Holder<>(entry, baseView));
 
                 // Add it to the group
                 radioGroup.addView(line);
@@ -258,7 +257,7 @@ public abstract class ListOfValuesProperty<T> extends PropertyWithGlobalValue<T>
         @NonNull
         @Override
         public String toString() {
-            return getLabel();
+            return getLabel() + "=" + (value == null ? null : value.toString());
         }
     }
 

@@ -383,8 +383,9 @@ public class BooksOnBookshelf extends BaseListActivity implements
                 break;
             }
             default: {
-                // If it's level, expand/collapse. Technically, TODO: we could expand/collapse any level
+                // If it's level, expand/collapse. Technically, we could expand/collapse any level
                 // but storing and recovering the view becomes unmanageable.
+                // ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/542
                 if (mListCursor.getCursorRow().getLevel() == 1) {
                     mListCursor.getBuilder().toggleExpandNode(mListCursor.getCursorRow().getAbsolutePosition());
                     mListCursor.requery();
@@ -688,8 +689,8 @@ public class BooksOnBookshelf extends BaseListActivity implements
 
         // Get the ListView and set it up
         final ListView listView = getListView();
-        final ListViewHolder listViewHolder = new ListViewHolder();
-        ViewTagger.setTag(listView, R.id.TAG_HOLDER, listViewHolder);// value: BooksOnBookshelf.ListViewHolder
+        final Holder holder = new Holder();
+        ViewTagger.setTag(listView, holder);
 
         listView.setAdapter(mAdapter);
         mAdapter.notifyDataSetChanged();
@@ -721,22 +722,22 @@ public class BooksOnBookshelf extends BaseListActivity implements
         final boolean hasLevel2 = (mListCursor.numLevels() > 2);
 
         if (hasLevel2 && (showHeaderFlags & BooklistStyle.SUMMARY_SHOW_LEVEL_2) != 0) {
-            listViewHolder.level2Text.setVisibility(View.VISIBLE);
-            listViewHolder.level2Text.setText("");
+            holder.level2Text.setVisibility(View.VISIBLE);
+            holder.level2Text.setText("");
         } else {
-            listViewHolder.level2Text.setVisibility(View.GONE);
+            holder.level2Text.setVisibility(View.GONE);
         }
         if (hasLevel1 && (showHeaderFlags & BooklistStyle.SUMMARY_SHOW_LEVEL_1) != 0) {
-            listViewHolder.level1Text.setVisibility(View.VISIBLE);
-            listViewHolder.level1Text.setText("");
+            holder.level1Text.setVisibility(View.VISIBLE);
+            holder.level1Text.setText("");
         } else {
-            listViewHolder.level1Text.setVisibility(View.GONE);
+            holder.level1Text.setVisibility(View.GONE);
         }
 
         // Update the header details
         if (count > 0 && (showHeaderFlags &
                 (BooklistStyle.SUMMARY_SHOW_LEVEL_1 ^ BooklistStyle.SUMMARY_SHOW_LEVEL_2)) != 0) {
-            updateListHeader(listViewHolder, mTopRow, hasLevel1, hasLevel2, showHeaderFlags);
+            updateListHeader(holder, mTopRow, hasLevel1, hasLevel2, showHeaderFlags);
         }
 
         // Define a scroller to update header detail when top row changes
@@ -748,7 +749,7 @@ public class BooksOnBookshelf extends BaseListActivity implements
                         // Need to check isDead because BooklistPseudoCursor misbehaves when activity
                         // terminates and closes cursor
                         if (mLastTop != firstVisibleItem && !mIsDead && (showHeaderFlags != 0)) {
-                            ListViewHolder holder = ViewTagger.getTagOrThrow(view, R.id.TAG_HOLDER);// value: BooksOnBookshelf.ListViewHolder
+                            Holder holder = ViewTagger.getTagOrThrow(view);
                             updateListHeader(holder, firstVisibleItem, hasLevel1, hasLevel2, showHeaderFlags);
                         }
                     }
@@ -872,7 +873,7 @@ public class BooksOnBookshelf extends BaseListActivity implements
      * @param hasLevel1 flag indicating level 1 is present
      * @param hasLevel2 flag indicating level 2 is present
      */
-    private void updateListHeader(final @NonNull ListViewHolder holder,
+    private void updateListHeader(final @NonNull Holder holder,
                                   int topItem,
                                   final boolean hasLevel1,
                                   final boolean hasLevel2,
@@ -1546,11 +1547,11 @@ public class BooksOnBookshelf extends BaseListActivity implements
      *
      * @author Philip Warner
      */
-    private class ListViewHolder {
+    private class Holder {
         final TextView level1Text;
         final TextView level2Text;
 
-        ListViewHolder() {
+        Holder() {
             level1Text = findViewById(R.id.level_1_text);
             level2Text = findViewById(R.id.level_2_text);
         }

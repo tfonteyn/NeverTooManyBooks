@@ -3,7 +3,7 @@ TOMF ENHANCE New anthology stuff:
  * - when to delete entries in ANTHOLOGY ? when last book is gone or keep them, for adding to new books / wish list
  * - consider a purge based on book for orphan TOCEntry (a purge based on Author is already done)
 
-TOMF FIXME database stuff
+Review database stuff
  * - Very few database methods throw an SQLiteDoneException.
  * The caller is either already catching them, or believes they will never happen.
  *
@@ -20,7 +20,7 @@ ENHANCE database using 'lower()' in WHERE and ORDER BY clauses.
 ENHANCE finish FTS searching {@link com.eleybourn.bookcatalogue.searches.SearchLocalActivity}
  * and {@link #searchFts(String, String, String)}
 
-ENHANCE: booklist styles: don't serialise...
+ENHANCE: booklist styles: don't serialise... easiest might be xml/json?
 
 TOMF: research 'local' search. The code has some stuff enabled, but not tested. -> check BC 5.2.2 release (not master)
 

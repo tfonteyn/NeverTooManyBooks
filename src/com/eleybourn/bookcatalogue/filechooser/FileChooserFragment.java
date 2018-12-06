@@ -30,13 +30,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
-import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter;
 import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter.ViewProvider;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
@@ -193,16 +194,17 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
     @Override
     public void onGotFileList(final @NonNull File root, final @NonNull ArrayList<FileDetails> list) {
         mRootPath = root;
+        mList = list;
+
         mPathField.setText(mRootPath.getAbsolutePath());
 
         // Setup and display the list
-        mList = list;
-        // We pass no view ID since each item can provide the view id
-        FileDetailsAdapter adapter = new FileDetailsAdapter(requireActivity(), mList);
+        ListAdapter adapter = new FileDetailsAdapter(requireContext(), mList);
         //noinspection ConstantConditions
         ListView lv = getView().findViewById(android.R.id.list);
         lv.setAdapter(adapter);
     }
+
 
     /**
      * Interface that the containing Activity must implement. Called when user changes path.
@@ -210,7 +212,7 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
      * @author pjw
      */
     public interface OnPathChangedListener {
-        void onPathChanged(File root);
+        void onPathChanged(final @NonNull File root);
     }
 
     /** Interface for details of files in current directory */
@@ -226,33 +228,42 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
     /**
      * List Adapter for FileDetails objects
      *
+     * {@link FileDetails} can provide the view using {@link ViewProvider#getViewId} and {@link ViewProvider#onGetView}
+     *
      * @author pjw
      */
-    protected class FileDetailsAdapter extends SimpleListAdapter<FileDetails> {
+    protected class FileDetailsAdapter extends ArrayAdapter<FileDetails> {
 
         FileDetailsAdapter(final @NonNull Context context, final @NonNull ArrayList<FileDetails> items) {
             super(context, 0, items);
         }
 
+        @NonNull
         @Override
-        public void onGetView(final @NonNull View convertView, final @NonNull FileDetails item) {
-            item.onGetView(convertView, requireActivity());
-        }
+        public View getView(final int position, @Nullable View convertView, @NonNull final ViewGroup parent) {
 
-        /**
-         * Put the name of the file we clicked on into the filename field
-         */
-        @Override
-        public void onRowClick(final @NonNull View v, final @Nullable FileDetails item, final int position) {
-            if (item != null) {
-                if (item.getFile().isDirectory()) {
-                    mRootPath = item.getFile();
-                    tellActivityPathChanged();
-                } else {
-                    mFilenameField.setText(item.getFile().getName());
-                }
+            final FileDetails item = this.getItem(position);
+            if (convertView == null) {
+                //noinspection ConstantConditions
+                convertView = LayoutInflater.from(getContext()).inflate(item.getViewId(), null);
             }
+
+            //noinspection ConstantConditions
+            item.onGetView(convertView, getContext());
+
+            // Put the name of the file into the filename field when clicked.
+            convertView.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(final View v) {
+                    if (item.getFile().isDirectory()) {
+                        mRootPath = item.getFile();
+                        tellActivityPathChanged();
+                    } else {
+                        mFilenameField.setText(item.getFile().getName());
+                    }
+                }
+            });
+            return convertView;
         }
     }
-
 }

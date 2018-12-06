@@ -207,7 +207,7 @@ public class ImageUtils {
         // If we get here, the image is not in the cache but the original exists. See if we can queue it.
         if (allowBackground && destView != null) {
             destView.setImageBitmap(null);
-            GetThumbnailTask.getThumbnail(destView.getContext(), uuid, destView, maxWidth, maxHeight, cacheWasChecked);
+            GetThumbnailTask.getThumbnail(uuid, destView, maxWidth, maxHeight, cacheWasChecked);
             return null;
         }
 

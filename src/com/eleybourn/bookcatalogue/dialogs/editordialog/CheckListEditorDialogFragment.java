@@ -142,8 +142,7 @@ public class CheckListEditorDialogFragment<T> extends EditorDialogFragment<Check
         private final CompoundButton.OnCheckedChangeListener onCheckedChangeListener = new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(final CompoundButton buttonView, final boolean isChecked) {
-                CheckListItem item = ViewTagger.getTag(buttonView, R.id.TAG_DIALOG_ITEM);
-                //noinspection ConstantConditions
+                CheckListItem item = ViewTagger.getTagOrThrow(buttonView, R.id.TAG_DIALOG_ITEM);
                 item.setSelected(isChecked);
             }
         };

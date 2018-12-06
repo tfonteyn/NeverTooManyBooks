@@ -37,10 +37,8 @@ import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter;
 import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
-import com.eleybourn.bookcatalogue.booklist.EditBooklistStyleGroupsActivity;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
-import com.eleybourn.bookcatalogue.dialogs.fieldeditdialog.EditAuthorDialog;
 import com.eleybourn.bookcatalogue.dialogs.fieldeditdialog.EditSeriesDialog;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.utils.Utils;
@@ -51,7 +49,7 @@ import java.util.ArrayList;
 /**
  * Activity to edit a list of series provided in an ArrayList<Series> and return an updated list.
  *
- * Calling point is a Book; see {@link EditAuthorDialog} for list
+ * Calling point is a Book; see {@link EditSeriesDialog} for list
  *
  * @author Philip Warner
  */
@@ -268,15 +266,15 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
         }
 
         @Override
-        public void onGetView(final @NonNull View target, final @NonNull Series series) {
-            Holder holder = ViewTagger.getTag(target, R.id.TAG_HOLDER);
+        public void onGetView(final @NonNull View convertView, final @NonNull Series series) {
+            Holder holder = ViewTagger.getTag(convertView);
             if (holder == null) {
                 // New view, so build the Holder
                 holder = new Holder();
-                holder.row_series = target.findViewById(R.id.row_series);
-                holder.row_series_sort = target.findViewById(R.id.row_series_sort);
+                holder.row_series = convertView.findViewById(R.id.row_series);
+                holder.row_series_sort = convertView.findViewById(R.id.row_series_sort);
                 // Tag the parts that need it
-                ViewTagger.setTag(target, R.id.TAG_HOLDER, holder);
+                ViewTagger.setTag(convertView, holder);
             }
             // Setup the variant fields in the holder
             if (holder.row_series != null) {

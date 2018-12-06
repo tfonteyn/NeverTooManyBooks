@@ -14,7 +14,8 @@
 
         <CheckedTextView
             android:id="@+id/row_check"
-            style="@style/tlv_checkable_button" />
+            style="@style/tlv_checkable_button"
+            tools:checked="true"/>
 
         <RelativeLayout
             android:id="@id/SLA_ROW_DETAILS"

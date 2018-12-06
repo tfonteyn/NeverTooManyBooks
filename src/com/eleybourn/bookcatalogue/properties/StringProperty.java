@@ -20,6 +20,7 @@
 
 package com.eleybourn.bookcatalogue.properties;
 
+import android.os.Parcel;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -66,8 +67,8 @@ public class StringProperty extends PropertyWithGlobalValue<String> {
 
         // Set the initial values
         holder.name.setText(getNameResourceId());
-        holder.value.setHint(getNameResourceId());
-        holder.value.setText(getValue());
+        holder.value.setHint(getResolvedValue());
+        holder.value.setText(getResolvedValue());
 
         // tags used
         ViewTagger.setTag(root, R.id.TAG_PROPERTY, holder);
@@ -93,11 +94,11 @@ public class StringProperty extends PropertyWithGlobalValue<String> {
         return root;
     }
 
-
     /** Get underlying preferences value */
     @Override
     @NonNull
     protected String getGlobalValue() {
+        //noinspection ConstantConditions
         return BookCatalogueApp.getStringPreference(getPreferenceKey(), getDefaultValue());
     }
 
@@ -134,16 +135,6 @@ public class StringProperty extends PropertyWithGlobalValue<String> {
         super.validate();
     }
 
-    @Override
-    @NonNull
-    @CallSuper
-    public String toString() {
-        return "StringProperty{" +
-                "mRequireNonBlank=" + mRequireNonBlank +
-                super.toString() +
-                '}';
-    }
-
     /**
      * Only implemented for chaining with correct return type
      */
@@ -177,6 +168,21 @@ public class StringProperty extends PropertyWithGlobalValue<String> {
         return this;
     }
 
+    /**
+     * Our value is Nullable. To Parcel it, we use Integer.MIN_VALUE for null.
+     *
+     * Note that {@link Parcel#writeValue(Object)} actually writes an Integer as 'int'
+     * So 'null' is NOT preserved.
+     */
+    public void writeToParcel(final @NonNull Parcel dest) {
+        String value = this.getValue();
+        dest.writeString(value);
+    }
+
+    public void readFromParcel(final @NonNull Parcel in) {
+        String parceledString = in.readString();
+        setValue(parceledString);
+    }
     private static class Holder {
         StringProperty property;
         TextView name;

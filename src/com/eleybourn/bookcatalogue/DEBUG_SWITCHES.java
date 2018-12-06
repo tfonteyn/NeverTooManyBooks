@@ -63,7 +63,7 @@ public final class DEBUG_SWITCHES {
     public static final boolean SQPFragment = false;
 
     /** {@link com.eleybourn.bookcatalogue.utils.StorageUtils} */
-    public static final boolean STORAGE_UTILS = true;
+    public static final boolean STORAGE_UTILS = false;
 
     /** {@link TaskManager} */
     public static final boolean TASK_MANAGER = false;

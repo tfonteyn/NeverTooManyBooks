@@ -23,8 +23,9 @@
         tools:ignore="UselessParent">
 
         <CheckedTextView
-            android:id="@+id/row_enabled"
-            style="@style/tlv_checkable_button" />
+            android:id="@+id/row_check"
+            style="@style/tlv_checkable_button"
+            tools:checked="true"/>
 
         <RelativeLayout
             android:id="@id/SLA_ROW_DETAILS"
@@ -33,12 +34,12 @@
             android:layout_alignParentTop="true"
             android:layout_alignParentBottom="true"
             android:layout_toStartOf="@id/grabber"
-            android:layout_toEndOf="@id/row_enabled"
+            android:layout_toEndOf="@id/row_check"
             android:orientation="vertical"
             android:padding="2dp">
 
             <TextView
-                android:id="@+id/row_name"
+                android:id="@+id/name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ellipsize="marquee"

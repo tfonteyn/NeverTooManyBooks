@@ -20,6 +20,7 @@
 
 package com.eleybourn.bookcatalogue.properties;
 
+import android.os.Parcel;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -60,7 +61,7 @@ public abstract class Property<T> {
 
     /** Resource ID for displayed name of this property */
     @StringRes
-    private final int mNameResourceId;
+    private int mNameResourceId = 0;
     /** Underlying value */
     @Nullable
     T mValue = null;

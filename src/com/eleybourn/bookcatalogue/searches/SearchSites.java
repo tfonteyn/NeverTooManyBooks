@@ -13,7 +13,6 @@ import com.eleybourn.bookcatalogue.searches.isfdb.SearchISFDBTask;
 import com.eleybourn.bookcatalogue.searches.librarything.SearchLibraryThingTask;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.TaskManager;
 import com.eleybourn.bookcatalogue.utils.RTE;
-import com.eleybourn.bookcatalogue.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;

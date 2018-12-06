@@ -9,12 +9,12 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.CheckedTextView;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter;
 import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
@@ -27,13 +27,14 @@ import java.util.Objects;
 /**
  * Ideally should use {@link EditObjectListActivity} but that needs to be converted to a Fragment first.
  */
-public class AdminSearchOrderFragment extends Fragment {
+public class AdminSearchOrderFragment extends Fragment
+        implements TouchListView.OnDropListener {
 
     public static final String TAG = "AdminSearchOrderFragment";
 
     private ListView mListView;
     private ArrayList<SearchSites.Site> mList;
-    private SearchSiteListAdapter mAdapter;
+    private SearchSiteListAdapter mListAdapter;
 
     @Override
     public View onCreateView(final @NonNull LayoutInflater inflater,
@@ -51,72 +52,94 @@ public class AdminSearchOrderFragment extends Fragment {
         Objects.requireNonNull(args);
         mList = args.getParcelableArrayList(SearchSites.BKEY_SEARCH_SITES);
 
-        mAdapter = new SearchSiteListAdapter(requireContext(), R.layout.row_edit_searchsite, mList);
+        mListAdapter = new SearchSiteListAdapter(requireContext(), mList);
         //noinspection ConstantConditions
         mListView = getView().findViewById(android.R.id.list);
-        mListView.setAdapter(mAdapter);
+        mListView.setAdapter(mListAdapter);
 
         // Do not add handler for 'onDrop' from the TouchListView; we'll get what we need when we're ready to save.
-        //((TouchListView) mListView).setOnDropListener(this);
+        ((TouchListView) mListView).setOnDropListener(this);
 
         Tracker.exitOnActivityCreated(this);
     }
 
+    /**
+     * Handle drop events; This is a simplified version of {@link EditObjectListActivity#onDrop}
+     *
+     * Lists here are 5 items or so....
+     */
+    @Override
+    @CallSuper
+    public void onDrop(final int fromPosition, final int toPosition) {
+        // Check if nothing to do; also avoids the nasty case where list size == 1
+        if (fromPosition == toPosition) {
+            return;
+        }
+
+        // update the list
+        SearchSites.Site item = mListAdapter.getItem(fromPosition);
+        mListAdapter.remove(item);
+        mListAdapter.insert(item, toPosition);
+        mListAdapter.notifyDataSetChanged();
+    }
+
     @Nullable
     public ArrayList<SearchSites.Site> getList() {
+        // have we been brought to the front ?
         if (mListView != null) {
             // walk the list, and use the position of the item as the site.priority
-            ArrayList<SearchSites.Site> newList = new ArrayList<>(mList);
-            for (int row = 0; row < mListView.getChildCount(); row++) {
-                // get the current position of each site, and store that back into the site object.
-                View child = mListView.getChildAt(row);
-                int pos = mAdapter.getViewRow(child);
-                SearchSites.Site site = mAdapter.getItem(pos);
-                //noinspection ConstantConditions
-                site.priority = row;
-                newList.set(site.priority, site);
+            for (int row = 0; row < mList.size(); row++) {
+                mList.get(row).priority = row;
             }
-            mList = newList;
         }
         return mList;
     }
 
-    private class SearchSiteListAdapter extends SimpleListAdapter<SearchSites.Site> {
+    private class SearchSiteListAdapter extends ArrayAdapter<SearchSites.Site> {
 
         SearchSiteListAdapter(final @NonNull Context context,
-                              final int rowViewId,
                               final @NonNull List<SearchSites.Site> list) {
-            super(context, rowViewId, list);
+            super(context, 0, list);
         }
 
+        @NonNull
         @Override
-        public void onGetView(final @NonNull View target, final @NonNull SearchSites.Site site) {
-            Holder holder = ViewTagger.getTag(target, R.id.TAG_HOLDER);
-            if (holder == null) {
-                // New view, so build the Holder
-                holder = new Holder();
-                holder.name = target.findViewById(R.id.name);
-                holder.checkable = target.findViewById(R.id.row_enabled);
-                // Tag the parts that need it
-                ViewTagger.setTag(target, R.id.TAG_HOLDER, holder);
-                ViewTagger.setTag(holder.checkable, R.id.TAG_HOLDER, holder);
+        public View getView(final int position, @Nullable View convertView, @NonNull final ViewGroup parent) {
+            Holder holder;
+            if (convertView == null) {
+                // Not recycling, get a new View and make the holder for it.
+                convertView = LayoutInflater.from(getContext()).inflate(R.layout.row_edit_searchsite, parent, false);
 
-                // Handle a click on the CheckedTextView
+                holder = new Holder();
+                holder.name = convertView.findViewById(R.id.name);
+                holder.checkable = convertView.findViewById(R.id.row_check);
+                // Tag the parts that need it
+                ViewTagger.setTag(convertView, holder);
+                ViewTagger.setTag(holder.checkable, holder);
+
+                // Set the click listener for the 'enable' site checkable
                 holder.checkable.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(@NonNull View v) {
-                        Holder h = ViewTagger.getTagOrThrow(v, R.id.TAG_HOLDER);
-                        boolean newStatus = !h.site.enabled;
-                        h.site.enabled = newStatus;
-                        h.checkable.setChecked(newStatus);
+                        Holder h = ViewTagger.getTagOrThrow(v);
+                        h.site.enabled = !h.site.enabled;
+                        h.checkable.setChecked(h.site.enabled);
+                        // no need to update the list, item itself is updated
+                        //onListChanged();
                     }
                 });
+            } else {
+                // Recycling: just get the holder
+                holder = ViewTagger.getTagOrThrow(convertView);
             }
 
             // Setup the variant fields in the holder
-            holder.site = site;
-            holder.name.setText(site.name);
-            holder.checkable.setChecked(site.enabled);
+            holder.site = getItem(position);
+            //noinspection ConstantConditions
+            holder.name.setText(holder.site.name);
+            holder.checkable.setChecked(holder.site.enabled);
+
+            return convertView;
         }
     }
 

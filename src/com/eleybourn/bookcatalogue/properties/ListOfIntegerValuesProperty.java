@@ -41,7 +41,7 @@ import java.util.Objects;
 public class ListOfIntegerValuesProperty extends ListOfValuesProperty<Integer> {
 
     /**
-     * @param list list with options. Minimum 0 element; a 'use default' is added automatically.
+     * @param list list with options. Minimum 0 element.
      */
     public ListOfIntegerValuesProperty(final @StringRes int nameResourceId,
                                        final @NonNull PropertyGroup group,

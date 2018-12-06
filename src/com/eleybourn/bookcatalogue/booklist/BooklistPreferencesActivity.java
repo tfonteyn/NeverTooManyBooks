@@ -82,6 +82,7 @@ public class BooklistPreferencesActivity extends PreferencesBaseActivity {
 
     static {
         ItemList<Integer> mtRebuildStateListItems = new ItemList<Integer>()
+                .add(null, R.string.use_default_setting)
                 .add(PREF_LIST_REBUILD_ALWAYS_EXPANDED, R.string.blp_state_start_expanded)
                 .add(PREF_LIST_REBUILD_ALWAYS_COLLAPSED, R.string.blp_state_start_collapsed)
                 .add(PREF_LIST_REBUILD_STATE_PRESERVED, R.string.blp_state_remember);
@@ -93,6 +94,7 @@ public class BooklistPreferencesActivity extends PreferencesBaseActivity {
                 .setIsGlobal(true);
 
         ItemList<Integer> mBooklistCompatibilityModeListItems = new ItemList<Integer>()
+                .add(null, R.string.use_default_setting)
                 .add(PREF_COMPATIBILITY_MODE_DEFAULT, R.string.blp_generation_use_recommended_option)
                 .add(PREF_COMPATIBILITY_MODE_OLD_STYLE, R.string.blp_generation_force_compatibility_mode)
                 .add(PREF_COMPATIBILITY_MODE_FLAT_TRIGGERS, R.string.blp_generation_force_enhanced_compatibility_mode)

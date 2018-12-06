@@ -250,15 +250,15 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
         }
 
         @Override
-        protected void onGetView(final @NonNull View target, final @NonNull Author author) {
-            Holder holder = ViewTagger.getTag(target, R.id.TAG_HOLDER);
+        protected void onGetView(final @NonNull View convertView, final @NonNull Author author) {
+            Holder holder = ViewTagger.getTag(convertView);
             if (holder == null) {
                 // New view, so build the Holder
                 holder = new Holder();
-                holder.row_author = target.findViewById(R.id.row_series);
-                holder.row_author_sort = target.findViewById(R.id.row_series_sort);
+                holder.row_author = convertView.findViewById(R.id.row_author);
+                holder.row_author_sort = convertView.findViewById(R.id.row_author_sort);
                 // Tag the parts that need it
-                ViewTagger.setTag(target, R.id.TAG_HOLDER, holder);
+                ViewTagger.setTag(convertView, holder);
             }
             // Setup the variant fields in the holder
             if (holder.row_author != null) {

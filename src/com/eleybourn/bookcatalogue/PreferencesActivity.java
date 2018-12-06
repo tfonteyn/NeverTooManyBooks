@@ -31,6 +31,7 @@ import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.properties.BooleanProperty;
 import com.eleybourn.bookcatalogue.properties.ListOfIntegerValuesProperty;
 import com.eleybourn.bookcatalogue.properties.ListOfStringValuesProperty;
+import com.eleybourn.bookcatalogue.properties.ListOfValuesProperty;
 import com.eleybourn.bookcatalogue.properties.ListOfValuesProperty.ItemList;
 import com.eleybourn.bookcatalogue.properties.PropertyGroup;
 import com.eleybourn.bookcatalogue.properties.PropertyList;
@@ -88,6 +89,7 @@ public class PreferencesActivity extends PreferencesBaseActivity {
 
         /* List of supported message implementations */
         final ItemList<Integer> mMessageImplementationItems = new ItemList<Integer>()
+                .add(null, R.string.use_default_setting)
                 .add(0, R.string.user_interface_messages_use_toast)
                 .add(1, R.string.user_interface_messages_use_snackbar);
         mProperties.add(new ListOfIntegerValuesProperty(R.string.user_interface_messages_use,
@@ -115,6 +117,7 @@ public class PreferencesActivity extends PreferencesBaseActivity {
 
         /* Supported scanners*/
         final ItemList<Integer> mScannerListItems = new ItemList<Integer>()
+                .add(null, R.string.use_default_setting)
                 .add(ScannerManager.SCANNER_ZXING_COMPATIBLE, R.string.scanning_preferred_scanner_zxing_compatible) // default
                 .add(ScannerManager.SCANNER_ZXING, R.string.scanning_preferred_scanner_zxing)
                 .add(ScannerManager.SCANNER_PIC2SHOP, R.string.scanning_preferred_scanner_pic2shop);
@@ -135,12 +138,13 @@ public class PreferencesActivity extends PreferencesBaseActivity {
 
         /* Camera image rotation property values */
         final ItemList<Integer> mRotationListItems = new ItemList<Integer>()
+                .add(null, R.string.use_default_setting)
                 .add(0, R.string.no)
                 .add(90, R.string.menu_cover_rotate_cw)
                 .add(-90, R.string.menu_cover_rotate_ccw)
                 .add(180, R.string.menu_cover_rotate_180);
         mProperties.add(new ListOfIntegerValuesProperty(R.string.thumbnails_rotate_auto,
-                PropertyGroup.GRP_THUMBNAILS,0, mRotationListItems)
+                PropertyGroup.GRP_THUMBNAILS, 0, mRotationListItems)
                 .setPreferenceKey(CoverHandler.PREF_CAMERA_AUTOROTATE)
                 .setIsGlobal(true));
 
@@ -159,9 +163,10 @@ public class PreferencesActivity extends PreferencesBaseActivity {
          * so for API level > 11, we turn it off manually.
          *
          * 2018-11-30: making this a configuration option;
-          * default CoverHandler.PREF_IMAGE_VIEW_LAYER_TYPE_DEFAULT('-1') == use device default
+         * default CoverHandler.PREF_IMAGE_VIEW_LAYER_TYPE_DEFAULT('-1') == use device default
          */
         final ItemList<Integer> mViewLayerType = new ItemList<Integer>()
+                .add(null, R.string.use_default_setting)
                 .add(View.LAYER_TYPE_HARDWARE, R.string.pref_layer_type_hardware)
                 .add(View.LAYER_TYPE_SOFTWARE, R.string.pref_layer_type_software);
         mProperties.add(new ListOfIntegerValuesProperty(R.string.pref_layer_type,

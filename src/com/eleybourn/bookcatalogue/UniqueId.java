@@ -57,11 +57,6 @@ public class UniqueId {
 
     // BEGIN RequestCodes used for startActivityForResult / onActivityResult
 
-    /* Reminder: if doing startActivityForResult from a Fragment, then in
-    * onActivityResult in your fragment,  the requestCode should be clipped to the lower 4 bytes.
-    *
-    * OR.. use   getActivity().startActivityForResult
-    */
     // these should not be used directly, but via the REQUEST_CODE of the actual Activity.
     public static final int ACTIVITY_REQUEST_CODE_EDIT_BOOK = 101;
     public static final int ACTIVITY_REQUEST_CODE_EDIT_AUTHORS = 102;

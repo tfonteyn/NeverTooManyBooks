@@ -13,8 +13,9 @@
         android:orientation="horizontal">
 
         <CheckedTextView
-            android:id="@+id/preferred"
-            style="@style/tlv_checkable_button" />
+            android:id="@+id/row_check"
+            style="@style/tlv_checkable_button"
+            tools:checked="true"/>
 
         <RelativeLayout
             android:id="@id/SLA_ROW_DETAILS"
@@ -22,9 +23,10 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_alignParentTop="true"
-            android:layout_toEndOf="@id/preferred"
+            android:layout_toEndOf="@id/row_check"
             android:layout_toStartOf="@id/grabber"
             android:orientation="vertical"
+            android:longClickable="true"
             android:padding="2dp">
 
             <TextView

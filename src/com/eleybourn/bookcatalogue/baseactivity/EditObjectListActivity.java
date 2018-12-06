@@ -31,17 +31,14 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
-import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.utils.BundleUtils;
 import com.eleybourn.bookcatalogue.widgets.TouchListView;
@@ -195,8 +192,6 @@ abstract public class EditObjectListActivity<T extends Parcelable> extends BaseL
         setOnClickListener(R.id.cancel, mCancelListener);
         setOnClickListener(R.id.add, mOnAddListener);
 
-        //getListView().setOnItemLongClickListener(this);
-
         // Add handler for 'onDrop' from the TouchListView
         ((TouchListView) getListView()).setOnDropListener(this);
 
@@ -263,12 +258,6 @@ abstract public class EditObjectListActivity<T extends Parcelable> extends BaseL
     abstract protected SimpleListAdapter<T> createListAdapter(final @LayoutRes int rowViewId,
                                                               final @NonNull ArrayList<T> list);
 
-//    @Override
-//    public boolean onItemLongClick(final AdapterView<?> parent, final View view, final int position, final long id) {
-//        T item = mListAdapter.getItem(position);
-//        return item != null && onRowLongClick(view, item, position);
-//    }
-
     /**
      * Called when user clicks the 'Add' button (if present).
      *
@@ -288,41 +277,37 @@ abstract public class EditObjectListActivity<T extends Parcelable> extends BaseL
         if (fromPosition == toPosition) {
             return;
         }
-        final ListView mListView = getListView();
-        final int firstPos = mListView.getFirstVisiblePosition();
 
+        // update the list
         T item = mListAdapter.getItem(fromPosition);
         mListAdapter.remove(item);
         mListAdapter.insert(item, toPosition);
         onListChanged();
 
-        if (BuildConfig.DEBUG) {
-            final int first2 = mListView.getFirstVisiblePosition();
-            Logger.info(this, fromPosition + " -> " + toPosition + ", first " + firstPos + "(" + first2 + ")");
-        }
-        final int newFirst = (toPosition > fromPosition && fromPosition < firstPos) ? (firstPos - 1) : firstPos;
+        final ListView listView = getListView();
+        final int firstVisiblePosition = listView.getFirstVisiblePosition();
+        final int newFirst = (toPosition > fromPosition && fromPosition < firstVisiblePosition) ?
+                (firstVisiblePosition - 1) : firstVisiblePosition;
 
-        View firstView = mListView.getChildAt(0);
+        View firstView = listView.getChildAt(0);
         final int offset = firstView.getTop();
+
         // re-position the list
-        mListView.post(new Runnable() {
+        listView.post(new Runnable() {
             @Override
             public void run() {
-                if (BuildConfig.DEBUG) {
-                    Logger.info(this, "Positioning to " + newFirst + "+{" + offset + "}");
-                }
-                mListView.requestFocusFromTouch();
-                mListView.setSelectionFromTop(newFirst, offset);
-                mListView.post(new Runnable() {
+                listView.requestFocusFromTouch();
+                listView.setSelectionFromTop(newFirst, offset);
+                listView.post(new Runnable() {
                     @Override
                     public void run() {
                         for (int i = 0; ; i++) {
-                            View c = mListView.getChildAt(i);
+                            View c = listView.getChildAt(i);
                             if (c == null) {
                                 break;
                             }
-                            if (mListView.getPositionForView(c) == toPosition) {
-                                mListView.setSelectionFromTop(toPosition, c.getTop());
+                            if (listView.getPositionForView(c) == toPosition) {
+                                listView.setSelectionFromTop(toPosition, c.getTop());
                                 //c.requestFocusFromTouch();
                                 break;
                             }
