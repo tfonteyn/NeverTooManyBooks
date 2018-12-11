@@ -27,7 +27,7 @@ import java.io.OutputStream;
 /**
  * Interface definition for a 'books' exporter.
  *
- * Currently (Feb 2013) there is only one, but there will probably be an XML exportBooks/import one day.
+ * Currently (Feb 2013) there is only one, but there will probably be an XML export/import one day.
  * or JSON?
  *
  * @author pjw
@@ -44,8 +44,8 @@ public interface Exporter {
      *
      * @throws IOException on any error
      */
-    boolean exportBooks(final @NonNull OutputStream outputStream,
-                        final @NonNull ExportListener listener) throws IOException;
+    boolean doBooks(final @NonNull OutputStream outputStream,
+                    final @NonNull ExportListener listener) throws IOException;
 
     /**
      * Listener interface to get progress messages.

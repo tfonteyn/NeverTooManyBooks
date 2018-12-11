@@ -24,6 +24,7 @@ import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
+import android.widget.Checkable;
 import android.widget.EditText;
 
 import com.eleybourn.bookcatalogue.EditAuthorListActivity;
@@ -63,6 +64,8 @@ public class EditAuthorDialog {
         final EditText givenView = root.findViewById(R.id.given_names);
         //noinspection ConstantConditions
         givenView.setText(author.givenNames);
+        final Checkable isCompleteView = root.findViewById(R.id.is_complete);
+        isCompleteView.setChecked(author.isComplete);
 
         final AlertDialog dialog = new AlertDialog.Builder(mContext)
                 .setView(root)
@@ -79,8 +82,9 @@ public class EditAuthorDialog {
                     return;
                 }
                 String newGiven = givenView.getText().toString().trim();
+                boolean isComplete = isCompleteView.isChecked();
 
-                Author newAuthor = new Author(newFamily, newGiven);
+                Author newAuthor = new Author(newFamily, newGiven, isComplete);
                 dialog.dismiss();
                 confirmEdit(author, newAuthor);
             }

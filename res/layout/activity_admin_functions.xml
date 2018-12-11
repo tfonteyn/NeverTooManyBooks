@@ -43,6 +43,13 @@
                 android:text="@string/lbl_preferences"
                 android:visibility="gone" />
 
+            <TextView
+                android:id="@+id/lbl_debug_run_code"
+                style="@style/row_option_label"
+                android:drawableStart="@android:drawable/ic_menu_help"
+                android:text="@string/debug"
+                android:visibility="gone" />
+
             <!-- GENERAL -->
 
             <TextView

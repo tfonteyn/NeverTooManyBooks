@@ -39,9 +39,9 @@ public interface Importer {
      * @throws IOException on any error
      */
     @SuppressWarnings({"UnusedReturnValue", "SameReturnValue"})
-    boolean importBooks(final @NonNull InputStream importStream,
-                        final @Nullable CoverFinder coverFinder,
-                        final @NonNull OnImporterListener listener) throws IOException;
+    boolean doBooks(final @NonNull InputStream importStream,
+                    final @Nullable CoverFinder coverFinder,
+                    final @NonNull OnImporterListener listener) throws IOException;
 
     /**
      * Listener interface to get progress messages.

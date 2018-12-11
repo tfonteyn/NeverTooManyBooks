@@ -30,6 +30,10 @@
 
     <!-- all vector xml files should use this for their color -->
     <attr name="fillColorVectorIcons" format="reference|color" />
+    <!-- the check mark for 'read' etc should standout -->
+    <attr name="ic_check_fillColor" format="reference|color" />
+    <!-- the lock icon for 'complete' etc should standout -->
+    <attr name="ic_lock_fillColor" format="reference|color" />
 
     <!-- drawable border.xml uses this color -->
     <attr name="color_border" format="reference|color" />

@@ -168,12 +168,6 @@ public class StringProperty extends PropertyWithGlobalValue<String> {
         return this;
     }
 
-    /**
-     * Our value is Nullable. To Parcel it, we use Integer.MIN_VALUE for null.
-     *
-     * Note that {@link Parcel#writeValue(Object)} actually writes an Integer as 'int'
-     * So 'null' is NOT preserved.
-     */
     public void writeToParcel(final @NonNull Parcel dest) {
         String value = this.getValue();
         dest.writeString(value);

@@ -1,10 +1,13 @@
 package com.eleybourn.bookcatalogue.database;
 
+import android.support.annotation.NonNull;
+
+import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
+import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.debug.Tracker;
 
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ANTHOLOGY_BITMASK;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ISFDB_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LIBRARY_THING_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_READ;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_SIGNED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_BOOKSHELF_ID;
@@ -14,10 +17,10 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOK_
 
 /**
  * Intention is to create cleanup routines for some columns/tables
- * which can be run at upgrades and/or startup
+ * which can be run at upgrades, import, startup
  *
  *
- * As seen in 5.2.2 BOOKS table:
+ * 5.2.2 BOOKS table:
  *
  * CREATE TABLE books (
  *
@@ -58,14 +61,14 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOK_
  * - read-start: null, ''
  * - read-end: null, ''
  * - Goodreads-book-id: null, 0
+ *
  * - Goodreads-last-sync: 0000-00-00, ''
  *
  * - signed: 0,1,false,true
-
+ *
  *
  * BOOK_BOOKSHELF
  * - book: null  with bookshelf != 0
- *
  */
 public class DBCleaner {
 
@@ -84,76 +87,91 @@ public class DBCleaner {
     }
 
     public void all(final boolean dryRun) {
+
+        // sanity check for '2' only
+        bookAnthologyBitmask(dryRun);
+
+        // remove orphan rows
         book_bookshelf(dryRun);
 
-        // books table
-        bookSigned(dryRun);
-        bookRead(dryRun);
-        bookAnthologyBitmask(dryRun);
-        // v83
-        bookISFDBid(dryRun);
-        bookLTid(dryRun);
+        // make sure these are '0' or '1'
+        booleanCleanup(TBL_BOOKS, DOM_BOOK_READ, dryRun);
+        booleanCleanup(TBL_BOOKS, DOM_BOOK_SIGNED, dryRun);
+
+        //TOMF: DOM_BOOK_PAGES is an integer, but often handled as a String....
+
+        //TODO: books table: search out invalid uuid's, check if there is a file, rename/remove...
+        // in particular if the UUID is surrounded with '' or ""
+        //TODO: covers.db, filename column -> delete rows where the uuid is invalid
     }
 
     public void book_bookshelf(final boolean dryRun) {
-        toLog("SELECT DISTINCT " + DOM_FK_BOOK_ID +
-                " FROM " + TBL_BOOK_BOOKSHELF + " WHERE " + DOM_FK_BOOKSHELF_ID + "=NULL");
+        String sql = "SELECT DISTINCT " + DOM_FK_BOOK_ID +
+                " FROM " + TBL_BOOK_BOOKSHELF + " WHERE " + DOM_FK_BOOKSHELF_ID + "=NULL";
+        toLog(Tracker.States.Enter, sql);
         if (!dryRun) {
-            mSyncDb.rawQuery("DELETE " + TBL_BOOK_BOOKSHELF + " WHERE " + DOM_FK_BOOKSHELF_ID + "=NULL", null);
+            mSyncDb.execSQL("DELETE " + TBL_BOOK_BOOKSHELF +
+                    " WHERE " + DOM_FK_BOOKSHELF_ID + "=NULL");
+            toLog(Tracker.States.Exit, sql);
         }
     }
-
-    /**
-     * boolean: 0,1
-     */
-    public void bookSigned(final boolean dryRun) {
-        toLog("SELECT DISTINCT " + DOM_BOOK_SIGNED +
-                " FROM " + TBL_BOOKS + " WHERE " + DOM_BOOK_SIGNED + " NOT IN ('0','1')");
-        if (!dryRun) {
-            mSyncDb.rawQuery("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_SIGNED + "=1 WHERE " + DOM_BOOK_SIGNED + "='true'", null);
-            mSyncDb.rawQuery("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_SIGNED + "=0 WHERE " + DOM_BOOK_SIGNED + "='false'", null);
-        }
-    }
-
-    /**
-     * boolean: 0,1
-     */
-    public void bookRead(final boolean dryRun) {
-        toLog("SELECT DISTINCT " + DOM_BOOK_READ +
-                " FROM " + TBL_BOOKS + " WHERE " + DOM_BOOK_READ + " NOT IN ('0','1')");
-    }
-
-
 
     /**
      * int: 0,1,3
      */
     public void bookAnthologyBitmask(final boolean dryRun) {
-        toLog("SELECT DISTINCT " + DOM_BOOK_ANTHOLOGY_BITMASK +
-                " FROM " + TBL_BOOKS + " WHERE " + DOM_BOOK_ANTHOLOGY_BITMASK + " NOT IN (0,1,3)");
-    }
-
-
-
-    /** int */
-    public void bookISFDBid(final boolean dryRun) {
-        toLog("SELECT DISTINCT " + DOM_BOOK_ISFDB_ID +
-                " FROM " + TBL_BOOKS + " WHERE " + DOM_BOOK_ISFDB_ID + " <> 0");
+        String sql = "SELECT DISTINCT " + DOM_BOOK_ANTHOLOGY_BITMASK +
+                " FROM " + TBL_BOOKS + " WHERE " + DOM_BOOK_ANTHOLOGY_BITMASK + " NOT IN (0,1,3)";
+        toLog(Tracker.States.Enter, sql);
     }
 
     /** int */
-    public void bookLTid(final boolean dryRun) {
-        toLog("SELECT DISTINCT " + DOM_BOOK_LIBRARY_THING_ID +
-                " FROM " + TBL_BOOKS + " WHERE " + DOM_BOOK_LIBRARY_THING_ID + " <> 0");
+    public void idNotZero(final @NonNull DomainDefinition column, final boolean dryRun) {
+        String sql = "SELECT DISTINCT " + column +
+                " FROM " + TBL_BOOKS + " WHERE " + column + " <> 0";
+        toLog(Tracker.States.Enter, sql);
     }
 
-    public void toLog(String sql) {
+    /**
+     * string default ''
+     */
+    public void nullString2empty(final @NonNull TableDefinition table,
+                                 final @NonNull DomainDefinition column,
+                                 final boolean dryRun) {
+        String sql = "SELECT DISTINCT " + column +
+                " FROM " + table + " WHERE " + column + "=NULL";
+                toLog(Tracker.States.Enter, sql);
+
+        if (!dryRun) {
+            mSyncDb.execSQL("UPDATE " + table + " SET " + column + "=''" + " WHERE " + column + "=NULL");
+            toLog(Tracker.States.Exit, sql);
+        }
+    }
+
+    /**
+     * boolean: 0,1
+     */
+    public void booleanCleanup(final @NonNull TableDefinition table,
+                               final @NonNull DomainDefinition column,
+                               final boolean dryRun) {
+        String sql = "SELECT DISTINCT " + column +
+                " FROM " + table + " WHERE " + column + " NOT IN ('0','1')";
+
+        toLog(Tracker.States.Enter, sql);
+        if (!dryRun) {
+            mSyncDb.execSQL("UPDATE " + table + " SET " + column + "=1 WHERE lower(" + column + ") IN ('true', 't')");
+            mSyncDb.execSQL("UPDATE " + table + " SET " + column + "=0 WHERE lower(" + column + ") IN ('false','f')");
+            toLog(Tracker.States.Exit, sql);
+        }
+    }
+
+    public void toLog(final @NonNull Tracker.States state, final @NonNull String sql) {
         DbSync.SynchronizedCursor cursor = mSyncDb.rawQuery(sql, null);
         while (cursor.moveToNext()) {
             String field = cursor.getColumnName(0);
             String value = cursor.getString(0);
 
-            Logger.info(this, field + "=" + value);
+            Logger.info(this, state + "|" + field + "=" + value);
         }
         cursor.close();
     }

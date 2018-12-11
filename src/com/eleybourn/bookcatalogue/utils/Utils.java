@@ -153,8 +153,9 @@ public class Utils {
                 } catch (java.net.UnknownHostException e) {
                     Logger.error(e);
                     retries--;
-                    if (retries-- == 0)
+                    if (retries-- == 0) {
                         throw e;
+                    }
                     try {
                         Thread.sleep(500);
                     } catch (Exception ignored) {
@@ -238,8 +239,9 @@ public class Utils {
                 names.put(name, true);
             }
         }
-        for (int i = toDelete.size() - 1; i >= 0; i--)
+        for (int i = toDelete.size() - 1; i >= 0; i--) {
             list.remove(toDelete.get(i).intValue());
+        }
         return toDelete.size() > 0;
     }
 
@@ -268,6 +270,7 @@ public class Utils {
      *
      * @return Spannable with all links
      */
+    @SuppressWarnings("WeakerAccess")
     @NonNull
     public static Spannable linkifyHtml(final @NonNull String html, final int linkifyMask) {
         // Get the spannable HTML
@@ -299,10 +302,11 @@ public class Utils {
      * @return The joined strings
      */
     @NonNull
-    public static String join(final @NonNull String delim, final @NonNull String[] sa) {
+    public static String join(final @NonNull String delim, final @NonNull String... sa) {
         // Simple case, return empty string
-        if (sa.length <= 0)
+        if (sa.length <= 0) {
             return "";
+        }
 
         // Initialize with first
         StringBuilder sb = new StringBuilder(sa[0]);
@@ -314,7 +318,6 @@ public class Utils {
                 sb.append(sa[i]);
             }
         }
-        // Return result
         return sb.toString();
     }
 

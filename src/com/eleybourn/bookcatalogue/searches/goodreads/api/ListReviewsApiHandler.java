@@ -415,7 +415,7 @@ public class ListReviewsApiHandler extends ApiHandler {
     /**
      * Field names we add to the bundle based on parsed XML data.
      *
-     * We duplicate the CatalogueDBAdapter names (and give them a DB_ getPrefix) so
+     * We duplicate the CatalogueDBAdapter names (and give them a DB_ prefix) so
      * that (a) it is clear which fields are provided by this call, and (b) it is clear
      * which fields directly relate to DB fields.
      *
@@ -447,7 +447,7 @@ public class ListReviewsApiHandler extends ApiHandler {
         public static final String DB_NOTES = DatabaseDefinitions.DOM_BOOK_NOTES.name;
         public static final String DB_FORMAT = DatabaseDefinitions.DOM_BOOK_FORMAT.name;
         public static final String DB_PUBLISHER = DatabaseDefinitions.DOM_BOOK_PUBLISHER.name;
-        public static final String DB_DESCRIPTION = DatabaseDefinitions.DOM_DESCRIPTION.name;
+        public static final String DB_DESCRIPTION = DatabaseDefinitions.DOM_BOOK_DESCRIPTION.name;
         public static final String DB_AUTHOR_ID = DatabaseDefinitions.DOM_FK_AUTHOR_ID.name;
         public static final String DB_RATING = DatabaseDefinitions.DOM_BOOK_RATING.name;
         public static final String DB_READ_START = DatabaseDefinitions.DOM_BOOK_READ_START.name;

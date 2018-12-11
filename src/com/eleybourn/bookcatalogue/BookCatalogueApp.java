@@ -262,7 +262,7 @@ public class BookCatalogueApp extends Application {
     }
 
     /**
-     * @param theme allows to override the app theme, f.e. with Dialog Themes
+     * @param theme allows to override the app theme, e.g. with Dialog Themes
      * @param attr  resource id to get
      *
      * @return resolved attribute

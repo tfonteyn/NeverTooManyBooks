@@ -572,7 +572,7 @@
     <!-- For saving and opening exports or backups -->
     <string name="btn_confirm_open">Άνοιγμα</string>
 
-    <!-- Admin option to exportBooks books -->
+    <!-- Admin option to export books -->
     <string name="export_to_csv">Εξαγωγή σε αρχείο CSV</string>
     <!-- Admin option to import books -->
     <string name="import_from_csv">Εισαγωγή από αρχείο CSV</string>
@@ -616,7 +616,7 @@
     <string name="title_import_books_blurb">Τα βιβλία σε αυτό το Αρχείο θα εισαχθούν. Επιλέξτε μία από τις δύο επιλογές για να αρχίσει η εισαγωγή, ή πατήστε \'Πίσω\' για να ακυρωθεί:</string>
     <!-- Description of the 'import all books' option -->
     <string name="import_option_info_all_books">Όλα τα βιβλία από το Αρχείο θα εισαχθούν, ενημερώνοντας παλιά βιβλία και προσθέτοντας καινούρια.</string>
-    <!-- Menu text for the 'import/exportBooks new & changed' option -->
+    <!-- Menu text for the 'import/export new & changed' option -->
     <string name="import_option_new_and_changed_books">Καινούρια και ενημερωμένα βιβλία</string>
     <!-- Description of the 'import new & changed' option -->
     <string name="import_option_info_new_and_changed_books">Εισαγωγή μόνο βιβλίων που είναι καινούρια, ή που έχουν ενημερωθεί πιο πρόσφατα στο Αρχείο. Χρήσιμο όταν συγχρονίζετε δύο συσκευές.</string>
@@ -625,14 +625,14 @@
     <!-- Part of the progress message displayed when importing books -->
     <string name="progress_msg_n_created_m_updated">%1$s δημιουργήθηκαν, %2$s ενημερώθηκαν</string>
 
-    <!--  Explanatory text for 'exportBooks' dialogue -->
+    <!--  Explanatory text for 'export' dialogue -->
     <string name="title_export_books">Τα βιβλία στον κατάλογό σας θα εξαχθούν. Επιλέξτε μία από τις δύο επιλογές για να αρχίσει η εξαγωγή, ή πατήστε \'Πίσω\' για να ακυρωθεί:</string>
     <!-- Displayed in progress dialog when exporting covers in incremental mode -->
     <string name="progress_msg_covers_skip">%1$s εξώφυλλα επεξεργάστηκαν (%2$s λείπουν, %3$s παρελείφθησαν)</string>
 
-    <!-- Explanatory note for 'exportBooks all' option -->
+    <!-- Explanatory note for 'export all' option -->
     <string name="export_info_backup_all">Όλα τα βιβλία, εξώφυλλα, ρυθμίσεις και προσαρμοσμένα στυλ θα εξαχθούν στο Αρχείο.</string>
-    <!-- Explanatory note for 'advanced exportBooks' option -->
+    <!-- Explanatory note for 'advanced export' option -->
     <string name="export_options_dialog_title">Επιλέξτε τι θα εξαχθεί στο Αρχείο.</string>
 
     <!-- Text for button -->
@@ -646,12 +646,12 @@
     <!-- Brief description -->
     <string name="import_export_info_preferences">Προτιμήσεις και στυλ για λίστες καθορισμένες από το χρήστη</string>
 
-    <!-- Explanatory note for exportBooks date (not yet implemented) -->
+    <!-- Explanatory note for export date (not yet implemented) -->
     <string name="export_option_info_books_since_date">Προαιρετικά καθορίστε μια ημερομηνία να χρησιμοποιηθεί στην επιλογή βιβλίων ή/και εξωφύλλων για εξαγωγή:</string>
 
-    <!-- Explanatory note for exportBooks date (not yet implemented) -->
+    <!-- Explanatory note for export date (not yet implemented) -->
     <string name="export_option_books_since_date">Όλα τα βιβλία που προστέθηκαν ή ενημερώθηκαν από:</string>
-    <!-- Explanatory note for exportBooks data since last backup -->
+    <!-- Explanatory note for export data since last backup -->
     <string name="export_option_books_since_last_full_backup">Όλα τα βιβλία που προστέθηκαν ή ενημερώθηκαν από το τελευταίο πλήρες αντίγραφο ασφαλείας</string>
 
     <plurals name="displaying_n_books">
@@ -702,9 +702,6 @@
     <!-- Credits in the 'about' dialog -->
     <string name="about_translators">Το BookCatalogue είναι προιόν προσπάθειας πολλών ανθρώπων και δεν θα είχε τέτοια ευρεία αποδοχή χωρίς την γενναιόδωρη βοήθεια των εθελοντών μεταφραστών: Eugenio Davolio, José M. Galdo, Imkal, Gideon van Melle, Emir Sarı, Nick Silin, Robert Wetzlmayr and Dimitris Klisiaris (εαν ξεχνάμε κάποιον, παρακαλούμε ενημερώστε μας).</string>
 
-    <!-- A hint describing the benefit of following the Amazon links -->
-    <string name="hint_amazon_links_blurb">&lt;p&gt;If you buy things from Amazon after selecting the &lt;i&gt;\"%1$s\"&lt;/i&gt;, &lt;i&gt;\"%2$s\"&lt;/i&gt; or &lt;i&gt;\"%3$s\"&lt;/i&gt; menu items, a proportion of the purchase price will be sent to the developers of %4$s.&lt;/p&gt;&lt;p&gt;You can also use the &lt;a href=\"https://github.com/eleybourn/Book-Catalogue/wiki/Frequently-Asked-Questions-%%28FAQ%%29\"&gt;links on our FAQ&lt;/a&gt; to navigate directly to Amazon or PayPal.&lt;/p&gt;</string>
-
     <!-- Name of the new style grouping (needs to be short). -->
     <string name="style_builtin_update_date">Ημερομηνία ενημέρωσης</string>
     <!-- Name of the new style grouping (needs to be short). -->
@@ -717,8 +714,6 @@
     <!-- Preference name (fairly short) for preferred language -->
     <string name="user_interface_preferred_language">Προτιμώμενη Γλώσσα Διεπαφής</string>
     <string name="tab_lbl_content">περιεχόμενο</string>
-    <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
-    <string name="a_comma_b">%1$s, %2$s</string>
     <string name="name_colon_value">%1$s: %2$s</string>
     <string name="preferred_language_x">%1$s (%2$s)</string>
 

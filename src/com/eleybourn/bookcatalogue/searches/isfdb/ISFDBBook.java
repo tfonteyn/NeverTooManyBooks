@@ -344,7 +344,7 @@ public class ISFDBBook extends AbstractBase {
 
                 } else if ("Notes:".equalsIgnoreCase(fieldName)) {
                     tmp = li.childNode(1).childNode(1).toString().trim();
-                    bookData.putString(UniqueId.KEY_DESCRIPTION, tmp);
+                    bookData.putString(UniqueId.KEY_BOOK_DESCRIPTION, tmp);
 
 
 //                } else if ("Cover:".equalsIgnoreCase(fieldName)) {

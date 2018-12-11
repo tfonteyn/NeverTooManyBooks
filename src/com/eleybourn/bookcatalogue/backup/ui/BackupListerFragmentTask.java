@@ -62,7 +62,7 @@ public class BackupListerFragmentTask extends FileListerFragmentTask {
             if (BackupFileDetails.isArchive(file)) {
                 BackupReader reader = null;
                 try {
-                    reader = BackupManager.readFrom(context, file);
+                    reader = BackupManager.readFrom(file);
                     fd.setInfo(reader.getInfo());
                 } catch (IOException e) {
                     Logger.error(e);

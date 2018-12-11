@@ -57,6 +57,7 @@ import com.eleybourn.bookcatalogue.database.DBExceptions;
 import com.eleybourn.bookcatalogue.datamanager.datavalidators.ValidatorException;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Book;
+import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.RTE;
@@ -171,10 +172,10 @@ public class Fields extends ArrayList<Fields.Field> {
     }
 
     /**
-     * This should NEVER happen, but it does. See Issue 505. So we need more info about why & when.
+     * This should NEVER happen, but it does. See Issue #505. So we need more info about why & when.
      *
      * // Allow for the (apparent) possibility that the view may have been removed due
-     * // to a tab change or similar. See Issue 505.
+     * // to a tab change or similar. See Issue #505.
      *
      * Every field MUST have an associated View object, but sometimes it is not found.
      * When not found, the app crashes.
@@ -1021,14 +1022,14 @@ public class Fields extends ArrayList<Fields.Field> {
     static public class BinaryYesNoEmptyFormatter implements FieldFormatter {
 
         @NonNull
-        private final Resources mRes;
+        private final Context mContext;
 
         /**
-         * @param res resources so we can get the strings to display
+         * @param context so we can get the strings to display
          */
         @SuppressWarnings("WeakerAccess")
-        public BinaryYesNoEmptyFormatter(final @NonNull Resources res) {
-            mRes = res;
+        public BinaryYesNoEmptyFormatter(final @NonNull Context context) {
+            mContext = context;
         }
 
         /**
@@ -1041,7 +1042,7 @@ public class Fields extends ArrayList<Fields.Field> {
             }
             try {
                 boolean val = Datum.toBoolean(source, false);
-                return mRes.getString(val ? R.string.yes : R.string.no);
+                return mContext.getString(val ? R.string.yes : R.string.no);
             } catch (IllegalArgumentException e) {
                 return source;
             }

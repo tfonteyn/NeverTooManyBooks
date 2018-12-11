@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.database.DbSync;
+import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.RTE;
 
 import java.util.HashMap;
@@ -122,8 +123,10 @@ public class TableInfo implements Iterable<TableInfo.ColumnInfo> {
                 case TYPE_DATE:
                 case TYPE_DATETIME:
                     return StorageClass.Text;
+
                 default:
-                    throw new RTE.IllegalTypeException(columnType);
+                    // note that "" (empty) type is treated as TEXT. But we really should not allow our columns to be defined without a type.
+                    throw new RTE.IllegalTypeException("columnType=`" + columnType + "`");
             }
         }
     }

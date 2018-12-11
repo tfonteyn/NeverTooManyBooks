@@ -158,7 +158,7 @@ public class UpdateFieldsFromInternetActivity extends BaseActivityWithTasks {
                 R.string.lbl_date_published, Fields.FieldUsage.Usage.CopyIfBlank, false);
         addIfVisible(UniqueId.KEY_FIRST_PUBLICATION,
                 R.string.lbl_first_publication, Fields.FieldUsage.Usage.CopyIfBlank, false);
-        addIfVisible(UniqueId.KEY_DESCRIPTION,
+        addIfVisible(UniqueId.KEY_BOOK_DESCRIPTION,
                 R.string.lbl_description, Fields.FieldUsage.Usage.CopyIfBlank, false);
         addIfVisible(UniqueId.KEY_BOOK_PAGES,
                 R.string.lbl_pages, Fields.FieldUsage.Usage.CopyIfBlank, false);

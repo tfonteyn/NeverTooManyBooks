@@ -27,6 +27,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.database.CatalogueDBHelper;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 
@@ -82,13 +83,11 @@ public class BackupInfo {
      * Static method to create an INFO block based on the current environment.
      *
      * @param container The container being used (we want the version)
-     * @param context   Context (for package-related info)
      *
      * @return a new BackupInfo object
      */
     @NonNull
-    public static BackupInfo createInfo(final @NonNull BackupContainer container,
-                                 final @NonNull Context context,
+    static BackupInfo createInfo(final @NonNull BackupContainer container,
                                  final int bookCount,
                                  final int coverCount) {
         Bundle info = new Bundle();
@@ -101,6 +100,7 @@ public class BackupInfo {
         info.putInt(INFO_DATABASE_VERSION, CatalogueDBHelper.DATABASE_VERSION);
         info.putString(INFO_CREATION_DATE, DateUtils.utcSqlDateTimeForToday());
         try {
+            Context context = BookCatalogueApp.getAppContext();
             // Get app info
             PackageManager manager = context.getPackageManager();
             PackageInfo appInfo = manager.getPackageInfo(context.getPackageName(), 0);

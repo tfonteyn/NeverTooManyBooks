@@ -92,10 +92,11 @@ public class Publisher implements Parcelable {
     }
 
     /**
-     * Two Publishers are equal if:
+     * Two are the same if:
+     *
      * - it's the same Object duh..
-     * - one or both of them is 'new' (e.g. id == 0) but their names are equal
-     * - ids are equal
+     * - one or both of them is 'new' (e.g. id == 0) or their id's are the same
+     *   AND all their other fields are equal
      *
      * Compare is CASE SENSITIVE ! This allows correcting case mistakes.
      */
@@ -107,12 +108,12 @@ public class Publisher implements Parcelable {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        Publisher publisher = (Publisher) o;
+        Publisher that = (Publisher) o;
         //ENHANCE uncomment the 3 lines once(if) we start using ids
-//        if (id == 0 || publisher.id == 0) {
-        return Objects.equals(name, publisher.name);
+//        if (this.id == 0 || that.id == 0 || this.id == that.id) {
+        return Objects.equals(this.name, that.name);
 //        }
-//        return (id == publisher.id);
+//        return false;
     }
 
     @Override

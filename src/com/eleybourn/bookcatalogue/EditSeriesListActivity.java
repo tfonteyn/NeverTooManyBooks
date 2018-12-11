@@ -74,7 +74,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
         super.onCreate(savedInstanceState);
         setTitle(mBookTitle);
         mSeriesAdapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_dropdown_item_1line, mDb.getAllSeries());
+                android.R.layout.simple_dropdown_item_1line, mDb.getAllSeriesNames());
         ((AutoCompleteTextView) this.findViewById(R.id.name)).setAdapter(mSeriesAdapter);
 
         getWindow().setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
@@ -90,7 +90,7 @@ public class EditSeriesListActivity extends EditObjectListActivity<Series> {
             EditText numberField = EditSeriesListActivity.this.findViewById(R.id.series_num);
             Series newSeries = new Series(seriesTitle, numberField.getText().toString().trim());
             // see if we can find it based on the name
-            newSeries.id = mDb.getSeriesId(newSeries.name);
+            newSeries.id = mDb.getSeriesIdByName(newSeries.name);
             for (Series series : mList) {
                 if (series.equals(newSeries)) {
                     StandardDialogs.showUserMessage(EditSeriesListActivity.this, R.string.warning_series_already_in_list);

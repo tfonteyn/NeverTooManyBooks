@@ -48,7 +48,7 @@ import java.util.regex.Pattern;
  */
 public class TOCEntry implements Parcelable, Utils.ItemWithIdFixup {
     /**
-     * import/exportBooks etc...
+     * import/export etc...
      *
      * "anthology title (year) * author ","anthology title (year) * author ",...
      */
@@ -58,7 +58,7 @@ public class TOCEntry implements Parcelable, Utils.ItemWithIdFixup {
     /**
      * Used by:
      * - ISFDB import of anthology titles
-     * - exportBooks/import
+     * - export/import
      *
      * find the publication year in a string like "some title (1960)"
      *
@@ -232,8 +232,12 @@ public class TOCEntry implements Parcelable, Utils.ItemWithIdFixup {
 
     /**
      * Two are the same if:
-     * - one or both are 'new' (id==0)  and author + title is the same
+     *
+     * - it's the same Object duh..
+     * - one or both of them is 'new' (e.g. id == 0) but all their fields are equal
      * - their id's are the same
+     *
+     * Compare is CASE SENSITIVE ! This allows correcting case mistakes.
      */
     @Override
     public boolean equals(final @Nullable Object o) {
@@ -244,10 +248,12 @@ public class TOCEntry implements Parcelable, Utils.ItemWithIdFixup {
             return false;
         }
         TOCEntry that = (TOCEntry) o;
-        if (id == 0 || that.id == 0) {
-            return Objects.equals(mAuthor, that.mAuthor) && Objects.equals(mTitle, that.mTitle);
+        if (this.id == 0 || that.id == 0) {
+            return Objects.equals(this.mAuthor, that.mAuthor)
+                    && Objects.equals(this.mTitle, that.mTitle)
+                    && Objects.equals(this.mFirstPublicationDate, that.mFirstPublicationDate);
         }
-        return (id == that.id);
+        return (this.id == that.id);
     }
 
     @Override

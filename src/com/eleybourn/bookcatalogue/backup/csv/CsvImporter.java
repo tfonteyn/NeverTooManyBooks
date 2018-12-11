@@ -19,7 +19,6 @@
  */
 package com.eleybourn.bookcatalogue.backup.csv;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -86,10 +85,10 @@ public class CsvImporter implements Importer {
      *                 {@link ImportSettings##dateFrom} is not applicable
      *                 {@link ImportSettings#IMPORT_ONLY_NEW_OR_UPDATED} is respected.
      *                 Other flags are ignored, as this method only
-     *                 handles {@link ImportSettings#BOOK_DATA} anyhow.
+     *                 handles {@link ImportSettings#BOOK_CSV} anyhow.
      */
-    public CsvImporter(final @NonNull Context context, final @NonNull ImportSettings settings) {
-        mDb = new CatalogueDBAdapter(context);
+    public CsvImporter(final @NonNull ImportSettings settings) {
+        mDb = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
         mSettings = settings;
     }
 
@@ -105,9 +104,9 @@ public class CsvImporter implements Importer {
      * @throws IOException on any error
      */
     @SuppressWarnings("UnusedReturnValue")
-    public boolean importBooks(final @NonNull InputStream importStream,
-                               final @Nullable CoverFinder coverFinder,
-                               final @NonNull OnImporterListener listener) throws IOException {
+    public boolean doBooks(final @NonNull InputStream importStream,
+                           final @Nullable CoverFinder coverFinder,
+                           final @NonNull OnImporterListener listener) throws IOException {
 
         final List<String> importedList = new ArrayList<>();
 
@@ -134,7 +133,7 @@ public class CsvImporter implements Importer {
         }
 
         // See if we can deduce the kind of escaping to use based on column names.
-        // Version 1->3.3 exportBooks with family_name and author_id. Version 3.4+ do not; latest versions
+        // Version 1->3.3 export with family_name and author_id. Version 3.4+ do not; latest versions
         // make an attempt at escaping characters etc to preserve formatting.
         boolean fullEscaping = !book.containsKey(UniqueId.KEY_AUTHOR) || !book.containsKey(UniqueId.KEY_AUTHOR_FAMILY_NAME);
 
@@ -486,7 +485,7 @@ public class CsvImporter implements Importer {
 
     //
     // This CSV parser is not a complete parser, but it will parse files exported by older
-    // versions. At some stage in the future it would be good to allow full CSV exportBooks
+    // versions. At some stage in the future it would be good to allow full CSV export
     // and import to allow for escape('\') chars so that cr/lf can be preserved.
     //
     @NonNull

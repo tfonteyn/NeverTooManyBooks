@@ -1,5 +1,5 @@
 PROBLEM:
-to many ways of using tasks.
+too many ways of using tasks.
 
 GOALS:
  1. Removal of taskqueue, replace with SimpleTask/FragmentTask

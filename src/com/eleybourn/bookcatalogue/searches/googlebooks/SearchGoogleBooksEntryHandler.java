@@ -281,7 +281,7 @@ class SearchGoogleBooksEntryHandler extends DefaultHandler {
                 break;
             }
             case XML_DESCRIPTION: {
-                addIfNotPresent(UniqueId.KEY_DESCRIPTION, mBuilder.toString());
+                addIfNotPresent(UniqueId.KEY_BOOK_DESCRIPTION, mBuilder.toString());
                 break;
             }
 

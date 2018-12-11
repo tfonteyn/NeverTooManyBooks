@@ -133,7 +133,6 @@ public class About extends BaseActivity {
         Tracker.exitOnCreate(this);
     }
 
-    //TEST: do we need this ? is Linkify not doing email for us ?
     private void sendContactEmail(final @StringRes int stringId) {
         try {
             Intent emailIntent = new Intent(Intent.ACTION_SEND);

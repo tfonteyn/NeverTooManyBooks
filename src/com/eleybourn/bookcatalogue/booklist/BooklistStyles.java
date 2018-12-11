@@ -27,6 +27,7 @@ import android.support.annotation.StringRes;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.booklist.filters.TrinaryFilter;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.utils.StringList;
 
@@ -57,7 +58,7 @@ import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_LANGUAGE;
 import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_LOANED;
 import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_LOCATION;
 import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_RATING;
-import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_READ_AND_UNREAD;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_READ_STATUS;
 import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_SERIES;
 
 /**
@@ -129,7 +130,8 @@ public class BooklistStyles extends ArrayList<BooklistStyle> {
      * This method requires the application context to be present.
      *
      * Note the hardcoded negative id's. These number should never be changed as they will
-     * get stored in preferences. Take care not to add duplicates.
+     * get stored in preferences and serialized. Take care not to add duplicates.
+     * (maybe use statics instead of just the ints)
      */
     @NonNull
     private static List<BooklistStyle> getBuiltinStyles() {
@@ -145,7 +147,7 @@ public class BooklistStyles extends ArrayList<BooklistStyle> {
         style = new BooklistStyle(-2, R.string.style_builtin_unread);
         list.add(style);
         style.addGroups(ROW_KIND_AUTHOR, ROW_KIND_SERIES);
-        style.setReadFilter(BooklistStyle.FILTER_NO);
+        style.setReadFilter(TrinaryFilter.FILTER_NO);
 
         // Compact
         style = new BooklistStyle(-3, R.string.style_builtin_compact);
@@ -177,7 +179,7 @@ public class BooklistStyles extends ArrayList<BooklistStyle> {
         // Read & Unread
         style = new BooklistStyle(-8, R.string.style_builtin_read_and_unread);
         list.add(style);
-        style.addGroups(ROW_KIND_READ_AND_UNREAD, ROW_KIND_AUTHOR, ROW_KIND_SERIES);
+        style.addGroups(ROW_KIND_READ_STATUS, ROW_KIND_AUTHOR, ROW_KIND_SERIES);
 
         // Publication date
         style = new BooklistStyle(-9, R.string.style_builtin_publication_date);

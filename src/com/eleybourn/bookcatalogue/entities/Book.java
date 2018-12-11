@@ -20,7 +20,10 @@
 package com.eleybourn.bookcatalogue.entities;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -28,6 +31,7 @@ import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.support.v4.content.FileProvider;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BookSearchActivity;
@@ -42,9 +46,12 @@ import com.eleybourn.bookcatalogue.datamanager.DataAccessor;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.dialogs.editordialog.CheckListItem;
 import com.eleybourn.bookcatalogue.dialogs.editordialog.CheckListItemBase;
+import com.eleybourn.bookcatalogue.utils.DateUtils;
+import com.eleybourn.bookcatalogue.utils.GenericFileProvider;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
-import com.eleybourn.bookcatalogue.utils.Utils;
+import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -153,7 +160,7 @@ public class Book extends DataManager {
     /**
      * Private constructor.
      *
-     * @param bookId of book (may be 0 for new)
+     * @param bookId   of book (may be 0 for new)
      * @param bookData Bundle with book data
      */
     private Book(final long bookId, final @NonNull Bundle bookData) {
@@ -173,14 +180,14 @@ public class Book extends DataManager {
      *
      * So *always* returns a valid Book.
      *
-     * @param bookId of book (may be 0 for new)
+     * @param bookId   of book (may be 0 for new)
      * @param bookData Bundle with book data (may be null)
      */
     @NonNull
     public static Book getBook(final @NonNull CatalogueDBAdapter db, final long bookId, final @Nullable Bundle bookData) {
         // if we have a populated bundle, use that.
-            if (bookData != null) {
-                return new Book(bookId, bookData);
+        if (bookData != null) {
+            return new Book(bookId, bookData);
         }
         // otherwise, create a new book and try to load the data from the database.
         return new Book(db, bookId);
@@ -194,6 +201,136 @@ public class Book extends DataManager {
     @NonNull
     public static Book getBook(final @NonNull CatalogueDBAdapter db, final long bookId) {
         return new Book(db, bookId);
+    }
+
+    @SuppressWarnings("UnusedReturnValue")
+    public static boolean setRead(final @NonNull CatalogueDBAdapter db,
+                                  final long bookId,
+                                  final boolean isRead) {
+        // load from database
+        Book book = getBook(db, bookId);
+        book.putBoolean(UniqueId.KEY_BOOK_READ, isRead);
+        book.putString(UniqueId.KEY_BOOK_READ_END, DateUtils.localSqlDateForToday());
+        return (db.updateBook(bookId, book, 0) == 1);
+    }
+
+    /**
+     * Perform sharing of book. Create chooser with matched apps for sharing some text like:
+     * <b>"I'm reading " + title + " by " + author + series + " " + ratingString</b>
+     */
+    public Intent getShareBookIntent(final @NonNull Activity activity) {
+        String title = getString(UniqueId.KEY_TITLE);
+        double rating = getDouble(UniqueId.KEY_BOOK_RATING);
+        String author = getString(DatabaseDefinitions.DOM_AUTHOR_FORMATTED_GIVEN_FIRST.name);
+        String series = getString(DatabaseDefinitions.DOM_SERIES_FORMATTED.name);
+        String uuid = getString(UniqueId.KEY_BOOK_UUID);
+
+        if (!series.isEmpty()) {
+            series = " (" + series.replace("#", "%23 ") + ")";
+        }
+
+        //remove trailing 0's
+        String ratingString = "";
+        if (rating > 0) {
+            int ratingTmp = (int) rating;
+            double decimal = rating - ratingTmp;
+            if (decimal > 0) {
+                ratingString = rating + "/5";
+            } else {
+                ratingString = ratingTmp + "/5";
+            }
+        }
+
+        if (!ratingString.isEmpty()) {
+            ratingString = "(" + ratingString + ")";
+        }
+
+        // prepare the cover to post
+        File coverFile = StorageUtils.getCoverFile(uuid);
+        Uri coverURI = FileProvider.getUriForFile(activity, GenericFileProvider.AUTHORITY, coverFile);
+
+        /*
+        TEST: There's a problem with the facebook app in android,
+         so despite it being shown on the list it will not post any text unless the user types it.
+		 */
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        String text = activity.getString(R.string.share_book_im_reading, title, author, series, ratingString);
+        shareIntent.putExtra(Intent.EXTRA_TEXT, text);
+        shareIntent.putExtra(Intent.EXTRA_STREAM, coverURI);
+        shareIntent.setType("text/plain");
+
+        return shareIntent;
+    }
+
+    /**
+     * Duplicate a book by putting applicable fields in a Bundle ready for further processing.
+     *
+     * @return bundle with book data
+     */
+    public Bundle duplicate() {
+        final Bundle bookData = new Bundle();
+
+        bookData.putString(UniqueId.KEY_TITLE, getString(UniqueId.KEY_TITLE));
+        bookData.putString(UniqueId.KEY_BOOK_ISBN, getString(UniqueId.KEY_BOOK_ISBN));
+        bookData.putString(UniqueId.KEY_BOOK_DESCRIPTION, getString(UniqueId.KEY_BOOK_DESCRIPTION));
+
+        bookData.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY));
+        bookData.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY));
+
+        bookData.putInt(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK, getInt(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK));
+        bookData.putParcelableArrayList(UniqueId.BKEY_TOC_TITLES_ARRAY, getParcelableArrayList(UniqueId.BKEY_TOC_TITLES_ARRAY));
+
+        bookData.putString(UniqueId.KEY_BOOK_PUBLISHER, getString(UniqueId.KEY_BOOK_PUBLISHER));
+        bookData.putString(UniqueId.KEY_BOOK_DATE_PUBLISHED, getString(UniqueId.KEY_BOOK_DATE_PUBLISHED));
+        bookData.putString(UniqueId.KEY_FIRST_PUBLICATION, getString(UniqueId.KEY_FIRST_PUBLICATION));
+
+        bookData.putString(UniqueId.KEY_BOOK_FORMAT, getString(UniqueId.KEY_BOOK_FORMAT));
+        bookData.putString(UniqueId.KEY_BOOK_GENRE, getString(UniqueId.KEY_BOOK_GENRE));
+        bookData.putString(UniqueId.KEY_BOOK_LANGUAGE, getString(UniqueId.KEY_BOOK_LANGUAGE));
+        bookData.putString(UniqueId.KEY_BOOK_PAGES, getString(UniqueId.KEY_BOOK_PAGES));
+
+
+        bookData.putString(UniqueId.KEY_BOOK_PRICE_LISTED, getString(UniqueId.KEY_BOOK_PRICE_LISTED));
+        bookData.putString(UniqueId.KEY_BOOK_PRICE_LISTED_CURRENCY, getString(UniqueId.KEY_BOOK_PRICE_LISTED_CURRENCY));
+        bookData.putString(UniqueId.KEY_BOOK_PRICE_PAID, getString(UniqueId.KEY_BOOK_PRICE_PAID));
+        bookData.putString(UniqueId.KEY_BOOK_PRICE_PAID_CURRENCY, getString(UniqueId.KEY_BOOK_PRICE_PAID_CURRENCY));
+
+        bookData.putInt(UniqueId.KEY_BOOK_READ, getInt(UniqueId.KEY_BOOK_READ));
+        bookData.putString(UniqueId.KEY_BOOK_READ_END, getString(UniqueId.KEY_BOOK_READ_END));
+        bookData.putString(UniqueId.KEY_BOOK_READ_START, getString(UniqueId.KEY_BOOK_READ_START));
+
+        bookData.putString(UniqueId.KEY_BOOK_NOTES, getString(UniqueId.KEY_BOOK_NOTES));
+        bookData.putDouble(UniqueId.KEY_BOOK_RATING, getInt(UniqueId.KEY_BOOK_RATING));
+        bookData.putString(UniqueId.KEY_BOOK_LOCATION, getString(UniqueId.KEY_BOOK_LOCATION));
+        bookData.putInt(UniqueId.KEY_BOOK_SIGNED, getInt(UniqueId.KEY_BOOK_SIGNED));
+        bookData.putInt(UniqueId.KEY_BOOK_EDITION_BITMASK, getInt(UniqueId.KEY_BOOK_EDITION_BITMASK));
+
+        return bookData;
+    }
+
+    /**
+     * Update the 'read' status of a book in the database + sets the 'read end' to today
+     * The book will have its 'read' status updated ONLY if the update went through.
+     *
+     * @param db database
+     *
+     * @return <tt>true</tt> if the update was successful, false on failure
+     */
+    @SuppressWarnings("UnusedReturnValue")
+    public boolean setRead(final @NonNull CatalogueDBAdapter db, final boolean isRead) {
+        int prevRead = getInt(UniqueId.KEY_BOOK_READ);
+        String prevReadEnd = getString(UniqueId.KEY_BOOK_READ_END);
+
+        putInt(UniqueId.KEY_BOOK_READ, isRead ? 1 : 0);
+        putString(UniqueId.KEY_BOOK_READ_END, DateUtils.localSqlDateForToday());
+
+        if (db.updateBook(getBookId(), this, 0) != 1) {
+            //rollback
+            putInt(UniqueId.KEY_BOOK_READ, prevRead);
+            putString(UniqueId.KEY_BOOK_READ_END, prevReadEnd);
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -265,19 +402,6 @@ public class Book extends DataManager {
             list.add(new BookshelfCheckListItem(bookshelf, currentShelves.contains(bookshelf)));
         }
         return list;
-    }
-
-    /**
-     * Special Formatter
-     *
-     * @return the list of bookshelves formatted as "shelf1, shelf2, shelf3, ...
-     */
-    public String getBookshelfListAsText() {
-        List<String> list = new ArrayList<>();
-        for (Bookshelf bookshelf : getBookshelfList()) {
-            list.add(bookshelf.name);
-        }
-        return Utils.toDisplayString(list);
     }
 
     /**
@@ -425,7 +549,7 @@ public class Book extends DataManager {
     }
 
     /**
-     * Utility routine to get a Content (an TOCEntry list) from a data manager
+     * Utility routine to get a Table Of Content (an TOCEntry list) from a data manager
      *
      * TODO: use {@link DataAccessor}
      *
@@ -484,6 +608,17 @@ public class Book extends DataManager {
     }
 
     public static class EditionCheckListItem extends CheckListItemBase<Integer> implements Parcelable {
+        public static final Creator<EditionCheckListItem> CREATOR = new Creator<EditionCheckListItem>() {
+            @Override
+            public EditionCheckListItem createFromParcel(final @NonNull Parcel in) {
+                return new EditionCheckListItem(in);
+            }
+
+            @Override
+            public EditionCheckListItem[] newArray(final int size) {
+                return new EditionCheckListItem[size];
+            }
+        };
         @StringRes
         private int labelId;
 
@@ -508,24 +643,24 @@ public class Book extends DataManager {
             dest.writeInt(item);
         }
 
-        public static final Creator<EditionCheckListItem> CREATOR = new Creator<EditionCheckListItem>() {
-            @Override
-            public EditionCheckListItem createFromParcel(final @NonNull Parcel in) {
-                return new EditionCheckListItem(in);
-            }
-
-            @Override
-            public EditionCheckListItem[] newArray(final int size) {
-                return new EditionCheckListItem[size];
-            }
-        };
-
         public String getLabel() {
             return BookCatalogueApp.getResourceString(labelId);
         }
     }
 
     public static class BookshelfCheckListItem extends CheckListItemBase<Bookshelf> implements Parcelable {
+
+        public static final Creator<BookshelfCheckListItem> CREATOR = new Creator<BookshelfCheckListItem>() {
+            @Override
+            public BookshelfCheckListItem createFromParcel(final @NonNull Parcel in) {
+                return new BookshelfCheckListItem(in);
+            }
+
+            @Override
+            public BookshelfCheckListItem[] newArray(final int size) {
+                return new BookshelfCheckListItem[size];
+            }
+        };
 
         public BookshelfCheckListItem() {
         }
@@ -544,18 +679,6 @@ public class Book extends DataManager {
             super.writeToParcel(dest, flags);
             dest.writeParcelable(item, flags);
         }
-
-        public static final Creator<BookshelfCheckListItem> CREATOR = new Creator<BookshelfCheckListItem>() {
-            @Override
-            public BookshelfCheckListItem createFromParcel(final @NonNull Parcel in) {
-                return new BookshelfCheckListItem(in);
-            }
-
-            @Override
-            public BookshelfCheckListItem[] newArray(final int size) {
-                return new BookshelfCheckListItem[size];
-            }
-        };
 
         public String getLabel() {
             return getItem().name;

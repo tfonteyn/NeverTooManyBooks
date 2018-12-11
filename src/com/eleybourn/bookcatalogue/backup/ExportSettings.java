@@ -14,13 +14,15 @@ public class ExportSettings {
     public static final int PREFERENCES = 1 << 1;
     public static final int BOOK_LIST_STYLES = 1 << 2;
     public static final int COVERS = 1 << 3;
-    public static final int BOOK_DATA = 1 << 4;
-    //public static final int DATABASE = 1 << 5;
-    //public static final int EXPORT_6 = 1 << 6;
+    public static final int BOOK_CSV = 1 << 4;
+    public static final int XML_TABLES = 1 << 6;
     //public static final int EXPORT_7 = 1 << 7;
+    //public static final int DATABASE = 1 << 8;
 
     /* Options value to indicate ALL things should be exported */
-    public static final int EXPORT_ALL = PREFERENCES | BOOK_LIST_STYLES | COVERS | BOOK_DATA;
+    public static final int EXPORT_ALL = PREFERENCES | BOOK_LIST_STYLES | COVERS
+            | BOOK_CSV
+            | XML_TABLES;
 
     /*
      * Options to indicate new books or books with more recent update_date fields should be exported
@@ -28,14 +30,14 @@ public class ExportSettings {
      * 0: all books
      * 1: books added/updated since {@link #dateFrom}. If the latter is null, then since last backup.
      */
-    public static final int EXPORT_SINCE = 1 << 8; // 1: 'since';  '0': ALL
+    public static final int EXPORT_SINCE = 1 << 16; // 1: 'since';  '0': ALL
 
     /**
      * all defined flags
      */
     public static final int EXPORT_MASK = EXPORT_ALL | EXPORT_SINCE;
 
-    /** file to exportBooks to */
+    /** file to export to */
     @Nullable
     public File file;
     /**
@@ -55,7 +57,7 @@ public class ExportSettings {
     /**
      * Constructor
      *
-     * @param file to exportBooks to
+     * @param file to export to
      */
     public ExportSettings(final @NonNull File file) {
         this.file = file;

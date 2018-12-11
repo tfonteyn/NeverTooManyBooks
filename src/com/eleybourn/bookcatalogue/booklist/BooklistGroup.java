@@ -23,13 +23,12 @@ package com.eleybourn.bookcatalogue.booklist;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.CallSuper;
+import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.booklist.BooklistStyle.CompoundKey;
 import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
 import com.eleybourn.bookcatalogue.properties.BooleanProperty;
 import com.eleybourn.bookcatalogue.properties.PropertyGroup;
@@ -41,9 +40,6 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_AUTHOR;
-import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_SERIES;
 
 /**
  * Class representing a single level in the booklist hierarchy.
@@ -63,44 +59,29 @@ public class BooklistGroup implements Serializable, Parcelable {
         }
     };
     private static final long serialVersionUID = 1012206875683862714L;
-    /** The Row Kind of this group */
-    public final int kind;
-    /** The domains represented by this group. Set at runtime by builder based on current group and outer groups */
-    @Nullable
-    transient ArrayList<DomainDefinition> groupDomains;
-    /** The domain used to display this group. Set at runtime by builder based on internal logic of builder */
-    @Nullable
-    transient DomainDefinition displayDomain;
-    /** Compound key of this group. Set at runtime by builder based on current group and outer groups */
-    private transient CompoundKey mCompoundKey;
 
     /**
-     * Constructor
+     * keep for backwards Serializable support. So *MUST* be initialized correctly.
+     * But general coding should use the rowKind as replacement.
      */
-    BooklistGroup(final int kind) {
-        this.kind = kind;
-    }
-
-    BooklistGroup(final @NonNull Parcel in) {
-        kind = in.readInt();
-        displayDomain = in.readParcelable(getClass().getClassLoader());
-        mCompoundKey = in.readParcelable(getClass().getClassLoader());
-        groupDomains = new ArrayList<>();
-        in.readList(groupDomains, getClass().getClassLoader());
-    }
+    private int kind;
 
     /**
-     * Return a list of BooklistGroups, one for each defined row kind
+     * The Row Kind of this group
+     *
+     * We can re-construct everything with just the actual {@link RowKinds.RowKind#kind}
+     * So Parcelable and Serializable only needs to think care of that int.
+     *
+     * Only the {@link #mDomains} will need to be (re-)set at runtime.
      */
-    @NonNull
-    static List<BooklistGroup> getAllGroups() {
-        List<BooklistGroup> list = new ArrayList<>();
-        //skip BOOK KIND
-        for (int kind = 1; kind < RowKinds.size(); kind++) {
-            list.add(newInstance(kind));
-        }
-        return list;
-    }
+    private transient RowKinds.RowKind rowKind;
+
+    /**
+     * The domains represented by this group.
+     * Set at runtime by builder based on current group and outer groups
+     * */
+    @Nullable
+    private transient ArrayList<DomainDefinition> mDomains;
 
     /**
      * Create a new BooklistGroup of the specified kind, creating any specific subclasses as necessary.
@@ -108,42 +89,70 @@ public class BooklistGroup implements Serializable, Parcelable {
      * @param kind Kind of group to create
      */
     @NonNull
-    static BooklistGroup newInstance(final int kind) {
+    static BooklistGroup newInstance(final @IntRange(from = 0, to = RowKinds.ROW_KIND_MAX) int kind) {
         switch (kind) {
-            case ROW_KIND_AUTHOR:
+            case RowKinds.ROW_KIND_AUTHOR:
                 return new BooklistAuthorGroup();
-            case ROW_KIND_SERIES:
+            case RowKinds.ROW_KIND_SERIES:
                 return new BooklistSeriesGroup();
             default:
                 return new BooklistGroup(kind);
         }
     }
 
-    /** Setter for compound key */
-    void setKeyComponents(final @NonNull String prefix, final @NonNull DomainDefinition... domains) {
-        mCompoundKey = new CompoundKey(prefix, domains);
-    }
-
-    /** Getter for compound key */
+    /**
+     * Return a list of BooklistGroups, one for each defined RowKind
+     */
     @NonNull
-    CompoundKey getCompoundKey() {
-        if (BuildConfig.DEBUG) {
-            if (mCompoundKey == null) {
-                throw new IllegalStateException("mCompoundKey was null");
-            }
+    static List<BooklistGroup> getAllGroups() {
+        List<BooklistGroup> list = new ArrayList<>();
+        //skip BOOK KIND
+        for (int i = 1; i < RowKinds.size(); i++) {
+            list.add(newInstance(i));
         }
-        return mCompoundKey;
+        return list;
+    }
+
+    /**
+     * Constructor
+     */
+    BooklistGroup(final @IntRange(from = 0, to = RowKinds.ROW_KIND_MAX) int kind) {
+        this.kind = kind;
+        rowKind = RowKinds.getRowKind(kind);
+    }
+
+    /**
+     * Constructor
+     */
+    BooklistGroup(final @NonNull Parcel in) {
+        this.kind = in.readInt();
+        rowKind = RowKinds.getRowKind(this.kind);
     }
 
     @NonNull
-    public String getName() {
-        return RowKinds.getName(kind);
+    public RowKinds.RowKind getRowKind() {
+        return rowKind;
+    }
+
+    /** Getter for group domains */
+    ArrayList<DomainDefinition> getDomains() {
+        return mDomains;
+    }
+
+    /** Setter for group domains */
+    void setDomains(@Nullable final ArrayList<DomainDefinition> domains) {
+        mDomains = domains;
     }
 
     /**
      * Get the Property objects that this group will contribute to a Style.
      */
     public void getStyleProperties(final @NonNull PropertyList /* in/out */ list) {
+    }
+
+    @Override
+    public void writeToParcel(final @NonNull Parcel dest, int flags) {
+        dest.writeInt(rowKind.kind);
     }
 
     /**
@@ -162,21 +171,13 @@ public class BooklistGroup implements Serializable, Parcelable {
      */
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();
+        rowKind = RowKinds.getRowKind(this.kind);
     }
 
     @SuppressWarnings("SameReturnValue")
     @Override
     public int describeContents() {
         return 0;
-    }
-
-    @Override
-    public void writeToParcel(final @NonNull Parcel dest, int flags) {
-        dest.writeInt(kind);
-        // TEST: displayDomain, mCompoundKey, groupDomains are marked as transient. Do we need to do this ?
-        dest.writeParcelable(displayDomain, 0);
-        dest.writeParcelable(mCompoundKey, 0);
-        dest.writeList(groupDomains);
     }
 
     /**
@@ -204,13 +205,13 @@ public class BooklistGroup implements Serializable, Parcelable {
 
         private static final long serialVersionUID = 9023218506278704155L;
         /** mAllSeries Parameter values and descriptions */
-        private static final String kind = BookCatalogueApp.getResourceString(R.string.lbl_series);
+        private static final String description = BookCatalogueApp.getResourceString(R.string.lbl_series);
 
         /** Show book under each series it appears in? */
         private transient BooleanProperty mAllSeries;
 
         BooklistSeriesGroup() {
-            super(ROW_KIND_SERIES);
+            super(RowKinds.ROW_KIND_SERIES);
             initProperties();
             mAllSeries.setValue(null);
         }
@@ -236,8 +237,8 @@ public class BooklistGroup implements Serializable, Parcelable {
                     PropertyGroup.GRP_SERIES)
                     .setPreferenceKey(PREF_SHOW_ALL_SERIES)
                     .setHint(R.string.hint_series_book_may_appear_more_than_once)
-                    .setTrueLabel(R.string.books_with_multiple_show_book_under_each_1s, kind)
-                    .setFalseLabel(R.string.books_with_multiple_show_book_under_primary_1s_only, kind);
+                    .setTrueLabel(R.string.books_with_multiple_show_book_under_each_1s, description)
+                    .setFalseLabel(R.string.books_with_multiple_show_book_under_primary_1s_only, description);
         }
 
         boolean showAllSeries() {
@@ -304,15 +305,15 @@ public class BooklistGroup implements Serializable, Parcelable {
         public static final String PREF_DISPLAY_FIRST_THEN_LAST_NAMES = BooklistStyle.TAG + "Group.Show.AllAuthors.DisplayFirstThenLast";
         private static final long serialVersionUID = -1984868877792780113L;
 
-        private static final String kind = BookCatalogueApp.getResourceString(R.string.lbl_author);
+        private static final String description = BookCatalogueApp.getResourceString(R.string.lbl_author);
 
-        /** Support for 'Show Given Name' property */
-        private transient BooleanProperty mGivenName;
+        /** Support for 'Show Given Name First' property */
+        private transient BooleanProperty mGivenNameFirst;
         /** Support for 'Show All Authors of Book' property */
         private transient BooleanProperty mAllAuthors;
 
         BooklistAuthorGroup() {
-            super(ROW_KIND_AUTHOR);
+            super(RowKinds.ROW_KIND_AUTHOR);
             initProperties();
         }
 
@@ -320,14 +321,14 @@ public class BooklistGroup implements Serializable, Parcelable {
             super(in);
             initProperties();
             mAllAuthors.readFromParcel(in);
-            mGivenName.readFromParcel(in);
+            mGivenNameFirst.readFromParcel(in);
         }
 
         @Override
         public void writeToParcel(final @NonNull Parcel dest, final int flags) {
             super.writeToParcel(dest, flags);
             mAllAuthors.writeToParcel(dest);
-            mGivenName.writeToParcel(dest);
+            mGivenNameFirst.writeToParcel(dest);
         }
 
         /**
@@ -339,20 +340,22 @@ public class BooklistGroup implements Serializable, Parcelable {
                     PropertyGroup.GRP_AUTHOR)
                     .setPreferenceKey(PREF_SHOW_ALL_AUTHORS)
                     .setHint(R.string.hint_authors_book_may_appear_more_than_once)
-                    .setTrueLabel(R.string.books_with_multiple_show_book_under_each_1s, kind)
-                    .setFalseLabel(R.string.books_with_multiple_show_book_under_primary_1s_only, kind);
+                    .setTrueLabel(R.string.books_with_multiple_show_book_under_each_1s, description)
+                    .setFalseLabel(R.string.books_with_multiple_show_book_under_primary_1s_only, description);
 
-            mGivenName = new BooleanProperty(R.string.blp_format_author_name, PropertyGroup.GRP_AUTHOR, Boolean.TRUE)
+            mGivenNameFirst = new BooleanProperty(R.string.blp_format_author_name,
+                    PropertyGroup.GRP_AUTHOR)
                     .setPreferenceKey(PREF_DISPLAY_FIRST_THEN_LAST_NAMES)
-                    .setOptionLabels(R.string.blp_format_author_name_given_first, R.string.blp_format_author_name_family_first);
+                    .setOptionLabels(R.string.blp_format_author_name_given_first,
+                            R.string.blp_format_author_name_family_first);
         }
 
         boolean showAllAuthors() {
             return mAllAuthors.isTrue();
         }
 
-        boolean showGivenName() {
-            return mGivenName.isTrue();
+        boolean showGivenNameFirst() {
+            return mGivenNameFirst.isTrue();
         }
 
         /**
@@ -363,7 +366,7 @@ public class BooklistGroup implements Serializable, Parcelable {
         public void getStyleProperties(final @NonNull PropertyList /* in/out */ list) {
             super.getStyleProperties(list);
             list.add(mAllAuthors);
-            list.add(mGivenName);
+            list.add(mGivenNameFirst);
         }
 
         /**
@@ -375,7 +378,7 @@ public class BooklistGroup implements Serializable, Parcelable {
             out.defaultWriteObject();
             // We use read/write Object so that NULL values are preserved
             out.writeObject(mAllAuthors.getValue());
-            out.writeObject(mGivenName.getValue());
+            out.writeObject(mGivenNameFirst.getValue());
         }
 
         /**
@@ -390,7 +393,7 @@ public class BooklistGroup implements Serializable, Parcelable {
             initProperties();
             // We use read/write Object so that NULL values are preserved
             mAllAuthors.setValue((Boolean) in.readObject());
-            mGivenName.setValue((Boolean) in.readObject());
+            mGivenNameFirst.setValue((Boolean) in.readObject());
         }
     }
 }

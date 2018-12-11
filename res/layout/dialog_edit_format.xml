@@ -7,7 +7,7 @@
         android:id="@+id/name"
         style="@style/bookFormatTextEntry"
         android:completionThreshold="2"
-        android:hint="@string/not_set"
+        android:hint="@string/lbl_format"
         tools:ignore="Autofill"/>
 
     <TextView

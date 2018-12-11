@@ -232,8 +232,8 @@ public class SearchAmazonHandler extends DefaultHandler {
 
     /*
      * flags to identify if we are in the correct node
-     * We need these for nodes in need of special handling (f.e. XML_LIST_PRICE)
-     * or which are composite (f.e. XML_LANGUAGE)
+     * We need these for nodes in need of special handling (e.g. XML_LIST_PRICE)
+     * or which are composite (e.g. XML_LANGUAGE)
      */
 
     /**
@@ -403,7 +403,7 @@ public class SearchAmazonHandler extends DefaultHandler {
                 BundleUtils.addIfNotPresent(mBookData, UniqueId.KEY_BOOK_PAGES, mBuilder.toString());
 
             } else if (localName.equalsIgnoreCase(XML_DESCRIPTION)) {
-                BundleUtils.addIfNotPresent(mBookData, UniqueId.KEY_DESCRIPTION, mBuilder.toString());
+                BundleUtils.addIfNotPresent(mBookData, UniqueId.KEY_BOOK_DESCRIPTION, mBuilder.toString());
 
             } else if (localName.equalsIgnoreCase(XML_BINDING)) {
                 BundleUtils.addIfNotPresent(mBookData, UniqueId.KEY_BOOK_FORMAT, mBuilder.toString());

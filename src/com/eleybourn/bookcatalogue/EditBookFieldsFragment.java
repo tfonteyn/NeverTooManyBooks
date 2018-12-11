@@ -130,7 +130,6 @@ public class EditBookFieldsFragment extends BookBaseFragment implements
 
         // book fields
 
-
         // defined, but handled manually
         mFields.add(R.id.author, "", UniqueId.KEY_AUTHOR)
                 .getView().setOnClickListener(
@@ -163,7 +162,7 @@ public class EditBookFieldsFragment extends BookBaseFragment implements
         mFields.add(R.id.title, UniqueId.KEY_TITLE);
         mFields.add(R.id.isbn, UniqueId.KEY_BOOK_ISBN);
 
-        field = mFields.add(R.id.description, UniqueId.KEY_DESCRIPTION)
+        field = mFields.add(R.id.description, UniqueId.KEY_BOOK_DESCRIPTION)
                 .setShowHtml(true);
         initTextFieldEditor(TAG, field, R.string.lbl_description, R.id.btn_description, true);
 
@@ -212,7 +211,7 @@ public class EditBookFieldsFragment extends BookBaseFragment implements
 
         // Personal fields
 
-        // defined, but handled manually (reminder: storing the list into the book is handled by onCheckListEditorSave)
+        // defined, but handled manually (reminder: storing the list back into the book is handled by onCheckListEditorSave)
         field = mFields.add(R.id.bookshelves, "", UniqueId.KEY_BOOKSHELF_NAME);
         initCheckListEditor(TAG, field, R.string.lbl_bookshelves_long, new CheckListEditorListGetter<Bookshelf>() {
             @Override
@@ -236,7 +235,7 @@ public class EditBookFieldsFragment extends BookBaseFragment implements
 
         populateAuthorListField(book);
         populateSeriesListField(book);
-        mFields.getField(R.id.bookshelves).setValue(book.getBookshelfListAsText());
+        mFields.getField(R.id.bookshelves).setValue(Bookshelf.toDisplayString(book.getBookshelfList()));
         mFields.getField(R.id.is_anthology).setValue(book.getString(Book.HAS_MULTIPLE_WORKS));
 
         mCoverHandler.populateCoverView();
@@ -401,7 +400,7 @@ public class EditBookFieldsFragment extends BookBaseFragment implements
         if (destinationFieldId == R.id.bookshelves) {
             ArrayList<Bookshelf> result = new Book.BookshelfCheckListItem().extractList(list);
             getBookManager().getBook().putBookshelfList(result);
-            mFields.getField(destinationFieldId).setValue(getBookManager().getBook().getBookshelfListAsText());
+            mFields.getField(destinationFieldId).setValue(Bookshelf.toDisplayString(getBookManager().getBook().getBookshelfList()));
         }
     }
 
@@ -453,7 +452,7 @@ public class EditBookFieldsFragment extends BookBaseFragment implements
     @NonNull
     private List<String> getPublishers() {
         if (mPublishers == null) {
-            mPublishers = mDb.getPublishers();
+            mPublishers = mDb.getPublisherNames();
         }
         return mPublishers;
     }

@@ -7,7 +7,7 @@
         android:id="@+id/name"
         style="@style/titleTextEntry"
         android:completionThreshold="2"
-        android:hint="@string/not_set"
+        android:hint="@string/name"
         tools:ignore="Autofill" />
 
     <include

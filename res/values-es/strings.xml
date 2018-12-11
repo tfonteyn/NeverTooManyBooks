@@ -585,7 +585,7 @@ y puede editar el libro utilizando el menú de opciones.
     <!-- For saving and opening exports or backups -->
     <string name="btn_confirm_open">Abrir</string>
 
-    <!-- Admin option to exportBooks books -->
+    <!-- Admin option to export books -->
     <string name="export_to_csv">Exportar a fichero CSV</string>
     <!-- Admin option to import books -->
     <string name="import_from_csv">Importar de fichero CSV</string>
@@ -629,7 +629,7 @@ y puede editar el libro utilizando el menú de opciones.
     <string name="title_import_books_blurb">Se importarán los libros de este fichero. Seleccione una de las dos opciones propuestas para empezar la importación, o pulse \'Atrás\' para cancelar:</string>
     <!-- Description of the 'import all books' option -->
     <string name="import_option_info_all_books">Importar todos los libros del fichero, actualizando los que existan y añadiendo los nuevos.</string>
-    <!-- Menu text for the 'import/exportBooks new & changed' option -->
+    <!-- Menu text for the 'import/export new & changed' option -->
     <string name="import_option_new_and_changed_books">Libros nuevos y actualizados</string>
     <!-- Description of the 'import new & changed' option -->
     <string name="import_option_info_new_and_changed_books">Importar sólo los libros nuevos, o los que tienen fecha de actualización más reciente en el fichero. Esto es útil para sincronizar dispositivos.</string>
@@ -638,15 +638,15 @@ y puede editar el libro utilizando el menú de opciones.
     <!-- Part of the progress message displayed when importing books -->
     <string name="progress_msg_n_created_m_updated">%1$s creados, %2$s actualizados</string>
 
-    <!--  Explanatory text for 'exportBooks' dialogue -->
+    <!--  Explanatory text for 'export' dialogue -->
     <string name="title_export_books">Se exportarán los libros de su catálogo. Seleccione una opción para iniciar la exportación, o pulse \'Atrás\' para cancelar:</string>
 
     <!-- Displayed in progress dialog when exporting covers in incremental mode -->
     <string name="progress_msg_covers_skip">%1$s portadas procesadas (%2$s no encontradas, %3$s saltadas)</string>
 
-    <!-- Explanatory note for 'exportBooks all' option -->
+    <!-- Explanatory note for 'export all' option -->
     <string name="export_info_backup_all">Se exportarán al fichero todos los libros, portadas, configuraciones y estilos personalizados.</string>
-    <!-- Explanatory note for 'advanced exportBooks' option -->
+    <!-- Explanatory note for 'advanced export' option -->
     <string name="export_options_dialog_title">Seleccione lo que desea exportar al fichero.</string>
 
     <!-- Text for button -->
@@ -660,12 +660,12 @@ y puede editar el libro utilizando el menú de opciones.
     <!-- Brief description -->
     <string name="import_export_info_preferences">Preferencias y estilos definidos por el usuario</string>
 
-    <!-- Explanatory note for exportBooks date (not yet implemented) -->
+    <!-- Explanatory note for export date (not yet implemented) -->
     <string name="export_option_info_books_since_date">Si lo desea, especifique una fecha para seleccionar los libros o portadas que se exportarán:</string>
 
-    <!-- Explanatory note for exportBooks date (not yet implemented) -->
+    <!-- Explanatory note for export date (not yet implemented) -->
     <string name="export_option_books_since_date">Todos los libros añadidos o actualizados desde:</string>
-    <!-- Explanatory note for exportBooks data since last backup -->
+    <!-- Explanatory note for export data since last backup -->
     <string name="export_option_books_since_last_full_backup">Todos los libros añadidos o actualizados desde la última copia de seguridad completa</string>
 
     <plurals name="displaying_n_books">
@@ -717,7 +717,14 @@ y puede editar el libro utilizando el menú de opciones.
     <string name="about_translators">BookCatalogue es fruto del esfuerzo de muchas personas, y no tendría un uso tan extendido sin la generosa aportación de nuestros traductores (voluntarios): Eugenio Davolio, José M. Galdo, Imkal, Gideon van Melle, Emir Sarı, Nick Silin y Robert Wetzlmayr (si nos hemos olvidado de alguien, por favor, díganoslo).</string>
 
     <!-- A hint describing the benefit of folowing the Amazon links -->
-    <string name="hint_amazon_links_blurb">&lt;p&gt;Si compra productos en Amazon después de haber seleccionado las opciones &lt;i&gt;\"%1$s\"&lt;/i&gt;, &lt;i&gt;\"%2$s\"&lt;/i&gt; o &lt;i&gt;\"%3$s\"&lt;/i&gt;, un porcentaje del precio de compra será enviado a los desarrolladores de %4$s.&lt;/p&gt;&lt;p&gt;También puede utilizar el enlace &lt;a href=""https://github.com/eleybourn/Book-Catalogue/wiki/Frequently-Asked-Questions-%%28FAQ%%29""&gt;en nuestras FAQ&lt;/a&gt; para acceder directamente a Amazon o PayPal.&lt;/p&gt;</string>
+    <string name="hint_amazon_links_blurb">
+        <![CDATA[
+        <p>Si compra productos en Amazon después de haber seleccionado las opciones « <i>"%1$s"</i> », « <i>"%2$s"</i> » o « <i>"%3$s"</i> »,
+         un porcentaje del precio de compra será enviado a los desarrolladores de %4$s.</p>
+         <p>También puede utilizar el enlace <a href="https://github.com/eleybourn/Book-Catalogue/wiki/Frequently-Asked-Questions-%%28FAQ%%29">en nuestras FAQ</a>
+          para acceder directamente a Amazon o PayPal.</p>
+    ]]>
+    </string>
 
     <!-- Name of the new style grouping (needs to be short). -->
     <string name="style_builtin_update_date">Fecha de actualización</string>
@@ -729,10 +736,9 @@ y puede editar el libro utilizando el menú de opciones.
     <string name="lbl_update_day">Día de actualización</string>
 
     <string name="tab_lbl_content">Contenido</string>
-    <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
-    <string name="a_comma_b">%1$s, %2$s</string>
     <string name="name_colon_value">%1$s: %2$s</string>
     <string name="preferred_language_x">%1$s (%2$s)</string>
+    <string name="warning_thing_already_exists">%1$s ya existe</string>
 
     <!-- Begin: Added/Updated in [Next Version] DO NOT TRANSLATE YET! MAY CHANGE OR BE DELETED! -->
 

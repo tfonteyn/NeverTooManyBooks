@@ -154,10 +154,10 @@ public class GetThumbnailTask implements SimpleTaskQueue.SimpleTask {
      * Used internally and from Utils.fetchFileIntoImageView to ensure that nothing
      * overwrites the view.
      */
-    public static void clearOldTaskFromView(final @NonNull ImageView v) {
-        final GetThumbnailTask oldTask = ViewTagger.getTag(v, R.id.TAG_GET_THUMBNAIL_TASK);
+    public static void clearOldTaskFromView(final @NonNull ImageView imageView) {
+        final GetThumbnailTask oldTask = ViewTagger.getTag(imageView, R.id.TAG_GET_THUMBNAIL_TASK);
         if (oldTask != null) {
-            ViewTagger.setTag(v, R.id.TAG_GET_THUMBNAIL_TASK, null);
+            ViewTagger.setTag(imageView, R.id.TAG_GET_THUMBNAIL_TASK, null);
             mQueue.remove(oldTask);
         }
     }
@@ -197,8 +197,7 @@ public class GetThumbnailTask implements SimpleTaskQueue.SimpleTask {
         if (!mCacheWasChecked) {
             File originalFile = StorageUtils.getCoverFile(mUuid);
             CoversDBAdapter coversDBAdapter = taskContext.getCoversDb();
-            mBitmap = coversDBAdapter.fetchCachedImageIntoImageView(originalFile,
-                    null, mUuid, mWidth, mHeight);
+            mBitmap = coversDBAdapter.fetchCachedImage(originalFile, mUuid, mWidth, mHeight);
 
             mWasInCache = (mBitmap != null);
         }

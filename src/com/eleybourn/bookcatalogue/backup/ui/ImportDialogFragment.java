@@ -13,6 +13,7 @@ import android.view.View.OnClickListener;
 import android.widget.Checkable;
 import android.widget.TextView;
 
+import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.backup.archivebase.BackupInfo;
@@ -68,6 +69,10 @@ public class ImportDialogFragment extends DialogFragment {
 
         View root = requireActivity().getLayoutInflater().inflate(R.layout.dialog_import_options, null);
 
+        if (BuildConfig.DEBUG) {
+            root.findViewById(R.id.row__xml_tables).setVisibility(View.VISIBLE);
+        }
+
         root.findViewById(R.id.confirm).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(final View v) {
@@ -109,7 +114,7 @@ public class ImportDialogFragment extends DialogFragment {
         Dialog dialog = this.getDialog();
         // what to import. All three checked == ImportSettings.IMPORT_ALL
         if (((Checkable) dialog.findViewById(R.id.books_check)).isChecked()) {
-            settings.what |= ImportSettings.BOOK_DATA;
+            settings.what |= ImportSettings.BOOK_CSV;
         }
         if (((Checkable) dialog.findViewById(R.id.covers_check)).isChecked()) {
             settings.what |= ImportSettings.COVERS;
@@ -130,7 +135,7 @@ public class ImportDialogFragment extends DialogFragment {
     private boolean archiveHasValidDates() {
         boolean mArchiveHasValidDates;
         try {
-            BackupReader reader = BackupManager.readFrom(this.requireContext(), settings.file);
+            BackupReader reader = BackupManager.readFrom(settings.file);
             BackupInfo info = reader.getInfo();
             reader.close();
             mArchiveHasValidDates = info.getAppVersionCode() >= 152;

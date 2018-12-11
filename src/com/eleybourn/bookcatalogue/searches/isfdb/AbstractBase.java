@@ -52,10 +52,9 @@ abstract class AbstractBase {
     boolean loadPage() throws SocketTimeoutException {
         if (mDoc == null) {
             Connection con = Jsoup.connect(mPath)
-                    // Default is true.
-                    .followRedirects(true)
-                    // Default is false
-                    .ignoreHttpErrors(false)
+                    // added due to https://github.com/square/okhttp/issues/1517
+                    // it's a server issue, this is a workaround.
+                    .header("Connection", "close")
                     // connect and read-timeout. Default is 30.
                     .timeout(60_000)
                     // maximum bytes to read before connection is closed, default 1mb

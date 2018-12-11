@@ -7,7 +7,7 @@ import android.support.annotation.Nullable;
 /**
  * a centralised collection of RunTimeExceptions so we can re-use them without re-inventing.
  *
- * Well focused exceptions (f.e. database) should not be moved here.
+ * Well focused exceptions (e.g. database) should not be moved here.
  */
 public class RTE {
 

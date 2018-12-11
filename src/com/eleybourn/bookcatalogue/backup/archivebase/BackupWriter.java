@@ -57,14 +57,22 @@ public interface BackupWriter extends Closeable {
     void putInfo(final @NonNull BackupInfo info) throws IOException;
 
     /**
-     * Write an exportBooks file to the archive
+     * Write a generic file to the archive
+     *
+     * @param name of the entry in the archive
+     * @param file actual file to store in the archive
      */
-    void putBooks(final @NonNull File books) throws IOException;
+    void putGenericFile(final @NonNull String name, final @NonNull File file) throws IOException;
 
     /**
-     * Store a cover file
+     * Write an export file to the archive
      */
-    void putCoverFile(final @NonNull File source) throws IOException;
+    void putBooks(final @NonNull File file) throws IOException;
+
+    /**
+     * Write a cover file to the archive
+     */
+    void putCoverFile(final @NonNull File file) throws IOException;
 
     /**
      * Store a Booklist Style

@@ -222,7 +222,7 @@ public class BookshelfListApiHandler extends ApiHandler {
     /**
      * Field names we add to the bundle based on parsed XML data.
      *
-     * We duplicate the CatalogueDBAdapter names (and give them a DB_ getPrefix) so
+     * We duplicate the CatalogueDBAdapter names (and give them a DB_ prefix) so
      * that (a) it is clear which fields are provided by this call, and (b) it is clear
      * which fields directly relate to DB fields.
      *

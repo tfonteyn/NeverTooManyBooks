@@ -613,7 +613,14 @@
 
     <string name="about_translators">BookCatalogue это продукт усилий многих людей, и он мог бы и не иметь такого широкого распространения без помощи добровольных переводчиков: Eugenio Davolio, José M. Galdo, Imkal, Gideon van Melle, Emir Sarı, Nick Silin, and Robert Wetzlmayr (если кто-то забыт, пожалуйста, напомните).</string>
 
-    <string name="hint_amazon_links_blurb">&lt;p&gt;Если вы покупаете вещи на Amazon после выбора &lt;i&gt;\"%1$s\"&lt;/i&gt;, &lt;i&gt;\"%2$s\"&lt;/i&gt; or &lt;i&gt;\"%3$s\"&lt;/i&gt; элементов меню, часть стоимости заказa будет отослана разработчикам %4$s.&lt;/p&gt;&lt;p&gt; Вы также можете использовать &lt;a href=""https://github.com/eleybourn/Book-Catalogue/wiki/Frequently-Asked-Questions-%%28FAQ%%29""&gt; ссылки нашего FAQ&lt;/a&gt;, чтобы перейти прямо на Amazon или PayPal.&lt;/p&gt;</string>
+    <string name="hint_amazon_links_blurb">
+        <![CDATA[
+        <p>Если вы покупаете вещи на Amazon после выбора  « <i>"%1$s"</i> », « <i>"%2$s"</i> » или « <i>"%3$s"</i> » элементов меню,
+         часть стоимости заказa будет отослана разработчикам %4$s.</p>
+         <p>Вы также можете использовать <a href="https://github.com/eleybourn/Book-Catalogue/wiki/Frequently-Asked-Questions-%%28FAQ%%29"> ссылки нашего FAQ</a>,
+          чтобы перейти прямо на Amazon или PayPal.</p>
+         ]]>
+    </string>
 
     <string name="style_builtin_update_date">Дата обновления</string>
     <string name="lbl_update_year">Год обновления</string>

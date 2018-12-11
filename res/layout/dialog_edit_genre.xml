@@ -7,7 +7,7 @@
         android:id="@+id/name"
         style="@style/simpleTextEntry"
         android:completionThreshold="2"
-        android:hint="@string/not_set"
+        android:hint="@string/lbl_genre"
         tools:ignore="Autofill"/>
 
     <TextView

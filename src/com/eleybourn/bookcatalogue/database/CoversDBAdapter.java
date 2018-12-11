@@ -60,9 +60,10 @@ import java.util.concurrent.atomic.AtomicInteger;
  * 'file names'.
  *
  * This class is used as singleton, to avoid running out of memory very quickly.
- * To be investigated some day.
+ * To be investigated some day. Not sure how much multi-threaded access is hampered by this.
+ * TODO: do some speed checks: cache enabled/disabled; do we actually need this db ?
  *
- * 2018-11-26: database location back to internal/private directory.
+ * 2018-11-26: database location back to internal storage.
  * The bulk of space is used by the actual image file, not by the database.
  * To be reviewed when the location of the images can be user-configured.
  *
@@ -91,16 +92,17 @@ public class CoversDBAdapter implements AutoCloseable {
 
     /* Domain definitions */
     /** TBL_IMAGE */
-    private static final DomainDefinition DOM_ID = new DomainDefinition("_id", TableInfo.TYPE_INTEGER, "", "primary key autoincrement");
+    private static final DomainDefinition DOM_ID = new DomainDefinition("_id");
 
-    private static final DomainDefinition DOM_DATE = new DomainDefinition("date", TableInfo.TYPE_DATETIME, "not null", "default current_timestamp");
-    private static final DomainDefinition DOM_TYPE = new DomainDefinition("type", TableInfo.TYPE_TEXT, "not null", "");    // T = Thumbnail; C = cover?
-    private static final DomainDefinition DOM_IMAGE = new DomainDefinition("image", TableInfo.TYPE_BLOB, "not null", "");
-    private static final DomainDefinition DOM_WIDTH = new DomainDefinition("width", TableInfo.TYPE_INTEGER, "not null", "");
-    private static final DomainDefinition DOM_HEIGHT = new DomainDefinition("height", TableInfo.TYPE_INTEGER, "not null", "");
-    private static final DomainDefinition DOM_SIZE = new DomainDefinition("size", TableInfo.TYPE_INTEGER, "not null", "");
+    private static final DomainDefinition DOM_DATE = new DomainDefinition("date", TableInfo.TYPE_DATETIME, true, "default current_timestamp");
+    // T = Thumbnail; C = cover? Only found reference to "T"
+    private static final DomainDefinition DOM_TYPE = new DomainDefinition("type", TableInfo.TYPE_TEXT, true);
+    private static final DomainDefinition DOM_IMAGE = new DomainDefinition("image", TableInfo.TYPE_BLOB, true);
+    private static final DomainDefinition DOM_WIDTH = new DomainDefinition("width", TableInfo.TYPE_INTEGER, true);
+    private static final DomainDefinition DOM_HEIGHT = new DomainDefinition("height", TableInfo.TYPE_INTEGER, true);
+    private static final DomainDefinition DOM_SIZE = new DomainDefinition("size", TableInfo.TYPE_INTEGER, true);
 
-    private static final DomainDefinition DOM_FILENAME = new DomainDefinition("filename", TableInfo.TYPE_TEXT, "", "");
+    private static final DomainDefinition DOM_FILENAME = new DomainDefinition("filename", TableInfo.TYPE_TEXT, true);
 
     /** table definitions */
     private static final TableDefinition TBL_IMAGE = new TableDefinition("image",
@@ -125,6 +127,8 @@ public class CoversDBAdapter implements AutoCloseable {
      * So before using it, every method in this class MUST test on != null
      */
     private static SynchronizedDb mSyncedDb;
+    /** singleton */
+    private static CoversDBAdapter mInstance;
 
     /* table indexes */
     static {
@@ -136,13 +140,12 @@ public class CoversDBAdapter implements AutoCloseable {
 
     /** List of statements we create so we can clean them when the instance is closed. */
     private final SqlStatementManager mStatements = new SqlStatementManager();
-
     /** {@link #saveFile(String, int, int, byte[])} */
     @Nullable
     private SynchronizedStatement mExistsStmt = null;
 
-    /** singleton */
-    private static CoversDBAdapter mInstance;
+    private CoversDBAdapter() {
+    }
 
     /**
      * Get the singleton instance.
@@ -165,7 +168,20 @@ public class CoversDBAdapter implements AutoCloseable {
         return mInstance;
     }
 
-    private CoversDBAdapter() {
+    /**
+     * Construct the cache ID for a given thumbnail spec.
+     *
+     * NOTE: Any changes to the resulting name MUST be reflected in {@link #deleteBookCover}
+     *
+     * @param uuid      used to construct the cacheId
+     * @param maxWidth  used to construct the cacheId
+     * @param maxHeight used to construct the cacheId
+     */
+    @NonNull
+    public static String getThumbnailCoverCacheId(final @NonNull String uuid,
+                                                  final int maxWidth,
+                                                  final int maxHeight) {
+        return uuid + ".thumb." + maxWidth + "x" + maxHeight + ".jpg";
     }
 
     private void open(final @NonNull Context context) {
@@ -190,19 +206,6 @@ public class CoversDBAdapter implements AutoCloseable {
                 Logger.error(e2, "Covers database unavailable");
             }
         }
-    }
-
-    /**
-     * Construct the cache ID for a given thumbnail spec.
-     *
-     * TODO: is this note still true ?
-     * NOTE: Any changes to the resulting name MUST be reflect in {@link #eraseCachedBookCover}
-     */
-    @NonNull
-    public static String getThumbnailCoverCacheId(final @NonNull String hash,
-                                                  final int maxWidth,
-                                                  final int maxHeight) {
-        return hash + ".thumb." + maxWidth + "x" + maxHeight + ".jpg";
     }
 
     /**
@@ -233,134 +236,40 @@ public class CoversDBAdapter implements AutoCloseable {
     }
 
     /**
-     * Delete the cached covers associated with the passed hash
-     */
-    public void deleteBookCover(final @NonNull String bookHash) {
-        if (mSyncedDb == null) {
-            return;
-        }
-        mSyncedDb.delete(TBL_IMAGE.getName(), DOM_FILENAME + " LIKE ?", new String[]{bookHash + "%"});
-    }
-
-    /**
-     * Get the named 'file'
-     *
-     * @return byte[] of image data
-     */
-    @Nullable
-    private byte[] getFile(final @NonNull String filename, final @NonNull Date lastModified) {
-        if (mSyncedDb == null) {
-            return null;
-        }
-
-        try (Cursor cursor = mSyncedDb.query(TBL_IMAGE.getName(),
-                new String[]{DOM_IMAGE.name},
-                DOM_FILENAME + "=? AND " + DOM_DATE + " > ?",
-                new String[]{filename, DateUtils.utcSqlDateTime(lastModified)},
-                null,
-                null,
-                null)) {
-            if (!cursor.moveToFirst()) {
-                return null;
-            }
-            return cursor.getBlob(0);
-        }
-    }
-
-    /**
-     * Save the passed bitmap to a 'file'
-     *
-     * @return the row ID of the newly inserted row, or -1 if an error occurred, or 1 for a successful update
-     */
-    @SuppressWarnings("UnusedReturnValue")
-    public long saveFile(final @NonNull Bitmap bitmap, final @NonNull String filename) {
-        if (mSyncedDb == null) {
-            return -1L;
-        }
-
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 70, out);
-        byte[] bytes = out.toByteArray();
-
-        return saveFile(filename, bitmap.getHeight(), bitmap.getWidth(), bytes);
-    }
-
-    /**
-     * Save the passed encoded image data to a 'file'
-     *
-     * @return the row ID of the newly inserted row, or -1 if an error occurred, or 1 for a successful update
-     */
-    private long saveFile(final @NonNull String filename,
-                          final int height, final int width,
-                          final @NonNull byte[] bytes) {
-        if (mSyncedDb == null) {
-            return -1L;
-        }
-
-        ContentValues cv = new ContentValues();
-        cv.put(DOM_FILENAME.name, filename);
-        cv.put(DOM_IMAGE.name, bytes);
-        cv.put(DOM_DATE.name, DateUtils.utcSqlDateTimeForToday());
-        cv.put(DOM_TYPE.name, "T");
-        cv.put(DOM_WIDTH.name, height);
-        cv.put(DOM_HEIGHT.name, width);
-        cv.put(DOM_SIZE.name, bytes.length);
-
-        if (mExistsStmt == null) {
-            mExistsStmt = mStatements.add(mSyncedDb, "mExistsStmt", SQL_COUNT_ID);
-        }
-        mExistsStmt.bindString(1, filename);
-
-        if (mExistsStmt.count() == 0) {
-            return mSyncedDb.insert(TBL_IMAGE.getName(), null, cv);
-        } else {
-            return mSyncedDb.update(TBL_IMAGE.getName(), cv, DOM_FILENAME.name + "=?", new String[]{filename});
-        }
-    }
-
-    /**
-     * delete all rows
-     */
-    public void eraseCoverCache() {
-        if (mSyncedDb == null) {
-            return;
-        }
-        mSyncedDb.delete(TBL_IMAGE.getName(), null, null);
-    }
-
-    /**
      * Called in the UI thread, will return a cached image OR NULL.
      *
      * @param originalFile File representing original image file
-     * @param destView     View to populate
-     * @param hash         used to construct the cacheId
+     * @param uuid         used to construct the cacheId
      * @param maxWidth     used to construct the cacheId
      * @param maxHeight    used to construct the cacheId
      *
      * @return Bitmap (if cached) or null (if not cached)
      */
     @Nullable
-    public Bitmap fetchCachedImageIntoImageView(final @NonNull File originalFile,
-                                                final @Nullable ImageView destView,
-                                                final @NonNull String hash,
-                                                final int maxWidth,
-                                                final int maxHeight) {
-        return fetchCachedImageIntoImageView(originalFile, destView, getThumbnailCoverCacheId(hash, maxWidth, maxHeight));
+    public Bitmap fetchCachedImage(final @NonNull File originalFile,
+                                   final @NonNull String uuid,
+                                   final int maxWidth,
+                                   final int maxHeight) {
+        return fetchCachedImageIntoImageView(null, originalFile, uuid, maxWidth, maxHeight);
     }
 
     /**
      * Called in the UI thread, will return a cached image OR NULL.
      *
+     * @param destView     View to populate if non-null
      * @param originalFile File representing original image file
-     * @param destView     View to populate
-     * @param cacheId      ID of the image in the cache
+     * @param uuid         used to construct the cacheId
+     * @param maxWidth     used to construct the cacheId
+     * @param maxHeight    used to construct the cacheId
      *
-     * @return Bitmap (if cached) or null (if not cached, or no database)
+     * @return Bitmap (if cached) or null (if not cached)
      */
     @Nullable
-    private Bitmap fetchCachedImageIntoImageView(final @Nullable File originalFile,
-                                                 final @Nullable ImageView destView,
-                                                 final @NonNull String cacheId) {
+    public Bitmap fetchCachedImageIntoImageView(final @Nullable ImageView destView,
+                                                final @NonNull File originalFile,
+                                                final @NonNull String uuid,
+                                                final int maxWidth,
+                                                final int maxHeight) {
         if (mSyncedDb == null) {
             return null;
         }
@@ -368,12 +277,8 @@ public class CoversDBAdapter implements AutoCloseable {
         Bitmap bitmap = null;   // resultant Bitmap (which we will return)
 
         byte[] bytes;
-        Date expiryDate;
-        if (originalFile == null) {
-            expiryDate = new Date(0L);
-        } else {
-            expiryDate = new Date(originalFile.lastModified());
-        }
+        String cacheId = getThumbnailCoverCacheId(uuid, maxWidth, maxHeight);
+        Date expiryDate = new Date(originalFile.lastModified());
 
         // Wrap in try/catch. It's possible the SDCard got removed and DB is now inaccessible
         try {
@@ -411,19 +316,107 @@ public class CoversDBAdapter implements AutoCloseable {
     }
 
     /**
-     * Erase all cached images relating to the passed book UUID.
+     * Get the named 'file'
      *
-     * @return the number of rows affected
+     * @return byte[] of image data
+     */
+    @Nullable
+    private byte[] getFile(final @NonNull String filename, final @NonNull Date lastModified) {
+        if (mSyncedDb == null) {
+            return null;
+        }
+
+        try (Cursor cursor = mSyncedDb.query(TBL_IMAGE.getName(),
+                new String[]{DOM_IMAGE.name},
+                DOM_FILENAME + "=? AND " + DOM_DATE + " > ?",
+                new String[]{filename, DateUtils.utcSqlDateTime(lastModified)},
+                null,
+                null,
+                null)) {
+            if (!cursor.moveToFirst()) {
+                return null;
+            }
+            return cursor.getBlob(0);
+        }
+    }
+
+    /**
+     * Save the passed bitmap to a 'file' in the covers database. Compresses to 70% quality first.
+     *
+     * @return the row ID of the newly inserted row, or -1 if an error occurred, or 1 for a successful update
      */
     @SuppressWarnings("UnusedReturnValue")
-    int eraseCachedBookCover(final @NonNull String uuid) {
+    public long saveFile(final @NonNull Bitmap bitmap, final @NonNull String filename) {
         if (mSyncedDb == null) {
-            return 0;
+            return -1L;
         }
-        // We use encodeString here because it's possible a user screws up the data and imports
-        // bad UUIDs...this has happened.
-        String whereClause = DOM_FILENAME + " glob '" + CatalogueDBAdapter.encodeString(uuid) + ".*'";
-        return mSyncedDb.delete(TBL_IMAGE.getName(), whereClause, new String[]{});
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 70, out);
+        byte[] bytes = out.toByteArray();
+
+        return saveFile(filename, bitmap.getHeight(), bitmap.getWidth(), bytes);
+    }
+
+    /**
+     * Save the passed encoded image data to a 'file'
+     *
+     * @return the row ID of the newly inserted row, or -1 if an error occurred, or 1 for a successful update
+     */
+    private long saveFile(final @NonNull String filename,
+                          final int height,
+                          final int width,
+                          final @NonNull byte[] bytes) {
+        if (mSyncedDb == null) {
+            return -1L;
+        }
+
+        ContentValues cv = new ContentValues();
+        cv.put(DOM_FILENAME.name, filename);
+        cv.put(DOM_IMAGE.name, bytes);
+        // no need for this, column has a default.
+        //cv.put(DOM_DATE.name, DateUtils.utcSqlDateTimeForToday());
+        cv.put(DOM_TYPE.name, "T");
+        cv.put(DOM_WIDTH.name, height);
+        cv.put(DOM_HEIGHT.name, width);
+        cv.put(DOM_SIZE.name, bytes.length);
+
+        if (mExistsStmt == null) {
+            mExistsStmt = mStatements.add(mSyncedDb, "mExistsStmt", SQL_COUNT_ID);
+        }
+        mExistsStmt.bindString(1, filename);
+
+        if (mExistsStmt.count() == 0) {
+            return mSyncedDb.insert(TBL_IMAGE.getName(), null, cv);
+        } else {
+            return mSyncedDb.update(TBL_IMAGE.getName(), cv, DOM_FILENAME.name + "=?", new String[]{filename});
+        }
+    }
+
+    /**
+     * Delete the cached covers associated with the passed book uuid
+     *
+     * The original code also had a 2nd 'delete' method with a different where clause:
+     *         // We use encodeString here because it's possible a user screws up the data and imports
+     *         // bad UUIDs...this has happened.
+     *         // String whereClause = DOM_FILENAME + " glob '" + CatalogueDBAdapter.encodeString(uuid) + ".*'";
+     *         In short: ENHANCE: bad data -> add covers.db 'filename' and book.uuid to {@link DBCleaner}
+     */
+    public void deleteBookCover(final @NonNull String uuid) {
+        if (mSyncedDb == null) {
+            return;
+        }
+        mSyncedDb.delete(TBL_IMAGE.getName(), DOM_FILENAME + " LIKE ?", new String[]{uuid + "%"});
+    }
+
+    /**
+     * delete all rows
+     */
+    public void deleteAll() {
+        if (mSyncedDb == null) {
+            return;
+        }
+        mSyncedDb.delete(TBL_IMAGE.getName(), null, null);
     }
 
     /**
@@ -466,7 +459,5 @@ public class CoversDBAdapter implements AutoCloseable {
             Logger.info(this, "Upgrading database: " + db.getPath());
             throw new IllegalStateException("Upgrades not handled yet!");
         }
-
-
     }
 }

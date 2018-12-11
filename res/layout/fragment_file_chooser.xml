@@ -16,7 +16,7 @@
         android:focusableInTouchMode="true">
 
         <ImageButton
-            android:id="@+id/up"
+            android:id="@+id/btn_path_up"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
@@ -33,7 +33,7 @@
             android:layout_height="wrap_content"
             android:layout_alignWithParentIfMissing="true"
             android:layout_centerVertical="true"
-            android:layout_toEndOf="@id/up"
+            android:layout_toEndOf="@id/btn_path_up"
             android:layout_alignParentEnd="true"
             android:gravity="center_vertical"
             android:textAppearance="?android:attr/textAppearanceMedium"

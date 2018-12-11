@@ -4,12 +4,14 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
+import java.io.Serializable;
+
 /**
  * Class to store domain name and definition.
  *
  * @author Philip Warner
  */
-public class DomainDefinition implements Parcelable {
+public class DomainDefinition implements Parcelable, Serializable {
     public static final Creator<DomainDefinition> CREATOR = new Creator<DomainDefinition>() {
         @Override
         public DomainDefinition createFromParcel(Parcel in) {
@@ -30,31 +32,46 @@ public class DomainDefinition implements Parcelable {
     @NonNull
     private final String constraint;
 
-    public DomainDefinition(final @NonNull String name,
-                            final @NonNull String type) {
-        this(name, type, "", "");
-    }
-
-    public DomainDefinition(final @NonNull String name,
-                            final @NonNull String type,
-                            final @NonNull String extra) {
-        this(name, type, "", extra);
+    /**
+     * Create a PRIMARY KEY
+     *
+     * @param name    column name
+     */
+    public DomainDefinition(final @NonNull String name) {
+        this.name = name;
+        this.type = TableInfo.TYPE_INTEGER;
+        this.extra = "PRIMARY KEY autoincrement";
+        this.constraint = "NOT NULL";
     }
 
     /**
-     * @param name       column name
-     * @param type       column type (text, int, float, ...)
-     * @param constraint (optional but non null) for example "not null"
-     * @param extra      (optional, but non null) for example "default 0'
+     * @param name    column name
+     * @param type    column type (text, int, float, ...)
+     * @param notNull can this column be null
      */
     public DomainDefinition(final @NonNull String name,
                             final @NonNull String type,
-                            final @NonNull String constraint,
+                            final boolean notNull) {
+        this.name = name;
+        this.type = type;
+        this.constraint = (notNull ? "NOT NULL" : "");
+        this.extra = "";
+    }
+
+    /**
+     * @param name    column name
+     * @param type    column type (text, int, float, ...)
+     * @param notNull can this column be null
+     * @param extra   (optional, but non null) for example "default 0'
+     */
+    public DomainDefinition(final @NonNull String name,
+                            final @NonNull String type,
+                            final boolean notNull,
                             final @NonNull String extra) {
         this.name = name;
         this.type = type;
         this.extra = extra;
-        this.constraint = constraint;
+        this.constraint = (notNull ? "NOT NULL" : "");
     }
 
     private DomainDefinition(Parcel in) {
@@ -89,9 +106,11 @@ public class DomainDefinition implements Parcelable {
         return name;
     }
 
-    /** Get the SQL used to define this domain */
+    /**
+     * Get the SQL used to define this domain
+     */
     @NonNull
-    public String getDefinition(boolean withConstraints) {
+    public String def(boolean withConstraints) {
         String s = name + " " + type + " " + extra;
         if (withConstraints) {
             s += " " + constraint;

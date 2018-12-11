@@ -41,12 +41,12 @@ import java.util.Objects;
 public class ListOfIntegerValuesProperty extends ListOfValuesProperty<Integer> {
 
     /**
-     * @param list list with options. Minimum 0 element.
+     * @param list list with options. Minimum 3 elements.
      */
     public ListOfIntegerValuesProperty(final @StringRes int nameResourceId,
                                        final @NonNull PropertyGroup group,
                                        final @NonNull Integer defaultValue,
-                                       final @NonNull @Size(min = 0) ItemList<Integer> list) {
+                                       final @NonNull @Size(min = 3) ItemList<Integer> list) {
         super(nameResourceId, group, defaultValue, list);
     }
 
@@ -115,6 +115,8 @@ public class ListOfIntegerValuesProperty extends ListOfValuesProperty<Integer> {
      *
      * Note that {@link Parcel#writeValue(Object)} actually writes an Integer as 'int'
      * So 'null' is NOT preserved.
+     *
+     * API_UPGRADE 23 use {@link Parcel#writeTypedObject}
      */
     public void writeToParcel(final @NonNull Parcel dest) {
         Integer value = this.getValue();
@@ -125,6 +127,10 @@ public class ListOfIntegerValuesProperty extends ListOfValuesProperty<Integer> {
         }
     }
 
+    /**
+     *
+     * API_UPGRADE 23  use {@link Parcel#readTypedObject}
+     */
     public void readFromParcel(final @NonNull Parcel in) {
         int parceledInt = in.readInt();
         setValue(parceledInt == Integer.MIN_VALUE ? null : parceledInt);

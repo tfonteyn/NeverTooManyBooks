@@ -5,27 +5,25 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:paddingBottom="2dp"
-    android:paddingTop="3dp">
+    android:paddingTop="2dp">
 
+    <!-- the "BLB_ROW_DETAILS" level is used by {@link BooksMultiTypeListHandler} to hide/show rows -->
     <LinearLayout
         android:id="@id/BLB_ROW_DETAILS"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddingBottom="2dp"
         tools:ignore="UselessParent">
 
         <TextView
             android:id="@+id/name"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingEnd="2dp"
-            android:paddingStart="2dp"
             android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textIsSelectable="false"
             android:textStyle="bold"
-            tools:text="third level"
-            android:textIsSelectable="false" />
+            tools:drawableEnd="@drawable/ic_lock"
+            tools:text="third level" />
 
         <View style="@style/divider_horizontalList" />
     </LinearLayout>

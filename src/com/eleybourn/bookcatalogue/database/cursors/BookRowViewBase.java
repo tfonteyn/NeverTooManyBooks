@@ -53,7 +53,7 @@ public class BookRowViewBase {
     private int mDateLastUpdatedCol = -2;
     private int mDatePublishedCol = -2;
 
-    private int mLibraryThinkgBookIdCol = -2;
+    private int mLibraryThingBookIdCol = -2;
     private int mISFDBBookIdCol = -2;
     private int mGoodreadsBookIdCol = -2;
     private int mDateLastSyncedWithGoodreadsCol = -2;
@@ -80,13 +80,19 @@ public class BookRowViewBase {
     }
 
     /**
-     * Get string from underlying cursor given a column index.
+     * Get a string from underlying cursor given a column index.
      */
     @Nullable
     public String getString(final int columnIndex) {
         return mCursor.getString(columnIndex);
     }
 
+    /**
+     * Get a boolean from underlying cursor given a column index.
+     */
+    public boolean getBoolean(final int columnIndex) {
+        return mCursor.getInt(columnIndex) == 1;
+    }
 
     public final long getId() {
         if (mIdCol < 0) {
@@ -147,7 +153,7 @@ public class BookRowViewBase {
                 throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_BOOK_READ.name);
             }
         }
-        return (int) mCursor.getLong(mReadCol);
+        return mCursor.getInt(mReadCol);
     }
 
     /**
@@ -242,9 +248,9 @@ public class BookRowViewBase {
 
     public final String getDescription() {
         if (mDescriptionCol < 0) {
-            mDescriptionCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_DESCRIPTION.name);
+            mDescriptionCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_DESCRIPTION.name);
             if (mDescriptionCol < 0) {
-                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_DESCRIPTION.name);
+                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_BOOK_DESCRIPTION.name);
             }
         }
         return mCursor.getString(mDescriptionCol);
@@ -401,13 +407,13 @@ public class BookRowViewBase {
     }
 
     public final long getLibraryThingBookId() {
-        if (mLibraryThinkgBookIdCol < 0) {
-            mLibraryThinkgBookIdCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_LIBRARY_THING_ID.name);
-            if (mLibraryThinkgBookIdCol < 0) {
+        if (mLibraryThingBookIdCol < 0) {
+            mLibraryThingBookIdCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_LIBRARY_THING_ID.name);
+            if (mLibraryThingBookIdCol < 0) {
                 throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_BOOK_LIBRARY_THING_ID.name);
             }
         }
-        return mCursor.getLong(mLibraryThinkgBookIdCol);
+        return mCursor.getLong(mLibraryThingBookIdCol);
     }
 
     public final long getISFDBBookId() {

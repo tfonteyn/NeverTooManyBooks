@@ -56,7 +56,7 @@ public class TarBackupReader extends BackupReaderAbstract {
      * @param container Parent
      */
     TarBackupReader(final @NonNull TarBackupContainer container) throws IOException {
-        super(container.getContext());
+        super();
 
         // Open the file and create the archive stream
         final FileInputStream in = new FileInputStream(container.getFile());

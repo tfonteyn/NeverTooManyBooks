@@ -283,10 +283,16 @@
     <style name="ctv_read">
         <item name="android:layout_weight">0</item>
         <item name="android:background">@android:color/transparent</item>
-        <item name="android:checkMark">?android:attr/textCheckMark</item>
+        <item name="android:checkMark">@drawable/ic_checked_selector</item>
         <item name="android:padding">0dp</item>
     </style>
-
+    <!-- CheckedTextView for 'lock' (aka 'complete') status of a series,author etc... -->
+    <style name="ctv_lock">
+        <item name="android:layout_weight">0</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:checkMark">@drawable/ic_lock_selector</item>
+        <item name="android:padding">0dp</item>
+    </style>
     <!-- *************************************************************************************** -->
     <!-- TouchListView icons -->
     <!-- *************************************************************************************** -->
@@ -380,7 +386,7 @@
     </style>
 
     <!-- *************************************************************************************** -->
-    <!-- row, button and blurb for 'options' in a an option list (f.e. on a dialog) -->
+    <!-- row, button and blurb for 'options' in a an option list (e.g. on a dialog) -->
     <!-- *************************************************************************************** -->
 
     <!-- Field or Menu label for options in a list -->

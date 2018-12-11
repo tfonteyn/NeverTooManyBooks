@@ -19,7 +19,6 @@
  */
 package com.eleybourn.bookcatalogue.backup.tararchive;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.backup.archivebase.BackupContainer;
@@ -40,7 +39,7 @@ import java.util.regex.Pattern;
  *
  * So we:
  *
- * - use "file names" to encode special meaning (eg. "books*.csv" is always an exportBooks file).
+ * - use "file names" to encode special meaning (eg. "books*.csv" is always an export file).
  * - use intermediate temp files so we can out sizes
  *
  * @author pjw
@@ -75,14 +74,11 @@ public class TarBackupContainer implements BackupContainer {
     /** Backup file spec */
     @NonNull
     private final File mFile;
-    @NonNull
-    private final Context mContext;
+
     /**
      * Constructor
      */
-    public TarBackupContainer(final @NonNull Context context,
-                              final @NonNull File file) {
-        mContext = context;
+    public TarBackupContainer(final @NonNull File file) {
         mFile = file;
     }
 
@@ -120,10 +116,5 @@ public class TarBackupContainer implements BackupContainer {
         }
 
         return true;
-    }
-
-    @Override
-    public Context getContext() {
-        return mContext;
     }
 }

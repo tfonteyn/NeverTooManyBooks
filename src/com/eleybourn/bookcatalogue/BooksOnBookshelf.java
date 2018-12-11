@@ -383,7 +383,7 @@ public class BooksOnBookshelf extends BaseListActivity implements
                 break;
             }
             default: {
-                // If it's level, expand/collapse. Technically, we could expand/collapse any level
+                // If it's a level, expand/collapse. Technically, we could expand/collapse any level
                 // but storing and recovering the view becomes unmanageable.
                 // ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/542
                 if (mListCursor.getCursorRow().getLevel() == 1) {
@@ -976,7 +976,7 @@ public class BooksOnBookshelf extends BaseListActivity implements
             @Override
             public void onItemSelected(final AdapterView<?> parentView, final View view, final int position, final long id) {
                 // Check to see if mBookshelfAdapter is null, which should only occur if
-                // the activity is being torn down: see Issue 370.
+                // the activity is being torn down: see Issue #370.
                 if (mBookshelfAdapter == null) {
                     return;
                 }
@@ -1374,11 +1374,11 @@ public class BooksOnBookshelf extends BaseListActivity implements
             } else {
                 bookListBuilder = getBooklistBuilder();
                 // Build based on our current criteria
-                bookListBuilder.setCriteriaText(searchText);
-                bookListBuilder.setCriteriaAuthorName(searchAuthor);
-                bookListBuilder.setCriteriaTitle(searchTitle);
-                bookListBuilder.setCriteriaBookIdList(searchBookIdList);
-                bookListBuilder.setCriteriaBookshelfId(currentBookshelfId);
+                bookListBuilder.setFilterOnText(searchText);
+                bookListBuilder.setFilterOnTitle(searchTitle);
+                bookListBuilder.setFilterOnAuthorName(searchAuthor);
+                bookListBuilder.setFilterOnBookIdList(searchBookIdList);
+                bookListBuilder.setFilterOnBookshelfId(currentBookshelfId);
             }
         }
 

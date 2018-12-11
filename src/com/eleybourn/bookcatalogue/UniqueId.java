@@ -11,12 +11,12 @@ import com.eleybourn.bookcatalogue.entities.Book;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FAMILY_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FORMATTED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_GIVEN_NAMES;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_ACQUIRED;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_AUTHOR_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKSHELF;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ANTHOLOGY_BITMASK;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_ACQUIRED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_ADDED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_PUBLISHED;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DESCRIPTION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_EDITION_BITMASK;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_FORMAT;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_GENRE;
@@ -25,10 +25,10 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ISFDB_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LANGUAGE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LIBRARY_THING_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PRICE_LISTED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LOCATION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_NOTES;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PAGES;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PRICE_LISTED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PRICE_LISTED_CURRENCY;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PRICE_PAID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PRICE_PAID_CURRENCY;
@@ -40,12 +40,12 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_SERIES_NUM;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_SIGNED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_UUID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DESCRIPTION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FIRST_PUBLICATION;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PK_ID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_AUTHOR_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LAST_UPDATE_DATE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LOANED_TO;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PK_ID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE;
 
 /**
@@ -101,10 +101,9 @@ public class UniqueId {
     public static final int ACTIVITY_RESULT_DELETED_SOMETHING = 10_001;
 
     /** {@link BooklistPreferredStylesActivity} need distinct code as it can trickle up */
-    public static final int ACTIVITY_RESULT_OK_BooklistPreferredStylesActivity = 10_130;
-
+    public static final int ACTIVITY_RESULT_OK_BooklistPreferredStylesActivity = 10_101;
     /** {@link EditBooklistStyleActivity} need distinct code as it can trickle up */
-    public static final int ACTIVITY_RESULT_OK_BooklistStylePropertiesActivity = 10_131;
+    public static final int ACTIVITY_RESULT_OK_BooklistStylePropertiesActivity = 10_102;
 
 
     // END Result Codes used for setResult / onActivityResult
@@ -173,8 +172,7 @@ public class UniqueId {
     public static final String KEY_ID = DOM_PK_ID.name;
     public static final String KEY_TITLE = DOM_TITLE.name;
     public static final String KEY_FIRST_PUBLICATION = DOM_FIRST_PUBLICATION.name;
-    public static final String KEY_NOTES = DOM_BOOK_NOTES.name;
-    public static final String KEY_DESCRIPTION = DOM_DESCRIPTION.name;
+
     public static final String KEY_LAST_UPDATE_DATE = DOM_LAST_UPDATE_DATE.name;
 
     // mapped to the database, single table use
@@ -196,6 +194,9 @@ public class UniqueId {
     public static final String KEY_BOOK_ISBN = DOM_BOOK_ISBN.name;
     public static final String KEY_BOOK_LANGUAGE = DOM_BOOK_LANGUAGE.name;
 
+    public static final String KEY_BOOK_NOTES = DOM_BOOK_NOTES.name;
+    public static final String KEY_BOOK_DESCRIPTION = DOM_BOOK_DESCRIPTION.name;
+
     public static final String KEY_BOOK_PRICE_LISTED = DOM_BOOK_PRICE_LISTED.name;
     public static final String KEY_BOOK_PRICE_LISTED_CURRENCY = DOM_BOOK_PRICE_LISTED_CURRENCY.name;
     public static final String KEY_BOOK_PRICE_PAID = DOM_BOOK_PRICE_PAID.name;
@@ -211,7 +212,7 @@ public class UniqueId {
     public static final String KEY_BOOK_READ_START = DOM_BOOK_READ_START.name;
     public static final String KEY_BOOK_SIGNED = DOM_BOOK_SIGNED.name;
 
-    public static final String KEY_SERIES = DOM_SERIES.name;
+    public static final String KEY_SERIES = DOM_SERIES_NAME.name;
     public static final String KEY_SERIES_NUM = DOM_BOOK_SERIES_NUM.name;
 
     public static final String KEY_BOOK_LIBRARY_THING_ID = DOM_BOOK_LIBRARY_THING_ID.name;

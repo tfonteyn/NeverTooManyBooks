@@ -52,18 +52,18 @@ public class CsvImportTask extends ManagedTask {
         super("CsvImportTask", manager);
 
         mSettings = settings;
-        mImporter = new CsvImporter(manager.getContext(), settings);
+        mImporter = new CsvImporter(settings);
         mCoverFinder = new LocalCoverFinder(manager.getContext(),
                 // the source is the folder from which we are importing.
                 mSettings.file.getParent(),
-                // If this is not the SharedStorage folder, we'll be doing copies, else renames (to 'cover' folder)
+                // If this is not the Shared Storage folder, we'll be doing copies, else renames (to 'cover' folder)
                 StorageUtils.getSharedStorage().getAbsolutePath());
     }
 
     @Override
     protected void runTask() {
         try (FileInputStream in = new FileInputStream(mSettings.file)) {
-            mImporter.importBooks(in, mCoverFinder, mImportListener);
+            mImporter.doBooks(in, mCoverFinder, mImportListener);
 
             if (isCancelled()) {
                 mFinalMessage = getString(R.string.progress_end_cancelled);

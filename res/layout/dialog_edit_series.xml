@@ -7,8 +7,15 @@
         android:id="@+id/name"
         style="@style/titleTextEntry"
         android:completionThreshold="2"
-        android:hint="@string/not_set"
+        android:hint="@string/name"
         tools:ignore="Autofill" />
+
+    <CheckBox
+        android:id="@+id/is_complete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:text="@string/lbl_is_complete" />
 
     <TextView
         android:layout_width="match_parent"

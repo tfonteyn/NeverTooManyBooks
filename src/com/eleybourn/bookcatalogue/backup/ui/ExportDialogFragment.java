@@ -15,6 +15,7 @@ import android.widget.Checkable;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.backup.ExportSettings;
@@ -69,6 +70,9 @@ public class ExportDialogFragment extends DialogFragment {
 
         View root = requireActivity().getLayoutInflater().inflate(R.layout.dialog_export_options, null);
 
+        if (BuildConfig.DEBUG) {
+            root.findViewById(R.id.row__xml_tables).setVisibility(View.VISIBLE);
+        }
         root.findViewById(R.id.confirm).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -104,9 +108,12 @@ public class ExportDialogFragment extends DialogFragment {
 
     private void updateOptions() {
         Dialog dialog = this.getDialog();
-        // what to export. All three checked == ExportSettings.EXPORT_ALL
+        // what to export. All checked == ExportSettings.EXPORT_ALL
+        if (((Checkable) dialog.findViewById(R.id.xml_tables_check)).isChecked()) {
+            settings.what |= ExportSettings.XML_TABLES;
+        }
         if (((Checkable) dialog.findViewById(R.id.books_check)).isChecked()) {
-            settings.what |= ExportSettings.BOOK_DATA;
+            settings.what |= ExportSettings.BOOK_CSV;
         }
         if (((Checkable) dialog.findViewById(R.id.covers_check)).isChecked()) {
             settings.what |= ExportSettings.COVERS;

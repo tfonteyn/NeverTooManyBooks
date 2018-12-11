@@ -62,6 +62,4 @@ public interface BackupContainer {
      * @return <tt>true</tt>if valid
      */
     boolean isValid();
-
-    Context getContext();
 }

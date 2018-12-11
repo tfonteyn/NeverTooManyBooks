@@ -491,21 +491,22 @@ public class TableDefinition implements AutoCloseable, Cloneable {
      * @param withConstraints Indicates if fields should have constraints applied
      *
      * @return TableDefinition (for chaining)
+     *
+     * @see #getSqlCreateTable  FIXME: the domain definitions lack FP + the table definition lacks PK
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
     public TableDefinition create(final @NonNull DbSync.SynchronizedDb db,
                                   final boolean withConstraints) {
+        String sql = this.getSqlCreateTable(mName, withConstraints, false);
         if (DEBUG_SWITCHES.DB_ADAPTER && BuildConfig.DEBUG) {
-            @SuppressWarnings("UnusedAssignment")
-            String s = this.getSql(mName, withConstraints, false);
             if (DEBUG_SWITCHES.SQL) {
-                Logger.info(this, s);
+                Logger.info(this, sql);
             } else {
-                Logger.info(this, "Creating table " + s.substring(0, 30));
+                Logger.info(this, "Creating table " + sql.substring(0, 30));
             }
         }
-        db.execSQL(this.getSql(mName, withConstraints, false));
+        db.execSQL(sql);
         return this;
     }
 
@@ -521,7 +522,7 @@ public class TableDefinition implements AutoCloseable, Cloneable {
     @NonNull
     public TableDefinition createAll(final @NonNull DbSync.SynchronizedDb db,
                                      final boolean withConstraints) {
-        db.execSQL(this.getSql(mName, withConstraints, false));
+        db.execSQL(this.getSqlCreateTable(mName, withConstraints, false));
         createIndices(db);
         return this;
     }
@@ -538,7 +539,7 @@ public class TableDefinition implements AutoCloseable, Cloneable {
     @NonNull
     public TableDefinition createIfNecessary(final @NonNull DbSync.SynchronizedDb db,
                                              final boolean withConstraints) {
-        db.execSQL(this.getSql(mName, withConstraints, true));
+        db.execSQL(this.getSqlCreateTable(mName, withConstraints, true));
         return this;
     }
 
@@ -575,14 +576,11 @@ public class TableDefinition implements AutoCloseable, Cloneable {
      */
     @NonNull
     public String refAll() {
-        final String aliasDot = getAlias() + ".";
-        final StringBuilder s = new StringBuilder(aliasDot);
-        s.append(mDomains.get(0).name);
+        final StringBuilder s = new StringBuilder(dot(mDomains.get(0)));
 
         for (int i = 1; i < mDomains.size(); i++) {
             s.append(",");
-            s.append(aliasDot);
-            s.append(mDomains.get(i).name);
+            s.append(dot(mDomains.get(i)));
         }
         return s.toString();
     }
@@ -594,21 +592,43 @@ public class TableDefinition implements AutoCloseable, Cloneable {
      * @param domains List of domains to use
      *
      * @return SQL fragment
+     *
+     * @see #dot
      */
     @NonNull
-    public String ref(final @Nullable DomainDefinition... domains) {
+    public String columnsRef(final @Nullable DomainDefinition... domains) {
         if (domains == null || domains.length == 0) {
             return "";
         }
 
-        final String aliasDot = getAlias() + ".";
-        final StringBuilder s = new StringBuilder(aliasDot);
-        s.append(domains[0].name);
-
+        final StringBuilder s = new StringBuilder(dot(domains[0]));
         for (int i = 1; i < domains.length; i++) {
             s.append(",");
-            s.append(aliasDot);
-            s.append(domains[i].name);
+            s.append(dot(domains[i]));
+        }
+        return s.toString();
+    }
+
+    /**
+     * Get a base list of fields for this table using the passed list of domains. Returns partial
+     * SQL of the form: '[alias].[domain-1] AS [domain-1], ..., [alias].[domain-n] AS [domain-n]'.
+     *
+     * @param domains List of domains to use
+     *
+     * @return SQL fragment
+     *
+     * @see #dotAs
+     */
+    @NonNull
+    public String columnsRefAs(final @Nullable DomainDefinition... domains) {
+        if (domains == null || domains.length == 0) {
+            return "";
+        }
+
+        final StringBuilder s = new StringBuilder(dotAs(domains[0]));
+        for (int i = 1; i < domains.length; i++) {
+            s.append(",");
+            s.append(dotAs(domains[i]));
         }
         return s.toString();
     }
@@ -694,7 +714,7 @@ public class TableDefinition implements AutoCloseable, Cloneable {
      * @return SQL to create table
      */
     @NonNull
-    private String getSql(final @NonNull String name, final boolean withConstraints, final boolean ifNecessary) {
+    private String getSqlCreateTable(final @NonNull String name, final boolean withConstraints, final boolean ifNecessary) {
         StringBuilder sql = new StringBuilder("CREATE").append(mType.getCreateModifier()).append(" TABLE ");
         if (ifNecessary) {
             if (mType.isVirtual()) {
@@ -707,15 +727,18 @@ public class TableDefinition implements AutoCloseable, Cloneable {
 
         sql.append(" (");
         boolean first = true;
-        for (DomainDefinition d : mDomains) {
+        for (DomainDefinition domain : mDomains) {
             if (first) {
                 first = false;
             } else {
                 sql.append(",");
             }
-            sql.append(d.getDefinition(withConstraints));
+            //FIXME: this relies on the domain been defined with foreign key references which (2018-12-09) they are not.
+            sql.append(domain.def(withConstraints));
         }
         sql.append(")");
+        //FIXME: any PRIMARY KEY definitions are also missing.
+
         return sql.toString();
     }
 
@@ -795,7 +818,7 @@ public class TableDefinition implements AutoCloseable, Cloneable {
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    public TableDefinition createIndices(final @NonNull DbSync.SynchronizedDb db) {
+    private TableDefinition createIndices(final @NonNull DbSync.SynchronizedDb db) {
         for (IndexDefinition i : getIndexes()) {
             db.execSQL(i.getSql());
         }
@@ -907,7 +930,7 @@ public class TableDefinition implements AutoCloseable, Cloneable {
                 sql.append(parent.getAlias());
                 sql.append(".");
                 sql.append(pk.get(i).name);
-                sql.append(" = ");
+                sql.append("=");
                 sql.append(child.getAlias());
                 sql.append(".");
                 sql.append(domains.get(i).name);

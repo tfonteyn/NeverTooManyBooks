@@ -14,7 +14,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 /**
- * Class to handle exportBooks in a separate thread.
+ * Class to handle export in a separate thread.
  *
  * @author Philip Warner
  */
@@ -47,7 +47,7 @@ public class CsvExportTask extends ManagedTask {
 
     public CsvExportTask(final @NonNull TaskManager manager, final @NonNull ExportSettings settings) {
         super("CsvExportTask", manager);
-        mExporter = new CsvExporter(manager.getContext(), settings);
+        mExporter = new CsvExporter(settings);
     }
 
     @Override
@@ -55,7 +55,7 @@ public class CsvExportTask extends ManagedTask {
         try {
             File tmpFile = StorageUtils.getFile(CsvExporter.EXPORT_TEMP_FILE_NAME);
             final FileOutputStream out = new FileOutputStream(tmpFile);
-            mExporter.exportBooks(out, mOnExportListener);
+            mExporter.doBooks(out, mOnExportListener);
 
             if (out.getChannel().isOpen()) {
                 out.close();

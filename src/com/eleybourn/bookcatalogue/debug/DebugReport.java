@@ -20,6 +20,8 @@ import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.scanner.Pic2ShopScanner;
 import com.eleybourn.bookcatalogue.scanner.ScannerManager;
 import com.eleybourn.bookcatalogue.scanner.ZxingScanner;
+import com.eleybourn.bookcatalogue.searches.amazon.AmazonManager;
+import com.eleybourn.bookcatalogue.searches.googlebooks.GoogleBooksManager;
 import com.eleybourn.bookcatalogue.utils.GenericFileProvider;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
@@ -32,7 +34,7 @@ public class DebugReport {
 
     /** files with these prefixes will be bundled in the report */
     private static final String[] FILE_PREFIXES = new String[]{
-            "DbUpgrade", "DbExport", "error.log", "exportBooks.csv"};
+            "DbUpgrade", "DbExport", "error.log", "export.csv"};
 
     /**
      * Return the MD5 hash of the public key that signed this app, or a useful
@@ -122,7 +124,8 @@ public class DebugReport {
         }
 
 
-        message.append("SDK: ").append(Build.VERSION.RELEASE).append(" (").append(Build.VERSION.SDK_INT).append(" ").append(Build.TAGS).append(")\n")
+        message.append("SDK: ").append(Build.VERSION.RELEASE)
+                .append(" (").append(Build.VERSION.SDK_INT).append(" ").append(Build.TAGS).append(")\n")
                 .append("Phone Model: ").append(Build.MODEL).append("\n")
                 .append("Phone Manufacturer: ").append(Build.MANUFACTURER).append("\n")
                 .append("Phone Device: ").append(Build.DEVICE).append("\n")
@@ -162,6 +165,12 @@ public class DebugReport {
             message.append("Scanner failure: ").append(e.getLocalizedMessage()).append("\n");
         }
         message.append("\n");
+
+        //  urls
+
+        message.append("Customizable Search sites URL:\n");
+        message.append(AmazonManager.getBaseURL()).append("\n");
+        message.append(GoogleBooksManager.getBaseURL()).append("\n");
 
         message.append("Details:\n\n").append(activity.getString(R.string.debug_body).toUpperCase()).append("\n\n");
 

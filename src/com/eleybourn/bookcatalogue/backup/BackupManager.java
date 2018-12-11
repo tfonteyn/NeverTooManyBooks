@@ -19,7 +19,6 @@
  */
 package com.eleybourn.bookcatalogue.backup;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
@@ -95,7 +94,7 @@ public class BackupManager {
             public void run(final @NonNull SimpleTaskQueueProgressDialogFragment fragment,
                             final @NonNull SimpleTaskContext taskContext) throws Exception {
 
-                BackupContainer bkp = new TarBackupContainer(fragment.requireContext(), tempFile);
+                BackupContainer bkp = new TarBackupContainer(tempFile);
                 if (DEBUG_SWITCHES.BACKUP && BuildConfig.DEBUG) {
                     Logger.info(this,
                             "backup|starting|file=" + tempFile.getAbsolutePath());
@@ -214,7 +213,7 @@ public class BackupManager {
                         Logger.info(this,
                                 "restore|starting|file=" + settings.file.getAbsolutePath());
                     }
-                    readFrom(context, settings.file)
+                    readFrom(settings.file)
                             .restore(settings, new BackupReaderListener() {
                                 @Override
                                 public void setMax(int max) {
@@ -262,15 +261,14 @@ public class BackupManager {
      *
      * @throws IOException (inaccessible, invalid other other errors)
      */
-    public static BackupReader readFrom(final @NonNull Context context,
-                                        final @NonNull File file) throws IOException {
+    public static BackupReader readFrom(final @NonNull File file) throws IOException {
         if (!file.exists()) {
             throw new FileNotFoundException("Attempt to open non-existent backup file");
         }
 
         // We only support one backup format; so we use that. In future we would need to
         // explore the file to determine which format to use
-        TarBackupContainer bkp = new TarBackupContainer(context, file);
+        TarBackupContainer bkp = new TarBackupContainer(file);
         // Each format should provide a validator of some kind
         if (!bkp.isValid()) {
             throw new IOException("Not a valid backup file");

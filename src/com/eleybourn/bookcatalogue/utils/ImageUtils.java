@@ -182,7 +182,8 @@ public class ImageUtils {
     @Nullable
     public static Bitmap fetchFileIntoImageView(final @Nullable ImageView destView,
                                                 final @NonNull String uuid,
-                                                final int maxWidth, final int maxHeight,
+                                                final int maxWidth,
+                                                final int maxHeight,
                                                 final boolean exact,
                                                 final boolean checkCache,
                                                 final boolean allowBackground) {
@@ -196,7 +197,7 @@ public class ImageUtils {
         if (checkCache && destView != null
                 && !GetThumbnailTask.hasActiveTasks() && !ThumbnailCacheWriterTask.hasActiveTasks()) {
             try (CoversDBAdapter coversDBAdapter = CoversDBAdapter.getInstance()) {
-                final Bitmap bm = coversDBAdapter.fetchCachedImageIntoImageView(coverFile, destView, uuid, maxWidth, maxHeight);
+                final Bitmap bm = coversDBAdapter.fetchCachedImageIntoImageView(destView, coverFile, uuid, maxWidth, maxHeight);
                 if (bm != null) {
                     return bm;
                 }

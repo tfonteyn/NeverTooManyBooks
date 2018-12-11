@@ -26,6 +26,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.StringList;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
@@ -34,14 +35,24 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Class to hold author data. Used in lists and import/exportBooks.
+ * Class to hold author data. Used in lists and import/export.
  *
  * @author Philip Warner
  */
 public class Author implements Parcelable, Utils.ItemWithIdFixup {
 
-    private static final char SEPARATOR = ',';
+    public static final Creator<Author> CREATOR = new Creator<Author>() {
+        @Override
+        public Author createFromParcel(Parcel in) {
+            return new Author(in);
+        }
 
+        @Override
+        public Author[] newArray(int size) {
+            return new Author[size];
+        }
+    };
+    private static final char SEPARATOR = ',';
     /**
      * ENHANCE: author middle name; needs internationalisation ?
      *
@@ -51,7 +62,6 @@ public class Author implements Parcelable, Utils.ItemWithIdFixup {
      * Rip Von Ronkel
      */
     private static final Pattern FAMILY_NAME_PREFIX = Pattern.compile("[LlDd]e|[Vv][oa]n");
-
     /**
      * ENHANCE author name suffixes; needs internationalisation ? probably not.
      *
@@ -75,10 +85,10 @@ public class Author implements Parcelable, Utils.ItemWithIdFixup {
      * "Dr. Asimov" -> titles... pre or suffixed
      */
     private static final Pattern FAMILY_NAME_SUFFIX = Pattern.compile("[Jj]r\\.|[Jj]r|[Jj]unior|[Ss]r\\.|[Ss]r|[Ss]enior|II|III");
-
     public long id;
     public String familyName;
     public String givenNames;
+    public boolean isComplete;
 
     /**
      * Constructor that will attempt to parse a single string into an author name.
@@ -90,30 +100,76 @@ public class Author implements Parcelable, Utils.ItemWithIdFixup {
     /**
      * Constructor without ID.
      *
-     * @param family Family name
-     * @param given  Given names
+     * @param familyName Family name
+     * @param givenNames Given names
      */
-    public Author(final @NonNull String family, final @NonNull String given) {
-        this(0L, family, given);
+    public Author(final @NonNull String familyName, final @NonNull String givenNames) {
+        this(0L, familyName, givenNames, false);
+    }
+
+    /**
+     * Constructor without ID.
+     *
+     * @param familyName Family name
+     * @param givenNames Given names
+     * @param isComplete whether an Author is completed, i.e if the user hs all he wants from this Author.
+     */
+    public Author(final @NonNull String familyName, final @NonNull String givenNames, final boolean isComplete) {
+        this(0L, familyName, givenNames, isComplete);
     }
 
     /**
      * Constructor
      *
-     * @param id     ID of author in DB (0 if not in DB)
-     * @param family Family name
-     * @param given  Given names
+     * @param id         ID of author in DB (0 if not in DB)
+     * @param familyName Family name
+     * @param givenNames Given names
+     * @param isComplete whether an Author is completed, i.e if the user has all he wants from this Author.
      */
-    public Author(long id, final @NonNull String family, final @NonNull String given) {
+    public Author(final long id,
+                  final @NonNull String familyName,
+                  final @NonNull String givenNames,
+                  final boolean isComplete) {
         this.id = id;
-        familyName = family.trim();
-        givenNames = given.trim();
+        this.familyName = familyName.trim();
+        this.givenNames = givenNames.trim();
+        this.isComplete = isComplete;
     }
 
     protected Author(Parcel in) {
         id = in.readLong();
         familyName = in.readString();
         givenNames = in.readString();
+        isComplete = in.readByte() != 0;
+    }
+
+    public boolean isComplete() {
+        return isComplete;
+    }
+
+    public void setComplete(final boolean complete) {
+        isComplete = complete;
+    }
+
+    public static boolean setComplete(final CatalogueDBAdapter db,
+                                      final long id,
+                                      final boolean isComplete) {
+        Author author = null;
+        try {
+            // load from database
+            author = db.getAuthor(id);
+            //noinspection ConstantConditions
+            author.setComplete(isComplete);
+            return (db.updateAuthor(author) == 1);
+        } catch (Exception e) {
+            // log but ignore
+            Logger.error(e,"failed to set Author id=" + id + " to complete=" + isComplete);
+            // rollback
+            if (author != null) {
+                author.setComplete(!isComplete);
+            }
+            return false;
+        }
     }
 
     @Override
@@ -121,6 +177,7 @@ public class Author implements Parcelable, Utils.ItemWithIdFixup {
         dest.writeLong(id);
         dest.writeString(familyName);
         dest.writeString(givenNames);
+        dest.writeByte((byte) (isComplete ? 1 : 0));
     }
 
     @SuppressWarnings("SameReturnValue")
@@ -128,18 +185,6 @@ public class Author implements Parcelable, Utils.ItemWithIdFixup {
     public int describeContents() {
         return 0;
     }
-
-    public static final Creator<Author> CREATOR = new Creator<Author>() {
-        @Override
-        public Author createFromParcel(Parcel in) {
-            return new Author(in);
-        }
-
-        @Override
-        public Author[] newArray(int size) {
-            return new Author[size];
-        }
-    };
 
     /**
      * This will parse a string into a family/given name pair
@@ -268,6 +313,7 @@ public class Author implements Parcelable, Utils.ItemWithIdFixup {
     public void copyFrom(final @NonNull Author source) {
         familyName = source.familyName;
         givenNames = source.givenNames;
+        isComplete = source.isComplete;
         id = source.id;
     }
 
@@ -286,10 +332,11 @@ public class Author implements Parcelable, Utils.ItemWithIdFixup {
     }
 
     /**
-     * Two authors are equal if:
+     * Two are the same if:
+     *
      * - it's the same Object duh..
-     * - one or both of them is 'new' (e.g. id == 0) but their names are equal
-     * - ids are equal
+     * - one or both of them is 'new' (e.g. id == 0) or their id's are the same
+     *   AND all their other fields are equal
      *
      * Compare is CASE SENSITIVE ! This allows correcting case mistakes.
      */
@@ -301,12 +348,14 @@ public class Author implements Parcelable, Utils.ItemWithIdFixup {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        Author author = (Author) o;
-        if (id == 0 || author.id == 0) {
-            return Objects.equals(familyName, author.familyName)
-                    && Objects.equals(givenNames, author.givenNames);
+        Author that = (Author) o;
+        if (this.id == 0 || that.id == 0 || this.id == that.id) {
+            return Objects.equals(this.familyName, that.familyName)
+                    && Objects.equals(this.givenNames, that.givenNames)
+                    && (this.isComplete == that.isComplete);
         }
-        return (id == author.id);
+
+        return false;
     }
 
     @Override

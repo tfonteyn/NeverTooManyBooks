@@ -29,6 +29,7 @@ import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.BookManager;
+import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.entities.TOCEntry;
 import com.eleybourn.bookcatalogue.utils.BundleUtils;
@@ -139,7 +140,7 @@ public class BookFragment extends BookBaseFragment implements BookManager {
         // book fields
         mFields.add(R.id.title, UniqueId.KEY_TITLE);
         mFields.add(R.id.isbn, UniqueId.KEY_BOOK_ISBN);
-        mFields.add(R.id.description, UniqueId.KEY_DESCRIPTION)
+        mFields.add(R.id.description, UniqueId.KEY_BOOK_DESCRIPTION)
                 .setShowHtml(true);
         mFields.add(R.id.genre, UniqueId.KEY_BOOK_GENRE);
         mFields.add(R.id.language, UniqueId.KEY_BOOK_LANGUAGE)
@@ -192,10 +193,10 @@ public class BookFragment extends BookBaseFragment implements BookManager {
         mFields.add(R.id.edition, UniqueId.KEY_BOOK_EDITION_BITMASK)
                 .setFormatter(new Fields.BookEditionsFormatter());
         mFields.add(R.id.signed, UniqueId.KEY_BOOK_SIGNED)
-                .setFormatter(new Fields.BinaryYesNoEmptyFormatter(this.getResources()));
+                .setFormatter(new Fields.BinaryYesNoEmptyFormatter(this.requireContext()));
         mFields.add(R.id.location, UniqueId.KEY_BOOK_LOCATION);
         mFields.add(R.id.rating, UniqueId.KEY_BOOK_RATING);
-        mFields.add(R.id.notes, UniqueId.KEY_NOTES)
+        mFields.add(R.id.notes, UniqueId.KEY_BOOK_NOTES)
                 .setShowHtml(true);
         mFields.add(R.id.read_start, UniqueId.KEY_BOOK_READ_START)
                 .setFormatter(dateFormatter);
@@ -204,8 +205,10 @@ public class BookFragment extends BookBaseFragment implements BookManager {
 
         // note the use of the accessor instead of a real column.
         mFields.add(R.id.read, Book.IS_READ, UniqueId.KEY_BOOK_READ);
+
         // defined, but handled manually
         mFields.add(R.id.bookshelves, "", UniqueId.KEY_BOOKSHELF_NAME);
+
         // defined, but handled manually
         mFields.add(R.id.loaned_to, "", UniqueId.KEY_LOAN_LOANED_TO);
     }
@@ -247,7 +250,7 @@ public class BookFragment extends BookBaseFragment implements BookManager {
         mCoverHandler.populateCoverView(ts.small, ts.standard);
 
         // handle 'text' DoNotFetch fields
-        mFields.getField(R.id.bookshelves).setValue(book.getBookshelfListAsText());
+        mFields.getField(R.id.bookshelves).setValue(Bookshelf.toDisplayString(book.getBookshelfList()));
         populateLoanedToField(book.getBookId());
 
         // handle composite fields

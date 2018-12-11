@@ -29,7 +29,7 @@ Small notes in addition:
   No doubt some places do a trim which is not really needed, something for a rainy day.
 
 * Layout in code:
-    * Use a ViewGroup instead of f.e. LinearLayout where possible.
+    * Use a ViewGroup instead of e.g. LinearLayout where possible.
       This leaves the layout flexible to choose a different type without code changes
 
 * checkable Buttons:

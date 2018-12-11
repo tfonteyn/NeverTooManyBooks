@@ -24,7 +24,8 @@ ENHANCE: booklist styles: don't serialise... easiest might be xml/json?
 
 TOMF: research 'local' search. The code has some stuff enabled, but not tested. -> check BC 5.2.2 release (not master)
 
-ENHANCE instead of string encoding of lists, at the very least use ArrayList<String>; only do the multi-string encoding/decoding at CSV level
+ENHANCE instead of string encoding of lists, at the very least use ArrayList<String>;
+only do the multi-string encoding/decoding at CSV level
 
 ENHANCE: JSON or XML Exporter / Importer
  * pro: easier / (sort of) foolproof / FLEXIBLE!
@@ -35,17 +36,15 @@ TODO: remove the Apache http client; it's removed from API 23.
 Issues checked: 800 down to 677 (inc)
 
 New fields:
-ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/763 - Feature request: Series/Author complete/done checkbox (and see 542)
 ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/753 - Add Edition, Print, and condition (book / dustcover)
 ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/799 - original title (for translations, so also original language)
 
 Make some behavior optional:
 ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/561 - Make title/series mangling optional
-ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/696 - Order by author first name
 
 General:
 ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/317 - Add statistics to 'About' tab
-ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/542 - Feature request: collapsed series (and see 763)
+ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/542 - Feature request: collapsed series
 
 Searches
 ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/546 - Worldcat support
@@ -53,11 +52,6 @@ ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/348 - ISSN (serials)
 ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/723 - add book by search: allow publisher + present list of finds instead of using first found.
 ==> SearchManager.search when isbn not provided, will run a search until it finds an isbn, and then redo the search WITH the isbn
 ==> so this is why we only ever get ONE result back.
-
-Filtering:
-ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/686 - Filter by signed
-==> adding ISortableField and IFilterableField so that we (theoretically) just need to create a new
-==> object that implements one or both of these for each such field.
 
 Bugs:
 FIXME: https://github.com/eleybourn/Book-Catalogue/issues/740 - Date prompt appears to be UCT, not local time
@@ -69,6 +63,7 @@ Implemented:
 https://github.com/eleybourn/Book-Catalogue/issues/800 - Bulk edit (lang,pub)
 https://github.com/eleybourn/Book-Catalogue/issues/779 - Unneeded comma at end of line in CSV export
 https://github.com/eleybourn/Book-Catalogue/issues/770 - Make as read from long press
+https://github.com/eleybourn/Book-Catalogue/issues/763 - Feature request: Series/Author complete/done checkbox
 https://github.com/eleybourn/Book-Catalogue/issues/761 - Surround ISBN with quotes on CSV export?
 https://github.com/eleybourn/Book-Catalogue/issues/751 - Different decimal separator for price (German)
 https://github.com/eleybourn/Book-Catalogue/issues/742 - Cannot Delete Title in Anthologies
@@ -80,6 +75,7 @@ https://github.com/eleybourn/Book-Catalogue/issues/720 - Moving user-created sty
 https://github.com/eleybourn/Book-Catalogue/issues/719 - "Language" field content should be translated
 https://github.com/eleybourn/Book-Catalogue/issues/713 - Completely switch to Android Studio project hierarchy
 https://github.com/eleybourn/Book-Catalogue/issues/709 - Add 'date acquired' field
+https://github.com/eleybourn/Book-Catalogue/issues/696 - Order by author first name
 https://github.com/eleybourn/Book-Catalogue/issues/690 - Currency for each book
 https://github.com/eleybourn/Book-Catalogue/issues/678 - List price needs to be listed to two decimal points.
 https://github.com/eleybourn/Book-Catalogue/issues/597 - Merging of bookshelves

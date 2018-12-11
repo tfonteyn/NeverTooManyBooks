@@ -13,7 +13,7 @@
         android:id="@+id/family_name"
         style="@style/personalNameTextEntry"
         android:completionThreshold="2"
-        android:hint="@string/not_set"
+        android:hint="@string/lbl_family_name"
         tools:ignore="Autofill"/>
 
     <TextView
@@ -25,9 +25,16 @@
     <EditText
         android:id="@+id/given_names"
         style="@style/personalNameTextEntry"
-        android:hint="@string/not_set"
+        android:hint="@string/lbl_given_names"
         android:singleLine="true"
         tools:ignore="Autofill" />
+
+    <CheckBox
+        android:id="@+id/is_complete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:text="@string/lbl_is_complete" />
 
     <TextView
         android:layout_width="match_parent"

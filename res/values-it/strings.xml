@@ -525,7 +525,7 @@
     <!-- This is the heading of the 'Loan' tab when editing a book. It needs to be short. "Loan Book" is too long. -->
     <string name="tab_lbl_loan">Prestito</string>
 
-    <!-- Hint displayed when an exportBooks or database backup is done -->
+    <!-- Hint displayed when an export or database backup is done -->
 
     <!-- Button text on the Goodreads activity; only displayed after user has registered -->
     <string name="gr_btn_forget_credentials">Cancella Credenziali</string>
@@ -566,7 +566,7 @@
     <!-- For saving and opening exports or backups -->
     <string name="btn_confirm_open">Apri</string>
 
-    <!-- Admin option to exportBooks books -->
+    <!-- Admin option to export books -->
     <string name="export_to_csv">Esporta come File CSV</string>
     <!-- Admin option to import books -->
     <string name="import_from_csv">Importa da File CSV</string>
@@ -610,7 +610,7 @@
     <string name="title_import_books_blurb">I libri di questo archivio saranno importati. Seleziona uno delle due opzioni per avviare l\'importazione, o premi \'back\' per annullare:</string>
     <!-- Description of the 'import all books' option -->
     <string name="import_option_info_all_books">Tutti i libri nell\'archivio saranno importati, aggiornando i libri già presenti e aggiungendo quelli nuovi.</string>
-    <!-- Menu text for the 'import/exportBooks new & changed' option -->
+    <!-- Menu text for the 'import/export new & changed' option -->
     <string name="import_option_new_and_changed_books">Libri nuovi ed aggiornati</string>
     <!-- Description of the 'import new & changed' option -->
     <string name="import_option_info_new_and_changed_books">Importa solo i libri nuovi, o che sono stati aggiornati più di recente nell\'archivio. Utile per sincronizzare due apparecchi.</string>
@@ -619,15 +619,15 @@
     <!-- Part of the progress message displayed when importing books -->
     <string name="progress_msg_n_created_m_updated">%1$s creati, %2$s aggiornati</string>
 
-    <!--  Explanatory text for 'exportBooks' dialogue -->
+    <!--  Explanatory text for 'export' dialogue -->
     <string name="title_export_books">I libri del tuo catalogo saranno esportati. Seleziona uno delle due opzioni per avviare l\'esportazione, o premi \'back\' per annullare:</string>
 
     <!-- Displayed in progress dialog when exporting covers in incremental mode -->
     <string name="progress_msg_covers_skip">%1$s copertine elaborate (%2$s mancanti, %3$s saltate)</string>
 
-    <!-- Explanatory note for 'exportBooks all' option -->
+    <!-- Explanatory note for 'export all' option -->
     <string name="export_info_backup_all">Tutti i libri, copertine, impostazioni e stili personalizzati saranno esportati nell\'archivio.</string>
-    <!-- Explanatory note for 'advanced exportBooks' option -->
+    <!-- Explanatory note for 'advanced export' option -->
     <string name="export_options_dialog_title">Seleziona cosa esportare nell\'archivio.</string>
     <!-- Text for button -->
     <string name="book_details">Dettagli dei libri</string>
@@ -640,11 +640,11 @@
     <!-- Brief description -->
     <string name="import_export_info_preferences">Preferenze e stili di elencazione personalizzati</string>
 
-    <!-- Explanatory note for exportBooks date (not yet implemented) -->
+    <!-- Explanatory note for export date (not yet implemented) -->
     <string name="export_option_info_books_since_date">In via opzionale, specifica una data da usare per selezionare libri e/o copertine da esportare:</string>
-    <!-- Explanatory note for exportBooks date (not yet implemented) -->
+    <!-- Explanatory note for export date (not yet implemented) -->
     <string name="export_option_books_since_date">Tutti i libri aggiunti o aggiornati dopo il giorno:</string>
-    <!-- Explanatory note for exportBooks data since last backup -->
+    <!-- Explanatory note for export data since last backup -->
     <string name="export_option_books_since_last_full_backup">Tutti i libri aggiunti o aggiornati dall\'ultimo backup completo</string>
 
     <plurals name="displaying_n_books">
@@ -677,7 +677,14 @@
     <string name="progress_msg_searching_directory">Ricerca nella cartella…</string>
 
     <!-- A hint describing the benefit of folowing the Amazon links -->
-    <string name="hint_amazon_links_blurb">&lt;p&gt;Se acquisti da Amazon dopo aver selezionato le voci &lt;i&gt;\"%1$s\"&lt;/i&gt;, &lt;i&gt;\"%2$s\"&lt;/i&gt; oppure &lt;i&gt;\"%3$s\"&lt;/i&gt;, una parte del prezzo d\'acquisto sarà inviata agli sviluppatori di %4$s.&lt;/p&gt;&lt;p&gt;In alternativa, puoi usare i &lt;a href=\"https://github.com/eleybourn/Book-Catalogue/wiki/Frequently-Asked-Questions-%%28FAQ%%29\"&gt;link alle nostre FAQ&lt;/a&gt; per andare direttamente su Amazon o PayPal.&lt;/p&gt;</string>
+    <string name="hint_amazon_links_blurb">
+        <![CDATA[
+        <p>Se acquisti da Amazon dopo aver selezionato le voci « <i>"%1$s"</i> », « <i>"%2$s"</i> » oppure « <i>"%3$s"</i> »,
+         una parte del prezzo d\'acquisto sarà inviata agli sviluppatori di %4$s.</p>
+         <p>In alternativa, puoi usare i <a href="https://github.com/eleybourn/Book-Catalogue/wiki/Frequently-Asked-Questions-%%28FAQ%%29">link alle nostre FAQ</a>
+          per andare direttamente su Amazon o PayPal.</p>
+        ]]>
+    </string>
 
     <!-- Name of the new style grouping (needs to be short). -->
     <string name="style_builtin_update_date">Data aggiornamento</string>
@@ -701,10 +708,9 @@
 
     <string name="loaned_to_2">→</string>
     <string name="tab_lbl_content">Contenuto</string>
-    <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
-    <string name="a_comma_b">%1$s, %2$s</string>
     <string name="name_colon_value">%1$s: %2$s</string>
     <string name="preferred_language_x">%1$s (%2$s)</string>
+    <string name="warning_thing_already_exists">%1$s già presente in elenco</string>
 
     <!-- Begin: Added/Updated in [Next Version] -->
 

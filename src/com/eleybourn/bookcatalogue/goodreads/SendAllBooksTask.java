@@ -71,7 +71,7 @@ public class SendAllBooksTask extends SendBooksTask {
             mTotalBooks = bookCursor.getCount() + mCount;
             boolean needsRetryReset = true;
             while (bookCursor.moveToNext()) {
-                // Try to exportBooks one book
+                // Try to export one book
                 if (!sendOneBook(queueManager, context, bookCursorRow)) {
                     // quit on error
                     return false;

@@ -27,12 +27,12 @@ import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.ExportSettings;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
-import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
+import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
-import com.eleybourn.bookcatalogue.utils.StringList;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
+import com.eleybourn.bookcatalogue.utils.StringList;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -46,6 +46,7 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_ACQUIRED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_ADDED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_PUBLISHED;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DESCRIPTION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_EDITION_BITMASK;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_FORMAT;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_GENRE;
@@ -55,10 +56,10 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ISFDB_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LANGUAGE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LIBRARY_THING_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PRICE_LISTED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LOCATION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_NOTES;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PAGES;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PRICE_LISTED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PRICE_LISTED_CURRENCY;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PRICE_PAID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PRICE_PAID_CURRENCY;
@@ -69,11 +70,10 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_READ_START;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_SIGNED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_UUID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DESCRIPTION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FIRST_PUBLICATION;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PK_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LAST_UPDATE_DATE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LOANED_TO;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PK_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE;
 
 /**
@@ -82,14 +82,14 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE
  * @author pjw
  */
 public class CsvExporter implements Exporter {
-    /** standard exportBooks file */
-    public static final String EXPORT_FILE_NAME = "exportBooks.csv";
-    /** standard temp exportBooks file, first we write here, then rename to csv */
-    static final String EXPORT_TEMP_FILE_NAME = "exportBooks.tmp";
+    /** standard export file */
+    public static final String EXPORT_FILE_NAME = "export.csv";
+    /** standard temp export file, first we write here, then rename to csv */
+    static final String EXPORT_TEMP_FILE_NAME = "export.tmp";
     private static final String UTF8 = "utf8";
     private static final int BUFFER_SIZE = 32768;
     /** pattern we look for to rename/keep older copies */
-    private static final String EXPORT_CSV_FILES_PATTERN = "exportBooks.%s.csv";
+    private static final String EXPORT_CSV_FILES_PATTERN = "export.%s.csv";
     /** backup copies to keep */
     private static final int COPIES = 5;
     @NonNull
@@ -98,11 +98,11 @@ public class CsvExporter implements Exporter {
     private final ExportSettings mSettings;
 
     /* The CSV file has columns with these names */
-    /** string-encoded - used in import/exportBooks, never change this string! */
+    /** string-encoded - used in import/export, never change this string! */
     static final String CSV_COLUMN_TOC = "anthology_titles";
-    /** string-encoded - used in import/exportBooks, never change this string! */
+    /** string-encoded - used in import/export, never change this string! */
     static final String CSV_COLUMN_SERIES = "series_details";
-    /** string-encoded - used in import/exportBooks, never change this string! */
+    /** string-encoded - used in import/export, never change this string! */
     static final String CSV_COLUMN_AUTHORS = "author_details";
     /**
      * The order of the header MUST be the same as the order used to write the data (obvious eh?)
@@ -142,7 +142,7 @@ public class CsvExporter implements Exporter {
                     '"' + DOM_BOOK_SIGNED + "\"," +
                     '"' + DOM_LOANED_TO + "\"," +
                     '"' + CSV_COLUMN_TOC + "\"," +
-                    '"' + DOM_DESCRIPTION + "\"," +
+                    '"' + DOM_BOOK_DESCRIPTION + "\"," +
                     '"' + DOM_BOOK_GENRE + "\"," +
                     '"' + DOM_BOOK_LANGUAGE + "\"," +
                     '"' + DOM_BOOK_DATE_ADDED + "\"," +
@@ -160,10 +160,10 @@ public class CsvExporter implements Exporter {
      * @param settings {@link ExportSettings#file} is not used, as we must support writing to a stream.
      *                 {@link ExportSettings#EXPORT_SINCE} and {@link ExportSettings#dateFrom} is respected.
      *                 Other flags are ignored, as this method only
-     *                 handles {@link ExportSettings#BOOK_DATA} anyhow.
+     *                 handles {@link ExportSettings#BOOK_CSV} anyhow.
      */
-    public CsvExporter(final @NonNull Context context, final @NonNull ExportSettings settings) {
-        mDb = new CatalogueDBAdapter(context);
+    public CsvExporter(final @NonNull ExportSettings settings) {
+        mDb = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
         mSettings = settings;
     }
 
@@ -175,8 +175,8 @@ public class CsvExporter implements Exporter {
      *
      * @throws IOException on any error
      */
-    public boolean exportBooks(final @NonNull OutputStream outputStream,
-                               final @NonNull ExportListener listener) throws IOException {
+    public boolean doBooks(final @NonNull OutputStream outputStream,
+                           final @NonNull ExportListener listener) throws IOException {
         final String UNKNOWN = BookCatalogueApp.getResourceString(R.string.unknown);
         final String AUTHOR = BookCatalogueApp.getResourceString(R.string.lbl_author);
 
@@ -199,7 +199,7 @@ public class CsvExporter implements Exporter {
         int num = 0;
         final StringBuilder row = new StringBuilder();
 
-        try (BookCursor bookCursor = mDb.exportBooks(mSettings.dateFrom);
+        try (BookCursor bookCursor = mDb.exportFlattenedBooks(mSettings.dateFrom);
              BufferedWriter out = new BufferedWriter(new OutputStreamWriter(outputStream, UTF8), BUFFER_SIZE)) {
 
             final BookRowView bookCursorRow = bookCursor.getCursorRow();

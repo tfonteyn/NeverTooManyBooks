@@ -51,8 +51,6 @@ import java.util.Date;
 public abstract class BackupReaderAbstract implements BackupReader {
     @NonNull
     private final CatalogueDBAdapter mDb;
-    @NonNull
-    private final Context mContext;
 
     private String processPreferences;
     private String processCover;
@@ -61,9 +59,9 @@ public abstract class BackupReaderAbstract implements BackupReader {
     /**
      * Constructor
      */
-    protected BackupReaderAbstract(@NonNull final Context context) {
-        mContext = context;
-        mDb = new CatalogueDBAdapter(mContext);
+    protected BackupReaderAbstract() {
+        Context context = BookCatalogueApp.getAppContext();
+        mDb = new CatalogueDBAdapter(context);
 
         processPreferences = context.getString(R.string.progress_msg_process_preferences);
         processCover = context.getString(R.string.progress_msg_process_cover);
@@ -106,15 +104,15 @@ public abstract class BackupReaderAbstract implements BackupReader {
             }
                 switch (entity.getType()) {
                     case Books: {
-                        if ((settings.what & ImportSettings.BOOK_DATA) != 0) {
+                        if ((settings.what & ImportSettings.BOOK_CSV) != 0) {
                             // a CSV file with all book data
                             restoreBooks(listener, entity, settings);
-                            entitiesRead |= ImportSettings.BOOK_DATA;
+                            entitiesRead |= ImportSettings.BOOK_CSV;
                         }
                         break;
                     }
                     case Cover: {
-                        if ((settings.what & ImportSettings.BOOK_DATA) != 0) {
+                        if ((settings.what & ImportSettings.BOOK_CSV) != 0) {
                             // This *might* not be a cover !
                             restoreCover(listener, entity, settings);
                             coverCount++;
@@ -175,12 +173,12 @@ public abstract class BackupReaderAbstract implements BackupReader {
     }
 
     /**
-     * Restore the books from the exportBooks file.
+     * Restore the books from the export file.
      */
     private void restoreBooks(final @NonNull BackupReaderListener listener,
                               final @NonNull ReaderEntity entity,
                               final @NonNull ImportSettings settings) throws IOException {
-        // Listener for the 'importBooks' function that just passes on the progress to our own listener
+        // Listener for the 'doBooks' function that just passes on the progress to our own listener
         Importer.OnImporterListener importListener = new Importer.OnImporterListener() {
             private int mLastPos = 0;
 
@@ -203,8 +201,8 @@ public abstract class BackupReaderAbstract implements BackupReader {
         };
 
         // Now do the import
-        CsvImporter importer = new CsvImporter(mContext, settings);
-        importer.importBooks(entity.getStream(), null, importListener);
+        CsvImporter importer = new CsvImporter(settings);
+        importer.doBooks(entity.getStream(), null, importListener);
     }
 
 

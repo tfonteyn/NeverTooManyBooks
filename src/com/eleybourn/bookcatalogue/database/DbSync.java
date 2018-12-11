@@ -593,7 +593,7 @@ public class DbSync {
         @NonNull
         public Cursor rawQueryWithFactory(final @NonNull SQLiteDatabase.CursorFactory cursorFactory,
                                           final @NonNull String sql,
-                                          final @NonNull String[] selectionArgs,
+                                          final @Nullable String[] selectionArgs,
                                           final @NonNull String editTable) {
             SyncLock txLock = null;
             if (mTxLock == null) {

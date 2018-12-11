@@ -4,30 +4,29 @@
     android:id="@id/SLA_ROW"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:orientation="horizontal"
+    android:paddingTop="@dimen/padding_border">
 
-    <!-- the "row_info" level is used by {@link BooksMultiTypeListHandler} to hide/show rows -->
+    <!-- the "BLB_ROW_DETAILS" level is used by {@link BooksMultiTypeListHandler} to hide/show rows -->
     <LinearLayout
         android:id="@id/BLB_ROW_DETAILS"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddingBottom="2dp"
         tools:ignore="UselessParent">
 
         <TextView
             android:id="@+id/name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingTop="@dimen/padding_border_double"
             android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textIsSelectable="false"
             android:textStyle="bold"
-            tools:text="Expandable top level, author f.e."
-            android:textIsSelectable="false" />
+            tools:drawableEnd="@drawable/ic_lock"
+            tools:text="Expandable top level" />
 
         <View
             style="@style/divider_horizontalList"
-            android:background="?attr/dividerHorizontal"
             android:paddingBottom="@dimen/padding_border" />
     </LinearLayout>
 

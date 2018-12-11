@@ -675,7 +675,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_IS_EBOOK)
                 .setEndAction(mHandleBoolean, ShowBookFieldNames.IS_EBOOK);
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_DESCRIPTION)
-                .setEndAction(mHandleText, UniqueId.KEY_DESCRIPTION);
+                .setEndAction(mHandleText, UniqueId.KEY_BOOK_DESCRIPTION);
 
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_WORK, XML_ID)
                 .setEndAction(mHandleLong, ShowBookFieldNames.WORK_ID);

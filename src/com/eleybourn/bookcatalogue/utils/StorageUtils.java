@@ -61,33 +61,40 @@ import java.util.regex.Pattern;
 /**
  * Class to wrap common storage related functions.
  *
+ * "External Storage" == what Android considers non-application-private storage. i.e the user has access to it
+ * ('external' refers to old android phones where Shared Storage *always* was an external sdcard)
+ * Sometimes also referred to as "Shared Storage" because all apps have access to it.
+ *
+ * For the sake of clarity (confusion?) we'll call it "Shared Storage" only.
+ *
+ * TODO: user message talk about "SD Card"
+ *
  * @author Philip Warner
  */
 public class StorageUtils {
 
-    /** error result code for {@link #getExternalStorageFreeSpace} */
+    /** error result code for {@link #getSharedStorageFreeSpace} */
     public static final int ERROR_CANNOT_STAT = -2;
     /** buffer size for file copy operations */
     private static final int FILE_COPY_BUFFER_SIZE = 8192;
-    /** our root directory to be created on the 'external storage' */
-
+    /** our root directory to be created on the 'external storage' aka Shared Storage*/
     private static final String DIRECTORY_NAME = "bookCatalogue";
     private static final String UTF8 = "utf8";
-    /** root external storage */
-    private static final String EXTERNAL_FILE_PATH = Environment.getExternalStorageDirectory() + File.separator + DIRECTORY_NAME;
-    /** sub directory for temporary images TODO: Not properly used really */
-    private static final String TEMP_FILE_PATH = EXTERNAL_FILE_PATH + File.separator + "tmp_images";
+    /** root external storage aka Shared Storage */
+    private static final String SHARED_STORAGE_PATH = Environment.getExternalStorageDirectory() + File.separator + DIRECTORY_NAME;
+    /** sub directory for temporary images TOMF: use context.getCacheDir() instead */
+    private static final String TEMP_FILE_PATH = SHARED_STORAGE_PATH + File.separator + "tmp_images";
     /** permanent location for cover files. For now hardcoded, but the intention is to allow user-defined. */
-    private static final String COVER_FILE_PATH = EXTERNAL_FILE_PATH + File.separator + "covers";
+    private static final String COVER_FILE_PATH = SHARED_STORAGE_PATH + File.separator + "covers";
     /** permanent location for log files. */
-    private static final String LOG_FILE_PATH = EXTERNAL_FILE_PATH + File.separator + "log";
+    private static final String LOG_FILE_PATH = SHARED_STORAGE_PATH + File.separator + "log";
     /** serious errors are written to this file */
     private static final String ERROR_LOG_FILE = "error.log";
     /**
-     * written to root external storage as 'writable' test + prevent 'detection' by apps who
+     * written to root Shared Storage as 'writable' test + prevent 'detection' by apps who
      * want to 'do things' with media
      */
-    private static final String NOMEDIA_FILE_PATH = EXTERNAL_FILE_PATH + File.separator + MediaStore.MEDIA_IGNORE_FILENAME;
+    private static final String NOMEDIA_FILE_PATH = SHARED_STORAGE_PATH + File.separator + MediaStore.MEDIA_IGNORE_FILENAME;
     /**
      * Filenames *starting* with this prefix are considered purgeable.
      */
@@ -98,7 +105,7 @@ public class StorageUtils {
      * of all CSV files.
      */
     private static final Pattern MOUNT_POINT_PATH = Pattern.compile("^\\s*[^\\s]+\\s+([^\\s]+)");
-    /** error result code for {@link #getExternalStorageFreeSpace} */
+    /** error result code for {@link #getSharedStorageFreeSpace} */
     private static final int ERROR_NO_STORAGE = -1;
 
     private StorageUtils() {
@@ -118,7 +125,7 @@ public class StorageUtils {
     }
 
     /**
-     * Check if the external storage is writable
+     * Check if the Shared Storage is writable
      */
     static public boolean isWriteProtected() throws SecurityException {
         try {
@@ -132,7 +139,7 @@ public class StorageUtils {
     }
 
     /**
-     * Make sure the external shared directory exists
+     * Make sure the Shared Storage directory exists
      * Logs failures only if we we're capable of creating a log directory!
      * Abort if we don't get that far.
      *
@@ -141,7 +148,7 @@ public class StorageUtils {
     @RequiresPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
     public static void initSharedDirectories() throws SecurityException {
         // need root first (duh)
-        if (!createDir(EXTERNAL_FILE_PATH)) {
+        if (!createDir(SHARED_STORAGE_PATH)) {
             return;
         }
         // then log dir!
@@ -181,10 +188,10 @@ public class StorageUtils {
     /* ------------------------------------------------------------------------------------------ */
 
     /**
-     * @return the shared root Directory object
+     * @return the Shared Storage root Directory object
      */
     public static File getSharedStorage() {
-        return new File(EXTERNAL_FILE_PATH);
+        return new File(SHARED_STORAGE_PATH);
     }
 
     /**
@@ -196,7 +203,7 @@ public class StorageUtils {
      * @return the file
      */
     public static File getFile(final @NonNull String fileName) {
-        return new File(EXTERNAL_FILE_PATH + File.separator + fileName);
+        return new File(SHARED_STORAGE_PATH + File.separator + fileName);
     }
 
     /**
@@ -554,7 +561,7 @@ public class StorageUtils {
     }
 
     /**
-     * Create a copy of the databases into the ExternalStorage location
+     * Create a copy of the databases into the Shared Storage location
      */
     public static void exportDatabaseFiles(final @NonNull Context context) {
         exportFile(CatalogueDBHelper.getDatabasePath(context), "DbExport.db");
@@ -562,8 +569,8 @@ public class StorageUtils {
     }
 
     /**
-     * @param sourcePath      absolute path to file to exportBooks
-     * @param destinationPath destination file name, will be stored in our directory on ExternalStorage
+     * @param sourcePath      absolute path to file to export
+     * @param destinationPath destination file name, will be stored in our directory in Shared Storage
      */
     public static void exportFile(final @NonNull String sourcePath, final @NonNull String destinationPath) {
         try {
@@ -632,10 +639,10 @@ public class StorageUtils {
     }
 
     /**
-     * @return Space in bytes free on ExternalStorageDirectory,
+     * @return Space in bytes free on Shared Storage,
      * or {@link #ERROR_CANNOT_STAT} on error accessing it
      */
-    public static long getExternalStorageFreeSpace() {
+    public static long getSharedStorageFreeSpace() {
         try {
             StatFs stat = new StatFs(Environment.getExternalStorageDirectory().getAbsolutePath());
             return (stat.getAvailableBlocksLong() * stat.getBlockSizeLong());
@@ -653,7 +660,7 @@ public class StorageUtils {
     @StringRes
     public static int getMediaStateMessageId() {
         /*
-         * Returns the current state of the primary shared/external storage media.
+         * Returns the current state of the primary Shared Storage media.
          *
          * @see #getExternalStorageDirectory()
          * @return one of {@link #MEDIA_UNKNOWN}, {@link #MEDIA_REMOVED},

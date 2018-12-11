@@ -1,52 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@id/SLA_ROW"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingBottom="2dp"
-    android:paddingTop="3dp">
+    android:orientation="horizontal"
+    android:paddingTop="2dp">
 
-    <!-- the "row_info" level is used by {@link BooksMultiTypeListHandler} to hide/show rows -->
+    <!-- the "BLB_ROW_DETAILS" level is used by {@link BooksMultiTypeListHandler} to hide/show rows -->
     <LinearLayout
         android:id="@id/BLB_ROW_DETAILS"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+
         android:orientation="horizontal"
-        android:paddingBottom="2dp"
         tools:ignore="UselessParent">
 
         <ImageView
             android:id="@+id/c_start"
-            android:layout_width="@dimen/padding_border_double"
-            android:layout_height="@dimen/padding_border_double"
-            android:layout_gravity="center_vertical"
-            android:backgroundTint="?android:attr/colorForeground"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scaleX="0.5"
+            android:scaleY="0.5"
             android:background="@drawable/ic_lens"
+            android:backgroundTint="?android:attr/colorForeground"
             tools:ignore="ContentDescription" />
 
         <TextView
             android:id="@+id/name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingEnd="2dp"
-            android:paddingStart="2dp"
             android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textIsSelectable="false"
             android:textStyle="bold"
-            tools:text="Series name f.e."
-            android:textIsSelectable="false" />
+            android:layout_gravity="center_vertical"
+            tools:drawableEnd="@drawable/ic_lock"
+            tools:text="e.g. Series name" />
 
         <ImageView
             android:id="@+id/c_end"
-            android:layout_width="@dimen/padding_border_double"
-            android:layout_height="@dimen/padding_border_double"
-            android:layout_gravity="center_vertical"
-            android:backgroundTint="?android:attr/colorForeground"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scaleX="0.5"
+            android:scaleY="0.5"
             android:background="@drawable/ic_lens"
+            android:backgroundTint="?android:attr/colorForeground"
             tools:ignore="ContentDescription" />
 
-        <View
-            style="@style/divider_horizontalList" />
+        <View style="@style/divider_horizontalList" />
     </LinearLayout>
 
-</RelativeLayout>
+</LinearLayout>

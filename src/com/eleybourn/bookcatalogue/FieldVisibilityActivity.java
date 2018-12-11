@@ -68,7 +68,7 @@ public class FieldVisibilityActivity extends BaseActivity {
         mFields.add(new FieldInfo(UniqueId.KEY_BOOK_ISBN, R.string.lbl_isbn, false));
         mFields.add(new FieldInfo(UniqueId.KEY_SERIES, R.string.lbl_series, false));
         mFields.add(new FieldInfo(UniqueId.KEY_SERIES_NUM, R.string.lbl_series_num, false));
-        mFields.add(new FieldInfo(UniqueId.KEY_DESCRIPTION, R.string.lbl_description, false));
+        mFields.add(new FieldInfo(UniqueId.KEY_BOOK_DESCRIPTION, R.string.lbl_description, false));
 
         mFields.add(new FieldInfo(UniqueId.KEY_BOOK_PUBLISHER, R.string.lbl_publisher, false));
         mFields.add(new FieldInfo(UniqueId.KEY_BOOK_DATE_PUBLISHED, R.string.lbl_first_publication, false));
@@ -85,7 +85,7 @@ public class FieldVisibilityActivity extends BaseActivity {
         // **** PERSONAL FIELDS ****
         mFields.add(new FieldInfo(UniqueId.KEY_BOOKSHELF_NAME, R.string.lbl_bookshelf, false));
         mFields.add(new FieldInfo(UniqueId.KEY_LOAN_LOANED_TO, R.string.lbl_loaning, false));
-        mFields.add(new FieldInfo(UniqueId.KEY_NOTES, R.string.lbl_notes, false));
+        mFields.add(new FieldInfo(UniqueId.KEY_BOOK_NOTES, R.string.lbl_notes, false));
         mFields.add(new FieldInfo(UniqueId.KEY_BOOK_LOCATION, R.string.lbl_location_long, false));
         mFields.add(new FieldInfo(UniqueId.KEY_BOOK_PRICE_PAID, R.string.lbl_price_paid, false));
         mFields.add(new FieldInfo(UniqueId.KEY_BOOK_READ, R.string.lbl_is_read, false));

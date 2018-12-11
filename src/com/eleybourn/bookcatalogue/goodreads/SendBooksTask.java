@@ -81,7 +81,7 @@ public abstract class SendBooksTask extends GoodreadsTask {
                                     final @NonNull Context context);
 
     /**
-     * Try to exportBooks one book
+     * Try to export one book
      *
      * @return false on failure, true on success
      */

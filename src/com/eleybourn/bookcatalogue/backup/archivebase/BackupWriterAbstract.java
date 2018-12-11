@@ -19,7 +19,6 @@
  */
 package com.eleybourn.bookcatalogue.backup.archivebase;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.support.annotation.CallSuper;
@@ -32,6 +31,7 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.ExportSettings;
 import com.eleybourn.bookcatalogue.backup.csv.CsvExporter;
 import com.eleybourn.bookcatalogue.backup.csv.Exporter;
+import com.eleybourn.bookcatalogue.backup.xml.XmlExporter;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
@@ -52,15 +52,13 @@ import java.io.IOException;
 public abstract class BackupWriterAbstract implements BackupWriter {
     @NonNull
     private final CatalogueDBAdapter mDb;
-    @NonNull
-    private final Context mContext;
 
+    private final String XML_BACKUP_FILE = "bc.xml";
     /**
      * Constructor
      */
-    protected BackupWriterAbstract(@NonNull final Context context) {
-        mContext = context;
-        mDb = new CatalogueDBAdapter(mContext);
+    protected BackupWriterAbstract() {
+        mDb = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
     }
 
     /**
@@ -79,7 +77,7 @@ public abstract class BackupWriterAbstract implements BackupWriter {
 
         try {
             // If we are doing books, add the number
-            if ((settings.what & ExportSettings.BOOK_DATA) != 0) {
+            if ((settings.what & ExportSettings.BOOK_CSV) != 0) {
                 estimatedSteps += mDb.countBooks();
             }
 
@@ -96,15 +94,20 @@ public abstract class BackupWriterAbstract implements BackupWriter {
             // Generate the book list first, so we know how many there are exactly.
             final File tempBookCsvFile = generateBooks(listener, settings, coverCount);
 
+            final File tempXmlBackupFile = generateXmlBackupFile(listener,settings, coverCount);
+
             // we now have a known number of books
             listener.setMax(coverCount + listener.getTotalBooks() + 1);
 
             // Process each component of the Archive, unless we are cancelled, as in Nikita
             if (!listener.isCancelled()) {
-                writeInfo(mContext, listener, listener.getTotalBooks(), coverCount);
+                writeInfo(listener, listener.getTotalBooks(), coverCount);
             }
-            if (!listener.isCancelled() && (settings.what & ExportSettings.BOOK_DATA) != 0) {
-                writeBooks(tempBookCsvFile);
+            if (!listener.isCancelled() && (settings.what & ExportSettings.XML_TABLES) != 0) {
+                writeGenericFile(XML_BACKUP_FILE,tempXmlBackupFile);
+            }
+            if (!listener.isCancelled() && (settings.what & ExportSettings.BOOK_CSV) != 0) {
+                 writeBooks(tempBookCsvFile);
             }
             if (!listener.isCancelled() && (settings.what & ExportSettings.COVERS) != 0) {
                 writeCovers(listener, settings, false);
@@ -131,17 +134,71 @@ public abstract class BackupWriterAbstract implements BackupWriter {
     /**
      * Generate a bundle containing the INFO block, and send it to the archive
      */
-    private void writeInfo(final @NonNull Context context,
-                           final @NonNull BackupWriterListener listener,
+    private void writeInfo(final @NonNull BackupWriterListener listener,
                            final int bookCount,
                            final int coverCount) throws IOException {
-        final BackupInfo info = BackupInfo.createInfo(getContainer(), context, bookCount, coverCount);
+        final BackupInfo info = BackupInfo.createInfo(getContainer(), bookCount, coverCount);
         putInfo(info);
         listener.step(null, 1);
     }
 
     /**
-     * Generate a temporary file containing a books exportBooks, and send it to the archive
+     * Write a generic file to the archive
+     *
+     * @param name of the entry in the archive
+     * @param file actual file to store in the archive
+     */
+    private void writeGenericFile(final @NonNull String name,
+                                  final @NonNull File file) throws IOException {
+        try {
+            putGenericFile(name, file);
+        } finally {
+            StorageUtils.deleteFile(file);
+        }
+    }
+
+    private File generateXmlBackupFile(final BackupWriterListener listener,
+                                       final ExportSettings settings,
+                                       final int numCovers) throws IOException {
+        // Get a temp file and set for delete
+        final File temp = File.createTempFile("bc-xml-backup", ".tmp");
+        temp.deleteOnExit();
+
+        final Exporter.ExportListener exportListener = new Exporter.ExportListener() {
+
+            @Override
+            public void setMax(final int max) {
+                // Update the progress bar to a more realistic value
+                listener.setMax(numCovers + max + 1);
+            }
+
+            private int mLastPos = 0;
+
+            @Override
+            public void onProgress(@NonNull String message, final int position) {
+                // The progress is sent periodically and has jumps, so we calculate deltas
+                listener.step(message, position - mLastPos);
+                mLastPos = position;
+            }
+
+            @Override
+            public boolean isCancelled() {
+                return listener.isCancelled();
+            }
+        };
+
+        try (FileOutputStream output = new FileOutputStream(temp)) {
+            XmlExporter exporter = new XmlExporter(settings);
+            exporter.doBooks(output, exportListener);
+        }
+
+        return temp;
+
+    }
+
+
+    /**
+     * Generate a temporary file containing a books export, and send it to the archive
      * <p>
      * NOTE: This implementation is built around the TAR format; it is not a fixed design.
      * We could for example pass an Exporter to the writer and leave it to decide if a
@@ -158,7 +215,7 @@ public abstract class BackupWriterAbstract implements BackupWriter {
         // This is an estimate only; we actually don't know how many covers there are in the backup.
         listener.setMax((mDb.countBooks() * 2 + 1));
 
-        // Listener for the 'exportBooks' function that just passes on the progress to our own listener
+        // Listener for the 'doBooks' function that just passes on the progress to our own listener
         final Exporter.ExportListener exportListener = new Exporter.ExportListener() {
             private int mLastPos = 0;
 
@@ -187,8 +244,8 @@ public abstract class BackupWriterAbstract implements BackupWriter {
         final File temp = File.createTempFile("bc", ".tmp");
         temp.deleteOnExit();
         try (FileOutputStream output = new FileOutputStream(temp)) {
-            CsvExporter exporter = new CsvExporter(mContext, settings);
-            exporter.exportBooks(output, exportListener);
+            CsvExporter exporter = new CsvExporter(settings);
+            exporter.doBooks(output, exportListener);
         }
 
         return temp;

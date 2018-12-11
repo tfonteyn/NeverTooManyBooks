@@ -47,7 +47,7 @@ public class BackupTest {
     public static void testBackupTar() {
         File f = StorageUtils.getFile(BACKUP_TAR);
         try {
-            performBackupTar(BookCatalogueApp.getAppContext(), f);
+            performBackupTar(f);
         } catch (IOException e) {
             Logger.error(e);
         }
@@ -56,19 +56,19 @@ public class BackupTest {
     public static void testRestoreTar() {
         File f = StorageUtils.getFile(BACKUP_TAR);
         try {
-            performRestoreTar(BookCatalogueApp.getAppContext(), f);
+            performRestoreTar(f);
         } catch (IOException e) {
             Logger.error(e);
         }
     }
 
-    private static void performBackupTar(final @NonNull Context context, @NonNull File file) throws IOException {
+    private static void performBackupTar(@NonNull File file) throws IOException {
         if (DEBUG_SWITCHES.BACKUP && BuildConfig.DEBUG) {
             Logger.info(BackupTest.class,"Starting " + file.getAbsolutePath());
         }
         ExportSettings settings = new ExportSettings(file);
         settings.what = ExportSettings.EXPORT_ALL;
-        new TarBackupContainer(context, file)
+        new TarBackupContainer(file)
                 .newWriter()
                 .backup(settings, new BackupWriterListener() {
                     private final boolean mIsCancelled = false;
@@ -113,12 +113,12 @@ public class BackupTest {
         }
     }
 
-    private static void performRestoreTar(final @NonNull Context context, @NonNull File file) throws IOException {
+    private static void performRestoreTar(@NonNull File file) throws IOException {
         if (DEBUG_SWITCHES.BACKUP && BuildConfig.DEBUG) {
             Logger.info(BackupTest.class,"Starting " + file.getAbsolutePath());
         }
 
-        TarBackupContainer bkp = new TarBackupContainer(context, file);
+        TarBackupContainer bkp = new TarBackupContainer(file);
         // Each format should provide a validator of some kind
         if (!bkp.isValid()) {
             throw new IOException("Not a valid backup file");

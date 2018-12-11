@@ -65,6 +65,21 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
     private EditText mFilenameField;
     private TextView mPathField;
 
+    OnClickListener onPathUpClickListener = new OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            String parent = mRootPath.getParent();
+            if (parent == null) {
+                //Snackbar.make(this.getView(), R.string.no_parent_directory_found, Snackbar.LENGTH_LONG).show();
+                StandardDialogs.showUserMessage(requireActivity(), R.string.warning_no_parent_directory_found);
+                return;
+            }
+            mRootPath = new File(parent);
+
+            tellActivityPathChanged();
+        }
+    };
+
     // Create an empty one in case we are rotated before generated.
     @Nullable
     private ArrayList<FileDetails> mList = new ArrayList<>();
@@ -133,12 +148,9 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
         }
 
         // 'up' directory
-        getView().findViewById(R.id.row_path_up).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                handleUp();
-            }
-        });
+        getView().findViewById(R.id.row_path_up).setOnClickListener(onPathUpClickListener);
+        getView().findViewById(R.id.btn_path_up).setOnClickListener(onPathUpClickListener);
+
         Tracker.exitOnActivityCreated(this);
     }
 
@@ -147,21 +159,6 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
      */
     private void tellActivityPathChanged() {
         ((OnPathChangedListener) requireActivity()).onPathChanged(mRootPath);
-    }
-
-    /**
-     * Handle the 'Up' action
-     */
-    private void handleUp() {
-        String parent = mRootPath.getParent();
-        if (parent == null) {
-            //Snackbar.make(this.getView(), R.string.no_parent_directory_found, Snackbar.LENGTH_LONG).show();
-            StandardDialogs.showUserMessage(requireActivity(), R.string.warning_no_parent_directory_found);
-            return;
-        }
-        mRootPath = new File(parent);
-
-        tellActivityPathChanged();
     }
 
     /**

@@ -6,8 +6,11 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.utils.StringList;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class Bookshelf implements Parcelable, Utils.ItemWithIdFixup {
@@ -16,13 +19,14 @@ public class Bookshelf implements Parcelable, Utils.ItemWithIdFixup {
     public static final Character SEPARATOR = ',';
 
     /** the virtual 'All Books' */
-    public static final int ALL_BOOKS = 0;
+    public static final int ALL_BOOKS = -1;
+
     /** the 'first' bookshelf created at install time. We allow renaming it, but not deleting. */
     public static final int DEFAULT_ID = 1;
 
     public long id;
     @NonNull
-    public final String name;
+    public String name;
 
     /**
      * Constructor
@@ -43,6 +47,19 @@ public class Bookshelf implements Parcelable, Utils.ItemWithIdFixup {
     protected Bookshelf(Parcel in) {
         id = in.readLong();
         name = in.readString();
+    }
+
+    /**
+     * Special Formatter
+     *
+     * @return the list of bookshelves formatted as "shelf1, shelf2, shelf3, ...
+     */
+    public static String toDisplayString(final List<Bookshelf> list) {
+        List<String> allNames = new ArrayList<>();
+        for (Bookshelf bookshelf : list) {
+            allNames.add(bookshelf.name);
+        }
+        return Utils.toDisplayString(allNames);
     }
 
     @Override
@@ -97,11 +114,11 @@ public class Bookshelf implements Parcelable, Utils.ItemWithIdFixup {
     }
 
     /**
-     * Two bookshelves are equal if:
+     * Two are the same if:
+     *
      * - it's the same Object duh..
-     * - one or both of them is 'new' (e.g. id == 0) but their names are equal
-     *   TOMF: but what about 'all books' ? that's id==0 as well.
-     * - ids are equal
+     * - one or both of them is 'new' (e.g. id == 0) or their id's are the same
+     *   AND all their other fields are equal
      *
      * Compare is CASE SENSITIVE ! This allows correcting case mistakes.
      */
@@ -113,11 +130,11 @@ public class Bookshelf implements Parcelable, Utils.ItemWithIdFixup {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        Bookshelf bookshelf = (Bookshelf) o;
-        if (id == 0 || bookshelf.id == 0) {
-            return Objects.equals(name, bookshelf.name);
+        Bookshelf that = (Bookshelf) o;
+        if (this.id == 0 || that.id == 0 || this.id == that.id) {
+            return Objects.equals(this.name, that.name);
         }
-        return (id == bookshelf.id);
+        return false;
     }
 
     @Override

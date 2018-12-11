@@ -131,7 +131,7 @@ public class EditBookNotesFragment extends BookBaseFragment implements
         mFields.add(R.id.signed, UniqueId.KEY_BOOK_SIGNED);
         mFields.add(R.id.rating, UniqueId.KEY_BOOK_RATING);
 
-        mFields.add(R.id.notes, UniqueId.KEY_NOTES);
+        mFields.add(R.id.notes, UniqueId.KEY_BOOK_NOTES);
         //ENHANCE?: initTextFieldEditor(R.id.notes, R.string.lbl_notes, R.id.btn_notes, true);
 
         mFields.add(R.id.price_paid, UniqueId.KEY_BOOK_PRICE_PAID);

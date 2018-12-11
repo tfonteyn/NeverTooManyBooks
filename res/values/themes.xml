@@ -16,6 +16,8 @@
         <item name="ic_goodreads">@drawable/ic_goodreads_dark</item>
 
         <item name="fillColorVectorIcons">?android:attr/textColorSecondary</item>
+        <item name="ic_check_fillColor">@color/light_green_a700</item>
+        <item name="ic_lock_fillColor">@color/amber_a700</item>
 
         <item name="color_background_nav_header">@color/blue_400</item>
         <item name="color_background_nav_panel">@color/black</item>
@@ -62,6 +64,8 @@
         <item name="ic_goodreads">@drawable/ic_goodreads_light</item>
 
         <item name="fillColorVectorIcons">?android:attr/textColorSecondary</item>
+        <item name="ic_check_fillColor">@color/light_green_a700</item>
+        <item name="ic_lock_fillColor">@color/amber_a700</item>
 
         <item name="color_background_nav_header">@color/light_blue_400</item>
         <item name="color_background_nav_panel">@color/white</item>

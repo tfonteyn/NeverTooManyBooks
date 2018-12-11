@@ -153,8 +153,7 @@ public class LocalCoverFinder implements Importer.CoverFinder {
     }
 
     /**
-     * Copy the ID-based cover from its current location to the correct location in shared
-     * storage, if it exists.
+     * Copy the ID-based cover from its current location to the correct location in Shared Storage, if it exists.
      *
      * @param externalId The file ID in external media
      * @param newId      The new file ID
@@ -170,8 +169,7 @@ public class LocalCoverFinder implements Importer.CoverFinder {
     }
 
     /**
-     * Copy the ID-based cover from its current location to the correct location in shared
-     * storage, if it exists.
+     * Copy the ID-based cover from its current location to the correct location in Shared Storage, if it exists.
      *
      * @param externalId The file ID in external media
      * @param newId      The new file ID
@@ -187,8 +185,7 @@ public class LocalCoverFinder implements Importer.CoverFinder {
     }
 
     /**
-     * Copy the UUID-based cover from its current location to the correct location in shared
-     * storage, if it exists.
+     * Copy the UUID-based cover from its current location to the correct location in Shared Storage, if it exists.
      */
     private void copyCoverImageIfMissing(final @NonNull String uuid) throws IOException {
         File orig = findExternalCover(uuid);

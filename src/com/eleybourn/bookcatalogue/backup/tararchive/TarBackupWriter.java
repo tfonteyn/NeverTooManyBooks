@@ -61,7 +61,7 @@ public class TarBackupWriter extends BackupWriterAbstract {
      * @param container Parent
      */
     TarBackupWriter(final @NonNull TarBackupContainer container) throws IOException {
-        super(container.getContext());
+        super();
         mContainer = container;
         // Open the archive for writing
         FileOutputStream out = new FileOutputStream(container.getFile());
@@ -115,32 +115,36 @@ public class TarBackupWriter extends BackupWriterAbstract {
     }
 
     /**
-     * Save the books CSV file
+     * Write an export CSV file to the archive.
      */
     @Override
-    public void putBooks(final @NonNull File booksCsvFile) throws IOException {
-        TarArchiveEntry entry = new TarArchiveEntry(new File(TarBackupContainer.BOOKS_FILE));
-        entry.setModTime(booksCsvFile.lastModified());
-        entry.setSize(booksCsvFile.length());
-        mOutput.putArchiveEntry(entry);
-        FileInputStream in = new FileInputStream(booksCsvFile);
-        streamToArchive(in);
+    public void putBooks(final @NonNull File file) throws IOException {
+        putGenericFile(TarBackupContainer.BOOKS_FILE, file);
     }
 
     /**
-     * Save a cover file
+     * Write a cover file to the archive
      */
     @Override
-    public void putCoverFile(final @NonNull File coverFile) throws IOException {
-        final TarArchiveEntry entry = new TarArchiveEntry(coverFile.getName());
-        entry.setModTime(coverFile.lastModified());
-        entry.setSize(coverFile.length());
-        mOutput.putArchiveEntry(entry);
-        final FileInputStream in = new FileInputStream(coverFile);
-        streamToArchive(in);
+    public void putCoverFile(final @NonNull File file) throws IOException {
+        putGenericFile(file.getName(), file);
     }
 
-
+    /**
+     * Write a generic file to the archive
+     *
+     * @param name of the entry in the archive
+     * @param file actual file to store in the archive
+     */
+    @Override
+    public void putGenericFile(final @NonNull String name, final @NonNull File file) throws IOException {
+        TarArchiveEntry entry = new TarArchiveEntry(new File(name));
+        entry.setModTime(file.lastModified());
+        entry.setSize(file.length());
+        mOutput.putArchiveEntry(entry);
+        FileInputStream in = new FileInputStream(file);
+        streamToArchive(in);
+    }
 
     /**
      * Utility routine to send the contents of a stream to the current archive entry

@@ -124,14 +124,14 @@ public class EditBooklistStyleGroupsActivity extends EditObjectListActivity<Grou
     protected ArrayList<GroupWrapper> getList() {
         // Build an array list with the groups from the style
         ArrayList<GroupWrapper> groups = new ArrayList<>();
-        for (BooklistGroup g : mStyle) {
-            groups.add(new GroupWrapper(g, true));
+        for (BooklistGroup group : mStyle.getGroups()) {
+            groups.add(new GroupWrapper(group, true));
         }
 
         // Get all other groups and add any missing ones to the list
-        for (BooklistGroup g : BooklistGroup.getAllGroups()) {
-            if (!mStyle.hasKind(g.kind)) {
-                groups.add(new GroupWrapper(g, false));
+        for (BooklistGroup group : BooklistGroup.getAllGroups()) {
+            if (!mStyle.hasKind(group.getRowKind().kind)) {
+                groups.add(new GroupWrapper(group, false));
             }
         }
 
@@ -155,7 +155,7 @@ public class EditBooklistStyleGroupsActivity extends EditObjectListActivity<Grou
         // Loop through ALL groups
         for (GroupWrapper wrapper : mList) {
             // Remove it from style
-            mStyle.removeGroup(wrapper.group.kind);
+            mStyle.removeGroup(wrapper.group.getRowKind().kind);
             // Add it back, if required; then move ensures order will also match
             if (wrapper.present) {
                 mStyle.addGroup(wrapper.group);
@@ -265,7 +265,7 @@ public class EditBooklistStyleGroupsActivity extends EditObjectListActivity<Grou
             }
             // Setup the variant fields in the holder
             holder.groupWrapper = groupWrapper;
-            holder.name.setText(groupWrapper.group.getName());
+            holder.name.setText(groupWrapper.group.getRowKind().getName());
             holder.checkable.setChecked(holder.groupWrapper.present);
         }
 

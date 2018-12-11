@@ -578,7 +578,7 @@ Entweder sind die Daten des Buchs falsch (Sie sollten die ISBN überprüfen) ode
     <string name="title_import_books_blurb">Die Bücher aus diesem Archiv werden importiert. Tippen Sie auf eine der beiden Optionen, um den Import zu starten, oder auf \'Zurück\', um abzubrechen:</string>
     <!-- Description of the 'import all books' option -->
     <string name="import_option_info_all_books">Alle Bücher aus diesem Archiv werden importiert. Vorhandene Bücher werden aktualisiert und neue Bücher hinzugefügt.</string>
-    <!-- Menu text for the 'import/exportBooks new & changed' option -->
+    <!-- Menu text for the 'import/export new & changed' option -->
     <string name="import_option_new_and_changed_books">Neue und aktualisierte Bücher</string>
     <!-- Description of the 'import new & changed' option -->
     <string name="import_option_info_new_and_changed_books">Nur neue oder aktuellere Bücher im Archiv. Das ist nützlich, um zwei Geräte zu synchronisieren.</string>
@@ -587,15 +587,15 @@ Entweder sind die Daten des Buchs falsch (Sie sollten die ISBN überprüfen) ode
     <!-- Part of the progress message displayed when importing books -->
     <string name="progress_msg_n_created_m_updated">%1$s erzeugt, %2$s aktualisiert</string>
 
-    <!--  Explanatory text for 'exportBooks' dialogue -->
+    <!--  Explanatory text for 'export' dialogue -->
     <string name="title_export_books">Die Bücher aus Ihrem Katalog werden exportiert. Tippen Sie auf eine der beiden Optionen, um den Export zu starten, oder auf \'Zurück\', um abzubrechen:</string>
 
     <!-- Displayed in progress dialog when exporting covers in incremental mode -->
     <string name="progress_msg_covers_skip">%1$s Cover bearbeitet (%2$s fehlen, %3$s übersprungen)</string>
 
-    <!-- Explanatory note for 'exportBooks all' option -->
+    <!-- Explanatory note for 'export all' option -->
     <string name="export_info_backup_all">Alle Bücher, Cover, Einstellungen und benutzerdefinierten Stile werden in das Archiv exportiert.</string>
-    <!-- Explanatory note for 'advanced exportBooks' option -->
+    <!-- Explanatory note for 'advanced export' option -->
     <string name="export_options_dialog_title">Wählen Sie, was in das Archiv exportiert wird.</string>
 
     <!-- Text for button -->
@@ -609,12 +609,12 @@ Entweder sind die Daten des Buchs falsch (Sie sollten die ISBN überprüfen) ode
     <!-- Brief description -->
     <string name="import_export_info_preferences">Einstellungen und benutzerdefinierte Stile</string>
 
-    <!-- Explanatory note for exportBooks date (not yet implemented) -->
+    <!-- Explanatory note for export date (not yet implemented) -->
     <string name="export_option_info_books_since_date">Geben Sie wahlweise ein Datum an, um Bücher und Cover auszuwählen:</string>
 
-    <!-- Explanatory note for exportBooks date (not yet implemented) -->
+    <!-- Explanatory note for export date (not yet implemented) -->
     <string name="export_option_books_since_date">Alle neuen und aktualisierten Bücher seit:</string>
-    <!-- Explanatory note for exportBooks data since last backup -->
+    <!-- Explanatory note for export data since last backup -->
     <string name="export_option_books_since_last_full_backup">Alle neuen und aktualisierten Bücher seit der letzten vollständigen Sicherung</string>
 
     <plurals name="displaying_n_books">
@@ -666,7 +666,14 @@ Entweder sind die Daten des Buchs falsch (Sie sollten die ISBN überprüfen) ode
     <string name="about_translators">BookCatalogue ist das Ergebnis der Arbeit vieler Personen und würde nicht so weit verbreitet sein ohne die großzügige Arbeit unserer freiwilligen Übersetzer: Eugenio Davolio, José M. Galdo, Imkal, Gideon van Melle, Emir Sarı, Nick Silin und Robert Wetzlmayr (falls wir jemanden vergessen haben, geben Sie uns bitte Bescheid).</string>
 
     <!-- A hint describing the benefit of following the Amazon links -->
-    <string name="hint_amazon_links_blurb">&lt;p&gt;Wenn Sie Produkte von Amazon kaufen, nachdem Sie die Menüpunkte &lt;i&gt;\"%1$s\"&lt;/i&gt;, &lt;i&gt;\"%2$s\"&lt;/i&gt; oder &lt;i&gt;\"%3$s\"&lt;/i&gt; gewählt haben, wird ein Anteil des Kaufpreises an die Entwickler von %4$s weitergeleitet.&lt;/p&gt;&lt;p&gt;Sie können auch die &lt;a href=""https://github.com/eleybourn/Book-Catalogue/wiki/Frequently-Asked-Questions-%%28FAQ%%29""&gt;Links in unserer Hilfe&lt;/a&gt; verwenden, um direkt zu Amazon oder PayPal zu gelangen.&lt;/p&gt;</string>
+    <string name="hint_amazon_links_blurb">
+        <![CDATA[
+        <p>Wenn Sie Produkte von Amazon kaufen, nachdem Sie die Menüpunkte « <i>"%1$s"</i> », « <i>"%2$s"</i> » oder « <i>"%3$s"</i> »
+         gewählt haben, wird ein Anteil des Kaufpreises an die Entwickler von %4$s weitergeleitet.</p>
+         <p>Sie können auch die <a href="https://github.com/eleybourn/Book-Catalogue/wiki/Frequently-Asked-Questions-%%28FAQ%%29">Links in unserer Hilfe</a>
+          verwenden, um direkt zu Amazon oder PayPal zu gelangen.</p>
+        ]]>
+    </string>
 
     <!-- Name of the new style grouping (needs to be short). -->
     <string name="style_builtin_update_date">Änderungsdatum</string>
@@ -686,10 +693,9 @@ Entweder sind die Daten des Buchs falsch (Sie sollten die ISBN überprüfen) ode
 
     <string name="loaned_to_2">→</string>
     <string name="tab_lbl_content">Inhalt</string>
-    <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
-    <string name="a_comma_b">%1$s, %2$s</string>
     <string name="name_colon_value">%1$s: %2$s</string>
     <string name="preferred_language_x">%1$s (%2$s)</string>
+    <string name="warning_thing_already_exists">%1$s existiert bereits</string>
 
     <!-- Begin: Added/Updated in [Next Version] DO NOT TRANSLATE YET! MAY CHANGE OR BE DELETED! -->
 

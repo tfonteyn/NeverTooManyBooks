@@ -177,7 +177,7 @@
                 android:id="@+id/toc_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/expander"
+                android:background="@drawable/ic_expander"
                 android:buttonTint="@android:color/transparent"
                 android:textOff=""
                 android:textOn=""

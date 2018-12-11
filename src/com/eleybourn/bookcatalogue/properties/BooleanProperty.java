@@ -75,6 +75,9 @@ public class BooleanProperty extends PropertyWithGlobalValue<Boolean> {
 
     /**
      * Override the standard 'true'/'false' labels.
+     *
+     * If your labels don't need arguments.
+     * Otherwise use {@link #setTrueLabel} {@link #setFalseLabel}
      */
     public BooleanProperty setOptionLabels(final @StringRes int positiveId, final @StringRes int negativeId) {
         mPositiveTextId = positiveId;
@@ -242,6 +245,8 @@ public class BooleanProperty extends PropertyWithGlobalValue<Boolean> {
      *
      * Note that {@link Parcel#writeValue(Object)} actually writes a Boolean as 'int'
      * So 'null' is NOT preserved.
+     *
+     * API_UPGRADE 23 use {@link Parcel#writeTypedObject}
      */
     public void writeToParcel(final @NonNull Parcel dest) {
         Object o = this.getValue();
@@ -253,6 +258,10 @@ public class BooleanProperty extends PropertyWithGlobalValue<Boolean> {
         }
     }
 
+    /**
+     *
+     * API_UPGRADE 23  use {@link Parcel#readTypedObject}
+     */
     public void readFromParcel(final @NonNull Parcel in) {
         int value = in.readInt();
         if (value == -1) {

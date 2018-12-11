@@ -160,7 +160,7 @@ public class TaskQueueDBHelper extends SQLiteOpenHelper {
         Map<String,Integer> counters = new Hashtable<>();
         // Loop through definitions.
         for(String[] defn : mIndices) {
-            // Get getPrefix fields
+            // Get prefix fields
             final String tbl = defn[0];
             final String qualifier = defn[1];
             // See how many are already defined for this table; get next counter value

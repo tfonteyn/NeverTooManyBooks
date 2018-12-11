@@ -675,7 +675,7 @@ public class PartialDatePickerDialogFragment extends EditorDialogFragment<Partia
                 // This actually throws exception in some versions of Android, specifically when
                 // the locale-specific date format has the day name (EEE) in it. So we exit and
                 // just use our default order in these cases.
-                // See Issue 712.
+                // See Issue #712.
                 order = DateFormat.getDateFormatOrder(mActivity);
             } catch (Exception e) {
                 return;

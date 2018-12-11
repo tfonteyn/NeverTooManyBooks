@@ -324,7 +324,7 @@
     <string name="menu_customize_ellipsis">Aanpassen…</string>
     <string name="hint">Aanwijzing</string>
     <string name="hint_reset_all_hints">Herstel aanwijzingen</string>
-    <string name="hint_do_not_show_again">Laat niet meer zien</string>
+    <string name="hint_do_not_show_again">Niet meer laten zien</string>
     <string name="hint_booklist_styles_editor">U kunt dit scherm gebruiken om de lijst met stijlen aan te passen die in uw standaard stijlen menu wordt getoond.
     										\n\nEen goren vinkje betekent dat een stijl getoond wordt in de lijst en een rood kruisje dat die niet wordt getoond.
     										Tikken op een groen vinkje zal het in een rood kruisje veranderen en vice-versa.
@@ -425,7 +425,7 @@
     <string name="hints_have_been_reset">Aanwijzingen zijn hersteld</string>
     <string name="task_has_been_queued_in_background">Taak is op de achtergrond in de wachtrij gezet</string>
     <string name="hint_startup_screen">Dit is het standaard BookCatalogue opstartscherm. Als u dat wilt kunt u direct in \'Mijn Boeken\' opstarten. Het opstartscherm kan veranderd worden bij Voorkeuren.</string>
-    <string name="progress_msg_upgrading">Upgrading…</string>
+    <string name="progress_msg_upgrading">Nieuwe versie voorbereiden…</string>
     <string name="gr_explain_goodreads_no_isbn">
         Het geselecteerde boek heeft geen ISBN en kan niet automatisch worden gesynchroniseerd met Goodreads.
     	De simpelste oplossing is om:
@@ -588,7 +588,7 @@ Zie "Meer voorkeuren" voor de relevante instelling.
     <!-- For saving and opening exports or backups -->
     <string name="btn_confirm_open">Open</string>
 
-    <!-- Admin option to exportBooks books -->
+    <!-- Admin option to export books -->
     <string name="export_to_csv">Exporteer naar CSV-bestand</string>
     <!-- Admin option to import books -->
     <string name="import_from_csv">Importeer vanuit CSV-bestand</string>
@@ -632,7 +632,7 @@ Zie "Meer voorkeuren" voor de relevante instelling.
     <string name="title_import_books_blurb">De boeken in dit archief zullen worden geïmporteerd. Tik op één van de twee opties om de import te starten of druk op \'terug\' om te annuleren:</string>
     <!-- Description of the 'import all books' option -->
     <string name="import_option_info_all_books">Alle boeken in het archief zullen worden geïmporteerd en zo de bestaande boeken bijwerken en nieuwe toevoegen.</string>
-    <!-- Menu text for the 'import/exportBooks new & changed' option -->
+    <!-- Menu text for the 'import/export new & changed' option -->
     <string name="import_option_new_and_changed_books">Nieuwe en bijgewerkte boeken</string>
     <!-- Description of the 'import new & changed' option -->
     <string name="import_option_info_new_and_changed_books">Alleen nieuwe boeken importeren of boeken die onlangs zijn bijgewerkt in het archief. Dit is handig bij het synchroniseren van twee apparaten.</string>
@@ -641,15 +641,15 @@ Zie "Meer voorkeuren" voor de relevante instelling.
     <!-- Part of the progress message displayed when importing books -->
     <string name="progress_msg_n_created_m_updated">%1$s toegevoegd, %2$s bijgewerkt</string>
 
-    <!--  Explanatory text for 'exportBooks' dialogue -->
+    <!--  Explanatory text for 'export' dialogue -->
     <string name="title_export_books">De boeken in de catalogus zullen worden geëxporteerd. Tik op één van de twee opties om de export te starten of druk op \'terug\' om te annuleren:</string>
 
     <!-- Displayed in progress dialog when exporting covers in incremental mode -->
     <string name="progress_msg_covers_skip">%1$s boekomslagen verwerkt (%2$s missend, %3$s overgeslagen)</string>
 
-    <!-- Explanatory note for 'exportBooks all' option -->
+    <!-- Explanatory note for 'export all' option -->
     <string name="export_info_backup_all">Alle boeken, omslagafbeeldingen, instellingen en aangepaste stijlen zullen worden geëxporteerd naar het archief.</string>
-    <!-- Explanatory note for 'advanced exportBooks' option -->
+    <!-- Explanatory note for 'advanced export' option -->
     <string name="export_options_dialog_title">Selecteer wat geëxporteerd zal worden naar het archief.</string>
 
     <!-- Text for button -->
@@ -663,12 +663,12 @@ Zie "Meer voorkeuren" voor de relevante instelling.
     <!-- Brief description -->
     <string name="import_export_info_preferences">Voorkeuren en aangepaste boekenlijst stijlen</string>
 
-    <!-- Explanatory note for exportBooks date (not yet implemented) -->
+    <!-- Explanatory note for export date (not yet implemented) -->
     <string name="export_option_info_books_since_date">Specificeer desgewenst een datum voor de selectie van boeken en/of omslagen om te exporteren:</string>
 
-    <!-- Explanatory note for exportBooks date (not yet implemented) -->
+    <!-- Explanatory note for export date (not yet implemented) -->
     <string name="export_option_books_since_date">Alle boeken die zijn toegevoegd of bijgewerkt sinds:</string>
-    <!-- Explanatory note for exportBooks data since last backup -->
+    <!-- Explanatory note for export data since last backup -->
     <string name="export_option_books_since_last_full_backup">Alle boeken die zijn toegevoegd of bijgewerkt sinds de laatste volledige back-up</string>
 
     <plurals name="displaying_n_books">
@@ -717,7 +717,14 @@ Zie "Meer voorkeuren" voor de relevante instelling.
     <string name="about_translators">BookCatalogue is het resultaat van de inspanning van vele personen en zou niet zo\'n grote verspreiding kennen zonder de genereuse hulp van vrijwillige vertalers: Eugenio Davolio, José M. Galdo, Imkal, Gideon van Melle, Emir Sarı, Nick Silin, and Robert Wetzlmayr (als we iemand zijn vergeten, laat het ons aub weten).</string>
 
     <!-- A hint describing the benefit of folowing the Amazon links -->
-    <string name="hint_amazon_links_blurb">&lt;p&gt;Indien u boeken koopt bij Amazon na het selecteren van de &lt;i&gt;\"%1$s\"&lt;/i&gt;, &lt;i&gt;\"%2$s\"&lt;/i&gt; of &lt;i&gt;\"%3$s\"&lt;/i&gt; menu items, zal een deel van de aankoopprijs gezonden worden naar de ontwikkelaars van  %4$s.&lt;/p&gt;&lt;p&gt;U kunt ook de &lt;a href=\"https://github.com/eleybourn/Book-Catalogue/wiki/Frequently-Asked-Questions-%%28FAQ%%29\"&gt;links op de FAQ pagina&lt;/a&gt; gebruiken om direct naar Amazon of Paypal te gaan.&lt;/p&gt;</string>
+    <string name="hint_amazon_links_blurb">
+        <![CDATA[
+        <p>Indien u boeken koopt bij Amazon na het selecteren van de  « <i>"%1$s"</i> », « <i>"%2$s"</i> » of « <i>"%3$s"</i> »
+        menu opties, zal een deel van de aankoopprijs gezonden worden naar de ontwikkelaars van %4$s.</p>
+         <p>U kunt ook de <a href="https://github.com/eleybourn/Book-Catalogue/wiki/Frequently-Asked-Questions-%%28FAQ%%29">links op de FAQ pagina</a>
+          gebruiken om direct naar Amazon of Paypal te gaan.</p>
+        ]]>
+    </string>
     <!-- Name of the new style grouping (needs to be short). -->
     <string name="style_builtin_update_date">Datum update</string>
     <!-- Name of the new style grouping (needs to be short). -->
@@ -791,11 +798,34 @@ Zie "Meer voorkeuren" voor de relevante instelling.
     <string name="gr_search_goodreads">Zoeken op Goodreads</string>
     <string name="error_search_configuration">Configuratie fout</string>
     <string name="lbl_currency">Munt</string>
-    <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
-    <string name="a_comma_b">%1$s, %2$s</string>
     <string name="name_colon_value">%1$s: %2$s</string>
     <string name="preferred_language_x">%1$s (%2$s)</string>
     <string name="user_interface_messages_use">Informeer met</string>
+    <string name="blp_sort_author_name">Auteur namen sorteren</string>
+    <string name="book_format_audiobook">Luisterboek</string>
+    <string name="book_format_ebook">E-boek</string>
+    <string name="btn_merge">Samenvoegen</string>
+    <string name="btn_options">Opties</string>
+    <string name="import_options_dialog_title">Selecteer wat je wil importeren uit het archief</string>
+    <string name="lbl_cover">Omslag</string>
+    <string name="lbl_date_acquired_day">Dag aangekocht</string>
+    <string name="lbl_date_acquired_month">Maand aangekocht</string>
+    <string name="lbl_date_acquired_year">Jaar aangekocht</string>
+    <string name="lbl_is_complete">Is volledig</string>
+    <string name="lbl_loaning">Leen</string>
+    <string name="menu_author_details">Auteur details</string>
+    <string name="menu_set_complete">Markeer als volledig</string>
+    <string name="menu_set_incomplete">Markeer als onvolledig</string>
+    <string name="progress_msg_cleaning_database">Controle van de gegevens</string>
+    <string name="progress_msg_process_preferences">Opties…</string>
+    <string name="progress_msg_process_cover">Omslagen…</string>
+    <string name="progress_msg_process_booklist_style">Stijlen…</string>
+    <string name="progress_msg_updating_languages">Bijwerken talen…</string>
+    <string name="style_builtin_acquired_date">Datum aangekocht</string>
+    <string name="tab_lbl_notes">Notities</string>
+    <string name="warning_merge_bookshelves">De boekenplank die U hernoemt bestaat al. Wil je ze samenvoegen?</string>
+    <string name="warning_required_at_least_one">Er moet op z\'n minst een veld ingevuld zijn</string>
+    <string name="warning_thing_already_exists">%1$s bestaat al</string>
 
     <!-- End: Added/Updated in [Next Version] -->
 

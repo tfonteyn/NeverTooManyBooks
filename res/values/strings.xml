@@ -72,9 +72,9 @@
     <!-- generic import failure -->
     <string name="error_import_failed">Import failed.</string>
 
-    <!-- Displayed when any read operation from the sd card fails -->
+    <!-- Displayed when any read operation from Shared Storage fails -->
     <string name="error_storage_not_readable">Please check that the SD Card is accessible.</string>
-    <!-- Displayed when any write operation to the sd card fails -->
+    <!-- Displayed when any write operation to Shared Storage fails -->
     <string name="error_storage_not_writable">Please check that the SD Card is writable, and has sufficient space.</string>
 
 
@@ -376,12 +376,7 @@
 
     <string name="hint">Hint</string>
     <string name="hint_reset_all_hints">Reset hints</string>
-    <string name="hint_do_not_show_again">Do not show again</string>
 
-    <string name="hint_startup_screen">
-        This is the standard BookCatalogue startup screen. If you prefer, you can startup directly
-        in \'My Books\'; the preferred startup screen can be changed in preferences.
-    </string>
     <string name="hint_book_search_by_text">
         Adding books by ISBN is much more accurate than adding by author and title and
         is generally preferred. Please remember you can sometimes find the correct
@@ -474,7 +469,7 @@
     <!-- A hint describing the benefit of following the Amazon links -->
     <string name="hint_amazon_links_blurb">
         <![CDATA[
-        <p>If you buy things from Amazon after selecting the <i>"%1$s"</i>, <i>"%2$s"</i> or <i>"%3$s"</i>
+        <p>If you buy things from Amazon after selecting the  « <i>"%1$s"</i> », « <i>"%2$s"</i> » or « <i>"%3$s"</i> »
         menu items, a proportion of the purchase price will be sent to the developers of %4$s.</p>
         <p>You can also use the
          <a href="https://github.com/eleybourn/Book-Catalogue/wiki/Frequently-Asked-Questions-%%28FAQ%%29">links on our FAQ</a>
@@ -724,7 +719,7 @@
     <string name="backup_to_archive">Backup to Archive</string>
     <!-- Admin option to import archive -->
     <string name="import_from_archive">Import from Archive</string>
-    <!-- Admin option to exportBooks books -->
+    <!-- Admin option to export books -->
     <string name="export_to_csv">Export to CSV File</string>
     <!-- Admin option to import books -->
     <string name="import_from_csv">Import from CSV File</string>
@@ -1037,7 +1032,7 @@
     <string name="export_options_dialog_title">Select what will be exported to the archive.</string>
     <!-- Explanatory note of the 'export from archive' "all books" option -->
     <string name="export_option_info_all_books">blah</string>
-    <!-- Explanatory note for exportBooks data since last backup -->
+    <!-- Explanatory note for export data since last backup -->
     <string name="export_option_books_since_last_full_backup">All books added or updated since last full backup</string>
     <!-- Explanatory note of the 'export from archive' "all books" option -->
     <string name="export_option_info_new_and_changed_books">blah</string>
@@ -1067,7 +1062,7 @@
     <!-- Displayed when a CSV import fails -->
     <string name="import_error_failed_is_csv_file_location_correct">Import of data failed. Is the file in the correct place?</string>
     <!-- Displayed when an import fails -->
-    <!-- Displayed when a CSV exportBooks fails -->
+    <!-- Displayed when a CSV export fails -->
     <string name="export_error_csv_failed">Export failed - could not write to SD card</string>
     <!-- offer to send the CSV exported file as an email attachment -->
     <string name="export_csv_email">Would you like to send this export as an email somewhere?</string>
@@ -1211,6 +1206,12 @@
         the export, or press \'back\' to cancel:</string>
     <string name="title_import_books_blurb">The books in this archive will be imported. Select on
         one of two options to start the import, or press \'back\' to cancel:</string>
+    <string name="hint_do_not_show_again">Do not show again</string>
+
+    <string name="hint_startup_screen">
+        This is the standard BookCatalogue startup screen. If you prefer, you can startup directly
+        in \'My Books\'; the preferred startup screen can be changed in preferences.
+    </string>
 
     <!-- ####################################################################################### -->
     <!-- ========== Added/Updated in [Next Version]  ========== -->
@@ -1251,14 +1252,14 @@
     <string name="saving_image">Saving image</string>
 
 
-    <!-- storage file system is not available (it's not mounted, busy, USB locked it, etc.... -->
-    <string name="error_storage_not_available">Storage is not available</string>
-    <!-- storage file system access fails for some reason (but is is available) -->
-    <string name="error_storage_no_access">Cannot access Storage</string>
-    <!-- you're out of storage space... buy a bigger SDCard -->
-    <string name="error_storage_no_space_left">Not enough Storage space</string>
-    <!-- when tried to write to Storage, but were denied; write-protected ? -->
-    <string name="error_storage_cannot_write">Could not write to Storage</string>
+    <!-- Shared Storage file system is not available (it's not mounted, busy, USB locked it, etc.... -->
+    <string name="error_storage_not_available">The SD Card is not available</string>
+    <!-- Shared Storage file system access fails for some reason (but is is available) -->
+    <string name="error_storage_no_access">Cannot access the SD Card</string>
+    <!-- you're out of Shared Storage space... buy an SDCard -->
+    <string name="error_storage_no_space_left">Not enough space on the SD Card</string>
+    <!-- when tried to write to Shared Storage, but were denied; write-protected ? -->
+    <string name="error_storage_cannot_write">Could not write to the SD Card</string>
 
     <string name="error_no_external_crop_app">Can not find image crop app</string>
     <string name="error_no_style_found">Could not find appropriate style</string>
@@ -1289,9 +1290,9 @@
     <!-- Preference HINT -->
     <string name="hint_pref_layer_type">Leave this setting on \'Use default\' unless you experience crashes while cropping images. Try \'Software\' for safer but slower, or force \'Hardware\' for less safe, but faster</string>
     <!-- Preference VALUE -->
-    <string name="pref_layer_type_hardware">Hardware</string>
+    <string name="pref_layer_type_hardware" translatable="false">Hardware</string>
     <!-- Preference VALUE -->
-    <string name="pref_layer_type_software">Software</string>
+    <string name="pref_layer_type_software" translatable="false">Software</string>
 
     <!-- filters -->
     <string name="booklist_filters_select_based_on_signed_status">Select based on \'Signed\' status</string>
@@ -1306,6 +1307,8 @@
 
     <string name="menu_set_read">Set as read</string>
     <string name="menu_set_unread">Set as unread</string>
+    <string name="menu_set_complete">Set complete</string>
+    <string name="menu_set_incomplete">Set incomplete</string>
 
     <string name="tab_lbl_search_sites">Search Sites</string>
     <string name="tab_info_search_sites">Set your local websites.</string>
@@ -1328,6 +1331,9 @@
     <string name="warning_merge_bookshelves">The shelf you are renaming already exists. Would you like to merge them?</string>
     <string name="btn_merge">Merge</string>
 
+    <!-- button text -->
+    <string name="btn_options">Options</string>
+
     <!-- 'use' the settings, but do not save them. -->
     <string name="btn_use">Use</string>
 
@@ -1342,6 +1348,7 @@
     <string name="lbl_first_publication">First Publication</string>
     <string name="lbl_date_acquired">Date Acquired</string>
     <string name="lbl_price_paid">Price paid</string>
+    <string name="lbl_is_complete">Is complete</string>
 
     <string name="progress_msg_process_cover">Processing Covers…</string>
     <string name="progress_msg_process_preferences">Preferences…</string>
@@ -1359,6 +1366,8 @@
     <string name="lbl_date_acquired_month">Acquired Month</string>
     <string name="lbl_date_acquired_year">Acquired Year</string>
 
+    <string name="blp_sort_author_name">Sorting of author names</string>
+
     <!-- Name of the 'Default' bookshelf, created when app first installed. Needs to be short. -->
     <string name="initial_bookshelf">Default</string>
     <!--  book format string used if a search site indicates in any form it's an eBook -->
@@ -1366,9 +1375,11 @@
     <!-- book format string used if a search site indicates in any form it's some sort of Audio (tape, cd, etc..) -->
     <string name="book_format_audiobook">AudioBook</string>
 
-    <string name="btn_options">Options</string>
-    <string name="debug">Debug</string>
+    <string name="debug" translatable="false">Debug</string>
     <string name="history">History</string>
+
+    <string name="import_export_xml_tables">as XML</string>
+    <string name="import_export_info_xml_tables">as XML</string>
 
 
     <!-- End: Added/Updated in  [Next Version]  -->

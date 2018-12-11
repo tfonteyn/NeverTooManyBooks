@@ -158,7 +158,7 @@ public class IsbnUtils {
         /**
          * https://getsatisfaction.com/deliciousmonster/topics/cant-scan-a-barcode-with-5-digit-extension-no-barcodes-inside
          *
-         * The extended barcode combined with the UPC vendor getPrefix can be used to reconstruct the ISBN.
+         * The extended barcode combined with the UPC vendor prefix can be used to reconstruct the ISBN.
          * Example:
          * Del Rey edition of Larry Niven's _World of Ptavvs_,
          * which says it's "Ninth Printing: September 1982" on the copyright page.
@@ -345,7 +345,7 @@ public class IsbnUtils {
             }
 
             List<Integer> digits = new ArrayList<>();
-            // standard getPrefix 978
+            // standard prefix 978
             digits.add(9);
             digits.add(7);
             digits.add(8);

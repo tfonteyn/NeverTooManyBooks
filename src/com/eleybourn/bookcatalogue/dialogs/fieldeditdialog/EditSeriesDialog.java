@@ -26,6 +26,7 @@ import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.Checkable;
 
 import com.eleybourn.bookcatalogue.EditSeriesListActivity;
 import com.eleybourn.bookcatalogue.R;
@@ -51,7 +52,7 @@ public class EditSeriesDialog {
     public EditSeriesDialog(final @NonNull Activity activity, final @NonNull CatalogueDBAdapter db, final @NonNull Runnable onChanged) {
         mDb = db;
         mContext = activity;
-        mSeriesAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_dropdown_item_1line, mDb.getAllSeries());
+        mSeriesAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_dropdown_item_1line, mDb.getAllSeriesNames());
         mOnChanged = onChanged;
     }
 
@@ -63,6 +64,8 @@ public class EditSeriesDialog {
         //noinspection ConstantConditions
         seriesView.setText(series.name);
         seriesView.setAdapter(mSeriesAdapter);
+        final Checkable isCompleteView = root.findViewById(R.id.is_complete);
+        isCompleteView.setChecked(series.isComplete);
 
         final AlertDialog dialog = new AlertDialog.Builder(mContext)
                 .setView(root)
@@ -78,7 +81,8 @@ public class EditSeriesDialog {
                     StandardDialogs.showUserMessage(mContext, R.string.warning_required_series);
                     return;
                 }
-                confirmEdit(series, new Series(newName, ""));
+                boolean isComplete = isCompleteView.isChecked();
+                confirmEdit(series, new Series(newName, isComplete,""));
                 dialog.dismiss();
             }
         });

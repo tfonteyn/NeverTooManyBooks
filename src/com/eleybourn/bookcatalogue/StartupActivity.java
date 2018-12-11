@@ -466,8 +466,8 @@ public class StartupActivity extends AppCompatActivity {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     initStorage();
                 } else {
-                    // we can't work without storage, so die; can't use Logger as we don't have a log file!
-                    Log.e("StartupActivity","No storage permissions granted, quiting");
+                    // we can't work without Shared Storage, so die; can't use Logger as we don't have a log file!
+                    Log.e("StartupActivity","No Shared Storage permissions granted, quiting");
                     finishAndRemoveTask();
                 }
             }

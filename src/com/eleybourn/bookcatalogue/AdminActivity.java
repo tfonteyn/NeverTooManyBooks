@@ -21,11 +21,13 @@
 package com.eleybourn.bookcatalogue;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -62,8 +64,10 @@ import com.eleybourn.bookcatalogue.utils.GenericFileProvider;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This is the Administration page.
@@ -79,8 +83,8 @@ public class AdminActivity extends BaseActivityWithTasks {
      * Can be used to automatically trigger an action in {@link #onResume()}.
      */
     private static final String BKEY_DO_AUTO = "do_auto";
-    /** supported action: do an exportBooks to a CSV file + finishes the activity when done */
-    private static final String BVAL_DO_AUTO_EXPORT = "exportBooks";
+    /** supported action: do an export to a CSV file + finishes the activity when done */
+    private static final String BVAL_DO_AUTO_EXPORT = "export";
     /**
      * collected results from all started activities, which we'll pass on up in our own setResult
      */
@@ -117,6 +121,28 @@ public class AdminActivity extends BaseActivityWithTasks {
         Tracker.exitOnCreate(this);
     }
 
+    private static String[] getExtSdCardPaths(Context context) {
+        List<String> paths = new ArrayList<>();
+        for (File file : context.getExternalFilesDirs("external")) {
+            if (file != null && !file.equals(context.getExternalFilesDir("external"))) {
+                int index = file.getAbsolutePath().lastIndexOf("/Android/data");
+                if (index < 0) {
+                    Logger.info(AdminActivity.class, "Unexpected external file dir: " + file.getAbsolutePath());
+                } else {
+                    String path = file.getAbsolutePath().substring(0, index);
+                    try {
+                        path = new File(path).getCanonicalPath();
+                    } catch (IOException e) {
+                        // Keep non-canonical path.
+                    }
+                    paths.add(path);
+                }
+            }
+        }
+        if (paths.isEmpty()) paths.add("/storage/sdcard1");
+        return paths.toArray(new String[0]);
+    }
+
     /**
      * This function builds the Administration page in 4 sections.
      * 1. General management functions
@@ -132,7 +158,6 @@ public class AdminActivity extends BaseActivityWithTasks {
 
             v = findViewById(R.id.lbl_debug_tracker_history);
             v.setVisibility(View.VISIBLE);
-            // Make line flash when clicked.
             v.setBackgroundResource(android.R.drawable.list_selector_background);
             v.setOnClickListener(new OnClickListener() {
                 @Override
@@ -143,12 +168,44 @@ public class AdminActivity extends BaseActivityWithTasks {
 
             v = findViewById(R.id.lbl_debug_preferences);
             v.setVisibility(View.VISIBLE);
-            // Make line flash when clicked.
             v.setBackgroundResource(android.R.drawable.list_selector_background);
             v.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     BookCatalogueApp.dumpPreferences();
+                }
+            });
+
+            v = findViewById(R.id.lbl_debug_run_code);
+            v.setVisibility(View.VISIBLE);
+            v.setBackgroundResource(android.R.drawable.list_selector_background);
+            v.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    System.getProperties().list(System.out);
+
+                    Map<String,String> env = System.getenv();
+                    for (String key : env.keySet()) {
+                        Logger.info(System.class, "env|key=" + key + ", value=" + env.get(key));
+                    }
+
+                    for (File file : AdminActivity.this.getExternalCacheDirs()) {
+                        Logger.info(AdminActivity.this, "getExternalCacheDirs|dir=" + file.getAbsolutePath());
+                    }
+                    for (File file : AdminActivity.this.getExternalFilesDirs(null)) {
+                        Logger.info(AdminActivity.this, "getExternalFilesDirs|dir=" + file.getAbsolutePath());
+                    }
+                    for (File file : AdminActivity.this.getExternalMediaDirs()) {
+                        Logger.info(AdminActivity.this, "getExternalMediaDirs|dir=" + file.getAbsolutePath());
+                    }
+                    Logger.info(AdminActivity.this, "isExternalStorageRemovable=" + Environment.isExternalStorageRemovable());
+                    Logger.info(AdminActivity.this, "getDataDirectory=" + Environment.getDataDirectory().getAbsolutePath());
+                    Logger.info(AdminActivity.this, "getCacheDir=" + AdminActivity.this.getCacheDir());
+
+                    for (String dir : getExtSdCardPaths(AdminActivity.this)) {
+                        Logger.info(AdminActivity.this, "getExtSdCardPaths|dir=" + dir);
+                    }
                 }
             });
         }
@@ -384,7 +441,7 @@ public class AdminActivity extends BaseActivityWithTasks {
                 @Override
                 public void onClick(View v) {
                     try (CoversDBAdapter coversDBAdapter = CoversDBAdapter.getInstance()) {
-                        coversDBAdapter.eraseCoverCache();
+                        coversDBAdapter.deleteAll();
                     }
                 }
             });
@@ -413,7 +470,7 @@ public class AdminActivity extends BaseActivityWithTasks {
     private void exportToCSV() {
         File file = StorageUtils.getFile(CsvExporter.EXPORT_FILE_NAME);
         ExportSettings settings = new ExportSettings(file);
-        settings.what = ExportSettings.BOOK_DATA;
+        settings.what = ExportSettings.BOOK_CSV;
         new CsvExportTask(getTaskManager(), settings)
                 .start();
     }
@@ -443,7 +500,7 @@ public class AdminActivity extends BaseActivityWithTasks {
     }
 
     /**
-     * Import all data from somewhere on shared storage; ask user to disambiguate if necessary
+     * Import all data from somewhere on Shared Storage; ask user to disambiguate if necessary
      */
     private void importFromCSV() {
 
@@ -476,7 +533,7 @@ public class AdminActivity extends BaseActivityWithTasks {
      */
     private void importFromCSV(final @NonNull File file) {
         ImportSettings settings = new ImportSettings(file);
-        settings.what = ImportSettings.BOOK_DATA;
+        settings.what = ImportSettings.BOOK_CSV;
         new CsvImportTask(getTaskManager(), settings)
                 .start();
     }
@@ -540,7 +597,7 @@ public class AdminActivity extends BaseActivityWithTasks {
     public void onTaskFinished(final @NonNull ManagedTask task) {
         super.onTaskFinished(task);
 
-        // If it's an exportBooks, handle it
+        // If it's an export, handle it
         if (task instanceof CsvExportTask) {
             onExportFinished((CsvExportTask) task);
         }

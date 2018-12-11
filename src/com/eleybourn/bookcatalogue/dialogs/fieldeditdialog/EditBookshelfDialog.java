@@ -30,14 +30,11 @@ import android.widget.EditText;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
-import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 
-import java.util.Objects;
-
 /**
- *  Dialog to edit a single bookshelf.
+ * Dialog to edit a single bookshelf.
  *
  * Calling point is a List.
  */
@@ -91,7 +88,7 @@ public class EditBookshelfDialog {
                 }
 
                 dialog.dismiss();
-                confirmEdit(bookshelf, existingShelf, newName);
+                confirmEdit(bookshelf, newName, existingShelf);
             }
         });
 
@@ -106,29 +103,25 @@ public class EditBookshelfDialog {
         dialog.show();
     }
 
-    private void confirmEdit(final @NonNull Bookshelf from,
-                             final @Nullable Bookshelf existingShelf,
-                             final @NonNull String newName) {
+    private void confirmEdit(final @NonNull Bookshelf bookshelf,
+                             final @NonNull String newName,
+                             final @Nullable Bookshelf existingShelf) {
         // case sensitive equality
-        if (from.name.equals(newName)) {
+        if (bookshelf.name.equals(newName)) {
             return;
         }
 
-        // are we adding a new shelf?
-        if (from.id == 0) {
-            long id = mDb.insertBookshelf(newName);
-            if (id < 0) {
-                Logger.error("insert failed?");
-            } else {
-                mOnChanged.run();
-            }
+        // copy new values
+        bookshelf.name = newName;
+        // shelf did not exist, so go for it.
+        if (existingShelf == null) {
+            long id = mDb.insertOrUpdateBookshelf(bookshelf);
+            mOnChanged.run();
             return;
         }
 
-        // we are renaming 'from' to 'newName' which already exists.
+        // we are renaming 'from' to 'to' which already exists.
         // check if we should merge them.
-        Objects.requireNonNull(existingShelf);
-
         final AlertDialog dialog = new AlertDialog.Builder(mContext)
                 .setTitle(R.string.menu_edit_bookshelf)
                 .setMessage(R.string.warning_merge_bookshelves)
@@ -136,22 +129,23 @@ public class EditBookshelfDialog {
 
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, mContext.getString(R.string.btn_merge),
                 new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(final DialogInterface dialog, final int which) {
-                dialog.dismiss();
+                    @Override
+                    public void onClick(final DialogInterface dialog, final int which) {
+                        dialog.dismiss();
 
-                mDb.mergeBookshelves(from.id, existingShelf.id);
-                mOnChanged.run();
-            }
-        });
+                        // move all books from bookshelf to existingShelf
+                        mDb.mergeBookshelves(bookshelf.id, existingShelf.id);
+                        mOnChanged.run();
+                    }
+                });
 
         dialog.setButton(DialogInterface.BUTTON_NEGATIVE, mContext.getString(android.R.string.cancel),
                 new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(final DialogInterface dialog, final int which) {
-                dialog.dismiss();
-            }
-        });
+                    @Override
+                    public void onClick(final DialogInterface dialog, final int which) {
+                        dialog.dismiss();
+                    }
+                });
         dialog.show();
     }
 }

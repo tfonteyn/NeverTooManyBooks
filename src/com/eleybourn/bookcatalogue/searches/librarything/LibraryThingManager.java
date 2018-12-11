@@ -185,7 +185,8 @@ public class LibraryThingManager {
         if (!showAlert)
             return;
 
-        final AlertDialog dialog = new AlertDialog.Builder(context).setMessage(msgId)
+        final AlertDialog dialog = new AlertDialog.Builder(context)
+                .setMessage(msgId)
                 .setTitle(R.string.lt_registration_title)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .create();
@@ -193,8 +194,8 @@ public class LibraryThingManager {
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getString(R.string.btn_more_info),
                 new DialogInterface.OnClickListener() {
                     public void onClick(final @NonNull DialogInterface dialog, final int which) {
-                        Intent i = new Intent(context, LibraryThingAdminActivity.class);
-                        context.startActivity(i);
+                        Intent intent = new Intent(context, LibraryThingAdminActivity.class);
+                        context.startActivity(intent);
                         dialog.dismiss();
                     }
                 });
@@ -225,7 +226,8 @@ public class LibraryThingManager {
      * Search for edition data.
      *
      * No dev-key needed for this call.
-     * isbn must be valid.
+     *
+     * @param isbn to lookup. Must be a valid ISBN
      *
      * @return a list of isbn's of alternative editions of our original isbn
      */
@@ -275,9 +277,8 @@ public class LibraryThingManager {
 
     /**
      * dev-key needed for this call
-     * isbn must be valid.
      *
-     * @param isbn for book cover to find
+     * @param isbn to lookup. Must be a valid ISBN
      * @param size the LT {@link ImageSizes} size to get
      *
      * @return found/saved File, or null when none found (or any other failure)
@@ -325,9 +326,8 @@ public class LibraryThingManager {
 
     /**
      * dev-key needed for this call
-     * isbn must be valid.
      *
-     * @param isbn     to lookup
+     * @param isbn to lookup. Must be a valid ISBN
      * @param bookData Bundle to save results in
      *
      * @throws IOException on failure to search

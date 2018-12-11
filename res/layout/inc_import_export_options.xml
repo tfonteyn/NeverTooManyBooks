@@ -9,6 +9,27 @@
         android:paddingTop="2dp"
         android:layout_height="2dp" />
 
+
+    <LinearLayout
+        android:id="@+id/row__xml_tables"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <CheckBox
+            android:id="@+id/xml_tables_check"
+            style="@style/row_option_checkable"
+            android:checked="false"
+            android:text="@string/import_export_xml_tables" />
+
+        <TextView
+            android:id="@+id/import_export_xml_tables_blurb"
+            style="@style/row_option_info"
+            android:text="@string/import_export_info_xml_tables" />
+    </LinearLayout>
+
     <LinearLayout
         android:id="@+id/row_all_books"
         android:layout_width="match_parent"

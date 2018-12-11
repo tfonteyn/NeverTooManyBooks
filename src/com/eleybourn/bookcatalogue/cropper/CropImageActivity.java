@@ -89,7 +89,7 @@ public class CropImageActivity extends CropMonitoredActivity {
     public static final String REQUEST_KEY_WHOLE_IMAGE = "whole-image";
     public static final String REQUEST_KEY_NO_FACE_DETECTION = "noFaceDetection";
 
-    /** used to calculate free space on storage, 400kb per picture is a GUESS */
+    /** used to calculate free space on Shared Storage, 400kb per picture is a GUESS */
     private static final long ESTIMATED_PICTURE_SIZE = 400_000L;
 
     private final Bitmap.CompressFormat COMPRESS_FORMAT = Bitmap.CompressFormat.JPEG; // only used with mOptionSaveUri
@@ -565,12 +565,12 @@ public class CropImageActivity extends CropMonitoredActivity {
         int msgId = StorageUtils.getMediaStateMessageId();
         if (msgId == 0) {
             // stat the filesystem
-            long freeSpace = StorageUtils.getExternalStorageFreeSpace();
+            long freeSpace = StorageUtils.getSharedStorageFreeSpace();
             if (freeSpace == StorageUtils.ERROR_CANNOT_STAT) {
                 msgId = R.string.error_storage_no_access;
             } else {
                 // make an educated guess how many pics we can store.
-                long remaining = StorageUtils.getExternalStorageFreeSpace() / ESTIMATED_PICTURE_SIZE;
+                long remaining = StorageUtils.getSharedStorageFreeSpace() / ESTIMATED_PICTURE_SIZE;
                 if (remaining < 1) {
                     msgId = R.string.error_storage_no_space_left;
                 }

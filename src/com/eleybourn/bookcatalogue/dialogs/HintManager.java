@@ -50,9 +50,9 @@ import java.util.Map;
  * @author Philip Warner
  */
 public class HintManager {
-    /** Preferences getPrefix */
+    /** Preferences prefix */
     private final static String TAG = "HintManager.";
-    /** Preferences getPrefix for hints */
+    /** Preferences prefix for hints */
     private final static String PREF_HINT = TAG + "Hint.";
     /** All hints managed by this class */
     @SuppressLint("UseSparseArrays")
@@ -70,12 +70,10 @@ public class HintManager {
         mHints.put(R.string.hint_background_tasks, new Hint("BACKGROUND_TASKS"));
         mHints.put(R.string.hint_background_task_events, new Hint("BACKGROUND_TASK_EVENTS"));
 
-        mHints.put(R.string.hint_startup_screen, new Hint("STARTUP_SCREEN"));
-
         mHints.put(R.string.gr_explain_goodreads_no_isbn, new Hint("explain_goodreads_no_isbn"));
         mHints.put(R.string.gr_explain_goodreads_no_match, new Hint("explain_goodreads_no_match"));
 
-        mHints.put(R.string.hint_tempus_locum, new Hint("hint_tempus_locum"));
+        //mHints.put(R.string.hint_tempus_locum, new Hint("hint_tempus_locum"));
 
         mHints.put(R.string.hint_booklist_style_menu, new Hint("hint_booklist_style_menu"));
         mHints.put(R.string.hint_autorotate_camera_images, new Hint("hint_autorotate_camera_images"));

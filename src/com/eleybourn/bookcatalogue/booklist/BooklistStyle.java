@@ -31,6 +31,8 @@ import android.support.annotation.StringRes;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BooksMultiTypeListHandler;
 import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.booklist.filters.Filter;
+import com.eleybourn.bookcatalogue.booklist.filters.TrinaryFilter;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
@@ -50,7 +52,6 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -63,7 +64,7 @@ import java.util.Map;
  *
  * How to add a new Group:
  *
- * 1. add it to {@link RowKinds} and update ROW_KIND_TOTAL
+ * 1. add it to {@link RowKinds} and update ROW_KIND_MAX
  *
  * 2. if necessary add new domain to {@link DatabaseDefinitions }
  *
@@ -77,7 +78,7 @@ import java.util.Map;
  *
  * @author Philip Warner
  */
-public class BooklistStyle implements Iterable<BooklistGroup>, Serializable, Parcelable {
+public class BooklistStyle implements Serializable, Parcelable {
 
     public static final Creator<BooklistStyle> CREATOR = new Creator<BooklistStyle>() {
         @Override
@@ -91,7 +92,9 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable, Par
         }
     };
 
-    /** Extra book data to show at lowest level */
+    /**
+     * Extra book data to show at lowest level
+     */
     public static final int EXTRAS_BOOKSHELVES = 1;
     /** Extra book data to show at lowest level */
     public static final int EXTRAS_LOCATION = (1 << 1);
@@ -106,7 +109,9 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable, Par
     /** Extra book data to show at lowest level */
     public static final int EXTRAS_FORMAT = (1 << 7);
 
-    /** the amount of details to show in the header */
+    /**
+     * the amount of details to show in the header
+     */
     private static final Integer SUMMARY_HIDE = 0;
     /** the amount of details to show in the header */
     public static final Integer SUMMARY_SHOW_COUNT = 1;
@@ -117,23 +122,19 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable, Par
     /** the amount of details to show in the header */
     public static final Integer SUMMARY_SHOW_ALL = 0xff;
 
-    private static final int FILTER_NOT_USED = -1;
-    static final int FILTER_NO = 0;
-    static final int FILTER_YES = 1;
-
-    /** serialization id for plain class data */
-    private static final long serialVersionUID = 6615877148246388549L;
-    /** version field used in serialized data reading from file, see {@link #readObject} */
-    private static final long realSerialVersion = 5;
-
-    /** Scaling of text and images */
-    private static final int SCALE_SIZE_USE_DEFAULT = 0;
+    /**
+     * Scaling of text and images
+     */
+    @SuppressWarnings("WeakerAccess")
+    public static final int SCALE_SIZE_USE_DEFAULT = 0;
     /** Scaling of text and images */
     public static final int SCALE_SIZE_NORMAL = 1;
     /** Scaling of text and images */
     public static final int SCALE_SIZE_SMALLER = 2;
 
-    /** Prefix for all prefs */
+    /**
+     * Prefix for all prefs
+     */
     static final String TAG = "BookList.Style.";
     /** Preferred styles / menu order */
     public static final String PREF_BL_STYLE_MENU_ITEMS = TAG + "Menu.Items";
@@ -145,7 +146,6 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable, Par
     public static final String PREF_BL_STYLE_SHOW_THUMBNAILS = TAG + "Show.Thumbnails";
     /** Show large thumbnail if thumbnails are shown */
     public static final String PREF_BL_STYLE_SHOW_LARGE_THUMBNAILS = TAG + "Show.LargeThumbnails";
-
     /** Show list of bookshelves for each book */
     public static final String PREF_BL_STYLE_SHOW_BOOKSHELVES = TAG + "Show.Bookshelves";
     /** Show location for each book */
@@ -155,7 +155,17 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable, Par
     /** Show publisher for each book */
     public static final String PREF_BL_STYLE_SHOW_PUBLISHER = TAG + "Show.Publisher";
     /** Show format for each book */
-    private static final String PREF_BL_STYLE_SHOW_FORMAT = TAG + "Show.Format";
+    @SuppressWarnings("WeakerAccess")
+    public static final String PREF_BL_STYLE_SHOW_FORMAT = TAG + "Show.Format";
+    /** Sorting Author by family (default) or given name. This is independent from the display format */
+    @SuppressWarnings("WeakerAccess")
+    public static final String PREF_BL_STYLE_SORT_AUTHOR_GIVEN_FIRST = "Sort.Author.GivenFirst";
+
+    /** serialization id for plain class data */
+    private static final long serialVersionUID = 6615877148246388549L;
+    /** version field used in serialized data reading from file, see {@link #readObject} */
+    private static final long realSerialVersion = 5;
+
 
     /** Support for 'Font Size' property */
     private static final ItemList<Integer> mListFontSizeListItems;
@@ -184,25 +194,27 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable, Par
         mShowHeaderInfoListItems.add(SUMMARY_SHOW_ALL, R.string.blp_summary_show_all);
 
         mReadFilterListItems.add(null, R.string.use_default_setting);
-        mReadFilterListItems.add(FILTER_NOT_USED, R.string.all_books);
-        mReadFilterListItems.add(FILTER_NO, R.string.booklist_filters_unread);
-        mReadFilterListItems.add(FILTER_YES, R.string.booklist_filters_read);
+        mReadFilterListItems.add(TrinaryFilter.FILTER_NOT_USED, R.string.all_books);
+        mReadFilterListItems.add(TrinaryFilter.FILTER_NO, R.string.booklist_filters_unread);
+        mReadFilterListItems.add(TrinaryFilter.FILTER_YES, R.string.booklist_filters_read);
 
         mSignedFilterListItems.add(null, R.string.use_default_setting);
-        mSignedFilterListItems.add(FILTER_NOT_USED, R.string.all_books);
-        mSignedFilterListItems.add(FILTER_NO, R.string.booklist_filters_signed_no);
-        mSignedFilterListItems.add(FILTER_YES, R.string.booklist_filters_signed_yes);
+        mSignedFilterListItems.add(TrinaryFilter.FILTER_NOT_USED, R.string.all_books);
+        mSignedFilterListItems.add(TrinaryFilter.FILTER_NO, R.string.booklist_filters_signed_no);
+        mSignedFilterListItems.add(TrinaryFilter.FILTER_YES, R.string.booklist_filters_signed_yes);
 
         mAnthologyFilterListItems.add(null, R.string.use_default_setting);
-        mAnthologyFilterListItems.add(FILTER_NOT_USED, R.string.all_books);
-        mAnthologyFilterListItems.add(FILTER_NO, R.string.booklist_filters_is_anthology_no);
-        mAnthologyFilterListItems.add(FILTER_YES, R.string.booklist_filters_is_anthology_yes);
+        mAnthologyFilterListItems.add(TrinaryFilter.FILTER_NOT_USED, R.string.all_books);
+        mAnthologyFilterListItems.add(TrinaryFilter.FILTER_NO, R.string.booklist_filters_is_anthology_no);
+        mAnthologyFilterListItems.add(TrinaryFilter.FILTER_YES, R.string.booklist_filters_is_anthology_yes);
 
         mLoanedFilterListItems.add(null, R.string.use_default_setting);
-        mLoanedFilterListItems.add(FILTER_NOT_USED, R.string.all_books);
-        mLoanedFilterListItems.add(FILTER_NO, R.string.booklist_filters_loaned_no);
-        mLoanedFilterListItems.add(FILTER_YES, R.string.booklist_filters_loaned_yes);
+        mLoanedFilterListItems.add(TrinaryFilter.FILTER_NOT_USED, R.string.all_books);
+        mLoanedFilterListItems.add(TrinaryFilter.FILTER_NO, R.string.booklist_filters_loaned_no);
+        mLoanedFilterListItems.add(TrinaryFilter.FILTER_YES, R.string.booklist_filters_loaned_yes);
     }
+
+
     /** List of groups */
     @NonNull
     private final ArrayList<BooklistGroup> mGroups;
@@ -243,6 +255,9 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable, Par
     /** Show list header info */
     private transient ListOfIntegerValuesProperty mShowHeaderInfo;
 
+    /** Sorting */
+    private transient BooleanProperty mSortAuthor;
+
     /** Extra details to show on book rows */
     private transient BooleanProperty mExtraShowThumbnails;
     private transient BooleanProperty mExtraLargeThumbnails;
@@ -252,22 +267,11 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable, Par
     private transient BooleanProperty mExtraShowPublisher;
     private transient BooleanProperty mExtraShowFormat;
 
-    /**
-     * ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/686 - Filter by signed
-     * ==> adding ISortableField and IFilterableField so that we (theoretically) just need to create a new
-     * ==> object that implements one or both of these for each such field.
-     *
-     * Filters use ListOfIntegerValuesProperty as they need 4 values:
-     * - true -> 1
-     * - false-> 0
-     * - null -> -1 -> do not use the filter
-     * - use defaults -> inherit from default
-     */
-    private transient ListOfIntegerValuesProperty mFilterRead;
-    private transient ListOfIntegerValuesProperty mFilterSigned;
-    private transient ListOfIntegerValuesProperty mFilterAnthology;
-    private transient ListOfIntegerValuesProperty mFilterLoaned;
-
+    private transient ArrayList<Filter> mFilters;
+    private transient TrinaryFilter mFilterRead;
+    private transient TrinaryFilter mFilterSigned;
+    private transient TrinaryFilter mFilterAnthology;
+    private transient TrinaryFilter mFilterLoaned;
 
     /**
      * Constructor for system-defined styles.
@@ -316,6 +320,8 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable, Par
         mFilterSigned.readFromParcel(in);
         mFilterAnthology.readFromParcel(in);
         mFilterLoaned.readFromParcel(in);
+
+        mSortAuthor.readFromParcel(in);
     }
 
     /**
@@ -349,6 +355,8 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable, Par
         mFilterSigned.writeToParcel(dest);
         mFilterAnthology.writeToParcel(dest);
         mFilterLoaned.writeToParcel(dest);
+
+        mSortAuthor.writeToParcel(dest);
     }
 
     @SuppressWarnings("SameReturnValue")
@@ -357,20 +365,8 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable, Par
         return 0;
     }
 
-    int filterRead() {
-        return mFilterRead.getResolvedValue();
-    }
-
-    int filterSigned() {
-        return mFilterSigned.getResolvedValue();
-    }
-
-    int filterAnthology() {
-        return mFilterAnthology.getResolvedValue();
-    }
-
-    int filterLoaned() {
-        return mFilterLoaned.getResolvedValue();
+    boolean sortAuthorByGiven() {
+        return mSortAuthor.isTrue();
     }
 
     /**
@@ -414,6 +410,38 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable, Par
         return id;
     }
 
+    @NonNull
+    public ArrayList<BooklistGroup> getGroups() {
+        return mGroups;
+    }
+
+    /**
+     * Passed a template style, copy the group structure to this style.
+     */
+    public void setGroups(final @NonNull BooklistStyle fromStyle) {
+        PropertyList newProps = new PropertyList();
+
+        // Save the current groups
+        @SuppressLint("UseSparseArrays")
+        Map<Integer, BooklistGroup> oldGroups = new HashMap<>();
+        for (BooklistGroup group : this.getGroups()) {
+            oldGroups.put(group.getRowKind().kind, group);
+        }
+        // Clear the current groups, and rebuild, reusing old values where possible
+        mGroups.clear();
+        for (BooklistGroup group : fromStyle.getGroups()) {
+            BooklistGroup saved = oldGroups.get(group.getRowKind().kind);
+            if (saved != null) {
+                mGroups.add(saved);
+            } else {
+                group.getStyleProperties(newProps);
+                this.addGroup(group.getRowKind().kind);
+            }
+        }
+        // Copy any properties from new groups.
+        this.setProperties(newProps);
+    }
+
     void addGroup(final @NonNull BooklistGroup group) {
         mGroups.add(group);
     }
@@ -423,7 +451,7 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable, Par
      *
      * @param kind of group to add.
      */
-    void addGroup(final int kind) {
+    void addGroup(final @IntRange(from = 0, to = RowKinds.ROW_KIND_MAX) int kind) {
         BooklistGroup group = BooklistGroup.newInstance(kind);
         mGroups.add(group);
     }
@@ -449,11 +477,11 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable, Par
      */
     @SuppressWarnings("UnusedReturnValue")
     @Nullable
-    BooklistGroup removeGroup(final int kind) {
+    BooklistGroup removeGroup(final @IntRange(from = 0, to = RowKinds.ROW_KIND_MAX) int kind) {
         BooklistGroup toRemove = null;
-        for (BooklistGroup g : mGroups) {
-            if (g.kind == kind) {
-                toRemove = g;
+        for (BooklistGroup group : mGroups) {
+            if (group.getRowKind().kind == kind) {
+                toRemove = group;
                 break;
             }
         }
@@ -478,7 +506,7 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable, Par
          ******************************************************************************/
         /* the name for user-defined styles */
         mNameProperty = new StringProperty(R.string.name,
-                PropertyGroup.GRP_GENERAL,"")
+                PropertyGroup.GRP_GENERAL, "")
                 .setRequireNonBlank(true)
                 .setWeight(-100);
 
@@ -489,6 +517,15 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable, Par
         mShowHeaderInfo = new ListOfIntegerValuesProperty(R.string.blp_summary,
                 PropertyGroup.GRP_GENERAL, SUMMARY_SHOW_ALL, mShowHeaderInfoListItems)
                 .setPreferenceKey(PREF_BL_STYLE_SHOW_HEADER_INFO);
+
+        /* *****************************************************************************
+         * GRP_AUTHOR:
+         ******************************************************************************/
+        mSortAuthor = new BooleanProperty(R.string.blp_sort_author_name,
+                PropertyGroup.GRP_AUTHOR)
+                .setPreferenceKey(PREF_BL_STYLE_SORT_AUTHOR_GIVEN_FIRST)
+                .setOptionLabels(R.string.blp_format_author_name_given_first,
+                        R.string.blp_format_author_name_family_first);
 
         /* *****************************************************************************
          * GRP_THUMBNAILS:
@@ -529,17 +566,27 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable, Par
         /* *****************************************************************************
          * GRP_FILTERS:
          ******************************************************************************/
-        mFilterRead = new ListOfIntegerValuesProperty(R.string.booklist_filters_select_based_on_read_status,
-                PropertyGroup.GRP_FILTERS, FILTER_NOT_USED, mReadFilterListItems);
+        mFilters = new ArrayList<>();
 
-        mFilterSigned = new ListOfIntegerValuesProperty(R.string.booklist_filters_select_based_on_signed_status,
-                PropertyGroup.GRP_FILTERS, FILTER_NOT_USED, mSignedFilterListItems);
+        mFilterRead = new TrinaryFilter(R.string.booklist_filters_select_based_on_read_status,
+                PropertyGroup.GRP_FILTERS, TrinaryFilter.FILTER_NOT_USED, mReadFilterListItems);
+        mFilterRead.setDomain(DatabaseDefinitions.TBL_BOOKS, DatabaseDefinitions.DOM_BOOK_READ);
+        mFilters.add(mFilterRead);
 
-        mFilterAnthology = new ListOfIntegerValuesProperty(R.string.booklist_filters_select_based_on_is_anthology_status,
-                PropertyGroup.GRP_FILTERS, FILTER_NOT_USED, mAnthologyFilterListItems);
+        mFilterSigned = new TrinaryFilter(R.string.booklist_filters_select_based_on_signed_status,
+                PropertyGroup.GRP_FILTERS, TrinaryFilter.FILTER_NOT_USED, mSignedFilterListItems);
+        mFilterSigned.setDomain(DatabaseDefinitions.TBL_BOOKS, DatabaseDefinitions.DOM_BOOK_SIGNED);
+        mFilters.add(mFilterSigned);
 
-        mFilterLoaned = new ListOfIntegerValuesProperty(R.string.booklist_filters_select_based_on_loaned_status,
-                PropertyGroup.GRP_FILTERS, FILTER_NOT_USED, mLoanedFilterListItems);
+        mFilterAnthology = new TrinaryFilter(R.string.booklist_filters_select_based_on_is_anthology_status,
+                PropertyGroup.GRP_FILTERS, TrinaryFilter.FILTER_NOT_USED, mAnthologyFilterListItems);
+        mFilterAnthology.setDomain(DatabaseDefinitions.TBL_BOOKS, DatabaseDefinitions.DOM_BOOK_ANTHOLOGY_BITMASK);
+        mFilters.add(mFilterAnthology);
+
+        mFilterLoaned = new TrinaryFilter(R.string.booklist_filters_select_based_on_loaned_status,
+                PropertyGroup.GRP_FILTERS, TrinaryFilter.FILTER_NOT_USED, mLoanedFilterListItems);
+        mFilterLoaned.setDomain(DatabaseDefinitions.TBL_BOOKS, DatabaseDefinitions.DOM_LOANED_TO);
+        mFilters.add(mFilterLoaned);
     }
 
     /**
@@ -562,6 +609,8 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable, Par
         list.add(mScaleSize);
         // list header information shown
         list.add(mShowHeaderInfo);
+        // sorting
+        list.add(mSortAuthor);
         // filter the list according to these
         list.add(mFilterRead);
         list.add(mFilterSigned);
@@ -592,33 +641,6 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable, Par
     }
 
     /**
-     * Passed a template style, copy the group structure to this style.
-     */
-    public void setGroups(final @NonNull BooklistStyle fromStyle) {
-        PropertyList newProps = new PropertyList();
-
-        // Save the current groups
-        @SuppressLint("UseSparseArrays")
-        Map<Integer, BooklistGroup> oldGroups = new HashMap<>();
-        for (BooklistGroup g : this) {
-            oldGroups.put(g.kind, g);
-        }
-        // Clear the current groups, and rebuild, reusing old values where possible
-        mGroups.clear();
-        for (BooklistGroup group : fromStyle) {
-            BooklistGroup saved = oldGroups.get(group.kind);
-            if (saved != null) {
-                mGroups.add(saved);
-            } else {
-                group.getStyleProperties(newProps);
-                this.addGroup(group.kind);
-            }
-        }
-        // Copy any properties from new groups.
-        this.setProperties(newProps);
-    }
-
-    /**
      * A quicker way of getting the status of all extra-fields in one go instead of implementing
      * individual getters for each.
      *
@@ -627,26 +649,33 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable, Par
     public int getExtraFieldsStatus() {
         int extras = 0;
 
-        if (mExtraShowThumbnails.isTrue())
+        if (mExtraShowThumbnails.isTrue()) {
             extras |= EXTRAS_THUMBNAIL;
+        }
 
-        if (mExtraLargeThumbnails.isTrue())
+        if (mExtraLargeThumbnails.isTrue()) {
             extras |= EXTRAS_THUMBNAIL_LARGE;
+        }
 
-        if (mExtraShowBookshelves.isTrue())
+        if (mExtraShowBookshelves.isTrue()) {
             extras |= EXTRAS_BOOKSHELVES;
+        }
 
-        if (mExtraShowLocation.isTrue())
+        if (mExtraShowLocation.isTrue()) {
             extras |= EXTRAS_LOCATION;
+        }
 
-        if (mExtraShowPublisher.isTrue())
+        if (mExtraShowPublisher.isTrue()) {
             extras |= EXTRAS_PUBLISHER;
+        }
 
-        if (mExtraShowFormat.isTrue())
+        if (mExtraShowFormat.isTrue()) {
             extras |= EXTRAS_FORMAT;
+        }
 
-        if (mExtraShowAuthor.isTrue())
+        if (mExtraShowAuthor.isTrue()) {
             extras |= EXTRAS_AUTHOR;
+        }
 
         return extras;
     }
@@ -654,10 +683,11 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable, Par
     /**
      * Check if this style has the specified group
      */
-    boolean hasKind(final int kind) {
-        for (BooklistGroup g : mGroups) {
-            if (g.kind == kind)
+    boolean hasKind(final @IntRange(from = 0, to = RowKinds.ROW_KIND_MAX) int kind) {
+        for (BooklistGroup group : mGroups) {
+            if (group.getRowKind().kind == kind) {
                 return true;
+            }
         }
         return false;
     }
@@ -681,15 +711,6 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable, Par
         return mShowHeaderInfo.getResolvedValue();
     }
 
-    /**
-     * Iterable support
-     */
-    @NonNull
-    @Override
-    public Iterator<BooklistGroup> iterator() {
-        return mGroups.iterator();
-    }
-
     public float getScaleSize() {
         switch (mScaleSize.getResolvedValue()) {
             case SCALE_SIZE_NORMAL:
@@ -700,6 +721,14 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable, Par
             default:
                 return SCALE_SIZE_NORMAL;
         }
+    }
+
+    /**
+     * Used by built-in styles only
+     */
+    @SuppressWarnings("SameParameterValue")
+    void setScaleSize(final @IntRange(from = SCALE_SIZE_USE_DEFAULT, to = SCALE_SIZE_SMALLER) int size) {
+        mScaleSize.setValue(size);
     }
 
     /**
@@ -719,13 +748,13 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable, Par
     String getGroupListDisplayNames() {
         StringBuilder groups = new StringBuilder();
         boolean first = true;
-        for (BooklistGroup g : this) {
+        for (BooklistGroup group : this.getGroups()) {
             if (first) {
                 first = false;
             } else {
                 groups.append(" / ");
             }
-            groups.append(g.getName());
+            groups.append(group.getRowKind().getName());
         }
         return groups.toString();
     }
@@ -753,9 +782,12 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable, Par
         out.writeObject(mShowHeaderInfo.getValue());
         // v5
         out.writeObject(mExtraShowFormat.getValue());
+
         out.writeObject(mFilterSigned.getValue());
         out.writeObject(mFilterAnthology.getValue());
         out.writeObject(mFilterLoaned.getValue());
+
+        out.writeObject(mSortAuthor.getValue());
     }
 
     /**
@@ -828,18 +860,13 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable, Par
         // v5
         if (version > 4) {
             mExtraShowFormat.setValue((Boolean) in.readObject());
+
             mFilterSigned.setValue((Integer) in.readObject());
             mFilterAnthology.setValue((Integer) in.readObject());
             mFilterLoaned.setValue((Integer) in.readObject());
-        }
-    }
 
-    /**
-     * Used by built-in styles only
-     */
-    @SuppressWarnings("SameParameterValue")
-    void setScaleSize(final @IntRange(from = SCALE_SIZE_USE_DEFAULT, to = SCALE_SIZE_SMALLER) int size) {
-        mScaleSize.setValue(size);
+            mSortAuthor.setValue((Boolean) in.readObject());
+        }
     }
 
     /**
@@ -900,6 +927,10 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable, Par
         return clone;
     }
 
+    public ArrayList<Filter> getFilters() {
+        return mFilters;
+    }
+
     /**
      * Represents a collection of domains that make a unique key for a given group.
      *
@@ -917,14 +948,12 @@ public class BooklistStyle implements Iterable<BooklistGroup>, Serializable, Par
                 return new CompoundKey[size];
             }
         };
-        /** Unique getPrefix used to represent a key in the hierarchy */
+        /** Unique prefix used to represent a key in the hierarchy */
         @NonNull
         final String prefix;
         /** List of domains in key */
-        @NonNull
         final DomainDefinition[] domains;
 
-        /** Constructor */
         CompoundKey(final @NonNull String prefix, final @NonNull DomainDefinition... domains) {
             this.prefix = prefix;
             this.domains = domains;

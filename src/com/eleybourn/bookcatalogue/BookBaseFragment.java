@@ -52,13 +52,13 @@ import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.SelectOneDialog;
+import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.dialogs.editordialog.CheckListEditorDialogFragment;
 import com.eleybourn.bookcatalogue.dialogs.editordialog.CheckListItem;
 import com.eleybourn.bookcatalogue.dialogs.editordialog.PartialDatePickerDialogFragment;
 import com.eleybourn.bookcatalogue.dialogs.editordialog.TextFieldEditorDialogFragment;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.BookManager;
-import com.eleybourn.bookcatalogue.utils.BookUtils;
 import com.eleybourn.bookcatalogue.utils.BundleUtils;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 
@@ -338,8 +338,9 @@ public abstract class BookBaseFragment extends Fragment implements DataEditor {
 
         MenuHandler.addAmazonSearchSubMenu(menu);
 
+        // same menu, but different visibility/group
         menu.add(R.id.MENU_BOOK_READ, R.id.MENU_BOOK_READ, 0, R.string.menu_set_read);
-        menu.add(R.id.MENU_BOOK_UNREAD, R.id.MENU_BOOK_UNREAD, 0, R.string.menu_set_unread);
+        menu.add(R.id.MENU_BOOK_UNREAD, R.id.MENU_BOOK_READ, 0, R.string.menu_set_unread);
 
         super.onCreateOptionsMenu(menu, inflater);
     }
@@ -382,21 +383,22 @@ public abstract class BookBaseFragment extends Fragment implements DataEditor {
         switch (menuItem.getItemId()) {
 
             case R.id.MENU_BOOK_DELETE: {
-                BookUtils.deleteBook(mActivity, mDb, book.getBookId(),
-                        // runs if user confirmed deletion.
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                mActivity.setResult(UniqueId.ACTIVITY_RESULT_DELETED_SOMETHING);
-                                mActivity.finish();
-                            }
-                        });
+                @StringRes
+                int errorMsgId = StandardDialogs.deleteBookAlert(mActivity, mDb, book.getBookId(), new Runnable() {
+                    @Override
+                    public void run() {
+                        mActivity.setResult(UniqueId.ACTIVITY_RESULT_DELETED_SOMETHING);
+                        mActivity.finish();
+                    }
+                });
+                if (errorMsgId != 0) {
+                    StandardDialogs.showUserMessage(mActivity, errorMsgId);
+                }
                 return true;
             }
             case R.id.MENU_BOOK_DUPLICATE: {
-                Bundle bookData = BookUtils.duplicateBook(mDb, book.getBookId());
                 Intent intent = new Intent(mActivity, EditBookActivity.class);
-                intent.putExtra(UniqueId.BKEY_BOOK_DATA, bookData);
+                intent.putExtra(UniqueId.BKEY_BOOK_DATA, book.duplicate());
                 startActivityForResult(intent, EditBookActivity.REQUEST_CODE); /* result handled by hosting Activity */
                 return true;
             }
@@ -413,19 +415,15 @@ public abstract class BookBaseFragment extends Fragment implements DataEditor {
                 return true;
             }
             case R.id.MENU_SHARE: {
-                Intent shareIntent = BookUtils.getShareBookIntent(mActivity, mDb, book.getBookId());
-                startActivity(Intent.createChooser(shareIntent, getString(R.string.share)));
+                startActivity(Intent.createChooser(book.getShareBookIntent(mActivity), getString(R.string.share)));
                 return true;
             }
             case R.id.MENU_BOOK_READ: {
-                if (BookUtils.setRead(mDb, book, true)) {
-                    mFields.getField(R.id.read).setValue("1");
-                }
-                return true;
-            }
-            case R.id.MENU_BOOK_UNREAD: {
-                if (BookUtils.setRead(mDb, book, false)) {
-                    mFields.getField(R.id.read).setValue("0");
+                // toggle 'read' status
+                boolean isRead = (0 != book.getInt(UniqueId.KEY_BOOK_READ));
+                if (book.setRead(mDb, !isRead)) {
+                    // reverse value obv.
+                    mFields.getField(R.id.read).setValue(isRead ? "0" : "1");
                 }
                 return true;
             }

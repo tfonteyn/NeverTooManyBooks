@@ -47,16 +47,6 @@ public class UpgradeMigrations {
         }
 
         SharedPreferences.Editor ed = prefs.edit();
-        // obsolete keys
-        ed.remove("StartupActivity.FAuthorSeriesFixupRequired");
-        ed.remove("start_in_my_books");
-        ed.remove("App.includeClassicView");
-        ed.remove("App.DisableBackgroundImage");
-        ed.remove("App.BooklistStyle");
-        ed.remove("BookList.Global.FlatBackground");
-        ed.remove("state_current_group_count");
-        ed.remove("state_sort");
-        ed.remove("state_bookshelf");
 
         for (String key : oldMap.keySet()) {
             // no migration needed for these:
@@ -70,6 +60,7 @@ public class UpgradeMigrations {
                     ) {
                 continue;
             }
+
             try {
                 if (key.startsWith("lt_hide_alert_")) {
                     ed.putString(key.replace("lt_hide_alert_", LibraryThingManager.PREFS_HIDE_ALERT),
@@ -200,6 +191,19 @@ public class UpgradeMigrations {
                         case "BookList.ShowLocation":
                             ed.putBoolean(BooklistStyle.PREF_BL_STYLE_SHOW_LOCATION,
                                     prefs.getBoolean(key, false));
+                            break;
+
+
+                        // skip obsolete keys
+                        case "StartupActivity.FAuthorSeriesFixupRequired":
+                        case "start_in_my_books":
+                        case "App.includeClassicView":
+                        case "App.DisableBackgroundImage":
+                        case "App.BooklistStyle":
+                        case "BookList.Global.FlatBackground":
+                        case "state_current_group_count":
+                        case "state_sort":
+                        case "state_bookshelf":
                             break;
 
                         default:

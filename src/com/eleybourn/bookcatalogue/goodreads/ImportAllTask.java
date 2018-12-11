@@ -80,7 +80,7 @@ public class ImportAllTask extends GoodreadsTask {
     /** Date before which updates are irrelevant. Can be null, which implies all dates are included. */
     @Nullable
     private final String mUpdatesAfter;
-    /** Options indicating this job is a sync job: on completion, it will start an exportBooks. */
+    /** Options indicating this job is a sync job: on completion, it will start an export. */
     private final boolean mIsSync;
     /** Current position in entire list of reviews */
     private int mPosition;
