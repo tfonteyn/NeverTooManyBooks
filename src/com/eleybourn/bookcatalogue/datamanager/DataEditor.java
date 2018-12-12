@@ -19,7 +19,7 @@
  */
 package com.eleybourn.bookcatalogue.datamanager;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 /**
  * Interface supported by an editor object

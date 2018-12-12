@@ -3,8 +3,8 @@ package com.eleybourn.bookcatalogue.scanner;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * This object will start a Zxing compatible scanner and extract the data

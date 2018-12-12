@@ -23,10 +23,10 @@ package com.eleybourn.bookcatalogue.properties;
 import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.CallSuper;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -289,7 +289,7 @@ public class BooleanProperty extends PropertyWithGlobalValue<Boolean> {
      * - listener returns the state
      * - ImageButton
      */
-    public static class TriStateCheckBox extends android.support.v7.widget.AppCompatImageButton {
+    public static class TriStateCheckBox extends androidx.appcompat.widget.AppCompatImageButton {
 
         /** is state allowed to be null ? */
         private boolean nullable = true;

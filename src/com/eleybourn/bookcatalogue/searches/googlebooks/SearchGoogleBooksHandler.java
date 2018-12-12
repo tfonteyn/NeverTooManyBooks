@@ -20,8 +20,8 @@
 
 package com.eleybourn.bookcatalogue.searches.googlebooks;
 
-import android.support.annotation.CallSuper;
-import android.support.annotation.NonNull;
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;

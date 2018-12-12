@@ -4,8 +4,8 @@ import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.support.annotation.NonNull;
-import android.support.annotation.RawRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.RawRes;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;

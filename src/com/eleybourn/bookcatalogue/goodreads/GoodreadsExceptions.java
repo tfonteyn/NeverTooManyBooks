@@ -1,6 +1,6 @@
 package com.eleybourn.bookcatalogue.goodreads;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;

@@ -1,7 +1,7 @@
 package com.eleybourn.bookcatalogue.datamanager;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 public class BooleanDataAccessor implements DataAccessor {
     private final String key;

@@ -24,9 +24,9 @@ package com.eleybourn.bookcatalogue.widgets;
 
 import android.content.Context;
 import android.graphics.Point;
-import android.support.annotation.CallSuper;
-import android.support.annotation.NonNull;
-import android.support.v4.view.ViewPager;
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.viewpager.widget.ViewPager;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.widget.FrameLayout;

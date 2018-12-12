@@ -1,6 +1,6 @@
 package com.eleybourn.bookcatalogue.entities;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 /**
  * A Fragment or an Activity can be the 'keeper' ('manager') of a Book.

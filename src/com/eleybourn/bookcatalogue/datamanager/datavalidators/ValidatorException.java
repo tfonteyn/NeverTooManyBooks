@@ -20,8 +20,8 @@
 package com.eleybourn.bookcatalogue.datamanager.datavalidators;
 
 import android.content.res.Resources;
-import android.support.annotation.NonNull;
-import android.support.annotation.StringRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 
 /**
  * Exception class for all validation errors. String ID and args are stored for later retrieval.

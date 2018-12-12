@@ -12,7 +12,7 @@
         android:layout_gravity="fill_horizontal">
 
         <!-- layout_width/layout_height is controlled from CoverBrowser.java, changing it here has no effect -->
-        <android.support.v4.view.ViewPager
+        <androidx.viewpager.widget.ViewPager
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="fill_horizontal" />

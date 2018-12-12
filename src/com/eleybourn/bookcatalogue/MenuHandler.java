@@ -22,7 +22,7 @@ package com.eleybourn.bookcatalogue;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;

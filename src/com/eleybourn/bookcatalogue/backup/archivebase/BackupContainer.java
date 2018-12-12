@@ -19,11 +19,7 @@
  */
 package com.eleybourn.bookcatalogue.backup.archivebase;
 
-import android.content.Context;
-import android.support.annotation.NonNull;
-
-import com.eleybourn.bookcatalogue.backup.archivebase.BackupReader;
-import com.eleybourn.bookcatalogue.backup.archivebase.BackupWriter;
+import androidx.annotation.NonNull;
 
 import java.io.IOException;
 

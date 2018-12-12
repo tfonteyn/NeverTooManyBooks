@@ -19,9 +19,8 @@ package com.eleybourn.bookcatalogue.cropper;
 import android.content.ContentResolver;
 import android.net.Uri;
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
-import java.io.IOException;
 import java.util.Map;
 
 //

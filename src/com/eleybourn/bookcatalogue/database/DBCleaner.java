@@ -1,6 +1,6 @@
 package com.eleybourn.bookcatalogue.database;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
 import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;

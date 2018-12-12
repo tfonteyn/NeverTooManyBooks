@@ -21,7 +21,7 @@
 package com.eleybourn.bookcatalogue.tasks;
 
 import android.graphics.Bitmap;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.database.CoversDBAdapter;
 import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue;

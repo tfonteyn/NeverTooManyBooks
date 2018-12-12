@@ -1,14 +1,13 @@
 package com.eleybourn.bookcatalogue.searches.librarything;
 
 import android.os.Bundle;
-import android.support.annotation.CallSuper;
-import android.support.annotation.NonNull;
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.utils.BundleUtils;
-import com.eleybourn.bookcatalogue.utils.StringList;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;

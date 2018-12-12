@@ -1,7 +1,7 @@
 package com.eleybourn.bookcatalogue.utils;
 
-import android.support.annotation.CallSuper;
-import android.support.annotation.NonNull;
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
 
 import java.util.HashMap;
 

@@ -21,8 +21,8 @@ package com.eleybourn.bookcatalogue.utils;
 
 import android.content.Context;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;

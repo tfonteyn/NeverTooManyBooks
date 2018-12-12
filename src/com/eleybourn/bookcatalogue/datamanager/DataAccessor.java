@@ -20,7 +20,7 @@
 package com.eleybourn.bookcatalogue.datamanager;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 /**
  * Interface implemented for custom data access

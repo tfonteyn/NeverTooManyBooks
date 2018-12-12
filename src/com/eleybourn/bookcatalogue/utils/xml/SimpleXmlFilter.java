@@ -21,8 +21,8 @@
 package com.eleybourn.bookcatalogue.utils.xml;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.utils.xml.XmlFilter.ElementContext;
 import com.eleybourn.bookcatalogue.utils.xml.XmlFilter.XmlHandler;

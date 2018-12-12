@@ -6,7 +6,7 @@
     android:orientation="vertical"
     android:padding="@dimen/padding_border">
 
-    <android.support.v7.widget.Toolbar
+    <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         style="@style/toolbar" />
 

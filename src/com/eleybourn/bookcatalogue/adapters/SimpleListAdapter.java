@@ -20,10 +20,10 @@
 package com.eleybourn.bookcatalogue.adapters;
 
 import android.content.Context;
-import android.support.annotation.CallSuper;
-import android.support.annotation.LayoutRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.CallSuper;
+import androidx.annotation.LayoutRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,10 +37,12 @@ import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.util.List;
 
+import androidx.recyclerview.widget.RecyclerView;
+
 /**
  * TODO: RecyclerView
  * If you are considering using array adapter with a ListView, consider using
- * {@link android.support.v7.widget.RecyclerView} instead.
+ * {@link RecyclerView} instead.
  * RecyclerView offers similar features with better performance and more flexibility than
  * ListView provides.
  * See the

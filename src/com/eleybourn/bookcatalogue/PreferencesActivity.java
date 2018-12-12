@@ -21,9 +21,9 @@
 package com.eleybourn.bookcatalogue;
 
 import android.os.Bundle;
-import android.support.annotation.CallSuper;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import android.view.View;
 
 import com.eleybourn.bookcatalogue.baseactivity.PreferencesBaseActivity;
@@ -31,7 +31,6 @@ import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.properties.BooleanProperty;
 import com.eleybourn.bookcatalogue.properties.ListOfIntegerValuesProperty;
 import com.eleybourn.bookcatalogue.properties.ListOfStringValuesProperty;
-import com.eleybourn.bookcatalogue.properties.ListOfValuesProperty;
 import com.eleybourn.bookcatalogue.properties.ListOfValuesProperty.ItemList;
 import com.eleybourn.bookcatalogue.properties.PropertyGroup;
 import com.eleybourn.bookcatalogue.properties.PropertyList;

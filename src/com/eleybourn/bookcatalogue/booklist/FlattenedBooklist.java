@@ -1,7 +1,7 @@
 package com.eleybourn.bookcatalogue.booklist;
 
 import android.database.sqlite.SQLiteDoneException;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;

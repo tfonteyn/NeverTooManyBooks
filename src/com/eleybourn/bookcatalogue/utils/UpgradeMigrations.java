@@ -2,7 +2,7 @@ package com.eleybourn.bookcatalogue.utils;
 
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BooksOnBookshelf;

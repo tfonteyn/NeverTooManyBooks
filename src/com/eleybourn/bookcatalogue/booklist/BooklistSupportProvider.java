@@ -20,7 +20,7 @@
 
 package com.eleybourn.bookcatalogue.booklist;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.database.cursors.BooklistRowView;
 
