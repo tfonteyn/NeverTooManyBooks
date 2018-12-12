@@ -71,6 +71,8 @@ import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_ACQUIR
 import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_ADDED_DAY;
 import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_ADDED_MONTH;
 import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_ADDED_YEAR;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_FIRST_PUBLICATION_MONTH;
+import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_FIRST_PUBLICATION_YEAR;
 import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_LAST_UPDATE_DAY;
 import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_LAST_UPDATE_MONTH;
 import static com.eleybourn.bookcatalogue.booklist.RowKinds.ROW_KIND_DATE_LAST_UPDATE_YEAR;
@@ -117,6 +119,7 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_SERIES_NUM;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_SERIES_POSITION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_UUID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FIRST_PUBLICATION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_AUTHOR_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_BOOKSHELF_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_BOOK_ID;
@@ -1356,6 +1359,18 @@ public class BooklistBuilder implements AutoCloseable {
                 break;
             }
 
+            case ROW_KIND_DATE_FIRST_PUBLICATION_YEAR: {
+                summary.addDomain(rowKind.getDisplayDomain(),
+                        yearGlob(TBL_BOOKS.dot(DOM_FIRST_PUBLICATION), false),
+                        SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED); // | sortDescendingMask);
+                break;
+            }
+            case ROW_KIND_DATE_FIRST_PUBLICATION_MONTH: {
+                summary.addDomain(rowKind.getDisplayDomain(),
+                        monthGlob(TBL_BOOKS.dot(DOM_FIRST_PUBLICATION), false),
+                        SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED); // | sortDescendingMask);
+                break;
+            }
 
             case ROW_KIND_DATE_READ_YEAR: {
                 summary.addDomain(rowKind.getDisplayDomain(),

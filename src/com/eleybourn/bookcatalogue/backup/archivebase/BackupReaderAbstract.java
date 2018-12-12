@@ -178,7 +178,7 @@ public abstract class BackupReaderAbstract implements BackupReader {
     private void restoreBooks(final @NonNull BackupReaderListener listener,
                               final @NonNull ReaderEntity entity,
                               final @NonNull ImportSettings settings) throws IOException {
-        // Listener for the 'doBooks' function that just passes on the progress to our own listener
+        // Listener for the 'doExport' function that just passes on the progress to our own listener
         Importer.OnImporterListener importListener = new Importer.OnImporterListener() {
             private int mLastPos = 0;
 
@@ -202,7 +202,7 @@ public abstract class BackupReaderAbstract implements BackupReader {
 
         // Now do the import
         CsvImporter importer = new CsvImporter(settings);
-        importer.doBooks(entity.getStream(), null, importListener);
+        importer.doImport(entity.getStream(), null, importListener);
     }
 
 

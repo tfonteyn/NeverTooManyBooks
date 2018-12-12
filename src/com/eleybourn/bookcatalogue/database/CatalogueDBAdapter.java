@@ -44,6 +44,7 @@ import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer;
 import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer.SyncLock;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
 import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
+import com.eleybourn.bookcatalogue.database.cursors.ColumnMapper;
 import com.eleybourn.bookcatalogue.database.cursors.TrackedCursor;
 import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
 import com.eleybourn.bookcatalogue.database.definitions.TableInfo;
@@ -845,12 +846,9 @@ public class CatalogueDBAdapter implements AutoCloseable {
             if (cursor.getCount() == 0) {
                 return list;
             }
-
-            final int titleCol = cursor.getColumnIndex(DOM_TITLE.name);
-            final int pubDateCol = cursor.getColumnIndex(DOM_FIRST_PUBLICATION.name);
-
+            ColumnMapper mapper = new ColumnMapper(cursor, DOM_TITLE, DOM_FIRST_PUBLICATION);
             while (cursor.moveToNext()) {
-                TOCEntry title = new TOCEntry(author, cursor.getString(titleCol), cursor.getString(pubDateCol));
+                TOCEntry title = new TOCEntry(author, mapper.getString(DOM_TITLE), mapper.getString(DOM_FIRST_PUBLICATION));
                 list.add(title);
             }
         }
@@ -955,33 +953,14 @@ public class CatalogueDBAdapter implements AutoCloseable {
     }
 
     /**
-     * This will return ALL Author; mainly for the purpose of backups.
+     * This will return ALL Authors; mainly for the purpose of backups.
      *
-     * @return Authors list
+     * @return Cursor over all Authors
      */
     @NonNull
-    public List<Author> getAuthors() {
-        String sql = SELECT(
-                DOM_PK_ID.name,
-                TBL_AUTHORS.dotAs(DOM_AUTHOR_FAMILY_NAME),
-                TBL_AUTHORS.dotAs(DOM_AUTHOR_GIVEN_NAMES),
-                TBL_AUTHORS.dotAs(DOM_AUTHOR_IS_COMPLETE)
-        ) +
-                " FROM " + TBL_SERIES.ref();
-
-        List<Author> list = new ArrayList<>();
-        try (Cursor cursor = mSyncedDb.rawQuery(sql, null)) {
-            while (cursor.moveToNext()) {
-                list.add(new Author(cursor.getInt(0),
-                        cursor.getString(1),
-                        cursor.getString(2),
-                        (cursor.getInt(3) == 1)));
-            }
-        }
-
-        return list;
+    public Cursor fetchAuthors() {
+        return mSyncedDb.rawQuery("SELECT * FROM " + TBL_AUTHORS, null);
     }
-
     /**
      * This will return the Author based on the ID.
      *
@@ -1114,8 +1093,9 @@ public class CatalogueDBAdapter implements AutoCloseable {
     public ArrayList<String> getAuthorsFormattedName() {
         ArrayList<String> list = new ArrayList<>();
         try (Cursor cursor = mSyncedDb.rawQuery(SqlString.GET_ALL_AUTHORS_WITH_FORMATTED_NAMES, null)) {
+            int col = cursor.getColumnIndexOrThrow(DOM_AUTHOR_FORMATTED.name);
             while (cursor.moveToNext()) {
-                String name = cursor.getString(cursor.getColumnIndexOrThrow(DOM_AUTHOR_FORMATTED.name));
+                String name = cursor.getString(col);
                 list.add(name);
             }
             return list;
@@ -2241,25 +2221,18 @@ public class CatalogueDBAdapter implements AutoCloseable {
             if (cursor.getCount() == 0) {
                 return list;
             }
-
-            final int authorIdCol = cursor.getColumnIndex(DOM_FK_AUTHOR_ID.name);
-            final int familyNameCol = cursor.getColumnIndex(DOM_AUTHOR_FAMILY_NAME.name);
-            final int givenNameCol = cursor.getColumnIndex(DOM_AUTHOR_GIVEN_NAMES.name);
-            final int completeCol = cursor.getColumnIndex(DOM_AUTHOR_IS_COMPLETE.name);
-
-            final int titleCol = cursor.getColumnIndex(DOM_TITLE.name);
-
-            final int pubDateCol = cursor.getColumnIndex(DOM_FIRST_PUBLICATION.name);
-
-            //final int positionCol = cursor.getColumnIndex(DOM_BOOK_TOC_ENTRY_POSITION.name);
+            ColumnMapper mapper = new ColumnMapper(cursor, DOM_FK_AUTHOR_ID,
+                    DOM_AUTHOR_FAMILY_NAME, DOM_AUTHOR_GIVEN_NAMES, DOM_AUTHOR_IS_COMPLETE,
+                    DOM_TITLE,DOM_FIRST_PUBLICATION);
+            //DOM_BOOK_TOC_ENTRY_POSITION
 
             while (cursor.moveToNext()) {
                 Author author = new Author(
-                        cursor.getLong(authorIdCol),
-                        cursor.getString(familyNameCol),
-                        cursor.getString(givenNameCol),
-                        (cursor.getInt(completeCol) == 1));
-                list.add(new TOCEntry(author, cursor.getString(titleCol), cursor.getString(pubDateCol)));
+                        mapper.getLong(DOM_FK_AUTHOR_ID),
+                        mapper.getString(DOM_AUTHOR_FAMILY_NAME),
+                        mapper.getString(DOM_AUTHOR_GIVEN_NAMES),
+                        mapper.getBoolean(DOM_AUTHOR_IS_COMPLETE));
+                list.add(new TOCEntry(author, mapper.getString(DOM_TITLE), mapper.getString(DOM_FIRST_PUBLICATION)));
             }
         }
         return list;
@@ -2275,15 +2248,12 @@ public class CatalogueDBAdapter implements AutoCloseable {
             if (cursor.getCount() == 0) {
                 return list;
             }
-
-            int idCol = cursor.getColumnIndex(DOM_PK_ID.name);
-            int familyCol = cursor.getColumnIndex(DOM_AUTHOR_FAMILY_NAME.name);
-            int givenCol = cursor.getColumnIndex(DOM_AUTHOR_GIVEN_NAMES.name);
-            final int completeCol = cursor.getColumnIndex(DOM_AUTHOR_IS_COMPLETE.name);
-
-
+            ColumnMapper mapper = new ColumnMapper(cursor, TBL_AUTHORS);
             while (cursor.moveToNext()) {
-                list.add(new Author(cursor.getLong(idCol), cursor.getString(familyCol), cursor.getString(givenCol), (cursor.getInt(completeCol) == 1)));
+                list.add(new Author(mapper.getLong(DOM_PK_ID),
+                        mapper.getString(DOM_AUTHOR_FAMILY_NAME),
+                        mapper.getString(DOM_AUTHOR_GIVEN_NAMES),
+                        mapper.getBoolean(DOM_AUTHOR_IS_COMPLETE)));
             }
         }
         return list;
@@ -2299,17 +2269,12 @@ public class CatalogueDBAdapter implements AutoCloseable {
             if (cursor.getCount() == 0) {
                 return list;
             }
-
-            int idCol = cursor.getColumnIndex(DOM_PK_ID.name);
-            int nameCol = cursor.getColumnIndex(DOM_SERIES_NAME.name);
-            int completeCol = cursor.getColumnIndex(DOM_SERIES_IS_COMPLETE.name);
-            int numCol = cursor.getColumnIndex(DOM_BOOK_SERIES_NUM.name);
-
+            ColumnMapper mapper = new ColumnMapper(cursor, TBL_SERIES, DOM_BOOK_SERIES_NUM);
             while (cursor.moveToNext()) {
-                list.add(new Series(cursor.getLong(idCol),
-                        cursor.getString(nameCol),
-                        (cursor.getInt(completeCol) == 1),
-                        cursor.getString(numCol)));
+                list.add(new Series(mapper.getLong(DOM_PK_ID),
+                        mapper.getString(DOM_SERIES_NAME),
+                        mapper.getBoolean(DOM_SERIES_IS_COMPLETE),
+                        mapper.getString(DOM_BOOK_SERIES_NUM)));
             }
         }
         return list;
@@ -2506,10 +2471,12 @@ public class CatalogueDBAdapter implements AutoCloseable {
     /**
      * A complete export of all tables (flattened) in the database
      *
+     * @param sinceDate to select all books added/modified since that date. Set to null for *ALL* books.
+     *
      * @return BookCursor over all books, authors, etc
      */
     @NonNull
-    public BookCursor exportFlattenedBooks(final @Nullable Date sinceDate) {
+    public BookCursor fetchFlattenedBooks(final @Nullable Date sinceDate) {
         String whereClause;
         if (sinceDate == null) {
             whereClause = "";
@@ -2779,11 +2746,10 @@ public class CatalogueDBAdapter implements AutoCloseable {
     public List<BooklistStyle> getBooklistStyles() {
         final List<BooklistStyle> list = new ArrayList<>();
         try (Cursor cursor = mSyncedDb.rawQuery(SqlString.GET_ALL_BOOKLIST_STYLES, null)) {
-            int idCol = cursor.getColumnIndex(DOM_PK_ID.name);
-            int blobCol = cursor.getColumnIndex(DOM_STYLE.name);
+            ColumnMapper mapper = new ColumnMapper(cursor, TBL_BOOKLIST_STYLES);
             while (cursor.moveToNext()) {
-                long id = cursor.getLong(idCol);
-                byte[] blob = cursor.getBlob(blobCol);
+                long id = mapper.getLong(DOM_PK_ID);
+                byte[] blob = mapper.getBlob(DOM_STYLE);
                 BooklistStyle style;
                 try {
                     style = SerializationUtils.deserializeObject(blob);
@@ -3218,27 +3184,11 @@ public class CatalogueDBAdapter implements AutoCloseable {
     /**
      * This will return ALL series; mainly for the purpose of backups.
      *
-     * @return Series list
+     * @return Cursor over all series
      */
     @NonNull
-    public List<Series> getSeries() {
-        String sql = SELECT(
-                DOM_PK_ID.name,
-                TBL_SERIES.dotAs(DOM_SERIES_NAME),
-                TBL_SERIES.dotAs(DOM_SERIES_IS_COMPLETE)
-        ) +
-                " FROM " + TBL_SERIES.ref();
-
-        List<Series> list = new ArrayList<>();
-        try (Cursor cursor = mSyncedDb.rawQuery(sql, null)) {
-            while (cursor.moveToNext()) {
-                list.add(new Series(cursor.getInt(0),
-                        cursor.getString(1),
-                        (cursor.getInt(2) == 1), ""));
-            }
-        }
-
-        return list;
+    public Cursor fetchSeries() {
+        return mSyncedDb.rawQuery("SELECT * FROM " + TBL_SERIES, null);
     }
 
     /**
@@ -3542,10 +3492,12 @@ public class CatalogueDBAdapter implements AutoCloseable {
      * @param book      A collection with the columns to be set. May contain extra data.
      *
      * @return New and filtered ContentValues
+     *
+     * @throws NumberFormatException on parsing issues
      */
     @NonNull
     private ContentValues filterValues(final @NonNull String tableName,
-                                       final @NonNull Book book) {
+                                       final @NonNull Book book) throws NumberFormatException {
 
         TableInfo table = new TableInfo(mSyncedDb, tableName);
 
@@ -3638,7 +3590,8 @@ public class CatalogueDBAdapter implements AutoCloseable {
             seriesText.setLength(0);
             titleText.setLength(0);
             // Get list of authors
-            try (Cursor c = mSyncedDb.rawQuery(SqlString.FTS_GET_AUTHORS_BY_BOOK_ID, new String[]{Long.toString(bookCursorRow.getId())})) {
+            try (Cursor c = mSyncedDb.rawQuery(SqlString.FTS_GET_AUTHORS_BY_BOOK_ID,
+                    new String[]{Long.toString(bookCursorRow.getId())})) {
                 // Get column indexes, if not already got
                 if (colGivenNames < 0) {
                     colGivenNames = c.getColumnIndex(DOM_AUTHOR_GIVEN_NAMES.name);
@@ -3659,7 +3612,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
             try (Cursor c = mSyncedDb.rawQuery(SqlString.FTS_GET_SERIES_BY_BOOK_ID, new String[]{Long.toString(bookCursorRow.getId())})) {
                 // Get column indexes, if not already got
                 if (colSeriesInfo < 0) {
-                    colSeriesInfo = c.getColumnIndex("seriesInfo");
+                    colSeriesInfo = c.getColumnIndexOrThrow("seriesInfo");
                 }
                 // Append each series
                 while (c.moveToNext()) {
@@ -3673,10 +3626,10 @@ public class CatalogueDBAdapter implements AutoCloseable {
             try (Cursor c = mSyncedDb.rawQuery(SqlString.FTS_GET_TOC_ENTRIES_BY_BOOK_ID, new String[]{Long.toString(bookCursorRow.getId())})) {
                 // Get column indexes, if not already got
                 if (colTOCEntryAuthorInfo < 0) {
-                    colTOCEntryAuthorInfo = c.getColumnIndex(SqlString.DOM_TOC_ENTRY_AUTHOR_INFO);
+                    colTOCEntryAuthorInfo = c.getColumnIndexOrThrow(SqlString.DOM_TOC_ENTRY_AUTHOR_INFO);
                 }
                 if (colTOCEntryInfo < 0) {
-                    colTOCEntryInfo = c.getColumnIndex(SqlString.DOM_TOC_ENTRY_INFO);
+                    colTOCEntryInfo = c.getColumnIndexOrThrow(SqlString.DOM_TOC_ENTRY_INFO);
                 }
                 // Append each series
                 while (c.moveToNext()) {
@@ -4053,7 +4006,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
 
         private static final String GET_ALL_BOOKLIST_STYLES =
                 "SELECT " +
-                        TBL_BOOKLIST_STYLES.refAll() +
+                        TBL_BOOKLIST_STYLES.allColumns() +
                         " FROM " + TBL_BOOKLIST_STYLES.ref();
 
         private static final String GET_ALL_BOOKSHELVES =

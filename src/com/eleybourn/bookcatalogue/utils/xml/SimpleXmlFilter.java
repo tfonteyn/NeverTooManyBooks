@@ -63,7 +63,7 @@ public class SimpleXmlFilter {
                     if (value != null) {
                         try {
                             f.put(bc, value);
-                        } catch (Exception e) {
+                        } catch (Exception ignore) {
                             // Could not be parsed....just ignore
                         }
                     }

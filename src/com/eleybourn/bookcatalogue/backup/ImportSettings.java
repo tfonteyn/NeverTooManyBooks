@@ -45,8 +45,4 @@ public class ImportSettings {
     public ImportSettings(final @NonNull File file) {
         this.file = file;
     }
-
-    public void copyFrom(final ImportSettings settings) {
-
-    }
 }

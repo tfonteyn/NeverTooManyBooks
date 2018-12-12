@@ -570,8 +570,7 @@ public class CropImageActivity extends CropMonitoredActivity {
                 msgId = R.string.error_storage_no_access;
             } else {
                 // make an educated guess how many pics we can store.
-                long remaining = StorageUtils.getSharedStorageFreeSpace() / ESTIMATED_PICTURE_SIZE;
-                if (remaining < 1) {
+                if ( freeSpace / ESTIMATED_PICTURE_SIZE < 1) {
                     msgId = R.string.error_storage_no_space_left;
                 }
             }

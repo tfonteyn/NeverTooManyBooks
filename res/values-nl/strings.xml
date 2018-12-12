@@ -497,9 +497,9 @@
     <string name="btn_confirm_exit">Afsluiten</string>
     <string name="btn_continue_editing">Doorgaan met bewerken</string>
     <string name="warning_title_already_exists">De titel bestaat al</string>
-    <string name="year">Jaar</string>
-    <string name="month">Maand</string>
-    <string name="day">Dag</string>
+    <string name="lbl_year">Jaar</string>
+    <string name="lbl_month">Maand</string>
+    <string name="lbl_day">Dag</string>
     <string name="menu_edit">bewerken…</string>
     <string name="progress_msg_getting_books">Verkrijgen van boeken…</string>
     <string name="last_error_e">Laatste fout: %1$s</string>

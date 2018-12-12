@@ -27,21 +27,11 @@
             android:text="@string/all_books"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
-        <!--<TextView-->
-            <!--android:id="@+id/export_option_info_all_books"-->
-            <!--style="@style/row_option_blurb"-->
-            <!--android:text="@string/export_option_info_all_books" />-->
-
         <RadioButton
             android:id="@+id/radioSinceLastBackup"
             style="@style/row_option_checkable"
             android:text="@string/export_option_books_since_last_full_backup"
             android:textAppearance="?android:attr/textAppearanceSmall" />
-
-        <!--<TextView-->
-            <!--android:id="@+id/new_and_changed_books_blurb"-->
-            <!--style="@style/row_option_blurb"-->
-            <!--android:text="@string/export_option_info_new_and_changed_books" />-->
 
         <!-- Disabled to reduce complexity of UI and app; may enable one day. Deemed to be too rarely of use. -->
         <RadioButton

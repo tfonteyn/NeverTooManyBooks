@@ -59,7 +59,7 @@ public class IntegerValidator extends DefaultFieldValidator {
                 value = Integer.parseInt(o.toString());
             }
             data.putInt(datum, value);
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             throw new ValidatorException(R.string.vldt_integer_expected, new Object[]{datum.getKey()});
         }
     }

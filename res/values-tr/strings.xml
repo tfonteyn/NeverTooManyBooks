@@ -469,9 +469,9 @@
     <string name="btn_confirm_exit">Çıkış</string>
     <string name="btn_continue_editing">Düzenlemeyi sürdür</string>
     <string name="warning_title_already_exists">Bu kitap adı zaten var</string>
-    <string name="year">Yıl</string>
-    <string name="month">Ay</string>
-    <string name="day">Gün</string>
+    <string name="lbl_year">Yıl</string>
+    <string name="lbl_month">Ay</string>
+    <string name="lbl_day">Gün</string>
     <string name="menu_edit">düzenle…</string>
     <string name="progress_msg_getting_books">Kitaplar alınıyor…</string>
     <string name="last_error_e">Son hata: %1$s</string>

@@ -19,7 +19,6 @@
  */
 package com.eleybourn.bookcatalogue.backup.csv;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -39,7 +38,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.util.Objects;
 
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKSHELF;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ANTHOLOGY_BITMASK;
@@ -165,6 +163,7 @@ public class CsvExporter implements Exporter {
     public CsvExporter(final @NonNull ExportSettings settings) {
         mDb = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
         mSettings = settings;
+        settings.validate();
     }
 
     /**
@@ -175,22 +174,11 @@ public class CsvExporter implements Exporter {
      *
      * @throws IOException on any error
      */
-    public boolean doBooks(final @NonNull OutputStream outputStream,
-                           final @NonNull ExportListener listener) throws IOException {
+    public boolean doExport(final @NonNull OutputStream outputStream,
+                            final @NonNull ExportListener listener) throws IOException {
         final String UNKNOWN = BookCatalogueApp.getResourceString(R.string.unknown);
         final String AUTHOR = BookCatalogueApp.getResourceString(R.string.lbl_author);
 
-        if (StorageUtils.isWriteProtected()) {
-            throw new IOException("Export Failed - Could not write to Storage");
-        }
-
-        // if we want 'since', we *must* have a valid dateFrom
-        if ((mSettings.what & ExportSettings.EXPORT_SINCE) != 0) {
-            Objects.requireNonNull(mSettings.dateFrom,"Export Failed - 'dateFrom' is null");
-        } else {
-            // sanity check: we don't want 'since', so make sure fromDate is not set.
-            mSettings.dateFrom = null;
-        }
         // Display startup message
         listener.onProgress(BookCatalogueApp.getResourceString(R.string.progress_msg_export_starting), 0);
         boolean displayingStartupMessage = true;
@@ -199,7 +187,7 @@ public class CsvExporter implements Exporter {
         int num = 0;
         final StringBuilder row = new StringBuilder();
 
-        try (BookCursor bookCursor = mDb.exportFlattenedBooks(mSettings.dateFrom);
+        try (BookCursor bookCursor = mDb.fetchFlattenedBooks(mSettings.dateFrom);
              BufferedWriter out = new BufferedWriter(new OutputStreamWriter(outputStream, UTF8), BUFFER_SIZE)) {
 
             final BookRowView bookCursorRow = bookCursor.getCursorRow();

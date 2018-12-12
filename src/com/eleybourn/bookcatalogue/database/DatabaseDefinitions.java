@@ -162,7 +162,7 @@ public class DatabaseDefinitions {
     /** FULL representation of AUTHORS table */
     public static final TableDefinition TBL_AUTHORS =
             new TableDefinition(DB_TB_AUTHORS)
-            .addDomains(DOM_PK_ID, DOM_AUTHOR_GIVEN_NAMES, DOM_AUTHOR_FAMILY_NAME, DOM_AUTHOR_IS_COMPLETE)
+            .addDomains(DOM_PK_ID, DOM_AUTHOR_FAMILY_NAME, DOM_AUTHOR_GIVEN_NAMES, DOM_AUTHOR_IS_COMPLETE)
             .setAlias(ALIAS_AUTHORS)
             .setPrimaryKey(DOM_PK_ID);
 
@@ -296,7 +296,7 @@ public class DatabaseDefinitions {
 
     /** {@link #TBL_BOOKSHELF) */
     public static final DomainDefinition DOM_BOOKSHELF = new DomainDefinition("bookshelf", TableInfo.TYPE_TEXT, true);
-    /** Partial representation of BOOKSHELF table */
+    /** FULL representation of BOOKSHELF table */
     public static final TableDefinition TBL_BOOKSHELF =
             new TableDefinition(DB_TB_BOOKSHELF)
             .addDomains(DOM_PK_ID, DOM_BOOKSHELF)
@@ -318,7 +318,7 @@ public class DatabaseDefinitions {
 
     /** {@link #TBL_LOAN) */
     public static final DomainDefinition DOM_LOANED_TO = new DomainDefinition("loaned_to", TableInfo.TYPE_TEXT, true);
-    /** Partial representation of LOAN table */
+    /** FULL representation of LOAN table */
     public static final TableDefinition TBL_LOAN =
             new TableDefinition(DB_TB_LOAN)
             .addDomains(DOM_PK_ID, DOM_FK_BOOK_ID, DOM_LOANED_TO)
@@ -339,7 +339,7 @@ public class DatabaseDefinitions {
 
     /* ========================================================================================== */
 
-    /** Partial representation of ANTHOLOGY table */
+    /** FULL representation of ANTHOLOGY table */
     public static final TableDefinition TBL_TOC_ENTRIES =
             new TableDefinition(DB_TB_TOC_ENTRIES)
             .addDomains(DOM_PK_ID, DOM_FK_AUTHOR_ID, DOM_TITLE, DOM_FIRST_PUBLICATION)
@@ -351,6 +351,7 @@ public class DatabaseDefinitions {
 
     /** {@link #TBL_BOOK_TOC_ENTRIES} */
     static final DomainDefinition DOM_BOOK_TOC_ENTRY_POSITION = new DomainDefinition("position", TableInfo.TYPE_INTEGER, true);
+
     /** Partial representation of BOOK_ANTHOLOGY table */
     public static final TableDefinition TBL_BOOK_TOC_ENTRIES =
             new TableDefinition(DB_TB_BOOK_TOC_ENTRIES)
@@ -364,9 +365,7 @@ public class DatabaseDefinitions {
     /** {@link #TBL_BOOKS_FTS} specific formatted list; example: "stephen baxter;arthur c. clarke;" */
     public static final DomainDefinition DOM_FTS_AUTHOR_NAME = new DomainDefinition("author_name", TableInfo.TYPE_TEXT, true);
 
-    /**
-     * FULL representation of BOOKS_FTS table
-     */
+    /** FULL representation of BOOKS_FTS table */
     public static final TableDefinition TBL_BOOKS_FTS =
             new TableDefinition(DB_TB_FTS_BOOKS)
             .addDomains(DOM_FTS_AUTHOR_NAME, DOM_TITLE, DOM_BOOK_DESCRIPTION, DOM_BOOK_NOTES,
@@ -375,10 +374,8 @@ public class DatabaseDefinitions {
 
     /* ========================================================================================== */
 
-    /**
-     * cast()'d for sorting purposes in {@link BooklistBuilder}
-     * so we can sort it numerically regardless of content
-     */
+    /** Series number, cast()'d for sorting purposes in {@link BooklistBuilder}
+     * so we can sort it numerically regardless of content */
     public static final DomainDefinition DOM_SERIES_NUM_FLOAT = new DomainDefinition("series_num_float", TableInfo.TYPE_REAL, false);
 
     /** sorting and grouping in {@link BooklistBuilder} */
@@ -398,11 +395,11 @@ public class DatabaseDefinitions {
     /** sorting and grouping in {@link BooklistBuilder} */
     public static final DomainDefinition DOM_DATE_ADDED_YEAR = new DomainDefinition("added_year", TableInfo.TYPE_INTEGER, false);
     /** sorting and grouping in {@link BooklistBuilder} */
-    public static final DomainDefinition DOM_DATE_UPDATE_DAY = new DomainDefinition("update_day", TableInfo.TYPE_INTEGER, false);
+    public static final DomainDefinition DOM_DATE_UPDATE_DAY = new DomainDefinition("upd_day", TableInfo.TYPE_INTEGER, false);
     /** sorting and grouping in {@link BooklistBuilder} */
-    public static final DomainDefinition DOM_DATE_UPDATE_MONTH = new DomainDefinition("update_month", TableInfo.TYPE_INTEGER, false);
+    public static final DomainDefinition DOM_DATE_UPDATE_MONTH = new DomainDefinition("upd_month", TableInfo.TYPE_INTEGER, false);
     /** sorting and grouping in {@link BooklistBuilder} */
-    public static final DomainDefinition DOM_DATE_LAST_UPDATE_YEAR = new DomainDefinition("update_year", TableInfo.TYPE_INTEGER, false);
+    public static final DomainDefinition DOM_DATE_LAST_UPDATE_YEAR = new DomainDefinition("upd_year", TableInfo.TYPE_INTEGER, false);
     /** sorting and grouping in {@link BooklistBuilder} */
     public static final DomainDefinition DOM_DATE_READ_DAY = new DomainDefinition("read_day", TableInfo.TYPE_INTEGER, false);
     /** sorting and grouping in {@link BooklistBuilder} */
@@ -410,21 +407,25 @@ public class DatabaseDefinitions {
     /** sorting and grouping in {@link BooklistBuilder} */
     public static final DomainDefinition DOM_DATE_READ_YEAR = new DomainDefinition("read_year", TableInfo.TYPE_INTEGER, false);
     /** sorting and grouping in {@link BooklistBuilder} */
-    public static final DomainDefinition DOM_DATE_ACQUIRED_DAY = new DomainDefinition("acquired_day", TableInfo.TYPE_INTEGER, false);
+    public static final DomainDefinition DOM_DATE_ACQUIRED_DAY = new DomainDefinition("acq_day", TableInfo.TYPE_INTEGER, false);
     /** sorting and grouping in {@link BooklistBuilder} */
-    public static final DomainDefinition DOM_DATE_ACQUIRED_MONTH = new DomainDefinition("acquired_month", TableInfo.TYPE_INTEGER, false);
+    public static final DomainDefinition DOM_DATE_ACQUIRED_MONTH = new DomainDefinition("acq_month", TableInfo.TYPE_INTEGER, false);
     /** sorting and grouping in {@link BooklistBuilder} */
-    public static final DomainDefinition DOM_DATE_ACQUIRED_YEAR = new DomainDefinition("acquired_year", TableInfo.TYPE_INTEGER, false);
+    public static final DomainDefinition DOM_DATE_ACQUIRED_YEAR = new DomainDefinition("acq_year", TableInfo.TYPE_INTEGER, false);
 
     /** sorting and grouping in {@link BooklistBuilder} */
-    public static final DomainDefinition DOM_DATE_PUBLISHED_MONTH = new DomainDefinition("publication_month", TableInfo.TYPE_INTEGER, false);
+    public static final DomainDefinition DOM_DATE_FIRST_PUBLICATION_MONTH = new DomainDefinition("first_pub_month", TableInfo.TYPE_INTEGER, false);
     /** sorting and grouping in {@link BooklistBuilder} */
-    public static final DomainDefinition DOM_DATE_PUBLISHED_YEAR = new DomainDefinition("publication_year", TableInfo.TYPE_INTEGER, false);
+    public static final DomainDefinition DOM_DATE_FIRST_PUBLICATION_YEAR = new DomainDefinition("first_pub_year", TableInfo.TYPE_INTEGER, false);
+    /** sorting and grouping in {@link BooklistBuilder} */
+    public static final DomainDefinition DOM_DATE_PUBLISHED_MONTH = new DomainDefinition("pub_month", TableInfo.TYPE_INTEGER, false);
+    /** sorting and grouping in {@link BooklistBuilder} */
+    public static final DomainDefinition DOM_DATE_PUBLISHED_YEAR = new DomainDefinition("pub_year", TableInfo.TYPE_INTEGER, false);
 
     /** {@link BooklistBuilder} */
     public static final DomainDefinition DOM_SELECTED = new DomainDefinition("selected", TableInfo.TYPE_BOOLEAN, false, "default 0");
     /** {@link BooklistBuilder} */
-    public static final DomainDefinition DOM_ABSOLUTE_POSITION = new DomainDefinition("absolute_position", TableInfo.TYPE_INTEGER, true);
+    public static final DomainDefinition DOM_ABSOLUTE_POSITION = new DomainDefinition("abs_pos", TableInfo.TYPE_INTEGER, true);
 
 
     /* ========================================================================================== */

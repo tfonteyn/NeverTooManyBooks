@@ -161,7 +161,7 @@ public abstract class BackupWriterAbstract implements BackupWriter {
                                        final ExportSettings settings,
                                        final int numCovers) throws IOException {
         // Get a temp file and set for delete
-        final File temp = File.createTempFile("bc-xml-backup", ".tmp");
+        final File temp = File.createTempFile("tmp_xml_", ".tmp");
         temp.deleteOnExit();
 
         final Exporter.ExportListener exportListener = new Exporter.ExportListener() {
@@ -189,7 +189,7 @@ public abstract class BackupWriterAbstract implements BackupWriter {
 
         try (FileOutputStream output = new FileOutputStream(temp)) {
             XmlExporter exporter = new XmlExporter(settings);
-            exporter.doBooks(output, exportListener);
+            exporter.doExport(output, exportListener);
         }
 
         return temp;
@@ -215,7 +215,7 @@ public abstract class BackupWriterAbstract implements BackupWriter {
         // This is an estimate only; we actually don't know how many covers there are in the backup.
         listener.setMax((mDb.countBooks() * 2 + 1));
 
-        // Listener for the 'doBooks' function that just passes on the progress to our own listener
+        // Listener for the 'doExport' function that just passes on the progress to our own listener
         final Exporter.ExportListener exportListener = new Exporter.ExportListener() {
             private int mLastPos = 0;
 
@@ -241,11 +241,11 @@ public abstract class BackupWriterAbstract implements BackupWriter {
         };
 
         // Get a temp file and set for delete
-        final File temp = File.createTempFile("bc", ".tmp");
+        final File temp = File.createTempFile("tmp_books_csv_", ".tmp");
         temp.deleteOnExit();
         try (FileOutputStream output = new FileOutputStream(temp)) {
             CsvExporter exporter = new CsvExporter(settings);
-            exporter.doBooks(output, exportListener);
+            exporter.doExport(output, exportListener);
         }
 
         return temp;

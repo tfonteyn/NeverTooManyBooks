@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 
 import java.io.File;
 import java.util.Date;
+import java.util.Objects;
 
 public class ExportSettings {
     /*
@@ -63,8 +64,13 @@ public class ExportSettings {
         this.file = file;
     }
 
-
-    public void copyFrom(final ExportSettings settings) {
-
+    public void validate() {
+        // if we want 'since', we *must* have a valid dateFrom
+        if ((what & ExportSettings.EXPORT_SINCE) != 0) {
+            Objects.requireNonNull(dateFrom,"Export Failed - 'dateFrom' is null");
+        } else {
+            // sanity check: we don't want 'since', so make sure fromDate is not set.
+            dateFrom = null;
+        }
     }
 }

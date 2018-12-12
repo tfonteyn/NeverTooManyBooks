@@ -26,6 +26,8 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_ADDED_DAY;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_ADDED_MONTH;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_ADDED_YEAR;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_FIRST_PUBLICATION_MONTH;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_FIRST_PUBLICATION_YEAR;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_LAST_UPDATE_YEAR;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_PUBLISHED_MONTH;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_PUBLISHED_YEAR;
@@ -80,15 +82,15 @@ public final class RowKinds {
     public static final int ROW_KIND_DATE_ACQUIRED_YEAR = 24;
     public static final int ROW_KIND_DATE_ACQUIRED_MONTH = 25;
     public static final int ROW_KIND_DATE_ACQUIRED_DAY = 26;
+    public static final int ROW_KIND_DATE_FIRST_PUBLICATION_YEAR = 27;
+    public static final int ROW_KIND_DATE_FIRST_PUBLICATION_MONTH = 28;
 
     // NEWKIND: ROW_KIND_x
     // the highest valid index of kinds  ALWAYS update after adding a row kind...
-    public static final int ROW_KIND_MAX = 26;
+    public static final int ROW_KIND_MAX = 28;
 
-    //TOMF: add support for all? new columns added in CatalogueDBHelper: 2018-11-14
-    // don't forget MONTH special formatting, search specific for the MONTH kinds
+    //TOMF: add support for all? columns not handled yet. Added in CatalogueDBHelper: 2018-11-14
     /*
-        DOM_FIRST_PUBLICATION + " date"
         DOM_BOOK_EDITION_BITMASK + " integer NOT NULL default 0"
 
         DOM_BOOK_PRICE_LISTED
@@ -184,6 +186,12 @@ public final class RowKinds {
         allKinds.put(rowkind.kind, rowkind);
 
         rowkind = new RowKind(ROW_KIND_DATE_ACQUIRED_DAY, R.string.lbl_date_acquired_day, "dyac", DOM_DATE_ACQUIRED_DAY);
+        allKinds.put(rowkind.kind, rowkind);
+
+        rowkind = new RowKind(ROW_KIND_DATE_FIRST_PUBLICATION_YEAR, R.string.lbl_first_publication_year, "yrfp", DOM_DATE_FIRST_PUBLICATION_YEAR);
+        allKinds.put(rowkind.kind, rowkind);
+
+        rowkind = new RowKind(ROW_KIND_DATE_FIRST_PUBLICATION_MONTH, R.string.lbl_first_publication_month, "mnfp", DOM_DATE_FIRST_PUBLICATION_MONTH);
         allKinds.put(rowkind.kind, rowkind);
 
         // NEWKIND: ROW_KIND_x

@@ -139,7 +139,6 @@ public class AdminActivity extends BaseActivityWithTasks {
                 }
             }
         }
-        if (paths.isEmpty()) paths.add("/storage/sdcard1");
         return paths.toArray(new String[0]);
     }
 
@@ -202,6 +201,7 @@ public class AdminActivity extends BaseActivityWithTasks {
                     Logger.info(AdminActivity.this, "isExternalStorageRemovable=" + Environment.isExternalStorageRemovable());
                     Logger.info(AdminActivity.this, "getDataDirectory=" + Environment.getDataDirectory().getAbsolutePath());
                     Logger.info(AdminActivity.this, "getCacheDir=" + AdminActivity.this.getCacheDir());
+                    Logger.info(AdminActivity.this, "getExternalCacheDir=" + AdminActivity.this.getExternalCacheDir());
 
                     for (String dir : getExtSdCardPaths(AdminActivity.this)) {
                         Logger.info(AdminActivity.this, "getExtSdCardPaths|dir=" + dir);

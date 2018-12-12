@@ -112,18 +112,19 @@ public class SearchLocalActivity extends BaseActivity {
      * Detect text changes and call userIsActive(...).
      */
     private final TextWatcher mTextWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(final @NonNull CharSequence s,
+                                      final int start, final int count, final int after) {
+        }
 
         @Override
-        public void afterTextChanged(Editable s) {
+        public void onTextChanged(final @NonNull CharSequence s,
+                                  final int start, final int before, final int count) {
+        }
+
+        @Override
+        public void afterTextChanged(final @NonNull Editable s) {
             userIsActive(true);
-        }
-
-        @Override
-        public void beforeTextChanged(final CharSequence s, final int start, final int count, final int after) {
-        }
-
-        @Override
-        public void onTextChanged(final CharSequence s, final int start, final int before, final int count) {
         }
     };
 

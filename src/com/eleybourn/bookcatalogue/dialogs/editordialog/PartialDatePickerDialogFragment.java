@@ -70,7 +70,7 @@ public class PartialDatePickerDialogFragment extends EditorDialogFragment<Partia
                 public void onPartialDatePickerSave(final Integer year,
                                                     final Integer month,
                                                     final Integer day) {
-                     getFragmentListener()
+                    getFragmentListener()
                             .onPartialDatePickerSave(PartialDatePickerDialogFragment.this,
                                     mDestinationFieldId, year, month, day);
                 }
@@ -144,7 +144,7 @@ public class PartialDatePickerDialogFragment extends EditorDialogFragment<Partia
             yyyy = Integer.parseInt(date[0]);
             mm = Integer.parseInt(date[1]);
             dd = Integer.parseInt(date[2]);
-        } catch (Exception ignore) {
+        } catch (NumberFormatException ignore) {
         }
 
         setDate(yyyy, mm, dd);
@@ -350,20 +350,19 @@ public class PartialDatePickerDialogFragment extends EditorDialogFragment<Partia
 
             // Handle all changes to the YEAR text
             mYearView.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(final @NonNull CharSequence s,
+                                              final int start, final int count, final int after) {
+                }
 
                 @Override
-                public void afterTextChanged(final Editable s) {
+                public void onTextChanged(final @NonNull CharSequence s,
+                                          final int start, final int before, final int count) {
+                }
+
+                @Override
+                public void afterTextChanged(final @NonNull Editable s) {
                     handleYear();
-                }
-
-                @Override
-                public void beforeTextChanged(final CharSequence s, final int start, final int count,
-                                              final int after) {
-                }
-
-                @Override
-                public void onTextChanged(final CharSequence s, final int start, final int before,
-                                          final int count) {
                 }
             });
 
@@ -466,8 +465,9 @@ public class PartialDatePickerDialogFragment extends EditorDialogFragment<Partia
                                     } else if (mMonth != null && mMonth > 0 && mYear == null) {
                                         StandardDialogs.showUserMessage(mActivity, R.string.warning_if_month_set_year_must_be);
                                     } else {
-                                        if (mListener != null)
+                                        if (mListener != null) {
                                             mListener.onPartialDatePickerSave(mYear, mMonth, mDay);
+                                        }
                                     }
                                 }
                             }
@@ -478,8 +478,9 @@ public class PartialDatePickerDialogFragment extends EditorDialogFragment<Partia
                     new View.OnClickListener() {
                         @Override
                         public void onClick(final View v) {
-                            if (mListener != null)
+                            if (mListener != null) {
                                 mListener.onPartialDatePickerCancel();
+                            }
                         }
                     }
             );
@@ -561,7 +562,7 @@ public class PartialDatePickerDialogFragment extends EditorDialogFragment<Partia
             String val = mYearView.getText().toString().trim();
             try {
                 mYear = Integer.parseInt(val);
-            } catch (Exception e) {
+            } catch (NumberFormatException e) {
                 mYear = null;
             }
 
@@ -625,8 +626,9 @@ public class PartialDatePickerDialogFragment extends EditorDialogFragment<Partia
             //ArrayAdapter<String> days = (ArrayAdapter<String>)mDaySpinner.getAdapter();
 
             // Make sure we have the 'no-day' value in the dialog
-            if (mDayAdapter.getCount() == 0)
+            if (mDayAdapter.getCount() == 0) {
                 mDayAdapter.add("--");
+            }
 
             // Determine the total days if not passed to us
             if (totalDays == null || totalDays == 0) {
@@ -658,8 +660,9 @@ public class PartialDatePickerDialogFragment extends EditorDialogFragment<Partia
             if (daySave == null || daySave == 0) {
                 mDaySpinner.setSelection(0);
             } else {
-                if (daySave > totalDays)
+                if (daySave > totalDays) {
                     daySave = totalDays;
+                }
                 mDaySpinner.setSelection(daySave);
             }
         }

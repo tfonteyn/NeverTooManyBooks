@@ -29,12 +29,14 @@ import android.support.annotation.Nullable;
 import android.support.annotation.RequiresPermission;
 import android.support.annotation.StringRes;
 
+import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.CatalogueDBHelper;
 import com.eleybourn.bookcatalogue.database.CoversDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -61,13 +63,14 @@ import java.util.regex.Pattern;
 /**
  * Class to wrap common storage related functions.
  *
- * "External Storage" == what Android considers non-application-private storage. i.e the user has access to it
- * ('external' refers to old android phones where Shared Storage *always* was an external sdcard)
- * Sometimes also referred to as "Shared Storage" because all apps have access to it.
+ * "External Storage" == what Android considers non-application-private storage. i.e the user has access to it.
+ * ('external' refers to old android phones where Shared Storage *always* was on an sdcard)
+ * Also referred to as "Shared Storage" because all apps have access to it.
  *
  * For the sake of clarity (confusion?) we'll call it "Shared Storage" only.
  *
  * TODO: user message talk about "SD Card"
+ * FIXME: implement the sample code for 'watching'  Environment.getExternalStorageDirectory() and/or isExternalStorageRemovable()
  *
  * @author Philip Warner
  */
@@ -82,8 +85,6 @@ public class StorageUtils {
     private static final String UTF8 = "utf8";
     /** root external storage aka Shared Storage */
     private static final String SHARED_STORAGE_PATH = Environment.getExternalStorageDirectory() + File.separator + DIRECTORY_NAME;
-    /** sub directory for temporary images TOMF: use context.getCacheDir() instead */
-    private static final String TEMP_FILE_PATH = SHARED_STORAGE_PATH + File.separator + "tmp_images";
     /** permanent location for cover files. For now hardcoded, but the intention is to allow user-defined. */
     private static final String COVER_FILE_PATH = SHARED_STORAGE_PATH + File.separator + "covers";
     /** permanent location for log files. */
@@ -91,22 +92,14 @@ public class StorageUtils {
     /** serious errors are written to this file */
     private static final String ERROR_LOG_FILE = "error.log";
     /**
-     * written to root Shared Storage as 'writable' test + prevent 'detection' by apps who
-     * want to 'do things' with media
-     */
-    private static final String NOMEDIA_FILE_PATH = SHARED_STORAGE_PATH + File.separator + MediaStore.MEDIA_IGNORE_FILENAME;
-    /**
-     * Filenames *starting* with this prefix are considered purgeable.
+     * Filenames *STARTING* with this prefix are considered purgeable.
      */
     private static final String[] mPurgeableFilePrefixes = new String[]{
             "DbUpgrade", "DbExport", "error.log", "tmp"};
     /**
-     * Loop all mount points for '/bookCatalogue' directory and collect a list
-     * of all CSV files.
+     * Loop all mount points for '/bookCatalogue' directory and collect a list of all CSV files.
      */
     private static final Pattern MOUNT_POINT_PATH = Pattern.compile("^\\s*[^\\s]+\\s+([^\\s]+)");
-    /** error result code for {@link #getSharedStorageFreeSpace} */
-    private static final int ERROR_NO_STORAGE = -1;
 
     private StorageUtils() {
     }
@@ -125,20 +118,6 @@ public class StorageUtils {
     }
 
     /**
-     * Check if the Shared Storage is writable
-     */
-    static public boolean isWriteProtected() throws SecurityException {
-        try {
-            BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(NOMEDIA_FILE_PATH), UTF8), 10); // yes, 10 bytes...
-            out.write("");
-            out.close();
-            return false;
-        } catch (IOException e) {
-            return true;
-        }
-    }
-
-    /**
      * Make sure the Shared Storage directory exists
      * Logs failures only if we we're capable of creating a log directory!
      * Abort if we don't get that far.
@@ -147,6 +126,14 @@ public class StorageUtils {
      */
     @RequiresPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
     public static void initSharedDirectories() throws SecurityException {
+
+        int msgId = StorageUtils.getMediaStateMessageId();
+        // tell user if needed.
+        if (msgId != 0) {
+            StandardDialogs.showUserMessage(msgId);
+            return;
+        }
+
         // need root first (duh)
         if (!createDir(SHARED_STORAGE_PATH)) {
             return;
@@ -160,21 +147,20 @@ public class StorageUtils {
         if (!createDir(COVER_FILE_PATH)) {
             Logger.error("Failed to create covers directory");
         }
-        if (!createDir(TEMP_FILE_PATH)) {
-            Logger.error("Failed to create temp directory");
-        }
 
         // A .nomedia file will be created which will stop the thumbnails showing up in the gallery (thanks Brandon)
         try {
             //noinspection ResultOfMethodCallIgnored
-            new File(NOMEDIA_FILE_PATH).createNewFile();
+            new File(SHARED_STORAGE_PATH + File.separator + MediaStore.MEDIA_IGNORE_FILENAME).createNewFile();
+            //noinspection ResultOfMethodCallIgnored
+            new File(COVER_FILE_PATH + File.separator + MediaStore.MEDIA_IGNORE_FILENAME).createNewFile();
         } catch (IOException e) {
-            Logger.error(e, "Failed to create .media file: " + NOMEDIA_FILE_PATH);
+            Logger.error(e, "Failed to create .nomedia files");
         }
     }
 
-    public static File getTempStorage() {
-        return new File(TEMP_FILE_PATH);
+    private static File getTemp() {
+        return BookCatalogueApp.getAppContext().getExternalCacheDir();
     }
 
     public static File getCoverStorage() {
@@ -211,7 +197,7 @@ public class StorageUtils {
      * Is also used as the standard file name for images downloaded from the internet.
      */
     public static File getTempCoverFile() {
-        return new File(TEMP_FILE_PATH + File.separator + "tmp.jpg");
+        return new File(getTemp() + File.separator + "tmp.jpg");
     }
 
     /**
@@ -224,17 +210,10 @@ public class StorageUtils {
     /* ------------------------------------------------------------------------------------------ */
 
     /**
-     * Get the 'standard' temp file name for new books, including a suffix
+     * Get a temp cover file 'name'
      */
-    static File getTempCoverFile(final @NonNull String suffix) {
-        return new File(TEMP_FILE_PATH + File.separator + "tmp" + suffix + ".jpg");
-    }
-
-    /**
-     * Get the 'standard' temp file name for new books, including a suffix
-     */
-    public static File getTempCoverFile(final @NonNull String prefix, final @NonNull String name) {
-        return new File(TEMP_FILE_PATH + File.separator + prefix + name + ".jpg");
+    public static File getTempCoverFile(final @NonNull String name) {
+        return new File(getTemp() + File.separator + "tmp" + name + ".jpg");
     }
 
     /* ------------------------------------------------------------------------------------------ */
@@ -282,20 +261,11 @@ public class StorageUtils {
     public static long purgeFiles(final boolean reallyDelete) {
         long totalSize = 0;
         try {
-            for (String name : getLogStorage().list()) {
-                totalSize += purgeFile(name, reallyDelete);
-            }
-            for (String name : getTempStorage().list()) {
-                totalSize += purgeFile(name, reallyDelete);
-            }
-            // and the root.
-            for (String name : getSharedStorage().list()) {
-                totalSize += purgeFile(name, reallyDelete);
-            }
-            // theoretically this one is not needed.
-            for (String name : getCoverStorage().list()) {
-                totalSize += purgeFile(name, reallyDelete);
-            }
+            totalSize += purgeDir(getLogStorage(),reallyDelete);
+            totalSize += purgeDir(getCoverStorage(),reallyDelete);
+            totalSize += purgeDir(getSharedStorage(),reallyDelete);
+            totalSize += purgeDir(getTemp(),reallyDelete);
+
         } catch (SecurityException e) {
             Logger.error(e);
         }
@@ -303,6 +273,14 @@ public class StorageUtils {
     }
     /* ------------------------------------------------------------------------------------------ */
 
+    private static long purgeDir(final @NonNull File dir, final boolean reallyDelete) {
+        long size = 0;
+        for (String name : dir.list()) {
+            size += purgeFile(name, reallyDelete);
+        }
+        Logger.info(StorageUtils.class, "purge dir=" + dir + ", size=" + size);
+        return size;
+    }
     private static long purgeFile(final @NonNull String name, final boolean reallyDelete) {
         long totalSize = 0;
         for (String prefix : mPurgeableFilePrefixes) {
@@ -327,7 +305,7 @@ public class StorageUtils {
      */
     public static void purgeTempStorage() {
         try {
-            File dir = getTempStorage();
+            File dir = getTemp();
             if (dir.exists() && dir.isDirectory()) {
                 File[] files = dir.listFiles();
                 if (files != null) {
@@ -359,10 +337,10 @@ public class StorageUtils {
             }
         };
 
-        @SuppressWarnings("unused") StringBuilder debugInfo = new StringBuilder();
+        @SuppressWarnings("unused") StringBuilder debugInfo;
         if (DEBUG_SWITCHES.STORAGE_UTILS && BuildConfig.DEBUG) {
             //noinspection UnusedAssignment
-            debugInfo.append("Getting mounted file systems\n");
+            debugInfo = new StringBuilder("Getting mounted file systems\n");
         }
 
         // Loop all mounted file systems
@@ -499,7 +477,7 @@ public class StorageUtils {
         File temp = null;
         try {
             // Get a temp file to avoid overwriting output unless copy works
-            temp = File.createTempFile("temp_", null, getTempStorage());
+            temp = File.createTempFile("tmp_is_", ".tmp", getTemp());
             FileOutputStream tempFos = new FileOutputStream(temp);
             // Copy from input to temp file
             byte[] buffer = new byte[65536];

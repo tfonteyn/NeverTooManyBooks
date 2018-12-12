@@ -150,8 +150,10 @@ public class DateUtils {
 
     /**
      * Pretty format a (potentially) partial SQL date; local timezone
+     *
+     * @throws NumberFormatException on failure to parse
      */
-    public static String toPrettyDate(final @NonNull String partialDate) {
+    public static String toPrettyDate(final @NonNull String partialDate) throws NumberFormatException {
         switch (partialDate.length()) {
             // YYYY-MM-DD
             case 10: {

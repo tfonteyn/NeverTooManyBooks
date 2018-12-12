@@ -17,6 +17,8 @@ import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.UpgradeMessageManager;
 import com.eleybourn.bookcatalogue.utils.UpgradeMigrations;
 
+import java.io.File;
+
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FAMILY_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_GIVEN_NAMES;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_IS_COMPLETE;
@@ -137,20 +139,7 @@ public class CatalogueDBHelper extends SQLiteOpenHelper {
                     //TODO: check PRIMARY KEY usage for all 'link' tables.
                     "PRIMARY KEY(" + DOM_FK_BOOK_ID + ", " + DOM_BOOK_AUTHOR_POSITION + ")" +
                     ")";
-    static final String DATABASE_CREATE_BOOK_BOOKSHELF =
-            "CREATE TABLE " + TBL_BOOK_BOOKSHELF + "(" +
-                    //TODO: this leaves the link after the book was deleted.  why ?
-                    DOM_FK_BOOK_ID + " integer REFERENCES " + TBL_BOOKS + " ON DELETE SET NULL ON UPDATE SET NULL," +
-                    //TODO: this leaves the link after the bookshelf was deleted. why ?
-                    DOM_FK_BOOKSHELF_ID + " integer REFERENCES " + TBL_BOOKSHELF + " ON DELETE SET NULL ON UPDATE SET NULL" +
-                    ")";
-    static final String DATABASE_CREATE_BOOK_LOAN =
-            "CREATE TABLE " + TBL_LOAN + " (" +
-                    DOM_PK_ID .def(true)+ "," +
-                    //TODO: this leaves the loan after the book was deleted.  why ?
-                    DOM_FK_BOOK_ID + " integer REFERENCES " + TBL_BOOKS + " ON DELETE SET NULL ON UPDATE SET NULL," +
-                    DOM_LOANED_TO + " text not null" +
-                    ")";
+
     static final String DATABASE_CREATE_BOOK_SERIES =
             "CREATE TABLE " + TBL_BOOK_SERIES + "(" +
                     // if a book is deleted, remove the link
@@ -184,6 +173,17 @@ public class CatalogueDBHelper extends SQLiteOpenHelper {
                     DOM_AUTHOR_FAMILY_NAME + " text not null," +
                     DOM_AUTHOR_GIVEN_NAMES + " text not null default ''," +
                     DOM_AUTHOR_IS_COMPLETE + " boolean not null default 0" +
+                    ")";
+    private static final String DATABASE_CREATE_BOOK_BOOKSHELF =
+            "CREATE TABLE " + TBL_BOOK_BOOKSHELF + "(" +
+                    DOM_FK_BOOK_ID + " integer REFERENCES " + TBL_BOOKS + " ON DELETE CASCADE ON UPDATE CASCADE," +
+                    DOM_FK_BOOKSHELF_ID + " integer REFERENCES " + TBL_BOOKSHELF + " ON DELETE CASCADE ON UPDATE CASCADE," +
+                    ")";
+    private static final String DATABASE_CREATE_BOOK_LOAN =
+            "CREATE TABLE " + TBL_LOAN + " (" +
+                    DOM_PK_ID .def(true)+ "," +
+                    DOM_FK_BOOK_ID + " integer REFERENCES " + TBL_BOOKS + " ON DELETE CASCADE ON UPDATE CASCADE," +
+                    DOM_LOANED_TO + " text not null" +
                     ")";
     private static final String DATABASE_CREATE_BOOKS =
             "CREATE TABLE " + TBL_BOOKS + " (" +
@@ -453,15 +453,51 @@ public class CatalogueDBHelper extends SQLiteOpenHelper {
             mMessage += "Major upgrade; restart to see what's new\n\n";
 
             /* move cover files to a sub-folder.
-               There is now also a dedicated log directory.
-               Any leftover files can be cleaned by a Help/purge.
-              */
+            Only files with matching rows in 'books' are moved. */
             UpgradeMigrations.v200moveCoversToDedicatedDirectory(syncedDb);
+
+            /* now using the 'real' cache directory */
+            StorageUtils.deleteFile(new File(StorageUtils.getSharedStorage() + File.separator + "tmp_images"));
 
             // migrate the properties.
             UpgradeMigrations.v200preferences(BookCatalogueApp.getSharedPreferences(), true);
 
             //TEST a proper upgrade from 82 to 83 with non-clean data
+            // Due to a number of code remarks, and some observation... let's do a clean of some columns.
+
+            // these two are due to a remark in the CSV exporter that (at one time?) the author name and title could be bad
+            final String UNKNOWN = BookCatalogueApp.getResourceString(R.string.unknown);
+            db.execSQL("UPDATE " + TBL_AUTHORS + " SET " + DOM_AUTHOR_FAMILY_NAME + "='" + UNKNOWN + "' WHERE " +
+                    DOM_AUTHOR_FAMILY_NAME + "='' OR " + DOM_AUTHOR_FAMILY_NAME + " IS NULL");
+            db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_TITLE + "='" + UNKNOWN + "' WHERE " +
+                    DOM_TITLE + "='' OR " + DOM_TITLE + " IS NULL");
+
+            // clean columns where we are adding a "not null default ''" constraint
+            db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_FORMAT + "=''" + " WHERE " + DOM_BOOK_FORMAT + " IS NULL");
+            db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_GENRE + "=''" + " WHERE " + DOM_BOOK_GENRE + " IS NULL");
+            db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_LANGUAGE + "=''" + " WHERE " + DOM_BOOK_LANGUAGE + " IS NULL");
+            db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_LOCATION + "=''" + " WHERE " + DOM_BOOK_LOCATION + " IS NULL");
+            db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_PUBLISHER + "=''" + " WHERE " + DOM_BOOK_PUBLISHER + " IS NULL");
+            db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_ISBN + "=''" + " WHERE " + DOM_BOOK_ISBN + " IS NULL");
+            db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_PRICE_LISTED + "=''" + " WHERE " + DOM_BOOK_PRICE_LISTED + " IS NULL");
+            db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_DESCRIPTION + "=''" + " WHERE " + DOM_BOOK_DESCRIPTION + " IS NULL");
+            db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_NOTES + "=''" + " WHERE " + DOM_BOOK_NOTES + " IS NULL");
+
+            db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_READ_START + "=''" + " WHERE " + DOM_BOOK_READ_START + " IS NULL");
+            db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_READ_END + "=''" + " WHERE " + DOM_BOOK_READ_END + " IS NULL");
+            db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_DATE_PUBLISHED + "=''" + " WHERE " + DOM_BOOK_DATE_PUBLISHED + " IS NULL");
+
+            // clean boolean columns where we have seen non-0/1 values. 'true'/'false' were seen in 5.2.2 exports. 't'/'f' just because paranoid.
+            db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_READ + "=1 WHERE lower(" + DOM_BOOK_READ + ") IN ('true', 't')");
+            db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_READ + "=0 WHERE lower(" + DOM_BOOK_READ + ") IN ('false', 'f')");
+            db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_SIGNED + "=1 WHERE lower(" + DOM_BOOK_SIGNED + ") IN ('true', 't')");
+            db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_SIGNED + "=0 WHERE lower(" + DOM_BOOK_SIGNED + ") IN ('false', 'f')");
+
+            // probably not needed, but there were some 'coalesce' usages. Paranoia again...
+            db.execSQL("UPDATE " + TBL_BOOKSHELF + " SET " + DOM_BOOKSHELF + "=''" + " WHERE " + DOM_BOOKSHELF + " IS NULL");
+
+            // this better works....
+            UpgradeDatabase.recreateAndReloadTable(syncedDb, TBL_BOOKS.getName(), DATABASE_CREATE_BOOKS);
 
             // anthology-titles are now cross-book; e.g. one 'story' can be present in multiple books
             db.execSQL(DATABASE_CREATE_BOOK_TOC_ENTRIES);
@@ -472,33 +508,6 @@ public class CatalogueDBHelper extends SQLiteOpenHelper {
             // reorganise the original table
             UpgradeDatabase.recreateAndReloadTable(syncedDb, TBL_TOC_ENTRIES.getName(), DATABASE_CREATE_TOC_ENTRIES,
                     /* remove fields: */ DOM_FK_BOOK_ID.name, DOM_BOOK_TOC_ENTRY_POSITION.name);
-
-            // clean columns where we are adding a "not null default ''" constraint
-            db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_FORMAT + "=''" + " WHERE " + DOM_BOOK_FORMAT + "=NULL");
-            db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_GENRE + "=''" + " WHERE " + DOM_BOOK_GENRE + "=NULL");
-            db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_LANGUAGE + "=''" + " WHERE " + DOM_BOOK_LANGUAGE + "=NULL");
-            db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_LOCATION + "=''" + " WHERE " + DOM_BOOK_LOCATION + "=NULL");
-            db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_PUBLISHER + "=''" + " WHERE " + DOM_BOOK_PUBLISHER + "=NULL");
-            db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_ISBN + "=''" + " WHERE " + DOM_BOOK_ISBN + "=NULL");
-            db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_PRICE_LISTED + "=''" + " WHERE " + DOM_BOOK_PRICE_LISTED + "=NULL");
-            db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_DESCRIPTION + "=''" + " WHERE " + DOM_BOOK_DESCRIPTION + "=NULL");
-            db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_NOTES + "=''" + " WHERE " + DOM_BOOK_NOTES + "=NULL");
-
-            db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_READ_START + "=''" + " WHERE " + DOM_BOOK_READ_START + "=NULL");
-            db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_READ_END + "=''" + " WHERE " + DOM_BOOK_READ_END + "=NULL");
-            db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_DATE_PUBLISHED + "=''" + " WHERE " + DOM_BOOK_DATE_PUBLISHED + "=NULL");
-
-            // clean boolean columns where we have seen non-0/1 values. 'true'/'false' were seen in 5.2.2 exports. 't'/'f' just because paranoid.
-            db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_READ + "=1 WHERE lower(" + DOM_BOOK_READ + ") IN ('true', 't')");
-            db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_READ + "=0 WHERE lower(" + DOM_BOOK_READ + ") IN ('false', 'f')");
-            db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_SIGNED + "=1 WHERE lower(" + DOM_BOOK_SIGNED + ") IN ('true', 't')");
-            db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_SIGNED + "=0 WHERE lower(" + DOM_BOOK_SIGNED + ") IN ('false', 'f')");
-
-            // probably not needed, but there were some 'coalesce' occurrences. Paranoia again...
-            db.execSQL("UPDATE " + TBL_BOOKSHELF + " SET " + DOM_BOOKSHELF + "=''" + " WHERE " + DOM_BOOKSHELF + "=NULL");
-
-            // this better works....
-            UpgradeDatabase.recreateAndReloadTable(syncedDb, TBL_BOOKS.getName(), DATABASE_CREATE_BOOKS);
 
 
             /* all books with a list price are assumed to be USD based on the only search up to v82

@@ -63,7 +63,6 @@ public class BookRowViewBase {
     }
 
     @Nullable
-    @Deprecated
     public String getString(final @NonNull String columnName) {
         final int position = mCursor.getColumnIndex(columnName);
         if (position < 0) {

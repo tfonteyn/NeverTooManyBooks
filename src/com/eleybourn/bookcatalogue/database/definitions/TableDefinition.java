@@ -570,12 +570,14 @@ public class TableDefinition implements AutoCloseable, Cloneable {
      * SQL of the form: '[alias].[domain-1], ..., [alias].[domain-n]'.
      *
      * Keep in mind that not all tables are fully registered in {@link DatabaseDefinitions}
-     * Add domains there when needed. Eventually the lists will get semi-complete.
+     * Add domains there when needed. Eventually the lists will get complete.
      *
      * @return SQL fragment
+     *
+     * @see #dot
      */
     @NonNull
-    public String refAll() {
+    public String allColumns() {
         final StringBuilder s = new StringBuilder(dot(mDomains.get(0)));
 
         for (int i = 1; i < mDomains.size(); i++) {
@@ -585,29 +587,6 @@ public class TableDefinition implements AutoCloseable, Cloneable {
         return s.toString();
     }
 
-    /**
-     * Get a base list of fields for this table using the passed list of domains. Returns partial
-     * SQL of the form: '[alias].[domain-1], ..., [alias].[domain-n]'.
-     *
-     * @param domains List of domains to use
-     *
-     * @return SQL fragment
-     *
-     * @see #dot
-     */
-    @NonNull
-    public String columnsRef(final @Nullable DomainDefinition... domains) {
-        if (domains == null || domains.length == 0) {
-            return "";
-        }
-
-        final StringBuilder s = new StringBuilder(dot(domains[0]));
-        for (int i = 1; i < domains.length; i++) {
-            s.append(",");
-            s.append(dot(domains[i]));
-        }
-        return s.toString();
-    }
 
     /**
      * Get a base list of fields for this table using the passed list of domains. Returns partial
@@ -622,7 +601,7 @@ public class TableDefinition implements AutoCloseable, Cloneable {
     @NonNull
     public String columnsRefAs(final @Nullable DomainDefinition... domains) {
         if (domains == null || domains.length == 0) {
-            return "";
+            throw new IllegalStateException();
         }
 
         final StringBuilder s = new StringBuilder(dotAs(domains[0]));

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="@string/user_interface">
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="BooksOnBookshelf.OpenBookReadOnly"
+            android:title="@string/user_interface_open_book_read_only" />
+        <ListPreference
+            android:defaultValue="1"
+            android:entries="@array/user_interface_theme_supported"
+            android:entryValues="@array/user_interface_theme_supported"
+            android:key="App.Theme"
+            android:title="@string/user_interface_theme" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/scanning">
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="SoundManager.BeepIfScannedIsbnValid"
+            android:title="@string/scanning_beep_if_isbn_valid" />
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="SoundManager.BeepIfScannedIsbnInvalid"
+            android:title="@string/scanning_beep_if_isbn_invalid" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/thumbnails">
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="Image.Cropper.FrameIsWholeImage"
+            android:title="@string/thumbnails_default_crop_frame_is_whole_image" />
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="Image.Cropper.UseExternalApp"
+            android:title="@string/thumbnails_use_external_image_cropper" />
+    </PreferenceCategory>
+</PreferenceScreen>

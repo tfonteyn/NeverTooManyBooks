@@ -16,13 +16,11 @@ import static com.eleybourn.bookcatalogue.database.CatalogueDBHelper.COLLATION;
 import static com.eleybourn.bookcatalogue.database.CatalogueDBHelper.DATABASE_CREATE_BOOKSHELF;
 import static com.eleybourn.bookcatalogue.database.CatalogueDBHelper.DATABASE_CREATE_BOOKSHELF_DATA;
 import static com.eleybourn.bookcatalogue.database.CatalogueDBHelper.DATABASE_CREATE_BOOK_AUTHOR;
-import static com.eleybourn.bookcatalogue.database.CatalogueDBHelper.DATABASE_CREATE_BOOK_BOOKSHELF;
 import static com.eleybourn.bookcatalogue.database.CatalogueDBHelper.DATABASE_CREATE_BOOK_SERIES;
-import static com.eleybourn.bookcatalogue.database.CatalogueDBHelper.DATABASE_CREATE_BOOK_LOAN;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FAMILY_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_GIVEN_NAMES;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_AUTHOR_POSITION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ANTHOLOGY_BITMASK;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_AUTHOR_POSITION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_ADDED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_PUBLISHED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DESCRIPTION;
@@ -55,7 +53,6 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LOANE
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PK_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_TOC_ENTRIES;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_AUTHORS;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOKS;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOKSHELF;
@@ -64,11 +61,11 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOK_
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOK_SERIES;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_LOAN;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_SERIES;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_TOC_ENTRIES;
 
 /**
  * Moved all upgrade specific definitions/methods from {@link CatalogueDBHelper} here.
  * This should help reduce memory footprint (well, we can hope.. but at least editing the former is easier now)
- *
  */
 public class UpgradeDatabase {
 
@@ -84,14 +81,27 @@ public class UpgradeDatabase {
 
     // Renamed to the ****LAST*** version in which it was used
 
+    private static final String DATABASE_CREATE_BOOK_LOAN_82 =
+            "CREATE TABLE " + TBL_LOAN + " (" +
+                    DOM_PK_ID.def(true) + "," +
+                    // this leaves the link after the book was deleted.  why ?
+                    DOM_FK_BOOK_ID + " integer REFERENCES " + TBL_BOOKS + " ON DELETE SET NULL ON UPDATE SET NULL," +
+                    DOM_LOANED_TO + " text not null" +
+                    ")";
+    private static final String DATABASE_CREATE_BOOK_BOOKSHELF_82 =
+            "CREATE TABLE " + TBL_BOOK_BOOKSHELF + "(" +
+                    // this leaves the link after the book was deleted.  why ?
+                    DOM_FK_BOOK_ID + " integer REFERENCES " + TBL_BOOKS + " ON DELETE SET NULL ON UPDATE SET NULL," +
+                    // this leaves the link after the bookshelf was deleted. why ?
+                    DOM_FK_BOOKSHELF_ID + " integer REFERENCES " + TBL_BOOKSHELF + " ON DELETE SET NULL ON UPDATE SET NULL" +
+                    ")";
     private static final String DATABASE_CREATE_ANTHOLOGY_82 =
             "CREATE TABLE " + TBL_TOC_ENTRIES + " (_id integer primary key autoincrement, " +
                     DOM_FK_BOOK_ID + " integer REFERENCES " + TBL_BOOKS + " ON DELETE SET NULL ON UPDATE SET NULL, " +
-                    DOM_FK_AUTHOR_ID + " integer not null REFERENCES " + TBL_AUTHORS + ", " +
+                    DOM_FK_AUTHOR_ID + " integer not null REFERENCES " + TBL_AUTHORS + "," +
                     DOM_TITLE + " text not null, " +
                     DOM_BOOK_TOC_ENTRY_POSITION + " int" +
                     ")";
-
     private static final String DATABASE_CREATE_AUTHORS_82 =
             "CREATE table " + TBL_AUTHORS + " (_id integer primary key autoincrement, " +
                     DOM_AUTHOR_FAMILY_NAME + " text not null, " +
@@ -102,56 +112,56 @@ public class UpgradeDatabase {
                     DOM_SERIES_NAME + " text not null " +
                     ")";
     private static final String DATABASE_CREATE_BOOKS_82 =
-            "CREATE TABLE " + TBL_BOOKS + " (_id integer primary key autoincrement, " +
-                    DOM_TITLE + " text not null, " +
-                    DOM_BOOK_ISBN + " text, " +
-                    DOM_BOOK_PUBLISHER + " text, " +
-                    DOM_BOOK_DATE_PUBLISHED + " date, " +
-                    DOM_BOOK_RATING + " float not null default 0, " +
-                    DOM_BOOK_READ + " boolean not null default 0, " +
-                    DOM_BOOK_PAGES + " int, " +
-                    DOM_BOOK_NOTES + " text, " +
-                    DOM_BOOK_PRICE_LISTED + " text, " +
-                    DOM_BOOK_ANTHOLOGY_BITMASK + " int not null default 0, " +
-                    DOM_BOOK_LOCATION + " text, " +
-                    DOM_BOOK_READ_START + " date, " +
-                    DOM_BOOK_READ_END + " date, " +
-                    DOM_BOOK_FORMAT + " text, " +
-                    DOM_BOOK_SIGNED + " boolean not null default 0, " +
-                    DOM_BOOK_DESCRIPTION + " text, " +
-                    DOM_BOOK_GENRE + " text, " +
-                    DOM_BOOK_LANGUAGE + " text default '', " +
-                    DOM_BOOK_DATE_ADDED + " datetime default current_timestamp, " +
-                    DOM_BOOK_GOODREADS_BOOK_ID + " int, " +
-                    DOM_BOOK_GOODREADS_LAST_SYNC_DATE + " date default '0000-00-00', " +
-                    DOM_BOOK_UUID + " text not null default (lower(hex(randomblob(16)))), " +
-                    DOM_LAST_UPDATE_DATE + " date not null default current_timestamp " +
+            "CREATE TABLE " + TBL_BOOKS + " (_id integer primary key autoincrement," +
+                    DOM_TITLE + " text not null," +
+                    DOM_BOOK_ISBN + " text," +
+                    DOM_BOOK_PUBLISHER + " text," +
+                    DOM_BOOK_DATE_PUBLISHED + " date," +
+                    DOM_BOOK_RATING + " float not null default 0," +
+                    DOM_BOOK_READ + " boolean not null default 0," +
+                    DOM_BOOK_PAGES + " int," +
+                    DOM_BOOK_NOTES + " text," +
+                    DOM_BOOK_PRICE_LISTED + " text," +
+                    DOM_BOOK_ANTHOLOGY_BITMASK + " int not null default 0," +
+                    DOM_BOOK_LOCATION + " text," +
+                    DOM_BOOK_READ_START + " date," +
+                    DOM_BOOK_READ_END + " date," +
+                    DOM_BOOK_FORMAT + " text," +
+                    DOM_BOOK_SIGNED + " boolean not null default 0," +
+                    DOM_BOOK_DESCRIPTION + " text," +
+                    DOM_BOOK_GENRE + " text," +
+                    DOM_BOOK_LANGUAGE + " text default ''," +
+                    DOM_BOOK_DATE_ADDED + " datetime default current_timestamp," +
+                    DOM_BOOK_GOODREADS_BOOK_ID + " int," +
+                    DOM_BOOK_GOODREADS_LAST_SYNC_DATE + " date default '0000-00-00'," +
+                    DOM_BOOK_UUID + " text not null default (lower(hex(randomblob(16))))," +
+                    DOM_LAST_UPDATE_DATE + " date not null default current_timestamp" +
                     ")";
 
-     private static final String DATABASE_CREATE_BOOKS_81 =
-            "CREATE TABLE " + TBL_BOOKS + " (_id integer primary key autoincrement, " +
-                    DOM_TITLE + " text not null, " +
-                    DOM_BOOK_ISBN + " text, " +
-                    DOM_BOOK_PUBLISHER + " text, " +
-                    DOM_BOOK_DATE_PUBLISHED + " date, " +
-                    DOM_BOOK_RATING + " float not null default 0, " +
-                    DOM_BOOK_READ + " boolean not null default 0, " +
-                    DOM_BOOK_PAGES + " int, " +
-                    DOM_BOOK_NOTES + " text, " +
-                    DOM_BOOK_PRICE_LISTED + " text, " +
-                    DOM_BOOK_ANTHOLOGY_BITMASK + " int not null default 0, " +
-                    DOM_BOOK_LOCATION + " text, " +
-                    DOM_BOOK_READ_START + " date, " +
-                    DOM_BOOK_READ_END + " date, " +
-                    DOM_BOOK_FORMAT + " text, " +
-                    DOM_BOOK_SIGNED + " boolean not null default 0, " +
-                    DOM_BOOK_DESCRIPTION + " text, " +
-                    DOM_BOOK_GENRE + " text, " +
-                    DOM_BOOK_DATE_ADDED + " datetime default current_timestamp, " +
-                    DOM_BOOK_GOODREADS_BOOK_ID + " int, " +
-                    DOM_BOOK_GOODREADS_LAST_SYNC_DATE + " date default '0000-00-00', " +
-                    DOM_BOOK_UUID + " text not null default (lower(hex(randomblob(16)))), " +
-                    DOM_LAST_UPDATE_DATE + " date not null default current_timestamp " +
+    private static final String DATABASE_CREATE_BOOKS_81 =
+            "CREATE TABLE " + TBL_BOOKS + " (_id integer primary key autoincrement," +
+                    DOM_TITLE + " text not null," +
+                    DOM_BOOK_ISBN + " text," +
+                    DOM_BOOK_PUBLISHER + " text," +
+                    DOM_BOOK_DATE_PUBLISHED + " date," +
+                    DOM_BOOK_RATING + " float not null default 0," +
+                    DOM_BOOK_READ + " boolean not null default 0," +
+                    DOM_BOOK_PAGES + " int," +
+                    DOM_BOOK_NOTES + " text," +
+                    DOM_BOOK_PRICE_LISTED + " text," +
+                    DOM_BOOK_ANTHOLOGY_BITMASK + " int not null default 0," +
+                    DOM_BOOK_LOCATION + " text," +
+                    DOM_BOOK_READ_START + " date," +
+                    DOM_BOOK_READ_END + " date," +
+                    DOM_BOOK_FORMAT + " text," +
+                    DOM_BOOK_SIGNED + " boolean not null default 0," +
+                    DOM_BOOK_DESCRIPTION + " text," +
+                    DOM_BOOK_GENRE + " text," +
+                    DOM_BOOK_DATE_ADDED + " datetime default current_timestamp," +
+                    DOM_BOOK_GOODREADS_BOOK_ID + " int," +
+                    DOM_BOOK_GOODREADS_LAST_SYNC_DATE + " date default '0000-00-00'," +
+                    DOM_BOOK_UUID + " text not null default (lower(hex(randomblob(16))))," +
+                    DOM_LAST_UPDATE_DATE + " date not null default current_timestamp" +
                     ")";
 
     private static final String DATABASE_CREATE_BOOKS_68 =
@@ -203,13 +213,13 @@ public class UpgradeDatabase {
                     DOM_FK_SERIES_ID + " integer REFERENCES " + TBL_SERIES + " ON DELETE SET NULL ON UPDATE CASCADE, " +
                     DOM_BOOK_SERIES_NUM + " integer, " +
                     DOM_BOOK_SERIES_POSITION + " integer," +
-                    "PRIMARY KEY(" + DOM_FK_BOOK_ID + ", "  + DOM_BOOK_SERIES_POSITION + ")" +
+                    "PRIMARY KEY(" + DOM_FK_BOOK_ID + "," + DOM_BOOK_SERIES_POSITION + ")" +
                     ")";
 
     private static final String DATABASE_CREATE_BOOKS_41 =
             "CREATE TABLE " + TBL_BOOKS +
                     " (_id integer primary key autoincrement, " +
-                    DOM_FK_AUTHOR_ID + " integer not null REFERENCES " + TBL_AUTHORS + ", " +
+                    DOM_FK_AUTHOR_ID + " integer not null REFERENCES " + TBL_AUTHORS + "," +
                     DOM_TITLE + " text not null, " +
                     DOM_BOOK_ISBN + " text, " +
                     DOM_BOOK_PUBLISHER + " text, " +
@@ -232,6 +242,7 @@ public class UpgradeDatabase {
 
     @NonNull
     private static String mMessage = "";
+
     @NonNull
     public static String getMessage() {
         return mMessage;
@@ -243,10 +254,10 @@ public class UpgradeDatabase {
      * destination, an error will occur. Columns in the destination that are not in the source will be
      * defaulted or set to NULL if no default is defined.
      *
-     * @param sdb       the database
-     * @param from      from table
-     * @param to        to table
-     * @param toRemove	List of fields to be removed from the source table (ignored in copy)
+     * @param sdb      the database
+     * @param from     from table
+     * @param to       to table
+     * @param toRemove List of fields to be removed from the source table (ignored in copy)
      */
     private static void copyTableSafely(final @NonNull DbSync.SynchronizedDb sdb,
                                         @SuppressWarnings("SameParameterValue") final @NonNull String from,
@@ -257,9 +268,9 @@ public class UpgradeDatabase {
         // Build the column list
         StringBuilder cols = new StringBuilder();
         boolean first = true;
-        for(TableInfo.ColumnInfo ci: src) {
+        for (TableInfo.ColumnInfo ci : src) {
             boolean isNeeded = true;
-            for(String s: toRemove) {
+            for (String s : toRemove) {
                 if (s.equalsIgnoreCase(ci.name)) {
                     isNeeded = false;
                     break;
@@ -269,7 +280,7 @@ public class UpgradeDatabase {
                 if (first) {
                     first = false;
                 } else {
-                    cols.append(", ");
+                    cols.append(",");
                 }
                 cols.append(ci.name);
             }
@@ -298,7 +309,8 @@ public class UpgradeDatabase {
      * This routine renames all files, if they exist.
      */
     private static void v72_renameIdFilesToHash(final @NonNull DbSync.SynchronizedDb db) {
-        try (Cursor c = db.rawQuery("SELECT " + DOM_PK_ID + "," + DOM_BOOK_UUID + " FROM " + TBL_BOOKS + " ORDER BY " + DOM_PK_ID, new String[]{})) {
+        try (Cursor c = db.rawQuery("SELECT " + DOM_PK_ID + "," + DOM_BOOK_UUID + 
+                " FROM " + TBL_BOOKS + " ORDER BY " + DOM_PK_ID, new String[]{})) {
             while (c.moveToNext()) {
                 final long id = c.getLong(0);
                 final String uuid = c.getString(1);
@@ -355,7 +367,6 @@ public class UpgradeDatabase {
             // Get the column indexes we need
             final int bookCol = cursor.getColumnIndexOrThrow(DOM_PK_ID.name);
             final int posCol = cursor.getColumnIndexOrThrow("pos");
-
 
 
             // Loop through all instances of the old author appearing
@@ -427,7 +438,7 @@ public class UpgradeDatabase {
         }
         if (curVersion == 20) {
             curVersion++;
-            db.execSQL(DATABASE_CREATE_BOOK_LOAN);
+            db.execSQL(DATABASE_CREATE_BOOK_LOAN_82);
         }
         if (curVersion == 21) {
             //do nothing
@@ -461,7 +472,7 @@ public class UpgradeDatabase {
                 throw new RuntimeException("Failed to upgrade database", e);
             }
             try {
-                db.execSQL(DATABASE_CREATE_BOOK_LOAN);
+                db.execSQL(DATABASE_CREATE_BOOK_LOAN_82);
             } catch (Exception e) {
                 Logger.error(e);
                 throw new RuntimeException("Failed to upgrade database", e);
@@ -619,21 +630,31 @@ public class UpgradeDatabase {
             }
 
             try {
-                db.execSQL(DATABASE_CREATE_BOOK_BOOKSHELF);
-                db.execSQL("INSERT INTO " + TBL_BOOK_BOOKSHELF + " (" + DOM_FK_BOOK_ID + ", " + DOM_FK_BOOKSHELF_ID + ") SELECT " + DOM_PK_ID + ", " + DOM_FK_BOOKSHELF_ID + " FROM " + TBL_BOOKS + "");
-                db.execSQL("CREATE TABLE tmp1 AS SELECT _id, " + OLD_KEY_AUTHOR + ", " + DOM_TITLE + ", " + DOM_BOOK_ISBN + ", " + DOM_BOOK_PUBLISHER + ", " +
-                        DOM_BOOK_DATE_PUBLISHED + ", " + DOM_BOOK_RATING + ", " + DOM_BOOK_READ + ", " + OLD_KEY_SERIES + ", " + DOM_BOOK_PAGES + ", " + DOM_BOOK_SERIES_NUM + ", " + DOM_BOOK_NOTES + ", " +
-                        DOM_BOOK_PRICE_LISTED + ", " + DOM_BOOK_ANTHOLOGY_BITMASK + ", " + DOM_BOOK_LOCATION + ", " + DOM_BOOK_READ_START + ", " + DOM_BOOK_READ_END + ", " + OLD_KEY_AUDIOBOOK + ", " +
-                        DOM_BOOK_SIGNED + " FROM " + TBL_BOOKS);
-                db.execSQL("CREATE TABLE tmp2 AS SELECT _id, " + DOM_FK_BOOK_ID + ", " + DOM_LOANED_TO + " FROM " + TBL_LOAN );
-                db.execSQL("CREATE TABLE tmp3 AS SELECT _id, " + DOM_FK_BOOK_ID + ", " + OLD_KEY_AUTHOR + ", " + DOM_TITLE + ", " + DOM_BOOK_TOC_ENTRY_POSITION + " FROM " + TBL_TOC_ENTRIES);
+                db.execSQL(DATABASE_CREATE_BOOK_BOOKSHELF_82);
+                db.execSQL("INSERT INTO " + TBL_BOOK_BOOKSHELF + " (" +
+                        DOM_FK_BOOK_ID + "," + DOM_FK_BOOKSHELF_ID + ")" +
+                        " SELECT " + DOM_PK_ID + "," + DOM_FK_BOOKSHELF_ID + " FROM " + TBL_BOOKS);
+                db.execSQL("CREATE TABLE tmp1 AS SELECT _id, " + OLD_KEY_AUTHOR + "," +
+                        DOM_TITLE + "," + DOM_BOOK_ISBN + "," + DOM_BOOK_PUBLISHER + "," +
+                        DOM_BOOK_DATE_PUBLISHED + "," + DOM_BOOK_RATING + "," + DOM_BOOK_READ + "," +
+                        OLD_KEY_SERIES + "," + DOM_BOOK_PAGES + "," + DOM_BOOK_SERIES_NUM +
+                        "," + DOM_BOOK_NOTES + "," + DOM_BOOK_PRICE_LISTED + "," +
+                        DOM_BOOK_ANTHOLOGY_BITMASK + "," + DOM_BOOK_LOCATION + "," +
+                        DOM_BOOK_READ_START + "," + DOM_BOOK_READ_END + "," +
+                        OLD_KEY_AUDIOBOOK + "," + DOM_BOOK_SIGNED + " FROM " + TBL_BOOKS);
+
+                db.execSQL("CREATE TABLE tmp2 AS SELECT _id, " +
+                        DOM_FK_BOOK_ID + "," + DOM_LOANED_TO + " FROM " + TBL_LOAN);
+                db.execSQL("CREATE TABLE tmp3 AS SELECT _id, " +
+                        DOM_FK_BOOK_ID + "," + OLD_KEY_AUTHOR + "," + DOM_TITLE + "," +
+                        DOM_BOOK_TOC_ENTRY_POSITION + " FROM " + TBL_TOC_ENTRIES);
 
                 db.execSQL("DROP TABLE " + TBL_TOC_ENTRIES);
                 db.execSQL("DROP TABLE " + TBL_LOAN);
                 db.execSQL("DROP TABLE " + TBL_BOOKS);
 
                 db.execSQL(DATABASE_CREATE_BOOKS_41);
-                db.execSQL(DATABASE_CREATE_BOOK_LOAN);
+                db.execSQL(DATABASE_CREATE_BOOK_LOAN_82);
                 db.execSQL(DATABASE_CREATE_ANTHOLOGY_82);
 
                 db.execSQL("INSERT INTO " + TBL_BOOKS + " SELECT * FROM tmp1");
@@ -663,7 +684,8 @@ public class UpgradeDatabase {
                     " WHERE a." + DOM_FK_BOOK_ID + "=b." + DOM_FK_BOOK_ID + " AND a." + OLD_KEY_AUTHOR + "=b." + OLD_KEY_AUTHOR + " " +
                     " AND a." + DOM_TITLE + "=b." + DOM_TITLE + " AND a." + DOM_PK_ID + " > b." + DOM_PK_ID + "" +
                     ")");
-            db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS anthology_pk_idx ON " + TBL_TOC_ENTRIES + " (" + DOM_FK_BOOK_ID + ", " + OLD_KEY_AUTHOR + ", " + DOM_TITLE + ")");
+
+            db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS anthology_pk_idx ON " + TBL_TOC_ENTRIES + " (" + DOM_FK_BOOK_ID + "," + OLD_KEY_AUTHOR + "," + DOM_TITLE + ")");
         }
         if (curVersion == 44) {
             curVersion++;
@@ -681,14 +703,19 @@ public class UpgradeDatabase {
             } catch (Exception ignore) {
             }
 
-            db.execSQL("CREATE TABLE tmp1 AS SELECT _id, " + OLD_KEY_AUTHOR + ", " + DOM_TITLE + ", " + DOM_BOOK_ISBN + ", " + DOM_BOOK_PUBLISHER + ", " +
-                    DOM_BOOK_DATE_PUBLISHED + ", " + DOM_BOOK_RATING + ", " + DOM_BOOK_READ + ", " + OLD_KEY_SERIES + ", " + DOM_BOOK_PAGES + ", " + DOM_BOOK_SERIES_NUM + ", " + DOM_BOOK_NOTES + ", " +
-                    DOM_BOOK_PRICE_LISTED + ", " + DOM_BOOK_ANTHOLOGY_BITMASK + ", " + DOM_BOOK_LOCATION + ", " + DOM_BOOK_READ_START + ", " + DOM_BOOK_READ_END + ", " +
-                    "CASE WHEN " + OLD_KEY_AUDIOBOOK + "='t' THEN 'Audiobook' ELSE 'Paperback' END AS " + OLD_KEY_AUDIOBOOK + ", " +
+            db.execSQL("CREATE TABLE tmp1 AS SELECT _id, " + OLD_KEY_AUTHOR + "," +
+                    DOM_TITLE + "," + DOM_BOOK_ISBN + "," + DOM_BOOK_PUBLISHER + "," +
+                    DOM_BOOK_DATE_PUBLISHED + "," + DOM_BOOK_RATING + "," + DOM_BOOK_READ + "," +
+                    OLD_KEY_SERIES + "," + DOM_BOOK_PAGES + "," + DOM_BOOK_SERIES_NUM + "," +
+                    DOM_BOOK_NOTES + "," + DOM_BOOK_PRICE_LISTED + "," +
+                    DOM_BOOK_ANTHOLOGY_BITMASK + "," + DOM_BOOK_LOCATION + "," +
+                    DOM_BOOK_READ_START + "," + DOM_BOOK_READ_END + "," +
+                    "CASE WHEN " + OLD_KEY_AUDIOBOOK + "='t' THEN 'Audiobook' ELSE 'Paperback' END AS " + OLD_KEY_AUDIOBOOK + "," +
                     DOM_BOOK_SIGNED + " FROM " + TBL_BOOKS);
-            db.execSQL("CREATE TABLE tmp2 AS SELECT _id, " + DOM_FK_BOOK_ID + ", " + DOM_LOANED_TO + " FROM " + TBL_LOAN );
-            db.execSQL("CREATE TABLE tmp3 AS SELECT _id, " + DOM_FK_BOOK_ID + ", " + OLD_KEY_AUTHOR + ", " + DOM_TITLE + ", " + DOM_BOOK_TOC_ENTRY_POSITION + " FROM " + TBL_TOC_ENTRIES);
-            db.execSQL("CREATE TABLE tmp4 AS SELECT " + DOM_FK_BOOK_ID + ", " + DOM_FK_BOOKSHELF_ID + " FROM " + TBL_BOOK_BOOKSHELF);
+
+            db.execSQL("CREATE TABLE tmp2 AS SELECT _id, " + DOM_FK_BOOK_ID + "," + DOM_LOANED_TO + " FROM " + TBL_LOAN);
+            db.execSQL("CREATE TABLE tmp3 AS SELECT _id, " + DOM_FK_BOOK_ID + "," + OLD_KEY_AUTHOR + "," + DOM_TITLE + "," + DOM_BOOK_TOC_ENTRY_POSITION + " FROM " + TBL_TOC_ENTRIES);
+            db.execSQL("CREATE TABLE tmp4 AS SELECT " + DOM_FK_BOOK_ID + "," + DOM_FK_BOOKSHELF_ID + " FROM " + TBL_BOOK_BOOKSHELF);
 
             db.execSQL("DROP TABLE " + TBL_TOC_ENTRIES);
             db.execSQL("DROP TABLE " + TBL_LOAN);
@@ -698,7 +725,7 @@ public class UpgradeDatabase {
             String TMP_DATABASE_CREATE_BOOKS =
                     "CREATE TABLE " + TBL_BOOKS +
                             " (_id integer primary key autoincrement, " +
-                            OLD_KEY_AUTHOR + " integer not null REFERENCES " + TBL_AUTHORS + ", " +
+                            OLD_KEY_AUTHOR + " integer not null REFERENCES " + TBL_AUTHORS + "," +
                             DOM_TITLE + " text not null, " +
                             DOM_BOOK_ISBN + " text, " +
                             DOM_BOOK_PUBLISHER + " text, " +
@@ -720,9 +747,9 @@ public class UpgradeDatabase {
 
 
             db.execSQL(TMP_DATABASE_CREATE_BOOKS);
-            db.execSQL(DATABASE_CREATE_BOOK_LOAN);
+            db.execSQL(DATABASE_CREATE_BOOK_LOAN_82);
             db.execSQL(DATABASE_CREATE_ANTHOLOGY_82);
-            db.execSQL(DATABASE_CREATE_BOOK_BOOKSHELF);
+            db.execSQL(DATABASE_CREATE_BOOK_BOOKSHELF_82);
 
             db.execSQL("INSERT INTO " + TBL_BOOKS + " SELECT * FROM tmp1");
             db.execSQL("INSERT INTO " + TBL_LOAN + " SELECT * FROM tmp2");
@@ -736,7 +763,7 @@ public class UpgradeDatabase {
         }
         if (curVersion == 45) {
             curVersion++;
-            db.execSQL("DELETE FROM " + TBL_LOAN + " WHERE " + DOM_LOANED_TO + "='null'" );
+            db.execSQL("DELETE FROM " + TBL_LOAN + " WHERE " + DOM_LOANED_TO + "='null'");
         }
         if (curVersion == 46) {
             curVersion++;
@@ -764,7 +791,8 @@ public class UpgradeDatabase {
             curVersion++;
             mMessage += "New in v3.2\n\n";
             mMessage += "* Books can now be automatically added by searching for the author name and book title\n\n";
-            mMessage += "* Updating thumbnails, genre and description fields will also search by author name and title is the isbn does not exist\n\n";				mMessage += "* Expand/Collapse all bug fixed\n\n";
+            mMessage += "* Updating thumbnails, genre and description fields will also search by author name and title is the isbn does not exist\n\n";
+            mMessage += "* Expand/Collapse all bug fixed\n\n";
             mMessage += "* The search query will be shown at the top of all search screens\n\n";
         }
         if (curVersion == 50) {
@@ -837,21 +865,21 @@ public class UpgradeDatabase {
                     db.execSQL(DATABASE_CREATE_BOOK_SERIES_54);
                     db.execSQL(DATABASE_CREATE_BOOK_AUTHOR);
 
-                    db.execSQL("INSERT INTO " + TBL_BOOK_SERIES + " (" + DOM_FK_BOOK_ID + ", " + DOM_FK_SERIES_ID + ", " + DOM_BOOK_SERIES_NUM + ", " + DOM_BOOK_SERIES_POSITION + ") "
+                    db.execSQL("INSERT INTO " + TBL_BOOK_SERIES + " (" + DOM_FK_BOOK_ID + "," + DOM_FK_SERIES_ID + "," + DOM_BOOK_SERIES_NUM + "," + DOM_BOOK_SERIES_POSITION + ") "
                             + "SELECT DISTINCT b." + DOM_PK_ID + ", s." + DOM_PK_ID + ", b." + DOM_BOOK_SERIES_NUM + ", 1"
                             + " FROM " + TBL_BOOKS + " b "
                             + " JOIN " + TBL_SERIES + " s ON Upper(s." + DOM_SERIES_NAME + ") = Upper(b." + OLD_KEY_SERIES + ")" + COLLATION
                             + " WHERE Coalesce(b." + OLD_KEY_SERIES + ", '') <> ''");
 
-                    db.execSQL("INSERT INTO " + TBL_BOOK_AUTHOR + " (" + DOM_FK_BOOK_ID + ", " + DOM_FK_AUTHOR_ID + ", " + DOM_BOOK_AUTHOR_POSITION + ") "
+                    db.execSQL("INSERT INTO " + TBL_BOOK_AUTHOR + " (" + DOM_FK_BOOK_ID + "," + DOM_FK_AUTHOR_ID + "," + DOM_BOOK_AUTHOR_POSITION + ") "
                             + "SELECT b." + DOM_PK_ID + ", b." + OLD_KEY_AUTHOR + ", 1 FROM " + TBL_BOOKS + " b ");
 
-                    String tmpFields = DOM_PK_ID + ", " /* + KEY_AUTHOR + ", " */ + DOM_TITLE + ", " + DOM_BOOK_ISBN
-                            + ", " + DOM_BOOK_PUBLISHER + ", " + DOM_BOOK_DATE_PUBLISHED + ", " + DOM_BOOK_RATING + ", " + DOM_BOOK_READ
-                            + /* ", " + KEY_SERIES + */ ", " + DOM_BOOK_PAGES /* + ", " + KEY_SERIES_NUM */ + ", " + DOM_BOOK_NOTES
-                            + ", " + DOM_BOOK_PRICE_LISTED + ", " + DOM_BOOK_ANTHOLOGY_BITMASK + ", " + DOM_BOOK_LOCATION + ", " + DOM_BOOK_READ_START
-                            + ", " + DOM_BOOK_READ_END + ", " + DOM_BOOK_FORMAT + ", " + DOM_BOOK_SIGNED + ", " + DOM_BOOK_DESCRIPTION
-                            + ", " + DOM_BOOK_GENRE;
+                    String tmpFields = DOM_PK_ID + "," /* + KEY_AUTHOR + "," */ + DOM_TITLE + "," + DOM_BOOK_ISBN
+                            + "," + DOM_BOOK_PUBLISHER + "," + DOM_BOOK_DATE_PUBLISHED + "," + DOM_BOOK_RATING + "," + DOM_BOOK_READ
+                            + /* "," + KEY_SERIES + */ "," + DOM_BOOK_PAGES /* + "," + KEY_SERIES_NUM */ + "," + DOM_BOOK_NOTES
+                            + "," + DOM_BOOK_PRICE_LISTED + "," + DOM_BOOK_ANTHOLOGY_BITMASK + "," + DOM_BOOK_LOCATION + "," + DOM_BOOK_READ_START
+                            + "," + DOM_BOOK_READ_END + "," + DOM_BOOK_FORMAT + "," + DOM_BOOK_SIGNED + "," + DOM_BOOK_DESCRIPTION
+                            + "," + DOM_BOOK_GENRE;
                     db.execSQL("CREATE TABLE tmpBooks AS SELECT " + tmpFields + " FROM " + TBL_BOOKS);
 
                     db.execSQL("DROP TABLE " + TBL_BOOKS);
@@ -901,21 +929,21 @@ public class UpgradeDatabase {
                         db.execSQL(DATABASE_CREATE_BOOK_SERIES_54);
                         db.execSQL(DATABASE_CREATE_BOOK_AUTHOR);
 
-                        db.execSQL("INSERT INTO " + TBL_BOOK_SERIES + " (" + DOM_FK_BOOK_ID + ", " + DOM_FK_SERIES_ID + ", " + DOM_BOOK_SERIES_NUM + ", " + DOM_BOOK_SERIES_POSITION + ") "
+                        db.execSQL("INSERT INTO " + TBL_BOOK_SERIES + " (" + DOM_FK_BOOK_ID + "," + DOM_FK_SERIES_ID + "," + DOM_BOOK_SERIES_NUM + "," + DOM_BOOK_SERIES_POSITION + ") "
                                 + "SELECT DISTINCT b." + DOM_PK_ID + ", s." + DOM_PK_ID + ", b." + DOM_BOOK_SERIES_NUM + ", 1"
                                 + " FROM " + TBL_BOOKS + " b "
                                 + " JOIN " + TBL_SERIES + " s ON Upper(s." + DOM_SERIES_NAME + ") = Upper(b." + OLD_KEY_SERIES + ")" + COLLATION
                                 + " WHERE Coalesce(b." + OLD_KEY_SERIES + ", '') <> ''");
 
-                        db.execSQL("INSERT INTO " + TBL_BOOK_AUTHOR + " (" + DOM_FK_BOOK_ID + ", " + DOM_FK_AUTHOR_ID + ", " + DOM_BOOK_AUTHOR_POSITION + ") "
+                        db.execSQL("INSERT INTO " + TBL_BOOK_AUTHOR + " (" + DOM_FK_BOOK_ID + "," + DOM_FK_AUTHOR_ID + "," + DOM_BOOK_AUTHOR_POSITION + ") "
                                 + "SELECT b." + DOM_PK_ID + ", b." + OLD_KEY_AUTHOR + ", 1 FROM " + TBL_BOOKS + " b ");
 
-                        String tmpFields = DOM_PK_ID + ", " /* + KEY_AUTHOR + ", " */ + DOM_TITLE + ", " + DOM_BOOK_ISBN
-                                + ", " + DOM_BOOK_PUBLISHER + ", " + DOM_BOOK_DATE_PUBLISHED + ", " + DOM_BOOK_RATING + ", " + DOM_BOOK_READ
-                                + /* ", " + KEY_SERIES + */ ", " + DOM_BOOK_PAGES /* + ", " + KEY_SERIES_NUM */ + ", " + DOM_BOOK_NOTES
-                                + ", " + DOM_BOOK_PRICE_LISTED + ", " + DOM_BOOK_ANTHOLOGY_BITMASK + ", " + DOM_BOOK_LOCATION + ", " + DOM_BOOK_READ_START
-                                + ", " + DOM_BOOK_READ_END + ", " + DOM_BOOK_FORMAT + ", " + DOM_BOOK_SIGNED + ", " + DOM_BOOK_DESCRIPTION
-                                + ", " + DOM_BOOK_GENRE;
+                        String tmpFields = DOM_PK_ID + "," /* + KEY_AUTHOR + "," */ + DOM_TITLE + "," + DOM_BOOK_ISBN
+                                + "," + DOM_BOOK_PUBLISHER + "," + DOM_BOOK_DATE_PUBLISHED + "," + DOM_BOOK_RATING + "," + DOM_BOOK_READ
+                                + /* "," + KEY_SERIES + */ "," + DOM_BOOK_PAGES /* + "," + KEY_SERIES_NUM */ + "," + DOM_BOOK_NOTES
+                                + "," + DOM_BOOK_PRICE_LISTED + "," + DOM_BOOK_ANTHOLOGY_BITMASK + "," + DOM_BOOK_LOCATION + "," + DOM_BOOK_READ_START
+                                + "," + DOM_BOOK_READ_END + "," + DOM_BOOK_FORMAT + "," + DOM_BOOK_SIGNED + "," + DOM_BOOK_DESCRIPTION
+                                + "," + DOM_BOOK_GENRE;
                         db.execSQL("CREATE TABLE tmpBooks AS SELECT " + tmpFields + " FROM " + TBL_BOOKS);
 
                         db.execSQL("DROP TABLE " + TBL_BOOKS);
@@ -985,7 +1013,7 @@ public class UpgradeDatabase {
             try (Cursor results = db.rawQuery("SELECT name FROM sqlite_master WHERE type='table' AND name='" + TBL_LOAN + "'", new String[]{})) {
                 if (results.getCount() == 0) {
                     //table does not exist
-                    db.execSQL(DATABASE_CREATE_BOOK_LOAN);
+                    db.execSQL(DATABASE_CREATE_BOOK_LOAN_82);
                 }
             }
             try (Cursor results = db.rawQuery("SELECT name FROM sqlite_master WHERE type='table' AND name='" + TBL_TOC_ENTRIES + "'", new String[]{})) {
@@ -997,14 +1025,15 @@ public class UpgradeDatabase {
             try (Cursor results = db.rawQuery("SELECT name FROM sqlite_master WHERE type='table' AND name='" + TBL_BOOK_BOOKSHELF + "'", new String[]{})) {
                 if (results.getCount() == 0) {
                     //table does not exist
-                    db.execSQL(DATABASE_CREATE_BOOK_BOOKSHELF);
+                    db.execSQL(DATABASE_CREATE_BOOK_BOOKSHELF_82);
                 }
             }
             try (Cursor results = db.rawQuery("SELECT name FROM sqlite_master WHERE type='table' AND name='" + TBL_BOOK_SERIES + "'", new String[]{})) {
                 if (results.getCount() == 0) {
                     //table does not exist
                     db.execSQL(DATABASE_CREATE_BOOK_SERIES_54);
-                    db.execSQL("INSERT INTO " + TBL_BOOK_SERIES + " (" + DOM_FK_BOOK_ID + ", " + DOM_FK_SERIES_ID + ", " + DOM_BOOK_SERIES_NUM + ", " + DOM_BOOK_SERIES_POSITION + ") "
+                    db.execSQL("INSERT INTO " + TBL_BOOK_SERIES + " (" + DOM_FK_BOOK_ID + "," +
+                            DOM_FK_SERIES_ID + "," + DOM_BOOK_SERIES_NUM + "," + DOM_BOOK_SERIES_POSITION + ") "
                             + "SELECT DISTINCT b." + DOM_PK_ID + ", s." + DOM_PK_ID + ", b." + DOM_BOOK_SERIES_NUM + ", 1"
                             + " FROM " + TBL_BOOKS + " b "
                             + " JOIN " + TBL_SERIES + " s ON Upper(s." + DOM_SERIES_NAME + ") = Upper(b." + OLD_KEY_SERIES + ")" + COLLATION
@@ -1015,19 +1044,23 @@ public class UpgradeDatabase {
                 if (results.getCount() == 0) {
                     //table does not exist
                     db.execSQL(DATABASE_CREATE_BOOK_AUTHOR);
-                    db.execSQL("INSERT INTO " + TBL_BOOK_AUTHOR + " (" + DOM_FK_BOOK_ID + ", " + DOM_FK_AUTHOR_ID + ", " + DOM_BOOK_AUTHOR_POSITION + ") "
+                    db.execSQL("INSERT INTO " + TBL_BOOK_AUTHOR + " (" + DOM_FK_BOOK_ID + "," + DOM_FK_AUTHOR_ID + "," + DOM_BOOK_AUTHOR_POSITION + ") "
                             + "SELECT b." + DOM_PK_ID + ", b." + OLD_KEY_AUTHOR + ", 1 FROM " + TBL_BOOKS + " b ");
                 }
             }
             try (Cursor results = db.rawQuery("SELECT * FROM " + TBL_BOOKS, new String[]{})) {
                 if (results.getCount() > 0) {
                     if (results.getColumnIndex(OLD_KEY_SERIES) > -1) {
-                        String tmpFields = DOM_PK_ID + ", " /* + KEY_AUTHOR + ", " */ + DOM_TITLE + ", " + DOM_BOOK_ISBN
-                                + ", " + DOM_BOOK_PUBLISHER + ", " + DOM_BOOK_DATE_PUBLISHED + ", " + DOM_BOOK_RATING + ", " + DOM_BOOK_READ
-                                + /* ", " + KEY_SERIES + */ ", " + DOM_BOOK_PAGES /* + ", " + KEY_SERIES_NUM */ + ", " + DOM_BOOK_NOTES
-                                + ", " + DOM_BOOK_PRICE_LISTED + ", " + DOM_BOOK_ANTHOLOGY_BITMASK + ", " + DOM_BOOK_LOCATION + ", " + DOM_BOOK_READ_START
-                                + ", " + DOM_BOOK_READ_END + ", " + DOM_BOOK_FORMAT + ", " + DOM_BOOK_SIGNED + ", " + DOM_BOOK_DESCRIPTION
-                                + ", " + DOM_BOOK_GENRE;
+                        String tmpFields = DOM_PK_ID + "," /* + KEY_AUTHOR + "," */ + DOM_TITLE + "," +
+                                DOM_BOOK_ISBN + "," + DOM_BOOK_PUBLISHER + "," +
+                                DOM_BOOK_DATE_PUBLISHED + "," + DOM_BOOK_RATING + "," + DOM_BOOK_READ +
+                                /* "," + KEY_SERIES + */ "," + DOM_BOOK_PAGES + "," +
+                                /* KEY_SERIES_NUM  "," + */ DOM_BOOK_NOTES + "," +
+                                DOM_BOOK_PRICE_LISTED + "," + DOM_BOOK_ANTHOLOGY_BITMASK + "," +
+                                DOM_BOOK_LOCATION + "," + DOM_BOOK_READ_START + "," +
+                                DOM_BOOK_READ_END + "," + DOM_BOOK_FORMAT + "," +
+                                DOM_BOOK_SIGNED + "," + DOM_BOOK_DESCRIPTION + "," +
+                                DOM_BOOK_GENRE;
                         db.execSQL("CREATE TABLE tmpBooks AS SELECT " + tmpFields + " FROM " + TBL_BOOKS);
                         db.execSQL("DROP TABLE " + TBL_BOOKS);
                         db.execSQL(DATABASE_CREATE_BOOKS_63);
@@ -1039,7 +1072,7 @@ public class UpgradeDatabase {
         }
         if (curVersion == 58) {
             curVersion++;
-            db.delete(TBL_LOAN.getName(), "("+ DOM_FK_BOOK_ID + "='' OR " + DOM_FK_BOOK_ID + "=null OR " + DOM_LOANED_TO + "='' OR " + DOM_LOANED_TO + "=null) ", null);
+            db.delete(TBL_LOAN.getName(), "(" + DOM_FK_BOOK_ID + "='' OR " + DOM_FK_BOOK_ID + "=null OR " + DOM_LOANED_TO + "='' OR " + DOM_LOANED_TO + "=null) ", null);
             mMessage += "New in v3.6\n\n";
             mMessage += "* The LibraryThing Key will be verified when added\n\n";
             mMessage += "* When entering ISBN's manually, each button with vibrate the phone slightly\n\n";

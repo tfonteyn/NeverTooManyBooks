@@ -259,10 +259,14 @@ public class BackupUtils {
             return mBundle.get(key);
         }
 
+        /**
+         * @throws IOException on de-serialization issues
+         * @throws NumberFormatException on parsing issues
+         */
         @Override
         public void putItem(final @NonNull String key,
                             final @NonNull String type,
-                            final @NonNull String value) throws IOException {
+                            final @NonNull String value) throws IOException, NumberFormatException {
             switch (type) {
                 case TYPE_INTEGER:
                     mBundle.putInt(key, Integer.parseInt(value));
@@ -332,10 +336,13 @@ public class BackupUtils {
             return mMap.get(key);
         }
 
+        /**
+         * @throws NumberFormatException on parsing issues
+         */
         @Override
         public void putItem(final @NonNull String key,
                             final @NonNull String type,
-                            final @NonNull String value) {
+                            final @NonNull String value) throws NumberFormatException {
             switch (type) {
                 case TYPE_INTEGER:
                     mEditor.putInt(key, Integer.parseInt(value));

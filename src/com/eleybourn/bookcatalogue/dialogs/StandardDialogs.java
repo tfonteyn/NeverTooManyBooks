@@ -85,6 +85,9 @@ public class StandardDialogs {
         Toast.makeText(BookCatalogueApp.getAppContext(), message, Toast.LENGTH_LONG).show();
     }
 
+    public static void showUserMessage(final @StringRes int message) {
+        Toast.makeText(BookCatalogueApp.getAppContext(), message, Toast.LENGTH_LONG).show();
+    }
     /* ========================================================================================== */
 
     /**

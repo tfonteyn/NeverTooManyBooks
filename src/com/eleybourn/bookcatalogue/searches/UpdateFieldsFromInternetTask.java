@@ -183,14 +183,9 @@ public class UpdateFieldsFromInternetTask extends ManagedTask
     @Override
     public void runTask() throws InterruptedException {
         int progressCounter = 0;
-        // Test write to the SDCard; abort if not writable
-        if (StorageUtils.isWriteProtected()) {
-            mFinalMessage = getString(R.string.error_storage_cannot_write);
-            return;
-        }
         // the 'order by' makes sure we update the 'oldest' book to 'newest'
         // So if we get interrupted, we can pick up the thread (arf...) again later.
-        try (Cursor books = mDb.fetchBooksWhere(mBookWhereClause, new String[]{},
+        try (Cursor books = mDb.fetchBooksWhere(mBookWhereClause, null,
                 DatabaseDefinitions.TBL_BOOKS.dot(DatabaseDefinitions.DOM_PK_ID))) {
 
             mTaskManager.setMaxProgress(this, books.getCount());

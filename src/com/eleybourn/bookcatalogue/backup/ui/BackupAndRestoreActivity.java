@@ -231,7 +231,7 @@ public class BackupAndRestoreActivity extends FileChooserBaseActivity implements
                 }
             }
         } else {
-            Logger.error("sanity double-check... cannot have a dateFrom when not asking for a time limited export");
+            // make sure; cannot have a dateFrom when not asking for a time limited export
             settings.dateFrom = null;
         }
 

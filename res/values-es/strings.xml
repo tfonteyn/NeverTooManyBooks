@@ -495,9 +495,9 @@
     <string name="btn_confirm_exit">Salir</string>
     <string name="btn_continue_editing">Continuar editando</string>
     <string name="warning_title_already_exists">El título ya existe</string>
-    <string name="year">Año</string>
-    <string name="month">Mes</string>
-    <string name="day">Día</string>
+    <string name="lbl_year">Año</string>
+    <string name="lbl_month">Mes</string>
+    <string name="lbl_day">Día</string>
     <string name="menu_edit">Editar…</string>
     <string name="progress_msg_getting_books">Obteniendo libros…</string>
     <string name="last_error_e">Último error: %1$s</string>

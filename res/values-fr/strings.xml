@@ -476,9 +476,9 @@
     <string name="btn_confirm_exit">Quitter</string>
     <string name="btn_continue_editing">Continuer la modification</string>
     <string name="warning_title_already_exists">Le titre existe déjà</string>
-    <string name="year">Année</string>
-    <string name="month">Mois</string>
-    <string name="day">Jour</string>
+    <string name="lbl_year">Année</string>
+    <string name="lbl_month">Mois</string>
+    <string name="lbl_day">Jour</string>
     <string name="menu_edit">modifier…</string>
     <string name="progress_msg_getting_books">Chargement…</string>
     <string name="last_error_e">Dernière erreur : %1$s</string>

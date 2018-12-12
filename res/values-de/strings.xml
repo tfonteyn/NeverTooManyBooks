@@ -468,9 +468,9 @@ Entweder sind die Daten des Buchs falsch (Sie sollten die ISBN überprüfen) ode
     <string name="btn_confirm_exit">Beenden</string>
     <string name="btn_continue_editing">Bearbeiten fortsetzen</string>
     <string name="warning_title_already_exists">Der Titel existiert bereits</string>
-    <string name="year">Jahr</string>
-    <string name="month">Monat</string>
-    <string name="day">Tag</string>
+    <string name="lbl_year">Jahr</string>
+    <string name="lbl_month">Monat</string>
+    <string name="lbl_day">Tag</string>
     <string name="menu_edit">bearbeiten…</string>
     <string name="progress_msg_getting_books">Hole Bücher…</string>
     <string name="last_error_e">Letzter Fehler: %1$s</string>

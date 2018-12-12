@@ -482,9 +482,9 @@
     <string name="btn_confirm_exit">Έξοδος</string>
     <string name="btn_continue_editing">Συνέχεια Επεξεργασίας</string>
     <string name="warning_title_already_exists">Αυτός ο τίτλος υπάρχει ήδη</string>
-    <string name="year">Έτος</string>
-    <string name="month">Μήνας</string>
-    <string name="day">Ημέρα</string>
+    <string name="lbl_year">Έτος</string>
+    <string name="lbl_month">Μήνας</string>
+    <string name="lbl_day">Ημέρα</string>
     <string name="menu_edit">επεξεργασία…</string>
     <string name="progress_msg_getting_books">Γίνεται λήψη βιβλίων…</string>
     <string name="last_error_e">Τελευταίο σφάλμα: %1$s</string>

@@ -76,18 +76,18 @@ public class StringProperty extends PropertyWithGlobalValue<String> {
         // Reflect all changes in underlying data
         holder.value.addTextChangedListener(new TextWatcher() {
             @Override
-            public void afterTextChanged(final @NonNull Editable s) {
-                setValue(s.toString());
-            }
-
-            @Override
-            public void beforeTextChanged(final CharSequence s,
+            public void beforeTextChanged(final @NonNull CharSequence s,
                                           final int start, final int count, final int after) {
             }
 
             @Override
-            public void onTextChanged(final CharSequence s,
+            public void onTextChanged(final @NonNull CharSequence s,
                                       final int start, final int before, final int count) {
+            }
+
+            @Override
+            public void afterTextChanged(final @NonNull Editable s) {
+                setValue(s.toString());
             }
         });
 

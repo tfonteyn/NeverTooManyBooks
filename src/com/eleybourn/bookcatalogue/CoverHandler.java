@@ -342,7 +342,7 @@ public class CoverHandler implements SelectOneDialog.hasViewContextMenu {
             m.postRotate(BookCatalogueApp.getIntPreference(PREF_CAMERA_AUTOROTATE, 0));
             bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), m, true);
 
-            File cameraFile = StorageUtils.getTempCoverFile("camera", "" + CoverHandler.mTempImageCounter);
+            File cameraFile = StorageUtils.getTempCoverFile("camera" + CoverHandler.mTempImageCounter);
             FileOutputStream out;
             // Create a file to copy the thumbnail into
             try {
@@ -535,7 +535,7 @@ public class CoverHandler implements SelectOneDialog.hasViewContextMenu {
      */
     @NonNull
     private File getCroppedTempCoverFile() {
-        return StorageUtils.getTempCoverFile("cropped", "" + mTempImageCounter);
+        return StorageUtils.getTempCoverFile("cropped" + mTempImageCounter);
     }
 
     /**

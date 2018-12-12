@@ -148,7 +148,7 @@ public class BooklistRowView extends BookRowViewBase {
                         // Create static formatter if necessary
                         return DateUtils.getMonthName(i);
                     }
-                } catch (Exception ignored) {
+                } catch (NumberFormatException ignored) {
                 }
                 break;
             }
@@ -160,7 +160,7 @@ public class BooklistRowView extends BookRowViewBase {
                         Resources r = mBuilder.getContext().getResources();
                         return r.getQuantityString(R.plurals.n_stars, i, i);
                     }
-                } catch (Exception ignored) {
+                } catch (NumberFormatException ignored) {
                 }
                 break;
             }

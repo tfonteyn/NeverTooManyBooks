@@ -78,6 +78,7 @@ https://github.com/eleybourn/Book-Catalogue/issues/709 - Add 'date acquired' fie
 https://github.com/eleybourn/Book-Catalogue/issues/696 - Order by author first name
 https://github.com/eleybourn/Book-Catalogue/issues/690 - Currency for each book
 https://github.com/eleybourn/Book-Catalogue/issues/678 - List price needs to be listed to two decimal points.
+https://github.com/eleybourn/Book-Catalogue/issues/653 - Allow users to select a default Amazon site
 https://github.com/eleybourn/Book-Catalogue/issues/597 - Merging of bookshelves
 https://github.com/eleybourn/Book-Catalogue/issues/587 - residual thumbnail after Cancel entry-by-isbn
 https://github.com/eleybourn/Book-Catalogue/issues/567 - Read-only display does not display anthology titles

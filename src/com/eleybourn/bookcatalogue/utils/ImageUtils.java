@@ -49,8 +49,9 @@ public class ImageUtils {
                                                 final boolean exact) {
         // Get the file, if it exists. Otherwise set 'broken image' icon and exit.
         if (!file.exists()) {
-            if (destView != null)
+            if (destView != null) {
                 destView.setImageResource(R.drawable.ic_broken_image);
+            }
             return null;
         }
 
@@ -217,17 +218,17 @@ public class ImageUtils {
     }
 
     /**
-     * Given a URL, get an image and save to a file, appending a suffix to the filename.
+     * Given a URL, get an image and save to a file
      *
-     * @param urlText        Image file URL
-     * @param filenameSuffix Suffix to add
+     * @param urlText Image file URL
+     * @param name    for the file.
      *
      * @return Downloaded fileSpec, or null on failure
      */
     @Nullable
-    public static String saveThumbnailFromUrl(final @NonNull String urlText, final @NonNull String filenameSuffix) {
+    public static String saveThumbnailFromUrl(final @NonNull String urlText, final @NonNull String name) {
         boolean success = false;
-        final File file = StorageUtils.getTempCoverFile(filenameSuffix);
+        final File file = StorageUtils.getTempCoverFile(name);
         try (InputStream in = Utils.getInputStreamWithTerminator(new URL(urlText))) {
             if (in != null) {
                 success = StorageUtils.saveInputStreamToFile(in, file);
@@ -295,8 +296,9 @@ public class ImageUtils {
      */
     @Nullable
     public static Bitmap getBitmapFromBytes(final @NonNull byte[] bytes) {
-        if (bytes.length == 0)
+        if (bytes.length == 0) {
             return null;
+        }
 
         Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length, new BitmapFactory.Options());
 

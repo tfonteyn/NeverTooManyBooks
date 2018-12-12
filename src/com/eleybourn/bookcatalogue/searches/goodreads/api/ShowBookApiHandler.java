@@ -230,7 +230,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
 			/*
 			try {
 				mCurrSeriesId = Integer.parseInt(context.body.trim());
-			} catch (Exception ignore) {
+			} catch (NumberFormatException ignore) {
 			}
 			*/
         }
@@ -406,7 +406,7 @@ public abstract class ShowBookApiHandler extends ApiHandler {
         public void process(final @NonNull ElementContext context) {
             try {
                 mCurrSeriesPosition = Integer.parseInt(context.body.trim());
-            } catch (Exception ignore) {
+            } catch (NumberFormatException ignore) {
             }
         }
     };

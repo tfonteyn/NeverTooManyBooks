@@ -474,9 +474,9 @@
     <string name="btn_confirm_exit">Esci</string>
     <string name="btn_continue_editing">Annulla</string>
     <string name="warning_title_already_exists">Titolo già presente in elenco</string>
-    <string name="year">Anno</string>
-    <string name="month">Mese</string>
-    <string name="day">Giorno</string>
+    <string name="lbl_year">Anno</string>
+    <string name="lbl_month">Mese</string>
+    <string name="lbl_day">Giorno</string>
     <string name="menu_edit">modifica…</string>
     <string name="progress_msg_getting_books">Sto acquisendo i libri…</string>
     <string name="last_error_e">Ultimo Errore: %1$s</string>

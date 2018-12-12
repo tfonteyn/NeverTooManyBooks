@@ -25,7 +25,7 @@
                 android:id="@+id/lbl_year"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/year"
+                android:text="@string/lbl_year"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
             <Button
@@ -39,7 +39,7 @@
                 android:id="@+id/year"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/year"
+                android:hint="@string/lbl_year"
                 android:inputType="number"
                 android:ems="4"
                 android:text="2000"
@@ -65,7 +65,7 @@
                 android:id="@+id/lbl_month"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/month"
+                android:text="@string/lbl_month"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
             <Button
@@ -99,7 +99,7 @@
                 android:id="@+id/lbl_day"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/day"
+                android:text="@string/lbl_day"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
             <Button

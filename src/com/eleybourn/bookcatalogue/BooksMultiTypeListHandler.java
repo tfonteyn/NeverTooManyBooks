@@ -708,6 +708,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
             case RowKinds.ROW_KIND_LOANED:
             case RowKinds.ROW_KIND_BOOKSHELF:
             case RowKinds.ROW_KIND_DATE_PUBLISHED_YEAR:
+            case RowKinds.ROW_KIND_DATE_FIRST_PUBLICATION_YEAR:
             case RowKinds.ROW_KIND_DATE_ACQUIRED_YEAR:
             case RowKinds.ROW_KIND_DATE_ACQUIRED_DAY:
             case RowKinds.ROW_KIND_DATE_ADDED_YEAR:
@@ -720,6 +721,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
 
             /* Months are displayed by name */
             case RowKinds.ROW_KIND_DATE_PUBLISHED_MONTH:
+            case RowKinds.ROW_KIND_DATE_FIRST_PUBLICATION_MONTH:
             case RowKinds.ROW_KIND_DATE_ACQUIRED_MONTH:
             case RowKinds.ROW_KIND_DATE_ADDED_MONTH:
             case RowKinds.ROW_KIND_DATE_READ_MONTH:
@@ -1321,8 +1323,7 @@ public class BooksMultiTypeListHandler implements MultiTypeListHandler {
                 if (i > 0 && i <= 12) {
                     s = DateUtils.getMonthName(i);
                 }
-            } catch (Exception e) {
-                Logger.error(e);
+            } catch (NumberFormatException ignore) {
             }
             setText(mTextView, s, mNoDataId, level);
         }

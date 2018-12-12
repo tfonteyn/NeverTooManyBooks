@@ -475,9 +475,9 @@
     <string name="btn_confirm_exit">Выход</string>
     <string name="btn_continue_editing">Продолжить редактирование</string>
     <string name="warning_title_already_exists">Название уже существует</string>
-    <string name="year">Год</string>
-    <string name="month">Месяц</string>
-    <string name="day">День</string>
+    <string name="lbl_year">Год</string>
+    <string name="lbl_month">Месяц</string>
+    <string name="lbl_day">День</string>
     <string name="menu_edit">редактировать…</string>
     <string name="progress_msg_getting_books">Получение книг…</string>
     <string name="last_error_e">Последняя ошибка: %1$s</string>

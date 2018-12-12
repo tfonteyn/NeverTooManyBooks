@@ -124,7 +124,8 @@ public class OwnedBookCreateHandler extends ApiHandler {
 
 		@Override
 		@CallSuper
-		public void endElement(final @NonNull String uri, final @NonNull String localName, final @NonNull String name) throws SAXException {
+		public void endElement(final @NonNull String uri, final @NonNull String localName, final @NonNull String name)
+				throws SAXException, NumberFormatException {
 			super.endElement(uri, localName, name);
 
 			if (localName.equalsIgnoreCase(BOOK_ID)) {

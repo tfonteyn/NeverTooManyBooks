@@ -47,6 +47,7 @@ public class CsvExportTask extends ManagedTask {
 
     public CsvExportTask(final @NonNull TaskManager manager, final @NonNull ExportSettings settings) {
         super("CsvExportTask", manager);
+        settings.validate();
         mExporter = new CsvExporter(settings);
     }
 
@@ -55,7 +56,7 @@ public class CsvExportTask extends ManagedTask {
         try {
             File tmpFile = StorageUtils.getFile(CsvExporter.EXPORT_TEMP_FILE_NAME);
             final FileOutputStream out = new FileOutputStream(tmpFile);
-            mExporter.doBooks(out, mOnExportListener);
+            mExporter.doExport(out, mOnExportListener);
 
             if (out.getChannel().isOpen()) {
                 out.close();

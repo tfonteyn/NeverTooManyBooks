@@ -612,13 +612,19 @@
     <!-- ========== Single words used for multiple purposes ========== -->
     <!-- ####################################################################################### -->
 
-    <string name="edit">Edit</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="help">Help</string>
+    <string name="edit">Edit</string>
+
     <string name="unknown">Unknown</string>
     <string name="unknown_uc">UNKNOWN</string>
+    <!-- 'try again' -->
     <string name="retry">Retry</string>
+    <!-- e.g. "in a folder" -->
+    <string name="in">In</string>
+
+    <string name="updated">Updated</string>
 
     <!-- Default 'name' for anything that has a name -->
     <string name="name">Name</string>
@@ -627,6 +633,8 @@
     <!-- == Size measurements; for now only file-sizes.  == -->
     <!-- ####################################################################################### -->
 
+    <!-- e.g. "size of a file" -->
+    <string name="size">Size</string>
     <string name="megabytes">%.2fMB</string>
     <string name="kilobytes">%.2fkB</string>
     <string name="bytes">%.0f bytes</string>
@@ -862,6 +870,11 @@
     <string name="lbl_read">Read</string>
     <string name="lbl_unread">Unread</string>
 
+    <!-- Universal date strings -->
+    <string name="lbl_year">Year</string>
+    <string name="lbl_month">Month</string>
+    <string name="lbl_day">Day</string>
+
     <!-- Individual fields for "date added" -->
     <string name="lbl_added_year">Added Year</string>
     <string name="lbl_added_month">Added Month</string>
@@ -885,7 +898,6 @@
 
     <!-- Heading in Admin activity -->
     <string name="lbl_advanced_options">Advanced Options</string>
-
 
     <string name="lbl_cover_images">Cover images</string>
     <string name="lbl_search_for_books">Search for Books</string>
@@ -1030,12 +1042,8 @@
     <string name="export_info_backup_all">All books, covers, settings and custom styles will be exported to the archive.</string>
     <!-- Explanatory note for 'export to archive' OPTIONS dialog -->
     <string name="export_options_dialog_title">Select what will be exported to the archive.</string>
-    <!-- Explanatory note of the 'export from archive' "all books" option -->
-    <string name="export_option_info_all_books">blah</string>
     <!-- Explanatory note for export data since last backup -->
     <string name="export_option_books_since_last_full_backup">All books added or updated since last full backup</string>
-    <!-- Explanatory note of the 'export from archive' "all books" option -->
-    <string name="export_option_info_new_and_changed_books">blah</string>
     <!-- options to select 'what' will be exported to the archive -->
     <string name="export_info_cover_images">Cover images for all selected books. Will make the export much larger.</string>
     <!-- Explanatory note for 'export from archive' since-date (not yet implemented) -->
@@ -1069,13 +1077,6 @@
 
     <!-- ####################################################################################### -->
 
-    <string name="year">Year</string>
-    <string name="month">Month</string>
-    <string name="day">Day</string>
-
-    <string name="in">In</string>
-    <string name="size">Size</string>
-    <string name="updated">Updated</string>
     <string name="book_details">Book details</string>
     <string name="text_and_or_isbn">Text and/or ISBN</string>
 
@@ -1132,7 +1133,6 @@
     <string name="please_enter_search_criteria">Please enter search criteria</string>
 
     <string name="menu_credentials">Credentials</string>
-
 
 
     <string name="hints_have_been_reset">Hints have been reset</string>
@@ -1346,7 +1346,15 @@
     <string name="lbl_edition_limited">Limited Edition</string>
 
     <string name="lbl_first_publication">First Publication</string>
+    <string name="lbl_first_publication_month">First Pub. Month</string>
+    <string name="lbl_first_publication_year">First Pub. Year</string>
+
     <string name="lbl_date_acquired">Date Acquired</string>
+    <string name="lbl_date_acquired_day">Acquired Day</string>
+    <string name="lbl_date_acquired_month">Acquired Month</string>
+    <string name="lbl_date_acquired_year">Acquired Year</string>
+    <string name="style_builtin_acquired_date">Acquired date</string>
+
     <string name="lbl_price_paid">Price paid</string>
     <string name="lbl_is_complete">Is complete</string>
 
@@ -1360,11 +1368,6 @@
     <!-- some unique field already exists; example: when trying to create a duplicate Bookshelf -->
     <string name="warning_thing_already_exists">%1$s already exists</string>
     <string name="warning_required_at_least_one">At least one field must not be blank</string>
-
-    <string name="style_builtin_acquired_date">Acquired date</string>
-    <string name="lbl_date_acquired_day">Acquired Day</string>
-    <string name="lbl_date_acquired_month">Acquired Month</string>
-    <string name="lbl_date_acquired_year">Acquired Year</string>
 
     <string name="blp_sort_author_name">Sorting of author names</string>
 
@@ -1380,6 +1383,7 @@
 
     <string name="import_export_xml_tables">as XML</string>
     <string name="import_export_info_xml_tables">as XML</string>
+    <string name="title_activity_settings">Settings</string>
 
 
     <!-- End: Added/Updated in  [Next Version]  -->

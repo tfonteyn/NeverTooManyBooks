@@ -57,7 +57,6 @@ import com.eleybourn.bookcatalogue.database.DBExceptions;
 import com.eleybourn.bookcatalogue.datamanager.datavalidators.ValidatorException;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Book;
-import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.RTE;
@@ -777,41 +776,32 @@ public class Fields extends ArrayList<Fields.Field> {
      * Implementation that stores and retrieves data from an EditText.
      * Uses the defined {@link FieldFormatter} and setText() and getText().
      *
-     * @author Philip Warner
+     * 2018-12-11: set is now synchronized. There was recursion builtin due to the setText call.
+     * So now, disabling the TextWatcher while doing the latter.
      */
     static public class EditTextAccessor extends BaseDataAccessor {
-        private boolean mIsSetting = false;
 
-        public void set(final @NonNull Field field, final @NonNull String value) {
-            synchronized (this) {
-                if (mIsSetting) {
-                    return; // Avoid recursion now we watch text
-                }
-                mIsSetting = true;
-            }
-            try {
-                TextView view = field.getView();
-                String newVal = field.format(value);
-                String oldVal = view.getText().toString().trim();
+        public synchronized void set(final @NonNull Field field, final @NonNull String value) {
+            EditText view = field.getView();
+            view.removeTextChangedListener(field.textWatcher);
 
-                if (newVal.equals(oldVal)) {
-                    return;
-                }
+            String newVal = field.format(value);
+            String oldVal = view.getText().toString().trim();
+            if (!newVal.equals(oldVal)) {
                 view.setText(newVal);
-            } finally {
-                mIsSetting = false;
             }
+            view.addTextChangedListener(field.textWatcher);
         }
 
         public void putFieldValueInto(final @NonNull Field field, final @NonNull Bundle values) {
-            TextView view = field.getView();
+            EditText view = field.getView();
             values.putString(field.column, field.extract(view.getText().toString()).trim());
         }
 
         @Override
         public void putFieldValueInto(final @NonNull Field field, final @NonNull DataManager dataManager) {
             try {
-                TextView view = field.getView();
+                EditText view = field.getView();
                 dataManager.putString(field.column, field.extract(view.getText().toString()).trim());
             } catch (Exception e) {
                 throw new RuntimeException("Unable to save data", e);
@@ -820,7 +810,7 @@ public class Fields extends ArrayList<Fields.Field> {
 
         @NonNull
         public Object get(final @NonNull Field field) {
-            TextView view = field.getView();
+            EditText view = field.getView();
             return field.extract(view.getText().toString().trim());
         }
     }
@@ -1370,6 +1360,9 @@ public class Fields extends ArrayList<Fields.Field> {
         public boolean visible;
         /** Accessor to use (automatically defined) */
         private FieldDataAccessor accessor;
+        /** TextWatcher, used for EditText fields only. */
+        private TextWatcher textWatcher;
+
         /**
          * Option indicating that even though field has a column name, it should NOT be fetched
          * from a {@link DataManager} (or Bundle/Cursor).
@@ -1416,20 +1409,23 @@ public class Fields extends ArrayList<Fields.Field> {
                 } else if (view instanceof EditText) {
                     accessor = new EditTextAccessor();
                     EditText et = (EditText) view;
-                    et.addTextChangedListener(new TextWatcher() {
+                    textWatcher = new TextWatcher() {
                         @Override
-                        public void afterTextChanged(@NonNull Editable arg0) {
-                            Field.this.setValue(arg0.toString());
+                        public void beforeTextChanged(final @NonNull CharSequence s,
+                                                      final int start, final int count, final int after) {
                         }
 
                         @Override
-                        public void beforeTextChanged(final CharSequence arg0, final int arg1, final int arg2, final int arg3) {
+                        public void onTextChanged(final @NonNull CharSequence s,
+                                                  final int start, final int before, final int count) {
                         }
 
                         @Override
-                        public void onTextChanged(final CharSequence arg0, final int arg1, final int arg2, final int arg3) {
+                        public void afterTextChanged(final @NonNull Editable s) {
+                            Field.this.setValue(s.toString());
                         }
-                    });
+                    };
+                    et.addTextChangedListener(textWatcher);
 
                 } else if (view instanceof Button) { // a Button *is* a TextView, but this is cleaner
                     accessor = new TextViewAccessor();

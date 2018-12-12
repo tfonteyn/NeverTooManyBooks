@@ -63,7 +63,7 @@ public class CsvImportTask extends ManagedTask {
     @Override
     protected void runTask() {
         try (FileInputStream in = new FileInputStream(mSettings.file)) {
-            mImporter.doBooks(in, mCoverFinder, mImportListener);
+            mImporter.doImport(in, mCoverFinder, mImportListener);
 
             if (isCancelled()) {
                 mFinalMessage = getString(R.string.progress_end_cancelled);
